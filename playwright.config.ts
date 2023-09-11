@@ -13,7 +13,7 @@ export default defineConfig({
   testDir: './tests',
   /* Maximum time one test can run for. */
   //timeout: 30 * 1000,
-  timeout: 30 * 10000,
+  timeout: 30 * 1000,
   //timeout: 300 * 1000,
   retries: 0,
   expect: {
@@ -21,7 +21,7 @@ export default defineConfig({
      * Maximum time expect() should wait for the condition to be met.
      * For example in `await expect(locator).toHaveText();`
      */
-    timeout: 60000
+    timeout: 10000
   },
   /* Run tests in files in parallel */
   fullyParallel: true,
@@ -53,13 +53,13 @@ export default defineConfig({
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome']},
-    }//,
+    },
 
-  /*  {
+    {
       name: 'firefox',
       use: { ...devices['Desktop Firefox'] },
     },
-
+/*
     {
       name: 'webkit',
       use: { ...devices['Desktop Safari'] },
