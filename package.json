@@ -1,12 +1,15 @@
 {
   "devDependencies": {
-    "@playwright/test": "^1.33.0"
+    "@playwright/test": "^1.37.1",
+    "allure-commandline": "^2.24.0",
+    "allure-playwright": "^2.8.0"
   },
   "scripts": {},
   "dependencies": {
     "@fast-csv/format": "^4.3.5",
     "@fast-csv/parse": "^4.3.6",
-    "fast-csv": "^4.3.6"
+    "fast-csv": "^4.3.6",
+    "uuid": "^9.0.1"
   },
   "name": "schulportal-testautomatisierung",
   "description": "",
