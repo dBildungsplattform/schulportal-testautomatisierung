@@ -1,29 +1,12 @@
 import { defineConfig, devices } from '@playwright/test';
 require("dotenv").config({ path: "./.env.local" });
 
-/**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-// require('dotenv').config();
-
-/**
- * See https://playwright.dev/docs/test-configuration.
- */
 export default defineConfig({
   testDir: './tests',
   /* Maximum time one test can run for. */
-  //timeout: 30 * 1000,
   timeout: 30 * 1000,
-  //timeout: 300 * 1000,
   retries: 0,
-  expect: {
-    /**
-     * Maximum time expect() should wait for the condition to be met.
-     * For example in `await expect(locator).toHaveText();`
-     */
-    timeout: 10000
-  },
+  expect: { timeout: 10000 },
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -58,10 +41,10 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome']},
     },
 
-    {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-    },
+    // {
+    //   name: 'firefox',
+    //   use: { ...devices['Desktop Firefox'] },
+    // },
 /*
     {
       name: 'webkit',
@@ -100,5 +83,3 @@ export default defineConfig({
 
   
 });
-
-console.log(process.env.FOO); // prints "bar"

@@ -1,21 +1,24 @@
 import { test, expect } from '@playwright/test';
 import { LoginPage } from '../pages/login';
 
-test.describe('Erfolgreicher Standard Login', () => {
-  test('Login Test', async ({ context, page }) => {
-    const server = 'portal';
-    const url = 'https://' + server + '.qs.schule-sh.de/univention/login/#/'; 
+const PW = process.env.PW;
+const USER = process.env.USER;
+const URL_PORTAL = process.env.URL_PORTAL;
+const URL_COOKIE_PORTAL = process.env.URL_COOKIE_PORTAL;
+const URL_COOKIE_UCS = process.env.URL_COOKIE_UCS;
+
+test.describe(`Start Test in der Umgebung: ${process.env.UMGEBUNG} und Server: ${process.env.URL_PORTAL}`, () => {
+  test('Erfolgreicher Standard Login', async ({ context, page }) => {
     const Login = new LoginPage(page);
     
-    await test.step('Hier passiert nichts', async () => {  
+    await test.step("Vorab die Browser-Cookies setzen (Simulation, dass der Benutzer in der Vergangen schon mal auf der Seite war)", async () => {
+      context.addCookies([{name:"schuposh-consent", value: "do-not-change-me", url: URL_COOKIE_PORTAL}]);
+      context.addCookies([{name:"schuposh-consent", value: "do-not-change-me", url: URL_COOKIE_UCS}]);
     })
 
     await test.step('Negativer login', async () => {
-      await Login.login('xxxxxxxx', 'xxxxxxx', url); 
+      await Login.login('xxxxxxxx', 'yyyyyyyy', URL_PORTAL); 
     })
+    // await page.pause();
   })
 })
-  
-
-
-   //await page.pause();
