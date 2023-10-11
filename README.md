@@ -8,10 +8,10 @@ npm install qrcode-reader
 
 ## Oft verwendetet Konsolenbefehle
 
-# Einen bestimmten Test ausführen: 
+## Einen bestimmten Test ausführen: 
 npx playwright test TF0001.spec.ts
 
-# Umgebungsvariablen überschreiben
+## Umgebungsvariablen überschreiben
 gitbash: TIMEOUT="" npx playwright test TF0001.spec.ts --headed
 
 powershell:
