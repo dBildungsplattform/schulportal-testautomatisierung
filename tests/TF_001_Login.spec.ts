@@ -11,7 +11,7 @@ test.describe('Erfolgreicher Standard Login', () => {
     })
 
     await test.step('Negativer login', async () => {
-      await Login.loginAndereURL('xxxxxxxx', 'xxxxxxx', url); 
+      await Login.login('xxxxxxxx', 'xxxxxxx', url); 
     })
   })
 })

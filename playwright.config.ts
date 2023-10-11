@@ -1,4 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
+require("dotenv").config({ path: "./.env.local" });
 
 /**
  * Read environment variables from file.
@@ -96,4 +97,8 @@ export default defineConfig({
   //   command: 'npm run start',
   //   port: 3000,
   // },
+
+  
 });
+
+console.log(process.env.FOO); // prints "bar"
