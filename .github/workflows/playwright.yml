@@ -4,7 +4,7 @@ on:
   push:
     branches: [ main, master, dev ]
   schedule:
-  - cron: "12 16 * * *"
+  - cron: "15 16 * * *"
     branches: [ dev ]
 jobs:
   test:
