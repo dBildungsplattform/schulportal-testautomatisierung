@@ -1,10 +1,7 @@
-name: Playwright Tests
+name: Scheduled Tests
 on:
-  workflow_dispatch:
-  push:
-    branches: [ main, master, dev ]
   schedule:
-  - cron: '30 16 * * 1-5'
+  - cron: '45 16 * * 1-5'
 jobs:
   test:
     timeout-minutes: 60
