@@ -34,7 +34,7 @@ npx playwright test 00_Authentifizierung.spec.ts --headed
 # Struktur Testfälle
 
 ## Prefix Testfälle
-Bereich 00: Authentifizierung 
+Bereich 00: Authentifizierung
 Bereich 10: Navigation
 Bereich 20:
 Bereich 30:
