@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { LoginPage } from '../pages/login';
+import { StartseitePage } from '../pages/startseite';
 
 const PW = process.env.PW;
 const USER = process.env.USER;
@@ -9,36 +10,12 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.UM
   test('[01] Erfolgreicher Standard Login', async ({ page }) => {
     // await page.pause();
     const Login = new LoginPage(page);
-    const Benutzer = 'HelloWorld'
-    const PW = 'PwDontExists'
+    const Startseite = new StartseitePage(page);
 
-    await test.step(`Anmelden mit Benutzer ${Benutzer}`, async () => {
-      await Login.login(Benutzer, PW, URL_PORTAL); 
+    await test.step(`Anmelden mit Benutzer ${USER}`, async () => {
+      await Login.login(USER, PW, URL_PORTAL); 
     })
-    // await page.pause();
-  })
-
-  test('[02] Erfolgreicher Standard Login', async ({ page }) => {
-    // await page.pause();
-    const Login = new LoginPage(page);
-    const Benutzer = 'HelloWorld'
-    const PW = 'PwDontExists'
-
-    await test.step(`Anmelden mit Benutzer ${Benutzer}`, async () => {
-      await Login.login(Benutzer, PW, URL_PORTAL); 
-    })
-    // await page.pause();
-  })
-
-  test('[03] Erfolgreicher Standard Login', async ({ page }) => {
-    // await page.pause();
-    const Login = new LoginPage(page);
-    const Benutzer = 'HelloWorld'
-    const PW = 'PwDontExists'
-
-    await test.step(`Anmelden mit Benutzer ${Benutzer}`, async () => {
-      await Login.login(Benutzer, PW, URL_PORTAL); 
-    })
-    // await page.pause();
-  })
+    await expect(Startseite.text_h1_UeberschriftStartseite).toBeVisible();
+    await page.pause();
+  })  
 })

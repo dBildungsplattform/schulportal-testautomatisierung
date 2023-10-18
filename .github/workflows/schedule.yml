@@ -1,8 +1,7 @@
 name: Playwright Tests
 on:
-  workflow_dispatch:
-  push:
-    branches: [ main, dev ]
+  schedule:
+    - cron: '* 6 * * 1-5'
 jobs:
   test:
     timeout-minutes: 60
@@ -18,9 +17,6 @@ jobs:
       run: npx playwright install --with-deps
     - name: Run Playwright tests
       run: npx playwright test
-      env:
-        USER: '${{ secrets.USER }}'
-        PW: '${{ secrets.PW }}'
     - uses: actions/upload-artifact@v3
       if: always()
       with:

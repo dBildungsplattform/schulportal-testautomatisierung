@@ -6,8 +6,8 @@ export class LoginPage{
     readonly text_h1_UeberschriftLoginSeite: Locator;
     readonly input_username: Locator;
     readonly input_password: Locator;
-    readonly button_Anmelden: Locator;
-    
+    readonly button_login: Locator;
+    readonly text_h1_UeberschriftStartseite: Locator;
 
     constructor(page){
         this.page = page;  
@@ -15,7 +15,8 @@ export class LoginPage{
         this.text_h1_UeberschriftLoginSeite = page.getByRole('heading', { name: 'This is a login page' })
         this.input_username = page.locator("#input-1");
         this.input_password = page.locator("#input-3");
-        this.button_Anmelden = page.getByTestId('login-button')
+        this.button_login = page.getByTestId('login-button');
+        this.text_h1_UeberschriftStartseite = page.getByRole('heading', { name: 'This is gonna be the home page' });
     }
 
     async login(username, password, url){
@@ -26,7 +27,6 @@ export class LoginPage{
         await this.input_username.fill(username);
         await this.input_password.click();
         await this.input_password.fill(password);
-        await this.button_Anmelden.click();
-        await expect(this.text_h1_UeberschriftLoginSeite).toBeVisible();
+        await this.button_login.click();
     }
 }
