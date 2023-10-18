@@ -32,6 +32,7 @@ export default defineConfig({
     locale: 'de-DE',
         timezoneId: 'Europe/Brussels',
     screenshot: 'only-on-failure', 
+    // screenshot: 'on',
     ignoreHTTPSErrors: true,   
   },
 

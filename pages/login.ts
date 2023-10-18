@@ -7,6 +7,7 @@ export class LoginPage{
     readonly input_username: Locator;
     readonly input_password: Locator;
     readonly button_login: Locator;
+    readonly button_logoff: Locator;
     readonly text_h1_UeberschriftStartseite: Locator;
 
     constructor(page){
@@ -16,6 +17,7 @@ export class LoginPage{
         this.input_username = page.locator("#input-1");
         this.input_password = page.locator("#input-3");
         this.button_login = page.getByTestId('login-button');
+        this.button_logoff = page.getByRole('button', { name: 'Abmelden' });
         this.text_h1_UeberschriftStartseite = page.getByRole('heading', { name: 'This is gonna be the home page' });
     }
 
@@ -28,5 +30,10 @@ export class LoginPage{
         await this.input_password.click();
         await this.input_password.fill(password);
         await this.button_login.click();
+    }
+
+    async logoff(){
+        await this.button_logoff.click();
+        await expect(this.text_h1_UeberschriftLoginSeite).toBeVisible();
     }
 }
