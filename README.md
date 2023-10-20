@@ -12,7 +12,7 @@ npm install qrcode-reader
 npx playwright test TF0001.spec.ts
 
 ## Umgebungsvariablen überschreiben
-gitbash: TIMEOUT="" npx playwright test TF0001.spec.ts --headed
+gitbash: USER='' PW='' npx playwright test TF0001.spec.ts --headed
 
 powershell:
  $env:TIMEOUT=""
