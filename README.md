@@ -32,9 +32,8 @@ PWDEBUG=1
 npx playwright test 00_Authentifizierung.spec.ts --headed
 
 # Struktur Testfälle
+Jeder Testfall ist in Jiray/Xray beschrieben.
+Pro Datei ist nur ein Testfall implementiert.
 
 ## Prefix Testfälle
-Bereich 00: Authentifizierung
-Bereich 10: Navigation
-Bereich 20:
-Bereich 30:
+Die Dateinamen der Testfälle beginnen mit der Jira-ID
