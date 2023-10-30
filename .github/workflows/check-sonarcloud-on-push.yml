@@ -1,0 +1,18 @@
+name: "Check with Sonarcloud"
+
+on:
+  push:
+
+concurrency:
+  group: schulportal-testautomatisierung-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  sonarcloud:
+    uses: dBildungsplattform/dbp-github-workflows/.github/workflows/check-nest-test-sonarcloud.yaml@2.0.0
+    with:
+      node_version: '18'
+      skip_tests: true
+    permissions:
+      contents: read
+    secrets: inherit
