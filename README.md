@@ -1,8 +1,7 @@
 # Schulportal Playwright, Doku für lokale Ausführung von den Tests
 
-## Zu installierende Node.js-Pakete
+## Zusätzliche zu installierende Node.js-Pakete die
 npm install dotenv
-npm install otpauth
 
 # Oft verwendetet Konsolenbefehle
 
