@@ -31,3 +31,6 @@ git bash: PWDEBUG=1 npx playwright test 00_Authentifizierung.spec.ts --headed
 powershell:
 PWDEBUG=1
 npx playwright test 00_Authentifizierung.spec.ts --headed
+
+## ESLint ausführen
+`npm run lint`
