@@ -1,8 +1,5 @@
 # Schulportal Playwright, Doku für lokale Ausführung von den Tests
 
-## Zusätzliche zu installierende Node.js-Pakete die
-npm install dotenv
-
 # Oft verwendetet Konsolenbefehle
 
 ## Einen bestimmten Test ausführen: 
@@ -33,3 +30,8 @@ npx playwright test 00_Authentifizierung.spec.ts --headed
 
 ## ESLint ausführen
 `npm run lint`
+
+## Lokale Ausführung
+Wenn die Tests lokal ausgeführt werden, ist die Ziel-URL, auf der die Playwright-Tests ausgeführt werden, defaultmäßig: test.dev.
+Dieses wird über die env-files gesteuert. Das genutzte env.file ist in der playwright.config auf das env-file '.env.dev' konfiguriert. Dieses sollte auch immer die
+eingecheckte Konfiguration sein.
