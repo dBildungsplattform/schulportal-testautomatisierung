@@ -18,7 +18,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.UM
       await expect(Menue.button_Abmelden).toBeVisible();
     })
     
-    await test.step(`Abnmelden Benutzer ${USER}`, async () => {
+    await test.step(`Abmelden Benutzer ${USER}`, async () => {
       await Menue.button_Abmelden.click(); 
       await expect(Menue.button_Anmelden).toBeEnabled();
     })
