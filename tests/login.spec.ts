@@ -21,6 +21,5 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.UM
       await expect(Landing.text_h1_UeberschriftStartseite).toBeVisible();
     })
 
-    // await page.pause();
   })  
 })
