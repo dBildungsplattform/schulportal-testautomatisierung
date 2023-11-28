@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
-import { LoginPage } from '../pages/login.page.';
-import { MenuePage } from '../pages/menue.page.';
+import { LoginPage } from '../pages/login.page';
+import { MenuePage } from '../pages/menue.page';
 
 const PW = process.env.PW;
 const USER = process.env.USER;
@@ -22,7 +22,5 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.UM
       await Menue.button_Abmelden.click(); 
       await expect(Menue.button_Anmelden).toBeEnabled();
     })
-
-    // await page.pause();
   })  
 })
