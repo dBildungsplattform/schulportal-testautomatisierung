@@ -26,6 +26,3 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.UM
     })
   })  
 })
-
-// Um die Anmeldung zu verifizieren, schlage ich vor, dass der Test nach dem Login eine Seite aufruft, für die eine Authentifizierung 
-// notwendig ist, bspw. die Startseite mit den Service Providern.
