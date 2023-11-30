@@ -1,7 +1,7 @@
 name: Scheduled Playwright Tests
 on:
   schedule:
-    - cron: '* 6 * * *'
+    - cron: '10 6 * * *'
 jobs:
   test:
     timeout-minutes: 60

@@ -25,4 +25,19 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.UM
       await expect(Start.text_h2_Ueberschrift).toBeVisible();
     })
   })  
+
+  test('Erfolgloser Login mit falschem Passwort', async ({ page }) => {
+    const Login = new LoginPage(page);
+    const Landing = new LandingPage(page);
+    const Menue = new MenuePage(page);
+  
+    await test.step(`Anmelden mit Benutzer ${USER}`, async () => {
+      await page.goto(URL_PORTAL);
+      await expect(Landing.text_h1_UeberschriftStartseite).toBeVisible();
+      await Menue.button_Anmelden.click();
+      await Login.login(USER, 'Mickeymouse');
+      await expect(Login.text_span_inputerror).toBeVisible();
+      await expect(Login.text_h1).toBeVisible();
+    })
+  })
 })
