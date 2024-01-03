@@ -10,7 +10,7 @@ const USER = process.env.USER;
 const URL_PORTAL = process.env.URL_PORTAL;
 
 test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.URL_PORTAL}:`, () => {
-  test('SPSH-122 Angebot itsLearning öffnen', async ({ page}) => {
+  test('SPSH-122 Angebote per Link öffnen', async ({ page}) => {
     const Login = new LoginPage(page);
     const Menue = new MenuePage(page);
     const Startseite = new StartPage(page);
