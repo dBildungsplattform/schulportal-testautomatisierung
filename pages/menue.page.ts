@@ -8,8 +8,8 @@ export class MenuePage{
 
     constructor(page){
         this.page = page;  
-        this.button_Anmelden = page.getByRole('button', { name: 'Anmelden' });
-        this.button_Abmelden = page.getByRole('button', { name: 'Abmelden' });
+        this.button_Anmelden = page.getByRole('link', { name: 'Anmelden' });
+        this.button_Abmelden = page.getByRole('link', { name: 'Abmelden' });
         this.button_Startseite = page.getByRole('link', { name: 'Home' });
     }
 }
