@@ -11,8 +11,6 @@ export class UserManagementDetailPage{
     readonly input_pw: Locator;
     readonly button_close_pwreset: Locator;
     
-   
-   
     constructor(page){
         this.page = page;  
         this.text_h2 = page.getByRole('heading', { name: 'Benutzer bearbeiten' });

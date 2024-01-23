@@ -1,7 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { LandingPage } from '../pages/landing.page';
 import { LoginPage } from '../pages/login.page';
-import { MenuePage } from '../pages/menue.page';
 import { StartPage } from '../pages/start.page';
 import { Email4TeacherPage } from '../pages/email4teacher.page';
 import { ItsLearningPage } from '../pages/itslearning.page';

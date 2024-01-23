@@ -8,7 +8,6 @@ export class LandingPage{
 
     constructor(page){
         this.page = page;  
-        this.text_h1_UeberschriftStartseite = page.getByRole('heading', { name: 'This is gonna be a landing page' });
         this.text_Willkommen = page.getByText('Willkommen im Schulportal SH.');
         this.button_Anmelden = page.getByTestId('login-button');
     }
