@@ -58,7 +58,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.U
     const UserManagementDetail = new UserManagementDetailPage(page);
     const Header = new HeaderPage(page);
     const username_lastname = 'Max';
-    let NewPW_Username = '';
+    let new_password = '';
 
     await test.step(`Portal öffnen ${URL_PORTAL}`, async () => {
       await page.goto(URL_PORTAL);
@@ -89,14 +89,14 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.U
       await UserManagementDetail.button_pwReset.click();
       await UserManagementDetail.text_pwResetInfo.click();
       await UserManagementDetail.icon_pwVisible.click();
-      NewPW_Username = await UserManagementDetail.input_pw.inputValue();
+      new_password = await UserManagementDetail.input_pw.inputValue();
       await UserManagementDetail.button_close_pwreset.click();
     })
 
     await test.step(`Login für Benutzer ${username_lastname} mit dem neuen PW`, async () => {
       await Header.button_logout.click();
       await Landing.button_Anmelden.click();
-      await Login.login('pwtest', NewPW_Username);
+      await Login.login('pwtest', new_password);
     })
 
     await test.step(`Neues PW vergeben`, async () => {
