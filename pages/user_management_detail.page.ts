@@ -4,7 +4,6 @@ export class UserManagementDetailPage{
     readonly page: Page;
     readonly text_h2: Locator;
     readonly button_pwChange: Locator;
-    readonly text_warning_pwReset: Locator;
     readonly button_pwReset: Locator;
     readonly text_pwResetInfo: Locator; 
     readonly icon_pwVisible: Locator;
@@ -14,8 +13,7 @@ export class UserManagementDetailPage{
     constructor(page){
         this.page = page;  
         this.text_h2 = page.getByRole('heading', { name: 'Benutzer bearbeiten' });
-        this.button_pwChange = page.getByTestId('open-password-reset-dialog-icon');
-        this.text_warning_pwReset =  page.getByTestId('password-reset-info-text')      
+        this.button_pwChange = page.getByTestId('open-password-reset-dialog-icon');     
         this.button_pwReset = page.getByTestId('password-reset-button');
         this.text_pwResetInfo = page.getByTestId('password-reset-info-text');
         this.icon_pwVisible = page.getByTestId('show-password-icon');
