@@ -82,13 +82,12 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.U
     await test.step(`In den User-Details PW-Reset Dialog starten`, async () => {
       await UserManagementDetail.text_h2.click();
       await UserManagementDetail.button_pwChange.click();
-      await UserManagementDetail.text_pwResetInfo.click();
+      await expect(UserManagementDetail.text_pwResetInfo).toBeVisible();
     })
 
     await test.step(`In dem overlay den PW-Reset bestätigen, das PW kopieren und Dialog schließen`, async () => {
       await UserManagementDetail.button_pwReset.click();
-      await UserManagementDetail.text_pwResetInfo.click();
-      await UserManagementDetail.icon_pwVisible.click();
+      await expect(UserManagementDetail.text_pwResetInfo).toBeVisible();
       new_password = await UserManagementDetail.input_pw.inputValue();
       await UserManagementDetail.button_close_pwreset.click();
     })
