@@ -1,6 +1,7 @@
 {
   "devDependencies": {
     "@playwright/test": "^1.37.1",
+    "@types/node": "^20.11.5",
     "@typescript-eslint/eslint-plugin": "^6.13.0",
     "@typescript-eslint/parser": "^6.13.0",
     "dotenv": "^16.3.1",
@@ -14,7 +15,8 @@
   "dependencies": {
     "@fast-csv/format": "^4.3.5",
     "@fast-csv/parse": "^4.3.6",
-    "fast-csv": "^4.3.6"
+    "fast-csv": "^4.3.6",
+    "generate-password-ts": "^1.6.5"
   },
   "name": "schulportal-testautomatisierung",
   "description": "",
