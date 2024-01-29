@@ -46,7 +46,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.U
     })
 
     await test.step(`Prüfen, dass die Startseite noch geöffnet ist`, async () => {
-      await Startseite.text_h2_Ueberschrift.click();
+      await expect(Startseite.text_h2_Ueberschrift).toBeVisible();
     })
   })  
 
@@ -75,12 +75,12 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.U
     })
 
     await test.step(`In der Benutzerverwaltung die Zeile für Benutzer ${username_lastname} anklicken und User-Details öffnen`, async () => {
-      await UserManagement.text_h2.click();
+      await expect(UserManagement.text_h2).toBeVisible();
       await page.getByRole('cell', { name: 'Max' }).click();
     })
 
     await test.step(`In den User-Details PW-Reset Dialog starten`, async () => {
-      await UserManagementDetail.text_h2.click();
+      await expect(UserManagementDetail.text_h2).toBeVisible();
       await UserManagementDetail.button_pwChange.click();
       await expect(UserManagementDetail.text_pwResetInfo).toBeVisible();
     })
@@ -100,7 +100,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.U
 
     await test.step(`Neues PW vergeben`, async () => {
       await Login.UpdatePW();
-      await Startseite.text_h2_Ueberschrift.click();
+      await expect(Startseite.text_h2_Ueberschrift).toBeVisible();
     })
   }) 
 })
