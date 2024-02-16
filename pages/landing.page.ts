@@ -2,7 +2,6 @@ import { type Locator, Page } from '@playwright/test';
 
 export class LandingPage{
     readonly page: Page;
-    readonly text_h1_UeberschriftStartseite: Locator;
     readonly text_Willkommen: Locator;
     readonly button_Anmelden: Locator;
 

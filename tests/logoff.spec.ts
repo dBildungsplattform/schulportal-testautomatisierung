@@ -9,9 +9,9 @@ const USER = process.env.USER;
 const URL_PORTAL = process.env.URL_PORTAL;
 
 test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.URL_PORTAL}:`, () => {
-  test('SPSH-185 Erfolgreicher Standard Logoff', async ({ page }) => {
+  test('Erfolgreicher Standard Logoff', async ({ page }) => {
     const Landing = new LandingPage(page);
-    const Startseite = new StartPage(page)
+    const Startseite = new StartPage(page);
     const Login = new LoginPage(page);
     const Header = new HeaderPage(page);
 

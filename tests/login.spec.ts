@@ -8,7 +8,7 @@ const USER = process.env.USER;
 const URL_PORTAL = process.env.URL_PORTAL;
 
 test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.URL_PORTAL}:`, () => {
-  test('SPSH-63 Erfolgreicher Standard Login ohne Rolle', async ({ page }) => {
+  test('Erfolgreicher Standard Login ohne Rolle', async ({ page }) => {
     const Login = new LoginPage(page);
     const Landing = new LandingPage(page);
     const Start = new StartPage(page);
@@ -21,7 +21,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.UM
     })
   })  
   
-  test('SPSH-109 Erfolgloser Login mit falschem Passwort', async ({ page }) => {
+  test('Erfolgloser Login mit falschem Passwort', async ({ page }) => {
     const Login = new LoginPage(page);
     const Landing = new LandingPage(page);
   

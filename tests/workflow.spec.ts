@@ -13,7 +13,7 @@ const USER = process.env.USER;
 const URL_PORTAL = process.env.URL_PORTAL;
 
 test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.URL_PORTAL}:`, () => {
-  test('SPSH-122 Angebote per Link öffnen', async ({ page}) => {
+  test('Angebote per Link öffnen', async ({ page}) => {
     const Landing = new LandingPage(page);
     const Login = new LoginPage(page);
     const Startseite = new StartPage(page);
@@ -33,13 +33,13 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.U
       await Startseite.card_item_email.click();
       const page_Email4Teacher = await  page_Email4Teacher_Promise; 
       const Email4Teacher = new Email4TeacherPage(page_Email4Teacher);
-      await Email4Teacher.text_h1.click();
+      await expect(Email4Teacher.text_h1).toBeVisible();
 
       const page_Itslearning_Promise = page.waitForEvent('popup');
       await Startseite.card_item_itslearning.click();
       const page_Itslearning = await  page_Itslearning_Promise; 
       const Itslearning = new ItsLearningPage(page_Itslearning);
-      await Itslearning.text_h1.click();
+      await expect(Itslearning.text_h1).toBeVisible();
       
       await page_Itslearning.close();
       await page_Email4Teacher.close();
@@ -50,7 +50,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.U
     })
   })  
 
-  test('SPSH-215 Passwort Reset', async ({ page}) => {
+  test('Passwort Reset', async ({ page}) => {
     const Landing = new LandingPage(page);
     const Login = new LoginPage(page);
     const Startseite = new StartPage(page);

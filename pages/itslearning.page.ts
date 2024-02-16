@@ -6,6 +6,6 @@ export class ItsLearningPage{
 
     constructor(page){
         this.page = page;  
-        this.text_h1 = page.getByRole('heading', { name: 'Schulen des Landes Schleswig-Holstein' });
+        this.text_h1 = page.getByRole('heading', { name: 'Die Lernplattform für den' });
     }
 }
