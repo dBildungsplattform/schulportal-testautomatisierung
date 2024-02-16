@@ -1,10 +1,21 @@
 name: Playwright Tests
 on:
   workflow_dispatch:
-  push:
+    inputs:
+      frontendHostname:
+        type: string
+        description: 'Hostname of the frontend server (optional) (default "helm.dev.spsh.dbildungsplattform.de")'
+        required: false
+        default: 'helm.dev.spsh.dbildungsplattform.de'
+
+  pull_request:
+    types: [ opened ]
     branches: [ main ]
+
 jobs:
   test:
+    env: 
+      FRONTEND_URL: https://${{ inputs.frontendHostname || 'helm.dev.spsh.dbildungsplattform.de' }}/
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
