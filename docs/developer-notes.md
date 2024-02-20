@@ -7,7 +7,16 @@ Welche Elemente relevant sind, weiss der Entwickler zum Zeitpunkt der Entwicklun
 ## Hinweise für die Vergabe einer data-testid im FE
 Die data-testid muss genau in dem Bereich liegen, in dem der Endanwender auch tatsächlich den Klick ausführt, oder auch dort wo das Auge des Anwenders hinschaut(auf die Texte)
 
-## Liste der fehlenden oder nicht korrekt plazierten data-testid
+# Liste der fehlenden oder nicht korrekt plazierten data-testid
+## header.page.ts
+--
+
+## landing.page.ts
+"Willkommen im Schulportal SH.": h1 data-v-ddc92da0="" class="headline-2">Willkommen im Schulportal SH.</h1>
+
+## login.page.ts
+--
+
 ## menu.page.ts
 "NAVIGATION": div class="v-list-item-title">Navigation</div>
 
@@ -27,3 +36,11 @@ Die data-testid muss genau in dem Bereich liegen, in dem der Endanwender auch ta
 
 ## start.page.ts
 "Alle Angebote": h2 class="text-h4">Alle Angebote</h2>
+
+## user_management_detail.page.ts
+"Benutzer bearbeiten": h2 class="text-left headline-2">Benutzer bearbeiten</h2>
+
+## user_management.page.ts
+"Benutzerverwaltung":  h2 class="text-left headline-2">Benutzerverwaltung</h2>
+
+
