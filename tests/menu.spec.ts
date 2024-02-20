@@ -38,7 +38,7 @@ test.describe(`Testfälle für die Hauptmenue-Leiste: Umgebung: ${process.env.UM
     })    
   })  
 
-  test('Test der Funktion "Zuück zur Starseite"', async ({ page }) => {
+  test('Test der Funktion "Zurueck zur Starseite"', async ({ page }) => {
     const Landing = new LandingPage(page);
     const Startseite = new StartPage(page)
     const Login = new LoginPage(page);
