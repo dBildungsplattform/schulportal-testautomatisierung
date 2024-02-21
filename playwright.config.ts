@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 import dotenv from "dotenv";
 dotenv.config({
-  path: "./.env.dev",
+  path: "./.env.local",
 });
 
 export default defineConfig({
@@ -34,8 +34,7 @@ export default defineConfig({
     locale: 'de-DE',
         timezoneId: 'Europe/Brussels',
     screenshot: 'only-on-failure', 
-    // screenshot: 'on',
-    ignoreHTTPSErrors: true,   
+    // screenshot: 'on',   
   },
 
   /* Configure projects for major browsers */
@@ -44,7 +43,8 @@ export default defineConfig({
       name: 'chromium',
       use: { 
         ...devices['Desktop Chrome'],
-        viewport: { width: 1280, height: 720}
+        viewport: { width: 1280, height: 720},
+        ignoreHTTPSErrors: true
       },
     },
 

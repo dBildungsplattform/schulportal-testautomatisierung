@@ -1,11 +1,11 @@
 import { test, expect } from '@playwright/test';
-import { LandingPage } from '../pages/landing.page';
-import { LoginPage } from '../pages/login.page';
-import { StartPage } from '../pages/start.page';
-import { Email4TeacherPage } from '../pages/email4teacher.page';
-import { ItsLearningPage } from '../pages/itslearning.page';
-import { UserManagementPage } from '../pages/user_management.page';
-import { UserManagementDetailPage } from '../pages/user_management_detail.page';
+import { LandingPage } from '../pages/LandingView.page';
+import { LoginPage } from '../pages/LoginView.page';
+import { StartPage } from '../pages/StartView.page';
+import { Email4TeacherPage } from '../pages/Cards/Email4Teacher.page';
+import { ItsLearningPage } from '../pages/Cards/ItsLearning.page';
+import { UserManagementViewPage } from '../pages/admin/UserManagementView.page';
+import { UserDetailsViewPage } from '../pages/admin/UserDetailsView.page';
 import { HeaderPage } from '../pages/header.page';
 
 const PW = process.env.PW;
@@ -54,8 +54,8 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.U
     const Landing = new LandingPage(page);
     const Login = new LoginPage(page);
     const Startseite = new StartPage(page);
-    const UserManagement = new UserManagementPage(page);
-    const UserManagementDetail = new UserManagementDetailPage(page);
+    const UserManagement = new UserManagementViewPage(page);
+    const UserManagementDetail = new UserDetailsViewPage(page);
     const Header = new HeaderPage(page);
     const username_lastname = 'Max';
     let new_password = '';
@@ -75,12 +75,12 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.U
     })
 
     await test.step(`In der Benutzerverwaltung die Zeile für Benutzer ${username_lastname} anklicken und User-Details öffnen`, async () => {
-      await expect(UserManagement.text_h2).toBeVisible();
+      await expect(UserManagement.text_h2_Benutzerverwaltung).toBeVisible();
       await page.getByRole('cell', { name: 'Max' }).click();
     })
 
     await test.step(`In den User-Details PW-Reset Dialog starten`, async () => {
-      await expect(UserManagementDetail.text_h2).toBeVisible();
+      await expect(UserManagementDetail.text_h2_BenutzerBearbeiten).toBeVisible();
       await UserManagementDetail.button_pwChange.click();
       await expect(UserManagementDetail.text_pwResetInfo).toBeVisible();
     })

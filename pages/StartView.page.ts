@@ -9,7 +9,7 @@ export class StartPage{
 
     constructor(page){
         this.page = page;  
-        this.text_h2_Ueberschrift = page.getByRole('heading', { name: 'Alle Angebote' });  
+        this.text_h2_Ueberschrift = page.getByTestId('all-service-provider-title');
         this.card_item_email = page.getByTestId('provider-card-8f448f82-0be3-4d82-9cb1-2e67f277796f');
         this.card_item_itslearning = page.getByTestId('provider-card-ecc794a3-f94f-40f6-bef6-bd4808cf64d4');
         this.card_item_schulportal_administration = page.getByTestId('provider-card-admin');

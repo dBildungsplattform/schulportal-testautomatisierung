@@ -7,7 +7,7 @@ export class LandingPage{
 
     constructor(page){
         this.page = page;  
-        this.text_Willkommen = page.getByText('Willkommen im Schulportal SH.');
+        this.text_Willkommen = page.getByTestId('landing-headline');
         this.button_Anmelden = page.getByTestId('login-button');
     }
 }

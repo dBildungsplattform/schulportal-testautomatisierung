@@ -1,8 +1,8 @@
 import { test, expect } from '@playwright/test';
-import { LandingPage } from '../pages/landing.page';
-import { StartPage } from '../pages/start.page';
-import { LoginPage } from '../pages/login.page';
-import { MenuPage } from '../pages/menu.page';
+import { LandingPage } from '../pages/LandingView.page';
+import { StartPage } from '../pages/StartView.page';
+import { LoginPage } from '../pages/LoginView.page';
+import { MenuPage } from '../pages/MenuBar.page';
 
 const PW = process.env.PW;
 const USER = process.env.USER;
