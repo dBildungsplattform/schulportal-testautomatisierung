@@ -1,21 +1,29 @@
 name: Playwright Tests
 on:
+  workflow_call:
+    inputs:
+      frontendHostname:
+        type: string
+        description: 'Hostname of the frontend server (optional)'
+        required: false
   workflow_dispatch:
     inputs:
       frontendHostname:
         type: string
-        description: 'Hostname of the frontend server (optional) (default "helm.dev.spsh.dbildungsplattform.de")'
+        description: 'Hostname of the frontend server (optional)'
         required: false
-        default: 'helm.dev.spsh.dbildungsplattform.de'
-
-  pull_request:
-    types: [ opened ]
+  push:
     branches: [ main ]
 
 jobs:
+  set_frontend_url:
+    runs-on: ubuntu-latest
+    steps:
+      - name: If input frontendHostname is given, set env variable
+        if: github.event.inputs.frontendHostname != ''
+        run: echo "FRONTEND_URL=https://${frontendHostname}/" >> $GITHUB_ENV
+
   test:
-    env: 
-      FRONTEND_URL: https://${{ inputs.frontendHostname || 'helm.dev.spsh.dbildungsplattform.de' }}/
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
