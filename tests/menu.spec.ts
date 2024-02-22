@@ -9,7 +9,7 @@ const USER = process.env.USER;
 const URL_PORTAL = process.env.URL_PORTAL;
 
 test.describe(`Testfälle für die Hauptmenue-Leiste: Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.URL_PORTAL}:`, () => {
-  test('Test der Hauptenue-Leiste und Untermenues auf Vollständigkeit', async ({ page }) => {
+  test('Test der Hauptmenue-Leiste und Untermenues auf Vollständigkeit', async ({ page }) => {
     const Landing = new LandingPage(page);
     const Startseite = new StartPage(page)
     const Login = new LoginPage(page);
