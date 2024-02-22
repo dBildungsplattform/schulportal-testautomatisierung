@@ -15,14 +15,7 @@ on:
   push:
     branches: [ main ]
 
-jobs:
-  set_frontend_url:
-    runs-on: ubuntu-latest
-    steps:
-      - name: If input frontendHostname is given, set env variable
-        if: github.event.inputs.frontendHostname != ''
-        run: echo "FRONTEND_URL=https://${frontendHostname}/" >> $GITHUB_ENV
-
+jobs: 
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
@@ -35,6 +28,9 @@ jobs:
       run: npm ci
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
+    - name: If input frontendHostname is given, set env variable
+      if: github.event.inputs.frontendHostname != ''
+      run: echo "FRONTEND_URL=https://${frontendHostname}/" >> $GITHUB_ENV
     - name: Run Playwright tests
       run: npx playwright test
       env:
