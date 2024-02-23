@@ -10,8 +10,8 @@ export class StartPage{
     constructor(page){
         this.page = page;  
         this.text_h2_Ueberschrift = page.getByTestId('all-service-provider-title');
-        this.card_item_email = page.getByTestId('provider-card-8f448f82-0be3-4d82-9cb1-2e67f277796f');
-        this.card_item_itslearning = page.getByTestId('provider-card-ecc794a3-f94f-40f6-bef6-bd4808cf64d4');
-        this.card_item_schulportal_administration = page.getByTestId('provider-card-admin');
+        this.card_item_email = page.locator('[href="https://de.wikipedia.org/wiki/E-Mail"]');
+        this.card_item_itslearning = page.locator('[href="https://itslearning.com/de"]');
+        this.card_item_schulportal_administration = page.getByTestId('service-provider-card-admin');
     }
 }
