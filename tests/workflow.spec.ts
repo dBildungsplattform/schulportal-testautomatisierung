@@ -10,16 +10,16 @@ import { HeaderPage } from '../pages/header.page';
 
 const PW = process.env.PW;
 const USER = process.env.USER;
-const URL_PORTAL = process.env.URL_PORTAL;
+const FRONTEND_URL = process.env.FRONTEND_URL;
 
-test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.URL_PORTAL}:`, () => {
+test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test('Angebote per Link öffnen', async ({ page}) => {
     const Landing = new LandingPage(page);
     const Login = new LoginPage(page);
     const Startseite = new StartPage(page);
 
-    await test.step(`Portal öffnen ${URL_PORTAL}`, async () => {
-      await page.goto(URL_PORTAL);
+    await test.step(`Portal öffnen ${FRONTEND_URL}`, async () => {
+      await page.goto(FRONTEND_URL);
     })
 
     await test.step(`Annmelden mit Benutzer ${USER}`, async () => {
@@ -60,8 +60,8 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.U
     const username_lastname = 'Max';
     let new_password = '';
 
-    await test.step(`Portal öffnen ${URL_PORTAL}`, async () => {
-      await page.goto(URL_PORTAL);
+    await test.step(`Portal öffnen ${FRONTEND_URL}`, async () => {
+      await page.goto(FRONTEND_URL);
     })
 
     await test.step(`Annmelden mit Administrator ${USER}`, async () => {

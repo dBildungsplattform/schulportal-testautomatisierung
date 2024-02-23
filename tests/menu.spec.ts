@@ -6,9 +6,9 @@ import { MenuPage } from '../pages/MenuBar.page';
 
 const PW = process.env.PW;
 const USER = process.env.USER;
-const URL_PORTAL = process.env.URL_PORTAL;
+const FRONTEND_URL = process.env.FRONTEND_URL;
 
-test.describe(`Testfälle für die Hauptmenue-Leiste: Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.URL_PORTAL}:`, () => {
+test.describe(`Testfälle für die Hauptmenue-Leiste: Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test('Test der Hauptmenue-Leiste und Untermenues auf Vollständigkeit', async ({ page }) => {
     const Landing = new LandingPage(page);
     const Startseite = new StartPage(page)
@@ -16,7 +16,7 @@ test.describe(`Testfälle für die Hauptmenue-Leiste: Umgebung: ${process.env.UM
     const Menu = new MenuPage(page);
 
     await test.step(`Annmelden mit Benutzer ${USER}`, async () => {
-      await page.goto(URL_PORTAL);
+      await page.goto(FRONTEND_URL);
       await Landing.button_Anmelden.click();
       await Login.login(USER, PW); 
       await expect(Startseite.text_h2_Ueberschrift).toBeVisible();
@@ -45,7 +45,7 @@ test.describe(`Testfälle für die Hauptmenue-Leiste: Umgebung: ${process.env.UM
     const Menu = new MenuPage(page);
 
     await test.step(`Annmelden mit Benutzer ${USER}`, async () => {
-      await page.goto(URL_PORTAL);
+      await page.goto(FRONTEND_URL);
       await Landing.button_Anmelden.click();
       await Login.login(USER, PW); 
       await expect(Startseite.text_h2_Ueberschrift).toBeVisible();

@@ -5,15 +5,15 @@ import { StartPage } from '../pages/StartView.page';
 
 const PW = process.env.PW;
 const USER = process.env.USER;
-const URL_PORTAL = process.env.URL_PORTAL;
+const FRONTEND_URL = process.env.FRONTEND_URL;
 
-test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.URL_PORTAL}:`, () => {
+test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test('Erfolgreicher Standard Login ohne Rolle', async ({ page }) => {
     const Login = new LoginPage(page);
     const Landing = new LandingPage(page);
     const Start = new StartPage(page);
     await test.step(`Anmelden mit Benutzer ${USER}`, async () => {
-      await page.goto(URL_PORTAL);
+      await page.goto(FRONTEND_URL);
       await expect(Landing.text_Willkommen).toBeVisible();
       await Landing.button_Anmelden.click();
       await Login.login(USER, PW);
@@ -26,7 +26,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.UM
     const Landing = new LandingPage(page);
   
     await test.step(`Anmelden mit Benutzer ${USER}`, async () => {
-      await page.goto(URL_PORTAL);
+      await page.goto(FRONTEND_URL);
       await expect(Landing.text_Willkommen).toBeVisible();
       await Landing.button_Anmelden.click();
       await Login.login(USER, 'Mickeymouse');
