@@ -16,11 +16,18 @@ on:
     branches: [ main ]
 
 jobs: 
-  test:
+  run_playwright_end2end_tests:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
+     
+    - name: If input frontendHostname is given, set env variable
+      if: github.event.inputs.frontendHostname != ''
+      run: echo "FRONTEND_URL=https://${frontendHostname}/" >> $GITHUB_ENV
+      
     - uses: actions/checkout@v3
+      with:
+        repository: 'dBildungsplattform/schulportal-testautomatisierung'
     - uses: actions/setup-node@v3
       with:
         node-version: 16
@@ -28,9 +35,6 @@ jobs:
       run: npm ci
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
-    - name: If input frontendHostname is given, set env variable
-      if: github.event.inputs.frontendHostname != ''
-      run: echo "FRONTEND_URL=https://${frontendHostname}/" >> $GITHUB_ENV
     - name: Run Playwright tests
       run: npx playwright test
       env:
