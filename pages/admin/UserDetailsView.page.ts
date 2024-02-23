@@ -1,8 +1,8 @@
 import { type Locator, Page } from '@playwright/test';
 
-export class UserManagementDetailPage{
+export class UserDetailsViewPage{
     readonly page: Page;
-    readonly text_h2: Locator;
+    readonly text_h2_BenutzerBearbeiten: Locator;
     readonly button_pwChange: Locator;
     readonly button_pwReset: Locator;
     readonly text_pwResetInfo: Locator; 
@@ -12,7 +12,7 @@ export class UserManagementDetailPage{
     
     constructor(page){
         this.page = page;  
-        this.text_h2 = page.getByRole('heading', { name: 'Benutzer bearbeiten' });
+        this.text_h2_BenutzerBearbeiten = page.getByTestId('layout-card-headline')
         this.button_pwChange = page.getByTestId('open-password-reset-dialog-icon');     
         this.button_pwReset = page.getByTestId('password-reset-button');
         this.text_pwResetInfo = page.getByTestId('password-reset-info-text');

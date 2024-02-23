@@ -16,7 +16,7 @@ export class LoginPage{
     constructor(page){
         this.page = page;  
         this.text_h1 = page.getByRole('heading', { name: 'Sign in to your account' });
-        this.text_h1_updatePW = page.getByText('You need to change your password to activate your account.')
+        this.text_h1_updatePW = page.getByText('You need to change your password to activate your account.');
         this.input_username = page.locator('#username');
         this.input_password = page.locator('#password');
         this.input_NewPassword = page.getByLabel('New Password');
