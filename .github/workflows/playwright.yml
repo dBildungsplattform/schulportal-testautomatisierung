@@ -15,17 +15,15 @@ on:
   push:
     branches: [ main ]
 
-jobs: 
+jobs:
   run_playwright_end2end_tests:
     continue-on-error: true
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
-
     - name: If input frontendHostname is given, set env variable
       if: ${{ inputs.frontendHostname }}
       run: echo "FRONTEND_URL=https://${{ inputs.frontendHostname }}/" >> $GITHUB_ENV
-      
     - uses: actions/checkout@v3
       with:
         repository: 'dBildungsplattform/schulportal-testautomatisierung'
@@ -47,4 +45,4 @@ jobs:
         name: playwright-report
         path: playwright-report/
         retention-days: 30npm login
-    
+
