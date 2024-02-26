@@ -21,10 +21,17 @@ jobs:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
-     
+    - name: Test the inputs
+      if: ${{ github.event.inputs.frontendHostname }} 
+      run: |
+        echo "V1: ${{ github.event.inputs.frontendHostname }}"
+        echo "V2: ${{ inputs.frontendHostname }}"
+        echo "eq1: ${{ github.event.inputs.frontendHostname != '' }}"
+        echo "eq2: ${{ inputs.frontendHostname != '' }}"
+
     - name: If input frontendHostname is given, set env variable
-      if: ${{ github.event.inputs.frontendHostname }}
-      run: echo "FRONTEND_URL=https://${frontendHostname}/" >> $GITHUB_ENV
+      if: ${{ inputs.frontendHostname }}
+      run: echo "FRONTEND_URL=https://${{ inputs.frontendHostname }}/" >> $GITHUB_ENV
       
     - uses: actions/checkout@v3
       with:
