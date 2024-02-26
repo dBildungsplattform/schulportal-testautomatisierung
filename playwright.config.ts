@@ -34,15 +34,18 @@ export default defineConfig({
     locale: 'de-DE',
         timezoneId: 'Europe/Brussels',
     screenshot: 'only-on-failure', 
-    // screenshot: 'on',
-    ignoreHTTPSErrors: true,   
+    // screenshot: 'on',   
   },
 
   /* Configure projects for major browsers */
   projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome']},
+      use: { 
+        ...devices['Desktop Chrome'],
+        viewport: { width: 1280, height: 720},
+        ignoreHTTPSErrors: true
+      },
     },
 
     // {

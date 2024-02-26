@@ -1,25 +1,25 @@
 import { test, expect } from '@playwright/test';
-import { LandingPage } from '../pages/landing.page';
-import { LoginPage } from '../pages/login.page';
-import { StartPage } from '../pages/start.page';
-import { Email4TeacherPage } from '../pages/email4teacher.page';
-import { ItsLearningPage } from '../pages/itslearning.page';
-import { UserManagementPage } from '../pages/user_management.page';
-import { UserManagementDetailPage } from '../pages/user_management_detail.page';
+import { LandingPage } from '../pages/LandingView.page';
+import { LoginPage } from '../pages/LoginView.page';
+import { StartPage } from '../pages/StartView.page';
+import { Email4TeacherPage } from '../pages/Cards/Email4Teacher.page';
+import { ItsLearningPage } from '../pages/Cards/ItsLearning.page';
+import { UserManagementViewPage } from '../pages/admin/UserManagementView.page';
+import { UserDetailsViewPage } from '../pages/admin/UserDetailsView.page';
 import { HeaderPage } from '../pages/header.page';
 
 const PW = process.env.PW;
 const USER = process.env.USER;
-const URL_PORTAL = process.env.URL_PORTAL;
+const FRONTEND_URL = process.env.FRONTEND_URL;
 
-test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.URL_PORTAL}:`, () => {
-  test('SPSH-122 Angebote per Link öffnen', async ({ page}) => {
+test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
+  test('Angebote per Link öffnen', async ({ page}) => {
     const Landing = new LandingPage(page);
     const Login = new LoginPage(page);
     const Startseite = new StartPage(page);
 
-    await test.step(`Portal öffnen ${URL_PORTAL}`, async () => {
-      await page.goto(URL_PORTAL);
+    await test.step(`Portal öffnen ${FRONTEND_URL}`, async () => {
+      await page.goto(FRONTEND_URL);
     })
 
     await test.step(`Annmelden mit Benutzer ${USER}`, async () => {
@@ -33,13 +33,13 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.U
       await Startseite.card_item_email.click();
       const page_Email4Teacher = await  page_Email4Teacher_Promise; 
       const Email4Teacher = new Email4TeacherPage(page_Email4Teacher);
-      await Email4Teacher.text_h1.click();
+      await expect(Email4Teacher.text_h1).toBeVisible();
 
       const page_Itslearning_Promise = page.waitForEvent('popup');
       await Startseite.card_item_itslearning.click();
       const page_Itslearning = await  page_Itslearning_Promise; 
       const Itslearning = new ItsLearningPage(page_Itslearning);
-      await Itslearning.text_h1.click();
+      await expect(Itslearning.text_h1).toBeVisible();
       
       await page_Itslearning.close();
       await page_Email4Teacher.close();
@@ -50,18 +50,18 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.U
     })
   })  
 
-  test('SPSH-215 Passwort Reset', async ({ page}) => {
+  test('Passwort Reset', async ({ page}) => {
     const Landing = new LandingPage(page);
     const Login = new LoginPage(page);
     const Startseite = new StartPage(page);
-    const UserManagement = new UserManagementPage(page);
-    const UserManagementDetail = new UserManagementDetailPage(page);
+    const UserManagement = new UserManagementViewPage(page);
+    const UserManagementDetail = new UserDetailsViewPage(page);
     const Header = new HeaderPage(page);
     const username_lastname = 'Max';
     let new_password = '';
 
-    await test.step(`Portal öffnen ${URL_PORTAL}`, async () => {
-      await page.goto(URL_PORTAL);
+    await test.step(`Portal öffnen ${FRONTEND_URL}`, async () => {
+      await page.goto(FRONTEND_URL);
     })
 
     await test.step(`Annmelden mit Administrator ${USER}`, async () => {
@@ -75,12 +75,12 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.U
     })
 
     await test.step(`In der Benutzerverwaltung die Zeile für Benutzer ${username_lastname} anklicken und User-Details öffnen`, async () => {
-      await expect(UserManagement.text_h2).toBeVisible();
+      await expect(UserManagement.text_h2_Benutzerverwaltung).toBeVisible();
       await page.getByRole('cell', { name: 'Max' }).click();
     })
 
     await test.step(`In den User-Details PW-Reset Dialog starten`, async () => {
-      await expect(UserManagementDetail.text_h2).toBeVisible();
+      await expect(UserManagementDetail.text_h2_BenutzerBearbeiten).toBeVisible();
       await UserManagementDetail.button_pwChange.click();
       await expect(UserManagementDetail.text_pwResetInfo).toBeVisible();
     })
