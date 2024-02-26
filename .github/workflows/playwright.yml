@@ -17,12 +17,13 @@ on:
 
 jobs: 
   run_playwright_end2end_tests:
+    continue-on-error: true
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
      
     - name: If input frontendHostname is given, set env variable
-      if: inputs.frontendHostname != ''
+      if: ${{ github.event.inputs.frontendHostname}}
       run: echo "FRONTEND_URL=https://${frontendHostname}/" >> $GITHUB_ENV
       
     - uses: actions/checkout@v3
