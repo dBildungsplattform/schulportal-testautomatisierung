@@ -1,0 +1,22 @@
+name: Update Semver Tags
+
+on:
+  push:
+    tags:
+      - '*.*.*'
+      
+permissions:
+  contents: write
+
+jobs:
+  update-semver-tags:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 #v4.1.1
+      
+      - name: Update Semver
+        uses: rickstaa/action-update-semver@77e8cb0f3cd805b38ffe25c07236336e05dcb4da #v1.1.4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          major_version_tag_only: false
