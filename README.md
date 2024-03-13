@@ -11,11 +11,15 @@ USER='xxx' PW='xxx' npx playwright test -g "SPSH-122 Angebote" --headed
 ## Alle Tests ausführen: 
 USER="xxx" PW="xxx" npx playwright test
 
+## Alle Tests ausführen auf einer bestimmten Zielumgebung:
+USER='xxx' PW='xxx' FRONTEND_URL='https://main.dev.spsh.dbildungsplattform.de/' npx playwright test
+
 ## Einen Report von der Testausführung öffnen: 
 npx playwright show-report results\results-2023-10-06T13_49_14_593
 
 ## Code-Generator starten: 
 npx playwright codegen https://test.dev.spsh.dbildungsplattform.de
+npx playwright codegen https://main.dev.spsh.dbildungsplattform.de
 npx playwright codegen https://localhost:8099/ --ignore-https-errors
 
 ## Code-Generator aus GHA starten: 

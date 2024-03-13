@@ -14,6 +14,13 @@ Die data-testid muss genau in dem Bereich liegen, in dem der Endanwender auch ta
 ## admin/UserManagementView.page.ts
 --
 
+## admin/RoleDetailsView.page.ts
+### this.text_success = page.getByText('Die Rolle wurde erfolgreich');
+### In dem container: v-container v-locale--is-ltr new-rolle-success ist keine data-testid
+
+## admin/RoleManagementView.page.ts
+--
+
 ## Header.page.ts
 --
 
