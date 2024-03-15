@@ -1,6 +1,6 @@
 import { type Locator, Page } from '@playwright/test';
 
-export class RoleDetailsViewPage{
+export class RolleDetailsViewPage{
     readonly page: Page;
     readonly text_h2_RolleAnlegen: Locator;
     readonly combobox_Schulstrukturknoten: Locator;
