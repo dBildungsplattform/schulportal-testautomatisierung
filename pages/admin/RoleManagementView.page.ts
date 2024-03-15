@@ -1,6 +1,6 @@
 import { type Locator, Page } from '@playwright/test';
 
-export class RoleManagementViewPage{
+export class RolleManagementViewPage{
     readonly page: Page;
     readonly text_h2_RolleAnlegen: Locator;
    
