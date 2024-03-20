@@ -33,3 +33,6 @@ PWDEBUG=1 npx playwright test login.spec.ts --headed
 
 ## Umgebungen
 Es gibt die beiden Umgebungen .env.dev und .env.local auf denen die Tests ausgeführt werden. Verwendet wird die Umgebung, die in der playwright.config.ts konfiguriert ist(dotenv.config).
+
+## Testdatenerstellung durch die Playwright-Tests
+Neue Testdaten, die während der Testausführung erstellt werden, haben den Prefix 'TAuto', gefolgt von einem Buchstaben für den Typ + einen Zufallswert aus faker-js(Beispiel: XXX). Der Name einer Rolle ist z.B. TAutoR1XXX. Somit ist es einfacher, die Testdaten zu erkennen, die durch die Playwright-Tests erstellt wurden.

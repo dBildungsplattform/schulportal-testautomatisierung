@@ -4,8 +4,8 @@ import { LoginPage } from '../pages/LoginView.page';
 import { StartPage } from '../pages/StartView.page';
 import { Email4TeacherPage } from '../pages/Cards/Email4Teacher.page';
 import { ItsLearningPage } from '../pages/Cards/ItsLearning.page';
-import { UserManagementViewPage } from '../pages/admin/UserManagementView.page';
-import { UserDetailsViewPage } from '../pages/admin/UserDetailsView.page';
+import { PersonManagementViewPage } from '../pages/admin/PersonManagementView.page';
+import { PersonDetailsViewPage } from '../pages/admin/PersonDetailsView.page';
 import { HeaderPage } from '../pages/header.page';
 
 const PW = process.env.PW;
@@ -54,10 +54,10 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.U
     const Landing = new LandingPage(page);
     const Login = new LoginPage(page);
     const Startseite = new StartPage(page);
-    const UserManagement = new UserManagementViewPage(page);
-    const UserManagementDetail = new UserDetailsViewPage(page);
+    const PersonManagement = new PersonManagementViewPage(page);
+    const PersonManagementDetail = new PersonDetailsViewPage(page);
     const Header = new HeaderPage(page);
-    const username_lastname = 'Max';
+    const username_lastname = 'Superadmin';
     let new_password = '';
 
     await test.step(`Portal öffnen ${FRONTEND_URL}`, async () => {
@@ -75,27 +75,27 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.U
     })
 
     await test.step(`In der Benutzerverwaltung die Zeile für Benutzer ${username_lastname} anklicken und User-Details öffnen`, async () => {
-      await expect(UserManagement.text_h2_Benutzerverwaltung).toBeVisible();
-      await page.getByRole('cell', { name: 'Max' }).click();
+      await expect(PersonManagement.text_h2_Benutzerverwaltung).toBeVisible();
+      await page.getByRole('cell', { name: 'Superadmin', exact: true }).click();
     })
 
     await test.step(`In den User-Details PW-Reset Dialog starten`, async () => {
-      await expect(UserManagementDetail.text_h2_BenutzerBearbeiten).toBeVisible();
-      await UserManagementDetail.button_pwChange.click();
-      await expect(UserManagementDetail.text_pwResetInfo).toBeVisible();
+      await expect(PersonManagementDetail.text_h2_BenutzerBearbeiten).toBeVisible();
+      await PersonManagementDetail.button_pwChange.click();
+      await expect(PersonManagementDetail.text_pwResetInfo).toBeVisible();
     })
 
     await test.step(`In dem overlay den PW-Reset bestätigen, das PW kopieren und Dialog schließen`, async () => {
-      await UserManagementDetail.button_pwReset.click();
-      await expect(UserManagementDetail.text_pwResetInfo).toBeVisible();
-      new_password = await UserManagementDetail.input_pw.inputValue();
-      await UserManagementDetail.button_close_pwreset.click();
+      await PersonManagementDetail.button_pwReset.click();
+      await expect(PersonManagementDetail.text_pwResetInfo).toBeVisible();
+      new_password = await PersonManagementDetail.input_pw.inputValue();
+      await PersonManagementDetail.button_close_pwreset.click();
     })
 
     await test.step(`Login für Benutzer ${username_lastname} mit dem neuen PW`, async () => {
       await Header.button_logout.click();
       await Landing.button_Anmelden.click();
-      await Login.login('pwtest', new_password);
+      await Login.login('ssuperadmin', new_password);
     })
 
     await test.step(`Neues PW vergeben`, async () => {

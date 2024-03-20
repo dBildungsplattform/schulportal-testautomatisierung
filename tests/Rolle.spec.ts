@@ -4,8 +4,8 @@ import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
 import { StartPage } from '../pages/StartView.page';
 import { MenuPage } from '../pages/MenuBar.page';
-import { RoleDetailsViewPage } from '../pages/admin/RoleDetailsView.page';
-import { RoleManagementViewPage } from '../pages/admin/RoleManagementView.page';
+import { RolleCreationViewPage } from '../pages/admin/RolleCreationView.page';
+import { RolleManagementViewPage } from '../pages/admin/RolleManagementView.page';
 
 const PW = process.env.PW;
 const ADMIN = process.env.USER;
@@ -17,11 +17,11 @@ test.describe(`Testfälle für die Anlage von Rollen: Umgebung: ${process.env.UM
     const Startseite = new StartPage(page);
     const Login = new LoginPage(page);
     const Menue = new MenuPage(page);
-    const RoleDetailsView = new RoleDetailsViewPage(page);
-    const RoleManagementeView = new RoleManagementViewPage(page);
+    const RolleCreationView = new RolleCreationViewPage(page);
+    const RolleManagementeView = new RolleManagementViewPage(page);
 
-    const ROLLENNAME1 = 'TAutoR1_' + faker.word.noun();
-    const ROLLENNAME2 = 'TAutoR2_' + faker.word.noun();
+    const ROLLENNAME1 = 'TAutoR1' + faker.word.noun();
+    const ROLLENNAME2 = 'TAutoR2' + faker.word.noun();
     const SCHULSTRUKTURKNOTEN1 = 'Organisation2 (Träger2)';
     const SCHULSTRUKTURKNOTEN2 = 'Organisation3 (Schule1)';
     const ROLLENART1 = 'Lern'
@@ -37,39 +37,39 @@ test.describe(`Testfälle für die Anlage von Rollen: Umgebung: ${process.env.UM
     await test.step(`Dialog Rolle anlegen öffnen`, async () => {
       await Startseite.card_item_schulportal_administration.click();
       await Menue.menueItem_RolleAnlegen.click();
-      await expect(RoleDetailsView.text_h2_RolleAnlegen).toHaveText('Neue Rolle hinzufügen');
+      await expect(RolleCreationView.text_h2_RolleAnlegen).toHaveText('Neue Rolle hinzufügen');
     })
     
     await test.step(`Erste Rolle anlegen`, async () => {
-      await RoleDetailsView.combobox_Schulstrukturknoten.click();
+      await RolleCreationView.combobox_Schulstrukturknoten.click();
       await page.getByText(`${SCHULSTRUKTURKNOTEN1}`).click();
 
-      await RoleDetailsView.combobox_Rollenart.click();
+      await RolleCreationView.combobox_Rollenart.click();
       await page.getByText(`${ROLLENART1}`).click();
 
-      await RoleDetailsView.input_Rollenname.click();
-      await RoleDetailsView.input_Rollenname.fill(ROLLENNAME1);
-      await RoleDetailsView.button_RolleAnlegen.click();
-      await expect(RoleDetailsView.text_success).toBeVisible();
+      await RolleCreationView.input_Rollenname.click();
+      await RolleCreationView.input_Rollenname.fill(ROLLENNAME1);
+      await RolleCreationView.button_RolleAnlegen.click();
+      await expect(RolleCreationView.text_success).toBeVisible();
     })
 
     await test.step(`Zweite Rolle anlegen`, async () => {
-      await RoleDetailsView.button_WeitereRolleAnlegen.click();
-      await RoleDetailsView.combobox_Schulstrukturknoten.click();
+      await RolleCreationView.button_WeitereRolleAnlegen.click();
+      await RolleCreationView.combobox_Schulstrukturknoten.click();
       await page.getByText(`${SCHULSTRUKTURKNOTEN2}`).click();
 
-      await RoleDetailsView.combobox_Rollenart.click();
+      await RolleCreationView.combobox_Rollenart.click();
       await page.getByText(`${ROLLENART2}`).click();
 
-      await RoleDetailsView.input_Rollenname.click();
-      await RoleDetailsView.input_Rollenname.fill(ROLLENNAME2);
-      await RoleDetailsView.button_RolleAnlegen.click();
-      await expect(RoleDetailsView.text_success).toBeVisible();
+      await RolleCreationView.input_Rollenname.click();
+      await RolleCreationView.input_Rollenname.fill(ROLLENNAME2);
+      await RolleCreationView.button_RolleAnlegen.click();
+      await expect(RolleCreationView.text_success).toBeVisible();
     })
 
     await test.step(`In der Ergebnisliste prüfen dass die beiden neuen Rollen angezeigt sind`, async () => {
       await Menue.menueItem_AlleRollenAnzeigen.click();
-      await expect(RoleManagementeView.text_h2_RolleAnlegen).toHaveText('Rollenverwaltung');
+      await expect(RolleManagementeView.text_h2_RolleAnlegen).toHaveText('Rollenverwaltung');
       await expect(page.getByRole('cell', { name: `${ROLLENNAME1}` })).toBeVisible();
       await expect(page.getByRole('cell', { name: `${ROLLENNAME2}` })).toBeVisible();
     })
