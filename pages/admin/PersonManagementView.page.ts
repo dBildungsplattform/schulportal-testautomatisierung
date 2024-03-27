@@ -1,6 +1,6 @@
 import { type Locator, Page } from '@playwright/test';
 
-export class UserManagementViewPage{
+export class PersonManagementViewPage{
     readonly page: Page;
     readonly text_h2_Benutzerverwaltung: Locator;
    

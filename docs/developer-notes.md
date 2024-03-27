@@ -14,6 +14,12 @@ Die data-testid muss genau in dem Bereich liegen, in dem der Endanwender auch ta
 ## admin/UserManagementView.page.ts
 --
 
+## admin/RolleCreationView.page.ts
+### this.text_success = page.getByText('Die Rolle wurde erfolgreich'); Hier ist für das Element rolleAddedSuccessfully keine data-testid vorhanden.
+
+## admin/RoleManagementView.page.ts
+--
+
 ## Header.page.ts
 --
 

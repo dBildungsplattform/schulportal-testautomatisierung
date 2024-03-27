@@ -1,6 +1,6 @@
 import { type Locator, Page } from '@playwright/test';
 
-export class UserDetailsViewPage{
+export class PersonDetailsViewPage{
     readonly page: Page;
     readonly text_h2_BenutzerBearbeiten: Locator;
     readonly button_pwChange: Locator;
@@ -12,7 +12,7 @@ export class UserDetailsViewPage{
     
     constructor(page){
         this.page = page;  
-        this.text_h2_BenutzerBearbeiten = page.getByTestId('layout-card-headline')
+        this.text_h2_BenutzerBearbeiten = page.getByTestId('layout-card-headline');
         this.button_pwChange = page.getByTestId('open-password-reset-dialog-icon');     
         this.button_pwReset = page.getByTestId('password-reset-button');
         this.text_pwResetInfo = page.getByTestId('password-reset-info-text');
