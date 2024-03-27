@@ -24,7 +24,7 @@ export class MenuPage{
         this.label_Klassenverwaltung = page.locator('[data-testid="klasse-management-title"] .v-list-item-title');
         this.label_Rollenverwaltung = page.locator('[data-testid="rolle-management-title"] .v-list-item-title');
         this.menueItem_AlleRollenAnzeigen = page.locator('[data-testid="rolle-management-menu-item"] .v-list-item-title');
-        this.menueItem_RolleAnlegen = page.getByTestId('rolle-creation-menu-item');
+        this.menueItem_RolleAnlegen = page.getByRole('link', { name: 'Neue Rolle anlegen' })
         this.label_Schulverwaltung = page.locator('[data-testid="schule-management-title"] .v-list-item-title');
         this.label_Schultraegerverwaltung =  page.locator('[data-testid="schultraeger-management-title"] .v-list-item-title');
     }
