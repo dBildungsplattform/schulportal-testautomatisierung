@@ -19,10 +19,10 @@ export class LoginPage{
         this.text_h1_updatePW = page.getByTestId('login-page-title')
         this.input_username = page.getByTestId('username-input');
         this.input_password = page.getByTestId('password-input')
-        this.input_NewPassword = page.getByLabel('Neues Passwort');
-        this.input_ConfirmPW = page.getByLabel('Passwort bestätigen');
+        this.input_NewPassword = page.getByTestId('new-password-input');
+        this.input_ConfirmPW = page.getByTestId('new-password-confirm-input');
         this.button_login = page.getByTestId('login-button');
-        this.button_submitPWChange = page.getByRole('button', { name: 'Absenden' });
+        this.button_submitPWChange = page.getByTestId('set-password-button');
         this.text_span_inputerror = page.getByText('Ungültiger Benutzername oder Passwort');
     }
 

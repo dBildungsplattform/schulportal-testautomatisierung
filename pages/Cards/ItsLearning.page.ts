@@ -6,6 +6,6 @@ export class ItsLearningPage{
 
     constructor(page){
         this.page = page;  
-        this.text_h1 = page.getByRole('heading', { name: 'Die Lernplattform für den' });
+        this.text_h1 = page.getByRole('heading', { name: 'QS Umgebung für SH' });
     }
 }

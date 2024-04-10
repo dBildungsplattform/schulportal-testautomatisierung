@@ -57,7 +57,8 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.U
     const PersonManagement = new PersonManagementViewPage(page);
     const PersonManagementDetail = new PersonDetailsViewPage(page);
     const Header = new HeaderPage(page);
-    const username_lastname = 'Mustermann';
+    const lastname = 'AutoTester';
+    const username = 'autotester';
     let new_password = '';
 
     await test.step(`Portal öffnen ${FRONTEND_URL}`, async () => {
@@ -74,9 +75,9 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.U
       await Startseite.card_item_schulportal_administration.click();
     })
 
-    await test.step(`In der Benutzerverwaltung die Zeile für Benutzer ${username_lastname} anklicken und User-Details öffnen`, async () => {
+    await test.step(`In der Benutzerverwaltung die Zeile für Benutzer ${lastname} anklicken und User-Details öffnen`, async () => {
       await expect(PersonManagement.text_h2_Benutzerverwaltung).toBeVisible();
-      await page.getByRole('cell', { name: 'Mustermann', exact: true }).click();
+      await page.getByRole('cell', { name: `${lastname}`, exact: true }).click();
     })
 
     await test.step(`In den User-Details PW-Reset Dialog starten`, async () => {
@@ -92,10 +93,10 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.U
       await PersonManagementDetail.button_close_pwreset.click();
     })
 
-    await test.step(`Login für Benutzer ${username_lastname} mit dem neuen PW`, async () => {
+    await test.step(`Login für Benutzer ${lastname} mit dem neuen PW`, async () => {
       await Header.button_logout.click();
       await Landing.button_Anmelden.click();
-      await Login.login('mmustermann', new_password);
+      await Login.login(`${username}`, new_password);
     })
 
     await test.step(`Neues PW vergeben`, async () => {
