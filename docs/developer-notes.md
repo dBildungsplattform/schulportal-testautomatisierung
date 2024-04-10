@@ -1,4 +1,4 @@
-# Fehlende data-testid
+git status# Fehlende data-testid
 ## Erläuterung
 Der Playwright-Codegenerator ist ein sehr wirkungsvolles tool um schnell Ausdrücke für die Elemente auf einer Webseite automatisch zu erstellen.
 Der FE-Entwickler des Clients muss das Attribut "data-testid" für jedes Element einfügen, welches für die Playwright-Testautomatisierung relevant ist.
