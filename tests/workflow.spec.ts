@@ -77,7 +77,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.U
 
     await test.step(`In der Benutzerverwaltung die Zeile für Benutzer ${lastname} anklicken und User-Details öffnen`, async () => {
       await expect(PersonManagement.text_h2_Benutzerverwaltung).toBeVisible();
-      await page.getByRole('cell', { name: `${lastname}`, exact: true }).click();
+      await page.getByRole('cell', { name: lastname, exact: true }).click();
     })
 
     await test.step(`In den User-Details PW-Reset Dialog starten`, async () => {
