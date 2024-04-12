@@ -80,7 +80,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     const Startseite = new StartPage(page);
     const Login = new LoginPage(page);
     const Menue = new MenuPage(page);
-    const RolleManagementeView = new RolleManagementViewPage(page);
+    const RolleManagementView = new RolleManagementViewPage(page);
 
     await test.step(`Annmelden mit Benutzer ${ADMIN} und Rollenverwaltung öffnen`, async () => {
       await page.goto(FRONTEND_URL);
@@ -92,12 +92,12 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     })
 
     await test.step(`Alle Elemente in der Ergebnisliste auf Existenz prüfen`, async () => {      
-      await expect(RolleManagementeView.text_h1_Administrationsbereich).toBeVisible();
-      await expect(RolleManagementeView.text_h2_Rollenverwaltung).toBeVisible();
-      await expect(RolleManagementeView.table_header_Rollenname).toBeVisible();
-      await expect(RolleManagementeView.table_header_Rollenart).toBeVisible();
-      await expect(RolleManagementeView.table_header_Merkmale).toBeVisible();
-      await expect(RolleManagementeView.table_header_Administrationsebene).toBeVisible();
+      await expect(RolleManagementView.text_h1_Administrationsbereich).toBeVisible();
+      await expect(RolleManagementView.text_h2_Rollenverwaltung).toBeVisible();
+      await expect(RolleManagementView.table_header_Rollenname).toBeVisible();
+      await expect(RolleManagementView.table_header_Rollenart).toBeVisible();
+      await expect(RolleManagementView.table_header_Merkmale).toBeVisible();
+      await expect(RolleManagementView.table_header_Administrationsebene).toBeVisible();
     })
   })  
 })

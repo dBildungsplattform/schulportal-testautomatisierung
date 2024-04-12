@@ -11,7 +11,7 @@ export class RolleManagementViewPage{
    
     constructor(page){
         this.page = page;  
-        this.text_h1_Administrationsbereich = page.getByRole('heading', { name: 'Administrationsbereich' });
+        this.text_h1_Administrationsbereich = page.getByTestId('admin-headline');
         this.text_h2_Rollenverwaltung = page.getByTestId('layout-card-headline');
         this.table_header_Rollenname = page.getByText('Rollenname');
         this.table_header_Rollenart = page.getByText('Rollenart');
