@@ -96,7 +96,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.U
     await test.step(`Login für Benutzer ${lastname} mit dem neuen PW`, async () => {
       await Header.button_logout.click();
       await Landing.button_Anmelden.click();
-      await Login.login(`${username}`, new_password);
+      await Login.login(username, new_password);
     })
 
     await test.step(`Neues PW vergeben`, async () => {
