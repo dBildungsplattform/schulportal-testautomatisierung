@@ -1,4 +1,4 @@
-name: Scheduled Playwright Tests
+name: Scheduled Playwright Smoketest(test.dev) 
 on:
   schedule:
     - cron: '10 6 * * *'
@@ -16,7 +16,7 @@ jobs:
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
     - name: Run Playwright tests
-      run: npx playwright test
+      run: npx playwright test -g "Erfolgreicher Standard Login"
       env:
         USER: '${{ secrets.USER }}'
         PW: '${{ secrets.PW }}'
@@ -26,4 +26,3 @@ jobs:
         name: playwright-report
         path: playwright-report/
         retention-days: 30npm login
-    

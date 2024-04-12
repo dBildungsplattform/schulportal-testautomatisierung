@@ -15,15 +15,15 @@ export class LoginPage{
 
     constructor(page){
         this.page = page;  
-        this.text_h1 = page.getByRole('heading', { name: 'Sign in to your account' });
-        this.text_h1_updatePW = page.getByText('You need to change your password to activate your account.');
-        this.input_username = page.locator('#username');
-        this.input_password = page.locator('#password');
-        this.input_NewPassword = page.getByLabel('New Password');
-        this.input_ConfirmPW = page.getByLabel('Confirm password');
-        this.button_login = page.getByRole('button', { name: 'Sign In' });
-        this.button_submitPWChange = page.getByRole('button', { name: 'Submit' });
-        this.text_span_inputerror = page.getByText('Invalid username or password.');
+        this.text_h1 = page.getByTestId('login-page-title');
+        this.text_h1_updatePW = page.getByTestId('login-page-title')
+        this.input_username = page.getByTestId('username-input');
+        this.input_password = page.getByTestId('password-input')
+        this.input_NewPassword = page.getByTestId('new-password-input');
+        this.input_ConfirmPW = page.getByTestId('new-password-confirm-input');
+        this.button_login = page.getByTestId('login-button');
+        this.button_submitPWChange = page.getByTestId('set-password-button');
+        this.text_span_inputerror = page.getByText('Ungültiger Benutzername oder Passwort');
     }
 
     async login(username, password){
