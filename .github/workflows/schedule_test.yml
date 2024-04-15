@@ -16,7 +16,7 @@ jobs:
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
     - name: Run Playwright tests
-      run: npx playwright test -g "Erfolgreicher Standard Login"
+      run: FRONTEND_URL='https://test.dev.spsh.dbildungsplattform.de/' npx playwright test -g "Erfolgreicher Standard Login"
       env:
         USER: '${{ secrets.USER }}'
         PW: '${{ secrets.PW }}'
