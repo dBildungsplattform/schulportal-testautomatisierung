@@ -6,6 +6,7 @@ import { StartPage } from '../pages/StartView.page';
 import { MenuPage } from '../pages/MenuBar.page';
 import { PersonCreationViewPage } from '../pages/admin/PersonCreationView.page';
 import { PersonManagementViewPage } from '../pages/admin/PersonManagementView.page';
+import { HeaderPage } from '../pages/Header.page';
 
 const PW = process.env.PW;
 const ADMIN = process.env.USER;
@@ -19,11 +20,14 @@ test.describe(`Testfälle für die Administration von Personen: Umgebung: ${proc
     const Menue = new MenuPage(page);
     const PersonCreationView = new PersonCreationViewPage(page);
     const PersonManagementView = new PersonManagementViewPage(page);
+    const Header = new HeaderPage(page);
 
-    const ROLLE = 'Lehrkraft';
-    const VORNAME = 'TAutoV' + faker.person.firstName();
-    const NACHNAME = 'TAutoN' + faker.person.lastName();;
-    const SCHULSTRUKTURKNOTEN = '(Testschule Schulportal)'; 
+    const Rolle = 'Lehrkraft';
+    const Vorname = 'TAutoV' + faker.person.firstName();
+    const Nachname = 'TAutoN' + faker.person.lastName();;
+    const Schulstrukturknoten = '(Testschule Schulportal)'; 
+    let Benutzername= '';
+    let Einstiegspasswort = '';
 
     await test.step(`Annmelden mit Benutzer ${ADMIN}`, async () => {
       await page.goto(FRONTEND_URL);
@@ -40,25 +44,35 @@ test.describe(`Testfälle für die Administration von Personen: Umgebung: ${proc
     
     await test.step(`Benutzer anlegen`, async () => {
       await PersonCreationView.combobox_Rolle.click();
-      await page.getByText(`${ROLLE}`).click();
+      await page.getByText(`${Rolle}`).click();
 
       await PersonCreationView.Input_Vorname.click();
-      await PersonCreationView.Input_Vorname.fill(VORNAME);
+      await PersonCreationView.Input_Vorname.fill(Vorname);
 
       await PersonCreationView.Input_Nachname.click();
-      await PersonCreationView.Input_Nachname.fill(NACHNAME);
+      await PersonCreationView.Input_Nachname.fill(Nachname);
 
       await PersonCreationView.combobox_Schulstrukturknoten.click();
-      await page.getByText(`${SCHULSTRUKTURKNOTEN}`).click();
+      await page.getByText(`${Schulstrukturknoten}`).click();
 
       await PersonCreationView.button_PersonAnlegen.click();
       await expect(PersonCreationView.text_success).toBeVisible();
+      Benutzername = 't' + Nachname;  // hier fehlt noch eine testID, siehe developer-notes; dieses ist nur ein workaround
+      Einstiegspasswort =  await PersonCreationView.input_EinstiegsPasswort.inputValue();
     })
 
-    await test.step(`In der Ergebnisliste prüfen dass der neue Benutzer ${NACHNAME} angezeigt wird`, async () => {
+    await test.step(`In der Ergebnisliste prüfen dass der neue Benutzer ${Nachname} angezeigt wird`, async () => {
       await Menue.menueItem_AlleBenutzerAnzeigen.click();
       await expect(PersonManagementView.text_h2_Benutzerverwaltung).toHaveText('Benutzerverwaltung');
-      await expect(page.getByRole('cell', { name: `${NACHNAME}`, exact: true })).toBeVisible();
+      await expect(page.getByRole('cell', { name: `${Nachname}`, exact: true })).toBeVisible();
+    })
+
+    await test.step(`Der neue Benutzer meldet sich mit dem temporären Passwort am Portal an und vergibt ein neues Passwort`, async () => {
+      await Header.button_logout.click();
+      await Landing.button_Anmelden.click();
+      await Login.login(Benutzername, Einstiegspasswort); 
+      await Login.UpdatePW();
+      await expect(Startseite.text_h2_Ueberschrift).toBeVisible();
     })
   })  
 })

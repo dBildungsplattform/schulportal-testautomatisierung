@@ -29,6 +29,14 @@ src\views\admin\PersonCreationView.vue
           </v-col>
         </v-row>
 
+Und eine testId für den Benutzernamen auf der Bestätigungsseite:
+<!-- -->
+          <v-col class="text-body bold text-right"> {{ $t('person.userName') }}: </v-col>
+          <v-col class="text-body"> {{ personStore.createdPerson.person.referrer }}</v-col>
+        </v-row>
+      
+
+
 
 ## admin/PersonDetailsView.page.ts
 --
