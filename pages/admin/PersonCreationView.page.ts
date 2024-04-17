@@ -20,8 +20,8 @@ export class PersonCreationViewPage{
         this.Input_Nachname = page.getByTestId('familienname-input').locator('.v-field__input');
         this.combobox_Schulstrukturknoten = page.getByTestId('organisation-select').locator('.v-field__input');
         this.button_PersonAnlegen = page.getByTestId('person-creation-form-create-button');
-        this.text_success = page.getByText('wurde erfolgreich hinzugefügt');
-        this.text_Neuer_Benutzername =  page.getByText('abb'); // hier brauche ich noch eine testId, siehe developer-notes
+        this.text_success = page.getByTestId('person-success-text');
+        this.text_Neuer_Benutzername =  page.getByTestId('created-person-username');
         this.input_EinstiegsPasswort = page.locator('[data-testid="password-output-field"] input'); 
     }
 }

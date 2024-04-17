@@ -57,13 +57,14 @@ test.describe(`Testfälle für die Administration von Personen: Umgebung: ${proc
 
       await PersonCreationView.button_PersonAnlegen.click();
       await expect(PersonCreationView.text_success).toBeVisible();
-      Benutzername = 't' + Nachname;  // hier fehlt noch eine testID, siehe developer-notes; dieses ist nur ein workaround
+
+      Benutzername =  await PersonCreationView.text_Neuer_Benutzername.innerText();
       Einstiegspasswort =  await PersonCreationView.input_EinstiegsPasswort.inputValue();
     })
 
     await test.step(`In der Ergebnisliste prüfen dass der neue Benutzer ${Nachname} angezeigt wird`, async () => {
       await Menue.menueItem_AlleBenutzerAnzeigen.click();
-      await expect(PersonManagementView.text_h2_Benutzerverwaltung).toHaveText('Benutzerverwaltung');
+      await expect(PersonManagementView.text_h2_Benutzerverwaltung).toHaveText('Neuen Benutzer hinzufügen');
       await expect(page.getByRole('cell', { name: `${Nachname}`, exact: true })).toBeVisible();
     })
 

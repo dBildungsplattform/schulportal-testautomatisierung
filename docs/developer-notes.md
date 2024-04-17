@@ -10,34 +10,6 @@ Die data-testid muss genau in dem Bereich liegen, in dem der Endanwender auch ta
 # Liste der fehlenden oder nicht korrekt plazierten data-testid
 ## admin/PersonCreationView.page.ts
 
-Hier fehlt eine testId für den success-Text "Max Mustermann wurde erfolgreich hinzugefügt.":
-src\views\admin\PersonCreationView.vue
-<!-- Result template on success after submit  -->
-    <template v-if="personStore.createdPerson && !personStore.errorCode">
-      <v-container class="new-role-success">
-        <v-row justify="center">
-          <v-col
-            class="subtitle-1"
-            cols="auto"
-          >
-            {{
-              $t('admin.person.addedSuccessfully', {
-                firstname: personStore.createdPerson.person.name.vorname,
-                lastname: personStore.createdPerson.person.name.familienname,
-              })
-            }}
-          </v-col>
-        </v-row>
-
-Und eine testId für den Benutzernamen auf der Bestätigungsseite:
-<!-- -->
-          <v-col class="text-body bold text-right"> {{ $t('person.userName') }}: </v-col>
-          <v-col class="text-body"> {{ personStore.createdPerson.person.referrer }}</v-col>
-        </v-row>
-      
-
-
-
 ## admin/PersonDetailsView.page.ts
 --
 
