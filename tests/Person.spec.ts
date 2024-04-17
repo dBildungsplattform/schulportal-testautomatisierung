@@ -53,7 +53,7 @@ test.describe(`Testfälle für die Administration von Personen: Umgebung: ${proc
       await PersonCreationView.Input_Nachname.fill(Nachname);
 
       await PersonCreationView.combobox_Schulstrukturknoten.click();
-      await page.getByText(`${Schulstrukturknoten}`).click();
+      await page.getByText(Schulstrukturknoten).click();
 
       await PersonCreationView.button_PersonAnlegen.click();
       await expect(PersonCreationView.text_success).toBeVisible();
