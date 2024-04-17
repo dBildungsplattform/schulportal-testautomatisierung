@@ -44,7 +44,7 @@ test.describe(`Testfälle für die Administration von Personen: Umgebung: ${proc
     
     await test.step(`Benutzer anlegen`, async () => {
       await PersonCreationView.combobox_Rolle.click();
-      await page.getByText(`${Rolle}`).click();
+      await page.getByText(Rolle).click();
 
       await PersonCreationView.Input_Vorname.click();
       await PersonCreationView.Input_Vorname.fill(Vorname);
@@ -65,7 +65,7 @@ test.describe(`Testfälle für die Administration von Personen: Umgebung: ${proc
     await test.step(`In der Ergebnisliste prüfen dass der neue Benutzer ${Nachname} angezeigt wird`, async () => {
       await Menue.menueItem_AlleBenutzerAnzeigen.click();
       await expect(PersonManagementView.text_h2_Benutzerverwaltung).toHaveText('Neuen Benutzer hinzufügen');
-      await expect(page.getByRole('cell', { name: `${Nachname}`, exact: true })).toBeVisible();
+      await expect(page.getByRole('cell', { name: Nachname, exact: true })).toBeVisible();
     })
 
     await test.step(`Der neue Benutzer meldet sich mit dem temporären Passwort am Portal an und vergibt ein neues Passwort`, async () => {
