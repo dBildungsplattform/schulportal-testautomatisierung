@@ -8,16 +8,18 @@ Welche Elemente relevant sind, weiss der Entwickler zum Zeitpunkt der Entwicklun
 Die data-testid muss genau in dem Bereich liegen, in dem der Endanwender auch tatsächlich den Klick ausführt, oder auch dort wo das Auge des Anwenders hinschaut(auf die Texte)
 
 # Liste der fehlenden oder nicht korrekt plazierten data-testid
-## admin/UserDetailsView.page.ts
+## admin/PersonCreationView.page.ts
+
+## admin/PersonDetailsView.page.ts
 --
 
-## admin/UserManagementView.page.ts
+## admin/PersonManagementView.page.ts
 --
 
 ## admin/RolleCreationView.page.ts
 --
 
-## admin/RoleManagementView.page.ts
+## admin/RolleManagementView.page.ts
 --
 
 ## Header.page.ts
