@@ -22,8 +22,8 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
 
     const ROLLENNAME1 = 'TAutoR1' + faker.word.noun();
     const ROLLENNAME2 = 'TAutoR2' + faker.word.noun();
-    const SCHULSTRUKTURKNOTEN1 = '(Wurzel Land Schleswig Holstein)';
-    const SCHULSTRUKTURKNOTEN2 = '(Amalie-Sieveking-Schule)';
+    const SCHULSTRUKTURKNOTEN1 = 'Wurzel Land Schleswig Holstein';
+    const SCHULSTRUKTURKNOTEN2 = 'Amalie-Sieveking-Schule';
     const ROLLENART1 = 'Lern'
     const ROLLENART2 = 'Lehr'
 
