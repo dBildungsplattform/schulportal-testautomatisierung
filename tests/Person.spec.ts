@@ -63,7 +63,7 @@ test.describe(`Testfälle für die Administration von Personen: Umgebung: ${proc
     })
 
     await test.step(`In der Ergebnisliste prüfen dass der neue Benutzer ${Nachname} angezeigt wird`, async () => {
-      await Menue.menueItem_AlleBenutzerAnzeigen.click();
+      await PersonCreationView.button_ZurueckErgebnisliste.click();
       await expect(PersonManagementView.text_h2_Benutzerverwaltung).toHaveText('Benutzerverwaltung');
       await expect(page.getByRole('cell', { name: Nachname, exact: true })).toBeVisible();
     })

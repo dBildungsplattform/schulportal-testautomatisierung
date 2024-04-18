@@ -11,6 +11,7 @@ export class PersonCreationViewPage{
     readonly text_success: Locator;
     readonly text_Neuer_Benutzername: Locator;
     readonly input_EinstiegsPasswort: Locator;
+    readonly button_ZurueckErgebnisliste: Locator;
    
     constructor(page){
         this.page = page;  
@@ -23,5 +24,6 @@ export class PersonCreationViewPage{
         this.text_success = page.getByTestId('person-success-text');
         this.text_Neuer_Benutzername =  page.getByTestId('created-person-username');
         this.input_EinstiegsPasswort = page.locator('[data-testid="password-output-field"] input'); 
+        this.button_ZurueckErgebnisliste = page.getByTestId('back-to-list-button');
     }
 }
