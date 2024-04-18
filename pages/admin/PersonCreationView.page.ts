@@ -14,7 +14,7 @@ export class PersonCreationViewPage{
     readonly button_ZurueckErgebnisliste: Locator;
     readonly button_PasswortAnzeigen: Locator;
     readonly button_PasswortKopieren: Locator;
-    readonly text_PasswortKopiert: Locator;
+    readonly text_PasswortKopierenNichtMoeglich: Locator;
    
     constructor(page){
         this.page = page;  
@@ -31,6 +31,6 @@ export class PersonCreationViewPage{
 
         this.button_PasswortAnzeigen = page.getByTestId('show-password-icon')
         this.button_PasswortKopieren = page.getByTestId('copy-password-icon')
-        this.text_PasswortKopiert = page.getByText('Passwort in Zwischenablage');
+        this.text_PasswortKopierenNichtMoeglich = page.getByText('Passwort konnte nicht in die Zwischenablage kopiert werden');
     }
 }
