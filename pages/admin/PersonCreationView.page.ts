@@ -12,9 +12,6 @@ export class PersonCreationViewPage{
     readonly text_Neuer_Benutzername: Locator;
     readonly input_EinstiegsPasswort: Locator;
     readonly button_ZurueckErgebnisliste: Locator;
-    readonly button_PasswortAnzeigen: Locator;
-    readonly button_PasswortKopieren: Locator;
-    readonly text_PasswortKopierenNichtMoeglich: Locator;
    
     constructor(page){
         this.page = page;  
@@ -28,9 +25,5 @@ export class PersonCreationViewPage{
         this.text_Neuer_Benutzername =  page.getByTestId('created-person-username');
         this.input_EinstiegsPasswort = page.locator('[data-testid="password-output-field"] input'); 
         this.button_ZurueckErgebnisliste = page.getByTestId('back-to-list-button');
-
-        this.button_PasswortAnzeigen = page.getByTestId('show-password-icon')
-        this.button_PasswortKopieren = page.getByTestId('copy-password-icon')
-        this.text_PasswortKopierenNichtMoeglich = page.getByText('Passwort konnte nicht in die Zwischenablage kopiert werden');
     }
 }

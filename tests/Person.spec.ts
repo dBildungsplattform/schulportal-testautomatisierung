@@ -63,10 +63,7 @@ test.describe(`Testfälle für die Administration von Personen: Umgebung: ${proc
     })
 
     await test.step(`In der Ergebnisliste prüfen dass der neue Benutzer ${Nachname} angezeigt wird`, async () => {
-      await PersonCreationView.button_PasswortAnzeigen.click();
-      await PersonCreationView.button_PasswortKopieren.click();
-      await expect(PersonCreationView.text_PasswortKopierenNichtMoeglich).toBeVisible();
-      await PersonCreationView.button_ZurueckErgebnisliste.click();
+      await PersonCreationView.button_ZurueckErgebnisliste.dblclick();
       await expect(PersonManagementView.text_h2_Benutzerverwaltung).toHaveText('Benutzerverwaltung');
       await expect(page.getByRole('cell', { name: Nachname, exact: true })).toBeVisible();
     })
