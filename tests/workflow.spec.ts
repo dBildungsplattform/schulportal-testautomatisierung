@@ -6,7 +6,7 @@ import { Email4TeacherPage } from '../pages/Cards/Email4Teacher.page';
 import { ItsLearningPage } from '../pages/Cards/ItsLearning.page';
 import { PersonManagementViewPage } from '../pages/admin/PersonManagementView.page';
 import { PersonDetailsViewPage } from '../pages/admin/PersonDetailsView.page';
-import { HeaderPage } from '../pages/header.page';
+import { HeaderPage } from '../pages/Header.page';
 
 const PW = process.env.PW;
 const USER = process.env.USER;
