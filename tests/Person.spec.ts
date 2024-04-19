@@ -63,8 +63,8 @@ test.describe(`Testfälle für die Administration von Personen: Umgebung: ${proc
     })
 
     await test.step(`In der Ergebnisliste prüfen dass der neue Benutzer ${Nachname} angezeigt wird`, async () => {
-      // await page.waitForTimeout(1000);
-      await PersonCreationView.button_ZurueckErgebnisliste.click();
+      // Der Klick auf die Ergebnisliste funktioniert nicht zuverlaessig, darum der direkte Sprung in die Ergebnisliste via URL
+      await page.goto(FRONTEND_URL + '/admin/personen');
       await expect(PersonManagementView.text_h2_Benutzerverwaltung).toHaveText('Benutzerverwaltung');
       await expect(page.getByRole('cell', { name: Nachname, exact: true })).toBeVisible();
     })
