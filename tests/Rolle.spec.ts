@@ -20,8 +20,8 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     const RolleCreationView = new RolleCreationViewPage(page);
     const RolleManagementeView = new RolleManagementViewPage(page);
 
-    const ROLLENNAME1 = 'TAutoR1' + faker.word.noun();
-    const ROLLENNAME2 = 'TAutoR2' + faker.word.noun();
+    const ROLLENNAME1 = 'TAutoR1' + faker.word.noun() + '-' + faker.word.noun(); // Wahrscheinlichkeit doppelter Namen verringern
+    const ROLLENNAME2 = 'TAutoR2' + faker.word.noun() + '-' + faker.word.noun();
     const SCHULSTRUKTURKNOTEN1 = 'Wurzel Land Schleswig Holstein';
     const SCHULSTRUKTURKNOTEN2 = 'Amalie-Sieveking-Schule';
     const ROLLENART1 = 'Lern'
@@ -75,7 +75,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     })
   })  
 
-  test('Gesamtübersicht Rollen auf Vollständigkeit prüfen', async ({ page }) => {
+  test('Ergebnisliste Rollen auf Vollständigkeit prüfen', async ({ page }) => {
     const Landing = new LandingPage(page);
     const Startseite = new StartPage(page);
     const Login = new LoginPage(page);
