@@ -23,8 +23,8 @@ test.describe(`Testfälle für die Administration von Personen: Umgebung: ${proc
     const Header = new HeaderPage(page);
 
     const Rolle = 'Lehrkraft';
-    const Vorname = 'TAutoV' + faker.person.firstName();
-    const Nachname = 'TAutoN' + faker.person.lastName();;
+    const Vorname = 'TAutoV' + faker.person.firstName(); 
+    const Nachname = 'TAutoN' + faker.person.lastName() + '-' + faker.person.lastName(); // Wahrscheinlichkeit doppelter Namen verringern
     const Schulstrukturknoten = '(Testschule Schulportal)'; 
     let Benutzername= '';
     let Einstiegspasswort = '';
