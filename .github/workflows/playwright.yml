@@ -30,6 +30,11 @@ jobs:
     - uses: actions/setup-node@v3
       with:
         node-version: 16
+      
+    - name: Remove Microsoft APT and  Updat Package
+      run: |
+        sudo rm /etc/apt/sources.list.d/microsoft-prod.list
+        sudo apt-get update
     - name: Install dependencies
       run: npm ci
     - name: Install Playwright Browsers
