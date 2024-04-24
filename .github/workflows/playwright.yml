@@ -31,12 +31,7 @@ jobs:
       with:
         node-version: 16
       
-    #- name: Remove Microsoft APT and  Updat Packages
-    #  run: |
-    #    # sudo rm /etc/apt/sources.list.d/microsoft-prod.list
-    #    sudo apt-get update || true
-
-    - name: Updat Packages
+    - name: Update Packages
       run: sudo apt-get update || true
 
     - name: Install dependencies
