@@ -23,14 +23,14 @@ test.describe(`Spike um die API anzusprechen: Umgebung: ${process.env.UMGEBUNG}:
     })
 
     await test.step(`GET Request personen, alle Benutzer lesen`, async () => {
-      const response = await page.request.get('https://main.dev.spsh.dbildungsplattform.de/api/personen/'); 
+      const response = await page.request.get(FRONTEND_URL + 'api/personen/'); 
       expect(response.status()).toBe(200); 
     })
 
     await test.step(`POST Request personen, neuen Benutzer anlegen`, async () => {
       const Vorname = 'TAutoV' + faker.person.firstName(); 
       const Nachname = 'TAutoN' + faker.person.lastName() + '-' + faker.person.lastName(); // Wahrscheinlichkeit doppelter Namen verringern
-      const response = await page.request.post('https://main.dev.spsh.dbildungsplattform.de/api/personen/', {
+      const response = await page.request.post(FRONTEND_URL + 'api/personen/', {
         data: { 
           "name": {
             "vorname": Vorname,
