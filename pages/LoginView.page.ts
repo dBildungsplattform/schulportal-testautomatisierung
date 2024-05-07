@@ -1,5 +1,7 @@
 import { expect, type Locator, Page } from '@playwright/test';
 import generator from 'generate-password-ts';
+import { LandingPage } from '../pages/LandingView.page';
+import { StartPage } from '../pages/StartView.page';
 
 export class LoginPage{
     readonly page: Page;
