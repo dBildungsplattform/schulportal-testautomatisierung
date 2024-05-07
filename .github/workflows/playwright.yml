@@ -9,7 +9,7 @@ on:
       branch:  
         type: string
         description: 'The name of the branch to be tested with Playwright.'
-        required: true  
+        required: false  
   workflow_dispatch:
     inputs:
       frontendHostname:
