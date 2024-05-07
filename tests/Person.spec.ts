@@ -10,7 +10,7 @@ import { HeaderPage } from '../pages/Header.page';
 
 const PW = process.env.PW;
 const ADMIN = process.env.USER;
-const FRONTEND_URL = process.env.FRONTEND_URL;
+const FRONTEND_URL = process.env.FRONTEND_URL || '';
 
 test.describe(`Testfälle für die Administration von Personen: Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test('Einen Benutzer mit der Rolle Lehrkraft anlegen', async ({ page }) => {
@@ -85,7 +85,7 @@ test.describe(`Testfälle für die Administration von Personen: Umgebung: ${proc
     const Menue = new MenuPage(page);
     const PersonManagementView = new PersonManagementViewPage(page);
 
-    await test.step(`Annmelden mit Benutzer ${ADMIN} und Schulverwaltung öffnen`, async () => {
+    await test.step(`Annmelden mit Benutzer ${ADMIN} und Benutzerverwaltung öffnen`, async () => {
       await page.goto(FRONTEND_URL);
       await Landing.button_Anmelden.click();
       await Login.login(ADMIN, PW); 
