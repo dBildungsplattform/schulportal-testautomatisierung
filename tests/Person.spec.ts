@@ -10,7 +10,7 @@ import { HeaderPage } from '../pages/Header.page';
 
 const PW = process.env.PW;
 const ADMIN = process.env.USER;
-const FRONTEND_URL = process.env.FRONTEND_URL;
+const FRONTEND_URL = process.env.FRONTEND_URL || '';
 
 test.describe(`Testfälle für die Administration von Personen: Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test('Einen Benutzer mit der Rolle Lehrkraft anlegen', async ({ page }) => {
@@ -75,6 +75,38 @@ test.describe(`Testfälle für die Administration von Personen: Umgebung: ${proc
       await Login.login(Benutzername, Einstiegspasswort); 
       await Login.UpdatePW();
       await expect(Startseite.text_h2_Ueberschrift).toBeVisible();
+    })
+  })  
+
+  test('Ergebnisliste Benutzer auf Vollständigkeit prüfen', async ({ page }) => {
+    const Landing = new LandingPage(page);
+    const Startseite = new StartPage(page);
+    const Login = new LoginPage(page);
+    const Menue = new MenuPage(page);
+    const PersonManagementView = new PersonManagementViewPage(page);
+
+    await test.step(`Annmelden mit Benutzer ${ADMIN} und Benutzerverwaltung öffnen`, async () => {
+      await page.goto(FRONTEND_URL);
+      await Landing.button_Anmelden.click();
+      await Login.login(ADMIN, PW); 
+      await expect(Startseite.text_h2_Ueberschrift).toBeVisible();
+      await Startseite.card_item_schulportal_administration.click();
+      await Menue.menueItem_AlleBenutzerAnzeigen.click();
+    })
+
+    await test.step(`Alle Elemente in der Ergebnisliste auf Existenz prüfen`, async () => {   
+      await expect(PersonManagementView.text_h1_Administrationsbereich).toBeVisible();
+      await expect(PersonManagementView.text_h2_Benutzerverwaltung).toBeVisible();
+      await expect(PersonManagementView.text_h2_Benutzerverwaltung).toHaveText('Benutzerverwaltung');
+      await expect(PersonManagementView.input_Suchfeld).toBeVisible();
+      await expect(PersonManagementView.button_Suchen).toBeVisible();
+      await expect(PersonManagementView.table_header_Nachname).toBeVisible();
+      await expect(PersonManagementView.table_header_Vorname).toBeVisible();
+      await expect(PersonManagementView.table_header_Benutzername).toBeVisible();
+      await expect(PersonManagementView.table_header_KopersNr).toBeVisible();
+      await expect(PersonManagementView.table_header_Rolle).toBeVisible();
+      await expect(PersonManagementView.table_header_Zuordnungen).toBeVisible();
+      await expect(PersonManagementView.table_header_Klasse).toBeVisible();
     })
   })  
 })
