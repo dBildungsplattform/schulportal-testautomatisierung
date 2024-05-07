@@ -13,6 +13,7 @@ export class MenuPage{
     readonly menueItem_RolleAnlegen: Locator;
     readonly label_Schulverwaltung: Locator;
     readonly menueItem_AlleSchulenAnzeigen: Locator;
+    readonly menueItem_SchuleAnlegen: Locator;
     readonly label_Schultraegerverwaltung: Locator;
 
     constructor(page){

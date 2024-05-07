@@ -6,7 +6,7 @@ import { HeaderPage } from '../pages/Header.page';
 
 const PW = process.env.PW;
 const USER = process.env.USER;
-const FRONTEND_URL = process.env.FRONTEND_URL;
+const FRONTEND_URL = process.env.FRONTEND_URL || '';
 
 test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test('Erfolgreicher Standard Logoff', async ({ page }) => {

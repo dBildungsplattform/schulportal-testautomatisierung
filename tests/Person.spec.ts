@@ -10,7 +10,7 @@ import { HeaderPage } from '../pages/Header.page';
 
 const PW = process.env.PW;
 const ADMIN = process.env.USER;
-const FRONTEND_URL = process.env.FRONTEND_URL;
+const FRONTEND_URL = process.env.FRONTEND_URL || '';
 
 test.describe(`Testfälle für die Administration von Personen: Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test('Einen Benutzer mit der Rolle Lehrkraft anlegen', async ({ page }) => {
