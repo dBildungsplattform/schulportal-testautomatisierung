@@ -15,7 +15,7 @@ on:
       frontendHostname:
         type: string
         description: 'Hostname of the frontend server (optional)'
-        required: false
+        required: true
   push:
     branches: [ main ]
 
