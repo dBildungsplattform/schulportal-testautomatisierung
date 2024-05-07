@@ -20,8 +20,8 @@ export class PersonManagementViewPage{
         this.text_h2_Benutzerverwaltung = page.getByTestId('layout-card-headline');
         this.input_Suchfeld = page.locator('[data-testid="search-filter-input"] input');
         this.button_Suchen = page.getByTestId('apply-search-filter-button');
-        this.table_header_Nachname = page.getByText('Nachname', { exact: true });
-        this.table_header_Vorname = page.getByText('Vorname', { exact: true });
+        this.table_header_Nachname = page.getByTestId('person-table').getByText('Nachname', { exact: true });
+        this.table_header_Vorname = page.getByTestId('person-table').getByText('Vorname', { exact: true });
         this.table_header_Benutzername = page.getByText('Benutzername', { exact: true });
         this.table_header_KopersNr = page.getByText('Kopers-Nr');
         this.table_header_Rolle = page.getByTestId('person-table').getByText('Rolle', { exact: true });
