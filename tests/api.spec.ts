@@ -6,7 +6,7 @@ import { StartPage } from '../pages/StartView.page';
 
 const PW = process.env.PW;
 const USER = process.env.USER;
-const FRONTEND_URL = process.env.FRONTEND_URL;
+const FRONTEND_URL = process.env.FRONTEND_URL || '';
 
 test.describe(`Spike um die API anzusprechen: Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test('GET und Post request', async ({ page}) => {
