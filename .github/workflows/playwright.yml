@@ -18,9 +18,9 @@ on:
         description: 'Hostname of the frontend server (optional)'
         required: true
       playwright_branch:  
-            type: string
-            description: 'The name of the branch to be tested with Playwright.'
-            required: true 
+        type: string
+        description: 'The name of the branch to be tested with Playwright.'
+        required: true 
   push:
     branches: [ main ]
 
