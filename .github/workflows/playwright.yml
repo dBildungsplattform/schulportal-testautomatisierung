@@ -21,7 +21,7 @@ on:
       playwright_branch:
         type: string
         description: 'The name of the branch to be tested with Playwright.'
-        required: true
+        required: false
         default: main
   push:
     branches: [ main ]
