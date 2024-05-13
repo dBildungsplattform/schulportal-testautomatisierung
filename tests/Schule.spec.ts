@@ -5,6 +5,7 @@ import { LoginPage } from '../pages/LoginView.page';
 import { StartPage } from '../pages/StartView.page';
 import { MenuPage } from '../pages/MenuBar.page';
 import { SchuleCreationViewPage } from '../pages/admin/SchuleCreationView.page';
+import { SchuleManagementViewPage } from '../pages/admin/SchuleManagementView.page';
 
 const PW = process.env.PW;
 const ADMIN = process.env.USER;
@@ -17,6 +18,7 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
     const Login = new LoginPage(page);
     const Menue = new MenuPage(page);
     const SchuleCreationView = new SchuleCreationViewPage(page);
+    const SchuleManagementView = new SchuleManagementViewPage(page);
 
     const SCHULNAME1 = 'TAutoS1' + faker.word.noun() + '-' + faker.word.noun(); // Wahrscheinlichkeit doppelter Namen verringern
     const SCHULNAME2 = 'TAutoS2' + faker.word.noun() + '-' + faker.word.noun();
@@ -60,5 +62,37 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
       await SchuleCreationView.button_SchuleAnlegen.click();
       await expect(SchuleCreationView.text_success).toBeVisible();
     })
+
+    await test.step(`In der Ergebnisliste prüfen, dass die beiden neuen Schulen angezeigt werden`, async () => {
+      await Menue.menueItem_AlleSchulenAnzeigen.click();
+      await expect(SchuleManagementView.text_h2_Schulverwaltung).toHaveText('Schulverwaltung');
+      await expect(page.getByRole('cell', { name: `${SCHULNAME1}` })).toBeVisible();
+      await expect(page.getByRole('cell', { name: `${SCHULNAME2}` })).toBeVisible();
+    })
   })
+
+  test('Ergebnisliste Schulen auf Vollständigkeit prüfen', async ({ page }) => {
+    const Landing = new LandingPage(page);
+    const Startseite = new StartPage(page);
+    const Login = new LoginPage(page);
+    const Menue = new MenuPage(page);
+    const SchuleManagementView = new SchuleManagementViewPage(page);
+
+    await test.step(`Annmelden mit Benutzer ${ADMIN} und Schulverwaltung öffnen`, async () => {
+      await page.goto(FRONTEND_URL);
+      await Landing.button_Anmelden.click();
+      await Login.login(ADMIN, PW); 
+      await expect(Startseite.text_h2_Ueberschrift).toBeVisible();
+      await Startseite.card_item_schulportal_administration.click();
+      await Menue.menueItem_AlleSchulenAnzeigen.click();
+    })
+
+    await test.step(`Alle Elemente in der Ergebnisliste auf Existenz prüfen`, async () => {      
+      await expect(SchuleManagementView.text_h1_Administrationsbereich).toBeVisible();
+      await expect(SchuleManagementView.text_h2_Schulverwaltung).toBeVisible();
+      await expect(SchuleManagementView.text_h2_Schulverwaltung).toHaveText('Schulverwaltung');
+      await expect(SchuleManagementView.table_header_Dienstellennummer).toBeVisible();
+      await expect(SchuleManagementView.table_header_Schulname).toBeVisible();
+    })
+  })  
 })
