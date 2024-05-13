@@ -7,47 +7,28 @@ on:
         type: string
         description: 'Hostname of the frontend server (optional)'
         required: false
-      playwright_branch:  
+      playwright_branch:
         type: string
         description: 'The name of the branch to be tested with Playwright.'
-        required: false  
+        required: false
+        default: main
   workflow_dispatch:
     inputs:
       frontendHostname:
         type: string
         description: 'Hostname of the frontend server (optional)'
         required: true
-      playwright_branch:  
+      playwright_branch:
         type: string
         description: 'The name of the branch to be tested with Playwright.'
-        required: true 
+        required: true
+        default: main
   push:
     branches: [ main ]
 
 jobs:
 
-  determine_playwright_branch:
-    if: ${{ github.event_name == 'push' && !startsWith(github.ref_name,'dependabot/') }}
-    runs-on: ubuntu-latest
-    outputs:
-      playwright_branch: ${{ steps.check_branch.outputs.playwright_branch }}
-    steps:
-      - name: Check current branch
-        run: |
-          echo "Current branch: ${{ github.ref_name }}"
-          
-      - name: Check if Playwright branch exists
-        id: check_branch
-        run: |
-          playwright_branch="${{ github.ref_name }}"
-          if git ls-remote --heads https://github.com/dBildungsplattform/schulportal-testautomatisierung $playwright_branch &> /dev/null; then
-            echo "playwright_branch=$playwright_branch" >> $GITHUB_OUTPUT
-          else
-            echo "playwright_branch=main" >> $GITHUB_OUTPUT
-          fi
-
   run_playwright_end2end_tests:
-    needs: determine_playwright_branch
     continue-on-error: true
     timeout-minutes: 60
     runs-on: ubuntu-latest
@@ -58,7 +39,7 @@ jobs:
     - uses: actions/checkout@v3
       with:
         repository: 'dBildungsplattform/schulportal-testautomatisierung'
-        ref: ${{ needs.determine_playwright_branch.outputs.playwright_branch }}
+        ref: ${{ inputs.playwright_branch }}
     - uses: actions/setup-node@v3
       with:
         node-version: 16
