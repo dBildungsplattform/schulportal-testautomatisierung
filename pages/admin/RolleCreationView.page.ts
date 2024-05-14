@@ -12,7 +12,7 @@ export class RolleCreationViewPage{
     readonly text_success: Locator;
    
     constructor(page){
-        this.page = page;  
+        this.page = page;
         this.text_h2_RolleAnlegen = page.getByTestId('layout-card-headline');
         this.combobox_Schulstrukturknoten = page.getByTestId('administrationsebene-select').locator('.v-input__control');
         this.combobox_Rollenart = page.getByTestId('rollenart-select').locator('.v-input__control');

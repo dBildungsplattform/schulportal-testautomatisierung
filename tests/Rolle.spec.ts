@@ -9,7 +9,7 @@ import { RolleManagementViewPage } from '../pages/admin/RolleManagementView.page
 
 const PW = process.env.PW;
 const ADMIN = process.env.USER;
-const FRONTEND_URL = process.env.FRONTEND_URL;
+const FRONTEND_URL = process.env.FRONTEND_URL || '';
 
 test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test('2 Rollen nacheinander anlegen', async ({ page }) => {
@@ -18,7 +18,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     const Login = new LoginPage(page);
     const Menue = new MenuPage(page);
     const RolleCreationView = new RolleCreationViewPage(page);
-    const RolleManagementeView = new RolleManagementViewPage(page);
+    const RolleManagementView = new RolleManagementViewPage(page);
 
     const ROLLENNAME1 = 'TAutoR1' + faker.word.noun() + '-' + faker.word.noun(); // Wahrscheinlichkeit doppelter Namen verringern
     const ROLLENNAME2 = 'TAutoR2' + faker.word.noun() + '-' + faker.word.noun();
@@ -69,7 +69,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
 
     await test.step(`In der Ergebnisliste prüfen dass die beiden neuen Rollen angezeigt sind`, async () => {
       await Menue.menueItem_AlleRollenAnzeigen.click();
-      await expect(RolleManagementeView.text_h2_Rollenverwaltung).toHaveText('Rollenverwaltung');
+      await expect(RolleManagementView.text_h2_Rollenverwaltung).toHaveText('Rollenverwaltung');
       await expect(page.getByRole('cell', { name: `${ROLLENNAME1}` })).toBeVisible();
       await expect(page.getByRole('cell', { name: `${ROLLENNAME2}` })).toBeVisible();
     })

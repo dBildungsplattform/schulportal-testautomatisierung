@@ -13,6 +13,7 @@ export class MenuPage{
     readonly menueItem_RolleAnlegen: Locator;
     readonly label_Schulverwaltung: Locator;
     readonly menueItem_AlleSchulenAnzeigen: Locator;
+    readonly menueItem_SchuleAnlegen: Locator;
     readonly label_Schultraegerverwaltung: Locator;
 
     constructor(page){
@@ -28,6 +29,7 @@ export class MenuPage{
         this.menueItem_RolleAnlegen = page.getByTestId('rolle-creation-menu-item');
         this.label_Schulverwaltung = page.locator('[data-testid="schule-management-title"] .v-list-item-title');
         this.menueItem_AlleSchulenAnzeigen = page.locator('[data-testid="schule-management-menu-item"] .v-list-item-title');
+        this.menueItem_SchuleAnlegen = page.getByTestId('schule-creation-menu-item');
         this.label_Schultraegerverwaltung =  page.locator('[data-testid="schultraeger-management-title"] .v-list-item-title');
     }
 }
