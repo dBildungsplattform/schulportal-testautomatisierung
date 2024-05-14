@@ -4,6 +4,7 @@ export class PersonCreationViewPage{
     readonly page: Page;
     readonly text_h2_PersonAnlegen: Locator;
     readonly combobox_Rolle: Locator;
+    readonly combobox_Rolle_Clear: Locator;
     readonly Input_Vorname: Locator;
     readonly Input_Nachname: Locator;
     readonly combobox_Schulstrukturknoten: Locator;
@@ -17,6 +18,7 @@ export class PersonCreationViewPage{
         this.page = page;  
         this.text_h2_PersonAnlegen = page.getByTestId('layout-card-headline');
         this.combobox_Rolle = page.getByTestId('rolle-select').locator('.v-field__input');
+        this.combobox_Rolle_Clear = page.getByTestId('rolle-select').getByLabel('Clear');
         this.Input_Vorname = page.getByTestId('vorname-input').locator('.v-field__input');
         this.Input_Nachname = page.getByTestId('familienname-input').locator('.v-field__input');
         this.combobox_Schulstrukturknoten = page.getByTestId('organisation-select').locator('.v-field__input');

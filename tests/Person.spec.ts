@@ -109,4 +109,119 @@ test.describe(`Testfälle für die Administration von Personen: Umgebung: ${proc
       await expect(PersonManagementView.table_header_Klasse).toBeVisible();
     })
   })  
+
+  test('Gueltige Knoten in dem Dropdown Administrationsebene in Abhaengigkeit von der ausgewaehlten Rolle pruefen', async ({ page }) => {
+    const Landing = new LandingPage(page);
+    const Startseite = new StartPage(page);
+    const Login = new LoginPage(page);
+    const Menue = new MenuPage(page);
+    const PersonCreationView = new PersonCreationViewPage(page);
+    
+    const Rolle_LANDESADMIN = 'Landesadmin';
+    const Rolle_LEHR = 'Lehrkraft';    
+    const Rolle_LIV = 'LiV';
+    const Rolle_SCHULADMIN = 'Schuladmin';
+    const Rolle_SUS = 'SuS';
+
+    const TYP_ORGA_ROOT = 'ROOT'
+    const TYP_ORGA_LAND = 'LAND';
+    const TYP_ORGA_SCHULE = 'SCHULE';
+  
+    await test.step(`Annmelden mit Benutzer ${ADMIN}`, async () => {
+      await page.goto(FRONTEND_URL);
+      await Landing.button_Anmelden.click();
+      await Login.login(ADMIN, PW); 
+      await expect(Startseite.text_h2_Ueberschrift).toBeVisible();
+    })
+    
+    await test.step(`Dialog Person anlegen öffnen`, async () => {
+      await Startseite.card_item_schulportal_administration.click();
+      await Menue.menueItem_BenutzerAnlegen.click();
+      await expect(PersonCreationView.text_h2_PersonAnlegen).toHaveText('Neuen Benutzer hinzufügen');
+    })
+    
+    await test.step(`Rolle Landesadmin auswaehlen und verfügbare Einträge für die Organisationsebene prüfen`, async () => {
+      await PersonCreationView.combobox_Rolle.click();
+      await page.getByText(Rolle_LANDESADMIN).click();
+
+      const response_schulstrukturknoten = await page.waitForResponse((response) => response.url().includes("/api/personenkontext/schulstrukturknoten"));
+      const responseBody_schulstrukturknoten = await response_schulstrukturknoten.json();
+      let result = true;
+      
+      (responseBody_schulstrukturknoten.moeglicheSsks).forEach(element => {
+        if(!(element.typ === TYP_ORGA_ROOT) && !(element.typ === TYP_ORGA_LAND)) {
+          result = false;
+          expect(result).toBe(true); // Es werden ungültige Schulstrukturknoten angezeigt
+        }
+      });  
+    })
+
+    await test.step(`Rolle Lehrkraft auswaehlen und verfügbare Einträge für die Organisationsebene prüfen`, async () => {
+      await PersonCreationView.combobox_Rolle_Clear.click();
+      await PersonCreationView.combobox_Rolle.click();
+      await page.getByText(Rolle_LEHR).click();
+
+      const response_schulstrukturknoten = await page.waitForResponse((response) => response.url().includes("/api/personenkontext/schulstrukturknoten"));
+      const responseBody_schulstrukturknoten = await response_schulstrukturknoten.json();
+      let result = true;
+      
+      (responseBody_schulstrukturknoten.moeglicheSsks).forEach(element => {
+        if(!(element.typ === TYP_ORGA_SCHULE)) {
+          result = false;
+          expect(result).toBe(true); // Es werden ungültige Schulstrukturknoten angezeigt
+        }
+      });   
+    })
+
+    await test.step(`Rolle LiV auswaehlen und verfügbare Einträge für die Organisationsebene prüfen`, async () => {
+      await PersonCreationView.combobox_Rolle_Clear.click();
+      await PersonCreationView.combobox_Rolle.click();
+      await page.getByText(Rolle_LIV).click();
+
+      const response_schulstrukturknoten = await page.waitForResponse((response) => response.url().includes("/api/personenkontext/schulstrukturknoten"));
+      const responseBody_schulstrukturknoten = await response_schulstrukturknoten.json();
+      let result = true;
+      
+      (responseBody_schulstrukturknoten.moeglicheSsks).forEach(element => {
+        if(!(element.typ === TYP_ORGA_SCHULE)) {
+          result = false;
+          expect(result).toBe(true); // Es werden ungültige Schulstrukturknoten angezeigt
+        }
+      });   
+    })
+
+    await test.step(`Rolle Schuladmin auswaehlen und verfügbare Einträge für die Organisationsebene prüfen`, async () => {
+      await PersonCreationView.combobox_Rolle_Clear.click();
+      await PersonCreationView.combobox_Rolle.click();
+      await page.getByText(Rolle_SCHULADMIN).click();
+
+      const response_schulstrukturknoten = await page.waitForResponse((response) => response.url().includes("/api/personenkontext/schulstrukturknoten"));
+      const responseBody_schulstrukturknoten = await response_schulstrukturknoten.json();
+      let result = true;
+      
+      (responseBody_schulstrukturknoten.moeglicheSsks).forEach(element => {
+        if(!(element.typ === TYP_ORGA_SCHULE)) {
+          result = false;
+          expect(result).toBe(true); // Es werden ungültige Schulstrukturknoten angezeigt
+        }
+      });   
+    })
+
+    await test.step(`Rolle SuS auswaehlen und verfügbare Einträge für die Organisationsebene prüfen`, async () => {
+      await PersonCreationView.combobox_Rolle_Clear.click();
+      await PersonCreationView.combobox_Rolle.click();
+      await page.getByText(Rolle_SUS).click();
+
+      const response_schulstrukturknoten = await page.waitForResponse((response) => response.url().includes("/api/personenkontext/schulstrukturknoten"));
+      const responseBody_schulstrukturknoten = await response_schulstrukturknoten.json();
+      let result = true;
+      
+      (responseBody_schulstrukturknoten.moeglicheSsks).forEach(element => {
+        if(!(element.typ === TYP_ORGA_SCHULE)) {
+          result = false;
+          expect(result).toBe(true); // Es werden ungültige Schulstrukturknoten angezeigt
+        }
+      });   
+    })
+  })
 })
