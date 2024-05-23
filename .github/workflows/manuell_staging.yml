@@ -1,8 +1,6 @@
-name: Scheduled Playwright Alle Tests(main) 
+name: Manuell alle Tests(staging) 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '10 5 * * *'
 jobs:
   test:
     timeout-minutes: 60
@@ -14,14 +12,14 @@ jobs:
         node-version: 16
     - name: Remove Microsoft APT and  Update Packages
       run: |
-        sudo rm /etc/apt/sources.list.d/microsoft-prod.list
-        sudo apt-get update || true
+          sudo rm /etc/apt/sources.list.d/microsoft-prod.list
+          sudo apt-get update || true
     - name: Install dependencies
       run: npm ci
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
     - name: Run Playwright tests
-      run: FRONTEND_URL='https://main.dev.spsh.dbildungsplattform.de/' npx playwright test
+      run: FRONTEND_URL='https://spsh.staging.spsh.dbildungsplattform.de/' npx playwright test"
       env:
         USER: '${{ secrets.USER }}'
         PW: '${{ secrets.PW }}'
