@@ -1,38 +1,81 @@
 # Schulportal Playwright, Doku für lokale Ausführung von den Tests
 
-# Oft verwendetet Konsolenbefehle
+## Oft verwendetet Konsolenbefehle
 
-## Eine bestimmte Testfall-Datei ausführen: 
-USER="xxx" PW="xxx" npx playwright test login.spec.ts
+### Code-Generator lokal starten:
 
-## Einen bestimmten Testfall innerhalb einer Datei ausführen: 
-USER='xxx' PW='xxx' npx playwright test -g "SPSH-122 Angebote" --headed
+#### npx playwright codegen https://main.dev.spsh.dbildungsplattform.de
 
-## Alle Tests ausführen: 
-USER="xxx" PW="xxx" npx playwright test
+#### npx playwright codegen https://SPSH-1234.dev.spsh.dbildungsplattform.de
 
-## Alle Tests ausführen auf einer bestimmten Zielumgebung:
+#### npx playwright codegen https://spsh.staging.spsh.dbildungsplattform.de
+
+#### npx playwright codegen https://test.dev.spsh.dbildungsplattform.de
+
+#### npx playwright codegen https://localhost:8099/ --ignore-https-errors
+
+### Tests lokal ausführen:
+
+#### Alle Tests mit einer beliebigen URL ausführen
+
 USER='xxx' PW='xxx' FRONTEND_URL='https://main.dev.spsh.dbildungsplattform.de/' npx playwright test
 
-## Einen Report von der Testausführung öffnen: 
-npx playwright show-report results\results-2023-10-06T13_49_14_593
+#### Alle Tests auf main ausführen
 
-## Code-Generator starten: 
-npx playwright codegen https://test.dev.spsh.dbildungsplattform.de
-npx playwright codegen https://main.dev.spsh.dbildungsplattform.de
-npx playwright codegen https://localhost:8099/ --ignore-https-errors
+USER="xxx" PW="xxx" npx playwright test login.spec.ts
 
-## Code-Generator aus GHA starten: 
-Run workflow "Playwright Tests" with frontendHostname: test.dev.spsh.dbildungsplattform.de
+#### Einen bestimmten Testfall innerhalb einer Datei ausführen:
 
-## debug-mode: 
-PWDEBUG=1 npx playwright test login.spec.ts --headed
+USER='xxx' PW='xxx' FRONTEND_URL='https://main.dev.spsh.dbildungsplattform.de/' npx playwright test -g "Einen Benutzer mit der Rolle Lehrkraft anlegen" --headed
 
-## ESLint ausführen
-`npm run lint`
+#### Alle Tests einer bestimmten ausführen:
+
+USER='xxx' PW='xxx' FRONTEND_URL='https://main.dev.spsh.dbildungsplattform.de/' npx playwright test Schule.spec.ts
+
+#### debug-mode:
+
+PWDEBUG=1 USER='xxx' PW='xxx' FRONTEND_URL='https://main.dev.spsh.dbildungsplattform.de/' npx playwright test -g "Einen Benutzer mit der Rolle Lehrkraft anlegen"
+
+### Den letzten Report von der Testausführung öffnen:
+
+npx playwright show-report
 
 ## Umgebungen
-Es gibt die beiden Umgebungen .env.dev und .env.local auf denen die Tests ausgeführt werden. Verwendet wird die Umgebung, die in der playwright.config.ts konfiguriert ist(dotenv.config).
+
+Die Default-Umgebuzng ist in der playwright.config.ts konfiguriert(dotenv.config)
+
+### .env.dev(Default, main)
+
+### .env.devTest
+
+### .env.local
+
+### .env.staging
+
+## ESLint ausführen
+
+`npm run lint`
 
 ## Testdatenerstellung durch die Playwright-Tests
+
 Neue Testdaten, die während der Testausführung erstellt werden, haben den Prefix 'TAuto', gefolgt von einem Buchstaben für den Typ + einen Zufallswert aus faker-js(Beispiel: XXX). Der Name einer Rolle ist z.B. TAutoR1XXX. Somit ist es einfacher, die Testdaten zu erkennen, die durch die Playwright-Tests erstellt wurden.
+
+## Hinweise für die Entwicklung der Tests
+
+### Während der Entwicklung nur einen Test markieren, der alleine ausgeführt wird(temporär only hinzufügen in dem Test)
+
+test.only('2 Schulen nacheinander anlegen', async ({ page }) => {
+
+## Playwright installieren unter Windows
+
+### git clone https://github.com/dBildungsplattform/schulportal-testautomatisierung
+
+### cd schulportal-testautomatisierung
+
+### npm ci
+
+### npx playwright install --with-deps
+
+## Entwicklungsumgebung
+
+Empfohlen wird VS-Code
