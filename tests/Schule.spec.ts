@@ -13,15 +13,16 @@ const FRONTEND_URL = process.env.FRONTEND_URL || "";
 
 test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }) => {
-    // Login
-    const Landing = new LandingPage(page);
-    const Startseite = new StartPage(page);
-    const Login = new LoginPage(page);
+    await test.step(`Login`, async () => {
+      const Landing = new LandingPage(page);
+      const Startseite = new StartPage(page);
+      const Login = new LoginPage(page);
 
-    await page.goto(FRONTEND_URL);
-    await Landing.button_Anmelden.click();
-    await Login.login(ADMIN, PW);
-    await expect(Startseite.text_h2_Ueberschrift).toBeVisible();
+      await page.goto(FRONTEND_URL);
+      await Landing.button_Anmelden.click();
+      await Login.login(ADMIN, PW);
+      await expect(Startseite.text_h2_Ueberschrift).toBeVisible();
+    });
   });
 
   test("2 Schulen nacheinander anlegen", async ({ page }) => {
