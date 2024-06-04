@@ -5,22 +5,26 @@ import { LoginPage } from '../pages/LoginView.page';
 import { MenuPage } from '../pages/MenuBar.page';
 
 const PW = process.env.PW;
-const USER = process.env.USER;
+const ADMIN = process.env.USER;
 const FRONTEND_URL = process.env.FRONTEND_URL || '';
 
 test.describe(`Testfälle für die Hauptmenue-Leiste: Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
-  test('Test der Hauptmenue-Leiste und Untermenues auf Vollständigkeit', async ({ page }) => {
-    const Landing = new LandingPage(page);
-    const Startseite = new StartPage(page)
-    const Login = new LoginPage(page);
-    const MenuBar = new MenuPage(page);
+  test.beforeEach(async ({ page }) => {
+    await test.step(`Login`, async () => {
+      const Landing = new LandingPage(page);
+      const Startseite = new StartPage(page);
+      const Login = new LoginPage(page);
 
-    await test.step(`Annmelden mit Benutzer ${USER}`, async () => {
       await page.goto(FRONTEND_URL);
       await Landing.button_Anmelden.click();
-      await Login.login(USER, PW); 
+      await Login.login(ADMIN, PW);
       await expect(Startseite.text_h2_Ueberschrift).toBeVisible();
-    })
+    });
+  });
+  
+  test('Test der Hauptmenue-Leiste und Untermenues auf Vollständigkeit', async ({ page }) => {
+    const Startseite = new StartPage(page)
+    const MenuBar = new MenuPage(page);
 
     await test.step(`Pruefen der Hauptmenueleiste mit Untermenues`, async () => {
       await Startseite.card_item_schulportal_administration.click();
@@ -39,17 +43,8 @@ test.describe(`Testfälle für die Hauptmenue-Leiste: Umgebung: ${process.env.UM
   })  
 
   test('Test der Funktion "Zurueck zur Startseite"', async ({ page }) => {
-    const Landing = new LandingPage(page);
     const Startseite = new StartPage(page)
-    const Login = new LoginPage(page);
     const MenuBar = new MenuPage(page);
-
-    await test.step(`Annmelden mit Benutzer ${USER}`, async () => {
-      await page.goto(FRONTEND_URL);
-      await Landing.button_Anmelden.click();
-      await Login.login(USER, PW); 
-      await expect(Startseite.text_h2_Ueberschrift).toBeVisible();
-    })
 
     await test.step(`Menue-Eintrag zum Rücksprung auf die Startseite klicken`, async () => {
       await Startseite.card_item_schulportal_administration.click();
