@@ -42,7 +42,7 @@ npx playwright show-report
 
 ## Umgebungen
 
-Die Default-Umgebuzng ist in der playwright.config.ts konfiguriert(dotenv.config)
+Die Default-Umgebung ist in der playwright.config.ts konfiguriert (dotenv.config)
 
 ### .env.dev(Default, main)
 
