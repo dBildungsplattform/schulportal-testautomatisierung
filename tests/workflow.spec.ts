@@ -72,9 +72,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.U
     });
 
     await test.step(`In den User-Details PW-Reset Dialog starten`, async () => {
-      await expect(
-        PersonManagementDetail.text_h2_BenutzerBearbeiten
-      ).toBeVisible();
+      await expect(PersonManagementDetail.text_h2_BenutzerBearbeiten).toBeVisible();
       await PersonManagementDetail.button_pwChange.click();
       await expect(PersonManagementDetail.text_pwResetInfo).toBeVisible();
     });

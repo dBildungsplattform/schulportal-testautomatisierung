@@ -54,11 +54,11 @@ Die Default-Umgebung ist in der playwright.config.ts konfiguriert (dotenv.config
 
 ## ESLint ausführen
 
-`npm run lint`
+npm run lint
 
 ## Testdatenerstellung durch die Playwright-Tests
 
-Neue Testdaten, die während der Testausführung erstellt werden, haben den Prefix 'TAuto', gefolgt von einem Buchstaben für den Typ + einen Zufallswert aus faker-js(Beispiel: XXX). Der Name einer Rolle ist z.B. TAutoR1XXX. Somit ist es einfacher, die Testdaten zu erkennen, die durch die Playwright-Tests erstellt wurden.
+Neue Testdaten, die während der Testausführung erstellt werden, haben den Prefix 'TAuto-PW-', gefolgt von einem Buchstaben für den Typ + einen Zufallswert aus der Methode generateRandomString. Der Name einer Rolle ist z.B. TAuto-PW-R-xxxxxxxxx. Somit ist es einfacher, die Testdaten zu erkennen, die durch die Playwright-Tests erstellt wurden.
 
 ## Hinweise für die Entwicklung der Tests
 

@@ -1,8 +1,9 @@
-import { faker } from '@faker-js/faker/locale/de';
 import { test, expect } from '@playwright/test';
 import { LoginPage } from '../pages/LoginView.page';
 import { LandingPage } from '../pages/LandingView.page';
 import { StartPage } from '../pages/StartView.page';
+import { HelperPage } from "../pages/Helper.page";
+import { PersonManagementViewPage } from "../pages/admin/PersonManagementView.page";
 
 const PW = process.env.PW;
 const USER = process.env.USER;
@@ -13,6 +14,9 @@ test.describe(`Spike um die API anzusprechen: Umgebung: ${process.env.UMGEBUNG}:
     const Login = new LoginPage(page);
     const Landing = new LandingPage(page);
     const Start = new StartPage(page);
+    const Helper = new HelperPage();
+    const PersonManagementView = new PersonManagementViewPage(page);
+    const Nachname =  "TAuto-PW-N-" + (await Helper.generateRandomString(10));
 
     await test.step(`Anmelden mit Benutzer ${USER}`, async () => {
       await page.goto(FRONTEND_URL);
@@ -28,8 +32,7 @@ test.describe(`Spike um die API anzusprechen: Umgebung: ${process.env.UMGEBUNG}:
     })
 
     await test.step(`POST Request personen, neuen Benutzer anlegen`, async () => {
-      const Vorname = 'TAutoV' + faker.person.firstName(); 
-      const Nachname = 'TAutoN' + faker.person.lastName() + '-' + faker.person.lastName(); // Wahrscheinlichkeit doppelter Namen verringern
+      const Vorname =  "TAuto-PW-V-" + (await Helper.generateRandomString(10)); 
       const response = await page.request.post(FRONTEND_URL + 'api/personen/', {
         data: { 
           "name": {
@@ -40,5 +43,15 @@ test.describe(`Spike um die API anzusprechen: Umgebung: ${process.env.UMGEBUNG}:
       })   
       expect(response.status()).toBe(201);
     }) 
+
+    await test.step(`Benutzer wieder löschen`, async () => {
+      await page.goto(FRONTEND_URL + "admin/personen");
+      await PersonManagementView.input_Suchfeld.fill(Nachname);
+      await PersonManagementView.button_Suchen.click();
+      await page.getByRole("cell", { name: Nachname, exact: true }).click();
+      await page.getByTestId("open-person-delete-dialog-icon").click();
+      await page.getByTestId("person-delete-button").click();
+      await page.getByTestId("close-person-delete-success-dialog-button").click();
+    });
   })  
 })
