@@ -6,7 +6,7 @@ import { MenuPage } from "../pages/MenuBar.page";
 import { PersonCreationViewPage } from "../pages/admin/PersonCreationView.page";
 import { PersonManagementViewPage } from "../pages/admin/PersonManagementView.page";
 import { HeaderPage } from "../pages/Header.page";
-import { HelperPage } from "../pages/Helper.page";
+import { faker } from "@faker-js/faker/locale/de";
 
 const PW = process.env.PW;
 const ADMIN = process.env.USER;
@@ -36,11 +36,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     const PersonCreationView = new PersonCreationViewPage(page);
     const PersonManagementView = new PersonManagementViewPage(page);
     const Header = new HeaderPage(page);
-    const Helper = new HelperPage();
 
     const Rolle = "Lehrkraft";
-    const Vorname = "TAuto-PW-V-" + (await Helper.generateRandomString(10));
-    const Nachname = "TAuto-PW-N-" + (await Helper.generateRandomString(10));
+    const Vorname = "TAuto-PW-V-" + faker.person.firstName();
+    const Nachname = "TAuto-PW-N-" + faker.person.lastName();
     const Schulstrukturknoten = "(Testschule Schulportal)";
     let Benutzername = "";
     let Einstiegspasswort = "";
@@ -106,11 +105,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     const Menue = new MenuPage(page);
     const PersonCreationView = new PersonCreationViewPage(page);
     const PersonManagementView = new PersonManagementViewPage(page);
-    const Helper = new HelperPage();
 
     const Rolle = "Landesadmin";
-    const Vorname = "TAuto-PW-V-" + (await Helper.generateRandomString(10));
-    const Nachname = "TAuto-PW-N-" + (await Helper.generateRandomString(10));
+    const Vorname = "TAuto-PW-V-" + faker.person.firstName();
+    const Nachname = "TAuto-PW-N-" + faker.person.lastName();
     const Schulstrukturknoten = "Öffentliche Schulen Land Schleswig Holstein";
 
     await test.step(`Dialog Person anlegen öffnen`, async () => {
@@ -150,11 +148,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     const Menue = new MenuPage(page);
     const PersonCreationView = new PersonCreationViewPage(page);
     const PersonManagementView = new PersonManagementViewPage(page);
-    const Helper = new HelperPage();
 
     const Rolle = "LiV";
-    const Vorname = "TAuto-PW-V-" + (await Helper.generateRandomString(10));
-    const Nachname = "TAuto-PW-N-" + (await Helper.generateRandomString(10));
+    const Vorname = "TAuto-PW-V-" + faker.person.firstName();
+    const Nachname = "TAuto-PW-N-" + faker.person.lastName();
     const Schulstrukturknoten = "(Testschule Schulportal)";
 
     await test.step(`Dialog Person anlegen öffnen`, async () => {
@@ -194,11 +191,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     const Menue = new MenuPage(page);
     const PersonCreationView = new PersonCreationViewPage(page);
     const PersonManagementView = new PersonManagementViewPage(page);
-    const Helper = new HelperPage();
 
     const Rolle = "Schuladmin";
-    const Vorname = "TAuto-PW-V-" + (await Helper.generateRandomString(10));
-    const Nachname = "TAuto-PW-N-" + (await Helper.generateRandomString(10));
+    const Vorname = "TAuto-PW-V-" + faker.person.firstName();
+    const Nachname = "TAuto-PW-N-" + faker.person.lastName();
     const Schulstrukturknoten = "(Testschule Schulportal)";
 
     await test.step(`Dialog Person anlegen öffnen`, async () => {
@@ -238,11 +234,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     const Menue = new MenuPage(page);
     const PersonCreationView = new PersonCreationViewPage(page);
     const PersonManagementView = new PersonManagementViewPage(page);
-    const Helper = new HelperPage();
 
     const Rolle = "SuS";
-    const Vorname = "TAuto-PW-V-" + (await Helper.generateRandomString(10));
-    const Nachname = "TAuto-PW-N-" + (await Helper.generateRandomString(10));
+    const Vorname = "TAuto-PW-V-" + faker.person.firstName();
+    const Nachname = "TAuto-PW-N-" + faker.person.lastName();
     const Schulstrukturknoten = "(Carl-Orff-Schule)";
     const Klasse = "9a"
 
@@ -423,11 +418,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
   test("In der Ergebnisliste die Suchfunktion ausführen", async ({ page }) => {
     const PersonManagementView = new PersonManagementViewPage(page);
     const PersonCreationView = new PersonCreationViewPage(page);
-    const Helper = new HelperPage();
 
     const Rolle = "Lehrkraft";
-    const Vorname = "TAuto-PW-V-" + (await Helper.generateRandomString(10));
-    const Nachname = "TAuto-PW-N-" + (await Helper.generateRandomString(10));
+    const Vorname = "TAuto-PW-V-" + faker.person.firstName();
+    const Nachname = "TAuto-PW-N-" + faker.person.lastName();
     const Schulstrukturknoten = "(Testschule Schulportal)";
     let Benutzername = "";
 

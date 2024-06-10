@@ -15,8 +15,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: [["html"]],
   use: {
-    actionTimeout: 0,
-    trace: "on-first-retry",
+    // trace: "on-first-retry",
     locale: "de-DE",
     timezoneId: "Europe/Brussels",
     screenshot: "only-on-failure",

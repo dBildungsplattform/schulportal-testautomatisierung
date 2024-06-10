@@ -5,7 +5,7 @@ import { StartPage } from "../pages/StartView.page";
 import { MenuPage } from "../pages/MenuBar.page";
 import { SchuleCreationViewPage } from "../pages/admin/SchuleCreationView.page";
 import { SchuleManagementViewPage } from "../pages/admin/SchuleManagementView.page";
-import { HelperPage } from "../pages/Helper.page";
+import { faker } from "@faker-js/faker/locale/de";
 
 const PW = process.env.PW;
 const ADMIN = process.env.USER;
@@ -30,12 +30,11 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
     const Menue = new MenuPage(page);
     const SchuleCreationView = new SchuleCreationViewPage(page);
     const SchuleManagementView = new SchuleManagementViewPage(page);
-    const Helper = new HelperPage();
 
-    const SCHULNAME1 = "TAuto-PW-S1-" + (await Helper.generateRandomString(10));
-    const SCHULNAME2 = "TAuto-PW-S2-" + (await Helper.generateRandomString(10));
-    const DIENSTSTELLENNUMMER1 = "3310176111";
-    const DIENSTSTELLENNUMMER2 = "0481165563";
+    const SCHULNAME1 = "TAuto-PW-S1-" + faker.lorem.word({ length: { min: 8, max: 12 }});
+    const SCHULNAME2 = "TAuto-PW-S2-" + faker.lorem.word({ length: { min: 8, max: 12 }});
+    const DIENSTSTELLENNUMMER1 = "0" + faker.number.bigInt({ min: 10000000, max: 100000000 });
+    const DIENSTSTELLENNUMMER2 = "0" + faker.number.bigInt({ min: 10000000, max: 100000000 });
 
     await test.step(`Dialog Schule anlegen öffnen`, async () => {
       await Startseite.card_item_schulportal_administration.click();
@@ -67,8 +66,8 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
     await test.step(`In der Ergebnisliste prüfen, dass die beiden neuen Schulen angezeigt werden`, async () => {
       await Menue.menueItem_AlleSchulenAnzeigen.click();
       await expect(SchuleManagementView.text_h2_Schulverwaltung).toHaveText("Schulverwaltung");
-      await expect(page.getByRole("cell", { name: `${SCHULNAME1}` })).toBeVisible();
-      await expect(page.getByRole("cell", { name: `${SCHULNAME2}` })).toBeVisible();
+      await expect(page.getByRole("cell", { name: SCHULNAME1 })).toBeVisible();
+      await expect(page.getByRole("cell", { name: SCHULNAME2 })).toBeVisible();
     });
   });
 

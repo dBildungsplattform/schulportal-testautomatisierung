@@ -5,7 +5,7 @@ import { StartPage } from "../pages/StartView.page";
 import { MenuPage } from "../pages/MenuBar.page";
 import { RolleCreationViewPage } from "../pages/admin/RolleCreationView.page";
 import { RolleManagementViewPage } from "../pages/admin/RolleManagementView.page";
-import { HelperPage } from "../pages/Helper.page";
+import { faker } from "@faker-js/faker/locale/de";
 
 const PW = process.env.PW;
 const ADMIN = process.env.USER;
@@ -30,10 +30,9 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     const Menue = new MenuPage(page);
     const RolleCreationView = new RolleCreationViewPage(page);
     const RolleManagementView = new RolleManagementViewPage(page);
-    const Helper = new HelperPage();
 
-    const ROLLENNAME1 = "TAuto-PW-R1-" + (await Helper.generateRandomString(10));
-    const ROLLENNAME2 = "TAuto-PW-R2-" + (await Helper.generateRandomString(10));
+    const ROLLENNAME1 = "TAuto-PW-R1-" + faker.lorem.word({ length: { min: 8, max: 12 }});
+    const ROLLENNAME2 = "TAuto-PW-R2-" + faker.lorem.word({ length: { min: 8, max: 12 }});
     const SCHULSTRUKTURKNOTEN1 = "Wurzel Land Schleswig Holstein";
     const SCHULSTRUKTURKNOTEN2 = "Amalie-Sieveking-Schule";
     const ROLLENART1 = "Lern";

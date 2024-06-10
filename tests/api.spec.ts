@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { LoginPage } from '../pages/LoginView.page';
 import { LandingPage } from '../pages/LandingView.page';
 import { StartPage } from '../pages/StartView.page';
-import { HelperPage } from "../pages/Helper.page";
+import { faker } from "@faker-js/faker/locale/de";
 import { PersonManagementViewPage } from "../pages/admin/PersonManagementView.page";
 
 const PW = process.env.PW;
@@ -14,9 +14,9 @@ test.describe(`Spike um die API anzusprechen: Umgebung: ${process.env.UMGEBUNG}:
     const Login = new LoginPage(page);
     const Landing = new LandingPage(page);
     const Start = new StartPage(page);
-    const Helper = new HelperPage();
     const PersonManagementView = new PersonManagementViewPage(page);
-    const Nachname =  "TAuto-PW-N-" + (await Helper.generateRandomString(10));
+    const Vorname = "TAuto-PW-V-" + faker.person.firstName();
+    const Nachname = "TAuto-PW-N-" + faker.person.lastName();
 
     await test.step(`Anmelden mit Benutzer ${USER}`, async () => {
       await page.goto(FRONTEND_URL);
@@ -32,7 +32,6 @@ test.describe(`Spike um die API anzusprechen: Umgebung: ${process.env.UMGEBUNG}:
     })
 
     await test.step(`POST Request personen, neuen Benutzer anlegen`, async () => {
-      const Vorname =  "TAuto-PW-V-" + (await Helper.generateRandomString(10)); 
       const response = await page.request.post(FRONTEND_URL + 'api/personen/', {
         data: { 
           "name": {
