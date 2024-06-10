@@ -28,7 +28,7 @@ export class PersonCreationViewPage{
         this.combobox_Klasse = page.getByTestId('klasse-select').locator('.v-field__input');
         this.button_PersonAnlegen = page.getByTestId('person-creation-form-create-button');
         this.text_success = page.getByTestId('person-success-text');
-        this.text_Bestaetigungsseite_Benutzername =  page.getByTestId('created-person-username');
+        this.text_Bestaetigungsseite_Benutzername = page.getByTestId('created-person-username');
         this.text_Bestaetigungsseite_Rolle = page.getByTestId('created-person-rolle');
         this.input_EinstiegsPasswort = page.locator('[data-testid="password-output-field"] input'); 
         this.button_ZurueckErgebnisliste = page.getByTestId('back-to-list-button');
