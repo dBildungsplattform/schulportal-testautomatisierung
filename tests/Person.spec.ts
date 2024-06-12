@@ -18,7 +18,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const Landing = new LandingPage(page);
       const Startseite = new StartPage(page);
       const Login = new LoginPage(page);
-      
       await page.goto(FRONTEND_URL);
       await Landing.button_Anmelden.click();
       await Login.login(ADMIN, PW);
