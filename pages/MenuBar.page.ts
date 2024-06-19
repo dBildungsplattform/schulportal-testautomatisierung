@@ -8,6 +8,8 @@ export class MenuPage{
     readonly menueItem_AlleBenutzerAnzeigen: Locator;
     readonly menueItem_BenutzerAnlegen: Locator;
     readonly label_Klassenverwaltung: Locator;
+    readonly menueItem_AlleKlassenAnzeigen: Locator;
+    readonly menueItem_KlasseAnlegen: Locator;
     readonly label_Rollenverwaltung: Locator;
     readonly menueItem_AlleRollenAnzeigen: Locator;
     readonly menueItem_RolleAnlegen: Locator;
@@ -24,6 +26,8 @@ export class MenuPage{
         this.menueItem_AlleBenutzerAnzeigen = page.getByTestId('person-management-menu-item');
         this.menueItem_BenutzerAnlegen =  page.getByTestId('person-creation-menu-item'); 
         this.label_Klassenverwaltung = page.locator('[data-testid="klasse-management-title"] .v-list-item-title');
+        this.menueItem_AlleKlassenAnzeigen = page.getByTestId('klassen-management-menu-item');
+        this.menueItem_KlasseAnlegen = page.getByTestId('klasse-creation-menu-item');
         this.label_Rollenverwaltung = page.locator('[data-testid="rolle-management-title"] .v-list-item-title');
         this.menueItem_AlleRollenAnzeigen = page.locator('[data-testid="rolle-management-menu-item"] .v-list-item-title');
         this.menueItem_RolleAnlegen = page.getByTestId('rolle-creation-menu-item');
