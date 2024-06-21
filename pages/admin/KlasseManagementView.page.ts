@@ -15,7 +15,7 @@ export class KlasseManagementViewPage{
         this.text_h2_Klassenverwaltung = page.getByTestId('layout-card-headline');
         this.combobox_Filter_Schule = page.getByPlaceholder('Schule');
         this.combobox_Filter_Klasse = page.getByPlaceholder('Klasse');
-        this.table_header_Dienstellennummer = page.getByText('Dienststellennummer');
+        this.table_header_Dienststellennummer = page.getByText('Dienststellennummer');
         this.table_header_Klassenname = page.getByTestId('klasse-table').getByText('Klasse');
     }
 }
