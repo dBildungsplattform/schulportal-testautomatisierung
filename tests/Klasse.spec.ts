@@ -43,7 +43,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       await KlasseCreationView.combobox_Schulstrukturknoten.click();
       await page.getByText(SCHULNAME).click();
       await KlasseCreationView.input_Klassenname.fill(KLASSENNAME);
-      await KlasseCreationView.button_SchuleAnlegen.click();
+      await KlasseCreationView.button_KlasseAnlegen.click();
       await expect(KlasseCreationView.text_success).toBeVisible();
     });
 
