@@ -6,7 +6,7 @@ export class KlasseManagementViewPage{
     readonly text_h2_Klassenverwaltung: Locator;
     readonly combobox_Filter_Schule: Locator;
     readonly combobox_Filter_Klasse: Locator;
-    readonly table_header_Dienstellennummer: Locator;
+    readonly table_header_Dienststellennummer: Locator;
     readonly table_header_Klassenname: Locator;
    
     constructor(page){
