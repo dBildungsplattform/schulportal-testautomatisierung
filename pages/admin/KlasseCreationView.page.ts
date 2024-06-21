@@ -5,7 +5,7 @@ export class KlasseCreationViewPage{
     readonly text_h2_KlasseAnlegen: Locator;
     readonly combobox_Schulstrukturknoten: Locator;
     readonly input_Klassenname: Locator;
-    readonly button_SchuleAnlegen: Locator;
+    readonly button_KlasseAnlegen: Locator;
     readonly text_success: Locator;
    
     constructor(page){
