@@ -47,7 +47,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       await expect(KlasseCreationView.text_success).toBeVisible();
     });
 
-    await test.step(`In der Ergebnisliste prüfen, dass die neue Klasse angezeigt werden`, async () => {
+    await test.step(`In der Ergebnisliste prüfen, dass die neue Klasse angezeigt wird`, async () => {
       await Menue.menueItem_AlleKlassenAnzeigen.click();
       await KlasseManagementView.combobox_Filter_Schule.fill(SCHULNAME);    
       await page.keyboard.press('ArrowDown');
