@@ -72,7 +72,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       await expect(KlasseManagementView.text_h2_Klassenverwaltung).toHaveText("Klassenverwaltung");
       await expect(KlasseManagementView.combobox_Filter_Schule).toBeVisible();
       await expect(KlasseManagementView.combobox_Filter_Klasse).toBeVisible();
-      await expect(KlasseManagementView.table_header_Dienstellennummer).toBeVisible();
+      await expect(KlasseManagementView.table_header_Dienststellennummer).toBeVisible();
       await expect(KlasseManagementView.table_header_Klassenname).toBeVisible();
     });
   });
