@@ -50,7 +50,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
 
     await test.step(`Erste Rolle anlegen`, async () => {
       await RolleCreationView.combobox_Schulstrukturknoten.click();
-      await page.getByText(`${SCHULSTRUKTURKNOTEN1}`).click();
+      await page.getByText(`${SCHULSTRUKTURKNOTEN1}`, { exact: true }).click();
 
       await RolleCreationView.combobox_Rollenart.click();
       await page.getByText(`${ROLLENART1}`).click();
@@ -63,7 +63,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     await test.step(`Zweite Rolle anlegen`, async () => {
       await RolleCreationView.button_WeitereRolleAnlegen.click();
       await RolleCreationView.combobox_Schulstrukturknoten.click();
-      await page.getByText(`${SCHULSTRUKTURKNOTEN2}`).click();
+      await page.getByText(`${SCHULSTRUKTURKNOTEN2}`, { exact: true }).click();
 
       await RolleCreationView.combobox_Rollenart.click();
       await page.getByText(`${ROLLENART2}`).click();
