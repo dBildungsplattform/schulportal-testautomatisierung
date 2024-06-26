@@ -31,9 +31,11 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     const RolleCreationView = new RolleCreationViewPage(page);
     const RolleManagementView = new RolleManagementViewPage(page);
 
-    const ROLLENNAME1 = "TAuto-PW-R1-" + faker.lorem.word({ length: { min: 8, max: 12 }});
-    const ROLLENNAME2 = "TAuto-PW-R2-" + faker.lorem.word({ length: { min: 8, max: 12 }});
-    const SCHULSTRUKTURKNOTEN1 = "Wurzel Land Schleswig Holstein";
+    const ROLLENNAME1 =
+      "TAuto-PW-R1-" + faker.lorem.word({ length: { min: 8, max: 12 } });
+    const ROLLENNAME2 =
+      "TAuto-PW-R2-" + faker.lorem.word({ length: { min: 8, max: 12 } });
+    const SCHULSTRUKTURKNOTEN1 = "Land Schleswig-Holstein";
     const SCHULSTRUKTURKNOTEN2 = "Amalie-Sieveking-Schule";
     const ROLLENART1 = "Lern";
     const ROLLENART2 = "Lehr";
@@ -41,12 +43,14 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     await test.step(`Dialog Rolle anlegen öffnen`, async () => {
       await Startseite.card_item_schulportal_administration.click();
       await Menue.menueItem_RolleAnlegen.click();
-      await expect(RolleCreationView.text_h2_RolleAnlegen).toHaveText("Neue Rolle hinzufügen");
+      await expect(RolleCreationView.text_h2_RolleAnlegen).toHaveText(
+        "Neue Rolle hinzufügen"
+      );
     });
 
     await test.step(`Erste Rolle anlegen`, async () => {
       await RolleCreationView.combobox_Schulstrukturknoten.click();
-      await page.getByText(`${SCHULSTRUKTURKNOTEN1}`).click();
+      await page.getByText(`${SCHULSTRUKTURKNOTEN1}`, { exact: true }).click();
 
       await RolleCreationView.combobox_Rollenart.click();
       await page.getByText(`${ROLLENART1}`).click();
@@ -59,7 +63,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     await test.step(`Zweite Rolle anlegen`, async () => {
       await RolleCreationView.button_WeitereRolleAnlegen.click();
       await RolleCreationView.combobox_Schulstrukturknoten.click();
-      await page.getByText(`${SCHULSTRUKTURKNOTEN2}`).click();
+      await page.getByText(`${SCHULSTRUKTURKNOTEN2}`, { exact: true }).click();
 
       await RolleCreationView.combobox_Rollenart.click();
       await page.getByText(`${ROLLENART2}`).click();
@@ -71,7 +75,9 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
 
     await test.step(`In der Ergebnisliste prüfen dass die beiden neuen Rollen angezeigt sind`, async () => {
       await Menue.menueItem_AlleRollenAnzeigen.click();
-      await expect(RolleManagementView.text_h2_Rollenverwaltung).toHaveText("Rollenverwaltung");
+      await expect(RolleManagementView.text_h2_Rollenverwaltung).toHaveText(
+        "Rollenverwaltung"
+      );
       await expect(page.getByRole("cell", { name: ROLLENNAME1 })).toBeVisible();
       await expect(page.getByRole("cell", { name: ROLLENNAME2 })).toBeVisible();
     });
@@ -85,12 +91,16 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     await test.step(`Rollenverwaltung öffnen und alle Elemente in der Ergebnisliste auf Existenz prüfen`, async () => {
       await Startseite.card_item_schulportal_administration.click();
       await Menue.menueItem_AlleRollenAnzeigen.click();
-      await expect(RolleManagementView.text_h1_Administrationsbereich).toBeVisible();
+      await expect(
+        RolleManagementView.text_h1_Administrationsbereich
+      ).toBeVisible();
       await expect(RolleManagementView.text_h2_Rollenverwaltung).toBeVisible();
       await expect(RolleManagementView.table_header_Rollenname).toBeVisible();
       await expect(RolleManagementView.table_header_Rollenart).toBeVisible();
       await expect(RolleManagementView.table_header_Merkmale).toBeVisible();
-      await expect(RolleManagementView.table_header_Administrationsebene).toBeVisible();
+      await expect(
+        RolleManagementView.table_header_Administrationsebene
+      ).toBeVisible();
     });
   });
 });
