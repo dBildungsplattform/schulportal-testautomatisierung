@@ -21,7 +21,7 @@ export class PersonCreationViewPage{
         this.page = page;  
         this.text_h2_PersonAnlegen = page.getByTestId('layout-card-headline');
         this.combobox_Rolle = page.getByTestId('rolle-select').locator('.v-field__input');
-        this.combobox_Rolle_Clear = page.getByTestId('rolle-select').getByLabel('Clear');
+        this.combobox_Rolle_Clear = page.getByTestId('rolle-select').getByLabel('leeren');
         this.Input_Vorname = page.getByTestId('vorname-input').locator('.v-field__input');
         this.Input_Nachname = page.getByTestId('familienname-input').locator('.v-field__input');
         this.combobox_Schulstrukturknoten = page.getByTestId('organisation-select').locator('.v-field__input');
