@@ -36,7 +36,7 @@ jobs:
       if: always()
       with:
         type: ${{ job.status }} 
-        job_name: 'Playwright Job Failed! '
+        job_name: 'Playwright Job Failed!'
         url: ${{ secrets.RC_WEBHOOK }}
-        channel: '#SPSH-Test-Automation'
-        username: rocket.cat
+        #channel: '#SPSH-Test-Automation'
+        username: Playwright Notificator
