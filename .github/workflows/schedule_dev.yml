@@ -25,9 +25,17 @@ jobs:
       env:
         USER: '${{ secrets.USER }}'
         PW: '${{ secrets.PW }}'
-    - uses: actions/upload-artifact@v3
-      if: always()
+    #- uses: actions/upload-artifact@v3
+    #  if: always()
+    #  with:
+    #    name: playwright-report
+    #    path: playwright-report/
+    #    retention-days: 30npm login
+    - uses: RocketChat/Rocket.Chat.GitHub.Action.Notification@1.1.1
+      if: failure()
       with:
-        name: playwright-report
-        path: playwright-report/
-        retention-days: 30npm login
+        type: ${{ job.status }}
+        job_name: 'Playwright Job Failed'
+        url: ${{ secrets.RC_WEBHOOK }}
+        channel: '#SPSH-Test-Automation'
+        username: Playwright Test Notificator
