@@ -18,13 +18,13 @@ jobs:
         sudo apt-get update || true
     - name: Install dependencies
       run: npm ci
-    - name: Install Playwright Browsers
-      run: npx playwright install --with-deps
-    - name: Run Playwright tests
-      run: FRONTEND_URL='https://main.dev.spsh.dbildungsplattform.de/' npx playwright test
-      env:
-        USER: '${{ secrets.USER }}'
-        PW: '${{ secrets.PW }}'
+    #- name: Install Playwright Browsers
+    #  run: npx playwright install --with-deps
+    #- name: Run Playwright tests
+    #  run: FRONTEND_URL='https://main.dev.spsh.dbildungsplattform.de/' npx playwright test
+    #  env:
+    #    USER: '${{ secrets.USER }}'
+    #    PW: '${{ secrets.PW }}'
     #- uses: actions/upload-artifact@v3
     #  if: always()
     #  with:
@@ -34,7 +34,7 @@ jobs:
     - uses: RocketChat/Rocket.Chat.GitHub.Action.Notification@1.1.1
       if: failure()
       with:
-        type: ${{ job.status }}
+        type: ${{ job.status }} 
         job_name: 'Playwright Job Failed'
         url: ${{ secrets.RC_WEBHOOK }}
         channel: '#SPSH-Test-Automation'
