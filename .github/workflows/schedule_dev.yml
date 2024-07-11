@@ -32,7 +32,7 @@ jobs:
         path: playwright-report/
         retention-days: 30npm login
     - uses: RocketChat/Rocket.Chat.GitHub.Action.Notification@1.1.1
-      if: always()
+      if: failure()
       with:
         type: ${{ job.status }} 
         job_name: 'Playwright Job Status: '
