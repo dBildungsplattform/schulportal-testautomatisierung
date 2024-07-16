@@ -2,12 +2,14 @@ import { type Locator, Page } from '@playwright/test';
 
 export class PersonCreationViewPage{
     readonly page: Page;
+    readonly body: Locator;
     readonly text_h2_PersonAnlegen: Locator;
     readonly combobox_Rolle: Locator;
     readonly combobox_Rolle_Clear: Locator;
     readonly Input_Vorname: Locator;
     readonly Input_Nachname: Locator;
     readonly combobox_Schulstrukturknoten: Locator;
+    readonly combobox_Schulstrukturknoten_Clear: Locator;
     readonly combobox_Klasse: Locator;
     readonly button_PersonAnlegen: Locator;
     readonly text_success: Locator;
@@ -19,9 +21,11 @@ export class PersonCreationViewPage{
    
     constructor(page){
         this.page = page;  
+        this.body = page.locator('body');
         this.text_h2_PersonAnlegen = page.getByTestId('layout-card-headline');
         this.combobox_Rolle = page.getByTestId('rolle-select').locator('.v-field__input');
         this.combobox_Rolle_Clear = page.getByTestId('rolle-select').getByLabel('leeren');
+        this.combobox_Schulstrukturknoten_Clear = page.getByTestId('organisation-select').getByLabel('leeren');
         this.Input_Vorname = page.getByTestId('vorname-input').locator('.v-field__input');
         this.Input_Nachname = page.getByTestId('familienname-input').locator('.v-field__input');
         this.combobox_Schulstrukturknoten = page.getByTestId('organisation-select').locator('.v-field__input');

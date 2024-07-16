@@ -46,41 +46,30 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     await test.step(`Dialog Person anlegen öffnen`, async () => {
       await Startseite.card_item_schulportal_administration.click();
       await Menue.menueItem_BenutzerAnlegen.click();
-      await expect(PersonCreationView.text_h2_PersonAnlegen).toHaveText(
-        "Neuen Benutzer hinzufügen"
-      );
+      await expect(PersonCreationView.text_h2_PersonAnlegen).toHaveText("Neuen Benutzer hinzufügen");
     });
 
     await test.step(`Benutzer anlegen`, async () => {
-      await PersonCreationView.combobox_Rolle.click();
-      await page.getByText(Rolle).click();
-
-      await PersonCreationView.Input_Vorname.fill(Vorname);
-      await PersonCreationView.Input_Nachname.fill(Nachname);
-
       await PersonCreationView.combobox_Schulstrukturknoten.click();
       await page.getByText(Schulstrukturknoten).click();
-
+      await PersonCreationView.combobox_Rolle.click();
+      await page.getByText(Rolle).click();
+      await PersonCreationView.Input_Vorname.fill(Vorname);
+      await PersonCreationView.Input_Nachname.fill(Nachname);
       await PersonCreationView.button_PersonAnlegen.click();
       await expect(PersonCreationView.text_success).toBeVisible();
 
-      Benutzername =
-        await PersonCreationView.text_Bestaetigungsseite_Benutzername.innerText();
-      Einstiegspasswort =
-        await PersonCreationView.input_EinstiegsPasswort.inputValue();
+      Benutzername = await PersonCreationView.text_Bestaetigungsseite_Benutzername.innerText();
+      Einstiegspasswort = await PersonCreationView.input_EinstiegsPasswort.inputValue();
     });
 
     await test.step(`In der Ergebnisliste prüfen dass der neue Benutzer ${Nachname} angezeigt wird`, async () => {
       // Der Klick auf die Ergebnisliste funktioniert nicht zuverlaessig, darum der direkte Sprung in die Ergebnisliste via URL
       await page.goto(FRONTEND_URL + "admin/personen");
-      await expect(PersonManagementView.text_h2_Benutzerverwaltung).toHaveText(
-        "Benutzerverwaltung"
-      );
+      await expect(PersonManagementView.text_h2_Benutzerverwaltung).toHaveText("Benutzerverwaltung");
       await PersonManagementView.input_Suchfeld.fill(Nachname);
       await PersonManagementView.button_Suchen.click();
-      await expect(
-        page.getByRole("cell", { name: Nachname, exact: true })
-      ).toBeVisible();
+      await expect(page.getByRole("cell", { name: Nachname, exact: true })).toBeVisible();
     });
 
     await test.step(`Der neue Benutzer meldet sich mit dem temporären Passwort am Portal an und vergibt ein neues Passwort`, async () => {
@@ -129,20 +118,18 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
 
     await test.step(`Benutzer anlegen`, async () => {
+      await PersonCreationView.combobox_Schulstrukturknoten.click();
+      await page.getByText(Schulstrukturknoten).click();
       await PersonCreationView.combobox_Rolle.click();
       await page.getByText(Rolle).click();
       await PersonCreationView.Input_Vorname.fill(Vorname);
       await PersonCreationView.Input_Nachname.fill(Nachname);
-      await PersonCreationView.combobox_Schulstrukturknoten.click();
-      await page.getByText(Schulstrukturknoten).click();
       await PersonCreationView.button_PersonAnlegen.click();
     });
 
     await test.step(`Prüfen dass der Benutzer mit der Rolle Landesadmin angelegt wurde`, async () => {
       await expect(PersonCreationView.text_success).toBeVisible();
-      await expect(PersonCreationView.text_Bestaetigungsseite_Rolle).toHaveText(
-        "Landesadmin"
-      );
+      await expect(PersonCreationView.text_Bestaetigungsseite_Rolle).toHaveText("Landesadmin");
     });
 
     await test.step(`Benutzer wieder löschen`, async () => {
@@ -152,9 +139,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await page.getByRole("cell", { name: Nachname, exact: true }).click();
       await page.getByTestId("open-person-delete-dialog-icon").click();
       await page.getByTestId("person-delete-button").click();
-      await page
-        .getByTestId("close-person-delete-success-dialog-button")
-        .click();
+      await page.getByTestId("close-person-delete-success-dialog-button").click();
     });
   });
 
@@ -172,26 +157,22 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     await test.step(`Dialog Person anlegen öffnen`, async () => {
       await Startseite.card_item_schulportal_administration.click();
       await Menue.menueItem_BenutzerAnlegen.click();
-      await expect(PersonCreationView.text_h2_PersonAnlegen).toHaveText(
-        "Neuen Benutzer hinzufügen"
-      );
+      await expect(PersonCreationView.text_h2_PersonAnlegen).toHaveText("Neuen Benutzer hinzufügen");
     });
 
     await test.step(`Benutzer anlegen`, async () => {
+      await PersonCreationView.combobox_Schulstrukturknoten.click();
+      await page.getByText(Schulstrukturknoten).click();
       await PersonCreationView.combobox_Rolle.click();
       await page.getByText(Rolle).click();
       await PersonCreationView.Input_Vorname.fill(Vorname);
       await PersonCreationView.Input_Nachname.fill(Nachname);
-      await PersonCreationView.combobox_Schulstrukturknoten.click();
-      await page.getByText(Schulstrukturknoten).click();
       await PersonCreationView.button_PersonAnlegen.click();
     });
 
     await test.step(`Prüfen dass der Benutzer mit der Rolle Landesadmin angelegt wurde`, async () => {
       await expect(PersonCreationView.text_success).toBeVisible();
-      await expect(PersonCreationView.text_Bestaetigungsseite_Rolle).toHaveText(
-        "LiV"
-      );
+      await expect(PersonCreationView.text_Bestaetigungsseite_Rolle).toHaveText("LiV");
     });
 
     await test.step(`Benutzer wieder löschen`, async () => {
@@ -201,9 +182,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await page.getByRole("cell", { name: Nachname, exact: true }).click();
       await page.getByTestId("open-person-delete-dialog-icon").click();
       await page.getByTestId("person-delete-button").click();
-      await page
-        .getByTestId("close-person-delete-success-dialog-button")
-        .click();
+      await page.getByTestId("close-person-delete-success-dialog-button").click();
     });
   });
 
@@ -221,26 +200,22 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     await test.step(`Dialog Person anlegen öffnen`, async () => {
       await Startseite.card_item_schulportal_administration.click();
       await Menue.menueItem_BenutzerAnlegen.click();
-      await expect(PersonCreationView.text_h2_PersonAnlegen).toHaveText(
-        "Neuen Benutzer hinzufügen"
-      );
+      await expect(PersonCreationView.text_h2_PersonAnlegen).toHaveText("Neuen Benutzer hinzufügen");
     });
 
     await test.step(`Benutzer anlegen`, async () => {
+      await PersonCreationView.combobox_Schulstrukturknoten.click();
+      await page.getByText(Schulstrukturknoten).click();
       await PersonCreationView.combobox_Rolle.click();
       await page.getByText(Rolle).click();
       await PersonCreationView.Input_Vorname.fill(Vorname);
       await PersonCreationView.Input_Nachname.fill(Nachname);
-      await PersonCreationView.combobox_Schulstrukturknoten.click();
-      await page.getByText(Schulstrukturknoten).click();
       await PersonCreationView.button_PersonAnlegen.click();
     });
 
     await test.step(`Prüfen dass der Benutzer mit der Rolle Landesadmin angelegt wurde`, async () => {
       await expect(PersonCreationView.text_success).toBeVisible();
-      await expect(PersonCreationView.text_Bestaetigungsseite_Rolle).toHaveText(
-        "Schuladmin"
-      );
+      await expect(PersonCreationView.text_Bestaetigungsseite_Rolle).toHaveText("Schuladmin");
     });
 
     await test.step(`Benutzer wieder löschen`, async () => {
@@ -250,9 +225,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await page.getByRole("cell", { name: Nachname, exact: true }).click();
       await page.getByTestId("open-person-delete-dialog-icon").click();
       await page.getByTestId("person-delete-button").click();
-      await page
-        .getByTestId("close-person-delete-success-dialog-button")
-        .click();
+      await page.getByTestId("close-person-delete-success-dialog-button").click();
     });
   });
 
@@ -271,18 +244,16 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     await test.step(`Dialog Person anlegen öffnen`, async () => {
       await Startseite.card_item_schulportal_administration.click();
       await Menue.menueItem_BenutzerAnlegen.click();
-      await expect(PersonCreationView.text_h2_PersonAnlegen).toHaveText(
-        "Neuen Benutzer hinzufügen"
-      );
+      await expect(PersonCreationView.text_h2_PersonAnlegen).toHaveText("Neuen Benutzer hinzufügen");
     });
 
     await test.step(`Benutzer anlegen`, async () => {
+      await PersonCreationView.combobox_Schulstrukturknoten.click();
+      await page.getByText(Schulstrukturknoten).click();
       await PersonCreationView.combobox_Rolle.click();
       await page.getByText(Rolle).click();
       await PersonCreationView.Input_Vorname.fill(Vorname);
       await PersonCreationView.Input_Nachname.fill(Nachname);
-      await PersonCreationView.combobox_Schulstrukturknoten.click();
-      await page.getByText(Schulstrukturknoten).click();
       await PersonCreationView.combobox_Klasse.click();
       await page.getByText(Klasse).click();
       await PersonCreationView.button_PersonAnlegen.click();
@@ -290,9 +261,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
     await test.step(`Prüfen dass der Benutzer mit der Rolle Landesadmin angelegt wurde`, async () => {
       await expect(PersonCreationView.text_success).toBeVisible();
-      await expect(PersonCreationView.text_Bestaetigungsseite_Rolle).toHaveText(
-        "SuS"
-      );
+      await expect(PersonCreationView.text_Bestaetigungsseite_Rolle).toHaveText("SuS");
     });
 
     await test.step(`Benutzer wieder löschen`, async () => {
@@ -302,15 +271,11 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await page.getByRole("cell", { name: Nachname, exact: true }).click();
       await page.getByTestId("open-person-delete-dialog-icon").click();
       await page.getByTestId("person-delete-button").click();
-      await page
-        .getByTestId("close-person-delete-success-dialog-button")
-        .click();
+      await page.getByTestId("close-person-delete-success-dialog-button").click();
     });
   });
 
-  test("Ergebnisliste Benutzer auf Vollständigkeit prüfen", async ({
-    page,
-  }) => {
+  test("Ergebnisliste Benutzer auf Vollständigkeit prüfen", async ({page }) => {
     const Startseite = new StartPage(page);
     const Menue = new MenuPage(page);
     const PersonManagementView = new PersonManagementViewPage(page);
@@ -318,22 +283,14 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     await test.step(`Benutzerverwaltung öffnen und alle Elemente in der Ergebnisliste auf Existenz prüfen`, async () => {
       await Startseite.card_item_schulportal_administration.click();
       await Menue.menueItem_AlleBenutzerAnzeigen.click();
-      await expect(
-        PersonManagementView.text_h1_Administrationsbereich
-      ).toBeVisible();
-      await expect(
-        PersonManagementView.text_h2_Benutzerverwaltung
-      ).toBeVisible();
-      await expect(PersonManagementView.text_h2_Benutzerverwaltung).toHaveText(
-        "Benutzerverwaltung"
-      );
+      await expect(PersonManagementView.text_h1_Administrationsbereich).toBeVisible();
+      await expect(PersonManagementView.text_h2_Benutzerverwaltung).toBeVisible();
+      await expect(PersonManagementView.text_h2_Benutzerverwaltung).toHaveText("Benutzerverwaltung");
       await expect(PersonManagementView.input_Suchfeld).toBeVisible();
       await expect(PersonManagementView.button_Suchen).toBeVisible();
       await expect(PersonManagementView.table_header_Nachname).toBeVisible();
       await expect(PersonManagementView.table_header_Vorname).toBeVisible();
-      await expect(
-        PersonManagementView.table_header_Benutzername
-      ).toBeVisible();
+      await expect(PersonManagementView.table_header_Benutzername).toBeVisible();
       await expect(PersonManagementView.table_header_KopersNr).toBeVisible();
       await expect(PersonManagementView.table_header_Rolle).toBeVisible();
       await expect(PersonManagementView.table_header_Zuordnungen).toBeVisible();
@@ -341,137 +298,73 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
   });
 
-  test("Prüfung auf ungültige Organisationen bei Anlage Benutzer", async ({
-    page,
-  }) => {
-    // Bei Auswahl einer Rolle dürfen in dem Dropdown Administrationsebene nur Organisationen angezeigt werden, die für die Rolle auch gültig sind. Z.B dürfen für die Rolle Landesadmin nur die Organisationen mit Typ ROOT und LAND angezeigt werden.
+  test("Prüfung auf korrekte Rollen in dem Dropdown 'Rolle' nach Auswahl der Organisation bei Anlage eines Benutzer", async ({page}) => {
     const Startseite = new StartPage(page);
     const Menue = new MenuPage(page);
     const PersonCreationView = new PersonCreationViewPage(page);
 
-    const Rolle_LANDESADMIN = "Landesadmin";
-    const Rolle_LEHR = "Lehrkraft";
-    const Rolle_LIV = "LiV";
-    const Rolle_SCHULADMIN = "Schuladmin";
-    const Rolle_SUS = "SuS";
+    const Organisation_Land = "Land Schleswig-Holstein";
+    const Organisation_OeffentlicheSchule = "Öffentliche Schulen Land Schleswig-Holstein";
+    const Organisation_Ersatzschule = "Ersatzschulen Land Schleswig-Holstein";
+    const Organisation_Schule = "1111111 (Testschule Schulportal)";
 
-    const TYP_ORGA_ROOT = "ROOT";
-    const TYP_ORGA_LAND = "LAND";
-    const TYP_ORGA_SCHULE = "SCHULE";
+    const Rolle_Landesadmin = "Landesadmin";
+    const Rolle_Lehr = "Lehrkraft";
+    const Rolle_LiV = "LiV";
+    const Rolle_Schuladmin = "Schuladmin";
+    const Rolle_SuS = "SuS";
 
     await test.step(`Dialog Person anlegen öffnen`, async () => {
       await Startseite.card_item_schulportal_administration.click();
       await Menue.menueItem_BenutzerAnlegen.click();
-      await expect(PersonCreationView.text_h2_PersonAnlegen).toHaveText(
-        "Neuen Benutzer hinzufügen"
-      );
+      await expect(PersonCreationView.text_h2_PersonAnlegen).toHaveText("Neuen Benutzer hinzufügen");
     });
 
-    await test.step(`Rolle Landesadmin auswaehlen und verfügbare Einträge für die Organisationsebene prüfen(Gültige Organisationen: ROOT, LAND)`, async () => {
+    await test.step(`Organisation 'Land Schleswig-Holstein' auswählen und Dropdown 'Rolle' prüfen`, async () => {
+      await PersonCreationView.combobox_Schulstrukturknoten.click();
+      await page.getByText(Organisation_Land, { exact: true }).click();
       await PersonCreationView.combobox_Rolle.click();
-      await page.getByText(Rolle_LANDESADMIN).click();
-
-      const response_schulstrukturknoten = await page.waitForResponse(
-        (response) =>
-          response.url().includes("/api/personenkontext/schulstrukturknoten")
-      );
-      const responseBody_schulstrukturknoten =
-        await response_schulstrukturknoten.json();
-      let gueltig = true;
-
-      responseBody_schulstrukturknoten.moeglicheSsks.forEach((element) => {
-        if (
-          !(element.typ === TYP_ORGA_ROOT) &&
-          !(element.typ === TYP_ORGA_LAND)
-        ) {
-          gueltig = false; // element hat eine Organisation mit einem ungültigen Typ
-          expect(gueltig).toBe(true); // Der Testfall wird auf failed gesetzt
-        }
-      });
+      await expect(PersonCreationView.body).toContainText(Rolle_Landesadmin);
+      await expect(PersonCreationView.body).not.toContainText(Rolle_Lehr);
+      await expect(PersonCreationView.body).not.toContainText(Rolle_LiV);
+      await expect(PersonCreationView.body).not.toContainText(Rolle_Schuladmin);
+      await expect(PersonCreationView.body).not.toContainText(Rolle_SuS);
     });
 
-    await test.step(`Rolle Lehrkraft auswaehlen und verfügbare Einträge für die Organisationsebene prüfen(Gültige Organisationen: SCHULE)`, async () => {
-      await PersonCreationView.combobox_Rolle_Clear.click();
+    await test.step(`Organisation 'Öffentliche Schulen Land Schleswig-Holstein' auswählen und Dropdown 'Rolle' prüfen`, async () => {
+      await PersonCreationView.combobox_Schulstrukturknoten_Clear.click();
+      await PersonCreationView.combobox_Schulstrukturknoten.click();
+      await page.getByText(Organisation_OeffentlicheSchule, { exact: true }).click();
       await PersonCreationView.combobox_Rolle.click();
-      await page.getByText(Rolle_LEHR).click();
-
-      const response_schulstrukturknoten = await page.waitForResponse(
-        (response) =>
-          response.url().includes("/api/personenkontext/schulstrukturknoten")
-      );
-      const responseBody_schulstrukturknoten =
-        await response_schulstrukturknoten.json();
-      let gueltig = true;
-
-      responseBody_schulstrukturknoten.moeglicheSsks.forEach((element) => {
-        if (!(element.typ === TYP_ORGA_SCHULE)) {
-          gueltig = false; // element hat eine Organisation mit einem ungültigen Typ
-          expect(gueltig).toBe(true); // Der Testfall wird auf failed gesetzt
-        }
-      });
+      await expect(PersonCreationView.body).toContainText(Rolle_Landesadmin);
+      await expect(PersonCreationView.body).not.toContainText(Rolle_Lehr);
+      await expect(PersonCreationView.body).not.toContainText(Rolle_LiV);
+      await expect(PersonCreationView.body).not.toContainText(Rolle_Schuladmin);
+      await expect(PersonCreationView.body).not.toContainText(Rolle_SuS);
     });
 
-    await test.step(`Rolle LiV auswaehlen und verfügbare Einträge für die Organisationsebene prüfen(Gültige Organisationen: SCHULE)`, async () => {
-      await PersonCreationView.combobox_Rolle_Clear.click();
+    await test.step(`Organisation 'Ersatzschulen Land Schleswig-Holstein' auswählen und Dropdown 'Rolle' prüfen`, async () => {
+      await PersonCreationView.combobox_Schulstrukturknoten_Clear.click();
+      await PersonCreationView.combobox_Schulstrukturknoten.click();
+      await page.getByText(Organisation_Ersatzschule, { exact: true }).click();
       await PersonCreationView.combobox_Rolle.click();
-      await page.getByText(Rolle_LIV).click();
-
-      const response_schulstrukturknoten = await page.waitForResponse(
-        (response) =>
-          response.url().includes("/api/personenkontext/schulstrukturknoten")
-      );
-      const responseBody_schulstrukturknoten =
-        await response_schulstrukturknoten.json();
-      let gueltig = true;
-
-      responseBody_schulstrukturknoten.moeglicheSsks.forEach((element) => {
-        if (!(element.typ === TYP_ORGA_SCHULE)) {
-          gueltig = false; // element hat eine Organisation mit einem ungültigen Typ
-          expect(gueltig).toBe(true); // Der Testfall wird auf failed gesetzt
-        }
-      });
+      await expect(PersonCreationView.body).toContainText(Rolle_Landesadmin);
+      await expect(PersonCreationView.body).not.toContainText(Rolle_Lehr);
+      await expect(PersonCreationView.body).not.toContainText(Rolle_LiV);
+      await expect(PersonCreationView.body).not.toContainText(Rolle_Schuladmin);
+      await expect(PersonCreationView.body).not.toContainText(Rolle_SuS);
     });
 
-    await test.step(`Rolle Schuladmin auswaehlen und verfügbare Einträge für die Organisationsebene prüfen(Gültige Organisationen: SCHULE)`, async () => {
-      await PersonCreationView.combobox_Rolle_Clear.click();
+    await test.step(`Organisation 'Schule' auswählen und Dropdown 'Rolle' prüfen`, async () => {
+      await PersonCreationView.combobox_Schulstrukturknoten_Clear.click();
+      await PersonCreationView.combobox_Schulstrukturknoten.click();
+      await page.getByText(Organisation_Schule, { exact: true }).click();
       await PersonCreationView.combobox_Rolle.click();
-      await page.getByText(Rolle_SCHULADMIN).click();
-
-      const response_schulstrukturknoten = await page.waitForResponse(
-        (response) =>
-          response.url().includes("/api/personenkontext/schulstrukturknoten")
-      );
-      const responseBody_schulstrukturknoten =
-        await response_schulstrukturknoten.json();
-      let gueltig = true;
-
-      responseBody_schulstrukturknoten.moeglicheSsks.forEach((element) => {
-        if (!(element.typ === TYP_ORGA_SCHULE)) {
-          gueltig = false; // element hat eine Organisation mit einem ungültigen Typ
-          expect(gueltig).toBe(true); // Der Testfall wird auf failed gesetzt
-        }
-      });
-    });
-
-    await test.step(`Rolle SuS auswaehlen und verfügbare Einträge für die Organisationsebene prüfen(Gültige Organisationen: SCHULE)`, async () => {
-      await PersonCreationView.combobox_Rolle_Clear.click();
-      await PersonCreationView.combobox_Rolle.click();
-      await page.getByText(Rolle_SUS).click();
-
-      const response_schulstrukturknoten = await page.waitForResponse(
-        (response) =>
-          response.url().includes("/api/personenkontext/schulstrukturknoten")
-      );
-      const responseBody_schulstrukturknoten =
-        await response_schulstrukturknoten.json();
-      let gueltig = true;
-
-      responseBody_schulstrukturknoten.moeglicheSsks.forEach((element) => {
-        if (!(element.typ === TYP_ORGA_SCHULE)) {
-          gueltig = false; // element hat eine Organisation mit einem ungültigen Typ
-          expect(gueltig).toBe(true); // Der Testfall wird auf failed gesetzt
-        }
-      });
+      await expect(PersonCreationView.body).toContainText(Rolle_Lehr);
+      await expect(PersonCreationView.body).toContainText(Rolle_LiV);
+      await expect(PersonCreationView.body).toContainText(Rolle_Schuladmin);
+      await expect(PersonCreationView.body).toContainText(Rolle_SuS);
+      await expect(PersonCreationView.body).not.toContainText(Rolle_Landesadmin);
     });
   });
 
@@ -487,26 +380,20 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
     await test.step(`Benutzer Lehrkraft anlegen`, async () => {
       await page.goto(FRONTEND_URL + "admin/personen/new");
-      await PersonCreationView.combobox_Rolle.click();
-      await page.getByText(Rolle).click();
-
-      await PersonCreationView.Input_Vorname.fill(Vorname);
-      await PersonCreationView.Input_Nachname.fill(Nachname);
-
       await PersonCreationView.combobox_Schulstrukturknoten.click();
       await page.getByText(Schulstrukturknoten).click();
-
+      await PersonCreationView.combobox_Rolle.click();
+      await page.getByText(Rolle).click();
+      await PersonCreationView.Input_Vorname.fill(Vorname);
+      await PersonCreationView.Input_Nachname.fill(Nachname);
       await PersonCreationView.button_PersonAnlegen.click();
-      Benutzername =
-        await PersonCreationView.text_Bestaetigungsseite_Benutzername.innerText();
+      Benutzername = await PersonCreationView.text_Bestaetigungsseite_Benutzername.innerText();
       await expect(PersonCreationView.text_success).toBeVisible();
     });
 
     await test.step(`Benutzerverwaltung öffnen und Suche nach Vornamen `, async () => {
       await page.goto(FRONTEND_URL + "admin/personen");
-      await expect(PersonManagementView.text_h2_Benutzerverwaltung).toHaveText(
-        "Benutzerverwaltung"
-      );
+      await expect(PersonManagementView.text_h2_Benutzerverwaltung).toHaveText("Benutzerverwaltung");
       await PersonManagementView.input_Suchfeld.fill(Vorname);
       await PersonManagementView.button_Suchen.click();
       await expect(page.getByRole("cell", { name: Vorname })).toBeVisible();
@@ -527,17 +414,13 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     await test.step(`Suche nach Dienststellennummer `, async () => {
       await PersonManagementView.input_Suchfeld.fill("0056357");
       await PersonManagementView.button_Suchen.click();
-      await expect(
-        page.getByRole("cell", { name: "ssuperadmin" })
-      ).toBeVisible();
+      await expect(page.getByRole("cell", { name: "ssuperadmin" })).toBeVisible();
     });
 
     await test.step(`Suche mit leerer Ergebnisliste. Gepüft wird das der Text "Keine Daten gefunden." gefunden wird, danach wird gepüft dass die Tabelle 0 Zeilen hat.`, async () => {
       await PersonManagementView.input_Suchfeld.fill("!§$%aavvccdd44xx@");
       await PersonManagementView.button_Suchen.click();
-      await expect(
-        page.getByRole("cell", { name: "Keine Daten gefunden." })
-      ).toBeVisible();
+      await expect(page.getByRole("cell", { name: "Keine Daten gefunden." })).toBeVisible();
       await expect(page.locator("v-data-table__td")).toHaveCount(0);
     });
 
@@ -548,9 +431,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await page.getByRole("cell", { name: Nachname, exact: true }).click();
       await page.getByTestId("open-person-delete-dialog-icon").click();
       await page.getByTestId("person-delete-button").click();
-      await page
-        .getByTestId("close-person-delete-success-dialog-button")
-        .click();
+      await page.getByTestId("close-person-delete-success-dialog-button").click();
     });
   });
 });
