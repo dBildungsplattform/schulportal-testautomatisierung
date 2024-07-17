@@ -16,6 +16,6 @@ export class KlasseManagementViewPage{
         this.combobox_Filter_Schule = page.getByPlaceholder('Schule');
         this.combobox_Filter_Klasse = page.getByPlaceholder('Klasse');
         this.table_header_Dienststellennummer = page.getByText('Dienststellennummer');
-        this.table_header_Klassenname = page.getByTestId('klasse-table').getByText('Klasse');
+        this.table_header_Klassenname = page.getByTestId('klasse-table').getByText('Klasse', { exact: true });
     }
 }
