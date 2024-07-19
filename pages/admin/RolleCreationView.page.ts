@@ -20,6 +20,6 @@ export class RolleCreationViewPage{
         this.combobox_Merkmal = page.getByTestId('merkmale-select').locator('.v-input__control');
         this.button_RolleAnlegen = page.getByTestId('rolle-form-create-button');
         this.button_WeitereRolleAnlegen = page.getByTestId('create-another-rolle-button');
-        this.text_success = page.getByTestId('rolle-success-text');
+        this.text_success = page.getByTestId('success-text');
     }
 }
