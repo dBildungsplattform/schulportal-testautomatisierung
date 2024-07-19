@@ -31,7 +31,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     const KlasseCreationView = new KlasseCreationViewPage(page);
     const KlasseManagementView = new KlasseManagementViewPage(page);
     const SCHULNAME = "Testschule Schulportal";
-    const KLASSENNAME = "TAuto-PW-K-12 " + faker.lorem.word({ length: { min: 4, max: 8 }});
+    const KLASSENNAME = "TAuto-PW-K-12 " + faker.lorem.word({ length: { min: 10, max: 10 }});
 
     await test.step(`Dialog Schule anlegen öffnen`, async () => {
       await Startseite.card_item_schulportal_administration.click();

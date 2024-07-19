@@ -39,7 +39,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     const Rolle = "Lehrkraft";
     const Vorname = "TAuto-PW-V-" + faker.person.firstName();
     const Nachname = "TAuto-PW-N-" + faker.person.lastName();
-    const Schulstrukturknoten = "(Testschule Schulportal)";
+    const Schulstrukturknoten = "Testschule Schulportal";
     let Benutzername = "";
     let Einstiegspasswort = "";
 
@@ -53,7 +53,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await PersonCreationView.combobox_Schulstrukturknoten.click();
       await page.getByText(Schulstrukturknoten).click();
       await PersonCreationView.combobox_Rolle.click();
-      await page.getByText(Rolle).click();
+      await page.getByText(Rolle, { exact: true }).click();
       await PersonCreationView.Input_Vorname.fill(Vorname);
       await PersonCreationView.Input_Nachname.fill(Nachname);
       await PersonCreationView.button_PersonAnlegen.click();
@@ -121,7 +121,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await PersonCreationView.combobox_Schulstrukturknoten.click();
       await page.getByText(Schulstrukturknoten).click();
       await PersonCreationView.combobox_Rolle.click();
-      await page.getByText(Rolle).click();
+      await page.getByText(Rolle, { exact: true }).click();
       await PersonCreationView.Input_Vorname.fill(Vorname);
       await PersonCreationView.Input_Nachname.fill(Nachname);
       await PersonCreationView.button_PersonAnlegen.click();
@@ -152,7 +152,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     const Rolle = "LiV";
     const Vorname = "TAuto-PW-V-" + faker.person.firstName();
     const Nachname = "TAuto-PW-N-" + faker.person.lastName();
-    const Schulstrukturknoten = "(Testschule Schulportal)";
+    const Schulstrukturknoten = "Testschule Schulportal";
 
     await test.step(`Dialog Person anlegen öffnen`, async () => {
       await Startseite.card_item_schulportal_administration.click();
@@ -164,7 +164,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await PersonCreationView.combobox_Schulstrukturknoten.click();
       await page.getByText(Schulstrukturknoten).click();
       await PersonCreationView.combobox_Rolle.click();
-      await page.getByText(Rolle).click();
+      await page.getByText(Rolle, { exact: true }).click();
       await PersonCreationView.Input_Vorname.fill(Vorname);
       await PersonCreationView.Input_Nachname.fill(Nachname);
       await PersonCreationView.button_PersonAnlegen.click();
@@ -207,7 +207,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await PersonCreationView.combobox_Schulstrukturknoten.click();
       await page.getByText(Schulstrukturknoten).click();
       await PersonCreationView.combobox_Rolle.click();
-      await page.getByText(Rolle).click();
+      await page.getByText(Rolle, { exact: true }).click();
       await PersonCreationView.Input_Vorname.fill(Vorname);
       await PersonCreationView.Input_Nachname.fill(Nachname);
       await PersonCreationView.button_PersonAnlegen.click();
@@ -251,11 +251,11 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await PersonCreationView.combobox_Schulstrukturknoten.click();
       await page.getByText(Schulstrukturknoten).click();
       await PersonCreationView.combobox_Rolle.click();
-      await page.getByText(Rolle).click();
+      await page.getByText(Rolle, { exact: true }).click();
       await PersonCreationView.Input_Vorname.fill(Vorname);
       await PersonCreationView.Input_Nachname.fill(Nachname);
       await PersonCreationView.combobox_Klasse.click();
-      await page.getByText(Klasse).click();
+      await page.getByText(Klasse, { exact: true }).click();
       await PersonCreationView.button_PersonAnlegen.click();
     });
 
@@ -358,7 +358,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     await test.step(`Organisation 'Schule' auswählen und Dropdown 'Rolle' prüfen`, async () => {
       await PersonCreationView.combobox_Schulstrukturknoten_Clear.click();
       await PersonCreationView.combobox_Schulstrukturknoten.click();
-      await page.getByText(Organisation_Schule, { exact: true }).click();
+      await page.getByText(Organisation_Schule).click();
       await PersonCreationView.combobox_Rolle.click();
       await expect(PersonCreationView.body).toContainText(Rolle_Lehr);
       await expect(PersonCreationView.body).toContainText(Rolle_LiV);
@@ -375,7 +375,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     const Rolle = "Lehrkraft";
     const Vorname = "TAuto-PW-V-" + faker.person.firstName();
     const Nachname = "TAuto-PW-N-" + faker.person.lastName();
-    const Schulstrukturknoten = "(Testschule Schulportal)";
+    const Schulstrukturknoten = "Testschule Schulportal";
     let Benutzername = "";
 
     await test.step(`Benutzer Lehrkraft anlegen`, async () => {
@@ -383,7 +383,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await PersonCreationView.combobox_Schulstrukturknoten.click();
       await page.getByText(Schulstrukturknoten).click();
       await PersonCreationView.combobox_Rolle.click();
-      await page.getByText(Rolle).click();
+      await page.getByText(Rolle, { exact: true }).click();
       await PersonCreationView.Input_Vorname.fill(Vorname);
       await PersonCreationView.Input_Nachname.fill(Nachname);
       await PersonCreationView.button_PersonAnlegen.click();
