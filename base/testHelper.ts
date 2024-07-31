@@ -1,11 +1,6 @@
-import { Page } from '@playwright/test';
+import { Page, expect } from '@playwright/test';
 import {faker} from "@faker-js/faker/locale/de";
-import {LandingPage} from "../pages/LandingView.page";
-import {LoginPage} from "../pages/LoginView.page";
-import {HeaderPage} from "../pages/Header.page";
 
-const PW = process.env.PW;
-const ADMIN = process.env.USER;
 const FRONTEND_URL = process.env.FRONTEND_URL || "";
 
 export interface UserInfo {
@@ -29,6 +24,7 @@ export async function createOrganisation(page: Page, name: string): Promise<stri
             "traegerschaft": null
         }
     });
+    expect(response.status()).toBe(201);
     const json = await response.json();
     return json.id;
 }
@@ -43,14 +39,8 @@ export async function createRolle(page: Page, rollenArt: string, organisationId:
             "systemrechte": []
         }
     });
+    expect(response.status()).toBe(201);
     const json = await response.json();
-    await page.pause();
-    console.log('start');
-    console.log(rolleName);
-    console.log(organisationId);
-    console.log(rollenArt);
-    console.log(await json);
-    console.log('ende');
     return json.id;
 }
 
@@ -60,6 +50,7 @@ export async function addSPToRolle(page: Page, rolleId: string, idSP: string): P
             "serviceProviderId": idSP,
         }
     });
+    expect(response.status()).toBe(201);
 }
 
 export async function addSystemrechtToRolle(page: Page, rolleId: string, systemrecht: string): Promise<void> {
@@ -68,6 +59,7 @@ export async function addSystemrechtToRolle(page: Page, rolleId: string, systemr
             "systemRecht": systemrecht
         }
     });
+    expect(response.status()).toBe(200);
 }
 
 export async function createUser(page: Page, familienname: string, vorname: string, organisationId: string, rolleId: string): Promise<UserInfo> {
@@ -79,10 +71,8 @@ export async function createUser(page: Page, familienname: string, vorname: stri
             "rolleId": rolleId
         }
     });
+    expect(response.status()).toBe(201);
     const json = await response.json();
-    await page.pause();
-    //console.log(await response.json());
-    await page.pause();
     return {
         username: json.person.referrer,
         password: json.person.startpasswort,
@@ -93,86 +83,42 @@ export async function createUser(page: Page, familienname: string, vorname: stri
 }
 
 export async function createBenutzerWithUserContext(page: Page, organisationName: string, rollenArt: string, familienname: string, vorname: string, idSP: string, rolleName: string): Promise<UserInfo> {
-    // Sich mit dem Admin-User anmelden, damit die API-Calls auch Authorized sind und funktionieren:
-    const Landing = new LandingPage(page);
-    const Login = new LoginPage(page);
-    const Header = new HeaderPage(page);
-
-    if (await Header.button_logout.isVisible()) { //Abmelden, falls noch ein Nutzer aus einem vorherigen Test angemeldet ist:
-        await Header.button_logout.click();
-    }
-    await page.goto(FRONTEND_URL);
-    await Landing.button_Anmelden.click();
-    await Login.login(ADMIN, PW);
-    // page.on('console', msg => {
-    //     console.log(msg.text());
-    // });
-
-    // API-Calls machen:
-    // const organisationId: string = await createOrganisation(page, organisationName);  --> Es gibt keinen Endpunkt Organisation-löschen, Daten aus seeding
+    // API-Calls machen und Benutzer mit Kontext anlegen
     const organisationId: string = await getOrganisationId(page, organisationName);
-   // console.log('orga: ' + organisationId);
     const rolleId: string = await createRolle(page, rollenArt, organisationId, rolleName);
-    //console.log('rolle: ' + rolleId);
     await addSPToRolle(page, rolleId, idSP);
-    //console.log(familienname);
-    //console.log(vorname);
     const userInfo: UserInfo = await createUser(page, familienname, vorname, organisationId, rolleId);
-    // await addSystemrechtToRolle(page, rolleId, 'PERSONEN_VERWALTEN');
-    await Header.button_logout.click();
-    console.log(userInfo);
     return userInfo;
 }
 
 export async function getSPId(page: Page, nameSP: string): Promise<string> {
-    // Service-Provider-Ids auslesen
-    const Landing = new LandingPage(page);
-    const Login = new LoginPage(page);
-    const Header = new HeaderPage(page);
-
-    await page.goto(FRONTEND_URL);
-    await Landing.button_Anmelden.click();
-    await Login.login(ADMIN, PW);
-    
+    const response = await page.request.get(FRONTEND_URL + `api/provider/all`, {});   
+    expect(response.status()).toBe(200);
+    const json = await response.json(); 
+    expect(response.status()).toBe(200);
     let idSP = '';
-    const response_provider = await page.waitForResponse((response) =>
-        response.url().includes("/api/provider")
-    );
-
-    const responseBody_provider = await response_provider.json();
-    responseBody_provider.forEach((element) => {
+    
+    json.forEach((element) => {
         if (element.name === nameSP) {
-            idSP = element.id
+            idSP = element.id;
         }
     });
-    
-    await Header.button_logout.click();
     return idSP;   
 }
 
 export async function getOrganisationId(page: Page, nameOrganisation: string): Promise<string> {
-    // Organisations-Id auslesen
-    const Landing = new LandingPage(page);
-    const Login = new LoginPage(page);
-    const Header = new HeaderPage(page);
-
-    await Header.button_logout.click();
-    await Landing.button_Anmelden.click();
-    await Login.login(ADMIN, PW);
-    
-    const response = await page.request.get(FRONTEND_URL + `api/organisationen?name=${nameOrganisation}`, {})   
-    const json = await response.json();
-    await Header.button_logout.click();
-   // console.log( await response.json());
-   // console.log('orga: ' + nameOrganisation);
-   // console.log('orga: ' + json[0].id); 
+    const response = await page.request.get(FRONTEND_URL + `api/organisationen?name=${nameOrganisation}`, {});  
+    expect(response.status()).toBe(200); 
+    const json = await response.json(); 
     return json[0].id;
 }
 
 export async function deletePersonen(page: Page, personId: string): Promise<void> {
     const response = await page.request.delete(FRONTEND_URL + `api/personen/${personId}`, {});
+    expect(response.status()).toBe(204);
 }
 
 export async function deleteRolle(page: Page, RolleId: string): Promise<void> {
-    const response = await page.request.delete(FRONTEND_URL + `api/rollen/${RolleId}`, {});
+    const response = await page.request.delete(FRONTEND_URL + `api/rolle/${RolleId}`, {});
+    expect(response.status()).toBe(204);
 }
