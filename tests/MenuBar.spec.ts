@@ -3,6 +3,7 @@ import { LandingPage } from '../pages/LandingView.page';
 import { StartPage } from '../pages/StartView.page';
 import { LoginPage } from '../pages/LoginView.page';
 import { MenuPage } from '../pages/MenuBar.page';
+import { HeaderPage } from "../pages/Header.page";
 
 const PW = process.env.PW;
 const ADMIN = process.env.USER;
@@ -19,6 +20,13 @@ test.describe(`Testfälle für die Hauptmenue-Leiste: Umgebung: ${process.env.UM
       await Landing.button_Anmelden.click();
       await Login.login(ADMIN, PW);
       await expect(Startseite.text_h2_Ueberschrift).toBeVisible();
+    });
+  });
+
+  test.afterEach(async ({ page }) => {
+    await test.step(`Abmelden`, async () => {
+      const Header = new HeaderPage(page);
+      await Header.button_logout.click();
     });
   });
   

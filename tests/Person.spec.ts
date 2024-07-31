@@ -25,6 +25,13 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
   });
 
+  test.afterEach(async ({ page }) => {
+    await test.step(`Login`, async () => {
+      const Header = new HeaderPage(page);
+      await Header.button_logout.click();
+    });
+  });
+
   test("Einen Benutzer mit der Rolle Lehrkraft anlegen und anschließend mit diesem Benutzer anmelden", async ({
     page,
   }) => {

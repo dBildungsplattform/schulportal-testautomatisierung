@@ -10,6 +10,13 @@ const ADMIN = process.env.USER;
 const FRONTEND_URL = process.env.FRONTEND_URL || "";
 
 test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
+    test.afterEach(async ({ page }) => {
+        await test.step(`Abmelden`, async () => {
+          const Header = new HeaderPage(page);
+          await Header.button_logout.click();
+        });
+      });
+    
     test("Prüfen, dass die Schulportal-Administration Kachel nicht sichtbar ist für Lehrkräfte", async ({page}) => {
         const Landing = new LandingPage(page);
         const Login = new LoginPage(page);
@@ -21,7 +28,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         await Login.login(ADMIN, PW);
 
         const idSP = await getSPId(page, 'E-Mail');
-        const userInfo: UserInfo = await createBenutzerWithUserContext(page, 'Testschule Schulportal', 'LEHR', 'MeierLehrer', 'Hans', idSP, 'RolleLehrer');
+        const userInfo: UserInfo = await createBenutzerWithUserContext(page, 'Testschule Schulportal', 'LEHR', 'TAuto-PW-B-MeierLehrer', 'TAuto-PW-B-Hans', idSP, 'TAuto-PW-R-RolleLehrer');
         await Header.button_logout.click();  
 
         // Test durchführen
@@ -53,7 +60,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         await Login.login(ADMIN, PW);
 
         const idSP = await getSPId(page, 'itslearning');
-        const userInfo: UserInfo = await createBenutzerWithUserContext(page, 'Testschule Schulportal', 'LERN', 'JansenSchüler', 'Helga', idSP, 'RolleSuS');
+        const userInfo: UserInfo = await createBenutzerWithUserContext(page, 'Testschule Schulportal', 'LERN', 'TAuto-PW-B-JansenSchüler', 'TAuto-PW-B-Helga', idSP, 'TAuto-PW-R-RolleSuS');
         await Header.button_logout.click();  
 
         // Test durchführen
@@ -85,7 +92,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         await Login.login(ADMIN, PW);
 
         const idSP = await getSPId(page, 'Schulportal-Administration');
-        const userInfo: UserInfo = await createBenutzerWithUserContext(page, 'Testschule Schulportal', 'LEIT', 'MeierSchulAdmin', 'Peter', idSP, 'RolleSchuladmin');
+        const userInfo: UserInfo = await createBenutzerWithUserContext(page, 'Testschule Schulportal', 'LEIT', 'TAuto-PW-B-MeierAdmin', 'TAuto-PW-B-Peter', idSP, 'TAuto-PW-R-RolleSchuladmin');
         await addSystemrechtToRolle(page, userInfo.rolleId, 'PERSONEN_VERWALTEN'); 
         await Header.button_logout.click();     
 
