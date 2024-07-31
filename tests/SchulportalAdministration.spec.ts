@@ -18,7 +18,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         // Testdaten erstellen
         await page.goto(FRONTEND_URL);          
         await Landing.button_Anmelden.click();
-        await Login.login(ADMIN, PW)
+        await Login.login(ADMIN, PW);
 
         const idSP = await getSPId(page, 'E-Mail');
         const userInfo: UserInfo = await createBenutzerWithUserContext(page, 'Testschule Schulportal', 'LEHR', 'MeierLehrer', 'Hans', idSP, 'RolleLehrer');
@@ -42,7 +42,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         await deleteRolle(page, userInfo.rolleId);
     });
 
-    test("Prüfen, dass die Schulportal-Administration Kachel nicht sichtbar ist für Scüler", async ({page}) => {
+    test("Prüfen, dass die Schulportal-Administration Kachel nicht sichtbar ist für Schüler", async ({page}) => {
         const Landing = new LandingPage(page);
         const Login = new LoginPage(page);
         const Header = new HeaderPage(page);
@@ -50,7 +50,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         // Testdaten erstellen
         await page.goto(FRONTEND_URL);          
         await Landing.button_Anmelden.click();
-        await Login.login(ADMIN, PW)
+        await Login.login(ADMIN, PW);
 
         const idSP = await getSPId(page, 'itslearning');
         const userInfo: UserInfo = await createBenutzerWithUserContext(page, 'Testschule Schulportal', 'LERN', 'JansenSchüler', 'Helga', idSP, 'RolleSuS');
@@ -94,7 +94,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         await Login.login(userInfo.username, userInfo.password);
         await Login.UpdatePW();
         const Startseite = new StartPage(page);
-        await test.step(`Prüfen, dass die Kachel E-Mail angezeigt wird und die Kachel Schulportal-Administration nicht angezeigt wird`, async () => {
+        await test.step(`Prüfen, dass die Kachel E-Mail nicht angezeigt wird und die Kachel Schulportal-Administration angezeigt wird`, async () => {
             await expect(Startseite.card_item_schulportal_administration).toBeVisible();
             await expect(Startseite.card_item_email).toBeHidden();
         });
@@ -107,6 +107,3 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         await deleteRolle(page, userInfo.rolleId);
     }); 
 });
-
-       
-
