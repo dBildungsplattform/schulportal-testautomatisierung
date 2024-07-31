@@ -3,7 +3,7 @@ import {LandingPage} from "../pages/LandingView.page";
 import {StartPage} from "../pages/StartView.page";
 import {LoginPage} from "../pages/LoginView.page";
 import {HeaderPage} from "../pages/Header.page";
-import {createBenutzerWithUserContext, UserInfo, getSPId, addSystemrechtToRolle, deletePersonen, deleteRolle } from "../base/testHelper";
+import {createBenutzerWithUserContext, UserInfo, getSPId, addSystemrechtToRolle, deletePersonen, deleteRolle } from "../base/testHelper.page";
 
 const PW = process.env.PW;
 const ADMIN = process.env.USER;
