@@ -76,4 +76,39 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       await expect(KlasseManagementView.table_header_Klassenname).toBeVisible();
     });
   });
+
+  test("Eine Klasse anlegen und die Bestätigungsseite vollständig prüfen", async ({ page }) => {
+    const Startseite = new StartPage(page);
+    const Menue = new MenuPage(page);
+    const KlasseCreationView = new KlasseCreationViewPage(page);
+    const KlasseManagementView = new KlasseManagementViewPage(page);
+    const DIENSTELLENNUMMER = '1111111';
+    const SCHULNAME = "Testschule Schulportal";
+    const KLASSENNAME = "TAuto-PW-K-12 " + faker.lorem.word({ length: { min: 10, max: 10 }});
+
+    await test.step(`Dialog Schule anlegen öffnen`, async () => {
+      await page.goto(FRONTEND_URL + 'admin/klassen/new');
+    });
+
+    await test.step(`Klasse anlegen`, async () => {
+      await KlasseCreationView.combobox_Schulstrukturknoten.click();
+      await page.getByText(SCHULNAME).click();
+      await KlasseCreationView.input_Klassenname.fill(KLASSENNAME);
+      await KlasseCreationView.button_KlasseAnlegen.click();
+    });
+
+    await test.step(`Bestätigunsseite prüfen`, async () => {
+      await expect(KlasseCreationView.text_h2_KlasseAnlegen).toHaveText('Neue Klasse hinzufügen');
+      await expect(KlasseCreationView.button_Schliessen).toBeVisible();
+      await expect(KlasseCreationView.text_success).toHaveText('Die Klasse wurde erfolgreich hinzugefügt.');
+      await expect(KlasseCreationView.icon_success).toBeVisible();
+      await expect(KlasseCreationView.text_DatenGespeichert).toBeVisible();
+      await expect(KlasseCreationView.label_Schule).toBeVisible();
+      await expect(KlasseCreationView.data_Schule).toHaveText(DIENSTELLENNUMMER + ' (' + SCHULNAME + ')');
+      await expect(KlasseCreationView.label_Klasse).toBeVisible();
+      await expect(KlasseCreationView.data_Klasse).toHaveText(KLASSENNAME);
+      await expect(KlasseCreationView.button_WeitereKlasseAnlegen).toBeVisible();
+      await expect(KlasseCreationView.button_ZurueckErgebnisliste).toBeVisible();
+    });
+  });
 });
