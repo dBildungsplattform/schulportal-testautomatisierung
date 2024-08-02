@@ -62,7 +62,7 @@ export async function addSystemrechtToRolle(page: Page, rolleId: string, systemr
     expect(response.status()).toBe(200);
 }
 
-export async function createUser(page: Page, familienname: string, vorname: string, organisationId: string, rolleId: string): Promise<UserInfo> {
+export async function createPerson(page: Page, familienname: string, vorname: string, organisationId: string, rolleId: string): Promise<UserInfo> {
     const response = await page.request.post(FRONTEND_URL + 'api/personenkontext-workflow/', {
         data: {
             "familienname": familienname,
