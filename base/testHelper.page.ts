@@ -87,7 +87,7 @@ export async function createPersonWithUserContext(page: Page, organisationName: 
     const organisationId: string = await getOrganisationId(page, organisationName);
     const rolleId: string = await createRolle(page, rollenArt, organisationId, rolleName);
     await addSPToRolle(page, rolleId, idSP);
-    const userInfo: UserInfo = await createUser(page, familienname, vorname, organisationId, rolleId);
+    const userInfo: UserInfo = await createPerson(page, familienname, vorname, organisationId, rolleId);
     return userInfo;
 }
 
