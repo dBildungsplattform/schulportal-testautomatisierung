@@ -82,7 +82,7 @@ export async function createUser(page: Page, familienname: string, vorname: stri
     }
 }
 
-export async function createBenutzerWithUserContext(page: Page, organisationName: string, rollenArt: string, familienname: string, vorname: string, idSP: string, rolleName: string): Promise<UserInfo> {
+export async function createPersonWithUserContext(page: Page, organisationName: string, rollenArt: string, familienname: string, vorname: string, idSP: string, rolleName: string): Promise<UserInfo> {
     // API-Calls machen und Benutzer mit Kontext anlegen
     const organisationId: string = await getOrganisationId(page, organisationName);
     const rolleId: string = await createRolle(page, rollenArt, organisationId, rolleName);
