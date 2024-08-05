@@ -6,6 +6,7 @@ import { MenuPage } from "../pages/MenuBar.page";
 import { KlasseCreationViewPage } from "../pages/admin/KlasseCreationView.page";
 import { KlasseManagementViewPage } from "../pages/admin/KlasseManagementView.page";
 import { faker } from "@faker-js/faker/locale/de";
+import { HeaderPage } from "../pages/Header.page";
 
 const PW = process.env.PW;
 const ADMIN = process.env.USER;
@@ -22,6 +23,13 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       await Landing.button_Anmelden.click();
       await Login.login(ADMIN, PW);
       await expect(Startseite.text_h2_Ueberschrift).toBeVisible();
+    });
+  });
+
+  test.afterEach(async ({ page }) => {
+    await test.step(`Abmelden`, async () => {
+      const Header = new HeaderPage(page);
+      await Header.button_logout.click();
     });
   });
 
