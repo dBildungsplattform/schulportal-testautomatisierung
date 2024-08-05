@@ -4,12 +4,20 @@ import { LandingPage } from '../pages/LandingView.page';
 import { StartPage } from '../pages/StartView.page';
 import { faker } from "@faker-js/faker/locale/de";
 import { PersonManagementViewPage } from "../pages/admin/PersonManagementView.page";
+import { HeaderPage } from "../pages/Header.page";
 
 const PW = process.env.PW;
 const USER = process.env.USER;
 const FRONTEND_URL = process.env.FRONTEND_URL || '';
 
 test.describe(`Spike um die API anzusprechen: Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
+  test.afterEach(async ({ page }) => {
+    await test.step(`Abmelden`, async () => {
+      const Header = new HeaderPage(page);
+      await Header.button_logout.click();
+    });
+  });
+
   test('GET und Post request', async ({ page}) => {
     const Login = new LoginPage(page);
     const Landing = new LandingPage(page);
