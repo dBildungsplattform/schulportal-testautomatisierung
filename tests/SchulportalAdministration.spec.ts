@@ -1,9 +1,12 @@
-import {expect, test} from "@playwright/test";
-import {LandingPage} from "../pages/LandingView.page";
-import {StartPage} from "../pages/StartView.page";
-import {LoginPage} from "../pages/LoginView.page";
-import {HeaderPage} from "../pages/Header.page";
-import {createPersonWithUserContext, UserInfo, getSPId, addSystemrechtToRolle, deletePersonen, deleteRolle } from "../base/testHelper.page";
+import { expect, test } from "@playwright/test";
+import { LandingPage } from "../pages/LandingView.page";
+import { StartPage } from "../pages/StartView.page";
+import { LoginPage } from "../pages/LoginView.page";
+import { HeaderPage } from "../pages/Header.page";
+import { getSPId } from "../base/api/testHelperServiceprovider.page";
+import { createPersonWithUserContext, deletePersonen } from "../base/api/testHelperPerson.page";
+import { addSystemrechtToRolle, deleteRolle } from "../base/api/testHelperRolle.page";
+import { UserInfo } from "../base/api/testHelper.page";
 
 const PW = process.env.PW;
 const ADMIN = process.env.USER;
@@ -93,6 +96,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
 
         const idSP = await getSPId(page, 'Schulportal-Administration');
         const userInfo: UserInfo = await createPersonWithUserContext(page, 'Testschule Schulportal', 'LEIT', 'TAuto-PW-B-MeierAdmin', 'TAuto-PW-B-Peter', idSP, 'TAuto-PW-R-RolleSchuladmin');
+       
         await addSystemrechtToRolle(page, userInfo.rolleId, 'PERSONEN_VERWALTEN'); 
         await Header.button_logout.click();     
 
