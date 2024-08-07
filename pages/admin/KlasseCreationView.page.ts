@@ -18,8 +18,8 @@ export class KlasseCreationViewPage{
     readonly button_WeitereKlasseAnlegen: Locator;
    
     constructor(page){
-        this.page = page;
         // Anlage Klasse
+        this.page = page;
         this.text_h2_KlasseAnlegen = page.getByTestId('layout-card-headline');
         this.button_Schliessen = page.getByTestId('close-layout-card-button');
         this.combobox_Schulstrukturknoten = page.getByTestId('schule-select').locator('.v-input__control'); 
