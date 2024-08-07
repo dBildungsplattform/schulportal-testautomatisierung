@@ -7,6 +7,7 @@ import { PersonCreationViewPage } from "../pages/admin/PersonCreationView.page";
 import { PersonManagementViewPage } from "../pages/admin/PersonManagementView.page";
 import { HeaderPage } from "../pages/Header.page";
 import { faker } from "@faker-js/faker/locale/de";
+import { deletePersonen, getPersonId } from "../base/api/testHelperPerson.page";
 
 const PW = process.env.PW;
 const ADMIN = process.env.USER;
@@ -66,7 +67,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await PersonCreationView.button_PersonAnlegen.click();
       await expect(PersonCreationView.text_success).toBeVisible();
 
-      Benutzername = await PersonCreationView.text_Bestaetigungsseite_Benutzername.innerText();
+      Benutzername = await PersonCreationView.data_Benutzername.innerText();
       Einstiegspasswort = await PersonCreationView.input_EinstiegsPasswort.inputValue();
     });
 
@@ -136,7 +137,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
     await test.step(`Prüfen dass der Benutzer mit der Rolle Landesadmin angelegt wurde`, async () => {
       await expect(PersonCreationView.text_success).toBeVisible();
-      await expect(PersonCreationView.text_Bestaetigungsseite_Rolle).toHaveText("Landesadmin");
+      await expect(PersonCreationView.data_Rolle).toHaveText("Landesadmin");
     });
 
     await test.step(`Benutzer wieder löschen`, async () => {
@@ -179,7 +180,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
     await test.step(`Prüfen dass der Benutzer mit der Rolle Landesadmin angelegt wurde`, async () => {
       await expect(PersonCreationView.text_success).toBeVisible();
-      await expect(PersonCreationView.text_Bestaetigungsseite_Rolle).toHaveText("LiV");
+      await expect(PersonCreationView.data_Rolle).toHaveText("LiV");
     });
 
     await test.step(`Benutzer wieder löschen`, async () => {
@@ -222,7 +223,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
     await test.step(`Prüfen dass der Benutzer mit der Rolle Landesadmin angelegt wurde`, async () => {
       await expect(PersonCreationView.text_success).toBeVisible();
-      await expect(PersonCreationView.text_Bestaetigungsseite_Rolle).toHaveText("Schuladmin");
+      await expect(PersonCreationView.data_Rolle).toHaveText("Schuladmin");
     });
 
     await test.step(`Benutzer wieder löschen`, async () => {
@@ -268,7 +269,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
     await test.step(`Prüfen dass der Benutzer mit der Rolle Landesadmin angelegt wurde`, async () => {
       await expect(PersonCreationView.text_success).toBeVisible();
-      await expect(PersonCreationView.text_Bestaetigungsseite_Rolle).toHaveText("SuS");
+      await expect(PersonCreationView.data_Rolle).toHaveText("SuS");
     });
 
     await test.step(`Benutzer wieder löschen`, async () => {
@@ -394,7 +395,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await PersonCreationView.Input_Vorname.fill(Vorname);
       await PersonCreationView.Input_Nachname.fill(Nachname);
       await PersonCreationView.button_PersonAnlegen.click();
-      Benutzername = await PersonCreationView.text_Bestaetigungsseite_Benutzername.innerText();
+      Benutzername = await PersonCreationView.data_Benutzername.innerText();
       await expect(PersonCreationView.text_success).toBeVisible();
     });
 
@@ -439,6 +440,59 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await page.getByTestId("open-person-delete-dialog-icon").click();
       await page.getByTestId("person-delete-button").click();
       await page.getByTestId("close-person-delete-success-dialog-button").click();
+    });
+  });
+
+  test("Eine Lehrkraft anlegen in der Rolle Landesadmin und die Bestätigungsseite vollständig prüfen", async ({ page }) => {
+    const PersonCreationView = new PersonCreationViewPage(page);
+    const Rolle = "Lehrkraft";
+    const Vorname = "TAuto-PW-V-" + faker.person.firstName();
+    const Nachname = "TAuto-PW-N-" + faker.person.lastName();
+    const Schulstrukturknoten = "Testschule Schulportal";
+    const Dienstellennummer = "1111111";
+    let BenutzerID = '';
+    let Benutzername = '';
+
+    await test.step(`Dialog Person anlegen öffnen`, async () => {
+      await page.goto(FRONTEND_URL + 'admin/personen/new');
+    });
+
+    await test.step(`Benutzer anlegen`, async () => {
+      await PersonCreationView.combobox_Schulstrukturknoten.click();
+      await page.getByText(Schulstrukturknoten).click();
+      await PersonCreationView.combobox_Rolle.click();
+      await page.getByText(Rolle, { exact: true }).click();
+      await PersonCreationView.Input_Vorname.fill(Vorname);
+      await PersonCreationView.Input_Nachname.fill(Nachname);
+      await PersonCreationView.button_PersonAnlegen.click();
+    });
+
+    await test.step(`Bestätigunsseite prüfen`, async () => {
+      await expect(PersonCreationView.text_h2_PersonAnlegen).toBeVisible();
+      await expect(PersonCreationView.button_Schliessen).toBeVisible();
+      await expect(PersonCreationView.text_success).toHaveText(Vorname + ' ' + Nachname + ' wurde erfolgreich hinzugefügt.');
+      await expect(PersonCreationView.text_DatenGespeichert).toBeVisible();
+      await expect(PersonCreationView.label_Vorname).toHaveText('Vorname:');
+      await expect(PersonCreationView.data_Vorname).toHaveText(Vorname);
+      await expect(PersonCreationView.label_Nachname).toHaveText('Nachname:');
+      await expect(PersonCreationView.data_Nachname).toHaveText(Nachname);
+      await expect(PersonCreationView.label_Benutzername).toHaveText('Benutzername:');
+      await expect(PersonCreationView.data_Benutzername).toContainText('tautopw');
+      await expect(PersonCreationView.label_EinstiegsPasswort).toHaveText('Einstiegs-Passwort:');
+      await expect(PersonCreationView.input_EinstiegsPasswort).toBeVisible();
+      await expect(PersonCreationView.label_Rolle).toHaveText('Rolle:');
+      await expect(PersonCreationView.data_Rolle).toHaveText(Rolle);
+      await expect(PersonCreationView.label_Organisationsebene).toHaveText('Organisationsebene:');
+      await expect(PersonCreationView.data_Organisationsebene).toHaveText(Dienstellennummer + ' (' + Schulstrukturknoten + ')');
+      await expect(PersonCreationView.label_Klasse).toHaveText('Klasse:');
+      await expect(PersonCreationView.button_WeiterenBenutzerAnlegen).toBeVisible();
+      await expect(PersonCreationView.button_ZurueckErgebnisliste).toBeVisible();
+    });
+
+    await test.step(`Benutzer wieder löschen`, async () => {
+      Benutzername = await PersonCreationView.data_Benutzername.innerText();
+      BenutzerID = await getPersonId(page, Benutzername); 
+      await deletePersonen(page, BenutzerID);
     });
   });
 });

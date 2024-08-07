@@ -38,3 +38,10 @@ export async function deletePersonen(page: Page, personId: string): Promise<void
     const response = await page.request.delete(FRONTEND_URL + `api/personen/${personId}`, {});
     expect(response.status()).toBe(204);
 }
+
+export async function getPersonId(page: Page, Benutzername: string): Promise<string> {
+    const response = await page.request.get(FRONTEND_URL + `api/personen-frontend?suchFilter=${Benutzername}`, {});  
+    expect(response.status()).toBe(200); 
+    const json = await response.json(); 
+    return json.items[0].person.id;
+}
