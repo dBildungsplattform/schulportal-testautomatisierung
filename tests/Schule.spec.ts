@@ -7,6 +7,7 @@ import { SchuleCreationViewPage } from "../pages/admin/SchuleCreationView.page";
 import { SchuleManagementViewPage } from "../pages/admin/SchuleManagementView.page";
 import { faker } from "@faker-js/faker/locale/de";
 import { HeaderPage } from "../pages/Header.page";
+import { FooterDataTablePage } from "../pages/FooterDataTable.page ";
 
 const PW = process.env.PW;
 const ADMIN = process.env.USER;
@@ -33,11 +34,12 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
     });
   });
 
-  test("2 Schulen nacheinander anlegen", async ({ page }) => {
+  test.only("2 Schulen nacheinander anlegen", async ({ page }) => {
     const Startseite = new StartPage(page);
     const Menue = new MenuPage(page);
     const SchuleCreationView = new SchuleCreationViewPage(page);
     const SchuleManagementView = new SchuleManagementViewPage(page);
+    const FooterDataTable = new FooterDataTablePage(page);
 
     const SCHULNAME1 = "TAuto-PW-S1-" + faker.lorem.word({ length: { min: 8, max: 12 }});
     const SCHULNAME2 = "TAuto-PW-S2-" + faker.lorem.word({ length: { min: 8, max: 12 }});
@@ -73,6 +75,8 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
 
     await test.step(`In der Ergebnisliste prüfen, dass die beiden neuen Schulen angezeigt werden`, async () => {
       await Menue.menueItem_AlleSchulenAnzeigen.click();
+      await FooterDataTable.combobox_AnzahlEintraege.click();
+      await page.getByText('300').click();
       await expect(SchuleManagementView.text_h2_Schulverwaltung).toHaveText("Schulverwaltung");
       await expect(page.getByRole("cell", { name: SCHULNAME1 })).toBeVisible();
       await expect(page.getByRole("cell", { name: SCHULNAME2 })).toBeVisible();
