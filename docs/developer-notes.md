@@ -36,3 +36,5 @@ Die data-testid muss genau in dem Bereich liegen, in dem der Endanwender auch ta
 
 ## StartView.page.ts
 --
+## FooterDataTable.page.ts
+TestId für die combobox(Einträge pro Seite), also der Pfeil zum öffnen der combobox im FooterDataTable fehlt für die Ergebnisliste Alle Schulen.

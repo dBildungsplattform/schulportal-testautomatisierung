@@ -34,7 +34,7 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
     });
   });
 
-  test.only("2 Schulen nacheinander anlegen", async ({ page }) => {
+  test("2 Schulen nacheinander anlegen", async ({ page }) => {
     const Startseite = new StartPage(page);
     const Menue = new MenuPage(page);
     const SchuleCreationView = new SchuleCreationViewPage(page);
