@@ -86,10 +86,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
   });
 
   test("Eine Klasse anlegen und die Bestätigungsseite vollständig prüfen", async ({ page }) => {
-    const Startseite = new StartPage(page);
-    const Menue = new MenuPage(page);
     const KlasseCreationView = new KlasseCreationViewPage(page);
-    const KlasseManagementView = new KlasseManagementViewPage(page);
     const DIENSTELLENNUMMER = '1111111';
     const SCHULNAME = "Testschule Schulportal";
     const KLASSENNAME = "TAuto-PW-K-12 " + faker.lorem.word({ length: { min: 10, max: 10 }});

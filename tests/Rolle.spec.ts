@@ -96,7 +96,6 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     });
 
     await test.step(`Rollen wieder löschen`, async () => {
-      await page.pause();
       const RollenID1 = await getRolleId(page, ROLLENNAME1); 
       const RollenID2 = await getRolleId(page, ROLLENNAME2); 
       await deleteRolle(page, RollenID1);
@@ -122,12 +121,8 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
   });
 
   test("Eine Rolle anlegen und die Bestätigungsseite vollständig prüfen ", async ({ page }) => {
-    const Startseite = new StartPage(page);
-    const Menue = new MenuPage(page);
     const RolleCreationView = new RolleCreationViewPage(page);
-    const RolleManagementView = new RolleManagementViewPage(page);
-
-    const ROLLENNAME = "TAuto-PW-R1-" + faker.lorem.word({ length: { min: 8, max: 12 } });
+    const ROLLENNAME = "TAuto-PW-R-" + faker.lorem.word({ length: { min: 8, max: 12 } });
     const DIENSTSTELLENNUMMER = '1111111';
     const SCHULSTRUKTURKNOTEN = DIENSTSTELLENNUMMER + " (Testschule Schulportal)";
     const ROLLENART = "Leit";
@@ -138,7 +133,6 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     const SystemrechtA = 'Darf Benutzer verwalten';
     const SystemrechtB = 'Darf Schulen verwalten';
     const SystemrechtC = 'Darf Klassen verwalten';
-    
 
     await test.step(`Dialog Rolle anlegen öffnen`, async () => {
       await page.goto(FRONTEND_URL + 'admin/rollen/new');
@@ -183,7 +177,8 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
       await expect(RolleCreationView.data_Angebote).toContainText(AngebotA + ', ' + AngebotB + ', ' + AngebotC);
       await expect(RolleCreationView.label_Systemrechte).toHaveText('Systemrechte:');
       await expect(RolleCreationView.data_Systemrechte).toContainText(SystemrechtA + ', ' +  SystemrechtB + ', ' + SystemrechtC);
-      await page.pause();
+      await expect(RolleCreationView.button_WeitereRolleAnlegen).toBeVisible();
+      await expect(RolleCreationView.button_ZurueckErgebnisliste).toBeVisible();
     });
 
     await test.step(`Rolle wieder löschen`, async () => {

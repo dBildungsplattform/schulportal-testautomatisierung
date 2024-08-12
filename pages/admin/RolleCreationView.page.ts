@@ -12,12 +12,12 @@ export class RolleCreationViewPage{
     readonly combobox_Systemrechte: Locator;
     readonly button_RolleAnlegen: Locator;
     readonly button_WeitereRolleAnlegen: Locator;
+    readonly button_ZurueckErgebnisliste: Locator;
     readonly text_success: Locator;
     readonly icon_success: Locator;
     readonly text_DatenGespeichert: Locator;
     readonly label_Administrationsebene: Locator;
     readonly data_Administrationsebene: Locator;
-
     readonly label_Rollenart: Locator;
     readonly data_Rollenart: Locator;
     readonly label_Rollenname: Locator;
@@ -43,6 +43,7 @@ export class RolleCreationViewPage{
         this.button_RolleAnlegen = page.getByTestId('rolle-form-create-button');
         this.button_WeitereRolleAnlegen = page.getByTestId('create-another-rolle-button');
         // Bestätigungsseite Rolle
+        this.button_ZurueckErgebnisliste = page.getByTestId('back-to-list-button');
         this.text_success = page.getByTestId('rolle-success-text');
         this.icon_success = page.locator('.mdi-check-circle');
         this.text_DatenGespeichert = page.getByText('Folgende Daten wurden gespeichert:');
