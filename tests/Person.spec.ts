@@ -495,4 +495,148 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await deletePersonen(page, BenutzerID);
     });
   });
+
+  test.only("Mehere Benutzer hintereinander anlegen in der Rolle Landesadmin für die Rollenarten SuS und LEHR und die Bestätigungsseiten vollständig prüfen", async ({ page }) => {
+    const PersonCreationView = new PersonCreationViewPage(page);
+    // Testdaten
+    const Schulstrukturknoten = "Testschule Schulportal";
+    const Dienstellennummer = "1111111";
+    const Rolle1 = "SuS";
+    const Vorname1 = "TAuto-PW-VA-" + faker.person.firstName();
+    const Nachname1 = "TAuto-PW-NA-" + faker.person.lastName();
+    const KLASSENNAME = "2d"
+    let BenutzerID1 = '';
+    let Benutzername1 = '';
+
+    const Rolle2 = "Lehrkraft";
+    const Vorname2 = "TAuto-PW-VB-" + faker.person.firstName();
+    const Nachname2 = "TAuto-PW-NB-" + faker.person.lastName();
+    let BenutzerID2 = '';
+    let Benutzername2 = '';
+
+    const Rolle3 = "Lehrkraft";
+    const Vorname3 = "TAuto-PW-VC-" + faker.person.firstName();
+    const Nachname3 = "TAuto-PW-NC-" + faker.person.lastName();
+    let BenutzerID3 = '';
+    let Benutzername3 = '';
+
+    await test.step(`Dialog Person anlegen öffnen`, async () => {
+      await page.goto(FRONTEND_URL + 'admin/personen/new');
+    });
+
+    await test.step(`Benutzer Schüler anlegen`, async () => {
+      await PersonCreationView.combobox_Schulstrukturknoten.click();
+      await page.getByText(Schulstrukturknoten).click();
+      await PersonCreationView.combobox_Rolle.click();
+      await page.getByText(Rolle1, { exact: true }).click();
+      await PersonCreationView.combobox_Klasse.click();
+      await page.getByText(KLASSENNAME).click();
+      await PersonCreationView.Input_Vorname.fill(Vorname1);
+      await PersonCreationView.Input_Nachname.fill(Nachname1);
+      await PersonCreationView.button_PersonAnlegen.click();
+    });
+
+    await test.step(`Bestätigunsseite Schüler prüfen`, async () => {
+      await expect(PersonCreationView.text_h2_PersonAnlegen).toBeVisible();
+      await expect(PersonCreationView.button_Schliessen).toBeVisible();
+      await expect(PersonCreationView.text_success).toHaveText(Vorname1 + ' ' + Nachname1 + ' wurde erfolgreich hinzugefügt.');
+      await expect(PersonCreationView.text_DatenGespeichert).toBeVisible();
+      await expect(PersonCreationView.label_Vorname).toHaveText('Vorname:');
+      await expect(PersonCreationView.data_Vorname).toHaveText(Vorname1);
+      await expect(PersonCreationView.label_Nachname).toHaveText('Nachname:');
+      await expect(PersonCreationView.data_Nachname).toHaveText(Nachname1);
+      await expect(PersonCreationView.label_Benutzername).toHaveText('Benutzername:');
+      await expect(PersonCreationView.data_Benutzername).toContainText('tautopw');
+      await expect(PersonCreationView.label_EinstiegsPasswort).toHaveText('Einstiegs-Passwort:');
+      await expect(PersonCreationView.input_EinstiegsPasswort).toBeVisible();
+      await expect(PersonCreationView.label_Rolle).toHaveText('Rolle:');
+      await expect(PersonCreationView.data_Rolle).toHaveText(Rolle1);
+      await expect(PersonCreationView.label_Organisationsebene).toHaveText('Organisationsebene:');
+      await expect(PersonCreationView.data_Organisationsebene).toHaveText(Dienstellennummer + ' (' + Schulstrukturknoten + ')');
+      await expect(PersonCreationView.label_Klasse).toHaveText('Klasse:');
+      await expect(PersonCreationView.data_Klasse).toHaveText(KLASSENNAME);
+      await expect(PersonCreationView.button_WeiterenBenutzerAnlegen).toBeVisible();
+      await expect(PersonCreationView.button_ZurueckErgebnisliste).toBeVisible();
+      Benutzername1 = await PersonCreationView.data_Benutzername.innerText();
+      BenutzerID1 = await getPersonId(page, Benutzername1);
+    });
+
+    await test.step(`Weiteren Benutzer Lehrer1 anlegen`, async () => {
+      await PersonCreationView.button_WeiterenBenutzerAnlegen.click();
+      await PersonCreationView.combobox_Schulstrukturknoten.click();
+      await page.getByText(Schulstrukturknoten).click();
+      await PersonCreationView.combobox_Rolle.click();
+      await page.getByText(Rolle2, { exact: true }).click();
+      await PersonCreationView.Input_Vorname.fill(Vorname2);
+      await PersonCreationView.Input_Nachname.fill(Nachname2);
+      await PersonCreationView.button_PersonAnlegen.click();
+    });
+
+    await test.step(`Bestätigunsseite Lehrer1 prüfen`, async () => {
+      await expect(PersonCreationView.text_h2_PersonAnlegen).toBeVisible();
+      await expect(PersonCreationView.button_Schliessen).toBeVisible();
+      await expect(PersonCreationView.text_success).toHaveText(Vorname2 + ' ' + Nachname2 + ' wurde erfolgreich hinzugefügt.');
+      await expect(PersonCreationView.text_DatenGespeichert).toBeVisible();
+      await expect(PersonCreationView.label_Vorname).toHaveText('Vorname:');
+      await expect(PersonCreationView.data_Vorname).toHaveText(Vorname2);
+      await expect(PersonCreationView.label_Nachname).toHaveText('Nachname:');
+      await expect(PersonCreationView.data_Nachname).toHaveText(Nachname2);
+      await expect(PersonCreationView.label_Benutzername).toHaveText('Benutzername:');
+      await expect(PersonCreationView.data_Benutzername).toContainText('tautopw');
+      await expect(PersonCreationView.label_EinstiegsPasswort).toHaveText('Einstiegs-Passwort:');
+      await expect(PersonCreationView.input_EinstiegsPasswort).toBeVisible();
+      await expect(PersonCreationView.label_Rolle).toHaveText('Rolle:');
+      await expect(PersonCreationView.data_Rolle).toHaveText(Rolle2);
+      await expect(PersonCreationView.label_Organisationsebene).toHaveText('Organisationsebene:');
+      await expect(PersonCreationView.data_Organisationsebene).toHaveText(Dienstellennummer + ' (' + Schulstrukturknoten + ')');
+      await expect(PersonCreationView.label_Klasse).toHaveText('Klasse:');
+      await expect(PersonCreationView.data_Klasse).toHaveText('---');
+      await expect(PersonCreationView.button_WeiterenBenutzerAnlegen).toBeVisible();
+      await expect(PersonCreationView.button_ZurueckErgebnisliste).toBeVisible();
+      Benutzername2 = await PersonCreationView.data_Benutzername.innerText();
+      BenutzerID2 = await getPersonId(page, Benutzername2);
+    });
+
+    await test.step(`Weiteren Benutzer Lehrer2 anlegen`, async () => {
+      await PersonCreationView.button_WeiterenBenutzerAnlegen.click();
+      await PersonCreationView.combobox_Schulstrukturknoten.click();
+      await page.getByText(Schulstrukturknoten).click();
+      await PersonCreationView.combobox_Rolle.click();
+      await page.getByText(Rolle3, { exact: true }).click();
+      await PersonCreationView.Input_Vorname.fill(Vorname3);
+      await PersonCreationView.Input_Nachname.fill(Nachname3);
+      await PersonCreationView.button_PersonAnlegen.click();
+    });
+
+    await test.step(`Bestätigunsseite Lehrer2 prüfen`, async () => {
+      await expect(PersonCreationView.text_h2_PersonAnlegen).toBeVisible();
+      await expect(PersonCreationView.button_Schliessen).toBeVisible();
+      await expect(PersonCreationView.text_success).toHaveText(Vorname3 + ' ' + Nachname3 + ' wurde erfolgreich hinzugefügt.');
+      await expect(PersonCreationView.text_DatenGespeichert).toBeVisible();
+      await expect(PersonCreationView.label_Vorname).toHaveText('Vorname:');
+      await expect(PersonCreationView.data_Vorname).toHaveText(Vorname3);
+      await expect(PersonCreationView.label_Nachname).toHaveText('Nachname:');
+      await expect(PersonCreationView.data_Nachname).toHaveText(Nachname3);
+      await expect(PersonCreationView.label_Benutzername).toHaveText('Benutzername:');
+      await expect(PersonCreationView.data_Benutzername).toContainText('tautopw');
+      await expect(PersonCreationView.label_EinstiegsPasswort).toHaveText('Einstiegs-Passwort:');
+      await expect(PersonCreationView.input_EinstiegsPasswort).toBeVisible();
+      await expect(PersonCreationView.label_Rolle).toHaveText('Rolle:');
+      await expect(PersonCreationView.data_Rolle).toHaveText(Rolle3);
+      await expect(PersonCreationView.label_Organisationsebene).toHaveText('Organisationsebene:');
+      await expect(PersonCreationView.data_Organisationsebene).toHaveText(Dienstellennummer + ' (' + Schulstrukturknoten + ')');
+      await expect(PersonCreationView.label_Klasse).toHaveText('Klasse:');
+      await expect(PersonCreationView.data_Klasse).toHaveText('---');
+      await expect(PersonCreationView.button_WeiterenBenutzerAnlegen).toBeVisible();
+      await expect(PersonCreationView.button_ZurueckErgebnisliste).toBeVisible();
+      Benutzername3 = await PersonCreationView.data_Benutzername.innerText();
+      BenutzerID3 = await getPersonId(page, Benutzername3);
+    });
+
+    await test.step(`Benutzer wieder löschen`, async () => {
+      await deletePersonen(page, BenutzerID1);
+      await deletePersonen(page, BenutzerID2);
+      await deletePersonen(page, BenutzerID3);
+    });
+  });
 });
