@@ -174,7 +174,9 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
       await expect(RolleCreationView.label_Merkmale).toHaveText('Merkmale:');
       await expect(RolleCreationView.data_Merkmale).toHaveText(Merkmal);
       await expect(RolleCreationView.label_Angebote).toHaveText('Zugeordnete Angebote:');
-      await expect(RolleCreationView.data_Angebote).toContainText(AngebotA + ', ' + AngebotB + ', ' + AngebotC);
+      await expect(RolleCreationView.data_Angebote).toContainText(AngebotA);
+      await expect(RolleCreationView.data_Angebote).toContainText(AngebotB);
+      await expect(RolleCreationView.data_Angebote).toContainText(AngebotC);
       await expect(RolleCreationView.label_Systemrechte).toHaveText('Systemrechte:');
       await expect(RolleCreationView.data_Systemrechte).toContainText(SystemrechtA + ', ' +  SystemrechtB + ', ' + SystemrechtC);
       await expect(RolleCreationView.button_WeitereRolleAnlegen).toBeVisible();

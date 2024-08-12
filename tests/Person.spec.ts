@@ -7,7 +7,10 @@ import { PersonCreationViewPage } from "../pages/admin/PersonCreationView.page";
 import { PersonManagementViewPage } from "../pages/admin/PersonManagementView.page";
 import { HeaderPage } from "../pages/Header.page";
 import { faker } from "@faker-js/faker/locale/de";
-import { deletePersonen, getPersonId } from "../base/api/testHelperPerson.page";
+import { deletePersonen, getPersonId, createPersonWithUserContext } from "../base/api/testHelperPerson.page";
+import { getSPId } from "../base/api/testHelperServiceprovider.page";
+import { UserInfo } from "../base/api/testHelper.page";
+import { addSystemrechtToRolle, deleteRolle } from "../base/api/testHelperRolle.page";
 
 const PW = process.env.PW;
 const ADMIN = process.env.USER;
@@ -496,15 +499,39 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
   });
 
-  test.only("Mehere Benutzer hintereinander anlegen in der Rolle Landesadmin für die Rollenarten SuS und LEHR und die Bestätigungsseiten vollständig prüfen", async ({ page }) => {
+  test("Mehere Benutzer hintereinander anlegen in der Rolle Landesadmin für die Rollenarten SuS und LEHR und die Bestätigungsseiten vollständig prüfen", async ({ page }) => {
+    const Landing = new LandingPage(page);
+    const Startseite = new StartPage(page);
+    const Login = new LoginPage(page);
+    const Header = new HeaderPage(page);
     const PersonCreationView = new PersonCreationViewPage(page);
+    let userInfo: UserInfo;
+    
+    await test.step(`Testdaten: Landesadmin anlegen und mit diesem anmelden`, async () => {
+      const idSP = await getSPId(page, 'Schulportal-Administration');
+      userInfo = await createPersonWithUserContext(page, 'Land Schleswig-Holstein', 'SYSADMIN', 'TAuto-PW-B-Master', 'TAuto-PW-B-Hans', idSP, 'TAuto-PW-R-RolleSYSADMIN');
+      await addSystemrechtToRolle(page, userInfo.rolleId, 'ROLLEN_VERWALTEN');
+      await addSystemrechtToRolle(page, userInfo.rolleId, 'PERSONEN_SOFORT_LOESCHEN');
+      await addSystemrechtToRolle(page, userInfo.rolleId, 'PERSONEN_VERWALTEN');
+      await addSystemrechtToRolle(page, userInfo.rolleId, 'SCHULEN_VERWALTEN');
+      await addSystemrechtToRolle(page, userInfo.rolleId, 'KLASSEN_VERWALTEN');
+      await addSystemrechtToRolle(page, userInfo.rolleId, 'SCHULTRAEGER_VERWALTEN');
+
+      await Header.button_logout.click();
+      await Landing.button_Anmelden.click();
+      await Login.login(userInfo.username, userInfo.password);
+      userInfo.password = await Login.UpdatePW();
+      await expect(Startseite.text_h2_Ueberschrift).toBeVisible();    
+    });
+    
     // Testdaten
     const Schulstrukturknoten = "Testschule Schulportal";
     const Dienstellennummer = "1111111";
     const Rolle1 = "SuS";
     const Vorname1 = "TAuto-PW-VA-" + faker.person.firstName();
     const Nachname1 = "TAuto-PW-NA-" + faker.person.lastName();
-    const KLASSENNAME = "2d"
+    const KLASSENNAME = "2d";
+    //const KLASSENNAME = "Playwright3a";
     let BenutzerID1 = '';
     let Benutzername1 = '';
 
@@ -533,6 +560,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await page.getByText(KLASSENNAME).click();
       await PersonCreationView.Input_Vorname.fill(Vorname1);
       await PersonCreationView.Input_Nachname.fill(Nachname1);
+      await PersonCreationView.Input_Vorname.click();
       await PersonCreationView.button_PersonAnlegen.click();
     });
 
@@ -569,6 +597,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await page.getByText(Rolle2, { exact: true }).click();
       await PersonCreationView.Input_Vorname.fill(Vorname2);
       await PersonCreationView.Input_Nachname.fill(Nachname2);
+      await PersonCreationView.Input_Vorname.click();
       await PersonCreationView.button_PersonAnlegen.click();
     });
 
@@ -605,6 +634,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await page.getByText(Rolle3, { exact: true }).click();
       await PersonCreationView.Input_Vorname.fill(Vorname3);
       await PersonCreationView.Input_Nachname.fill(Nachname3);
+      await PersonCreationView.Input_Vorname.click();
       await PersonCreationView.button_PersonAnlegen.click();
     });
 
@@ -634,9 +664,17 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
 
     await test.step(`Benutzer wieder löschen`, async () => {
+      console.log(userInfo.username);
+      console.log(userInfo.password);
+      console.log(userInfo.rolleId);
+      await Header.button_logout.click();
+      await Landing.button_Anmelden.click();
+      await Login.login(ADMIN, PW);
       await deletePersonen(page, BenutzerID1);
       await deletePersonen(page, BenutzerID2);
       await deletePersonen(page, BenutzerID3);
+      await deletePersonen(page, userInfo.personId);
+      await deleteRolle(page, userInfo.rolleId);
     });
   });
 });
