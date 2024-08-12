@@ -530,8 +530,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     const Rolle1 = "SuS";
     const Vorname1 = "TAuto-PW-VA-" + faker.person.firstName();
     const Nachname1 = "TAuto-PW-NA-" + faker.person.lastName();
-    const KLASSENNAME = "2d";
-    //const KLASSENNAME = "Playwright3a";
+    const KLASSENNAME = "Playwright3a";
     let BenutzerID1 = '';
     let Benutzername1 = '';
 
