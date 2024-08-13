@@ -486,7 +486,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await expect(PersonCreationView.label_Rolle).toHaveText('Rolle:');
       await expect(PersonCreationView.data_Rolle).toHaveText(Rolle);
       await expect(PersonCreationView.label_Organisationsebene).toHaveText('Organisationsebene:');
-      await expect(PersonCreationView.data_Organisationsebene).toHaveText(Dienstellennummer + ' (' + Schulstrukturknoten + ')');
+      await expect(PersonCreationView.data_Organisationsebene).toHaveText(Dienststellennummer + ' (' + Schulstrukturknoten + ')');
       await expect(PersonCreationView.label_Klasse).toHaveText('Klasse:');
       await expect(PersonCreationView.button_WeiterenBenutzerAnlegen).toBeVisible();
       await expect(PersonCreationView.button_ZurueckErgebnisliste).toBeVisible();
@@ -526,7 +526,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     
     // Testdaten
     const Schulstrukturknoten = "Testschule Schulportal";
-    const Dienstellennummer = "1111111";
+    const Dienststellennummer = "1111111";
     const Rolle1 = "SuS";
     const Vorname1 = "TAuto-PW-VA-" + faker.person.firstName();
     const Nachname1 = "TAuto-PW-NA-" + faker.person.lastName();
@@ -579,7 +579,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await expect(PersonCreationView.label_Rolle).toHaveText('Rolle:');
       await expect(PersonCreationView.data_Rolle).toHaveText(Rolle1);
       await expect(PersonCreationView.label_Organisationsebene).toHaveText('Organisationsebene:');
-      await expect(PersonCreationView.data_Organisationsebene).toHaveText(Dienstellennummer + ' (' + Schulstrukturknoten + ')');
+      await expect(PersonCreationView.data_Organisationsebene).toHaveText(Dienststellennummer + ' (' + Schulstrukturknoten + ')');
       await expect(PersonCreationView.label_Klasse).toHaveText('Klasse:');
       await expect(PersonCreationView.data_Klasse).toHaveText(KLASSENNAME);
       await expect(PersonCreationView.button_WeiterenBenutzerAnlegen).toBeVisible();
@@ -616,7 +616,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await expect(PersonCreationView.label_Rolle).toHaveText('Rolle:');
       await expect(PersonCreationView.data_Rolle).toHaveText(Rolle2);
       await expect(PersonCreationView.label_Organisationsebene).toHaveText('Organisationsebene:');
-      await expect(PersonCreationView.data_Organisationsebene).toHaveText(Dienstellennummer + ' (' + Schulstrukturknoten + ')');
+      await expect(PersonCreationView.data_Organisationsebene).toHaveText(Dienststellennummer + ' (' + Schulstrukturknoten + ')');
       await expect(PersonCreationView.label_Klasse).toHaveText('Klasse:');
       await expect(PersonCreationView.data_Klasse).toHaveText('---');
       await expect(PersonCreationView.button_WeiterenBenutzerAnlegen).toBeVisible();
@@ -653,7 +653,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await expect(PersonCreationView.label_Rolle).toHaveText('Rolle:');
       await expect(PersonCreationView.data_Rolle).toHaveText(Rolle3);
       await expect(PersonCreationView.label_Organisationsebene).toHaveText('Organisationsebene:');
-      await expect(PersonCreationView.data_Organisationsebene).toHaveText(Dienstellennummer + ' (' + Schulstrukturknoten + ')');
+      await expect(PersonCreationView.data_Organisationsebene).toHaveText(Dienststellennummer + ' (' + Schulstrukturknoten + ')');
       await expect(PersonCreationView.label_Klasse).toHaveText('Klasse:');
       await expect(PersonCreationView.data_Klasse).toHaveText('---');
       await expect(PersonCreationView.button_WeiterenBenutzerAnlegen).toBeVisible();

@@ -94,7 +94,7 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
       await expect(SchuleManagementView.text_h1_Administrationsbereich).toBeVisible();
       await expect(SchuleManagementView.text_h2_Schulverwaltung).toBeVisible();
       await expect(SchuleManagementView.text_h2_Schulverwaltung).toHaveText("Schulverwaltung");
-      await expect(SchuleManagementView.table_header_Dienstellennummer).toBeVisible();
+      await expect(SchuleManagementView.table_header_Dienststellennummer).toBeVisible();
       await expect(SchuleManagementView.table_header_Schulname).toBeVisible();
     });
   });

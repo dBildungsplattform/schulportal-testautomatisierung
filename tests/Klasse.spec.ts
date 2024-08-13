@@ -109,7 +109,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       await expect(KlasseCreationView.icon_success).toBeVisible();
       await expect(KlasseCreationView.text_DatenGespeichert).toBeVisible();
       await expect(KlasseCreationView.label_Schule).toBeVisible();
-      await expect(KlasseCreationView.data_Schule).toHaveText(DIENSTELLENNUMMER + ' (' + SCHULNAME + ')');
+      await expect(KlasseCreationView.data_Schule).toHaveText(DIENSTSTELLENNUMMER + ' (' + SCHULNAME + ')');
       await expect(KlasseCreationView.label_Klasse).toBeVisible();
       await expect(KlasseCreationView.data_Klasse).toHaveText(KLASSENNAME);
       await expect(KlasseCreationView.button_WeitereKlasseAnlegen).toBeVisible();
