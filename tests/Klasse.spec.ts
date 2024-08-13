@@ -87,7 +87,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
 
   test("Eine Klasse anlegen und die Bestätigungsseite vollständig prüfen", async ({ page }) => {
     const KlasseCreationView = new KlasseCreationViewPage(page);
-    const DIENSTELLENNUMMER = '1111111';
+    const DIENSTSTELLENNUMMER = '1111111';
     const SCHULNAME = "Testschule Schulportal";
     const KLASSENNAME = "TAuto-PW-K-12 " + faker.lorem.word({ length: { min: 10, max: 10 }});
 
