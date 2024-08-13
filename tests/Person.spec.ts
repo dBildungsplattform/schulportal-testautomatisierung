@@ -563,7 +563,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await PersonCreationView.button_PersonAnlegen.click();
     });
 
-    await test.step(`Bestätigunsseite Schüler prüfen`, async () => {
+    await test.step(`Bestätigungsseite Schüler prüfen`, async () => {
       await expect(PersonCreationView.text_h2_PersonAnlegen).toBeVisible();
       await expect(PersonCreationView.button_Schliessen).toBeVisible();
       await expect(PersonCreationView.text_success).toHaveText(Vorname1 + ' ' + Nachname1 + ' wurde erfolgreich hinzugefügt.');
