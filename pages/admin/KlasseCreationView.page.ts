@@ -31,7 +31,7 @@ export class KlasseCreationViewPage{
         this.text_DatenGespeichert = page.getByText('Folgende Daten wurden gespeichert:');
         this.label_Schule =  page.getByText('Schule:', { exact: true });
         this.data_Schule =  page.getByTestId('created-klasse-schule');
-        this.label_Klasse =  page.getByText('Klassenname:'), { exact: true };
+        this.label_Klasse =  page.getByText('Klassenname:', { exact: true });
         this.data_Klasse =  page.getByTestId('created-klasse-name');
         this.button_ZurueckErgebnisliste = page.getByTestId('back-to-list-button');
         this.button_WeitereKlasseAnlegen = page.getByTestId('create-another-klasse-button');

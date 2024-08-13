@@ -62,9 +62,9 @@ export class PersonCreationViewPage{
         this.data_Rolle = page.getByTestId('created-person-rolle');
         this.label_Organisationsebene = page.getByText('Organisationsebene:', { exact: true });
         this.data_Organisationsebene =  page.getByTestId('created-person-organisation');
-        this.label_Klasse =  page.getByText('Klasse:'), { exact: true };
+        this.label_Klasse =  page.getByText('Klasse:', { exact: true });
         this.data_Klasse =  page.getByTestId('created-person-klasse');
-        this.label_EinstiegsPasswort =  page.getByText(' Einstiegs-Passwort:'), { exact: true };
+        this.label_EinstiegsPasswort =  page.getByText(' Einstiegs-Passwort:', { exact: true });
         this.input_EinstiegsPasswort = page.locator('[data-testid="password-output-field"] input'); 
         this.button_ZurueckErgebnisliste = page.getByTestId('back-to-list-button');
         this.button_WeiterenBenutzerAnlegen = page.getByTestId('create-another-person-button');
