@@ -452,7 +452,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     const Vorname = "TAuto-PW-V-" + faker.person.firstName();
     const Nachname = "TAuto-PW-N-" + faker.person.lastName();
     const Schulstrukturknoten = "Testschule Schulportal";
-    const Dienstellennummer = "1111111";
+    const Dienststellennummer = "1111111";
     let BenutzerID = '';
     let Benutzername = '';
 
