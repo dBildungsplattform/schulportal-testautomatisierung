@@ -11,6 +11,7 @@ import { createPersonWithUserContext, deletePersonen } from "../base/api/testHel
 import { getSPId } from "../base/api/testHelperServiceprovider.page";
 import { UserInfo } from "../base/api/testHelper.page";
 import { addSystemrechtToRolle, deleteRolle } from "../base/api/testHelperRolle.page";
+import { FooterDataTablePage } from "../pages/FooterDataTable.page ";
 
 const PW = process.env.PW;
 const ADMIN = process.env.USER;
@@ -42,9 +43,12 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
     const Menue = new MenuPage(page);
     const SchuleCreationView = new SchuleCreationViewPage(page);
     const SchuleManagementView = new SchuleManagementViewPage(page);
+    const FooterDataTable = new FooterDataTablePage(page);
 
-    const SCHULNAME1 = "TAuto-PW-S1-" + faker.lorem.word({ length: { min: 8, max: 12 }});
-    const SCHULNAME2 = "TAuto-PW-S2-" + faker.lorem.word({ length: { min: 8, max: 12 }});
+    // Schulen können noch nicht gelöscht werden. Um doppelte Namen zu vermeiden, wird am dem Schulnamen eine Zufallszahl angehängt
+    const ZUFALLSNUMMER = faker.number.bigInt({ min: 1000, max: 9000 })
+    const SCHULNAME1 = "TAuto-PW-S1-" + faker.lorem.word({ length: { min: 8, max: 12 }}) + ZUFALLSNUMMER;
+    const SCHULNAME2 = "TAuto-PW-S2-" + faker.lorem.word({ length: { min: 8, max: 12 }}) + ZUFALLSNUMMER;
     const DIENSTSTELLENNUMMER1 = "0" + faker.number.bigInt({ min: 10000000, max: 100000000 });
     const DIENSTSTELLENNUMMER2 = "0" + faker.number.bigInt({ min: 10000000, max: 100000000 });
 
@@ -77,6 +81,8 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
 
     await test.step(`In der Ergebnisliste prüfen, dass die beiden neuen Schulen angezeigt werden`, async () => {
       await Menue.menueItem_AlleSchulenAnzeigen.click();
+      await FooterDataTable.combobox_AnzahlEintraege.click();
+      await page.getByText('300', { exact: true }).click();
       await expect(SchuleManagementView.text_h2_Schulverwaltung).toHaveText("Schulverwaltung");
       await expect(page.getByRole("cell", { name: SCHULNAME1 })).toBeVisible();  
       await expect(page.getByRole("cell", { name: SCHULNAME2 })).toBeVisible();

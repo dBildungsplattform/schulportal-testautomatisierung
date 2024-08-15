@@ -663,9 +663,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
 
     await test.step(`Benutzer wieder löschen`, async () => {
-      console.log(userInfo.username);
-      console.log(userInfo.password);
-      console.log(userInfo.rolleId);
       await Header.button_logout.click();
       await Landing.button_Anmelden.click();
       await Login.login(ADMIN, PW);
