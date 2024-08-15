@@ -6,6 +6,6 @@ export class FooterDataTablePage{
 
     constructor(page){
         this.page = page;  
-        this.combobox_AnzahlEintraege = page.getByRole('combobox').locator('i');
+        this.combobox_AnzahlEintraege = page.locator('.v-data-table-footer__items-per-page .v-input');
     }
 }
