@@ -84,7 +84,7 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
       await FooterDataTable.combobox_AnzahlEintraege.click();
       await page.getByText('300', { exact: true }).click();
       await expect(SchuleManagementView.text_h2_Schulverwaltung).toHaveText("Schulverwaltung");
-      await expect(page.getByRole("cell", { name: SCHULNAME1 })).toBeVisible();  
+      await expect(page.getByRole("cell", { name: SCHULNAME1 })).toBeVisible();
       await expect(page.getByRole("cell", { name: SCHULNAME2 })).toBeVisible();
     });
   });
