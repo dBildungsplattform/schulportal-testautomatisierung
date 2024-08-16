@@ -42,7 +42,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
 
     const ROLLENNAME1 = "TAuto-PW-R1-" + faker.lorem.word({ length: { min: 8, max: 12 } });
     const ROLLENNAME2 = "TAuto-PW-R2-" + faker.lorem.word({ length: { min: 8, max: 12 } });
-    const SCHULSTRUKTURKNOTEN1 = "Land Schleswig-Holstein";
+    const SCHULSTRUKTURKNOTEN1 = "0701114 (Land Schleswig-Holstein)";
     const SCHULSTRUKTURKNOTEN2 = "0703754 (Amalie-Sieveking-Schule)";
     const ROLLENART1 = "Lern";
     const ROLLENART2 = "Lehr";

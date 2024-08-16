@@ -314,9 +314,9 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     const Menue = new MenuPage(page);
     const PersonCreationView = new PersonCreationViewPage(page);
 
-    const Organisation_Land = "Land Schleswig-Holstein";
-    const Organisation_OeffentlicheSchule = "Öffentliche Schulen Land Schleswig-Holstein";
-    const Organisation_Ersatzschule = "Ersatzschulen Land Schleswig-Holstein";
+    const Organisation_Land = "0701114 (Land Schleswig-Holstein)";
+    const Organisation_OeffentlicheSchule = "0702224 (Öffentliche Schulen Land Schleswig-Holstein)";
+    const Organisation_Ersatzschule = "0703334 (Ersatzschulen Land Schleswig-Holstein)";
     const Organisation_Schule = "1111111 (Testschule Schulportal)";
 
     const Rolle_Landesadmin = "Landesadmin";
