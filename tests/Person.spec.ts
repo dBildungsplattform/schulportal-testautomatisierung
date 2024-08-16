@@ -470,7 +470,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await PersonCreationView.button_PersonAnlegen.click();
     });
 
-    await test.step(`Bestätigunsseite prüfen`, async () => {
+    await test.step(`Bestätigungsseite prüfen`, async () => {
       await expect(PersonCreationView.text_h2_PersonAnlegen).toBeVisible();
       await expect(PersonCreationView.button_Schliessen).toBeVisible();
       await expect(PersonCreationView.text_success).toHaveText(Vorname + ' ' + Nachname + ' wurde erfolgreich hinzugefügt.');
@@ -600,7 +600,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await PersonCreationView.button_PersonAnlegen.click();
     });
 
-    await test.step(`Bestätigunsseite Lehrer1 prüfen`, async () => {
+    await test.step(`Bestätigungsseite Lehrer1 prüfen`, async () => {
       await expect(PersonCreationView.text_h2_PersonAnlegen).toBeVisible();
       await expect(PersonCreationView.button_Schliessen).toBeVisible();
       await expect(PersonCreationView.text_success).toHaveText(Vorname2 + ' ' + Nachname2 + ' wurde erfolgreich hinzugefügt.');
@@ -637,7 +637,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await PersonCreationView.button_PersonAnlegen.click();
     });
 
-    await test.step(`Bestätigunsseite Lehrer2 prüfen`, async () => {
+    await test.step(`Bestätigungsseite Lehrer2 prüfen`, async () => {
       await expect(PersonCreationView.text_h2_PersonAnlegen).toBeVisible();
       await expect(PersonCreationView.button_Schliessen).toBeVisible();
       await expect(PersonCreationView.text_success).toHaveText(Vorname3 + ' ' + Nachname3 + ' wurde erfolgreich hinzugefügt.');

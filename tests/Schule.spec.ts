@@ -140,7 +140,7 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
       await SchuleCreationView.button_SchuleAnlegen.click();
     });
     
-    await test.step(`Bestätigunsseite prüfen`, async () => {
+    await test.step(`Bestätigungsseite prüfen`, async () => {
       await expect(SchuleCreationView.text_success).toBeVisible();
       await expect(SchuleCreationView.text_h2_SchuleAnlegen).toHaveText('Neue Schule hinzufügen');
       await expect(SchuleCreationView.button_Schliessen).toBeVisible();

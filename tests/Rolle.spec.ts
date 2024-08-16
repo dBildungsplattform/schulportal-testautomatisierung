@@ -159,7 +159,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
       await RolleCreationView.button_RolleAnlegen.click();
     });
 
-    await test.step(`Bestätigunsseite prüfen`, async () => {
+    await test.step(`Bestätigungsseite  prüfen`, async () => {
       await expect(RolleCreationView.text_h2_RolleAnlegen).toHaveText('Neue Rolle hinzufügen');
       await expect(RolleCreationView.button_Schliessen).toBeVisible();
       await expect(RolleCreationView.text_success).toBeVisible();
