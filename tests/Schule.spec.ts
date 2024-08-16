@@ -11,7 +11,7 @@ import { createPersonWithUserContext, deletePersonen } from "../base/api/testHel
 import { getSPId } from "../base/api/testHelperServiceprovider.page";
 import { UserInfo } from "../base/api/testHelper.page";
 import { addSystemrechtToRolle, deleteRolle } from "../base/api/testHelperRolle.page";
-import { FooterDataTablePage } from "../pages/FooterDataTable.page ";
+import { FooterDataTablePage } from "../pages/FooterDataTable.page";
 
 const PW = process.env.PW;
 const ADMIN = process.env.USER;
