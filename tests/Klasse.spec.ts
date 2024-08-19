@@ -107,7 +107,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       await KlasseCreationView.button_KlasseAnlegen.click();
     });
 
-    await test.step(`Bestätigungsseite  prüfen`, async () => {
+    await test.step(`Bestätigungsseite prüfen`, async () => {
       await expect(KlasseCreationView.text_h2_KlasseAnlegen).toHaveText('Neue Klasse hinzufügen');
       await expect(KlasseCreationView.button_Schliessen).toBeVisible();
       await expect(KlasseCreationView.text_success).toHaveText('Die Klasse wurde erfolgreich hinzugefügt.');
