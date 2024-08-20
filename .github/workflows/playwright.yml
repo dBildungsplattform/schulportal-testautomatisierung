@@ -52,7 +52,7 @@ jobs:
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
     - name: Run Playwright tests
-      run: npx playwright test -g "@short"
+      run: npx playwright test --grep "@short"
       env:
         USER: '${{ secrets.USER }}'
         PW: '${{ secrets.PW }}'
