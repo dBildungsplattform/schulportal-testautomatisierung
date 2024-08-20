@@ -9,7 +9,7 @@ const USER = process.env.USER;
 const FRONTEND_URL = process.env.FRONTEND_URL || '';
 
 test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
-   test('Erfolgreicher Standard Login', async ({ page }) => {
+   test('Erfolgreicher Standard Login Landesadmin @long @stage smoke', async ({ page }) => {
     const Login = new LoginPage(page);
     const Landing = new LandingPage(page);
     const Start = new StartPage(page);
@@ -25,7 +25,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.UM
     })
   })  
   
-  test('Erfolgloser Login mit falschem Passwort', async ({ page }) => {
+  test('Erfolgloser Login mit falschem Passwort und gültigem Benutzernamen in der Rolle Landesadmin @long @short @stage', async ({ page }) => {
     const Login = new LoginPage(page);
     const Landing = new LandingPage(page);
   
