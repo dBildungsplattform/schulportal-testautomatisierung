@@ -21,7 +21,7 @@ jobs:
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
     - name: Run Playwright tests
-      run: FRONTEND_URL='https://spsh.staging.spsh.dbildungsplattform.de/' npx playwright test -g "smoke"
+      run: FRONTEND_URL='https://spsh.staging.spsh.dbildungsplattform.de/' npx playwright test -g "@smoke"
       env:
         USER: '${{ secrets.USER }}'
         PW: '${{ secrets.PW }}'
