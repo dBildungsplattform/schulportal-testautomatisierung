@@ -34,7 +34,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     });
   });
 
-  test("Eine Klasse anlegen und die Klasse anschließend in der Ergebnisliste suchen und dann löschen", async ({ page }) => {
+  test("Eine Klasse als Landesadmin anlegen und die Klasse anschließend in der Ergebnisliste suchen und dann löschen @long @short @stage", async ({ page }) => {
     const Startseite = new StartPage(page);
     const Menue = new MenuPage(page);
     const KlasseCreationView = new KlasseCreationViewPage(page);
@@ -73,7 +73,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     });
   });
 
-  test("Ergebnisliste Klassen auf Vollständigkeit prüfen", async ({ page }) => {
+  test("Ergebnisliste Klassen als Landesadmin auf Vollständigkeit prüfen @long @short @stage", async ({ page }) => {
     const Startseite = new StartPage(page);
     const Menue = new MenuPage(page);
     const KlasseManagementView = new KlasseManagementViewPage(page);
@@ -90,7 +90,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     });
   });
 
-  test("Eine Klasse anlegen und die Bestätigungsseite vollständig prüfen", async ({ page }) => {
+  test("Eine Klasse als Landesadmin anlegen und die Bestätigungsseite vollständig prüfen @long @stage", async ({ page }) => {
     const KlasseCreationView = new KlasseCreationViewPage(page);
     const DIENSTSTELLENNUMMER = '1111111';
     const SCHULNAME = "Testschule Schulportal";

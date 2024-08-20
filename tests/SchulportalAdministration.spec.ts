@@ -20,7 +20,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         });
       });
     
-    test("Prüfen, dass die Schulportal-Administration Kachel nicht sichtbar ist für Lehrkräfte", async ({page}) => {
+    test("Prüfen, dass die Schulportal-Administration Kachel nicht sichtbar ist für Lehrkräfte @long @stage", async ({page}) => {
         const Landing = new LandingPage(page);
         const Login = new LoginPage(page);
         const Header = new HeaderPage(page);
@@ -52,7 +52,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         await deleteRolle(page, userInfo.rolleId);
     });
 
-    test("Prüfen, dass die Schulportal-Administration Kachel nicht sichtbar ist für Schüler", async ({page}) => {
+    test("Prüfen, dass die Schulportal-Administration Kachel nicht sichtbar ist für Schüler @long @short @stage", async ({page}) => {
         const Landing = new LandingPage(page);
         const Login = new LoginPage(page);
         const Header = new HeaderPage(page);
@@ -84,7 +84,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         await deleteRolle(page, userInfo.rolleId);
     });
 
-    test("Prüfen, dass die Schulportal-Administration Kachel sichtbar ist für Schuladmins", async ({page}) => {
+    test("Prüfen, dass die Schulportal-Administration Kachel sichtbar ist für Schuladmins @long @stage", async ({page}) => {
         const Landing = new LandingPage(page);
         const Login = new LoginPage(page);
         const Header = new HeaderPage(page);
