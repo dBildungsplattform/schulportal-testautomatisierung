@@ -44,5 +44,6 @@ export class LoginPage{
         await this.input_ConfirmPW.click();
         await this.input_ConfirmPW.fill(new_Password);
         await this.button_submitPWChange.click();
+        return new_Password;
     }
 }

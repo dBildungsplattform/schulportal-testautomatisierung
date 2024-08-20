@@ -7,7 +7,11 @@ import { SchuleCreationViewPage } from "../pages/admin/SchuleCreationView.page";
 import { SchuleManagementViewPage } from "../pages/admin/SchuleManagementView.page";
 import { faker } from "@faker-js/faker/locale/de";
 import { HeaderPage } from "../pages/Header.page";
-import { FooterDataTablePage } from "../pages/FooterDataTable.page ";
+import { createPersonWithUserContext, deletePersonen } from "../base/api/testHelperPerson.page";
+import { getSPId } from "../base/api/testHelperServiceprovider.page";
+import { UserInfo } from "../base/api/testHelper.page";
+import { addSystemrechtToRolle, deleteRolle } from "../base/api/testHelperRolle.page";
+import { FooterDataTablePage } from "../pages/FooterDataTable.page";
 
 const PW = process.env.PW;
 const ADMIN = process.env.USER;
@@ -41,8 +45,10 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
     const SchuleManagementView = new SchuleManagementViewPage(page);
     const FooterDataTable = new FooterDataTablePage(page);
 
-    const SCHULNAME1 = "TAuto-PW-S1-" + faker.lorem.word({ length: { min: 8, max: 12 }});
-    const SCHULNAME2 = "TAuto-PW-S2-" + faker.lorem.word({ length: { min: 8, max: 12 }});
+    // Schulen können noch nicht gelöscht werden. Um doppelte Namen zu vermeiden, wird am dem Schulnamen eine Zufallszahl angehängt
+    const ZUFALLSNUMMER = faker.number.bigInt({ min: 1000, max: 9000 })
+    const SCHULNAME1 = "TAuto-PW-S1-" + faker.lorem.word({ length: { min: 8, max: 12 }}) + ZUFALLSNUMMER;
+    const SCHULNAME2 = "TAuto-PW-S2-" + faker.lorem.word({ length: { min: 8, max: 12 }}) + ZUFALLSNUMMER;
     const DIENSTSTELLENNUMMER1 = "0" + faker.number.bigInt({ min: 10000000, max: 100000000 });
     const DIENSTSTELLENNUMMER2 = "0" + faker.number.bigInt({ min: 10000000, max: 100000000 });
 
@@ -76,7 +82,7 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
     await test.step(`In der Ergebnisliste prüfen, dass die beiden neuen Schulen angezeigt werden`, async () => {
       await Menue.menueItem_AlleSchulenAnzeigen.click();
       await FooterDataTable.combobox_AnzahlEintraege.click();
-      await page.getByText('300').click();
+      await page.getByText('300', { exact: true }).click();
       await expect(SchuleManagementView.text_h2_Schulverwaltung).toHaveText("Schulverwaltung");
       await expect(page.getByRole("cell", { name: SCHULNAME1 })).toBeVisible();
       await expect(page.getByRole("cell", { name: SCHULNAME2 })).toBeVisible();
@@ -94,8 +100,70 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
       await expect(SchuleManagementView.text_h1_Administrationsbereich).toBeVisible();
       await expect(SchuleManagementView.text_h2_Schulverwaltung).toBeVisible();
       await expect(SchuleManagementView.text_h2_Schulverwaltung).toHaveText("Schulverwaltung");
-      await expect(SchuleManagementView.table_header_Dienstellennummer).toBeVisible();
+      await expect(SchuleManagementView.table_header_Dienststellennummer).toBeVisible();
       await expect(SchuleManagementView.table_header_Schulname).toBeVisible();
+    });
+  });
+
+  test("Eine Schule anlegen als Schuladmin und die Bestätigungsseite vollständig prüfen ", async ({ page }) => {
+    const SchuleCreationView = new SchuleCreationViewPage(page);
+    // Schulen können noch nicht gelöscht werden. Um doppelte Namen zu vermeiden, wird am dem Schulnamen eine Zufallszahl angehängt
+    const ZUFALLSNUMMER = faker.number.bigInt({ min: 1000, max: 9000 });
+    const SCHULNAME = "TAuto-PW-S1-" + faker.lorem.word({ length: { min: 8, max: 12 }}) + ZUFALLSNUMMER;
+    const DIENSTSTELLENNUMMER = "0" + faker.number.bigInt({ min: 10000000, max: 100000000 });
+    const Landing = new LandingPage(page);
+    const Startseite = new StartPage(page);
+    const Login = new LoginPage(page);
+    const Header = new HeaderPage(page);
+    let userInfo: UserInfo;
+
+    await test.step(`Testdaten: Schuladmin anlegen und mit diesem anmelden`, async () => {
+      const idSP = await getSPId(page, 'Schulportal-Administration');
+      userInfo = await createPersonWithUserContext(page, 'Testschule Schulportal', 'LEIT', 'TAuto-PW-B-MeierLEIT', 'TAuto-PW-B-Hans', idSP, 'TAuto-PW-R-RolleLEIT');
+      await addSystemrechtToRolle(page, userInfo.rolleId, 'SCHULEN_VERWALTEN');
+
+      await Header.button_logout.click();
+      await Landing.button_Anmelden.click();
+      await Login.login(userInfo.username, userInfo.password);
+      userInfo.password = await Login.UpdatePW();
+      await expect(Startseite.text_h2_Ueberschrift).toBeVisible();    
+    });
+
+    await test.step(`Dialog Schule anlegen öffnen also Schuladmin`, async () => {
+      await page.goto(FRONTEND_URL + 'admin/schulen/new');
+    });
+
+    await test.step(`Schule anlegen`, async () => {
+      await SchuleCreationView.radio_button_Public_Schule.click();
+      await SchuleCreationView.input_Dienststellennummer.fill(DIENSTSTELLENNUMMER);
+      await SchuleCreationView.input_Schulname.fill(SCHULNAME);
+      await SchuleCreationView.button_SchuleAnlegen.click();
+    });
+    
+    await test.step(`Bestätigungsseite prüfen`, async () => {
+      await expect(SchuleCreationView.text_success).toBeVisible();
+      await expect(SchuleCreationView.text_h2_SchuleAnlegen).toHaveText('Neue Schule hinzufügen');
+      await expect(SchuleCreationView.button_Schliessen).toBeVisible();
+      await expect(SchuleCreationView.text_success).toBeVisible();
+      await expect(SchuleCreationView.icon_success).toBeVisible();
+      await expect(SchuleCreationView.text_DatenGespeichert).toHaveText('Folgende Daten wurden gespeichert:');
+      await expect(SchuleCreationView.label_Schulform).toHaveText('Schulform:');
+      await expect(SchuleCreationView.data_Schulform).toHaveText('Öffentliche Schule');
+      await expect(SchuleCreationView.label_Dienststellennummer).toHaveText('Dienststellennummer:');
+      await expect(SchuleCreationView.data_Dienststellennummer).toHaveText(DIENSTSTELLENNUMMER);
+      await expect(SchuleCreationView.label_Schulname).toHaveText('Schulname:');
+      await expect(SchuleCreationView.data_Schulname).toHaveText(SCHULNAME);
+      await expect(SchuleCreationView.button_WeitereSchuleAnlegen).toBeVisible();
+      await expect(SchuleCreationView.button_ZurueckErgebnisliste).toBeVisible();
+    });
+
+    await test.step(`Testdaten löschen`, async () => {
+      await Header.button_logout.click();
+      await Landing.button_Anmelden.click();
+      await Login.login(ADMIN, PW);
+      await expect(Startseite.text_h2_Ueberschrift).toBeVisible();
+      await deletePersonen(page, userInfo.personId);
+      await deleteRolle(page, userInfo.rolleId);
     });
   });
 });
