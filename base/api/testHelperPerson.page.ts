@@ -26,6 +26,7 @@ export async function createPerson(page: Page, familienname: string, vorname: st
 }
 
 export async function createPersonWithUserContext(page: Page, organisationName: string, rollenArt: string, familienname: string, vorname: string, idSP: string, rolleName: string): Promise<UserInfo> {
+    // Organisation wird nicht angelegt, da diese zur Zeit nicht gelöscht werden kann
     // API-Calls machen und Benutzer mit Kontext anlegen
     const organisationId: string = await getOrganisationId(page, organisationName);
     const rolleId: string = await createRolle(page, rollenArt, organisationId, rolleName);
@@ -37,4 +38,11 @@ export async function createPersonWithUserContext(page: Page, organisationName: 
 export async function deletePersonen(page: Page, personId: string): Promise<void> {
     const response = await page.request.delete(FRONTEND_URL + `api/personen/${personId}`, {});
     expect(response.status()).toBe(204);
+}
+
+export async function getPersonId(page: Page, Benutzername: string): Promise<string> {
+    const response = await page.request.get(FRONTEND_URL + `api/personen-frontend?suchFilter=${Benutzername}`, {});  
+    expect(response.status()).toBe(200); 
+    const json = await response.json(); 
+    return json.items[0].person.id;
 }
