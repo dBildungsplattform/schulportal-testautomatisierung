@@ -39,3 +39,10 @@ export async function deleteRolle(page: Page, RolleId: string): Promise<void> {
     const response = await page.request.delete(FRONTEND_URL + `api/rolle/${RolleId}`, {});
     expect(response.status()).toBe(204);
 }
+
+export async function getRolleId(page: Page, Rollenname: string): Promise<string> {
+    const response = await page.request.get(FRONTEND_URL + `api/rolle?searchStr=${Rollenname}`, {});  
+    expect(response.status()).toBe(200); 
+    const json = await response.json(); 
+    return json[0].id;
+}

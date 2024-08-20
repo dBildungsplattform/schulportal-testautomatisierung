@@ -8,6 +8,9 @@ export class KlasseManagementViewPage{
     readonly combobox_Filter_Klasse: Locator;
     readonly table_header_Dienststellennummer: Locator;
     readonly table_header_Klassenname: Locator;
+    readonly icon_KlasseLoeschen: Locator;
+    readonly button_KlasseLoeschen: Locator;
+    readonly button_SchliesseKlasseLoeschenDialog: Locator;
    
     constructor(page){
         this.page = page;  
@@ -17,5 +20,8 @@ export class KlasseManagementViewPage{
         this.combobox_Filter_Klasse = page.getByPlaceholder('Klasse');
         this.table_header_Dienststellennummer = page.getByText('Dienststellennummer');
         this.table_header_Klassenname = page.getByTestId('klasse-table').getByText('Klasse', { exact: true });
+        this.icon_KlasseLoeschen = page.getByTestId('open-klasse-delete-dialog-icon');
+        this.button_KlasseLoeschen = page.getByTestId('klasse-delete-button');
+        this.button_SchliesseKlasseLoeschenDialog = page.getByTestId('close-klasse-delete-success-dialog-button');
     }
 }

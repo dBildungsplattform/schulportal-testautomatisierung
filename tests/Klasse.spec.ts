@@ -7,6 +7,7 @@ import { KlasseCreationViewPage } from "../pages/admin/KlasseCreationView.page";
 import { KlasseManagementViewPage } from "../pages/admin/KlasseManagementView.page";
 import { faker } from "@faker-js/faker/locale/de";
 import { HeaderPage } from "../pages/Header.page";
+import { getKlasseId, deleteKlasse } from "../base/api/testHelperOrganisation.page";
 
 const PW = process.env.PW;
 const ADMIN = process.env.USER;
@@ -33,7 +34,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     });
   });
 
-  test("Eine Klasse anlegen und die Klasse anschließend in der Ergebnisliste suchen", async ({ page }) => {
+  test("Eine Klasse anlegen und die Klasse anschließend in der Ergebnisliste suchen und dann löschen", async ({ page }) => {
     const Startseite = new StartPage(page);
     const Menue = new MenuPage(page);
     const KlasseCreationView = new KlasseCreationViewPage(page);
@@ -60,11 +61,15 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       await KlasseManagementView.combobox_Filter_Schule.fill(SCHULNAME);    
       await page.keyboard.press('ArrowDown');
       await page.keyboard.press('Enter');
-      await KlasseManagementView.combobox_Filter_Klasse.fill(KLASSENNAME);
-      await page.keyboard.press('ArrowDown');
-      await page.keyboard.press('Enter');
-      await expect(KlasseManagementView.text_h2_Klassenverwaltung).toHaveText("Klassenverwaltung");
-      await expect(page.getByRole("cell", { name: KLASSENNAME })).toBeVisible();
+      await KlasseManagementView.text_h2_Klassenverwaltung.click(); // dies schließt das Dropdown Klasse
+      await expect(page.getByRole('cell', { name: KLASSENNAME })).toBeVisible();
+    });
+
+    await test.step(`Klasse löschen`, async () => {
+      await page.getByRole('cell', { name: KLASSENNAME }).click();
+      await page.getByTestId('open-klasse-delete-dialog-button').click();
+      await page.getByTestId('klasse-delete-button').click();
+      await page.getByTestId('close-klasse-delete-success-dialog-button').click();
     });
   });
 
@@ -82,6 +87,43 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       await expect(KlasseManagementView.combobox_Filter_Klasse).toBeVisible();
       await expect(KlasseManagementView.table_header_Dienststellennummer).toBeVisible();
       await expect(KlasseManagementView.table_header_Klassenname).toBeVisible();
+    });
+  });
+
+  test("Eine Klasse anlegen und die Bestätigungsseite vollständig prüfen", async ({ page }) => {
+    const KlasseCreationView = new KlasseCreationViewPage(page);
+    const DIENSTSTELLENNUMMER = '1111111';
+    const SCHULNAME = "Testschule Schulportal";
+    const KLASSENNAME = "TAuto-PW-K-12 " + faker.lorem.word({ length: { min: 10, max: 10 }});
+
+    await test.step(`Dialog Schule anlegen öffnen`, async () => {
+      await page.goto(FRONTEND_URL + 'admin/klassen/new');
+    });
+
+    await test.step(`Klasse anlegen`, async () => {
+      await KlasseCreationView.combobox_Schulstrukturknoten.click();
+      await page.getByText(SCHULNAME).click();
+      await KlasseCreationView.input_Klassenname.fill(KLASSENNAME);
+      await KlasseCreationView.button_KlasseAnlegen.click();
+    });
+
+    await test.step(`Bestätigungsseite prüfen`, async () => {
+      await expect(KlasseCreationView.text_h2_KlasseAnlegen).toHaveText('Neue Klasse hinzufügen');
+      await expect(KlasseCreationView.button_Schliessen).toBeVisible();
+      await expect(KlasseCreationView.text_success).toHaveText('Die Klasse wurde erfolgreich hinzugefügt.');
+      await expect(KlasseCreationView.icon_success).toBeVisible();
+      await expect(KlasseCreationView.text_DatenGespeichert).toBeVisible();
+      await expect(KlasseCreationView.label_Schule).toBeVisible();
+      await expect(KlasseCreationView.data_Schule).toHaveText(DIENSTSTELLENNUMMER + ' (' + SCHULNAME + ')');
+      await expect(KlasseCreationView.label_Klasse).toBeVisible();
+      await expect(KlasseCreationView.data_Klasse).toHaveText(KLASSENNAME);
+      await expect(KlasseCreationView.button_WeitereKlasseAnlegen).toBeVisible();
+      await expect(KlasseCreationView.button_ZurueckErgebnisliste).toBeVisible();
+    });
+
+    await test.step(`Testdaten löschen via API`, async () => {
+      const KlassenID = await getKlasseId(page, KLASSENNAME);
+      await deleteKlasse(page, KlassenID);
     });
   });
 });
