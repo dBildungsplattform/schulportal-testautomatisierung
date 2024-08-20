@@ -51,6 +51,8 @@ jobs:
       run: npm ci
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
+    - name: List All Tests
+      run: npx playwright test --list
     - name: Run Playwright tests
       run: npx playwright test --grep "@short"
       env:
