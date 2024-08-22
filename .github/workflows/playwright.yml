@@ -53,6 +53,8 @@ jobs:
       run: npx playwright install --with-deps
     - name: Run Playwright tests
       run: npx playwright test
+    - name: Run Playwright @short tests 
+      run: npx playwright test --config=playwright.config.ts --grep "@short"
       env:
         USER: '${{ secrets.USER }}'
         PW: '${{ secrets.PW }}'
