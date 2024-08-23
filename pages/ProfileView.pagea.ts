@@ -61,3 +61,9 @@ export class ProfilePage{
          this.button_2FAEinrichten = page.getByTestId('setup-two-factor-button');
     }
 }
+
+// Hinweis für FR branch 930
+// 1) die id data-testid="koPersNummer-label" nimmt am ende den Doppelpunkt nicht mit; 
+// 2)ebenso bei DStNr 
+// 3) der button Passwort setzen is disabled, ist dein branch nicht aktuell? 
+// 4) button_ZurueckVorherigeSeite hat keine TestId 
