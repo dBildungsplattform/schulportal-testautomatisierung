@@ -141,7 +141,8 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       // 2FA
       await expect(ProfileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
       await expect(ProfileView.icon_Schild2FA).toBeVisible();
-      // await expect(ProfileView.button_2FAEinrichten).toBeDisabled();  Aktuell disabled im FE bis SPSH-855 fertig ist
+      // #ToDo Aktuell disabled im FE bis SPSH-855 fertig ist
+      // await expect(ProfileView.button_2FAEinrichten).toBeDisabled();  
     });
 
     await test.step(`Testdaten via api löschen`, async () => {
@@ -297,5 +298,5 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
 
   // #ToDo: Testfall mit 2 Schulzuordnungen für Lehrer, dieser hat 2 Kacheln für die Schulzuordnungen
   // Testbar auf: https://spsh-930.dev.spsh.dbildungsplattform.de/
-  // Bitte Hinwiese beachten: ProfileView.pagea.ts
+  // Bitte Hinweise beachten: ProfileView.pagea.ts
 });
