@@ -43,7 +43,7 @@ export class ProfilePage{
         this.label_KopersNr = page.getByTestId('koPersNummer-label');
         this.data_KopersNr = page.getByTestId('koPersNummer-value');
         this.icon_InfoPersoenlicheDaten = page.getByTestId('info-icon');
-        // Schulzuordnung 1
+        // Schulzuordnung 1: Die Schulzuordnungen sind als Tabelle dargestellt, darum sind in den IDs Indexe
         this.cardHeadline_Schulzuordnung = page.getByTestId('zuordung-card-0');
         this.label_Schule = page.getByTestId('schule-label-0');
         this.data_Schule = page.getByTestId('schule-value-0');
@@ -64,6 +64,6 @@ export class ProfilePage{
 
 // Hinweis für FR branch 930
 // 1) die id data-testid="koPersNummer-label" nimmt am ende den Doppelpunkt nicht mit; 
-// 2)ebenso bei DStNr 
+// 2 )ebenso bei DStNr 
 // 3) der button Passwort setzen is disabled, ist dein branch nicht aktuell? 
 // 4) button_ZurueckVorherigeSeite hat keine TestId 

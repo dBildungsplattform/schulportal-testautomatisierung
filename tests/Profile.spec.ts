@@ -294,4 +294,8 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       await deleteRolle(page, rolleId);
     });
   });
+
+  // #ToDo: Testfall mit 2 Schulzuordnungen für Lehrer, dieser hat 2 Kacheln für die Schulzuordnungen
+  // Testbar auf: https://spsh-930.dev.spsh.dbildungsplattform.de/
+  // Bitte Hinwiese beachten: ProfileView.pagea.ts
 });
