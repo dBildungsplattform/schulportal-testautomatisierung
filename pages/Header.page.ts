@@ -8,4 +8,8 @@ export class HeaderPage{
         this.page = page;  
         this.button_logout = page.getByTestId('nav-logout-button');
     }
+
+    async logout() {
+        await this.button_logout.click();
+    }
 }
