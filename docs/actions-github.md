@@ -8,7 +8,7 @@ Diese Action kann nur manuell ausgelöst werden und enthält die Testsuite "stag
 Die Action wird beim Deployment auf den Branch-Umgebungen automatisch ausgelöst und enthält die Testsuite "short"
 
 ## Action "Scheduled Playwright Alle Tests(main)"
-Die Tests werden jeden Morgen zu einer bestimmten Uhrzeit zeitgesteuert ausgelöst und enthält die Testsuite "long"
+Die Action wird jeden Morgen zu einer bestimmten Uhrzeit zeitgesteuert ausgelöst und enthält die Testsuite "long"
 
 ## Action "Scheduled Playwright Smoketest(staging)"
 Die Action wird jeden Morgen zu einer bestimmten Uhrzeit zeitgesteuert ausgelöst und enthält die Testsuite "smoke"
