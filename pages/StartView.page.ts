@@ -14,4 +14,8 @@ export class StartPage{
         this.card_item_itslearning = page.locator('[href="https://qs-sh.itslearning.com/Index.aspx"]');
         this.card_item_schulportal_administration = page.getByText('Schulportal-Administration');
     }
+
+    async administration() {
+        await this.card_item_schulportal_administration.click();
+    }
 }

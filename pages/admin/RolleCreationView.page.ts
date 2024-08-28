@@ -1,4 +1,5 @@
 import { type Locator, Page } from '@playwright/test';
+import {ComboBox} from "../../elements/ComboBox";
 
 export class RolleCreationViewPage{
     readonly page: Page;
@@ -28,6 +29,7 @@ export class RolleCreationViewPage{
     readonly data_Angebote: Locator;
     readonly label_Systemrechte: Locator;
     readonly data_Systemrechte: Locator;
+    readonly schulstrukturknotenComboBox: ComboBox;
    
     constructor(page){
         // Anlage Rolle
@@ -59,5 +61,11 @@ export class RolleCreationViewPage{
         this.data_Angebote =  page.getByTestId('created-rolle-angebote');
         this.label_Systemrechte =  page.getByText('Systemrechte:', { exact: true });
         this.data_Systemrechte =  page.getByTestId('created-rolle-systemrecht');
+
+        this.schulstrukturknotenComboBox = new ComboBox(this.page, this.combobox_Schulstrukturknoten);
+    }
+
+    public selectSchulstrukturknoten(schulstrukturknoten: string){
+        this.schulstrukturknotenComboBox.select(schulstrukturknoten);
     }
 }

@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import { LandingPage } from "../pages/LandingView.page";
 import { LoginPage } from "../pages/LoginView.page";
 import { StartPage } from "../pages/StartView.page";
-import { MenuPage } from "../pages/MenuBar.page";
+import { AdminMenuPage } from "../pages/MenuBar.page";
 import { SchuleCreationViewPage } from "../pages/admin/SchuleCreationView.page";
 import { SchuleManagementViewPage } from "../pages/admin/SchuleManagementView.page";
 import { faker } from "@faker-js/faker/locale/de";
@@ -40,7 +40,7 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
 
   test("2 Schulen nacheinander anlegen", async ({ page }) => {
     const Startseite = new StartPage(page);
-    const Menue = new MenuPage(page);
+    const Menue = new AdminMenuPage(page);
     const SchuleCreationView = new SchuleCreationViewPage(page);
     const SchuleManagementView = new SchuleManagementViewPage(page);
     const FooterDataTable = new FooterDataTablePage(page);
@@ -91,7 +91,7 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
 
   test("Ergebnisliste Schulen auf Vollständigkeit prüfen", async ({ page }) => {
     const Startseite = new StartPage(page);
-    const Menue = new MenuPage(page);
+    const Menue = new AdminMenuPage(page);
     const SchuleManagementView = new SchuleManagementViewPage(page);
 
     await test.step(`Schulverwaltung öffnen und Alle Elemente in der Ergebnisliste auf Existenz prüfen`, async () => {

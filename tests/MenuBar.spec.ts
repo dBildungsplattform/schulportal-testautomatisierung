@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { LandingPage } from '../pages/LandingView.page';
 import { StartPage } from '../pages/StartView.page';
 import { LoginPage } from '../pages/LoginView.page';
-import { MenuPage } from '../pages/MenuBar.page';
+import { AdminMenuPage } from '../pages/MenuBar.page';
 import { HeaderPage } from "../pages/Header.page";
 
 const PW = process.env.PW;
@@ -32,7 +32,7 @@ test.describe(`Testfälle für die Hauptmenue-Leiste: Umgebung: ${process.env.UM
   
   test('Test der Hauptmenue-Leiste und Untermenues auf Vollständigkeit', async ({ page }) => {
     const Startseite = new StartPage(page)
-    const MenuBar = new MenuPage(page);
+    const MenuBar = new AdminMenuPage(page);
 
     await test.step(`Pruefen der Hauptmenueleiste mit Untermenues`, async () => {
       await Startseite.card_item_schulportal_administration.click();
@@ -52,7 +52,7 @@ test.describe(`Testfälle für die Hauptmenue-Leiste: Umgebung: ${process.env.UM
 
   test('Test der Funktion "Zurueck zur Startseite"', async ({ page }) => {
     const Startseite = new StartPage(page)
-    const MenuBar = new MenuPage(page);
+    const MenuBar = new AdminMenuPage(page);
 
     await test.step(`Menue-Eintrag zum Rücksprung auf die Startseite klicken`, async () => {
       await Startseite.card_item_schulportal_administration.click();

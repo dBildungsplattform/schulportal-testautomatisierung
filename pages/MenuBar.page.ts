@@ -1,6 +1,6 @@
 import { type Locator, Page } from '@playwright/test';
 
-export class MenuPage{
+export class AdminMenuPage {
     readonly page: Page;
     readonly header_label_Navigation: Locator;
     readonly button_BackStartpage: Locator;
@@ -35,5 +35,9 @@ export class MenuPage{
         this.menueItem_AlleSchulenAnzeigen = page.locator('[data-testid="schule-management-menu-item"] .v-list-item-title');
         this.menueItem_SchuleAnlegen = page.getByTestId('schule-creation-menu-item');
         this.label_Schultraegerverwaltung =  page.locator('[data-testid="schultraeger-management-title"] .v-list-item-title');
+    }
+
+    async rolleAnlegen() {
+        await this.menueItem_RolleAnlegen.click();
     }
 }

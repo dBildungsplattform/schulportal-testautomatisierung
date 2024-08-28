@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import { LandingPage } from "../pages/LandingView.page";
 import { LoginPage } from "../pages/LoginView.page";
 import { StartPage } from "../pages/StartView.page";
-import { MenuPage } from "../pages/MenuBar.page";
+import { AdminMenuPage } from "../pages/MenuBar.page";
 import { RolleCreationViewPage } from "../pages/admin/RolleCreationView.page";
 import { RolleManagementViewPage } from "../pages/admin/RolleManagementView.page";
 import { faker } from "@faker-js/faker/locale/de";
@@ -16,12 +16,11 @@ const FRONTEND_URL = process.env.FRONTEND_URL || "";
 test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }) => {
     await test.step(`Login`, async () => {
-      const Landing = new LandingPage(page);
+      const Landing = new LandingPage(page, FRONTEND_URL);
       const Startseite = new StartPage(page);
       const Login = new LoginPage(page);
 
-      await page.goto(FRONTEND_URL);
-      await Landing.button_Anmelden.click();
+      await Landing.login();
       await Login.login(ADMIN, PW);
       await expect(Startseite.text_h2_Ueberschrift).toBeVisible();
     });
@@ -30,13 +29,13 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
   test.afterEach(async ({ page }) => {
     await test.step(`Abmelden`, async () => {
       const Header = new HeaderPage(page);
-      await Header.button_logout.click();
+      await Header.logout();
     });
   });
 
   test("2 Rollen nacheinander anlegen mit Rollenarten LERN und LEHR", async ({ page }) => {
     const Startseite = new StartPage(page);
-    const Menue = new MenuPage(page);
+    const AdminMenue = new AdminMenuPage(page);
     const RolleCreationView = new RolleCreationViewPage(page);
     const RolleManagementView = new RolleManagementViewPage(page);
 
@@ -52,21 +51,24 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     const AngebotB2 = "Kalender"
 
     await test.step(`Dialog Rolle anlegen öffnen`, async () => {
-      await Startseite.card_item_schulportal_administration.click();
-      await Menue.menueItem_RolleAnlegen.click();
+      await Startseite.administration();
+      await AdminMenue.rolleAnlegen();
+
       await expect(RolleCreationView.text_h2_RolleAnlegen).toHaveText("Neue Rolle hinzufügen");
     });
 
     await test.step(`Erste Rolle anlegen`, async () => {
-      await RolleCreationView.combobox_Schulstrukturknoten.click();
+      await RolleCreationView.selectSchulstrukturknoten(SCHULSTRUKTURKNOTEN1);
 
-      await page.getByText(SCHULSTRUKTURKNOTEN1, { exact: true }).click();
       await RolleCreationView.combobox_Rollenart.click();
       await page.getByText(ROLLENART1, { exact: true }).click();
+
       await RolleCreationView.input_Rollenname.fill(ROLLENNAME1);
       await RolleCreationView.combobox_Angebote.click();
+
       await page.getByText(Angebot1, { exact: true }).click();
       await RolleCreationView.button_RolleAnlegen.click();
+
       await expect(RolleCreationView.text_success).toBeVisible();
     });
 
@@ -89,7 +91,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     });
 
     await test.step(`In der Ergebnisliste prüfen dass die beiden neuen Rollen angezeigt sind`, async () => {
-      await Menue.menueItem_AlleRollenAnzeigen.click();
+      await AdminMenue.menueItem_AlleRollenAnzeigen.click();
       await expect(RolleManagementView.text_h2_Rollenverwaltung).toHaveText("Rollenverwaltung");
       await expect(page.getByRole("cell", { name: ROLLENNAME1 })).toBeVisible();
       await expect(page.getByRole("cell", { name: ROLLENNAME2 })).toBeVisible();
@@ -105,7 +107,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
 
   test("Ergebnisliste Rollen auf Vollständigkeit prüfen", async ({ page }) => {
     const Startseite = new StartPage(page);
-    const Menue = new MenuPage(page);
+    const Menue = new AdminMenuPage(page);
     const RolleManagementView = new RolleManagementViewPage(page);
 
     await test.step(`Rollenverwaltung öffnen und alle Elemente in der Ergebnisliste auf Existenz prüfen`, async () => {

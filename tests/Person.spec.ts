@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import { LandingPage } from "../pages/LandingView.page";
 import { LoginPage } from "../pages/LoginView.page";
 import { StartPage } from "../pages/StartView.page";
-import { MenuPage } from "../pages/MenuBar.page";
+import { AdminMenuPage } from "../pages/MenuBar.page";
 import { PersonCreationViewPage } from "../pages/admin/PersonCreationView.page";
 import { PersonManagementViewPage } from "../pages/admin/PersonManagementView.page";
 import { HeaderPage } from "../pages/Header.page";
@@ -42,7 +42,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     const Landing = new LandingPage(page);
     const Startseite = new StartPage(page);
     const Login = new LoginPage(page);
-    const Menue = new MenuPage(page);
+    const Menue = new AdminMenuPage(page);
     const PersonCreationView = new PersonCreationViewPage(page);
     const PersonManagementView = new PersonManagementViewPage(page);
     const Header = new HeaderPage(page);
@@ -111,7 +111,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test("Einen Benutzer mit der Rolle Landesadmin anlegen", async ({ page }) => {
     const Startseite = new StartPage(page);
-    const Menue = new MenuPage(page);
+    const Menue = new AdminMenuPage(page);
     const PersonCreationView = new PersonCreationViewPage(page);
     const PersonManagementView = new PersonManagementViewPage(page);
 
@@ -156,7 +156,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test("Einen Benutzer mit der Rolle LiV anlegen", async ({ page }) => {
     const Startseite = new StartPage(page);
-    const Menue = new MenuPage(page);
+    const Menue = new AdminMenuPage(page);
     const PersonCreationView = new PersonCreationViewPage(page);
     const PersonManagementView = new PersonManagementViewPage(page);
 
@@ -199,7 +199,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test("Einen Benutzer mit der Rolle Schuladmin anlegen", async ({ page }) => {
     const Startseite = new StartPage(page);
-    const Menue = new MenuPage(page);
+    const Menue = new AdminMenuPage(page);
     const PersonCreationView = new PersonCreationViewPage(page);
     const PersonManagementView = new PersonManagementViewPage(page);
 
@@ -242,7 +242,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test("Einen Benutzer mit der Rolle SuS anlegen", async ({ page }) => {
     const Startseite = new StartPage(page);
-    const Menue = new MenuPage(page);
+    const Menue = new AdminMenuPage(page);
     const PersonCreationView = new PersonCreationViewPage(page);
     const PersonManagementView = new PersonManagementViewPage(page);
 
@@ -288,7 +288,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test("Ergebnisliste Benutzer auf Vollständigkeit prüfen", async ({page }) => {
     const Startseite = new StartPage(page);
-    const Menue = new MenuPage(page);
+    const Menue = new AdminMenuPage(page);
     const PersonManagementView = new PersonManagementViewPage(page);
 
     await test.step(`Benutzerverwaltung öffnen und alle Elemente in der Ergebnisliste auf Existenz prüfen`, async () => {
@@ -311,7 +311,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test("Prüfung auf korrekte Rollen in dem Dropdown 'Rolle' nach Auswahl der Organisation bei Anlage eines Benutzer", async ({page}) => {
     const Startseite = new StartPage(page);
-    const Menue = new MenuPage(page);
+    const Menue = new AdminMenuPage(page);
     const PersonCreationView = new PersonCreationViewPage(page);
 
     const Organisation_Land = "0701114 (Land Schleswig-Holstein)";

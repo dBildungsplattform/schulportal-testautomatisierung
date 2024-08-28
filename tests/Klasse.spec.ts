@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import { LandingPage } from "../pages/LandingView.page";
 import { LoginPage } from "../pages/LoginView.page";
 import { StartPage } from "../pages/StartView.page";
-import { MenuPage } from "../pages/MenuBar.page";
+import { AdminMenuPage } from "../pages/MenuBar.page";
 import { KlasseCreationViewPage } from "../pages/admin/KlasseCreationView.page";
 import { KlasseManagementViewPage } from "../pages/admin/KlasseManagementView.page";
 import { faker } from "@faker-js/faker/locale/de";
@@ -36,7 +36,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
 
   test("Eine Klasse anlegen und die Klasse anschließend in der Ergebnisliste suchen und dann löschen", async ({ page }) => {
     const Startseite = new StartPage(page);
-    const Menue = new MenuPage(page);
+    const Menue = new AdminMenuPage(page);
     const KlasseCreationView = new KlasseCreationViewPage(page);
     const KlasseManagementView = new KlasseManagementViewPage(page);
     const SCHULNAME = "Testschule Schulportal";
@@ -75,7 +75,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
 
   test("Ergebnisliste Klassen auf Vollständigkeit prüfen", async ({ page }) => {
     const Startseite = new StartPage(page);
-    const Menue = new MenuPage(page);
+    const Menue = new AdminMenuPage(page);
     const KlasseManagementView = new KlasseManagementViewPage(page);
 
     await test.step(`Klassenverwaltung öffnen und Alle Elemente in der Ergebnisliste auf Existenz prüfen`, async () => {
