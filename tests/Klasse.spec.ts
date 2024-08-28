@@ -16,7 +16,7 @@ const FRONTEND_URL = process.env.FRONTEND_URL || "";
 test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }) => {
     await test.step(`Login`, async () => {
-      const Landing = new LandingPage(page);
+      const Landing = new LandingPage(page, FRONTEND_URL);
       const Startseite = new StartPage(page);
       const Login = new LoginPage(page);
 

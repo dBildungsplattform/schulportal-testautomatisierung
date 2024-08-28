@@ -19,7 +19,7 @@ const FRONTEND_URL = process.env.FRONTEND_URL || "";
 test.describe(`Testfälle für die Administration von Personen": Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }) => {
     await test.step(`Login`, async () => {
-      const Landing = new LandingPage(page);
+      const Landing = new LandingPage(page, FRONTEND_URL);
       const Startseite = new StartPage(page);
       const Login = new LoginPage(page);
       await page.goto(FRONTEND_URL);
@@ -39,7 +39,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
   test("Einen Benutzer mit der Rolle Lehrkraft anlegen und anschließend mit diesem Benutzer anmelden", async ({
     page,
   }) => {
-    const Landing = new LandingPage(page);
+    const Landing = new LandingPage(page, FRONTEND_URL);
     const Startseite = new StartPage(page);
     const Login = new LoginPage(page);
     const Menue = new AdminMenuPage(page);
@@ -500,7 +500,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
   });
 
   test("Mehere Benutzer hintereinander anlegen in der Rolle Landesadmin für die Rollenarten SuS und LEHR und die Bestätigungsseiten vollständig prüfen", async ({ page }) => {
-    const Landing = new LandingPage(page);
+    const Landing = new LandingPage(page, FRONTEND_URL);
     const Startseite = new StartPage(page);
     const Login = new LoginPage(page);
     const Header = new HeaderPage(page);
