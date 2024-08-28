@@ -36,7 +36,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
   });
 
-  test("Einen Benutzer mit der Rolle Lehrkraft anlegen und anschließend mit diesem Benutzer anmelden", async ({
+  test("Einen Benutzer mit der Rolle Lehrkraft anlegen als Landesadmin und anschließend mit diesem Benutzer anmelden @long @short @stage", async ({
     page,
   }) => {
     const Landing = new LandingPage(page);
@@ -109,7 +109,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
   });
 
-  test("Einen Benutzer mit der Rolle Landesadmin anlegen", async ({ page }) => {
+  test("Einen Benutzer mit der Rolle Landesadmin anlegen @long @short @stage", async ({ page }) => {
     const Startseite = new StartPage(page);
     const Menue = new MenuPage(page);
     const PersonCreationView = new PersonCreationViewPage(page);
@@ -123,9 +123,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     await test.step(`Dialog Person anlegen öffnen`, async () => {
       await Startseite.card_item_schulportal_administration.click();
       await Menue.menueItem_BenutzerAnlegen.click();
-      await expect(PersonCreationView.text_h2_PersonAnlegen).toHaveText(
-        "Neuen Benutzer hinzufügen"
-      );
+      await expect(PersonCreationView.text_h2_PersonAnlegen).toHaveText("Neuen Benutzer hinzufügen");
     });
 
     await test.step(`Benutzer anlegen`, async () => {
@@ -154,7 +152,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
   });
 
-  test("Einen Benutzer mit der Rolle LiV anlegen", async ({ page }) => {
+  test("Einen Benutzer mit der Rolle LiV anlegen als Landesadmin @long @short @stage", async ({ page }) => {
     const Startseite = new StartPage(page);
     const Menue = new MenuPage(page);
     const PersonCreationView = new PersonCreationViewPage(page);
@@ -197,7 +195,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
   });
 
-  test("Einen Benutzer mit der Rolle Schuladmin anlegen", async ({ page }) => {
+  test("Einen Benutzer mit der Rolle Schuladmin anlegen als Landesadmin @long @short @stage", async ({ page }) => {
     const Startseite = new StartPage(page);
     const Menue = new MenuPage(page);
     const PersonCreationView = new PersonCreationViewPage(page);
@@ -240,7 +238,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
   });
 
-  test("Einen Benutzer mit der Rolle SuS anlegen", async ({ page }) => {
+  test("Einen Benutzer mit der Rolle SuS anlegen als Landesadmin @long @short @stage", async ({ page }) => {
     const Startseite = new StartPage(page);
     const Menue = new MenuPage(page);
     const PersonCreationView = new PersonCreationViewPage(page);
@@ -286,7 +284,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
   });
 
-  test("Ergebnisliste Benutzer auf Vollständigkeit prüfen", async ({page }) => {
+  test("Ergebnisliste Benutzer auf Vollständigkeit prüfen als Landesadmin @long @short @stage", async ({page }) => {
     const Startseite = new StartPage(page);
     const Menue = new MenuPage(page);
     const PersonManagementView = new PersonManagementViewPage(page);
@@ -309,7 +307,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
   });
 
-  test("Prüfung auf korrekte Rollen in dem Dropdown 'Rolle' nach Auswahl der Organisation bei Anlage eines Benutzer", async ({page}) => {
+  test("Prüfung auf korrekte Rollen in dem Dropdown 'Rolle' nach Auswahl der Organisation bei Anlage eines Benutzer in der Rolle Landesadmin @long @short @stage", async ({page}) => {
     const Startseite = new StartPage(page);
     const Menue = new MenuPage(page);
     const PersonCreationView = new PersonCreationViewPage(page);
@@ -379,7 +377,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
   });
 
-  test("In der Ergebnisliste die Suchfunktion ausführen", async ({ page }) => {
+  test("In der Ergebnisliste die Suchfunktion ausführen als Landesadmin @long @short @stage", async ({ page }) => {
     const PersonManagementView = new PersonManagementViewPage(page);
     const PersonCreationView = new PersonCreationViewPage(page);
 
@@ -446,7 +444,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
   });
 
-  test("Eine Lehrkraft anlegen in der Rolle Landesadmin und die Bestätigungsseite vollständig prüfen", async ({ page }) => {
+  test("Eine Lehrkraft anlegen in der Rolle Landesadmin und die Bestätigungsseite vollständig prüfen @long @short @stage", async ({ page }) => {
     const PersonCreationView = new PersonCreationViewPage(page);
     const Rolle = "Lehrkraft";
     const Vorname = "TAuto-PW-V-" + faker.person.firstName();
@@ -499,7 +497,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
   });
 
-  test("Mehere Benutzer hintereinander anlegen in der Rolle Landesadmin für die Rollenarten SuS und LEHR und die Bestätigungsseiten vollständig prüfen", async ({ page }) => {
+  test("Mehere Benutzer hintereinander anlegen in der Rolle Landesadmin für die Rollenarten SuS und LEHR und die Bestätigungsseiten vollständig prüfen @long @short @stage", async ({ page }) => {
     const Landing = new LandingPage(page);
     const Startseite = new StartPage(page);
     const Login = new LoginPage(page);

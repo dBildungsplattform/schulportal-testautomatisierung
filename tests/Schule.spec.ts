@@ -38,7 +38,7 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
     });
   });
 
-  test("2 Schulen nacheinander anlegen", async ({ page }) => {
+  test("2 Schulen nacheinander anlegen als Landesadmin @long", async ({ page }) => {
     const Startseite = new StartPage(page);
     const Menue = new MenuPage(page);
     const SchuleCreationView = new SchuleCreationViewPage(page);
@@ -89,7 +89,7 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
     });
   });
 
-  test("Ergebnisliste Schulen auf Vollständigkeit prüfen", async ({ page }) => {
+  test("Ergebnisliste Schulen auf Vollständigkeit prüfen als Landesadmin @long @short @stage", async ({ page }) => {
     const Startseite = new StartPage(page);
     const Menue = new MenuPage(page);
     const SchuleManagementView = new SchuleManagementViewPage(page);
@@ -105,7 +105,7 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
     });
   });
 
-  test("Eine Schule anlegen als Schuladmin und die Bestätigungsseite vollständig prüfen ", async ({ page }) => {
+  test("Eine Schule anlegen als Schuladmin und die Bestätigungsseite vollständig prüfen @long @short", async ({ page }) => {
     const SchuleCreationView = new SchuleCreationViewPage(page);
     // Schulen können noch nicht gelöscht werden. Um doppelte Namen zu vermeiden, wird am dem Schulnamen eine Zufallszahl angehängt
     const ZUFALLSNUMMER = faker.number.bigInt({ min: 1000, max: 9000 });

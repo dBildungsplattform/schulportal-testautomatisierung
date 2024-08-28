@@ -30,7 +30,7 @@ test.describe(`Testfälle für die Hauptmenue-Leiste: Umgebung: ${process.env.UM
     });
   });
   
-  test('Test der Hauptmenue-Leiste und Untermenues auf Vollständigkeit', async ({ page }) => {
+  test('Test der Hauptmenue-Leiste und Untermenues auf Vollständigkeit @long @short @stage', async ({ page }) => {
     const Startseite = new StartPage(page)
     const MenuBar = new MenuPage(page);
 
@@ -50,7 +50,7 @@ test.describe(`Testfälle für die Hauptmenue-Leiste: Umgebung: ${process.env.UM
     })    
   })  
 
-  test('Test der Funktion "Zurueck zur Startseite"', async ({ page }) => {
+  test('Test der Funktion "Zurueck zur Startseite" @long @short @stage', async ({ page }) => {
     const Startseite = new StartPage(page)
     const MenuBar = new MenuPage(page);
 
