@@ -50,6 +50,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     const Rolle = "Lehrkraft";
     const Vorname = "TAuto-PW-V-" + faker.person.firstName();
     const Nachname = "TAuto-PW-N-" + faker.person.lastName();
+    const Kopersnr = faker.string.numeric(7);
     const Schulstrukturknoten = "Testschule Schulportal";
     let Benutzername = "";
     let Einstiegspasswort = "";
@@ -60,13 +61,14 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await expect(PersonCreationView.text_h2_PersonAnlegen).toHaveText("Neuen Benutzer hinzufügen");
     });
 
-    await test.step(`Benutzer anlegen`, async () => {
+    await test.step(`Benutzer mit Kopers Nummer anlegen`, async () => {
       await PersonCreationView.combobox_Schulstrukturknoten.click();
       await page.getByText(Schulstrukturknoten).click();
       await PersonCreationView.combobox_Rolle.click();
       await page.getByText(Rolle, { exact: true }).click();
       await PersonCreationView.Input_Vorname.fill(Vorname);
       await PersonCreationView.Input_Nachname.fill(Nachname);
+      await PersonCreationView.Input_Kopersnr.fill(Kopersnr);
       await PersonCreationView.button_PersonAnlegen.click();
       await expect(PersonCreationView.text_success).toBeVisible();
 

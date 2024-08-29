@@ -9,6 +9,7 @@ export class PersonCreationViewPage{
     readonly combobox_Rolle_Clear: Locator;
     readonly Input_Vorname: Locator;
     readonly Input_Nachname: Locator;
+    readonly Input_Kopersnr: Locator;
     readonly combobox_Schulstrukturknoten: Locator;
     readonly combobox_Schulstrukturknoten_Clear: Locator;
     readonly combobox_Klasse: Locator;
@@ -45,6 +46,7 @@ export class PersonCreationViewPage{
         this.combobox_Schulstrukturknoten_Clear = page.getByTestId('organisation-select').getByLabel('leeren');
         this.Input_Vorname = page.getByTestId('vorname-input').locator('.v-field__input');
         this.Input_Nachname = page.getByTestId('familienname-input').locator('.v-field__input');
+        this.Input_Kopersnr = page.getByTestId('kopersnr-input').locator('.v-field__input');
         this.combobox_Schulstrukturknoten = page.getByTestId('organisation-select').locator('.v-field__input');
         this.combobox_Klasse = page.getByTestId('klasse-select').locator('.v-field__input');
         this.button_PersonAnlegen = page.getByTestId('person-creation-form-create-button');
