@@ -23,7 +23,7 @@ export class PersonManagementViewPage{
         this.table_header_Nachname = page.getByTestId('person-table').getByText('Nachname', { exact: true });
         this.table_header_Vorname = page.getByTestId('person-table').getByText('Vorname', { exact: true });
         this.table_header_Benutzername = page.getByText('Benutzername', { exact: true });
-        this.table_header_KopersNr = page.getByText('Kopers-Nr');
+        this.table_header_KopersNr = page.getByText('KoPers.-Nr.');
         this.table_header_Rolle = page.getByTestId('person-table').getByText('Rolle', { exact: true });
         this.table_header_Zuordnungen = page.getByText('Zuordnung(en)');
         this.table_header_Klasse =  page.getByTestId('person-table').getByText('Klasse', { exact: true });

@@ -46,7 +46,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     const SCHULSTRUKTURKNOTEN2 = "0703754 (Amalie-Sieveking-Schule)";
     const ROLLENART1 = "Lern";
     const ROLLENART2 = "Lehr";
-    const Merkmal2 = "KoPers-Nr. ist Pflichtangabe";
+    const Merkmal2 = "KoPers.-Nr. ist Pflichtangabe";
     const Angebot1 = "itslearning";
     const AngebotA2 = "E-Mail";
     const AngebotB2 = "Kalender"
@@ -126,7 +126,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     const DIENSTSTELLENNUMMER = '1111111';
     const SCHULSTRUKTURKNOTEN = DIENSTSTELLENNUMMER + " (Testschule Schulportal)";
     const ROLLENART = "Leit";
-    const Merkmal = "KoPers-Nr. ist Pflichtangabe";
+    const Merkmal = "KoPers.-Nr. ist Pflichtangabe";
     const AngebotA = "E-Mail";
     const AngebotB = "Schulportal-Administration";
     const AngebotC = "Kalender";
