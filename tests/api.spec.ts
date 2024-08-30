@@ -18,7 +18,7 @@ test.describe(`Spike um die API anzusprechen: Umgebung: ${process.env.UMGEBUNG}:
     });
   });
 
-  test('GET und Post request', async ({ page}) => {
+  test('GET und Post request Personen und Benutzer anschließend über das FE löschen @long @short @stage', async ({ page}) => {
     const Login = new LoginPage(page);
     const Landing = new LandingPage(page);
     const Start = new StartPage(page);
@@ -26,7 +26,7 @@ test.describe(`Spike um die API anzusprechen: Umgebung: ${process.env.UMGEBUNG}:
     const Vorname = "TAuto-PW-V-" + faker.person.firstName();
     const Nachname = "TAuto-PW-N-" + faker.person.lastName();
 
-    await test.step(`Anmelden mit Benutzer ${USER}`, async () => {
+    await test.step(`Anmelden mit einem Landesadmin ${USER}`, async () => {
       await page.goto(FRONTEND_URL);
       await expect(Landing.text_Willkommen).toBeVisible();
       await Landing.button_Anmelden.click();

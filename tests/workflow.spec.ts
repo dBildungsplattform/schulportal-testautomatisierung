@@ -26,7 +26,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.U
     });
   });
 
-  test("Angebote per Link öffnen", async ({ page }) => {
+  test("Angebote per Link öffnen als Landesadmin @long @short @stage", async ({ page }) => {
     const Startseite = new StartPage(page);
 
     await test.step(`Kacheln Email für Lehrkräfte und Itslearning öffnen, danach beide Kacheln wieder schließen`, async () => {
@@ -51,7 +51,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.U
     });
   });
 
-  test("Passwort Reset", async ({ page }) => {
+  test("Passwort Reset für einen Lehrer als Landesadmin @long @short @stage", async ({ page }) => {
     const Landing = new LandingPage(page);
     const Login = new LoginPage(page);
     const Startseite = new StartPage(page);

@@ -51,8 +51,12 @@ jobs:
       run: npm ci
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
+    
+    - name: List Playwright tests
+      run: npx playwright test --list --grep "@short"
     - name: Run Playwright tests
-      run: npx playwright test
+      run: npx playwright test --config=playwright.config.ts --grep "@short"
+    
       env:
         USER: '${{ secrets.USER }}'
         PW: '${{ secrets.PW }}'
