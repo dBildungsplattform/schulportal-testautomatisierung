@@ -1,11 +1,13 @@
-import {Locator} from "@playwright/test";
+import { Locator, Page } from "@playwright/test";
 
 export class ComboBox {
-    constructor(private page, private locator: Locator) {
-    }
+  public constructor(
+    private page: Page,
+    private locator: Locator,
+  ) {}
 
-    async select(value: string) {
-        await this.locator.click();
-        await this.page.getByText(value, { exact: true }).click();
-    }
+  public async select(value: string): Promise<void> {
+    await this.locator.click();
+    await this.page.getByText(value, { exact: true }).click();
+  }
 }

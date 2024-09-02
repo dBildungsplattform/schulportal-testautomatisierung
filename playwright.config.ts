@@ -10,10 +10,10 @@ export default defineConfig({
   timeout: 30 * 2000,
   expect: { timeout: 10000 },
   fullyParallel: true,
-  forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
+  forbidOnly: !!process.env["CI"],
+  retries: process.env["CI"] ? 2 : 0,
   maxFailures: 3,
-  workers: process.env.CI ? 1 : undefined,
+  workers: process.env["CI"] ? 1 : undefined,
   reporter: [["html"]],
   use: {
     // trace: "on-first-retry",
@@ -37,11 +37,11 @@ export default defineConfig({
     //   use: { ...devices['Desktop Firefox'] },
     // },
     /*
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-    },
-*/
+            {
+              name: 'webkit',
+              use: { ...devices['Desktop Safari'] },
+            },
+        */
     /* Test against mobile viewports. */
     // {
     //   name: 'Mobile Chrome',

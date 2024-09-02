@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 import { LandingPage } from "../pages/LandingView.page";
 import { LoginPage } from "../pages/LoginView.page";
 import { StartPage } from "../pages/StartView.page";
@@ -8,11 +8,11 @@ import { PersonManagementViewPage } from "../pages/admin/PersonManagementView.pa
 import { PersonDetailsViewPage } from "../pages/admin/PersonDetailsView.page";
 import { HeaderPage } from "../pages/Header.page";
 
-const PW = process.env.PW;
-const ADMIN = process.env.USER;
-const FRONTEND_URL = process.env.FRONTEND_URL || "";
+const PW = process.env["PW"] || "";
+const ADMIN = process.env["USER"] || "";
+const FRONTEND_URL = process.env["FRONTEND_URL"] || "";
 
-test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
+test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env["UMGEBUNG"]}: URL: ${process.env["FRONTEND_URL"]}:`, () => {
   test.beforeEach(async ({ page }) => {
     await test.step(`Login`, async () => {
       const Landing = new LandingPage(page);
@@ -26,7 +26,9 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.U
     });
   });
 
-  test("Angebote per Link öffnen als Landesadmin @long @short @stage", async ({ page }) => {
+  test("Angebote per Link öffnen als Landesadmin @long @short @stage", async ({
+    page,
+  }) => {
     const Startseite = new StartPage(page);
 
     await test.step(`Kacheln Email für Lehrkräfte und Itslearning öffnen, danach beide Kacheln wieder schließen`, async () => {
@@ -51,7 +53,9 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.U
     });
   });
 
-  test("Passwort Reset für einen Lehrer als Landesadmin @long @short @stage", async ({ page }) => {
+  test("Passwort Reset für einen Lehrer als Landesadmin @long @short @stage", async ({
+    page,
+  }) => {
     const Landing = new LandingPage(page);
     const Login = new LoginPage(page);
     const Startseite = new StartPage(page);
@@ -72,7 +76,9 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.U
     });
 
     await test.step(`In den User-Details PW-Reset Dialog starten`, async () => {
-      await expect(PersonManagementDetail.text_h2_BenutzerBearbeiten).toBeVisible();
+      await expect(
+        PersonManagementDetail.text_h2_BenutzerBearbeiten,
+      ).toBeVisible();
       await PersonManagementDetail.button_pwChange.click();
       await expect(PersonManagementDetail.text_pwResetInfo).toBeVisible();
     });

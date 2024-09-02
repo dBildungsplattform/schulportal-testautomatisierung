@@ -1,11 +1,11 @@
-import { type Locator, Page } from '@playwright/test';
+import { type Locator, Page } from "@playwright/test";
 
-export class FooterDataTablePage{
-    readonly page: Page;
-    readonly combobox_AnzahlEintraege: Locator;
+export class FooterDataTablePage {
+  public readonly combobox_AnzahlEintraege: Locator;
 
-    constructor(page){
-        this.page = page;  
-        this.combobox_AnzahlEintraege = page.locator('.v-data-table-footer__items-per-page .v-input');
-    }
+  public constructor(public readonly page: Page) {
+    this.combobox_AnzahlEintraege = page.locator(
+      ".v-data-table-footer__items-per-page .v-input",
+    );
+  }
 }
