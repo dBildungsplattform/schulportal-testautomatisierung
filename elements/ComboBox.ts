@@ -4,8 +4,8 @@ export class ComboBox {
     constructor(private page, private locator: Locator) {
     }
 
-    async select(schulstrukturknoten: string) {
+    async select(value: string) {
         await this.locator.click();
-        await this.page.getByText(schulstrukturknoten, { exact: true }).click();
+        await this.page.getByText(value, { exact: true }).click();
     }
 }
