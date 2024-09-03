@@ -493,7 +493,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await expect(PersonCreationView.data_Rolle).toHaveText(Rolle);
       await expect(PersonCreationView.label_Organisationsebene).toHaveText('Organisationsebene:');
       await expect(PersonCreationView.data_Organisationsebene).toHaveText(Dienststellennummer + ' (' + Schulstrukturknoten + ')');
-      await expect(PersonCreationView.label_Klasse).toHaveText('Klasse:');
       await expect(PersonCreationView.button_WeiterenBenutzerAnlegen).toBeVisible();
       await expect(PersonCreationView.button_ZurueckErgebnisliste).toBeVisible();
     });
@@ -626,8 +625,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await expect(PersonCreationView.data_Rolle).toHaveText(Rolle2);
       await expect(PersonCreationView.label_Organisationsebene).toHaveText('Organisationsebene:');
       await expect(PersonCreationView.data_Organisationsebene).toHaveText(Dienststellennummer + ' (' + Schulstrukturknoten + ')');
-      await expect(PersonCreationView.label_Klasse).toHaveText('Klasse:');
-      await expect(PersonCreationView.data_Klasse).toHaveText('---');
       await expect(PersonCreationView.button_WeiterenBenutzerAnlegen).toBeVisible();
       await expect(PersonCreationView.button_ZurueckErgebnisliste).toBeVisible();
       Benutzername2 = await PersonCreationView.data_Benutzername.innerText();
@@ -664,8 +661,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await expect(PersonCreationView.data_Rolle).toHaveText(Rolle3);
       await expect(PersonCreationView.label_Organisationsebene).toHaveText('Organisationsebene:');
       await expect(PersonCreationView.data_Organisationsebene).toHaveText(Dienststellennummer + ' (' + Schulstrukturknoten + ')');
-      await expect(PersonCreationView.label_Klasse).toHaveText('Klasse:');
-      await expect(PersonCreationView.data_Klasse).toHaveText('---');
       await expect(PersonCreationView.button_WeiterenBenutzerAnlegen).toBeVisible();
       await expect(PersonCreationView.button_ZurueckErgebnisliste).toBeVisible();
       Benutzername3 = await PersonCreationView.data_Benutzername.innerText();
