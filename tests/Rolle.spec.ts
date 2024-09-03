@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, PlaywrightTestArgs, test } from "@playwright/test";
 import { LandingPage } from "../pages/LandingView.page";
 import { LoginPage } from "../pages/LoginView.page";
 import { StartPage } from "../pages/StartView.page";
@@ -9,16 +9,16 @@ import { faker } from "@faker-js/faker/locale/de";
 import { HeaderPage } from "../pages/Header.page";
 import { deleteRolle, getRolleId } from "../base/api/testHelperRolle.page";
 
-const PW = process.env["PW"] || "";
-const ADMIN = process.env["USER"] || "";
-const FRONTEND_URL = process.env["FRONTEND_URL"] || "";
+const PW: string = process.env["PW"] || "";
+const ADMIN: string = process.env["USER"] || "";
+const FRONTEND_URL: string = process.env["FRONTEND_URL"] || "";
 
 test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${process.env["UMGEBUNG"]}: URL: ${process.env["FRONTEND_URL"]}:`, () => {
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
     await test.step(`Login`, async () => {
-      const Landing = new LandingPage(page, FRONTEND_URL);
-      const Startseite = new StartPage(page);
-      const Login = new LoginPage(page);
+      const Landing: LandingPage = new LandingPage(page, FRONTEND_URL);
+      const Startseite: StartPage = new StartPage(page);
+      const Login: LoginPage = new LoginPage(page);
 
       await Landing.login();
       await Login.login(ADMIN, PW);
@@ -26,33 +26,36 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     });
   });
 
-  test.afterEach(async ({ page }) => {
+  test.afterEach(async ({ page }: PlaywrightTestArgs) => {
     await test.step(`Abmelden`, async () => {
-      const Header = new HeaderPage(page);
+      const Header: HeaderPage = new HeaderPage(page);
       await Header.logout();
     });
   });
 
   test("2 Rollen nacheinander anlegen mit Rollenarten LERN und LEHR als Landesadmin @long @short @stage", async ({
     page,
-  }) => {
-    const Startseite = new StartPage(page);
-    const AdminMenue = new AdminMenuPage(page);
-    const RolleCreationView = new RolleCreationViewPage(page);
-    const RolleManagementView = new RolleManagementViewPage(page);
+  }: PlaywrightTestArgs) => {
+    const Startseite: StartPage = new StartPage(page);
+    const AdminMenue: AdminMenuPage = new AdminMenuPage(page);
+    const RolleCreationView: RolleCreationViewPage = new RolleCreationViewPage(
+      page,
+    );
+    const RolleManagementView: RolleManagementViewPage =
+      new RolleManagementViewPage(page);
 
-    const ROLLENNAME1 =
+    const ROLLENNAME1: string =
       "TAuto-PW-R1-" + faker.lorem.word({ length: { min: 8, max: 12 } });
-    const ROLLENNAME2 =
+    const ROLLENNAME2: string =
       "TAuto-PW-R2-" + faker.lorem.word({ length: { min: 8, max: 12 } });
-    const SCHULSTRUKTURKNOTEN1 = "0701114 (Land Schleswig-Holstein)";
-    const SCHULSTRUKTURKNOTEN2 = "0703754 (Amalie-Sieveking-Schule)";
-    const ROLLENART1 = "Lern";
-    const ROLLENART2 = "Lehr";
-    const Merkmal2 = "KoPers.-Nr. ist Pflichtangabe";
-    const Angebot1 = "itslearning";
-    const AngebotA2 = "E-Mail";
-    const AngebotB2 = "Kalender";
+    const SCHULSTRUKTURKNOTEN1: string = "0701114 (Land Schleswig-Holstein)";
+    const SCHULSTRUKTURKNOTEN2: string = "0703754 (Amalie-Sieveking-Schule)";
+    const ROLLENART1: string = "Lern";
+    const ROLLENART2: string = "Lehr";
+    const Merkmal2: string = "KoPers.-Nr. ist Pflichtangabe";
+    const Angebot1: string = "itslearning";
+    const AngebotA2: string = "E-Mail";
+    const AngebotB2: string = "Kalender";
 
     await test.step(`Dialog Rolle anlegen öffnen`, async () => {
       await Startseite.administration();
@@ -106,8 +109,8 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     });
 
     await test.step(`Rollen wieder löschen`, async () => {
-      const RollenID1 = await getRolleId(page, ROLLENNAME1);
-      const RollenID2 = await getRolleId(page, ROLLENNAME2);
+      const RollenID1: string = await getRolleId(page, ROLLENNAME1);
+      const RollenID2: string = await getRolleId(page, ROLLENNAME2);
       await deleteRolle(page, RollenID1);
       await deleteRolle(page, RollenID2);
     });
@@ -115,10 +118,11 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
 
   test("Ergebnisliste Rollen auf Vollständigkeit prüfen als Landesadmin @long @short @stage", async ({
     page,
-  }) => {
-    const Startseite = new StartPage(page);
-    const Menue = new AdminMenuPage(page);
-    const RolleManagementView = new RolleManagementViewPage(page);
+  }: PlaywrightTestArgs) => {
+    const Startseite: StartPage = new StartPage(page);
+    const Menue: AdminMenuPage = new AdminMenuPage(page);
+    const RolleManagementView: RolleManagementViewPage =
+      new RolleManagementViewPage(page);
 
     await test.step(`Rollenverwaltung öffnen und alle Elemente in der Ergebnisliste auf Existenz prüfen`, async () => {
       await Startseite.card_item_schulportal_administration.click();
@@ -138,21 +142,23 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
 
   test("Eine Rolle anlegen und die Bestätigungsseite vollständig prüfen als Landesadmin @long @short @stage", async ({
     page,
-  }) => {
-    const RolleCreationView = new RolleCreationViewPage(page);
-    const ROLLENNAME =
+  }: PlaywrightTestArgs) => {
+    const RolleCreationView: RolleCreationViewPage = new RolleCreationViewPage(
+      page,
+    );
+    const ROLLENNAME: string =
       "TAuto-PW-R-" + faker.lorem.word({ length: { min: 8, max: 12 } });
-    const DIENSTSTELLENNUMMER = "1111111";
-    const SCHULSTRUKTURKNOTEN =
+    const DIENSTSTELLENNUMMER: string = "1111111";
+    const SCHULSTRUKTURKNOTEN: string =
       DIENSTSTELLENNUMMER + " (Testschule Schulportal)";
-    const ROLLENART = "Leit";
-    const Merkmal = "KoPers.-Nr. ist Pflichtangabe";
-    const AngebotA = "E-Mail";
-    const AngebotB = "Schulportal-Administration";
-    const AngebotC = "Kalender";
-    const SystemrechtA = "Darf Benutzer verwalten";
-    const SystemrechtB = "Darf Schulen verwalten";
-    const SystemrechtC = "Darf Klassen verwalten";
+    const ROLLENART: string = "Leit";
+    const Merkmal: string = "KoPers.-Nr. ist Pflichtangabe";
+    const AngebotA: string = "E-Mail";
+    const AngebotB: string = "Schulportal-Administration";
+    const AngebotC: string = "Kalender";
+    const SystemrechtA: string = "Darf Benutzer verwalten";
+    const SystemrechtB: string = "Darf Schulen verwalten";
+    const SystemrechtC: string = "Darf Klassen verwalten";
 
     await test.step(`Dialog Rolle anlegen öffnen`, async () => {
       await page.goto(FRONTEND_URL + "admin/rollen/new");
@@ -220,7 +226,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     });
 
     await test.step(`Rolle wieder löschen`, async () => {
-      const RollenID = await getRolleId(page, ROLLENNAME);
+      const RollenID: string = await getRolleId(page, ROLLENNAME);
       await deleteRolle(page, RollenID);
     });
   });

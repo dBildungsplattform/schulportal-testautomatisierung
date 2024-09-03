@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, PlaywrightTestArgs, test } from "@playwright/test";
 import { LandingPage } from "../pages/LandingView.page";
 import { StartPage } from "../pages/StartView.page";
 import { LoginPage } from "../pages/LoginView.page";
@@ -14,31 +14,31 @@ import {
 } from "../base/api/testHelperRolle.page";
 import { UserInfo } from "../base/api/testHelper.page";
 
-const PW = process.env["PW"] || "";
-const ADMIN = process.env["USER"] || "";
-const FRONTEND_URL = process.env["FRONTEND_URL"] || "";
+const PW: string = process.env["PW"] || "";
+const ADMIN: string = process.env["USER"] || "";
+const FRONTEND_URL: string = process.env["FRONTEND_URL"] || "";
 
 test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.env["UMGEBUNG"]}: URL: ${process.env["FRONTEND_URL"]}:`, () => {
-  test.afterEach(async ({ page }) => {
+  test.afterEach(async ({ page }: PlaywrightTestArgs) => {
     await test.step(`Abmelden`, async () => {
-      const Header = new HeaderPage(page);
+      const Header: HeaderPage = new HeaderPage(page);
       await Header.button_logout.click();
     });
   });
 
   test("Prüfen, dass die Schulportal-Administration Kachel nicht sichtbar ist für Lehrkräfte @long @stage", async ({
     page,
-  }) => {
-    const Landing = new LandingPage(page);
-    const Login = new LoginPage(page);
-    const Header = new HeaderPage(page);
+  }: PlaywrightTestArgs) => {
+    const Landing: LandingPage = new LandingPage(page);
+    const Login: LoginPage = new LoginPage(page);
+    const Header: HeaderPage = new HeaderPage(page);
 
     // Testdaten erstellen
     await page.goto(FRONTEND_URL);
     await Landing.button_Anmelden.click();
     await Login.login(ADMIN, PW);
 
-    const idSP = await getSPId(page, "E-Mail");
+    const idSP: string = await getSPId(page, "E-Mail");
     const userInfo: UserInfo = await createPersonWithUserContext(
       page,
       "Testschule Schulportal",
@@ -54,7 +54,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
     await Landing.button_Anmelden.click();
     await Login.login(userInfo.username, userInfo.password);
     await Login.UpdatePW();
-    const Startseite = new StartPage(page);
+    const Startseite: StartPage = new StartPage(page);
     await test.step(`Prüfen, dass die Kachel E-Mail angezeigt wird und die Kachel Schulportal-Administration nicht angezeigt wird`, async () => {
       await expect(
         Startseite.card_item_schulportal_administration,
@@ -72,17 +72,17 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
 
   test("Prüfen, dass die Schulportal-Administration Kachel nicht sichtbar ist für Schüler @long @short @stage", async ({
     page,
-  }) => {
-    const Landing = new LandingPage(page);
-    const Login = new LoginPage(page);
-    const Header = new HeaderPage(page);
+  }: PlaywrightTestArgs) => {
+    const Landing: LandingPage = new LandingPage(page);
+    const Login: LoginPage = new LoginPage(page);
+    const Header: HeaderPage = new HeaderPage(page);
 
     // Testdaten erstellen
     await page.goto(FRONTEND_URL);
     await Landing.button_Anmelden.click();
     await Login.login(ADMIN, PW);
 
-    const idSP = await getSPId(page, "itslearning");
+    const idSP: string = await getSPId(page, "itslearning");
     const userInfo: UserInfo = await createPersonWithUserContext(
       page,
       "Testschule Schulportal",
@@ -98,7 +98,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
     await Landing.button_Anmelden.click();
     await Login.login(userInfo.username, userInfo.password);
     await Login.UpdatePW();
-    const Startseite = new StartPage(page);
+    const Startseite: StartPage = new StartPage(page);
     await test.step(`Prüfen, dass die Kachel E-Mail angezeigt wird und die Kachel Schulportal-Administration nicht angezeigt wird`, async () => {
       await expect(
         Startseite.card_item_schulportal_administration,
@@ -116,17 +116,17 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
 
   test("Prüfen, dass die Schulportal-Administration Kachel sichtbar ist für Schuladmins @long @stage", async ({
     page,
-  }) => {
-    const Landing = new LandingPage(page);
-    const Login = new LoginPage(page);
-    const Header = new HeaderPage(page);
+  }: PlaywrightTestArgs) => {
+    const Landing: LandingPage = new LandingPage(page);
+    const Login: LoginPage = new LoginPage(page);
+    const Header: HeaderPage = new HeaderPage(page);
 
     // Testdaten erstellen
     await page.goto(FRONTEND_URL);
     await Landing.button_Anmelden.click();
     await Login.login(ADMIN, PW);
 
-    const idSP = await getSPId(page, "Schulportal-Administration");
+    const idSP: string = await getSPId(page, "Schulportal-Administration");
     const userInfo: UserInfo = await createPersonWithUserContext(
       page,
       "Testschule Schulportal",
@@ -144,7 +144,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
     await Landing.button_Anmelden.click();
     await Login.login(userInfo.username, userInfo.password);
     await Login.UpdatePW();
-    const Startseite = new StartPage(page);
+    const Startseite: StartPage = new StartPage(page);
     await test.step(`Prüfen, dass die Kachel E-Mail nicht angezeigt wird und die Kachel Schulportal-Administration angezeigt wird`, async () => {
       await expect(
         Startseite.card_item_schulportal_administration,

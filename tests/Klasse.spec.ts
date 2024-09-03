@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, PlaywrightTestArgs, test } from "@playwright/test";
 import { LandingPage } from "../pages/LandingView.page";
 import { LoginPage } from "../pages/LoginView.page";
 import { StartPage } from "../pages/StartView.page";
@@ -12,15 +12,15 @@ import {
   getKlasseId,
 } from "../base/api/testHelperOrganisation.page";
 
-const PW = process.env["PW"] || "";
-const ADMIN = process.env["USER"] || "";
+const PW: string = process.env["PW"] || "";
+const ADMIN: string = process.env["USER"] || "";
 
 test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${process.env["UMGEBUNG"]}: URL: ${process.env["FRONTEND_URL"]}:`, () => {
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page: page }: PlaywrightTestArgs) => {
     await test.step(`Login`, async () => {
-      const Landing = new LandingPage(page);
-      const Startseite = new StartPage(page);
-      const Login = new LoginPage(page);
+      const Landing: LandingPage = new LandingPage(page);
+      const Startseite: StartPage = new StartPage(page);
+      const Login: LoginPage = new LoginPage(page);
 
       await Landing.login();
       await Login.login(ADMIN, PW);
@@ -28,22 +28,24 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     });
   });
 
-  test.afterEach(async ({ page }) => {
+  test.afterEach(async ({ page: page }: PlaywrightTestArgs) => {
     await test.step(`Abmelden`, async () => {
-      const Header = new HeaderPage(page);
+      const Header: HeaderPage = new HeaderPage(page);
       await Header.button_logout.click();
     });
   });
 
   test("Eine Klasse als Landesadmin anlegen und die Klasse anschließend in der Ergebnisliste suchen und dann löschen @long @short @stage", async ({
-    page,
-  }) => {
-    const Startseite = new StartPage(page);
-    const Menue = new AdminMenuPage(page);
-    const KlasseCreationView = new KlasseCreationViewPage(page);
-    const KlasseManagementView = new KlasseManagementViewPage(page);
-    const SCHULNAME = "Testschule Schulportal";
-    const KLASSENNAME =
+    page: page,
+  }: PlaywrightTestArgs) => {
+    const Startseite: StartPage = new StartPage(page);
+    const Menue: AdminMenuPage = new AdminMenuPage(page);
+    const KlasseCreationView: KlasseCreationViewPage =
+      new KlasseCreationViewPage(page);
+    const KlasseManagementView: KlasseManagementViewPage =
+      new KlasseManagementViewPage(page);
+    const SCHULNAME: string = "Testschule Schulportal";
+    const KLASSENNAME: string =
       "TAuto-PW-K-12 " + faker.lorem.word({ length: { min: 10, max: 10 } });
 
     await test.step(`Dialog Schule anlegen öffnen`, async () => {
@@ -83,10 +85,11 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
 
   test("Ergebnisliste Klassen als Landesadmin auf Vollständigkeit prüfen @long @short @stage", async ({
     page,
-  }) => {
-    const Startseite = new StartPage(page);
-    const Menue = new AdminMenuPage(page);
-    const KlasseManagementView = new KlasseManagementViewPage(page);
+  }: PlaywrightTestArgs) => {
+    const Startseite: StartPage = new StartPage(page);
+    const Menue: AdminMenuPage = new AdminMenuPage(page);
+    const KlasseManagementView: KlasseManagementViewPage =
+      new KlasseManagementViewPage(page);
 
     await test.step(`Klassenverwaltung öffnen und Alle Elemente in der Ergebnisliste auf Existenz prüfen`, async () => {
       await Startseite.card_item_schulportal_administration.click();
@@ -108,11 +111,12 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
 
   test("Eine Klasse als Landesadmin anlegen und die Bestätigungsseite vollständig prüfen @long @stage", async ({
     page,
-  }) => {
-    const KlasseCreationView = new KlasseCreationViewPage(page);
-    const DIENSTSTELLENNUMMER = "1111111";
-    const SCHULNAME = "Testschule Schulportal";
-    const KLASSENNAME =
+  }: PlaywrightTestArgs) => {
+    const KlasseCreationView: KlasseCreationViewPage =
+      new KlasseCreationViewPage(page);
+    const DIENSTSTELLENNUMMER: string = "1111111";
+    const SCHULNAME: string = "Testschule Schulportal";
+    const KLASSENNAME: string =
       "TAuto-PW-K-12 " + faker.lorem.word({ length: { min: 10, max: 10 } });
 
     await test.step(`Dialog Klasse anlegen öffnen`, async () => {
@@ -148,7 +152,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     });
 
     await test.step(`Testdaten löschen via API`, async () => {
-      const KlassenID = await getKlasseId(page, KLASSENNAME);
+      const KlassenID: string = await getKlasseId(page, KLASSENNAME);
       await deleteKlasse(page, KlassenID);
     });
   });

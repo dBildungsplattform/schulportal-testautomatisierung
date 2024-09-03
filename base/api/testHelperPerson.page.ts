@@ -1,9 +1,9 @@
-import { expect, Page } from "@playwright/test";
+import { APIResponse, expect, Page } from "@playwright/test";
 import { getOrganisationId } from "./testHelperOrganisation.page";
 import { addSPToRolle, createRolle } from "./testHelperRolle.page";
 import { UserInfo } from "./testHelper.page";
 
-const FRONTEND_URL = process.env["FRONTEND_URL"] || "";
+const FRONTEND_URL: string = process.env["FRONTEND_URL"] || "";
 
 export async function createPerson(
   page: Page,
@@ -12,7 +12,7 @@ export async function createPerson(
   organisationId: string,
   rolleId: string,
 ): Promise<UserInfo> {
-  const response = await page.request.post(
+  const response: APIResponse = await page.request.post(
     FRONTEND_URL + "api/personenkontext-workflow/",
     {
       data: {
@@ -24,7 +24,13 @@ export async function createPerson(
     },
   );
   expect(response.status()).toBe(201);
-  const json = await response.json();
+  const json: {
+    person: {
+      referrer: string;
+      startpasswort: string;
+      id: string;
+    };
+  } = await response.json();
   return {
     username: json.person.referrer,
     password: json.person.startpasswort,
@@ -70,7 +76,7 @@ export async function deletePersonen(
   page: Page,
   personId: string,
 ): Promise<void> {
-  const response = await page.request.delete(
+  const response: APIResponse = await page.request.delete(
     FRONTEND_URL + `api/personen/${personId}`,
     {},
   );
@@ -81,11 +87,20 @@ export async function getPersonId(
   page: Page,
   Benutzername: string,
 ): Promise<string> {
-  const response = await page.request.get(
+  const response: APIResponse = await page.request.get(
     FRONTEND_URL + `api/personen-frontend?suchFilter=${Benutzername}`,
     {},
   );
+
+  interface PersonResponse {
+    person: {
+      referrer: string;
+      startpasswort: string;
+      id: string;
+    };
+  }
+
   expect(response.status()).toBe(200);
-  const json = await response.json();
-  return json.items[0].person.id;
+  const json: { items: PersonResponse[] } = await response.json();
+  return json.items[0]!.person.id;
 }

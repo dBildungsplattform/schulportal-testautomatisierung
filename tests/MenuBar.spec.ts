@@ -1,20 +1,20 @@
-import { expect, test } from "@playwright/test";
+import { expect, PlaywrightTestArgs, test } from "@playwright/test";
 import { LandingPage } from "../pages/LandingView.page";
 import { StartPage } from "../pages/StartView.page";
 import { LoginPage } from "../pages/LoginView.page";
 import { AdminMenuPage } from "../pages/MenuBar.page";
 import { HeaderPage } from "../pages/Header.page";
 
-const PW = process.env["PW"] || "";
-const ADMIN = process.env["USER"] || "";
-const FRONTEND_URL = process.env["FRONTEND_URL"] || "";
+const PW: string = process.env["PW"] || "";
+const ADMIN: string = process.env["USER"] || "";
+const FRONTEND_URL: string = process.env["FRONTEND_URL"] || "";
 
 test.describe(`Testfälle für die Hauptmenue-Leiste: Umgebung: ${process.env["UMGEBUNG"]}: URL: ${process.env["FRONTEND_URL"]}:`, () => {
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
     await test.step(`Login`, async () => {
-      const Landing = new LandingPage(page);
-      const Startseite = new StartPage(page);
-      const Login = new LoginPage(page);
+      const Landing: LandingPage = new LandingPage(page);
+      const Startseite: StartPage = new StartPage(page);
+      const Login: LoginPage = new LoginPage(page);
 
       await page.goto(FRONTEND_URL);
       await Landing.button_Anmelden.click();
@@ -23,18 +23,18 @@ test.describe(`Testfälle für die Hauptmenue-Leiste: Umgebung: ${process.env["U
     });
   });
 
-  test.afterEach(async ({ page }) => {
+  test.afterEach(async ({ page }: PlaywrightTestArgs) => {
     await test.step(`Abmelden`, async () => {
-      const Header = new HeaderPage(page);
+      const Header: HeaderPage = new HeaderPage(page);
       await Header.button_logout.click();
     });
   });
 
   test("Test der Hauptmenue-Leiste und Untermenues auf Vollständigkeit @long @short @stage", async ({
     page,
-  }) => {
-    const Startseite = new StartPage(page);
-    const MenuBar = new AdminMenuPage(page);
+  }: PlaywrightTestArgs) => {
+    const Startseite: StartPage = new StartPage(page);
+    const MenuBar: AdminMenuPage = new AdminMenuPage(page);
 
     await test.step(`Pruefen der Hauptmenueleiste mit Untermenues`, async () => {
       await Startseite.card_item_schulportal_administration.click();
@@ -54,9 +54,9 @@ test.describe(`Testfälle für die Hauptmenue-Leiste: Umgebung: ${process.env["U
 
   test('Test der Funktion "Zurueck zur Startseite" @long @short @stage', async ({
     page,
-  }) => {
-    const Startseite = new StartPage(page);
-    const MenuBar = new AdminMenuPage(page);
+  }: PlaywrightTestArgs) => {
+    const Startseite: StartPage = new StartPage(page);
+    const MenuBar: AdminMenuPage = new AdminMenuPage(page);
 
     await test.step(`Menue-Eintrag zum Rücksprung auf die Startseite klicken`, async () => {
       await Startseite.card_item_schulportal_administration.click();

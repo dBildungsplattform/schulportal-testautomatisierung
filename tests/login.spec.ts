@@ -1,21 +1,21 @@
-import { expect, test } from "@playwright/test";
+import { expect, PlaywrightTestArgs, test } from "@playwright/test";
 import { LoginPage } from "../pages/LoginView.page";
 import { LandingPage } from "../pages/LandingView.page";
 import { StartPage } from "../pages/StartView.page";
 import { HeaderPage } from "../pages/Header.page";
 
-const PW = process.env["PW"] || "";
-const USER = process.env["USER"] || "";
-const FRONTEND_URL = process.env["FRONTEND_URL"] || "";
+const PW: string = process.env["PW"] || "";
+const USER: string = process.env["USER"] || "";
+const FRONTEND_URL: string = process.env["FRONTEND_URL"] || "";
 
 test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env["UMGEBUNG"]}: URL: ${process.env["FRONTEND_URL"]}:`, () => {
   test("Erfolgreicher Standard Login Landesadmin @long @stage @smoke", async ({
     page,
-  }) => {
-    const Login = new LoginPage(page);
-    const Landing = new LandingPage(page, FRONTEND_URL);
-    const Start = new StartPage(page);
-    const Header = new HeaderPage(page);
+  }: PlaywrightTestArgs) => {
+    const Login: LoginPage = new LoginPage(page);
+    const Landing: LandingPage = new LandingPage(page, FRONTEND_URL);
+    const Start: StartPage = new StartPage(page);
+    const Header: HeaderPage = new HeaderPage(page);
 
     await test.step(`Anmelden mit Benutzer ${USER}`, async () => {
       await Landing.goto();
@@ -26,9 +26,11 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env["U
     });
   });
 
-  test("Erfolgloser Login mit falschem Passwort", async ({ page }) => {
-    const Login = new LoginPage(page);
-    const Landing = new LandingPage(page, FRONTEND_URL);
+  test("Erfolgloser Login mit falschem Passwort", async ({
+    page: page,
+  }: PlaywrightTestArgs) => {
+    const Login: LoginPage = new LoginPage(page);
+    const Landing: LandingPage = new LandingPage(page, FRONTEND_URL);
 
     await test.step(`Anmelden mit Benutzer ${USER}`, async () => {
       await Landing.login();

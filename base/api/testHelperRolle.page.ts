@@ -1,6 +1,6 @@
-import { expect, Page } from "@playwright/test";
+import { APIResponse, expect, Page } from "@playwright/test";
 
-const FRONTEND_URL = process.env["FRONTEND_URL"] || "";
+const FRONTEND_URL: string = process.env["FRONTEND_URL"] || "";
 
 export async function createRolle(
   page: Page,
@@ -8,17 +8,20 @@ export async function createRolle(
   organisationId: string,
   rolleName?: string,
 ): Promise<string> {
-  const response = await page.request.post(FRONTEND_URL + "api/rolle/", {
-    data: {
-      name: rolleName,
-      administeredBySchulstrukturknoten: organisationId,
-      rollenart: rollenArt,
-      merkmale: [],
-      systemrechte: [],
+  const response: APIResponse = await page.request.post(
+    FRONTEND_URL + "api/rolle/",
+    {
+      data: {
+        name: rolleName,
+        administeredBySchulstrukturknoten: organisationId,
+        rollenart: rollenArt,
+        merkmale: [],
+        systemrechte: [],
+      },
     },
-  });
+  );
   expect(response.status()).toBe(201);
-  const json = await response.json();
+  const json: { id: string } = await response.json();
   return json.id;
 }
 
@@ -27,7 +30,7 @@ export async function addSPToRolle(
   rolleId: string,
   idSP: string,
 ): Promise<void> {
-  const response = await page.request.post(
+  const response: APIResponse = await page.request.post(
     FRONTEND_URL + `api/rolle/${rolleId}/serviceProviders`,
     {
       data: {
@@ -43,7 +46,7 @@ export async function addSystemrechtToRolle(
   rolleId: string,
   systemrecht: string,
 ): Promise<void> {
-  const response = await page.request.patch(
+  const response: APIResponse = await page.request.patch(
     FRONTEND_URL + `api/rolle/${rolleId}`,
     {
       data: {
@@ -55,7 +58,7 @@ export async function addSystemrechtToRolle(
 }
 
 export async function deleteRolle(page: Page, RolleId: string): Promise<void> {
-  const response = await page.request.delete(
+  const response: APIResponse = await page.request.delete(
     FRONTEND_URL + `api/rolle/${RolleId}`,
     {},
   );
@@ -66,11 +69,11 @@ export async function getRolleId(
   page: Page,
   Rollenname: string,
 ): Promise<string> {
-  const response = await page.request.get(
+  const response: APIResponse = await page.request.get(
     FRONTEND_URL + `api/rolle?searchStr=${Rollenname}`,
     {},
   );
   expect(response.status()).toBe(200);
-  const json = await response.json();
-  return json[0].id;
+  const json: { id: string }[] = await response.json();
+  return json[0]!.id;
 }

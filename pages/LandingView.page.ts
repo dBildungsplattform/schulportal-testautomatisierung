@@ -1,6 +1,6 @@
 import { expect, type Locator, Page } from "@playwright/test";
 
-const FRONTEND_URL = process.env["FRONTEND_URL"] || "";
+const FRONTEND_URL: string = process.env["FRONTEND_URL"] || "";
 
 export class LandingPage {
   public readonly text_Willkommen: Locator;
@@ -8,7 +8,7 @@ export class LandingPage {
 
   public constructor(
     private readonly page: Page,
-    private readonly url = FRONTEND_URL,
+    private readonly url: string = FRONTEND_URL,
   ) {
     this.text_Willkommen = page.getByTestId("landing-headline");
     this.button_Anmelden = page.getByTestId("login-button");

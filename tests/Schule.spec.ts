@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, PlaywrightTestArgs, test } from "@playwright/test";
 import { LandingPage } from "../pages/LandingView.page";
 import { LoginPage } from "../pages/LoginView.page";
 import { StartPage } from "../pages/StartView.page";
@@ -19,16 +19,16 @@ import {
 } from "../base/api/testHelperRolle.page";
 import { FooterDataTablePage } from "../pages/FooterDataTable.page";
 
-const PW = process.env["PW"] || "";
-const ADMIN = process.env["USER"] || "";
-const FRONTEND_URL = process.env["FRONTEND_URL"] || "";
+const PW: string = process.env["PW"] || "";
+const ADMIN: string = process.env["USER"] || "";
+const FRONTEND_URL: string = process.env["FRONTEND_URL"] || "";
 
 test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${process.env["UMGEBUNG"]}: URL: ${process.env["FRONTEND_URL"]}:`, () => {
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
     await test.step(`Login`, async () => {
-      const Landing = new LandingPage(page);
-      const Startseite = new StartPage(page);
-      const Login = new LoginPage(page);
+      const Landing: LandingPage = new LandingPage(page);
+      const Startseite: StartPage = new StartPage(page);
+      const Login: LoginPage = new LoginPage(page);
 
       await page.goto(FRONTEND_URL);
       await Landing.button_Anmelden.click();
@@ -37,35 +37,37 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
     });
   });
 
-  test.afterEach(async ({ page }) => {
+  test.afterEach(async ({ page }: PlaywrightTestArgs) => {
     await test.step(`Abmelden`, async () => {
-      const Header = new HeaderPage(page);
+      const Header: HeaderPage = new HeaderPage(page);
       await Header.button_logout.click();
     });
   });
 
   test("2 Schulen nacheinander anlegen als Landesadmin @long", async ({
     page,
-  }) => {
-    const Startseite = new StartPage(page);
-    const Menue = new AdminMenuPage(page);
-    const SchuleCreationView = new SchuleCreationViewPage(page);
-    const SchuleManagementView = new SchuleManagementViewPage(page);
-    const FooterDataTable = new FooterDataTablePage(page);
+  }: PlaywrightTestArgs) => {
+    const Startseite: StartPage = new StartPage(page);
+    const Menue: AdminMenuPage = new AdminMenuPage(page);
+    const SchuleCreationView: SchuleCreationViewPage =
+      new SchuleCreationViewPage(page);
+    const SchuleManagementView: SchuleManagementViewPage =
+      new SchuleManagementViewPage(page);
+    const FooterDataTable: FooterDataTablePage = new FooterDataTablePage(page);
 
     // Schulen können noch nicht gelöscht werden. Um doppelte Namen zu vermeiden, wird am dem Schulnamen eine Zufallszahl angehängt
-    const ZUFALLSNUMMER = faker.number.bigInt({ min: 1000, max: 9000 });
-    const SCHULNAME1 =
+    const ZUFALLSNUMMER: bigint = faker.number.bigInt({ min: 1000, max: 9000 });
+    const SCHULNAME1: string =
       "TAuto-PW-S1-" +
       faker.lorem.word({ length: { min: 8, max: 12 } }) +
       ZUFALLSNUMMER;
-    const SCHULNAME2 =
+    const SCHULNAME2: string =
       "TAuto-PW-S2-" +
       faker.lorem.word({ length: { min: 8, max: 12 } }) +
       ZUFALLSNUMMER;
-    const DIENSTSTELLENNUMMER1 =
+    const DIENSTSTELLENNUMMER1: string =
       "0" + faker.number.bigInt({ min: 10000000, max: 100000000 });
-    const DIENSTSTELLENNUMMER2 =
+    const DIENSTSTELLENNUMMER2: string =
       "0" + faker.number.bigInt({ min: 10000000, max: 100000000 });
 
     await test.step(`Dialog Schule anlegen öffnen`, async () => {
@@ -115,10 +117,11 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
 
   test("Ergebnisliste Schulen auf Vollständigkeit prüfen als Landesadmin @long @short @stage", async ({
     page,
-  }) => {
-    const Startseite = new StartPage(page);
-    const Menue = new AdminMenuPage(page);
-    const SchuleManagementView = new SchuleManagementViewPage(page);
+  }: PlaywrightTestArgs) => {
+    const Startseite: StartPage = new StartPage(page);
+    const Menue: AdminMenuPage = new AdminMenuPage(page);
+    const SchuleManagementView: SchuleManagementViewPage =
+      new SchuleManagementViewPage(page);
 
     await test.step(`Schulverwaltung öffnen und Alle Elemente in der Ergebnisliste auf Existenz prüfen`, async () => {
       await Startseite.card_item_schulportal_administration.click();
@@ -139,24 +142,25 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
 
   test("Eine Schule anlegen als Schuladmin und die Bestätigungsseite vollständig prüfen @long @short", async ({
     page,
-  }) => {
-    const SchuleCreationView = new SchuleCreationViewPage(page);
+  }: PlaywrightTestArgs) => {
+    const SchuleCreationView: SchuleCreationViewPage =
+      new SchuleCreationViewPage(page);
     // Schulen können noch nicht gelöscht werden. Um doppelte Namen zu vermeiden, wird am dem Schulnamen eine Zufallszahl angehängt
-    const ZUFALLSNUMMER = faker.number.bigInt({ min: 1000, max: 9000 });
-    const SCHULNAME =
+    const ZUFALLSNUMMER: bigint = faker.number.bigInt({ min: 1000, max: 9000 });
+    const SCHULNAME: string =
       "TAuto-PW-S1-" +
       faker.lorem.word({ length: { min: 8, max: 12 } }) +
       ZUFALLSNUMMER;
-    const DIENSTSTELLENNUMMER =
+    const DIENSTSTELLENNUMMER: string =
       "0" + faker.number.bigInt({ min: 10000000, max: 100000000 });
-    const Landing = new LandingPage(page);
-    const Startseite = new StartPage(page);
-    const Login = new LoginPage(page);
-    const Header = new HeaderPage(page);
+    const Landing: LandingPage = new LandingPage(page);
+    const Startseite: StartPage = new StartPage(page);
+    const Login: LoginPage = new LoginPage(page);
+    const Header: HeaderPage = new HeaderPage(page);
     let userInfo: UserInfo;
 
     await test.step(`Testdaten: Schuladmin anlegen und mit diesem anmelden`, async () => {
-      const idSP = await getSPId(page, "Schulportal-Administration");
+      const idSP: string = await getSPId(page, "Schulportal-Administration");
       userInfo = await createPersonWithUserContext(
         page,
         "Testschule Schulportal",

@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, Page, PlaywrightTestArgs, test } from "@playwright/test";
 import { LandingPage } from "../pages/LandingView.page";
 import { LoginPage } from "../pages/LoginView.page";
 import { StartPage } from "../pages/StartView.page";
@@ -8,16 +8,16 @@ import { PersonManagementViewPage } from "../pages/admin/PersonManagementView.pa
 import { PersonDetailsViewPage } from "../pages/admin/PersonDetailsView.page";
 import { HeaderPage } from "../pages/Header.page";
 
-const PW = process.env["PW"] || "";
-const ADMIN = process.env["USER"] || "";
-const FRONTEND_URL = process.env["FRONTEND_URL"] || "";
+const PW: string = process.env["PW"] || "";
+const ADMIN: string = process.env["USER"] || "";
+const FRONTEND_URL: string = process.env["FRONTEND_URL"] || "";
 
 test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env["UMGEBUNG"]}: URL: ${process.env["FRONTEND_URL"]}:`, () => {
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
     await test.step(`Login`, async () => {
-      const Landing = new LandingPage(page);
-      const Startseite = new StartPage(page);
-      const Login = new LoginPage(page);
+      const Landing: LandingPage = new LandingPage(page);
+      const Startseite: StartPage = new StartPage(page);
+      const Login: LoginPage = new LoginPage(page);
 
       await page.goto(FRONTEND_URL);
       await Landing.button_Anmelden.click();
@@ -28,20 +28,26 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env["
 
   test("Angebote per Link öffnen als Landesadmin @long @short @stage", async ({
     page,
-  }) => {
-    const Startseite = new StartPage(page);
+  }: PlaywrightTestArgs) => {
+    const Startseite: StartPage = new StartPage(page);
 
     await test.step(`Kacheln Email für Lehrkräfte und Itslearning öffnen, danach beide Kacheln wieder schließen`, async () => {
-      const page_Email4Teacher_Promise = page.waitForEvent("popup");
+      const page_Email4Teacher_Promise: Promise<Page> =
+        page.waitForEvent("popup");
       await Startseite.card_item_email.click();
-      const page_Email4Teacher = await page_Email4Teacher_Promise;
-      const Email4Teacher = new Email4TeacherPage(page_Email4Teacher);
+      const page_Email4Teacher: Page = await page_Email4Teacher_Promise;
+      const Email4Teacher: Email4TeacherPage = new Email4TeacherPage(
+        page_Email4Teacher,
+      );
       await expect(Email4Teacher.text_h1).toBeVisible();
 
-      const page_Itslearning_Promise = page.waitForEvent("popup");
+      const page_Itslearning_Promise: Promise<Page> =
+        page.waitForEvent("popup");
       await Startseite.card_item_itslearning.click();
-      const page_Itslearning = await page_Itslearning_Promise;
-      const Itslearning = new ItsLearningPage(page_Itslearning);
+      const page_Itslearning: Page = await page_Itslearning_Promise;
+      const Itslearning: ItsLearningPage = new ItsLearningPage(
+        page_Itslearning,
+      );
       await expect(Itslearning.text_h1).toBeVisible();
 
       await page_Itslearning.close();
@@ -55,16 +61,18 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env["
 
   test("Passwort Reset für einen Lehrer als Landesadmin @long @short @stage", async ({
     page,
-  }) => {
-    const Landing = new LandingPage(page);
-    const Login = new LoginPage(page);
-    const Startseite = new StartPage(page);
-    const PersonManagement = new PersonManagementViewPage(page);
-    const PersonManagementDetail = new PersonDetailsViewPage(page);
-    const Header = new HeaderPage(page);
-    const lastname = "AutoTester";
-    const username = "autotester";
-    let new_password = "";
+  }: PlaywrightTestArgs) => {
+    const Landing: LandingPage = new LandingPage(page);
+    const Login: LoginPage = new LoginPage(page);
+    const Startseite: StartPage = new StartPage(page);
+    const PersonManagement: PersonManagementViewPage =
+      new PersonManagementViewPage(page);
+    const PersonManagementDetail: PersonDetailsViewPage =
+      new PersonDetailsViewPage(page);
+    const Header: HeaderPage = new HeaderPage(page);
+    const lastname: string = "AutoTester";
+    const username: string = "autotester";
+    let new_password: string = "";
 
     await test.step(`Benutzerverwaltung öffnen`, async () => {
       await Startseite.card_item_schulportal_administration.click();

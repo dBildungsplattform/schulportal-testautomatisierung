@@ -1,4 +1,9 @@
-import { expect, test } from "@playwright/test";
+import {
+  APIResponse,
+  expect,
+  PlaywrightTestArgs,
+  test,
+} from "@playwright/test";
 import { LoginPage } from "../pages/LoginView.page";
 import { LandingPage } from "../pages/LandingView.page";
 import { StartPage } from "../pages/StartView.page";
@@ -11,22 +16,23 @@ const USER: string = process.env["USER"] || "";
 const FRONTEND_URL: string | undefined = process.env["FRONTEND_URL"] || "";
 
 test.describe(`Spike um die API anzusprechen: Umgebung: ${process.env["UMGEBUNG"]}: URL: ${process.env["FRONTEND_URL"]}:`, () => {
-  test.afterEach(async ({ page }) => {
+  test.afterEach(async ({ page: page }: PlaywrightTestArgs) => {
     await test.step(`Abmelden`, async () => {
-      const Header = new HeaderPage(page);
+      const Header: HeaderPage = new HeaderPage(page);
       await Header.button_logout.click();
     });
   });
 
   test("GET und Post request Personen und Benutzer anschließend über das FE löschen @long @short @stage", async ({
-    page,
-  }) => {
-    const Login = new LoginPage(page);
-    const Landing = new LandingPage(page);
-    const Start = new StartPage(page);
-    const PersonManagementView = new PersonManagementViewPage(page);
-    const Vorname = "TAuto-PW-V-" + faker.person.firstName();
-    const Nachname = "TAuto-PW-N-" + faker.person.lastName();
+    page: page,
+  }: PlaywrightTestArgs) => {
+    const Login: LoginPage = new LoginPage(page);
+    const Landing: LandingPage = new LandingPage(page);
+    const Start: StartPage = new StartPage(page);
+    const PersonManagementView: PersonManagementViewPage =
+      new PersonManagementViewPage(page);
+    const Vorname: string = "TAuto-PW-V-" + faker.person.firstName();
+    const Nachname: string = "TAuto-PW-N-" + faker.person.lastName();
 
     await test.step(`Anmelden mit einem Landesadmin ${USER}`, async () => {
       await page.goto(FRONTEND_URL);
@@ -37,19 +43,24 @@ test.describe(`Spike um die API anzusprechen: Umgebung: ${process.env["UMGEBUNG"
     });
 
     await test.step(`GET Request personen, alle Benutzer lesen`, async () => {
-      const response = await page.request.get(FRONTEND_URL + "api/personen/");
+      const response: APIResponse = await page.request.get(
+        FRONTEND_URL + "api/personen/",
+      );
       expect(response.status()).toBe(200);
     });
 
     await test.step(`POST Request personen, neuen Benutzer anlegen`, async () => {
-      const response = await page.request.post(FRONTEND_URL + "api/personen/", {
-        data: {
-          name: {
-            vorname: Vorname,
-            familienname: Nachname,
+      const response: APIResponse = await page.request.post(
+        FRONTEND_URL + "api/personen/",
+        {
+          data: {
+            name: {
+              vorname: Vorname,
+              familienname: Nachname,
+            },
           },
         },
-      });
+      );
       expect(response.status()).toBe(201);
     });
 
