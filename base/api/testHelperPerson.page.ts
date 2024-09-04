@@ -10,8 +10,10 @@ export async function createPerson(page: Page, familienname: string, vorname: st
         data: {
             "familienname": familienname,
             "vorname": vorname,
-            "organisationId": organisationId,
-            "rolleId": rolleId
+            "createPersonenkontexte": [{
+                "organisationId": organisationId,
+                "rolleId": rolleId
+            }]
         }
     });
     expect(response.status()).toBe(201);
