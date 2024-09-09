@@ -34,7 +34,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     });
   });
 
-  test("2 Rollen nacheinander anlegen mit Rollenarten LERN und LEHR", async ({ page }) => {
+  test("2 Rollen nacheinander anlegen mit Rollenarten LERN und LEHR als Landesadmin @long @short @stage", async ({ page }) => {
     const Startseite = new StartPage(page);
     const Menue = new MenuPage(page);
     const RolleCreationView = new RolleCreationViewPage(page);
@@ -46,7 +46,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     const SCHULSTRUKTURKNOTEN2 = "0703754 (Amalie-Sieveking-Schule)";
     const ROLLENART1 = "Lern";
     const ROLLENART2 = "Lehr";
-    const Merkmal2 = "KoPers-Nr. ist Pflichtangabe";
+    const Merkmal2 = "KoPers.-Nr. ist Pflichtangabe";
     const Angebot1 = "itslearning";
     const AngebotA2 = "E-Mail";
     const AngebotB2 = "Kalender"
@@ -103,7 +103,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     });
   });
 
-  test("Ergebnisliste Rollen auf Vollständigkeit prüfen", async ({ page }) => {
+  test("Ergebnisliste Rollen auf Vollständigkeit prüfen als Landesadmin @long @short @stage", async ({ page }) => {
     const Startseite = new StartPage(page);
     const Menue = new MenuPage(page);
     const RolleManagementView = new RolleManagementViewPage(page);
@@ -120,13 +120,13 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     });
   });
 
-  test("Eine Rolle anlegen und die Bestätigungsseite vollständig prüfen ", async ({ page }) => {
+  test("Eine Rolle anlegen und die Bestätigungsseite vollständig prüfen als Landesadmin @long @short @stage", async ({ page }) => {
     const RolleCreationView = new RolleCreationViewPage(page);
     const ROLLENNAME = "TAuto-PW-R-" + faker.lorem.word({ length: { min: 8, max: 12 } });
     const DIENSTSTELLENNUMMER = '1111111';
     const SCHULSTRUKTURKNOTEN = DIENSTSTELLENNUMMER + " (Testschule Schulportal)";
     const ROLLENART = "Leit";
-    const Merkmal = "KoPers-Nr. ist Pflichtangabe";
+    const Merkmal = "KoPers.-Nr. ist Pflichtangabe";
     const AngebotA = "E-Mail";
     const AngebotB = "Schulportal-Administration";
     const AngebotC = "Kalender";

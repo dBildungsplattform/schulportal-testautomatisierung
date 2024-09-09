@@ -36,7 +36,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
   });
 
-  test("Einen Benutzer mit der Rolle Lehrkraft anlegen und anschließend mit diesem Benutzer anmelden", async ({
+  test("Einen Benutzer mit der Rolle Lehrkraft anlegen als Landesadmin und anschließend mit diesem Benutzer anmelden @long @short @stage", async ({
     page,
   }) => {
     const Landing = new LandingPage(page);
@@ -50,6 +50,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     const Rolle = "Lehrkraft";
     const Vorname = "TAuto-PW-V-" + faker.person.firstName();
     const Nachname = "TAuto-PW-N-" + faker.person.lastName();
+    const Kopersnr = faker.string.numeric(7);
     const Schulstrukturknoten = "Testschule Schulportal";
     let Benutzername = "";
     let Einstiegspasswort = "";
@@ -60,13 +61,14 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await expect(PersonCreationView.text_h2_PersonAnlegen).toHaveText("Neuen Benutzer hinzufügen");
     });
 
-    await test.step(`Benutzer anlegen`, async () => {
+    await test.step(`Benutzer mit Kopers Nummer anlegen`, async () => {
       await PersonCreationView.combobox_Schulstrukturknoten.click();
       await page.getByText(Schulstrukturknoten).click();
       await PersonCreationView.combobox_Rolle.click();
       await page.getByText(Rolle, { exact: true }).click();
       await PersonCreationView.Input_Vorname.fill(Vorname);
       await PersonCreationView.Input_Nachname.fill(Nachname);
+      await PersonCreationView.Input_Kopersnr.fill(Kopersnr);
       await PersonCreationView.button_PersonAnlegen.click();
       await expect(PersonCreationView.text_success).toBeVisible();
 
@@ -109,7 +111,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
   });
 
-  test("Einen Benutzer mit der Rolle Landesadmin anlegen", async ({ page }) => {
+  test("Einen Benutzer mit der Rolle Landesadmin anlegen @long @short @stage", async ({ page }) => {
     const Startseite = new StartPage(page);
     const Menue = new MenuPage(page);
     const PersonCreationView = new PersonCreationViewPage(page);
@@ -123,9 +125,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     await test.step(`Dialog Person anlegen öffnen`, async () => {
       await Startseite.card_item_schulportal_administration.click();
       await Menue.menueItem_BenutzerAnlegen.click();
-      await expect(PersonCreationView.text_h2_PersonAnlegen).toHaveText(
-        "Neuen Benutzer hinzufügen"
-      );
+      await expect(PersonCreationView.text_h2_PersonAnlegen).toHaveText("Neuen Benutzer hinzufügen");
     });
 
     await test.step(`Benutzer anlegen`, async () => {
@@ -154,7 +154,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
   });
 
-  test("Einen Benutzer mit der Rolle LiV anlegen", async ({ page }) => {
+  test("Einen Benutzer mit der Rolle LiV anlegen als Landesadmin @long @short @stage", async ({ page }) => {
     const Startseite = new StartPage(page);
     const Menue = new MenuPage(page);
     const PersonCreationView = new PersonCreationViewPage(page);
@@ -163,6 +163,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     const Rolle = "LiV";
     const Vorname = "TAuto-PW-V-" + faker.person.firstName();
     const Nachname = "TAuto-PW-N-" + faker.person.lastName();
+    const Kopersnr = faker.string.numeric(7);
     const Schulstrukturknoten = "Testschule Schulportal";
 
     await test.step(`Dialog Person anlegen öffnen`, async () => {
@@ -178,6 +179,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await page.getByText(Rolle, { exact: true }).click();
       await PersonCreationView.Input_Vorname.fill(Vorname);
       await PersonCreationView.Input_Nachname.fill(Nachname);
+      await PersonCreationView.Input_Kopersnr.fill(Kopersnr);
       await PersonCreationView.button_PersonAnlegen.click();
     });
 
@@ -197,7 +199,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
   });
 
-  test("Einen Benutzer mit der Rolle Schuladmin anlegen", async ({ page }) => {
+  test("Einen Benutzer mit der Rolle Schuladmin anlegen als Landesadmin @long @short @stage", async ({ page }) => {
     const Startseite = new StartPage(page);
     const Menue = new MenuPage(page);
     const PersonCreationView = new PersonCreationViewPage(page);
@@ -240,7 +242,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
   });
 
-  test("Einen Benutzer mit der Rolle SuS anlegen", async ({ page }) => {
+  test("Einen Benutzer mit der Rolle SuS anlegen als Landesadmin @long @short @stage", async ({ page }) => {
     const Startseite = new StartPage(page);
     const Menue = new MenuPage(page);
     const PersonCreationView = new PersonCreationViewPage(page);
@@ -286,7 +288,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
   });
 
-  test("Ergebnisliste Benutzer auf Vollständigkeit prüfen", async ({page }) => {
+  test("Ergebnisliste Benutzer auf Vollständigkeit prüfen als Landesadmin @long @short @stage", async ({page }) => {
     const Startseite = new StartPage(page);
     const Menue = new MenuPage(page);
     const PersonManagementView = new PersonManagementViewPage(page);
@@ -309,7 +311,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
   });
 
-  test("Prüfung auf korrekte Rollen in dem Dropdown 'Rolle' nach Auswahl der Organisation bei Anlage eines Benutzer", async ({page}) => {
+  test("Prüfung auf korrekte Rollen in dem Dropdown 'Rolle' nach Auswahl der Organisation bei Anlage eines Benutzer in der Rolle Landesadmin @long @short @stage", async ({page}) => {
     const Startseite = new StartPage(page);
     const Menue = new MenuPage(page);
     const PersonCreationView = new PersonCreationViewPage(page);
@@ -379,13 +381,14 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
   });
 
-  test("In der Ergebnisliste die Suchfunktion ausführen", async ({ page }) => {
+  test("In der Ergebnisliste die Suchfunktion ausführen als Landesadmin @long @short @stage", async ({ page }) => {
     const PersonManagementView = new PersonManagementViewPage(page);
     const PersonCreationView = new PersonCreationViewPage(page);
 
     const Rolle = "Lehrkraft";
     const Vorname = "TAuto-PW-V-" + faker.person.firstName();
     const Nachname = "TAuto-PW-N-" + faker.person.lastName();
+    const Kopersnr = faker.string.numeric(7);
     const Schulstrukturknoten = "Testschule Schulportal";
     let Benutzername = "";
 
@@ -397,6 +400,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await page.getByText(Rolle, { exact: true }).click();
       await PersonCreationView.Input_Vorname.fill(Vorname);
       await PersonCreationView.Input_Nachname.fill(Nachname);
+      await PersonCreationView.Input_Kopersnr.fill(Kopersnr);
       await PersonCreationView.button_PersonAnlegen.click();
       Benutzername = await PersonCreationView.data_Benutzername.innerText();
       await expect(PersonCreationView.text_success).toBeVisible();
@@ -446,11 +450,12 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
   });
 
-  test("Eine Lehrkraft anlegen in der Rolle Landesadmin und die Bestätigungsseite vollständig prüfen", async ({ page }) => {
+  test("Eine Lehrkraft anlegen in der Rolle Landesadmin und die Bestätigungsseite vollständig prüfen @long @short @stage", async ({ page }) => {
     const PersonCreationView = new PersonCreationViewPage(page);
     const Rolle = "Lehrkraft";
     const Vorname = "TAuto-PW-V-" + faker.person.firstName();
     const Nachname = "TAuto-PW-N-" + faker.person.lastName();
+    const Kopersnr = faker.string.numeric(7);
     const Schulstrukturknoten = "Testschule Schulportal";
     const Dienststellennummer = "1111111";
     let BenutzerID = '';
@@ -467,6 +472,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await page.getByText(Rolle, { exact: true }).click();
       await PersonCreationView.Input_Vorname.fill(Vorname);
       await PersonCreationView.Input_Nachname.fill(Nachname);
+      await PersonCreationView.Input_Kopersnr.fill(Kopersnr);
       await PersonCreationView.button_PersonAnlegen.click();
     });
 
@@ -487,7 +493,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await expect(PersonCreationView.data_Rolle).toHaveText(Rolle);
       await expect(PersonCreationView.label_Organisationsebene).toHaveText('Organisationsebene:');
       await expect(PersonCreationView.data_Organisationsebene).toHaveText(Dienststellennummer + ' (' + Schulstrukturknoten + ')');
-      await expect(PersonCreationView.label_Klasse).toHaveText('Klasse:');
       await expect(PersonCreationView.button_WeiterenBenutzerAnlegen).toBeVisible();
       await expect(PersonCreationView.button_ZurueckErgebnisliste).toBeVisible();
     });
@@ -499,7 +504,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
   });
 
-  test("Mehere Benutzer hintereinander anlegen in der Rolle Landesadmin für die Rollenarten SuS und LEHR und die Bestätigungsseiten vollständig prüfen", async ({ page }) => {
+  test("Mehere Benutzer hintereinander anlegen in der Rolle Landesadmin für die Rollenarten SuS und LEHR und die Bestätigungsseiten vollständig prüfen @long @short @stage", async ({ page }) => {
     const Landing = new LandingPage(page);
     const Startseite = new StartPage(page);
     const Login = new LoginPage(page);
@@ -537,12 +542,14 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     const Rolle2 = "Lehrkraft";
     const Vorname2 = "TAuto-PW-VB-" + faker.person.firstName();
     const Nachname2 = "TAuto-PW-NB-" + faker.person.lastName();
+    const Kopersnr2 = faker.string.numeric(7);
     let BenutzerID2 = '';
     let Benutzername2 = '';
 
     const Rolle3 = "Lehrkraft";
     const Vorname3 = "TAuto-PW-VC-" + faker.person.firstName();
     const Nachname3 = "TAuto-PW-NC-" + faker.person.lastName();
+    const Kopersnr3 = faker.string.numeric(7);
     let BenutzerID3 = '';
     let Benutzername3 = '';
 
@@ -596,6 +603,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await page.getByText(Rolle2, { exact: true }).click();
       await PersonCreationView.Input_Vorname.fill(Vorname2);
       await PersonCreationView.Input_Nachname.fill(Nachname2);
+      await PersonCreationView.Input_Kopersnr.fill(Kopersnr2);
       await PersonCreationView.Input_Vorname.click();
       await PersonCreationView.button_PersonAnlegen.click();
     });
@@ -617,8 +625,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await expect(PersonCreationView.data_Rolle).toHaveText(Rolle2);
       await expect(PersonCreationView.label_Organisationsebene).toHaveText('Organisationsebene:');
       await expect(PersonCreationView.data_Organisationsebene).toHaveText(Dienststellennummer + ' (' + Schulstrukturknoten + ')');
-      await expect(PersonCreationView.label_Klasse).toHaveText('Klasse:');
-      await expect(PersonCreationView.data_Klasse).toHaveText('---');
       await expect(PersonCreationView.button_WeiterenBenutzerAnlegen).toBeVisible();
       await expect(PersonCreationView.button_ZurueckErgebnisliste).toBeVisible();
       Benutzername2 = await PersonCreationView.data_Benutzername.innerText();
@@ -633,6 +639,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await page.getByText(Rolle3, { exact: true }).click();
       await PersonCreationView.Input_Vorname.fill(Vorname3);
       await PersonCreationView.Input_Nachname.fill(Nachname3);
+      await PersonCreationView.Input_Kopersnr.fill(Kopersnr3);
       await PersonCreationView.Input_Vorname.click();
       await PersonCreationView.button_PersonAnlegen.click();
     });
@@ -654,8 +661,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await expect(PersonCreationView.data_Rolle).toHaveText(Rolle3);
       await expect(PersonCreationView.label_Organisationsebene).toHaveText('Organisationsebene:');
       await expect(PersonCreationView.data_Organisationsebene).toHaveText(Dienststellennummer + ' (' + Schulstrukturknoten + ')');
-      await expect(PersonCreationView.label_Klasse).toHaveText('Klasse:');
-      await expect(PersonCreationView.data_Klasse).toHaveText('---');
       await expect(PersonCreationView.button_WeiterenBenutzerAnlegen).toBeVisible();
       await expect(PersonCreationView.button_ZurueckErgebnisliste).toBeVisible();
       Benutzername3 = await PersonCreationView.data_Benutzername.innerText();
