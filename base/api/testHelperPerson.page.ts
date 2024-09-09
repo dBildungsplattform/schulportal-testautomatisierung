@@ -35,6 +35,39 @@ export async function createPersonWithUserContext(page: Page, organisationName: 
     return userInfo;
 }
 
+
+
+// #ToDo
+// addOrganisationToPerson
+export async function addOrganisationToPerson(page: Page, familienname: string, vorname: string, organisationId: string, rolleId: string): Promise<UserInfo> {
+    const response = await page.request.post(FRONTEND_URL + 'api/personenkontext-workflow/' + 'personId', {
+        data: {
+            "familienname": familienname,
+            "vorname": vorname,
+            "organisationId": organisationId,
+            "rolleId": rolleId
+        }
+    });
+    expect(response.status()).toBe(201);
+    const json = await response.json();
+    return {
+        username: json.person.referrer,
+        password: json.person.startpasswort,
+        rolleId: rolleId,
+        organisationId: organisationId,
+        personId: json.person.id
+    }
+}
+
+
+
+
+
+
+
+
+
+
 export async function deletePersonen(page: Page, personId: string): Promise<void> {
     const response = await page.request.delete(FRONTEND_URL + `api/personen/${personId}`, {});
     expect(response.status()).toBe(204);

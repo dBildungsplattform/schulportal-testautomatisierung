@@ -7,8 +7,10 @@ import { HeaderPage } from "../pages/Header.page";
 import { ProfilePage } from "../pages/ProfileView.page";
 import { getSPId } from "../base/api/testHelperServiceprovider.page";
 import { createPersonWithUserContext, deletePersonen } from "../base/api/testHelperPerson.page";
+import { getOrganisationId } from "../base/api/testHelperOrganisation.page";
 import { UserInfo } from "../base/api/testHelper.page";
 import { deleteRolle } from "../base/api/testHelperRolle.page";
+import { userInfo } from "os";
 
 const PW = process.env.PW;
 const ADMIN = process.env.USER;
@@ -296,7 +298,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     });
   });
 
-  test("Das eigene Profil öffnen und auf Vollständigkeit prüfen als Lehrkraft mit 2 Schulzuordnungen @long @stage", async ({ page }) => {
+  test.only("Das eigene Profil öffnen und auf Vollständigkeit prüfen als Lehrkraft mit 2 Schulzuordnungen @long @stage", async ({ page }) => {
     const ProfileView = new ProfilePage(page);
     const Header = new HeaderPage(page);
     const Login = new LoginPage(page);
@@ -307,11 +309,16 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     const Vorname = "TAuto-PW-V-" + faker.person.firstName();
     const Nachname = "TAuto-PW-N-" + faker.person.lastName();
     const Organisation1 = 'Testschule Schulportal';
+    const Organisation2 = 'Carl-Orff-Schule';
     const Dienststellennummer1 = '1111111';
+    const Dienststellennummer2 = '0702948';
     // const Organisation2 = 'Testgymnasium Schulportal';
     // const Dienststellennummer2 = '7777777';
     const Rollenname = 'TAuto-PW-R-RolleLehrer';
-    const Rollenart = 'LEHR'
+    const Rollenart = 'LEHR';
+
+    // Beispiel: hkaiser
+    // Schulen: Amalie-Sieveking-Schule und Carl-Orff-Schule (Dienststellennummer: 0702948)
     
     await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
       const idSP = await getSPId(page, 'Schulportal-Administration');
@@ -319,6 +326,15 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       personId = userInfo.personId;
       rolleId = userInfo.rolleId;
       benutzername = userInfo.username;
+
+      // addOrganisationToPerson(page, Organisation2, Rollenart, Nachname, Vorname, idSP, Rollenname);
+      await page.pause();
+      console.log('personid: ' + personId);
+      console.log('Organisation1: ' + await getOrganisationId(page, Organisation1));
+      console.log('Organisation2: ' + await getOrganisationId(page, Organisation2));
+      console.log('rolleID: ' + rolleId);
+      
+      await page.pause();
 
       await Header.button_logout.click();  
       await Header.button_login.click();
@@ -367,6 +383,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       await expect(ProfileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
       await expect(ProfileView.icon_Schild2FA).toBeVisible();
       // await expect(ProfileView.button_2FAEinrichten).toBeDisabled(); Aktuell disabled im FE bis SPSH-855 fertig ist
+
     });
 
     await test.step(`Testdaten via api löschen`, async () => {
