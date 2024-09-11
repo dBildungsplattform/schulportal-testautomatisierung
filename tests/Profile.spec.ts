@@ -6,11 +6,10 @@ import { faker } from "@faker-js/faker/locale/de";
 import { HeaderPage } from "../pages/Header.page";
 import { ProfilePage } from "../pages/ProfileView.page";
 import { getSPId } from "../base/api/testHelperServiceprovider.page";
-import { createPersonWithUserContext, deletePersonen } from "../base/api/testHelperPerson.page";
+import { createPersonWithUserContext, deletePersonen, addSecondOrganisationToPerson } from "../base/api/testHelperPerson.page";
 import { getOrganisationId } from "../base/api/testHelperOrganisation.page";
 import { UserInfo } from "../base/api/testHelper.page";
 import { deleteRolle } from "../base/api/testHelperRolle.page";
-import { userInfo } from "os";
 
 const PW = process.env.PW;
 const ADMIN = process.env.USER;
@@ -298,7 +297,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     });
   });
 
-  test.only("Das eigene Profil öffnen und auf Vollständigkeit prüfen als Lehrkraft mit 2 Schulzuordnungen @long @stage", async ({ page }) => {
+  test("Das eigene Profil öffnen und auf Vollständigkeit prüfen als Lehrkraft mit 2 Schulzuordnungen @long @stage", async ({ page }) => {
     const ProfileView = new ProfilePage(page);
     const Header = new HeaderPage(page);
     const Login = new LoginPage(page);
@@ -312,13 +311,8 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     const Organisation2 = 'Carl-Orff-Schule';
     const Dienststellennummer1 = '1111111';
     const Dienststellennummer2 = '0702948';
-    // const Organisation2 = 'Testgymnasium Schulportal';
-    // const Dienststellennummer2 = '7777777';
     const Rollenname = 'TAuto-PW-R-RolleLehrer';
     const Rollenart = 'LEHR';
-
-    // Beispiel: hkaiser
-    // Schulen: Amalie-Sieveking-Schule und Carl-Orff-Schule (Dienststellennummer: 0702948)
     
     await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
       const idSP = await getSPId(page, 'Schulportal-Administration');
@@ -327,15 +321,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       rolleId = userInfo.rolleId;
       benutzername = userInfo.username;
 
-      // addOrganisationToPerson(page, Organisation2, Rollenart, Nachname, Vorname, idSP, Rollenname);
-      await page.pause();
-      console.log('personid: ' + personId);
-      console.log('Organisation1: ' + await getOrganisationId(page, Organisation1));
-      console.log('Organisation2: ' + await getOrganisationId(page, Organisation2));
-      console.log('rolleID: ' + rolleId);
-      
-      await page.pause();
-
+      await addSecondOrganisationToPerson(page, personId, await getOrganisationId(page, Organisation1), await getOrganisationId(page, Organisation2), rolleId);
       await Header.button_logout.click();  
       await Header.button_login.click();
       await Login.login(userInfo.username, userInfo.password);
@@ -359,7 +345,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       await expect(ProfileView.data_KopersNr).toBeHidden();
       await expect(ProfileView.icon_InfoPersoenlicheDaten).toBeVisible();
       // Schulzuordnung 1
-      await expect(ProfileView.cardHeadline_Schulzuordnung1).toHaveText('Schulzuordnung');
+      await expect(ProfileView.cardHeadline_Schulzuordnung1).toHaveText('Schulzuordnung 1');
       await expect(ProfileView.label_Schule1).toHaveText('Schule:');
       await expect(ProfileView.data_Schule1).toHaveText(Organisation1);
       await expect(ProfileView.label_Rolle1).toHaveText('Rolle:');
@@ -367,14 +353,13 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       await expect(ProfileView.label_Dienststellennummer1).toHaveText('DStNr.:');
       await expect(ProfileView.data_Dienststellennummer1).toHaveText(Dienststellennummer1);
       // Schulzuordnung 2
-      // TODO: how to create a second Schulzuordnung?
-      // await expect(ProfileView.cardHeadline_Schulzuordnung2).toHaveText('Schulzuordnung');
-      // await expect(ProfileView.label_Schule2).toHaveText('Schule:');
-      // await expect(ProfileView.data_Schule2).toHaveText(Organisation2);
-      // await expect(ProfileView.label_Rolle2).toHaveText('Rolle:');
-      // await expect(ProfileView.data_Rolle2).toHaveText(Rollenname);
-      // await expect(ProfileView.label_Dienststellennummer2).toHaveText('DStNr.:');
-      // await expect(ProfileView.data_Dienststellennummer2).toHaveText(Dienststellennummer2);
+      await expect(ProfileView.cardHeadline_Schulzuordnung2).toHaveText('Schulzuordnung 2');
+      await expect(ProfileView.label_Schule2).toHaveText('Schule:');
+      await expect(ProfileView.data_Schule2).toHaveText(Organisation2);
+      await expect(ProfileView.label_Rolle2).toHaveText('Rolle:');
+      await expect(ProfileView.data_Rolle2).toHaveText(Rollenname);
+      await expect(ProfileView.label_Dienststellennummer2).toHaveText('DStNr.:');
+      await expect(ProfileView.data_Dienststellennummer2).toHaveText(Dienststellennummer2);
       // Passwort
       await expect(ProfileView.cardHeadline_Passwort).toHaveText('Passwort');
       await expect(ProfileView.icon_Schluessel_Passwort).toBeVisible();
@@ -382,8 +367,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       // 2FA
       await expect(ProfileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
       await expect(ProfileView.icon_Schild2FA).toBeVisible();
-      // await expect(ProfileView.button_2FAEinrichten).toBeDisabled(); Aktuell disabled im FE bis SPSH-855 fertig ist
-
+      await expect(ProfileView.button_2FAEinrichten).toBeDisabled(); // Aktuell disabled im FE bis SPSH-855 fertig ist
     });
 
     await test.step(`Testdaten via api löschen`, async () => {

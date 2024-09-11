@@ -35,38 +35,28 @@ export async function createPersonWithUserContext(page: Page, organisationName: 
     return userInfo;
 }
 
-
-
-// #ToDo
-// addOrganisationToPerson
-export async function addOrganisationToPerson(page: Page, familienname: string, vorname: string, organisationId: string, rolleId: string): Promise<UserInfo> {
-    const response = await page.request.post(FRONTEND_URL + 'api/personenkontext-workflow/' + 'personId', {
+export async function addSecondOrganisationToPerson(page: Page, personId: string, organisationId1: string, organisationId2: string, rolleId: string) {
+    const response = await page.request.put(FRONTEND_URL + 'api/personenkontext-workflow/' + personId, {
         data: {
-            "familienname": familienname,
-            "vorname": vorname,
-            "organisationId": organisationId,
-            "rolleId": rolleId
+            "lastModified":"2034-09-11T08:28:36.590Z",
+            "count": 1,
+            "personenkontexte":
+            [
+                {
+                    "personId": personId,
+                    "organisationId": organisationId1,
+                    "rolleId": rolleId
+                },
+                {
+                    "personId": personId,
+                    "organisationId": organisationId2,
+                    "rolleId": rolleId
+                }
+            ]
         }
     });
-    expect(response.status()).toBe(201);
-    const json = await response.json();
-    return {
-        username: json.person.referrer,
-        password: json.person.startpasswort,
-        rolleId: rolleId,
-        organisationId: organisationId,
-        personId: json.person.id
-    }
+    expect(response.status()).toBe(200);
 }
-
-
-
-
-
-
-
-
-
 
 export async function deletePersonen(page: Page, personId: string): Promise<void> {
     const response = await page.request.delete(FRONTEND_URL + `api/personen/${personId}`, {});

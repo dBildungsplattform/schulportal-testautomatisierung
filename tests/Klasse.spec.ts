@@ -60,7 +60,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       await Menue.menueItem_AlleKlassenAnzeigen.click();
       await KlasseManagementView.combobox_Filter_Schule.fill(SCHULNAME); 
       await page.keyboard.press('ArrowDown', { delay: 300 }); // Wenn die Umgebung zu schnell ist, werden Tastaturbefehle manchmal verschluckt
-      await page.keyboard.press('Enter', { delay: 300 });   
+      await page.keyboard.press('Enter', { delay: 300 });
       await KlasseManagementView.text_h2_Klassenverwaltung.click(); // dies schließt das Dropdown Klasse
       await expect(page.getByRole('cell', { name: KLASSENNAME })).toBeVisible();
     });
