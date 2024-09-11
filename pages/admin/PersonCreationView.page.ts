@@ -1,17 +1,18 @@
 import { type Locator, Page } from "@playwright/test";
+import { ComboBox } from "../../elements/ComboBox.js";
 
 export class PersonCreationViewPage {
   public readonly body: Locator;
   public readonly text_h2_PersonAnlegen: Locator;
   public readonly button_Schliessen: Locator;
-  public readonly combobox_Rolle: Locator;
+  private readonly combobox_Rolle: ComboBox;
   public readonly combobox_Rolle_Clear: Locator;
   public readonly Input_Vorname: Locator;
   public readonly Input_Nachname: Locator;
   public readonly Input_Kopersnr: Locator;
-  public readonly combobox_Schulstrukturknoten: Locator;
+  private readonly combobox_Schulstrukturknoten: ComboBox;
   public readonly combobox_Schulstrukturknoten_Clear: Locator;
-  public readonly combobox_Klasse: Locator;
+  private readonly combobox_Klasse: ComboBox;
   public readonly button_PersonAnlegen: Locator;
   public readonly text_success: Locator;
   public readonly icon_success: Locator;
@@ -38,9 +39,10 @@ export class PersonCreationViewPage {
     this.body = page.locator("body");
     this.text_h2_PersonAnlegen = page.getByTestId("layout-card-headline");
     this.button_Schliessen = page.getByTestId("close-layout-card-button");
-    this.combobox_Rolle = page
-      .getByTestId("rolle-select")
-      .locator(".v-field__input");
+    this.combobox_Rolle = new ComboBox(
+      page,
+      page.getByTestId("rolle-select").locator(".v-field__input"),
+    );
     this.combobox_Rolle_Clear = page
       .getByTestId("rolle-select")
       .getByLabel("leeren");
@@ -56,12 +58,14 @@ export class PersonCreationViewPage {
     this.Input_Kopersnr = page
       .getByTestId("kopersnr-input")
       .locator(".v-field__input");
-    this.combobox_Schulstrukturknoten = page
-      .getByTestId("organisation-select")
-      .locator(".v-field__input");
-    this.combobox_Klasse = page
-      .getByTestId("klasse-select")
-      .locator(".v-field__input");
+    this.combobox_Schulstrukturknoten = new ComboBox(
+      page,
+      page.getByTestId("organisation-select").locator(".v-field__input"),
+    );
+    this.combobox_Klasse = new ComboBox(
+      page,
+      page.getByTestId("klasse-select").locator(".v-field__input"),
+    );
     this.button_PersonAnlegen = page.getByTestId(
       "person-creation-form-create-button",
     );
@@ -97,5 +101,21 @@ export class PersonCreationViewPage {
     this.button_WeiterenBenutzerAnlegen = page.getByTestId(
       "create-another-person-button",
     );
+  }
+
+  public async selectSchulstrukturknoten(value: string): Promise<void> {
+    await this.combobox_Schulstrukturknoten.select(value);
+  }
+
+  public async selectRolle(value: string): Promise<void> {
+    await this.combobox_Rolle.select(value);
+  }
+
+  public async selectKlasse(value: string): Promise<void> {
+    await this.combobox_Klasse.select(value);
+  }
+
+  public async showRollenAvailable(): Promise<void> {
+    await this.combobox_Rolle.open();
   }
 }

@@ -10,4 +10,8 @@ export class ComboBox {
     await this.locator.click();
     await this.page.getByText(value, { exact: true }).click();
   }
+
+  public async open(): Promise<void> {
+    await this.locator.click();
+  }
 }
