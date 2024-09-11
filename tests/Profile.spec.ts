@@ -83,7 +83,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     });
   });
 
-  test("Das eigene Profil öffnen und auf Vollständigkeit prüfen als Lehrer mit einer Schulzuordnung @long @stage", async ({ page }) => {
+  test("Das eigene Profil öffnen und auf Vollständigkeit prüfen als Lehrer mit einer Schulzuordnung @short @long @stage", async ({ page }) => {
     const ProfileView = new ProfilePage(page);
     const Header = new HeaderPage(page);
     const Login = new LoginPage(page);
