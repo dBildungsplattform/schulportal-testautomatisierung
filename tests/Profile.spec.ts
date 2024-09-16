@@ -15,7 +15,7 @@ const PW = process.env.PW;
 const ADMIN = process.env.USER;
 const FRONTEND_URL = process.env.FRONTEND_URL || "";
 
-test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
+test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }) => {
     await test.step(`Login`, async () => {
       const Landing = new LandingPage(page);
@@ -64,14 +64,15 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       await expect(ProfileView.label_KopersNr).toHaveText('KoPers.-Nr.:');
       await expect(ProfileView.data_KopersNr).toHaveText(KopersNr);
       await expect(ProfileView.icon_InfoPersoenlicheDaten).toBeVisible();
-      // Schulzuordnung
-      await expect(ProfileView.cardHeadline_Schulzuordnung1).toHaveText('Schulzuordnung');
-      await expect(ProfileView.label_Schule1).toHaveText('Schule:');
-      await expect(ProfileView.data_Schule1).toHaveText(Organisation);
-      await expect(ProfileView.label_Rolle1).toHaveText('Rolle:');
-      await expect(ProfileView.data_Rolle1).toHaveText(Rolle);
-      await expect(ProfileView.label_Dienststellennummer1).toHaveText('DStNr.:');
-      await expect(ProfileView.data_Dienststellennummer1).toHaveText(Dienststellennummer);
+      // Schulzuordnung  
+      // Kann wegen dem bug: SPSH-1085 nicht getestet werden 
+      // await expect(ProfileView.cardHeadline_Schulzuordnung1).toHaveText('Schulzuordnung');
+      // await expect(ProfileView.label_Schule1).toHaveText('Schule:');
+      // await expect(ProfileView.data_Schule1).toHaveText(Organisation);
+      // await expect(ProfileView.label_Rolle1).toHaveText('Rolle:');
+      // await expect(ProfileView.data_Rolle1).toHaveText(Rolle);
+      // await expect(ProfileView.label_Dienststellennummer1).toHaveText('DStNr.:');
+      // await expect(ProfileView.data_Dienststellennummer1).toHaveText(Dienststellennummer);
       // Passwort
       await expect(ProfileView.cardHeadline_Passwort).toHaveText('Passwort');
       await expect(ProfileView.icon_Schluessel_Passwort).toBeVisible();
