@@ -8,6 +8,7 @@ import { RolleManagementViewPage } from "../pages/admin/RolleManagementView.page
 import { faker } from "@faker-js/faker/locale/de";
 import { HeaderPage } from "../pages/Header.page";
 import { getRolleId, deleteRolle } from "../base/api/testHelperRolle.page";
+import { zu_ZA } from "@faker-js/faker";
 
 const PW = process.env.PW;
 const ADMIN = process.env.USER;
@@ -40,9 +41,10 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     const RolleCreationView = new RolleCreationViewPage(page);
     const RolleManagementView = new RolleManagementViewPage(page);
 
-    const ROLLENNAME1 = "TAuto-PW-R1-" + faker.lorem.word({ length: { min: 8, max: 12 } });
-    const ROLLENNAME2 = "TAuto-PW-R2-" + faker.lorem.word({ length: { min: 8, max: 12 } });
-    const SCHULSTRUKTURKNOTEN1 = "0701114 (Land Schleswig-Holstein)";
+    const ZUFALLSNUMMER = faker.number.bigInt({ min: 1000, max: 9000 })
+    const ROLLENNAME1 = "TAuto-PW-R1-" + faker.lorem.word({ length: { min: 8, max: 12 } }) + ZUFALLSNUMMER;
+    const ROLLENNAME2 = "TAuto-PW-R2-" + faker.lorem.word({ length: { min: 8, max: 12 } }) + ZUFALLSNUMMER;
+    const SCHULSTRUKTURKNOTEN1 = "Land Schleswig-Holstein";
     const SCHULSTRUKTURKNOTEN2 = "0703754 (Amalie-Sieveking-Schule)";
     const ROLLENART1 = "Lern";
     const ROLLENART2 = "Lehr";
@@ -59,7 +61,6 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
 
     await test.step(`Erste Rolle anlegen`, async () => {
       await RolleCreationView.combobox_Schulstrukturknoten.click();
-
       await page.getByText(SCHULSTRUKTURKNOTEN1, { exact: true }).click();
       await RolleCreationView.combobox_Rollenart.click();
       await page.getByText(ROLLENART1, { exact: true }).click();
@@ -77,6 +78,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
       await page.getByText(SCHULSTRUKTURKNOTEN2, { exact: true }).click();
       await RolleCreationView.combobox_Rollenart.click();
       await page.getByText(ROLLENART2, { exact: true }).click();
+
       await RolleCreationView.input_Rollenname.fill(ROLLENNAME2);
       await RolleCreationView.combobox_Merkmal.click();
       await page.getByText(Merkmal2, { exact: true }).click();

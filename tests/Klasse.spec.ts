@@ -40,7 +40,8 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     const KlasseCreationView = new KlasseCreationViewPage(page);
     const KlasseManagementView = new KlasseManagementViewPage(page);
     const SCHULNAME = "Testschule Schulportal";
-    const KLASSENNAME = "TAuto-PW-K-12 " + faker.lorem.word({ length: { min: 10, max: 10 }});
+    const ZUFALLSNUMMER = faker.number.bigInt({ min: 1000, max: 9000 })
+    const KLASSENNAME = "TAuto-PW-K-12 " + faker.lorem.word({ length: { min: 10, max: 10 }}) + ZUFALLSNUMMER;
 
     await test.step(`Dialog Schule anlegen öffnen`, async () => {
       await Startseite.card_item_schulportal_administration.click();
@@ -57,10 +58,9 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     });
 
     await test.step(`In der Ergebnisliste prüfen, dass die neue Klasse angezeigt wird`, async () => {
-      await Menue.menueItem_AlleKlassenAnzeigen.click();
-      await KlasseManagementView.combobox_Filter_Schule.fill(SCHULNAME); 
-      await page.keyboard.press('ArrowDown', { delay: 300 }); // Wenn die Umgebung zu schnell ist, werden Tastaturbefehle manchmal verschluckt
-      await page.keyboard.press('Enter', { delay: 300 });
+      await Menue.menueItem_AlleKlassenAnzeigen.click(); 
+      await KlasseManagementView.combobox_Filter_Schule.fill(SCHULNAME);
+      await page.getByText(`${SCHULNAME}`, { exact: true }).click();
       await KlasseManagementView.text_h2_Klassenverwaltung.click(); // dies schließt das Dropdown Klasse
       await expect(page.getByRole('cell', { name: KLASSENNAME })).toBeVisible();
     });
@@ -94,7 +94,8 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     const KlasseCreationView = new KlasseCreationViewPage(page);
     const DIENSTSTELLENNUMMER = '1111111';
     const SCHULNAME = "Testschule Schulportal";
-    const KLASSENNAME = "TAuto-PW-K-12 " + faker.lorem.word({ length: { min: 10, max: 10 }});
+    const ZUFALLSNUMMER = faker.number.bigInt({ min: 1000, max: 9000 })
+    const KLASSENNAME = "TAuto-PW-K-12 " + faker.lorem.word({ length: { min: 10, max: 10 }}) + ZUFALLSNUMMER;
 
     await test.step(`Dialog Schule anlegen öffnen`, async () => {
       await page.goto(FRONTEND_URL + 'admin/klassen/new');

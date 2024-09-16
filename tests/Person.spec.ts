@@ -130,7 +130,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
     await test.step(`Benutzer anlegen`, async () => {
       await PersonCreationView.combobox_Schulstrukturknoten.click();
-      await page.getByText(Schulstrukturknoten).click();
+      await page.keyboard.type(Schulstrukturknoten);
+      await page.getByText(Schulstrukturknoten, { exact: true }).click();
       await PersonCreationView.combobox_Rolle.click();
       await page.getByText(Rolle, { exact: true }).click();
       await PersonCreationView.Input_Vorname.fill(Vorname);
@@ -316,9 +317,9 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     const Menue = new MenuPage(page);
     const PersonCreationView = new PersonCreationViewPage(page);
 
-    const Organisation_Land = "0701114 (Land Schleswig-Holstein)";
-    const Organisation_OeffentlicheSchule = "0702224 (Öffentliche Schulen Land Schleswig-Holstein)";
-    const Organisation_Ersatzschule = "0703334 (Ersatzschulen Land Schleswig-Holstein)";
+    const Organisation_Land = "Land Schleswig-Holstein";
+    const Organisation_OeffentlicheSchule = "Öffentliche Schulen Land Schleswig-Holstein";
+    const Organisation_Ersatzschule = "Ersatzschulen Land Schleswig-Holstein";
     const Organisation_Schule = "1111111 (Testschule Schulportal)";
 
     const Rolle_Landesadmin = "Landesadmin";
@@ -335,7 +336,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
     await test.step(`Organisation 'Land Schleswig-Holstein' auswählen und Dropdown 'Rolle' prüfen`, async () => {
       await PersonCreationView.combobox_Schulstrukturknoten.click();
-      await page.getByText(Organisation_Land, { exact: true }).click();
+      await page.keyboard.type(Organisation_Land);
+      await page.getByText(Organisation_Land, { exact: true }).nth(1).click();
       await PersonCreationView.combobox_Rolle.click();
       await expect(PersonCreationView.body).toContainText(Rolle_Landesadmin);
       await expect(PersonCreationView.body).not.toContainText(Rolle_Lehr);
@@ -347,6 +349,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     await test.step(`Organisation 'Öffentliche Schulen Land Schleswig-Holstein' auswählen und Dropdown 'Rolle' prüfen`, async () => {
       await PersonCreationView.combobox_Schulstrukturknoten_Clear.click();
       await PersonCreationView.combobox_Schulstrukturknoten.click();
+      await page.keyboard.type(Organisation_OeffentlicheSchule);
       await page.getByText(Organisation_OeffentlicheSchule, { exact: true }).click();
       await PersonCreationView.combobox_Rolle.click();
       await expect(PersonCreationView.body).toContainText(Rolle_Landesadmin);
@@ -359,6 +362,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     await test.step(`Organisation 'Ersatzschulen Land Schleswig-Holstein' auswählen und Dropdown 'Rolle' prüfen`, async () => {
       await PersonCreationView.combobox_Schulstrukturknoten_Clear.click();
       await PersonCreationView.combobox_Schulstrukturknoten.click();
+      await page.keyboard.type(Organisation_Ersatzschule);
       await page.getByText(Organisation_Ersatzschule, { exact: true }).click();
       await PersonCreationView.combobox_Rolle.click();
       await expect(PersonCreationView.body).toContainText(Rolle_Landesadmin);
