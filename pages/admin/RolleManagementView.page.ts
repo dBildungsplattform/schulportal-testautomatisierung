@@ -8,6 +8,8 @@ export class RolleManagementViewPage{
     readonly table_header_Rollenart: Locator;
     readonly table_header_Merkmale: Locator;
     readonly table_header_Administrationsebene: Locator;
+
+    readonly rolleOverviewTable: Locator;
    
     constructor(page){
         this.page = page;  
@@ -17,5 +19,6 @@ export class RolleManagementViewPage{
         this.table_header_Rollenart = page.getByText('Rollenart');
         this.table_header_Merkmale = page.getByText('Merkmale');
         this.table_header_Administrationsebene = page.getByText('Administrationsebene');
+        this.rolleOverviewTable = page.getByTestId('rolle-table');
     }
 }
