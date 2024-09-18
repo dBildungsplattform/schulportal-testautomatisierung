@@ -270,13 +270,11 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
       });
 
     await test.step("Rollentabelle prüfen", async () => {
-      const row = rolleManagementPage.rolleOverviewTable.locator(
-        `tr:has-text('${rolleCreationConfirm.roleName}')`,
-      );
+      const row = rolleManagementPage.getRowOfRoleTable(rolleCreationConfirm.roleName);
       await expect(row).toBeVisible();
 
-      const elipsisWrapper = row.locator("td").nth(4);
-      await expect(elipsisWrapper).toHaveText(
+      const spCell = row.locator("td").nth(4);
+      await expect(spCell).toHaveText(
         rolleCreationConfirm.selectedSPs.join(", "),
       );
     });
