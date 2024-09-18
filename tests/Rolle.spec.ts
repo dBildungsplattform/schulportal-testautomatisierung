@@ -249,9 +249,10 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
       await rolleCreationView.selectRollenart("Lehr");
       const roleName = "Neue Rolle aus Test";
       await rolleCreationView.enterRollenname(roleName);
+      const theFirstSeven = Array.from({ length: 7 }, (_, key) => key);
       const selectedItems: string[] =
-        await rolleCreationView.selectAngeboteByPosition(
-          Array.from({ length: 7 }, (_, key) => key),
+        await rolleCreationView.serviceProviderComboBox.selectByPosition(
+          theFirstSeven,
         );
       return {
         rolleCreationConfirmPage: await rolleCreationView.createRolle(),
@@ -270,7 +271,9 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
       });
 
     await test.step("Rollentabelle prüfen", async () => {
-      const row = rolleManagementPage.getRowOfRoleTable(rolleCreationConfirm.roleName);
+      const row = rolleManagementPage.getRowOfRoleTable(
+        rolleCreationConfirm.roleName,
+      );
       await expect(row).toBeVisible();
 
       const spCell = row.locator("td").nth(4);

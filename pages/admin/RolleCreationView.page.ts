@@ -1,5 +1,6 @@
 import { type Locator, Page } from "@playwright/test";
 import { RolleCreationConfirmPage } from "./RolleCreationConfirm.page";
+import {ComboBox} from "../../elements/ComboBox";
 
 export class RolleCreationViewPage {
   readonly page: Page;
@@ -29,6 +30,8 @@ export class RolleCreationViewPage {
   readonly data_Angebote: Locator;
   readonly label_Systemrechte: Locator;
   readonly data_Systemrechte: Locator;
+
+  public readonly serviceProviderComboBox: ComboBox;
 
   constructor(page) {
     // Anlage Rolle
@@ -82,6 +85,11 @@ export class RolleCreationViewPage {
     this.data_Angebote = page.getByTestId("created-rolle-angebote");
     this.label_Systemrechte = page.getByText("Systemrechte:", { exact: true });
     this.data_Systemrechte = page.getByTestId("created-rolle-systemrecht");
+
+    this.serviceProviderComboBox = new ComboBox(
+      this.page,
+      this.combobox_Angebote,
+    );
   }
 
   public async selectSchulstrukturknoten(name: string) {
@@ -97,21 +105,6 @@ export class RolleCreationViewPage {
   public async enterRollenname(name: string) {
     await this.input_Rollenname.fill(name);
   }
-
-  public async selectAngeboteByPosition(
-    selection: number[],
-  ): Promise<string[]> {
-    const selectedItems: string[] = [];
-    await this.combobox_Angebote.click();
-    const items = this.page.locator("div.v-overlay.v-menu div.v-list-item");
-    for (const index of selection) {
-      const item = items.nth(index);
-      selectedItems.push(await item.locator(".v-list-item-title").innerText());
-      await item.click();
-    }
-    return selectedItems;
-  }
-
   public async createRolle(): Promise<RolleCreationConfirmPage> {
     await this.button_RolleAnlegen.click();
     return new RolleCreationConfirmPage(this.page);
