@@ -271,7 +271,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
       });
 
     await test.step("Rollentabelle prüfen", async () => {
-      const row = rolleManagementPage.getRowOfRoleTable(
+      const row = rolleManagementPage.getRowOfRoleTableByRoleName(
         rolleCreationConfirm.roleName,
       );
       await expect(row).toBeVisible();

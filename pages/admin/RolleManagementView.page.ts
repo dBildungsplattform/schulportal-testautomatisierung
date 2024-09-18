@@ -21,7 +21,7 @@ export class RolleManagementViewPage{
         this.rolleOverviewTable = page.getByTestId('rolle-table');
     }
 
-    public getRowOfRoleTable(roleName: string) {
+    public getRowOfRoleTableByRoleName(roleName: string) {
         return this.rolleOverviewTable.locator(
             `tr:has-text('${roleName}')`,
         );
