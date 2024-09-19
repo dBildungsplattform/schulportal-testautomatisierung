@@ -1,6 +1,4 @@
 import { expect, test } from "@playwright/test";
-import { LandingPage } from "../pages/LandingView.page";
-import { LoginPage } from "../pages/LoginView.page";
 import { StartPage } from "../pages/StartView.page";
 import { MenuPage } from "../pages/MenuBar.page";
 import { RolleCreationViewPage } from "../pages/admin/RolleCreationView.page";
@@ -9,26 +7,18 @@ import { faker } from "@faker-js/faker/locale/de";
 import { HeaderPage } from "../pages/Header.page";
 import { getRolleId, deleteRolle } from "../base/api/testHelperRolle.page";
 import { RolleCreationConfirmPage } from "../pages/admin/RolleCreationConfirm.page";
-
-const PW = process.env.PW;
-const ADMIN = process.env.USER;
-const FRONTEND_URL = process.env.FRONTEND_URL || "";
+import FromAnywhere from "../pages/FromAnywhere";
 
 let startseite: StartPage;
 let loggedIn = false;
 test.beforeEach(async ({ page }) => {
   startseite = await test.step(`Login`, async () => {
-    const Landing = new LandingPage(page);
-    const Startseite = new StartPage(page);
-    const Login = new LoginPage(page);
-
-    await page.goto(FRONTEND_URL);
-    await Landing.button_Anmelden.click();
-    await Login.login(ADMIN, PW);
-    await expect(Startseite.text_h2_Ueberschrift).toBeVisible();
+    const startPage = await FromAnywhere(page)
+      .start()
+      .then((landing) => landing.login())
+      .then((login) => login.login());
     loggedIn = true;
-
-    return Startseite;
+    return startPage;
   });
 });
 
@@ -167,7 +157,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     const SystemrechtC = "Darf Klassen verwalten";
 
     await test.step(`Dialog Rolle anlegen öffnen`, async () => {
-      await page.goto(FRONTEND_URL + "admin/rollen/new");
+      await startseite.administration().then((menu) => menu.rolleAnlegen());
     });
 
     await test.step(`Rolle anlegen`, async () => {
@@ -244,7 +234,9 @@ test.describe("Testet die Anlage einer neuen Rolle", () => {
   test("Eine neue Rolle anlegen und sicherstellen, dass alle Serviceprovider angezeigt werden und verfügbar sind @long", async () => {
     const rolleCreationView: RolleCreationViewPage =
       await test.step("Rolle anlegen aufrufen", async () => {
-        return (await startseite.administration()).rolleAnlegen();
+        return await startseite
+          .administration()
+          .then((menu) => menu.rolleAnlegen());
       });
 
     const rolleCreationConfirm: {
