@@ -1,9 +1,12 @@
 import { defineConfig, devices } from "@playwright/test";
 import dotenv from "dotenv";
+import * as path from "node:path";
 
 dotenv.config({
   path: "./.env.dev",
 });
+
+dotenv.config({ path: path.resolve(__dirname, ".env"), override: true });
 
 export default defineConfig({
   testDir: "./tests",
@@ -37,11 +40,11 @@ export default defineConfig({
     //   use: { ...devices['Desktop Firefox'] },
     // },
     /*
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-    },
-*/
+        {
+          name: 'webkit',
+          use: { ...devices['Desktop Safari'] },
+        },
+    */
     /* Test against mobile viewports. */
     // {
     //   name: 'Mobile Chrome',
