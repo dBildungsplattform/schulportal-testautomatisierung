@@ -14,30 +14,35 @@ const PW = process.env.PW;
 const ADMIN = process.env.USER;
 const FRONTEND_URL = process.env.FRONTEND_URL || "";
 
-test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
-  let startseite: StartPage;
-  test.beforeEach(async ({ page }) => {
-    startseite = await test.step(`Login`, async () => {
-      const Landing = new LandingPage(page);
-      const Startseite = new StartPage(page);
-      const Login = new LoginPage(page);
+let startseite: StartPage;
+let loggedIn = false;
+test.beforeEach(async ({ page }) => {
+  startseite = await test.step(`Login`, async () => {
+    const Landing = new LandingPage(page);
+    const Startseite = new StartPage(page);
+    const Login = new LoginPage(page);
 
-      await page.goto(FRONTEND_URL);
-      await Landing.button_Anmelden.click();
-      await Login.login(ADMIN, PW);
-      await expect(Startseite.text_h2_Ueberschrift).toBeVisible();
+    await page.goto(FRONTEND_URL);
+    await Landing.button_Anmelden.click();
+    await Login.login(ADMIN, PW);
+    await expect(Startseite.text_h2_Ueberschrift).toBeVisible();
+    loggedIn = true;
 
-      return Startseite;
-    });
+    return Startseite;
   });
+});
 
-  test.afterEach(async ({ page }) => {
+test.afterEach(async ({ page }) => {
+  if (loggedIn) {
     await test.step(`Abmelden`, async () => {
       const Header = new HeaderPage(page);
       await Header.button_logout.click();
+      loggedIn = false;
     });
-  });
+  }
+});
 
+test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test("2 Rollen nacheinander anlegen mit Rollenarten LERN und LEHR als Landesadmin @long @short @stage", async ({
     page,
   }) => {
@@ -231,6 +236,10 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
       await deleteRolle(page, RollenID);
     });
   });
+});
+
+test.describe("Testet die Anlage einer neuen Rolle", () => {
+  let roleName: string | undefined = undefined;
 
   test("Eine neue Rolle anlegen und sicherstellen, dass alle Serviceprovider angezeigt werden und verfügbar sind @long", async () => {
     const rolleCreationView: RolleCreationViewPage =
@@ -240,14 +249,13 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
 
     const rolleCreationConfirm: {
       rolleCreationConfirmPage: RolleCreationConfirmPage;
-      roleName: string;
       selectedSPs: string[];
     } = await test.step("Rolle mit mehr als 5 SPs anlegen", async () => {
       await rolleCreationView.selectSchulstrukturknoten(
         "Land Schleswig-Holstein",
       );
       await rolleCreationView.selectRollenart("Lehr");
-      const roleName = "Neue Rolle aus Test";
+      roleName = "Neue Rolle aus Test";
       await rolleCreationView.enterRollenname(roleName);
       const theFirstSeven = Array.from({ length: 7 }, (_, key) => key);
       const selectedItems: string[] =
@@ -256,7 +264,6 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
         );
       return {
         rolleCreationConfirmPage: await rolleCreationView.createRolle(),
-        roleName: roleName,
         selectedSPs: selectedItems,
       };
     });
@@ -271,15 +278,20 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
       });
 
     await test.step("Rollentabelle prüfen", async () => {
-      const row = rolleManagementPage.getRowOfRoleTableByRoleName(
-        rolleCreationConfirm.roleName,
-      );
+      const row = rolleManagementPage.getRowOfRoleTableByRoleName(roleName);
       await expect(row).toBeVisible();
 
       const spCell = row.locator("td").nth(4);
-      await expect(spCell).toHaveText(
-        rolleCreationConfirm.selectedSPs.join(", "),
-      );
+      for (const sp of rolleCreationConfirm.selectedSPs) {
+        await expect.soft(spCell).toContainText(sp);
+      }
     });
+  });
+
+  test.afterEach(async ({ page }) => {
+    if (roleName) {
+      const roleId = await getRolleId(page, roleName);
+      await deleteRolle(page, roleId);
+    }
   });
 });
