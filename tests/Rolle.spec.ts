@@ -2,7 +2,6 @@ import { expect, test } from "@playwright/test";
 import { StartPage } from "../pages/StartView.page";
 import { MenuPage } from "../pages/MenuBar.page";
 import { RolleCreationViewPage } from "../pages/admin/RolleCreationView.page";
-import { RolleManagementViewPage } from "../pages/admin/RolleManagementView.page";
 import { faker } from "@faker-js/faker/locale/de";
 import { HeaderPage } from "../pages/Header.page";
 import { getRolleId, deleteRolle } from "../base/api/testHelperRolle.page";
@@ -36,9 +35,6 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
   test("2 Rollen nacheinander anlegen mit Rollenarten LERN und LEHR als Landesadmin @long @short @stage", async ({
     page,
   }) => {
-    const Menue = new MenuPage(page);
-    const RolleManagementView = new RolleManagementViewPage(page);
-
     const ZUFALLSNUMMER = faker.number.bigInt({ min: 1000, max: 9000 });
     const ROLLENNAME1 =
       "TAuto-PW-R1-" +
@@ -100,8 +96,10 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     });
 
     await test.step(`In der Ergebnisliste prüfen dass die beiden neuen Rollen angezeigt sind`, async () => {
-      await Menue.menueItem_AlleRollenAnzeigen.click();
-      await expect(RolleManagementView.text_h2_Rollenverwaltung).toHaveText(
+      const rolleManagementView = await rolleCreationView
+        .menu()
+        .alleRollenAnzeigen();
+      await expect(rolleManagementView.text_h2_Rollenverwaltung).toHaveText(
         "Rollenverwaltung",
       );
       await expect(page.getByRole("cell", { name: ROLLENNAME1 })).toBeVisible();
@@ -116,25 +114,19 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     });
   });
 
-  test("Ergebnisliste Rollen auf Vollständigkeit prüfen als Landesadmin @long @short @stage", async ({
-    page,
-  }) => {
-    const Startseite = new StartPage(page);
-    const Menue = new MenuPage(page);
-    const RolleManagementView = new RolleManagementViewPage(page);
-
+  test("Ergebnisliste Rollen auf Vollständigkeit prüfen als Landesadmin @long @short @stage", async () => {
     await test.step(`Rollenverwaltung öffnen und alle Elemente in der Ergebnisliste auf Existenz prüfen`, async () => {
-      await Startseite.card_item_schulportal_administration.click();
-      await Menue.menueItem_AlleRollenAnzeigen.click();
+      const menu: MenuPage = await startseite.administration();
+      const rolleManagement = await menu.alleRollenAnzeigen();
       await expect(
-        RolleManagementView.text_h1_Administrationsbereich,
+        rolleManagement.text_h1_Administrationsbereich,
       ).toBeVisible();
-      await expect(RolleManagementView.text_h2_Rollenverwaltung).toBeVisible();
-      await expect(RolleManagementView.table_header_Rollenname).toBeVisible();
-      await expect(RolleManagementView.table_header_Rollenart).toBeVisible();
-      await expect(RolleManagementView.table_header_Merkmale).toBeVisible();
+      await expect(rolleManagement.text_h2_Rollenverwaltung).toBeVisible();
+      await expect(rolleManagement.table_header_Rollenname).toBeVisible();
+      await expect(rolleManagement.table_header_Rollenart).toBeVisible();
+      await expect(rolleManagement.table_header_Merkmale).toBeVisible();
       await expect(
-        RolleManagementView.table_header_Administrationsebene,
+        rolleManagement.table_header_Administrationsebene,
       ).toBeVisible();
     });
   });
