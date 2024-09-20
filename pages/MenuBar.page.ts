@@ -1,5 +1,6 @@
 import { type Locator, Page } from "@playwright/test";
 import { RolleCreationViewPage } from "./admin/RolleCreationView.page";
+import {RolleManagementViewPage} from "./admin/RolleManagementView.page";
 
 export class MenuPage {
   readonly page: Page;
@@ -67,5 +68,10 @@ export class MenuPage {
   public async rolleAnlegen(): Promise<RolleCreationViewPage> {
     await this.menueItem_RolleAnlegen.click();
     return new RolleCreationViewPage(this.page);
+  }
+
+  public async alleRollenAnzeigen(): Promise<RolleManagementViewPage> {
+    await this.menueItem_AlleRollenAnzeigen.click();
+    return new RolleManagementViewPage(this.page);
   }
 }

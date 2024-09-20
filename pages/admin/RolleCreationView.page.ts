@@ -1,6 +1,7 @@
 import { type Locator, Page } from "@playwright/test";
 import { RolleCreationConfirmPage } from "./RolleCreationConfirm.page";
-import {ComboBox} from "../../elements/ComboBox";
+import { ComboBox } from "../../elements/ComboBox";
+import { MenuPage } from "../MenuBar.page";
 
 export class RolleCreationViewPage {
   readonly page: Page;
@@ -105,8 +106,13 @@ export class RolleCreationViewPage {
   public async enterRollenname(name: string) {
     await this.input_Rollenname.fill(name);
   }
+
   public async createRolle(): Promise<RolleCreationConfirmPage> {
     await this.button_RolleAnlegen.click();
     return new RolleCreationConfirmPage(this.page);
+  }
+
+  public menu(): MenuPage {
+    return new MenuPage(this.page);
   }
 }
