@@ -4,15 +4,24 @@ import { ComboBox } from "../../elements/ComboBox";
 import { MenuPage } from "../MenuBar.page";
 
 export class RolleCreationViewPage {
-  readonly page: Page;
   readonly text_h2_RolleAnlegen: Locator;
   readonly button_Schliessen: Locator;
-  readonly combobox_Schulstrukturknoten: Locator;
-  readonly combobox_Rollenart: Locator;
+  readonly combobox_Schulstrukturknoten = this.page
+    .getByTestId("administrationsebene-select")
+    .locator(".v-input__control");
+  readonly combobox_Rollenart = this.page
+    .getByTestId("rollenart-select")
+    .locator(".v-input__control");
   readonly input_Rollenname: Locator;
-  readonly combobox_Merkmal: Locator;
-  readonly combobox_Angebote: Locator;
-  readonly combobox_Systemrechte: Locator;
+  private readonly combobox_Merkmal = this.page
+    .getByTestId("merkmale-select")
+    .locator(".v-input__control");
+  private readonly combobox_Angebote = this.page
+    .getByTestId("service-provider-select")
+    .locator(".v-input__control");
+  private readonly combobox_Systemrechte = this.page
+    .getByTestId("systemrechte-select")
+    .locator(".v-input__control");
   readonly button_RolleAnlegen: Locator;
   readonly button_WeitereRolleAnlegen: Locator;
   readonly button_ZurueckErgebnisliste: Locator;
@@ -32,31 +41,19 @@ export class RolleCreationViewPage {
   readonly label_Systemrechte: Locator;
   readonly data_Systemrechte: Locator;
 
-  public readonly serviceProviderComboBox: ComboBox;
+  public readonly angebote: ComboBox;
+  public readonly merkmale: ComboBox;
+  public readonly schulstrukturknoten: ComboBox;
+  public readonly rollenarten: ComboBox;
+  public readonly systemrechte: ComboBox;
 
-  constructor(page) {
+  constructor(public readonly page: Page) {
     // Anlage Rolle
-    this.page = page;
     this.text_h2_RolleAnlegen = page.getByTestId("layout-card-headline");
     this.button_Schliessen = page.getByTestId("close-layout-card-button");
-    this.combobox_Schulstrukturknoten = page
-      .getByTestId("administrationsebene-select")
-      .locator(".v-input__control");
-    this.combobox_Rollenart = page
-      .getByTestId("rollenart-select")
-      .locator(".v-input__control");
     this.input_Rollenname = page
       .getByTestId("rollenname-input")
       .locator("input");
-    this.combobox_Merkmal = page
-      .getByTestId("merkmale-select")
-      .locator(".v-input__control");
-    this.combobox_Angebote = page
-      .getByTestId("service-provider-select")
-      .locator(".v-input__control");
-    this.combobox_Systemrechte = page
-      .getByTestId("systemrechte-select")
-      .locator(".v-input__control");
     this.button_RolleAnlegen = page.getByTestId("rolle-form-create-button");
     this.button_WeitereRolleAnlegen = page.getByTestId(
       "create-another-rolle-button",
@@ -87,20 +84,14 @@ export class RolleCreationViewPage {
     this.label_Systemrechte = page.getByText("Systemrechte:", { exact: true });
     this.data_Systemrechte = page.getByTestId("created-rolle-systemrecht");
 
-    this.serviceProviderComboBox = new ComboBox(
+    this.angebote = new ComboBox(this.page, this.combobox_Angebote);
+    this.merkmale = new ComboBox(this.page, this.combobox_Merkmal);
+    this.schulstrukturknoten = new ComboBox(
       this.page,
-      this.combobox_Angebote,
+      this.combobox_Schulstrukturknoten,
     );
-  }
-
-  public async selectSchulstrukturknoten(name: string) {
-    await this.combobox_Schulstrukturknoten.click();
-    await this.page.getByText(name, { exact: true }).click();
-  }
-
-  public async selectRollenart(type: string) {
-    await this.combobox_Rollenart.click();
-    await this.page.getByText(type, { exact: true }).click();
+    this.rollenarten = new ComboBox(this.page, this.combobox_Rollenart);
+    this.systemrechte = new ComboBox(this.page, this.combobox_Systemrechte)
   }
 
   public async enterRollenname(name: string) {

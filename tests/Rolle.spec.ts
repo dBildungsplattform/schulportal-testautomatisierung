@@ -65,13 +65,12 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
       });
 
     await test.step(`Erste Rolle anlegen`, async () => {
-      await rolleCreationView.combobox_Schulstrukturknoten.click();
-      await page.getByText(SCHULSTRUKTURKNOTEN1, { exact: true }).click();
-      await rolleCreationView.combobox_Rollenart.click();
-      await page.getByText(ROLLENART1, { exact: true }).click();
-      await rolleCreationView.input_Rollenname.fill(ROLLENNAME1);
-      await rolleCreationView.combobox_Angebote.click();
-      await page.getByText(Angebot1, { exact: true }).click();
+      await rolleCreationView.schulstrukturknoten.selectByTitle(
+        SCHULSTRUKTURKNOTEN1,
+      );
+      await rolleCreationView.rollenarten.selectByTitle(ROLLENART1);
+      await rolleCreationView.enterRollenname(ROLLENNAME1);
+      await rolleCreationView.angebote.selectByTitle(Angebot1);
       await rolleCreationView.button_RolleAnlegen.click();
       await expect(rolleCreationView.text_success).toBeVisible();
     });
@@ -79,18 +78,14 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     await test.step(`Zweite Rolle anlegen`, async () => {
       await rolleCreationView.button_WeitereRolleAnlegen.click();
 
-      await rolleCreationView.combobox_Schulstrukturknoten.click();
-      await page.getByText(SCHULSTRUKTURKNOTEN2, { exact: true }).click();
-      await rolleCreationView.combobox_Rollenart.click();
-      await page.getByText(ROLLENART2, { exact: true }).click();
-
-      await rolleCreationView.input_Rollenname.fill(ROLLENNAME2);
-      await rolleCreationView.combobox_Merkmal.click();
-      await page.getByText(Merkmal2, { exact: true }).click();
-      await rolleCreationView.combobox_Angebote.click();
-      await page.getByText(AngebotA2, { exact: true }).click();
-      await page.getByText(AngebotB2, { exact: true }).click();
-
+      await rolleCreationView.schulstrukturknoten.selectByTitle(
+        SCHULSTRUKTURKNOTEN2,
+      );
+      await rolleCreationView.rollenarten.selectByTitle(ROLLENART2);
+      await rolleCreationView.enterRollenname(ROLLENNAME2);
+      await rolleCreationView.merkmale.selectByTitle(Merkmal2);
+      await rolleCreationView.angebote.selectByTitle(AngebotA2);
+      await rolleCreationView.angebote.selectByTitle(AngebotB2);
       await rolleCreationView.button_RolleAnlegen.click();
       await expect(rolleCreationView.text_success).toBeVisible();
     });
@@ -155,65 +150,81 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
           .then((menu) => menu.rolleAnlegen());
       });
 
-    await test.step(`Rolle anlegen`, async () => {
-      await rolleCreationView.combobox_Schulstrukturknoten.click();
+    const rolleCreationConfirmPage: RolleCreationConfirmPage =
+      await test.step(`Rolle anlegen`, async () => {
+        await rolleCreationView.schulstrukturknoten.selectByTitle(
+          SCHULSTRUKTURKNOTEN,
+        );
+        await rolleCreationView.rollenarten.selectByTitle(ROLLENART);
+        await rolleCreationView.enterRollenname(ROLLENNAME);
+        await rolleCreationView.merkmale.selectByTitle(Merkmal);
+        await rolleCreationView.angebote.selectByTitle(AngebotA);
+        await rolleCreationView.angebote.selectByTitle(AngebotB);
+        await rolleCreationView.angebote.selectByTitle(AngebotC);
 
-      await page.getByText(SCHULSTRUKTURKNOTEN, { exact: true }).click();
-      await rolleCreationView.combobox_Rollenart.click();
-      await page.getByText(ROLLENART, { exact: true }).click();
-      await rolleCreationView.input_Rollenname.fill(ROLLENNAME);
-      await rolleCreationView.combobox_Merkmal.click();
-      await page.getByText(Merkmal, { exact: true }).click();
-      await rolleCreationView.combobox_Angebote.click();
-      await page.getByText(AngebotA, { exact: true }).click();
-      await page.getByText(AngebotB, { exact: true }).click();
-      await page.getByText(AngebotC, { exact: true }).click();
-      await rolleCreationView.combobox_Systemrechte.click();
-      await page.getByText(SystemrechtA, { exact: true }).click();
-      await page.getByText(SystemrechtB, { exact: true }).click();
-      await page.getByText(SystemrechtC, { exact: true }).click();
+        await rolleCreationView.systemrechte.selectByTitle(SystemrechtA);
+        await rolleCreationView.systemrechte.selectByTitle(SystemrechtB);
+        await rolleCreationView.systemrechte.selectByTitle(SystemrechtC);
 
-      await rolleCreationView.button_RolleAnlegen.click();
-    });
+        return await rolleCreationView.createRolle();
+      });
 
     await test.step(`Bestätigungsseite prüfen`, async () => {
-      await expect(rolleCreationView.text_h2_RolleAnlegen).toHaveText(
+      await expect(rolleCreationConfirmPage.text_h2_RolleAnlegen).toHaveText(
         "Neue Rolle hinzufügen",
       );
-      await expect(rolleCreationView.button_Schliessen).toBeVisible();
-      await expect(rolleCreationView.text_success).toBeVisible();
-      await expect(rolleCreationView.icon_success).toBeVisible();
-      await expect(rolleCreationView.text_DatenGespeichert).toHaveText(
+      await expect(rolleCreationConfirmPage.button_Schliessen).toBeVisible();
+      await expect(rolleCreationConfirmPage.text_success).toBeVisible();
+      await expect(rolleCreationConfirmPage.icon_success).toBeVisible();
+      await expect(rolleCreationConfirmPage.text_DatenGespeichert).toHaveText(
         "Folgende Daten wurden gespeichert:",
       );
-      await expect(rolleCreationView.label_Administrationsebene).toHaveText(
-        "Administrationsebene:",
+      await expect(
+        rolleCreationConfirmPage.label_Administrationsebene,
+      ).toHaveText("Administrationsebene:");
+      await expect(
+        rolleCreationConfirmPage.data_Administrationsebene,
+      ).toHaveText(SCHULSTRUKTURKNOTEN);
+      await expect(rolleCreationConfirmPage.label_Rollenart).toHaveText(
+        "Rollenart:",
       );
-      await expect(rolleCreationView.data_Administrationsebene).toHaveText(
-        SCHULSTRUKTURKNOTEN,
+      await expect(rolleCreationConfirmPage.data_Rollenart).toHaveText(
+        ROLLENART,
       );
-      await expect(rolleCreationView.label_Rollenart).toHaveText("Rollenart:");
-      await expect(rolleCreationView.data_Rollenart).toHaveText(ROLLENART);
-      await expect(rolleCreationView.label_Rollenname).toHaveText(
+      await expect(rolleCreationConfirmPage.label_Rollenname).toHaveText(
         "Rollenname:",
       );
-      await expect(rolleCreationView.data_Rollenname).toHaveText(ROLLENNAME);
-      await expect(rolleCreationView.label_Merkmale).toHaveText("Merkmale:");
-      await expect(rolleCreationView.data_Merkmale).toHaveText(Merkmal);
-      await expect(rolleCreationView.label_Angebote).toHaveText(
+      await expect(rolleCreationConfirmPage.data_Rollenname).toHaveText(
+        ROLLENNAME,
+      );
+      await expect(rolleCreationConfirmPage.label_Merkmale).toHaveText(
+        "Merkmale:",
+      );
+      await expect(rolleCreationConfirmPage.data_Merkmale).toHaveText(Merkmal);
+      await expect(rolleCreationConfirmPage.label_Angebote).toHaveText(
         "Zugeordnete Angebote:",
       );
-      await expect(rolleCreationView.data_Angebote).toContainText(AngebotA);
-      await expect(rolleCreationView.data_Angebote).toContainText(AngebotB);
-      await expect(rolleCreationView.data_Angebote).toContainText(AngebotC);
-      await expect(rolleCreationView.label_Systemrechte).toHaveText(
+      await expect(rolleCreationConfirmPage.data_Angebote).toContainText(
+        AngebotA,
+      );
+      await expect(rolleCreationConfirmPage.data_Angebote).toContainText(
+        AngebotB,
+      );
+      await expect(rolleCreationConfirmPage.data_Angebote).toContainText(
+        AngebotC,
+      );
+      await expect(rolleCreationConfirmPage.label_Systemrechte).toHaveText(
         "Systemrechte:",
       );
-      await expect(rolleCreationView.data_Systemrechte).toContainText(
+      await expect(rolleCreationConfirmPage.data_Systemrechte).toContainText(
         SystemrechtA + ", " + SystemrechtB + ", " + SystemrechtC,
       );
-      await expect(rolleCreationView.button_WeitereRolleAnlegen).toBeVisible();
-      await expect(rolleCreationView.button_ZurueckErgebnisliste).toBeVisible();
+      await expect(
+        rolleCreationConfirmPage.button_WeitereRolleAnlegen,
+      ).toBeVisible();
+      await expect(
+        rolleCreationConfirmPage.button_ZurueckErgebnisliste,
+      ).toBeVisible();
     });
 
     await test.step(`Rolle wieder löschen`, async () => {
@@ -238,17 +249,15 @@ test.describe("Testet die Anlage einer neuen Rolle", () => {
       rolleCreationConfirmPage: RolleCreationConfirmPage;
       selectedSPs: string[];
     } = await test.step("Rolle mit mehr als 5 SPs anlegen", async () => {
-      await rolleCreationView.selectSchulstrukturknoten(
+      await rolleCreationView.schulstrukturknoten.selectByTitle(
         "Land Schleswig-Holstein",
       );
-      await rolleCreationView.selectRollenart("Lehr");
+      await rolleCreationView.rollenarten.selectByTitle("Lehr");
       roleName = "Neue Rolle aus Test";
       await rolleCreationView.enterRollenname(roleName);
       const theFirstSeven = Array.from({ length: 7 }, (_, key) => key);
       const selectedItems: string[] =
-        await rolleCreationView.serviceProviderComboBox.selectByPosition(
-          theFirstSeven,
-        );
+        await rolleCreationView.angebote.selectByPosition(theFirstSeven);
       return {
         rolleCreationConfirmPage: await rolleCreationView.createRolle(),
         selectedSPs: selectedItems,
