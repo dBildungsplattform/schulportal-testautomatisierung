@@ -8,7 +8,6 @@ import { RolleManagementViewPage } from "../pages/admin/RolleManagementView.page
 import { faker } from "@faker-js/faker/locale/de";
 import { HeaderPage } from "../pages/Header.page";
 import { getRolleId, deleteRolle } from "../base/api/testHelperRolle.page";
-import { zu_ZA } from "@faker-js/faker";
 
 const PW = process.env.PW;
 const ADMIN = process.env.USER;
