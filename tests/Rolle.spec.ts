@@ -274,7 +274,8 @@ test.describe("Testet die Anlage einer neuen Rolle", () => {
       });
 
     await test.step("Rollentabelle prüfen", async () => {
-      const row = rolleManagementPage.rowByRoleName(roleName);
+      expect(roleName).toBeDefined();
+      const row = rolleManagementPage.rowByRoleName(roleName!);
       await expect(row.locator).toBeVisible();
 
       const spCell = row.spCell();
