@@ -5,6 +5,7 @@ import { StartPage } from "../pages/StartView.page";
 import { MenuPage } from "../pages/MenuBar.page";
 import { PersonCreationViewPage } from "../pages/admin/PersonCreationView.page";
 import { PersonManagementViewPage } from "../pages/admin/PersonManagementView.page";
+import { PersonDetailsViewPage } from "../pages/admin/PersonDetailsView.page";
 import { HeaderPage } from "../pages/Header.page";
 import { faker } from "@faker-js/faker/locale/de";
 import { deletePersonen, getPersonId, createPersonWithUserContext } from "../base/api/testHelperPerson.page";
@@ -682,4 +683,30 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await deleteRolle(page, userInfo.rolleId);
     });
   });
+
+  test("Einen Benutzer über das FE löschen @long @short @stage", async ({page, }) => {
+    const PersonManagementView = new PersonManagementViewPage(page);
+    const PersonDetailsView = new PersonDetailsViewPage(page);
+
+    const vorname = "TAuto-PW-V-" + faker.person.firstName();
+    const nachname = "TAuto-PW-N-" + faker.person.lastName();
+    const rolle = "TAuto-PW-R-" + faker.lorem.word({ length: { min: 8, max: 12 }});
+    const berechtigung = 'SYSADMIN';
+    const idSP = await getSPId(page, 'Schulportal-Administration');
+
+    await test.step(`Neuen Benutzer über die api anlegen`, async () => {
+      await createPersonWithUserContext(page, 'Land Schleswig-Holstein', berechtigung, vorname, nachname, idSP, rolle);
+    })   
+    
+    await test.step(`Benutzer wieder löschen über das FE`, async () => {
+      await page.goto(FRONTEND_URL + "admin/personen");
+      await PersonManagementView.input_Suchfeld.fill(nachname);
+      await PersonManagementView.button_Suchen.click();
+      await page.getByRole("cell", { name: nachname, exact: true }).click();
+      await PersonDetailsView.button_deletePerson.click();
+      await PersonDetailsView.button_deletePersonConfirm.click();
+      await PersonDetailsView.button_closeDeletePersonConfirm.click();
+      await expect(page.getByRole("cell", { name: nachname, exact: true })).toBeHidden();
+    });
+  })  
 });
