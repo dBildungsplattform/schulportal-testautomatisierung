@@ -9,6 +9,7 @@ Die data-testid muss genau in dem Bereich liegen, in dem der Endanwender auch ta
 
 # Liste der fehlenden oder nicht korrekt plazierten data-testid
 ## admin/PersonCreationView.page.ts
+--
 
 ## admin/PersonDetailsView.page.ts
 --
@@ -36,5 +37,10 @@ Die data-testid muss genau in dem Bereich liegen, in dem der Endanwender auch ta
 
 ## StartView.page.ts
 --
+
 ## FooterDataTable.page.ts
 --
+
+## ProfileView.page.ts
+Abschnitt 2FA, text: "Es wurde noch kein zweiter Faktor für Sie eingerichtet."
+Abschnitt Passwort, text: "Ihr Passwort wurde zuletzt am 19.09.2024 geändert."
