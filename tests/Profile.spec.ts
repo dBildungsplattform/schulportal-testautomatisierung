@@ -242,9 +242,9 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       await expect(ProfileView.icon_Schluessel_Passwort).toBeVisible();
       await expect(ProfileView.button_NeuesPasswortSetzen).toBeEnabled();
       // 2FA
-      await expect(ProfileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
-      await expect(ProfileView.icon_Schild2FA).toBeVisible();
-      await expect(ProfileView.button_2FAEinrichten).toBeEnabled();
+      await expect(ProfileView.cardHeadline_2FA).toBeHidden();
+      await expect(ProfileView.icon_Schild2FA).toBeHidden();
+      await expect(ProfileView.button_2FAEinrichten).toBeHidden();
     });
 
     await test.step(`Testdaten via api löschen`, async () => {
