@@ -25,7 +25,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.U
     });
   });
 
-  test.only("Angebote per Link öffnen als Landesadmin @long", async ({ page }) => {
+  test("Angebote per Link öffnen als Landesadmin @long", async ({ page }) => {
     const Startseite = new StartPage(page);
 
     await test.step(`Kacheln Email für Lehrkräfte und Itslearning öffnen, danach beide Kacheln wieder schließen`, async () => {
