@@ -47,7 +47,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.U
       const page_calendar_Promise = page.waitForEvent("popup");
       await Startseite.card_item_calendar.click();
       const page_calendar = await page_calendar_Promise;
-      if(FRONTEND_URL.includes('dev.spsh')) {
+      if (FRONTEND_URL.includes('dev.spsh')) {
         await expect(page_calendar.getByText('error_category: ox-error')).toBeVisible();
       }
 
