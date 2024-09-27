@@ -9,6 +9,9 @@ export class PersonDetailsViewPage{
     readonly icon_pwVisible: Locator;
     readonly input_pw: Locator;
     readonly button_close_pwreset: Locator;
+    readonly button_deletePerson: Locator;
+    readonly button_deletePersonConfirm: Locator;
+    readonly button_closeDeletePersonConfirm: Locator;
     
     constructor(page){
         this.page = page;  
@@ -19,5 +22,8 @@ export class PersonDetailsViewPage{
         this.icon_pwVisible = page.getByTestId('show-password-icon');
         this.input_pw = page.locator('[data-testid="password-output-field"] input'); 
         this.button_close_pwreset = page.getByTestId('close-password-reset-dialog-button');
+        this.button_deletePerson = page.getByTestId('open-person-delete-dialog-icon');
+        this.button_deletePersonConfirm = page.getByTestId('person-delete-button');
+        this.button_closeDeletePersonConfirm = page.getByTestId('close-person-delete-success-dialog-button');
     }
 }
