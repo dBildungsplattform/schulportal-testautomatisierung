@@ -58,7 +58,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.U
       const page_directory_Promise = page.waitForEvent("popup");
       await Startseite.card_item_directory.click();
       const page_directory = await page_directory_Promise;
-      if(FRONTEND_URL.includes('dev.spsh')) {
+      if (FRONTEND_URL.includes('dev.spsh')) {
         await expect(page_directory.getByText('error_category: ox-error')).toBeVisible();
       }
 
