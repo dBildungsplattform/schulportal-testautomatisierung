@@ -1,8 +1,5 @@
 # Testfälle(Testname)
 
-## Api.spec.ts
-### GET und Post request Personen und Benutzer anschließend über das FE löschen @long @short @stage
-
 ## Klasse.spec.ts
 ### Eine Klasse als Landesadmin anlegen und die Klasse anschließend in der Ergebnisliste suchen und dann löschen @long @short @stage
 ### Ergebnisliste Klassen als Landesadmin auf Vollständigkeit prüfen @long @short @stage
