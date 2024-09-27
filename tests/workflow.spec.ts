@@ -32,7 +32,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.U
       // Kachel email
       // Die Schnittstelle email für Lehrkräfte(ox) gibt es nur auf stage
       // Auf dev wird nur getestet, dass die url für ox aufgerufen wird wenn man die Kachel email anklickt
-      // Wenn SPSH-1043 auf stage deployed ist, muss der Test erweitert werden. Hier muss dann das erwartete Verhalten getestet werden, wenn man auf stage auf die Kachel klickt
+      // Wenn SPSH-1043 auf stage deployed ist, muss der Test erweitert werden. Hier muss dann das erwartete Verhalten getestet werden, wenn man auf stage auf die Kacheln email, Kalender und Adressbuch klickt
       const page_Email4Teacher_Promise = page.waitForEvent("popup");
       await Startseite.card_item_email.click();
       const page_email4Teacher = await page_Email4Teacher_Promise;
@@ -41,9 +41,6 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.U
       }
 
       // Kachel Kalender
-      // Die Schnittstelle email für Lehrkräfte(ox) gibt es nur auf stage
-      // Auf dev wird nur getestet, dass die url für ox aufgerufen wird wenn man die Kachel Kalender anklickt
-      // Wenn SPSH-1043 auf stage deployed ist, muss der Test erweitert werden. Hier muss dann das erwartete Verhalten getestet werden, wenn man auf stage auf die Kachel klickt
       const page_calendar_Promise = page.waitForEvent("popup");
       await Startseite.card_item_calendar.click();
       const page_calendar = await page_calendar_Promise;
@@ -52,9 +49,6 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.U
       }
 
       // Kachel Adressbuch
-      // Die Schnittstelle email für Lehrkräfte(ox) gibt es nur auf stage
-      // Auf dev wird nur getestet, dass die url für ox aufgerufen wird wenn man die Kachel Adressbuch anklickt
-      // Wenn SPSH-1043 auf stage deployed ist, muss der Test erweitert werden. Hier muss dann das erwartete Verhalten getestet werden, wenn man auf stage auf die Kachel klickt
       const page_directory_Promise = page.waitForEvent("popup");
       await Startseite.card_item_directory.click();
       const page_directory = await page_directory_Promise;
