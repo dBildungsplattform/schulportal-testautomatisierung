@@ -40,8 +40,6 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
 
   test("2 Schulen nacheinander anlegen als Landesadmin @long", async ({ page }) => {
     const Startseite = new StartPage(page);
-    const Menue = new MenuPage(page);
-    const SchuleCreationView = new SchuleCreationViewPage(page);
     const SchuleManagementView = new SchuleManagementViewPage(page);
     const FooterDataTable = new FooterDataTablePage(page);
 
@@ -52,10 +50,13 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
     const DIENSTSTELLENNUMMER1 = "0" + faker.number.bigInt({ min: 10000000, max: 100000000 });
     const DIENSTSTELLENNUMMER2 = "0" + faker.number.bigInt({ min: 10000000, max: 100000000 });
 
-    await test.step(`Dialog Schule anlegen öffnen`, async () => {
-      await Startseite.card_item_schulportal_administration.click();
-      await Menue.menueItem_SchuleAnlegen.click();
-      await expect(SchuleCreationView.text_h2_SchuleAnlegen).toHaveText("Neue Schule hinzufügen");
+    const { Menue, SchuleCreationView }: { Menue: MenuPage; SchuleCreationView: SchuleCreationViewPage } =
+      await test.step(`Dialog Schule anlegen öffnen`, async (): Promise<{ Menue: MenuPage; SchuleCreationView: SchuleCreationViewPage }> => {
+        const Menue: MenuPage = await Startseite.administration();
+        const SchuleCreationView: SchuleCreationViewPage = await Menue.schuleAnlegen();
+        await Menue.menueItem_SchuleAnlegen.click();
+        await expect(SchuleCreationView.text_h2_SchuleAnlegen).toHaveText("Neue Schule hinzufügen");
+        return {Menue, SchuleCreationView};
     });
 
     await test.step(`Erste Schule anlegen`, async () => {
@@ -91,12 +92,10 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
 
   test("Ergebnisliste Schulen auf Vollständigkeit prüfen als Landesadmin @long @short @stage", async ({ page }) => {
     const Startseite = new StartPage(page);
-    const Menue = new MenuPage(page);
-    const SchuleManagementView = new SchuleManagementViewPage(page);
 
     await test.step(`Schulverwaltung öffnen und Alle Elemente in der Ergebnisliste auf Existenz prüfen`, async () => {
-      await Startseite.card_item_schulportal_administration.click();
-      await Menue.menueItem_AlleSchulenAnzeigen.click();
+      const Menue: MenuPage = await Startseite.administration();
+      const SchuleManagementView: SchuleManagementViewPage = await Menue.alleSchulenAnzeigen();
       await expect(SchuleManagementView.text_h1_Administrationsbereich).toBeVisible();
       await expect(SchuleManagementView.text_h2_Schulverwaltung).toBeVisible();
       await expect(SchuleManagementView.text_h2_Schulverwaltung).toHaveText("Schulverwaltung");
@@ -112,21 +111,20 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
     const SCHULNAME = "TAuto-PW-S1-" + faker.lorem.word({ length: { min: 8, max: 12 }}) + ZUFALLSNUMMER;
     const DIENSTSTELLENNUMMER = "0" + faker.number.bigInt({ min: 10000000, max: 100000000 });
     const Landing = new LandingPage(page);
-    const Startseite = new StartPage(page);
     const Login = new LoginPage(page);
     const Header = new HeaderPage(page);
     let userInfo: UserInfo;
 
-    await test.step(`Testdaten: Schuladmin anlegen und mit diesem anmelden`, async () => {
+    const Startseite: StartPage = await test.step(`Testdaten: Schuladmin anlegen und mit diesem anmelden`, async () => {
       const idSP = await getSPId(page, 'Schulportal-Administration');
       userInfo = await createPersonWithUserContext(page, 'Testschule Schulportal', 'LEIT', 'TAuto-PW-B-MeierLEIT', 'TAuto-PW-B-Hans', idSP, 'TAuto-PW-R-RolleLEIT');
       await addSystemrechtToRolle(page, userInfo.rolleId, 'SCHULEN_VERWALTEN');
 
       await Header.button_logout.click();
-      await Landing.button_Anmelden.click();
-      await Login.login(userInfo.username, userInfo.password);
+      const Startseite = await Login.login(userInfo.username, userInfo.password);
       userInfo.password = await Login.UpdatePW();
-      await expect(Startseite.text_h2_Ueberschrift).toBeVisible();    
+      await expect(Startseite.text_h2_Ueberschrift).toBeVisible();
+      return Startseite
     });
 
     await test.step(`Dialog Schule anlegen öffnen also Schuladmin`, async () => {
@@ -139,7 +137,7 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
       await SchuleCreationView.input_Schulname.fill(SCHULNAME);
       await SchuleCreationView.button_SchuleAnlegen.click();
     });
-    
+
     await test.step(`Bestätigungsseite prüfen`, async () => {
       await expect(SchuleCreationView.text_success).toBeVisible();
       await expect(SchuleCreationView.text_h2_SchuleAnlegen).toHaveText('Neue Schule hinzufügen');
@@ -148,7 +146,7 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
       await expect(SchuleCreationView.icon_success).toBeVisible();
       await expect(SchuleCreationView.text_DatenGespeichert).toHaveText('Folgende Daten wurden gespeichert:');
       await expect(SchuleCreationView.label_Schulform).toHaveText('Schulform:');
-      await expect(SchuleCreationView.data_Schulform).toHaveText('Öffentliche Schule');
+      await expect(SchuleCreationView.data_Schulform).toHaveText('Öffentliche Schulen Land Schleswig-Holstein');
       await expect(SchuleCreationView.label_Dienststellennummer).toHaveText('Dienststellennummer:');
       await expect(SchuleCreationView.data_Dienststellennummer).toHaveText(DIENSTSTELLENNUMMER);
       await expect(SchuleCreationView.label_Schulname).toHaveText('Schulname:');

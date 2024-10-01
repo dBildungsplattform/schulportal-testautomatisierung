@@ -1,6 +1,8 @@
 import { type Locator, Page } from "@playwright/test";
 import { RolleCreationViewPage } from "./admin/RolleCreationView.page";
 import {RolleManagementViewPage} from "./admin/RolleManagementView.page";
+import { SchuleManagementViewPage } from "./admin/SchuleManagementView.page";
+import { SchuleCreationViewPage } from "./admin/SchuleCreationView.page";
 
 export class MenuPage {
   readonly page: Page;
@@ -73,5 +75,15 @@ export class MenuPage {
   public async alleRollenAnzeigen(): Promise<RolleManagementViewPage> {
     await this.menueItem_AlleRollenAnzeigen.click();
     return new RolleManagementViewPage(this.page);
+  }
+
+  public async alleSchulenAnzeigen(): Promise<SchuleManagementViewPage> {
+    await this.menueItem_AlleSchulenAnzeigen.click();
+    return new SchuleManagementViewPage(this.page);
+  }
+
+  public async schuleAnlegen(): Promise<SchuleCreationViewPage> {
+    await this.menueItem_SchuleAnlegen.click();
+    return new SchuleCreationViewPage(this.page);
   }
 }
