@@ -8,6 +8,7 @@ import { KlasseManagementViewPage } from "../pages/admin/KlasseManagementView.pa
 import { faker } from "@faker-js/faker/locale/de";
 import { HeaderPage } from "../pages/Header.page";
 import { getKlasseId, deleteKlasse } from "../base/api/testHelperOrganisation.page";
+import { LONG, SHORT, STAGE } from "../base/tags";
 
 const PW = process.env.PW;
 const ADMIN = process.env.USER;
@@ -34,7 +35,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     });
   });
 
-  test("Eine Klasse als Landesadmin anlegen und die Klasse anschließend in der Ergebnisliste suchen und dann löschen @long @short @stage", async ({ page }) => {
+  test("Eine Klasse als Landesadmin anlegen und die Klasse anschließend in der Ergebnisliste suchen und dann löschen", {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
     const Startseite = new StartPage(page);
     const Menue = new MenuPage(page);
     const KlasseCreationView = new KlasseCreationViewPage(page);
@@ -73,7 +74,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     });
   });
 
-  test("Ergebnisliste Klassen als Landesadmin auf Vollständigkeit prüfen @long @short @stage", async ({ page }) => {
+  test("Ergebnisliste Klassen als Landesadmin auf Vollständigkeit prüfen", {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
     const Startseite = new StartPage(page);
     const Menue = new MenuPage(page);
     const KlasseManagementView = new KlasseManagementViewPage(page);
@@ -90,7 +91,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     });
   });
 
-  test("Eine Klasse als Landesadmin anlegen und die Bestätigungsseite vollständig prüfen @long @stage", async ({ page }) => {
+  test("Eine Klasse als Landesadmin anlegen und die Bestätigungsseite vollständig prüfen", {tag: [LONG, STAGE]}, async ({ page }) => {
     const KlasseCreationView = new KlasseCreationViewPage(page);
     const DIENSTSTELLENNUMMER = '1111111';
     const SCHULNAME = "Testschule Schulportal";

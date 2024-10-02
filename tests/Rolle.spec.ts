@@ -7,6 +7,7 @@ import { HeaderPage } from "../pages/Header.page";
 import { getRolleId, deleteRolle } from "../base/api/testHelperRolle.page";
 import { RolleCreationConfirmPage } from "../pages/admin/RolleCreationConfirm.page";
 import FromAnywhere from "../pages/FromAnywhere";
+import { LONG, SHORT, STAGE } from "../base/tags";
 
 let startseite: StartPage;
 let loggedIn = false;
@@ -32,7 +33,7 @@ test.afterEach(async ({ page }) => {
 });
 
 test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
-  test("2 Rollen nacheinander anlegen mit Rollenarten LERN und LEHR als Landesadmin @long @short @stage", async ({
+  test("2 Rollen nacheinander anlegen mit Rollenarten LERN und LEHR als Landesadmin", {tag: [LONG, SHORT, STAGE]}, async ({
     page,
   }) => {
     const ZUFALLSNUMMER = faker.number.bigInt({ min: 1000, max: 9000 });
@@ -109,7 +110,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     });
   });
 
-  test("Ergebnisliste Rollen auf Vollständigkeit prüfen als Landesadmin @long @short @stage", async () => {
+  test("Ergebnisliste Rollen auf Vollständigkeit prüfen als Landesadmin", {tag: [LONG, SHORT, STAGE]}, async () => {
     await test.step(`Rollenverwaltung öffnen und alle Elemente in der Ergebnisliste auf Existenz prüfen`, async () => {
       const menu: MenuPage = await startseite.administration();
       const rolleManagement = await menu.alleRollenAnzeigen();
@@ -126,7 +127,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     });
   });
 
-  test("Eine Rolle anlegen und die Bestätigungsseite vollständig prüfen als Landesadmin @long @short @stage", async ({
+  test("Eine Rolle anlegen und die Bestätigungsseite vollständig prüfen als Landesadmin", {tag: [LONG, SHORT, STAGE]}, async ({
     page,
   }) => {
     const ROLLENNAME =
@@ -237,7 +238,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
 test.describe("Testet die Anlage einer neuen Rolle", () => {
   let roleName: string | undefined = undefined;
 
-  test("Eine neue Rolle anlegen und sicherstellen, dass alle Serviceprovider angezeigt werden und verfügbar sind @long", async () => {
+  test("Eine neue Rolle anlegen und sicherstellen, dass alle Serviceprovider angezeigt werden und verfügbar sind", {tag: [LONG]}, async () => {
     const rolleCreationView: RolleCreationViewPage =
       await test.step("Rolle anlegen aufrufen", async () => {
         return await startseite

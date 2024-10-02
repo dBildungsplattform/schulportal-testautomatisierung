@@ -4,6 +4,7 @@ import { StartPage } from '../pages/StartView.page';
 import { LoginPage } from '../pages/LoginView.page';
 import { MenuPage } from '../pages/MenuBar.page';
 import { HeaderPage } from "../pages/Header.page";
+import { LONG, SHORT, STAGE } from '../base/tags';
 
 const PW = process.env.PW;
 const ADMIN = process.env.USER;
@@ -29,8 +30,8 @@ test.describe(`Testfälle für die Hauptmenue-Leiste: Umgebung: ${process.env.UM
       await Header.button_logout.click();
     });
   });
-  
-  test('Test der Hauptmenue-Leiste und Untermenues auf Vollständigkeit @long @short @stage', async ({ page }) => {
+
+  test('Test der Hauptmenue-Leiste und Untermenues auf Vollständigkeit', {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
     const Startseite = new StartPage(page)
     const MenuBar = new MenuPage(page);
 
@@ -47,10 +48,10 @@ test.describe(`Testfälle für die Hauptmenue-Leiste: Umgebung: ${process.env.UM
       await expect(MenuBar.menueItem_RolleAnlegen).toBeVisible();
       await expect(MenuBar.label_Schulverwaltung).toBeVisible();
       await expect(MenuBar.label_Schultraegerverwaltung).toBeVisible();
-    })    
-  })  
+    })
+  })
 
-  test('Test der Funktion "Zurueck zur Startseite" @long @short @stage', async ({ page }) => {
+  test('Test der Funktion "Zurueck zur Startseite"', {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
     const Startseite = new StartPage(page)
     const MenuBar = new MenuPage(page);
 
@@ -60,5 +61,5 @@ test.describe(`Testfälle für die Hauptmenue-Leiste: Umgebung: ${process.env.UM
       await MenuBar.button_BackStartpage.click();
       await expect(Startseite.text_h2_Ueberschrift).toBeVisible();
     })
-  })  
+  })
 })
