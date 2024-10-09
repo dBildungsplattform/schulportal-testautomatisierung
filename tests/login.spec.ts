@@ -3,13 +3,14 @@ import { LoginPage } from '../pages/LoginView.page';
 import { LandingPage } from '../pages/LandingView.page';
 import { StartPage } from '../pages/StartView.page';
 import { HeaderPage } from "../pages/Header.page";
+import { LONG, SHORT, SMOKE, STAGE } from '../base/tags';
 
 const PW = process.env.PW;
 const USER = process.env.USER;
 const FRONTEND_URL = process.env.FRONTEND_URL || '';
 
 test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
-   test('Erfolgreicher Standard Login Landesadmin @long @stage @smoke', async ({ page }) => {
+   test('Erfolgreicher Standard Login Landesadmin', {tag: [LONG, SMOKE, STAGE]}, async ({ page }) => {
     const Login = new LoginPage(page);
     const Landing = new LandingPage(page);
     const Start = new StartPage(page);
@@ -23,12 +24,12 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.UM
       await expect(Start.text_h2_Ueberschrift).toBeVisible();
       await Header.button_logout.click();
     })
-  })  
-  
-  test('Erfolgloser Login mit falschem Passwort und gültigem Benutzernamen in der Rolle Landesadmin @long @short @stage', async ({ page }) => {
+  })
+
+  test('Erfolgloser Login mit falschem Passwort und gültigem Benutzernamen in der Rolle Landesadmin', {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
     const Login = new LoginPage(page);
     const Landing = new LandingPage(page);
-  
+
     await test.step(`Anmelden mit Benutzer ${USER}`, async () => {
       await page.goto(FRONTEND_URL);
       await expect(Landing.text_Willkommen).toBeVisible();

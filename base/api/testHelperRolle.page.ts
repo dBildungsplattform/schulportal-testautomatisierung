@@ -19,9 +19,9 @@ export async function createRolle(page: Page, rollenArt: string, organisationId:
 }
 
 export async function addSPToRolle(page: Page, rolleId: string, idSP: string): Promise<void> {
-    const response = await page.request.post(FRONTEND_URL + `api/rolle/${rolleId}/serviceProviders`, {
+    const response = await page.request.put(FRONTEND_URL + `api/rolle/${rolleId}/serviceProviders`, {
         data: {
-            "serviceProviderId": idSP,
+            "serviceProviderIds": [idSP],
             "version": 1,
         }
     });
