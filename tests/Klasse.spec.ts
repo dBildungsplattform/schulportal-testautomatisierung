@@ -101,11 +101,11 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
   });
 
   test("Eine Klasse als Landesadmin anlegen und die Bestätigungsseite vollständig prüfen", {tag: [LONG, STAGE]}, async ({ page }) => {
-    const KlasseCreationView = new KlasseCreationViewPage(page);
-    const DIENSTSTELLENNUMMER = '1111111';
-    const SCHULNAME = "Testschule Schulportal";
-    const ZUFALLSNUMMER = faker.number.bigInt({ min: 1000, max: 9000 })
-    const KLASSENNAME = "TAuto-PW-K-12 " + faker.lorem.word({ length: { min: 10, max: 10 }}) + ZUFALLSNUMMER;
+    const klasseCreationView = new KlasseCreationViewPage(page);
+    const dienststellennummer = '1111111';
+    const nameSchule = "Testschule Schulportal";
+    const zufallsnummer = faker.number.bigInt({ min: 1000, max: 9000 })
+    const klasseName = "TAuto-PW-K-12 " + faker.lorem.word({ length: { min: 10, max: 10 }}) + zufallsnummer;
 
     await test.step(`Dialog Schule anlegen öffnen`, async () => {
       await page.goto(FRONTEND_URL + 'admin/klassen/new');

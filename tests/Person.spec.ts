@@ -11,7 +11,8 @@ import { faker } from "@faker-js/faker/locale/de";
 import { deletePersonen, getPersonId, createPersonWithUserContext } from "../base/api/testHelperPerson.page";
 import { getSPId } from "../base/api/testHelperServiceprovider.page";
 import { UserInfo } from "../base/api/testHelper.page";
-import { addSystemrechtToRolle, deleteRolle } from "../base/api/testHelperRolle.page";
+import { addSystemrechtToRolle } from "../base/api/testHelperRolle.page";
+import { LONG, SHORT, STAGE } from "../base/tags";
 
 const PW = process.env.PW;
 const ADMIN = process.env.USER;
@@ -39,7 +40,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     const Login = new LoginPage(page);
 
     await test.step(`Testdaten(Benutzer) löschen via API`, async () => {
-      async function processInLoopAsync(benutzername){  // benutzername ist ein array mit allen zu löschenden Benutzern
+      async function deletePerson(benutzername){  // benutzername ist ein array mit allen zu löschenden Benutzern
         for (const item in benutzername){
           const personId = await getPersonId(page, benutzername[item]);
           await deletePersonen(page, personId);
@@ -51,7 +52,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await Landing.button_Anmelden.click();
         await Login.login(ADMIN, PW);
         
-        await processInLoopAsync(benutzername);
+        await deletePerson(benutzername);
         benutzername = [];
       }
     });
@@ -469,12 +470,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await expect(PersonCreationView.data_Organisationsebene).toHaveText(Dienststellennummer + ' (' + Schulstrukturknoten + ')');
       await expect(PersonCreationView.button_WeiterenBenutzerAnlegen).toBeVisible();
       await expect(PersonCreationView.button_ZurueckErgebnisliste).toBeVisible();
-    });
-
-    await test.step(`Benutzer wieder löschen`, async () => {
-      Benutzername = await PersonCreationView.data_Benutzername.innerText();
-      BenutzerID = await getPersonId(page, Benutzername); 
-      await deletePersonen(page, BenutzerID);
     });
   });
 
