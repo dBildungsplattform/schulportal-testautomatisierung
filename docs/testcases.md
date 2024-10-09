@@ -44,7 +44,7 @@
 ### Prüfen, dass die Schulportal-Administration Kachel sichtbar ist für Schuladmins @long @stage
 
 ## Workflow.spec.ts
-### Angebote per Link öffnen als Landesadmin @long @short
+### Angebote per Link öffnen als Landesadmin @long @short @stage
 ### Passwort Reset für einen Lehrer als Landesadmin @long @short @stage
 
 ## Profile.spec.ts

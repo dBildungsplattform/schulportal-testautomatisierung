@@ -6,8 +6,6 @@ export class StartPage {
   readonly page: Page;
   readonly text_h2_Ueberschrift: Locator;
   readonly card_item_email: Locator;
-    readonly card_item_calendar: Locator;
-    readonly card_item_directory: Locator;
   readonly card_item_itslearning: Locator;
   readonly card_item_schulportal_administration: Locator;
 
