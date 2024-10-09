@@ -7,6 +7,7 @@ import { getSPId } from "../base/api/testHelperServiceprovider.page";
 import { createPersonWithUserContext, deletePersonen } from "../base/api/testHelperPerson.page";
 import { addSystemrechtToRolle, deleteRolle } from "../base/api/testHelperRolle.page";
 import { UserInfo } from "../base/api/testHelper.page";
+import { LONG, SHORT, STAGE } from "../base/tags";
 
 const PW = process.env.PW;
 const ADMIN = process.env.USER;
@@ -19,20 +20,20 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
           await Header.button_logout.click();
         });
       });
-    
-    test("Prüfen, dass die Schulportal-Administration Kachel nicht sichtbar ist für Lehrkräfte @long @stage", async ({page}) => {
+
+    test("Prüfen, dass die Schulportal-Administration Kachel nicht sichtbar ist für Lehrkräfte", {tag: [LONG, STAGE]}, async ({page}) => {
         const Landing = new LandingPage(page);
         const Login = new LoginPage(page);
         const Header = new HeaderPage(page);
 
         // Testdaten erstellen
-        await page.goto(FRONTEND_URL);          
+        await page.goto(FRONTEND_URL);
         await Landing.button_Anmelden.click();
         await Login.login(ADMIN, PW);
 
         const idSP = await getSPId(page, 'E-Mail');
         const userInfo: UserInfo = await createPersonWithUserContext(page, 'Testschule Schulportal', 'LEHR', 'TAuto-PW-B-MeierLehrer', 'TAuto-PW-B-Hans', idSP, 'TAuto-PW-R-RolleLehrer');
-        await Header.button_logout.click();  
+        await Header.button_logout.click();
 
         // Test durchführen
         await Landing.button_Anmelden.click();
@@ -52,19 +53,19 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         await deleteRolle(page, userInfo.rolleId);
     });
 
-    test("Prüfen, dass die Schulportal-Administration Kachel nicht sichtbar ist für Schüler @long @short @stage", async ({page}) => {
+    test("Prüfen, dass die Schulportal-Administration Kachel nicht sichtbar ist für Schüler", {tag: [LONG, SHORT, STAGE]}, async ({page}) => {
         const Landing = new LandingPage(page);
         const Login = new LoginPage(page);
         const Header = new HeaderPage(page);
 
         // Testdaten erstellen
-        await page.goto(FRONTEND_URL);          
+        await page.goto(FRONTEND_URL);
         await Landing.button_Anmelden.click();
         await Login.login(ADMIN, PW);
 
         const idSP = await getSPId(page, 'itslearning');
         const userInfo: UserInfo = await createPersonWithUserContext(page, 'Testschule Schulportal', 'LERN', 'TAuto-PW-B-JansenSchüler', 'TAuto-PW-B-Helga', idSP, 'TAuto-PW-R-RolleSuS');
-        await Header.button_logout.click();  
+        await Header.button_logout.click();
 
         // Test durchführen
         await Landing.button_Anmelden.click();
@@ -84,21 +85,21 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         await deleteRolle(page, userInfo.rolleId);
     });
 
-    test("Prüfen, dass die Schulportal-Administration Kachel sichtbar ist für Schuladmins @long @stage", async ({page}) => {
+    test("Prüfen, dass die Schulportal-Administration Kachel sichtbar ist für Schuladmins", {tag: [LONG, STAGE]}, async ({page}) => {
         const Landing = new LandingPage(page);
         const Login = new LoginPage(page);
         const Header = new HeaderPage(page);
-        
+
         // Testdaten erstellen
-        await page.goto(FRONTEND_URL);          
+        await page.goto(FRONTEND_URL);
         await Landing.button_Anmelden.click();
         await Login.login(ADMIN, PW);
 
         const idSP = await getSPId(page, 'Schulportal-Administration');
         const userInfo: UserInfo = await createPersonWithUserContext(page, 'Testschule Schulportal', 'LEIT', 'TAuto-PW-B-MeierAdmin', 'TAuto-PW-B-Peter', idSP, 'TAuto-PW-R-RolleSchuladmin');
-       
-        await addSystemrechtToRolle(page, userInfo.rolleId, 'PERSONEN_VERWALTEN'); 
-        await Header.button_logout.click();     
+
+        await addSystemrechtToRolle(page, userInfo.rolleId, 'PERSONEN_VERWALTEN');
+        await Header.button_logout.click();
 
         // Test durchführen
         await Landing.button_Anmelden.click();
@@ -116,5 +117,5 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         await Login.login(ADMIN, PW);
         await deletePersonen(page, userInfo.personId);
         await deleteRolle(page, userInfo.rolleId);
-    }); 
+    });
 });

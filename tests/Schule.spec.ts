@@ -12,6 +12,7 @@ import { getSPId } from "../base/api/testHelperServiceprovider.page";
 import { UserInfo } from "../base/api/testHelper.page";
 import { addSystemrechtToRolle, deleteRolle } from "../base/api/testHelperRolle.page";
 import { FooterDataTablePage } from "../pages/FooterDataTable.page";
+import { LONG, SHORT, STAGE } from "../base/tags";
 
 const PW = process.env.PW;
 const ADMIN = process.env.USER;
@@ -38,7 +39,7 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
     });
   });
 
-  test("2 Schulen nacheinander anlegen als Landesadmin @long", async ({ page }) => {
+  test("2 Schulen nacheinander anlegen als Landesadmin", {tag: [LONG]}, async ({ page }) => {
     const Startseite = new StartPage(page);
     const SchuleManagementView = new SchuleManagementViewPage(page);
     const FooterDataTable = new FooterDataTablePage(page);
@@ -90,7 +91,7 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
     });
   });
 
-  test("Ergebnisliste Schulen auf Vollständigkeit prüfen als Landesadmin @long @short @stage", async ({ page }) => {
+  test("Ergebnisliste Schulen auf Vollständigkeit prüfen als Landesadmin", {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
     const Startseite = new StartPage(page);
 
     await test.step(`Schulverwaltung öffnen und Alle Elemente in der Ergebnisliste auf Existenz prüfen`, async () => {
@@ -104,7 +105,8 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
     });
   });
 
-  test("Eine Schule anlegen als Schuladmin und die Bestätigungsseite vollständig prüfen @long @short", async ({ page }) => {
+  test("Eine Schule anlegen als Schuladmin und die Bestätigungsseite vollständig prüfen", {tag: [LONG, SHORT]}, async ({ page }) => {
+
     // Schulen können noch nicht gelöscht werden. Um doppelte Namen zu vermeiden, wird am dem Schulnamen eine Zufallszahl angehängt
     const ZUFALLSNUMMER = faker.number.bigInt({ min: 1000, max: 9000 });
     const SCHULNAME = "TAuto-PW-S1-" + faker.lorem.word({ length: { min: 8, max: 12 }}) + ZUFALLSNUMMER;
