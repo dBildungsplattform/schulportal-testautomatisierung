@@ -11,17 +11,13 @@ import { faker } from "@faker-js/faker/locale/de";
 import { deletePersonen, getPersonId, createPersonWithUserContext } from "../base/api/testHelperPerson.page";
 import { getSPId } from "../base/api/testHelperServiceprovider.page";
 import { UserInfo } from "../base/api/testHelper.page";
-import { addSystemrechtToRolle, deleteRolle } from "../base/api/testHelperRolle.page";
+import { addSystemrechtToRolle } from "../base/api/testHelperRolle.page";
 
 const PW = process.env.PW;
 const ADMIN = process.env.USER;
 const FRONTEND_URL = process.env.FRONTEND_URL || "";
 
-let isNotAdmin: boolean;
-// let benutzername: string | undefined = undefined
-// const names: string[] = [];
-// names.push("Dylan");
-let benutzername: string | undefined = undefined
+let benutzername: string[] = [];
 
 
 test.describe(`Testfälle für die Administration von Personen": Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
@@ -42,21 +38,22 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     const Landing = new LandingPage(page);
     const Login = new LoginPage(page);
 
-    await test.step(`Testdaten löschen via API`, async () => {
-      if (benutzername) {
-        if (isNotAdmin) {
-          await Header.button_logout.click();
-          await Landing.button_Anmelden.click();
-          await Login.login(ADMIN, PW);
-        }
-        
-        {
-          const personId = await getPersonId(page, benutzername);
+    await test.step(`Testdaten(Benutzer) löschen via API`, async () => {
+      async function processInLoopAsync(benutzername){  // benutzername ist ein array mit allen zu löschenden Benutzern
+        for (const item in benutzername){
+          const personId = await getPersonId(page, benutzername[item]);
           await deletePersonen(page, personId);
         }
       }
-      benutzername = undefined;
-      isNotAdmin = false;
+
+      if (benutzername) { // nur wenn der Testfall auch mind. einen Benutzer angelegt hat
+        await Header.button_logout.click();
+        await Landing.button_Anmelden.click();
+        await Login.login(ADMIN, PW);
+        
+        await processInLoopAsync(benutzername);
+        benutzername = [];
+      }
     });
 
     await test.step(`Abmelden`, async () => {
@@ -65,7 +62,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
   });
 
-  test.only("Einen Benutzer mit der Rolle Lehrkraft anlegen als Landesadmin und anschließend mit diesem Benutzer anmelden @long @short @stage", async ({
+  test("Einen Benutzer mit der Rolle Lehrkraft anlegen als Landesadmin und anschließend mit diesem Benutzer anmelden @long @short @stage", async ({
     page,
   }) => {
     const Landing = new LandingPage(page);
@@ -100,11 +97,9 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await PersonCreationView.button_PersonAnlegen.click();
       await expect(PersonCreationView.text_success).toBeVisible();
       // Benutzer wird im afterEach-Block gelöscht
-      // gesteuert wird die Löschung über die Variable benutzername und isNotAdmin
-      benutzername = await PersonCreationView.data_Benutzername.innerText(); 
-      //a.push(benutzername);
+      // gesteuert wird die Löschung über die Variable benutzername
+      benutzername.push(await PersonCreationView.data_Benutzername.innerText()); 
       einstiegspasswort = await PersonCreationView.input_EinstiegsPasswort.inputValue();
-      isNotAdmin = true;
     });
 
     await test.step(`In der Ergebnisliste prüfen dass der neue Benutzer ${Nachname} angezeigt wird`, async () => {
@@ -119,7 +114,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     await test.step(`Der neue Benutzer meldet sich mit dem temporären Passwort am Portal an und vergibt ein neues Passwort`, async () => {
       await Header.button_logout.click();
       await Landing.button_Anmelden.click();
-      await Login.login(benutzername, einstiegspasswort);
+      await Login.login(benutzername[0], einstiegspasswort);
       await Login.UpdatePW();
       await expect(Startseite.text_h2_Ueberschrift).toBeVisible();
     });
@@ -156,7 +151,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await expect(PersonCreationView.text_success).toBeVisible();
       // Benutzer wird im afterEach-Block gelöscht
       // gesteuert wird die Löschung über die Variable benutzername
-      benutzername = await PersonCreationView.data_Benutzername.innerText(); 
+      benutzername.push(await PersonCreationView.data_Benutzername.innerText());
       await expect(PersonCreationView.data_Rolle).toHaveText("Landesadmin");
     });
   });
@@ -193,7 +188,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await expect(PersonCreationView.text_success).toBeVisible();
       // Benutzer wird im afterEach-Block gelöscht
       // gesteuert wird die Löschung über die Variable benutzername
-      benutzername = await PersonCreationView.data_Benutzername.innerText(); 
+      benutzername.push(await PersonCreationView.data_Benutzername.innerText()); 
       await expect(PersonCreationView.data_Rolle).toHaveText("LiV");
     });
   });
@@ -228,7 +223,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await expect(PersonCreationView.text_success).toBeVisible();
       // Benutzer wird im afterEach-Block gelöscht
       // gesteuert wird die Löschung über die Variable benutzername
-      benutzername = await PersonCreationView.data_Benutzername.innerText(); 
+      benutzername.push(await PersonCreationView.data_Benutzername.innerText()); 
       await expect(PersonCreationView.data_Rolle).toHaveText("Schuladmin");
     });
   });
@@ -266,7 +261,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await expect(PersonCreationView.text_success).toBeVisible();
       // Benutzer wird im afterEach-Block gelöscht
       // gesteuert wird die Löschung über die Variable benutzername
-      benutzername = await PersonCreationView.data_Benutzername.innerText(); 
+      benutzername.push(await PersonCreationView.data_Benutzername.innerText());
       await expect(PersonCreationView.data_Rolle).toHaveText("SuS");
     });
   });
@@ -390,7 +385,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await expect(PersonCreationView.text_success).toBeVisible();
       // Benutzer wird im afterEach-Block gelöscht
       // gesteuert wird die Löschung über die Variable benutzername
-      benutzername = await PersonCreationView.data_Benutzername.innerText(); 
+      benutzername.push(await PersonCreationView.data_Benutzername.innerText()); 
       
     });
 
@@ -409,7 +404,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
 
     await test.step(`Suche nach Benutzernamen `, async () => {
-      await PersonManagementView.input_Suchfeld.fill(benutzername);
+      await PersonManagementView.input_Suchfeld.fill(benutzername[0]);
       await PersonManagementView.button_Suchen.click();
       await expect(page.getByRole("cell", { name: Nachname })).toBeVisible();
     });
@@ -458,7 +453,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await expect(PersonCreationView.text_success).toHaveText(Vorname + ' ' + Nachname + ' wurde erfolgreich hinzugefügt.');
       // Benutzer wird im afterEach-Block gelöscht
       // gesteuert wird die Löschung über die Variable benutzername
-      benutzername = await PersonCreationView.data_Benutzername.innerText(); 
+      benutzername.push(await PersonCreationView.data_Benutzername.innerText());
       await expect(PersonCreationView.text_DatenGespeichert).toBeVisible();
       await expect(PersonCreationView.label_Vorname).toHaveText('Vorname:');
       await expect(PersonCreationView.data_Vorname).toHaveText(Vorname);
@@ -494,6 +489,9 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await addSystemrechtToRolle(page, userInfo.rolleId, 'SCHULEN_VERWALTEN');
       await addSystemrechtToRolle(page, userInfo.rolleId, 'KLASSEN_VERWALTEN');
       await addSystemrechtToRolle(page, userInfo.rolleId, 'SCHULTRAEGER_VERWALTEN');
+      // Benutzer wird im afterEach-Block gelöscht
+      // gesteuert wird die Löschung über die Variable benutzername
+      benutzername.push(userInfo.username);
 
       await Header.button_logout.click();
       await Landing.button_Anmelden.click();
@@ -509,22 +507,16 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     const Vorname1 = "TAuto-PW-VA-" + faker.person.firstName();
     const Nachname1 = "TAuto-PW-NA-" + faker.person.lastName();
     const KLASSENNAME = "Playwright3a";
-    let BenutzerID1 = '';
-    let Benutzername1 = '';
 
     const Rolle2 = "Lehrkraft";
     const Vorname2 = "TAuto-PW-VB-" + faker.person.firstName();
     const Nachname2 = "TAuto-PW-NB-" + faker.person.lastName();
     const Kopersnr2 = faker.string.numeric(7);
-    let BenutzerID2 = '';
-    let Benutzername2 = '';
 
     const Rolle3 = "Lehrkraft";
     const Vorname3 = "TAuto-PW-VC-" + faker.person.firstName();
     const Nachname3 = "TAuto-PW-NC-" + faker.person.lastName();
     const Kopersnr3 = faker.string.numeric(7);
-    let BenutzerID3 = '';
-    let Benutzername3 = '';
 
     await test.step(`Dialog Person anlegen öffnen`, async () => {
       await page.goto(FRONTEND_URL + 'admin/personen/new');
@@ -547,6 +539,9 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await expect(PersonCreationView.text_h2_PersonAnlegen).toBeVisible();
       await expect(PersonCreationView.button_Schliessen).toBeVisible();
       await expect(PersonCreationView.text_success).toHaveText(Vorname1 + ' ' + Nachname1 + ' wurde erfolgreich hinzugefügt.');
+      // Benutzer wird im afterEach-Block gelöscht
+      // gesteuert wird die Löschung über die Variable benutzername
+      benutzername.push(await PersonCreationView.data_Benutzername.innerText());
       await expect(PersonCreationView.text_DatenGespeichert).toBeVisible();
       await expect(PersonCreationView.label_Vorname).toHaveText('Vorname:');
       await expect(PersonCreationView.data_Vorname).toHaveText(Vorname1);
@@ -564,8 +559,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await expect(PersonCreationView.data_Klasse).toHaveText(KLASSENNAME);
       await expect(PersonCreationView.button_WeiterenBenutzerAnlegen).toBeVisible();
       await expect(PersonCreationView.button_ZurueckErgebnisliste).toBeVisible();
-      Benutzername1 = await PersonCreationView.data_Benutzername.innerText();
-      BenutzerID1 = await getPersonId(page, Benutzername1);
     });
 
     await test.step(`Weiteren Benutzer Lehrer1 anlegen`, async () => {
@@ -585,6 +578,9 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await expect(PersonCreationView.text_h2_PersonAnlegen).toBeVisible();
       await expect(PersonCreationView.button_Schliessen).toBeVisible();
       await expect(PersonCreationView.text_success).toHaveText(Vorname2 + ' ' + Nachname2 + ' wurde erfolgreich hinzugefügt.');
+      // Benutzer wird im afterEach-Block gelöscht
+      // gesteuert wird die Löschung über die Variable benutzername
+      benutzername.push(await PersonCreationView.data_Benutzername.innerText());
       await expect(PersonCreationView.text_DatenGespeichert).toBeVisible();
       await expect(PersonCreationView.label_Vorname).toHaveText('Vorname:');
       await expect(PersonCreationView.data_Vorname).toHaveText(Vorname2);
@@ -600,8 +596,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await expect(PersonCreationView.data_Organisationsebene).toHaveText(Dienststellennummer + ' (' + Schulstrukturknoten + ')');
       await expect(PersonCreationView.button_WeiterenBenutzerAnlegen).toBeVisible();
       await expect(PersonCreationView.button_ZurueckErgebnisliste).toBeVisible();
-      Benutzername2 = await PersonCreationView.data_Benutzername.innerText();
-      BenutzerID2 = await getPersonId(page, Benutzername2);
     });
 
     await test.step(`Weiteren Benutzer Lehrer2 anlegen`, async () => {
@@ -621,6 +615,9 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await expect(PersonCreationView.text_h2_PersonAnlegen).toBeVisible();
       await expect(PersonCreationView.button_Schliessen).toBeVisible();
       await expect(PersonCreationView.text_success).toHaveText(Vorname3 + ' ' + Nachname3 + ' wurde erfolgreich hinzugefügt.');
+      // Benutzer wird im afterEach-Block gelöscht
+      // gesteuert wird die Löschung über die Variable benutzername
+      benutzername.push(await PersonCreationView.data_Benutzername.innerText());
       await expect(PersonCreationView.text_DatenGespeichert).toBeVisible();
       await expect(PersonCreationView.label_Vorname).toHaveText('Vorname:');
       await expect(PersonCreationView.data_Vorname).toHaveText(Vorname3);
@@ -636,19 +633,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await expect(PersonCreationView.data_Organisationsebene).toHaveText(Dienststellennummer + ' (' + Schulstrukturknoten + ')');
       await expect(PersonCreationView.button_WeiterenBenutzerAnlegen).toBeVisible();
       await expect(PersonCreationView.button_ZurueckErgebnisliste).toBeVisible();
-      Benutzername3 = await PersonCreationView.data_Benutzername.innerText();
-      BenutzerID3 = await getPersonId(page, Benutzername3);
-    });
-
-    await test.step(`Benutzer wieder löschen`, async () => {
-      await Header.button_logout.click();
-      await Landing.button_Anmelden.click();
-      await Login.login(ADMIN, PW);
-      await deletePersonen(page, BenutzerID1);
-      await deletePersonen(page, BenutzerID2);
-      await deletePersonen(page, BenutzerID3);
-      await deletePersonen(page, userInfo.personId);
-      await deleteRolle(page, userInfo.rolleId);
     });
   });
 
