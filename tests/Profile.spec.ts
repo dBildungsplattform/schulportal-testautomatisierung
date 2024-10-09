@@ -9,7 +9,8 @@ import { getSPId } from "../base/api/testHelperServiceprovider.page";
 import { createPersonWithUserContext, deletePersonen, addSecondOrganisationToPerson, getPersonId } from "../base/api/testHelperPerson.page";
 import { getOrganisationId } from "../base/api/testHelperOrganisation.page";
 import { UserInfo } from "../base/api/testHelper.page";
-import { deleteRolle, addSystemrechtToRolle, getRolleId } from "../base/api/testHelperRolle.page";
+import { deleteRolle, addSystemrechtToRolle } from "../base/api/testHelperRolle.page";
+import { LONG, SHORT, STAGE } from "../base/tags";
 
 const PW = process.env.PW;
 const ADMIN = process.env.USER;
@@ -66,7 +67,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
     });
   });
 
-  test.only("Das eigene Profil öffnen und auf Vollständigkeit prüfen als Landesadmin @long @stage", async ({ page }) => {
+  test("Das eigene Profil öffnen und auf Vollständigkeit prüfen als Landesadmin @long @stage", async ({ page }) => {
     const ProfileView = new ProfilePage(page);
     const Header = new HeaderPage(page);
     const Login = new LoginPage(page);
@@ -94,17 +95,17 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       await addSystemrechtToRolle(page, userInfo.rolleId, 'KLASSEN_VERWALTEN');
       await addSystemrechtToRolle(page, userInfo.rolleId, 'SCHULTRAEGER_VERWALTEN');
 
-      await Header.button_logout.click();  
+      await Header.button_logout.click();
       await Header.button_login.click();
       await Login.login(userInfo.username, userInfo.password);
       await Login.UpdatePW();
     });
-    
+
     await test.step(`Profil öffnen`, async () => {
       await Header.button_profil.click();
     });
 
-    await test.step(`Profil auf Vollständigkeit prüfen`, async () => {      
+    await test.step(`Profil auf Vollständigkeit prüfen`, async () => {
       await expect(ProfileView.button_ZurueckVorherigeSeite).toBeVisible();
       await expect(ProfileView.text_h2_Ueberschrift).toHaveText('Mein Profil');
       // Persönliche Daten
@@ -116,7 +117,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       await expect(ProfileView.label_KopersNr).toBeHidden();
       await expect(ProfileView.data_KopersNr).toBeHidden();
       await expect(ProfileView.icon_InfoPersoenlicheDaten).toBeVisible();
-      // Schulzuordnung   
+      // Schulzuordnung
       await expect(ProfileView.cardHeadline_Schulzuordnung1).toHaveText('Schulzuordnung');
       await expect(ProfileView.label_Schule1).toHaveText('Schule:');
       await expect(ProfileView.data_Schule1).toHaveText(Organisation);
@@ -134,9 +135,17 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       await expect(ProfileView.text_no2FA).toHaveText('Es wurde noch kein zweiter Faktor für Sie eingerichtet.');
       await expect(ProfileView.button_2FAEinrichten).toBeEnabled();
     });
+
+    await test.step(`Testdaten via api löschen`, async () => {
+      await Header.button_logout.click();
+      await Header.button_login.click();
+      await Login.login(ADMIN, PW);
+      await deletePersonen(page, personId);
+      await deleteRolle(page, rolleId);
+    });
   });
 
-  test.only("Das eigene Profil öffnen und auf Vollständigkeit prüfen als Lehrer mit einer Schulzuordnung @short @long @stage", async ({ page }) => {
+  test("Das eigene Profil öffnen und auf Vollständigkeit prüfen als Lehrer mit einer Schulzuordnung @short @long @stage", async ({ page }) => {
     const ProfileView = new ProfilePage(page);
     const Header = new HeaderPage(page);
     const Login = new LoginPage(page);
@@ -148,7 +157,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
     const Dienststellennummer = '1111111';
     const Rollenname = 'TAuto-PW-R-RolleLehrer';
     const Rollenart = 'LEHR';
-    
+
     await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
       const idSP = await getSPId(page, 'E-Mail');
       const userInfo: UserInfo = await createPersonWithUserContext(page, Organisation, Rollenart, Nachname, Vorname, idSP, Rollenname);
@@ -156,7 +165,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       rolleId = userInfo.rolleId;
       benutzername.push(userInfo.username);
 
-      await Header.button_logout.click();  
+      await Header.button_logout.click();
       await Header.button_login.click();
       await Login.login(userInfo.username, userInfo.password);
       await Login.UpdatePW();
@@ -166,7 +175,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       await Header.button_profil.click();
     });
 
-    await test.step(`Profil auf Vollständigkeit prüfen`, async () => {      
+    await test.step(`Profil auf Vollständigkeit prüfen`, async () => {
       await expect(ProfileView.button_ZurueckVorherigeSeite).toBeVisible();
       await expect(ProfileView.text_h2_Ueberschrift).toHaveText('Mein Profil');
       // Persönliche Daten
@@ -193,11 +202,19 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       // 2FA
       await expect(ProfileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
       await expect(ProfileView.icon_Schild2FA).toBeVisible();
-      await expect(ProfileView.button_2FAEinrichten).toBeEnabled();  
+      await expect(ProfileView.button_2FAEinrichten).toBeEnabled();
+    });
+
+    await test.step(`Testdaten via api löschen`, async () => {
+      await Header.button_logout.click();
+      await Header.button_login.click();
+      await Login.login(ADMIN, PW);
+      await deletePersonen(page, personId);
+      await deleteRolle(page, rolleId);
     });
   });
 
-  test.only("Das eigene Profil öffnen und auf Vollständigkeit prüfen als Schüler mit einer Schulzuordnung @long @stage", async ({ page }) => {
+  test("Das eigene Profil öffnen und auf Vollständigkeit prüfen als Schüler mit einer Schulzuordnung @long @stage", async ({ page }) => {
     const ProfileView = new ProfilePage(page);
     const Header = new HeaderPage(page);
     const Login = new LoginPage(page);
@@ -209,7 +226,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
     const Dienststellennummer = '1111111';
     const Rollenname = 'TAuto-PW-R-RolleSchüler';
     const Rollenart = 'LERN';
-    
+
     await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
       const idSP = await getSPId(page, 'itslearning');
       const userInfo: UserInfo = await createPersonWithUserContext(page, Organisation, Rollenart, Nachname, Vorname, idSP, Rollenname);
@@ -217,7 +234,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       rolleId = userInfo.rolleId;
       benutzername.push(userInfo.username);
 
-      await Header.button_logout.click();  
+      await Header.button_logout.click();
       await Header.button_login.click();
       await Login.login(userInfo.username, userInfo.password);
       await Login.UpdatePW();
@@ -227,7 +244,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       await Header.button_profil.click();
     });
 
-    await test.step(`Profil auf Vollständigkeit prüfen`, async () => {      
+    await test.step(`Profil auf Vollständigkeit prüfen`, async () => {
       await expect(ProfileView.button_ZurueckVorherigeSeite).toBeVisible();
       await expect(ProfileView.text_h2_Ueberschrift).toHaveText('Mein Profil');
       // Persönliche Daten
@@ -256,9 +273,17 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       await expect(ProfileView.icon_Schild2FA).toBeHidden();
       await expect(ProfileView.button_2FAEinrichten).toBeHidden();
     });
+
+    await test.step(`Testdaten via api löschen`, async () => {
+      await Header.button_logout.click();
+      await Header.button_login.click();
+      await Login.login(ADMIN, PW);
+      await deletePersonen(page, personId);
+      await deleteRolle(page, rolleId);
+    });
   });
 
-  test.only("Das eigene Profil öffnen und auf Vollständigkeit prüfen als Schuladmin mit einer Schulzuordnung @long @stage", async ({ page }) => {
+  test("Das eigene Profil öffnen und auf Vollständigkeit prüfen als Schuladmin mit einer Schulzuordnung @long @stage", async ({ page }) => {
     const ProfileView = new ProfilePage(page);
     const Header = new HeaderPage(page);
     const Login = new LoginPage(page);
@@ -270,7 +295,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
     const Dienststellennummer = '1111111';
     const Rollenname = 'TAuto-PW-R-RolleSchuladmin';
     const Rollenart = 'LEIT'
-    
+
     await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
       const idSP = await getSPId(page, 'Schulportal-Administration');
       const userInfo: UserInfo = await createPersonWithUserContext(page, Organisation, Rollenart, Nachname, Vorname, idSP, Rollenname);
@@ -278,7 +303,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       rolleId = userInfo.rolleId;
       benutzername.push(userInfo.username);
 
-      await Header.button_logout.click();  
+      await Header.button_logout.click();
       await Header.button_login.click();
       await Login.login(userInfo.username, userInfo.password);
       await Login.UpdatePW();
@@ -288,7 +313,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       await Header.button_profil.click();
     });
 
-    await test.step(`Profil auf Vollständigkeit prüfen`, async () => {      
+    await test.step(`Profil auf Vollständigkeit prüfen`, async () => {
       await expect(ProfileView.button_ZurueckVorherigeSeite).toBeVisible();
       await expect(ProfileView.text_h2_Ueberschrift).toHaveText('Mein Profil');
       // Persönliche Daten
@@ -322,7 +347,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
     });
   });
 
-  test("Das eigene Profil öffnen und auf Vollständigkeit prüfen als Lehrkraft mit 2 Schulzuordnungen @long @stage", async ({ page }) => {
+  test("Das eigene Profil öffnen und auf Vollständigkeit prüfen als Lehrkraft mit 2 Schulzuordnungen", {tag: [LONG, STAGE]}, async ({ page }) => {
     const ProfileView = new ProfilePage(page);
     const Header = new HeaderPage(page);
     const Login = new LoginPage(page);
@@ -336,7 +361,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
     const Dienststellennummer2 = '0702948';
     const Rollenname = 'TAuto-PW-R-RolleLehrer';
     const Rollenart = 'LEHR';
-    
+
     await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
       const idSP = await getSPId(page, 'Schulportal-Administration');
       const userInfo: UserInfo = await createPersonWithUserContext(page, Organisation1, Rollenart, Nachname, Vorname, idSP, Rollenname);
@@ -345,7 +370,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       benutzername.push(userInfo.username);
 
       await addSecondOrganisationToPerson(page, personId, await getOrganisationId(page, Organisation1), await getOrganisationId(page, Organisation2), rolleId);
-      await Header.button_logout.click();  
+      await Header.button_logout.click();
       await Header.button_login.click();
       await Login.login(userInfo.username, userInfo.password);
       await Login.UpdatePW();
@@ -355,7 +380,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       await Header.button_profil.click();
     });
 
-    await test.step(`Profil auf Vollständigkeit prüfen`, async () => {      
+    await test.step(`Profil auf Vollständigkeit prüfen`, async () => {
       await expect(ProfileView.button_ZurueckVorherigeSeite).toBeVisible();
       await expect(ProfileView.text_h2_Ueberschrift).toHaveText('Mein Profil');
       // Persönliche Daten
@@ -390,7 +415,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       // 2FA
       await expect(ProfileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
       await expect(ProfileView.icon_Schild2FA).toBeVisible();
-      await expect(ProfileView.button_2FAEinrichten).toBeEnabled(); 
+      await expect(ProfileView.button_2FAEinrichten).toBeEnabled();
     });
   });
 });

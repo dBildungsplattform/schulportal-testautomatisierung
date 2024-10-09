@@ -11,7 +11,7 @@ import { faker } from "@faker-js/faker/locale/de";
 import { deletePersonen, getPersonId, createPersonWithUserContext } from "../base/api/testHelperPerson.page";
 import { getSPId } from "../base/api/testHelperServiceprovider.page";
 import { UserInfo } from "../base/api/testHelper.page";
-import { addSystemrechtToRolle } from "../base/api/testHelperRolle.page";
+import { addSystemrechtToRolle, deleteRolle } from "../base/api/testHelperRolle.page";
 
 const PW = process.env.PW;
 const ADMIN = process.env.USER;
@@ -62,7 +62,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
   });
 
-  test("Einen Benutzer mit der Rolle Lehrkraft anlegen als Landesadmin und anschließend mit diesem Benutzer anmelden @long @short @stage", async ({
+  test("Einen Benutzer mit der Rolle Lehrkraft anlegen als Landesadmin und anschließend mit diesem Benutzer anmelden", {tag: [LONG, SHORT, STAGE]}, async ({
     page,
   }) => {
     const Landing = new LandingPage(page);
@@ -120,7 +120,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
   });
 
-  test("Einen Benutzer mit der Rolle Landesadmin anlegen @long @short @stage", async ({ page }) => {
+  test("Einen Benutzer mit der Rolle Landesadmin anlegen", {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
     const Startseite = new StartPage(page);
     const Menue = new MenuPage(page);
     const PersonCreationView = new PersonCreationViewPage(page);
@@ -156,7 +156,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
   });
 
-  test("Einen Benutzer mit der Rolle LiV anlegen als Landesadmin @long @short @stage", async ({ page }) => {
+  test("Einen Benutzer mit der Rolle LiV anlegen als Landesadmin", {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
     const Startseite = new StartPage(page);
     const Menue = new MenuPage(page);
     const PersonCreationView = new PersonCreationViewPage(page);
@@ -193,7 +193,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
   });
 
-  test("Einen Benutzer mit der Rolle Schuladmin anlegen als Landesadmin @long @short @stage", async ({ page }) => {
+  test("Einen Benutzer mit der Rolle Schuladmin anlegen als Landesadmin", {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
     const Startseite = new StartPage(page);
     const Menue = new MenuPage(page);
     const PersonCreationView = new PersonCreationViewPage(page);
@@ -228,7 +228,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
   });
 
-  test("Einen Benutzer mit der Rolle SuS anlegen als Landesadmin @long @short @stage", async ({ page }) => {
+  test("Einen Benutzer mit der Rolle SuS anlegen als Landesadmin", {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
     const Startseite = new StartPage(page);
     const Menue = new MenuPage(page);
     const PersonCreationView = new PersonCreationViewPage(page);
@@ -266,7 +266,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
   });
 
-  test("Ergebnisliste Benutzer auf Vollständigkeit prüfen als Landesadmin @long @short @stage", async ({page }) => {
+  test("Ergebnisliste Benutzer auf Vollständigkeit prüfen als Landesadmin", {tag: [LONG, SHORT, STAGE]}, async ({page }) => {
     const Startseite = new StartPage(page);
     const Menue = new MenuPage(page);
     const PersonManagementView = new PersonManagementViewPage(page);
@@ -289,7 +289,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
   });
 
-  test("Prüfung auf korrekte Rollen in dem Dropdown 'Rolle' nach Auswahl der Organisation bei Anlage eines Benutzer in der Rolle Landesadmin @long @short @stage", async ({page}) => {
+  test("Prüfung auf korrekte Rollen in dem Dropdown 'Rolle' nach Auswahl der Organisation bei Anlage eines Benutzer in der Rolle Landesadmin", {tag: [LONG, SHORT, STAGE]}, async ({page}) => {
     const Startseite = new StartPage(page);
     const Menue = new MenuPage(page);
     const PersonCreationView = new PersonCreationViewPage(page);
@@ -362,7 +362,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
   });
 
-  test("In der Ergebnisliste die Suchfunktion ausführen als Landesadmin @long @short @stage", async ({ page }) => {
+  test("In der Ergebnisliste die Suchfunktion ausführen als Landesadmin", {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
     const PersonManagementView = new PersonManagementViewPage(page);
     const PersonCreationView = new PersonCreationViewPage(page);
 
@@ -423,7 +423,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
   });
 
-  test("Eine Lehrkraft anlegen in der Rolle Landesadmin und die Bestätigungsseite vollständig prüfen @long @short @stage", async ({ page }) => {
+  test("Eine Lehrkraft anlegen in der Rolle Landesadmin und die Bestätigungsseite vollständig prüfen", {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
     const PersonCreationView = new PersonCreationViewPage(page);
     const Rolle = "Lehrkraft";
     const Vorname = "TAuto-PW-V-" + faker.person.firstName();
@@ -470,16 +470,22 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await expect(PersonCreationView.button_WeiterenBenutzerAnlegen).toBeVisible();
       await expect(PersonCreationView.button_ZurueckErgebnisliste).toBeVisible();
     });
+
+    await test.step(`Benutzer wieder löschen`, async () => {
+      Benutzername = await PersonCreationView.data_Benutzername.innerText();
+      BenutzerID = await getPersonId(page, Benutzername); 
+      await deletePersonen(page, BenutzerID);
+    });
   });
 
-  test("Mehere Benutzer hintereinander anlegen in der Rolle Landesadmin für die Rollenarten SuS und LEHR und die Bestätigungsseiten vollständig prüfen @long @short @stage", async ({ page }) => {
+  test("Mehere Benutzer hintereinander anlegen in der Rolle Landesadmin für die Rollenarten SuS und LEHR und die Bestätigungsseiten vollständig prüfen", {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
     const Landing = new LandingPage(page);
     const Startseite = new StartPage(page);
     const Login = new LoginPage(page);
     const Header = new HeaderPage(page);
     const PersonCreationView = new PersonCreationViewPage(page);
     let userInfo: UserInfo;
-    
+
     await test.step(`Testdaten: Landesadmin anlegen und mit diesem anmelden`, async () => {
       const idSP = await getSPId(page, 'Schulportal-Administration');
       userInfo = await createPersonWithUserContext(page, 'Land Schleswig-Holstein', 'SYSADMIN', 'TAuto-PW-B-Master', 'TAuto-PW-B-Hans', idSP, 'TAuto-PW-R-RolleSYSADMIN');
@@ -497,9 +503,9 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await Landing.button_Anmelden.click();
       await Login.login(userInfo.username, userInfo.password);
       userInfo.password = await Login.UpdatePW();
-      await expect(Startseite.text_h2_Ueberschrift).toBeVisible();    
+      await expect(Startseite.text_h2_Ueberschrift).toBeVisible();
     });
-    
+
     // Testdaten
     const Schulstrukturknoten = "Testschule Schulportal";
     const Dienststellennummer = "1111111";
@@ -648,8 +654,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
     await test.step(`Neuen Benutzer über die api anlegen`, async () => {
       await createPersonWithUserContext(page, 'Land Schleswig-Holstein', berechtigung, vorname, nachname, idSP, rolle);
-    })   
-    
+    })
+
     await test.step(`Benutzer wieder löschen über das FE`, async () => {
       await page.goto(FRONTEND_URL + "admin/personen");
       await PersonManagementView.input_Suchfeld.fill(nachname);
@@ -660,5 +666,5 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await PersonDetailsView.button_closeDeletePersonConfirm.click();
       await expect(page.getByRole("cell", { name: nachname, exact: true })).toBeHidden();
     });
-  })  
+  })
 });
