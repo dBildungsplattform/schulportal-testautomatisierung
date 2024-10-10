@@ -71,11 +71,9 @@ export class ProfilePage{
         this.data_Dienststellennummer2 = page.getByTestId('dienststellennummer-value-2');
         // Passwort
         this.cardHeadline_Passwort = page.getByTestId('new-password-card');
-        this.icon_Schluessel_Passwort = page.getByTestId('password-icon');
         this.button_NeuesPasswortSetzen = page.getByTestId('open-change-password-dialog');
          // 2FA
          this.cardHeadline_2FA = page.getByTestId('two-factor-card');
-         this.icon_Schild2FA = page.getByTestId('two-factor-icon');
          this.text_no2FA = page.getByText('Es wurde noch kein zweiter Faktor für Sie eingerichtet.');
          this.button_2FAEinrichten = page.getByTestId('open-2FA-self-service-dialog-icon');
     }
