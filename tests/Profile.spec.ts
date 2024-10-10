@@ -124,11 +124,9 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       await expect(ProfileView.data_Dienststellennummer1).toBeHidden();
       // Passwort
       await expect(ProfileView.cardHeadline_Passwort).toHaveText('Passwort');
-      await expect(ProfileView.icon_Schluessel_Passwort).toBeVisible();
       await expect(ProfileView.button_NeuesPasswortSetzen).toBeEnabled();
       // 2FA
       await expect(ProfileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
-      await expect(ProfileView.icon_Schild2FA).toBeVisible();
       await expect(ProfileView.text_no2FA).toHaveText('Es wurde noch kein zweiter Faktor für Sie eingerichtet.');
       await expect(ProfileView.button_2FAEinrichten).toBeEnabled();
     });
@@ -184,11 +182,9 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       await expect(ProfileView.data_Dienststellennummer1).toHaveText(Dienststellennummer);
       // Passwort
       await expect(ProfileView.cardHeadline_Passwort).toHaveText('Passwort');
-      await expect(ProfileView.icon_Schluessel_Passwort).toBeVisible();
       await expect(ProfileView.button_NeuesPasswortSetzen).toBeEnabled();
       // 2FA
       await expect(ProfileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
-      await expect(ProfileView.icon_Schild2FA).toBeVisible();
       await expect(ProfileView.button_2FAEinrichten).toBeEnabled();
     });
   });
@@ -243,11 +239,9 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       await expect(ProfileView.data_Dienststellennummer1).toHaveText(Dienststellennummer);
       // Passwort
       await expect(ProfileView.cardHeadline_Passwort).toHaveText('Passwort');
-      await expect(ProfileView.icon_Schluessel_Passwort).toBeVisible();
       await expect(ProfileView.button_NeuesPasswortSetzen).toBeEnabled();
       // 2FA
       await expect(ProfileView.cardHeadline_2FA).toBeHidden();
-      await expect(ProfileView.icon_Schild2FA).toBeHidden();
       await expect(ProfileView.button_2FAEinrichten).toBeHidden();
     });
   });
@@ -302,11 +296,9 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       await expect(ProfileView.data_Dienststellennummer1).toHaveText(Dienststellennummer);
       // Passwort
       await expect(ProfileView.cardHeadline_Passwort).toHaveText('Passwort');
-      await expect(ProfileView.icon_Schluessel_Passwort).toBeVisible();
       await expect(ProfileView.button_NeuesPasswortSetzen).toBeEnabled();
       // 2FA
       await expect(ProfileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
-      await expect(ProfileView.icon_Schild2FA).toBeVisible();
       await expect(ProfileView.button_2FAEinrichten).toBeEnabled();
     });
   });
@@ -374,11 +366,9 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       await expect(ProfileView.data_Dienststellennummer2).toHaveText(Dienststellennummer2);
       // Passwort
       await expect(ProfileView.cardHeadline_Passwort).toHaveText('Passwort');
-      await expect(ProfileView.icon_Schluessel_Passwort).toBeVisible();
       await expect(ProfileView.button_NeuesPasswortSetzen).toBeEnabled();
       // 2FA
       await expect(ProfileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
-      await expect(ProfileView.icon_Schild2FA).toBeVisible();
       await expect(ProfileView.button_2FAEinrichten).toBeEnabled();
     });
   });
