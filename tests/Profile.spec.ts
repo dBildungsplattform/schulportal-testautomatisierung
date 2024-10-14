@@ -6,18 +6,19 @@ import { faker } from "@faker-js/faker/locale/de";
 import { HeaderPage } from "../pages/Header.page";
 import { ProfilePage } from "../pages/ProfileView.page";
 import { getSPId } from "../base/api/testHelperServiceprovider.page";
-import { createPersonWithUserContext, deletePersonen, addSecondOrganisationToPerson, getPersonId } from "../base/api/testHelperPerson.page";
+import { createPersonWithUserContext, addSecondOrganisationToPerson } from "../base/api/testHelperPerson.page";
 import { getOrganisationId } from "../base/api/testHelperOrganisation.page";
 import { UserInfo } from "../base/api/testHelper.page";
-import { deleteRolle, addSystemrechtToRolle } from "../base/api/testHelperRolle.page";
+import { addSystemrechtToRolle } from "../base/api/testHelperRolle.page";
 import { LONG, SHORT, STAGE } from "../base/tags";
+import { deleteRolleById, deletePersonByUsername} from "../base/testHelperDeleteTestdata";
 
 const PW = process.env.PW;
 const ADMIN = process.env.USER;
 const FRONTEND_URL = process.env.FRONTEND_URL || "";
 
-let benutzername: string[] = [];
-let rolleId: string | undefined = undefined;
+let username: string[] = []; // Im afterEchh Block werden alle Testdaten gelöscht
+let roleId: string[] = []; // Im afterEchh Block werden alle Testdaten gelöscht
 
 test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }) => {
@@ -39,25 +40,18 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
     const Login = new LoginPage(page);
 
     await test.step(`Testdaten löschen via API`, async () => {
-      async function deletePerson(benutzername){  // benutzername ist ein array mit allen zu löschenden Benutzern
-        for (const item in benutzername){
-          const personId = await getPersonId(page, benutzername[item]);
-          await deletePersonen(page, personId);
-        }
-      }
-
-      if (benutzername) { // nur wenn der Testfall auch mind. einen Benutzer angelegt hat
+      if (username) { // nur wenn der Testfall auch mind. einen Benutzer angelegt hat
         await Header.button_logout.click();
         await Landing.button_Anmelden.click();
         await Login.login(ADMIN, PW);
         
-        await deletePerson(benutzername);
-        benutzername = [];
+        await deletePersonByUsername(username, page);
+        username = [];
       }
 
-      if (rolleId) {
-        await deleteRolle(page, rolleId);
-        rolleId = undefined;
+      if (roleId) {
+        deleteRolleById(roleId, page);
+        roleId = [];
       }
     });
 
@@ -82,8 +76,8 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       const idSP = await getSPId(page, 'Schulportal-Administration');
       const userInfo: UserInfo = await createPersonWithUserContext(page, Organisation, Rollenart, Nachname, Vorname, idSP, Rollenname);
       //personId = userInfo.personId;
-      rolleId = userInfo.rolleId;
-      benutzername.push(userInfo.username);
+      roleId.push(userInfo.rolleId);
+      username.push(userInfo.username);
 
       await addSystemrechtToRolle(page, userInfo.rolleId, 'ROLLEN_VERWALTEN');
       await addSystemrechtToRolle(page, userInfo.rolleId, 'PERSONEN_SOFORT_LOESCHEN');
@@ -110,7 +104,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       await expect(ProfileView.label_VornameNachname).toHaveText('Vor- und Nachname:');
       await expect(ProfileView.data_VornameNachname).toHaveText(Vorname + ' ' + Nachname);
       await expect(ProfileView.label_Benutzername).toHaveText('Benutzername:');
-      await expect(ProfileView.data_Benutzername).toHaveText(benutzername[0]);
+      await expect(ProfileView.data_Benutzername).toHaveText(username[0]);
       await expect(ProfileView.label_KopersNr).toBeHidden();
       await expect(ProfileView.data_KopersNr).toBeHidden();
       await expect(ProfileView.icon_InfoPersoenlicheDaten).toBeVisible();
@@ -147,8 +141,8 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
     await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
       const idSP = await getSPId(page, 'E-Mail');
       const userInfo: UserInfo = await createPersonWithUserContext(page, Organisation, Rollenart, Nachname, Vorname, idSP, Rollenname);
-      rolleId = userInfo.rolleId;
-      benutzername.push(userInfo.username);
+      roleId.push(userInfo.rolleId);
+      username.push(userInfo.username);
 
       await Header.button_logout.click();
       await Header.button_login.click();
@@ -168,7 +162,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       await expect(ProfileView.label_VornameNachname).toHaveText('Vor- und Nachname:');
       await expect(ProfileView.data_VornameNachname).toHaveText(Vorname + ' ' + Nachname);
       await expect(ProfileView.label_Benutzername).toHaveText('Benutzername:');
-      await expect(ProfileView.data_Benutzername).toHaveText(benutzername[0]);
+      await expect(ProfileView.data_Benutzername).toHaveText(username[0]);
       await expect(ProfileView.label_KopersNr).toBeHidden();
       await expect(ProfileView.data_KopersNr).toBeHidden();
       await expect(ProfileView.icon_InfoPersoenlicheDaten).toBeVisible();
@@ -204,8 +198,8 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
     await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
       const idSP = await getSPId(page, 'itslearning');
       const userInfo: UserInfo = await createPersonWithUserContext(page, Organisation, Rollenart, Nachname, Vorname, idSP, Rollenname);
-      rolleId = userInfo.rolleId;
-      benutzername.push(userInfo.username);
+      roleId.push(userInfo.rolleId);
+      username.push(userInfo.username);
 
       await Header.button_logout.click();
       await Header.button_login.click();
@@ -225,7 +219,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       await expect(ProfileView.label_VornameNachname).toHaveText('Vor- und Nachname:');
       await expect(ProfileView.data_VornameNachname).toHaveText(Vorname + ' ' + Nachname);
       await expect(ProfileView.label_Benutzername).toHaveText('Benutzername:');
-      await expect(ProfileView.data_Benutzername).toHaveText(benutzername[0]);
+      await expect(ProfileView.data_Benutzername).toHaveText(username[0]);
       await expect(ProfileView.label_KopersNr).toBeHidden();
       await expect(ProfileView.data_KopersNr).toBeHidden();
       await expect(ProfileView.icon_InfoPersoenlicheDaten).toBeVisible();
@@ -261,8 +255,8 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
     await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
       const idSP = await getSPId(page, 'Schulportal-Administration');
       const userInfo: UserInfo = await createPersonWithUserContext(page, Organisation, Rollenart, Nachname, Vorname, idSP, Rollenname);
-      rolleId = userInfo.rolleId;
-      benutzername.push(userInfo.username);
+      roleId.push(userInfo.rolleId);
+      username.push(userInfo.username);
 
       await Header.button_logout.click();
       await Header.button_login.click();
@@ -282,7 +276,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       await expect(ProfileView.label_VornameNachname).toHaveText('Vor- und Nachname:');
       await expect(ProfileView.data_VornameNachname).toHaveText(Vorname + ' ' + Nachname);
       await expect(ProfileView.label_Benutzername).toHaveText('Benutzername:');
-      await expect(ProfileView.data_Benutzername).toHaveText(benutzername[0]);
+      await expect(ProfileView.data_Benutzername).toHaveText(username[0]);
       await expect(ProfileView.label_KopersNr).toBeHidden();
       await expect(ProfileView.data_KopersNr).toBeHidden();
       await expect(ProfileView.icon_InfoPersoenlicheDaten).toBeVisible();
@@ -322,10 +316,10 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       const idSP = await getSPId(page, 'Schulportal-Administration');
       const userInfo: UserInfo = await createPersonWithUserContext(page, Organisation1, Rollenart, Nachname, Vorname, idSP, Rollenname);
       personId = userInfo.personId;
-      rolleId = userInfo.rolleId;
-      benutzername.push(userInfo.username);
+      roleId.push(userInfo.rolleId);
+      username.push(userInfo.username);
 
-      await addSecondOrganisationToPerson(page, personId, await getOrganisationId(page, Organisation1), await getOrganisationId(page, Organisation2), rolleId);
+      await addSecondOrganisationToPerson(page, personId, await getOrganisationId(page, Organisation1), await getOrganisationId(page, Organisation2), roleId[0]);
       await Header.button_logout.click();
       await Header.button_login.click();
       await Login.login(userInfo.username, userInfo.password);
@@ -344,7 +338,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       await expect(ProfileView.label_VornameNachname).toHaveText('Vor- und Nachname:');
       await expect(ProfileView.data_VornameNachname).toHaveText(Vorname + ' ' + Nachname);
       await expect(ProfileView.label_Benutzername).toHaveText('Benutzername:');
-      await expect(ProfileView.data_Benutzername).toHaveText(benutzername[0]);
+      await expect(ProfileView.data_Benutzername).toHaveText(username[0]);
       await expect(ProfileView.label_KopersNr).toBeHidden();
       await expect(ProfileView.data_KopersNr).toBeHidden();
       await expect(ProfileView.icon_InfoPersoenlicheDaten).toBeVisible();

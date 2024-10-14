@@ -8,10 +8,11 @@ import { getRolleId, deleteRolle } from "../base/api/testHelperRolle.page";
 import { RolleCreationConfirmPage } from "../pages/admin/RolleCreationConfirm.page";
 import FromAnywhere from "../pages/FromAnywhere";
 import { LONG, SHORT, STAGE } from "../base/tags";
+import { deleteRoleByName } from "../base/testHelperDeleteTestdata";
 
 let startseite: StartPage;
 let loggedIn = false;
-let rolleName: string[] = [];
+let rolleName: string[] = []; // Im afterEchh Block werden alle Testdaten gelöscht 
 
 test.beforeEach(async ({ page }) => {
   startseite = await test.step(`Login`, async () => {
@@ -25,17 +26,12 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.afterEach(async ({ page }) => {
-  async function deleteRole(rolleName){  // rolleName ist ein array mit allen zu löschenden Rollen
-    for (const item in rolleName){
-      const rolleId = await getRolleId(page, rolleName[item]);
-      await deleteRolle(page, rolleId);
+  await test.step(`Testdaten löschen via API`, async () => {
+    if (rolleName) { // nur wenn der Testfall auch mind. eine Rolle angelegt hat   
+      await deleteRoleByName(rolleName, page);
+      rolleName = [];
     }
-  }
-
-  if (rolleName) { // nur wenn der Testfall auch mind. eine Rolle angelegt hat   
-    await deleteRole(rolleName);
-    rolleName = [];
-  }
+  });
 
   if (loggedIn) {
     await test.step(`Abmelden`, async () => {
@@ -238,7 +234,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
 });
 
 test.describe("Testet die Anlage einer neuen Rolle", () => {
-  let roleName: string
+  let roleName: string | undefined = undefined;
 
   test("Eine neue Rolle anlegen und sicherstellen, dass alle Serviceprovider angezeigt werden und verfügbar sind", {tag: [LONG]}, async () => {
     const rolleCreationView: RolleCreationViewPage =
@@ -273,8 +269,6 @@ test.describe("Testet die Anlage einer neuen Rolle", () => {
         await expect(
           rolleCreationConfirmPage.confirmationMessage,
         ).toBeVisible();
-        rolleName.push(roleName);
-
         return rolleCreationConfirmPage.backToResultList();
       });
 
@@ -288,5 +282,12 @@ test.describe("Testet die Anlage einer neuen Rolle", () => {
         await expect.soft(spCell).toContainText(sp);
       }
     });
+  });
+
+  test.afterEach(async ({ page }) => {
+    if (roleName) {
+      const roleId = await getRolleId(page, roleName);
+      await deleteRolle(page, roleId);
+    }
   });
 });

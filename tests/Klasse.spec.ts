@@ -7,15 +7,15 @@ import { KlasseCreationViewPage } from "../pages/admin/KlasseCreationView.page";
 import { KlasseManagementViewPage } from "../pages/admin/KlasseManagementView.page";
 import { faker } from "@faker-js/faker/locale/de";
 import { HeaderPage } from "../pages/Header.page";
-import { getKlasseId, deleteKlasse } from "../base/api/testHelperOrganisation.page";
 import { LONG, SHORT, STAGE } from "../base/tags";
+import { deleteClassByName } from "../base/testHelperDeleteTestdata.ts";
 
 const PW = process.env.PW;
 const ADMIN = process.env.USER;
 const FRONTEND_URL = process.env.FRONTEND_URL || "";
 
 test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
-  let klasseName: string
+  let className: string[] = []; // Im afterEchh Block werden alle Testdaten gelöscht
   
   test.beforeEach(async ({ page }) => {
     await test.step(`Login`, async () => {
@@ -32,9 +32,9 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
 
   test.afterEach(async ({ page }) => {
     await test.step(`Testdaten löschen via API`, async () => {
-      if (klasseName) {
-        const klassenId = await getKlasseId(page, klasseName);
-        await deleteKlasse(page, klassenId);
+      if (className) { // nur wenn der Testfall auch mind. eine Klasse angelegt hat
+        await deleteClassByName(className, page);
+        className = [];
       }
     });
 
@@ -122,6 +122,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       await expect(klasseCreationView.text_h2_KlasseAnlegen).toHaveText('Neue Klasse hinzufügen');
       await expect(klasseCreationView.button_Schliessen).toBeVisible();
       await expect(klasseCreationView.text_success).toHaveText('Die Klasse wurde erfolgreich hinzugefügt.');
+      className.push(klasseName);
       await expect(klasseCreationView.icon_success).toBeVisible();
       await expect(klasseCreationView.text_DatenGespeichert).toBeVisible();
       await expect(klasseCreationView.label_Schule).toBeVisible();

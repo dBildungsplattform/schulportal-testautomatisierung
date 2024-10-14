@@ -7,16 +7,20 @@ import { SchuleCreationViewPage } from "../pages/admin/SchuleCreationView.page";
 import { SchuleManagementViewPage } from "../pages/admin/SchuleManagementView.page";
 import { faker } from "@faker-js/faker/locale/de";
 import { HeaderPage } from "../pages/Header.page";
-import { createPersonWithUserContext, deletePersonen } from "../base/api/testHelperPerson.page";
+import { createPersonWithUserContext } from "../base/api/testHelperPerson.page";
 import { getSPId } from "../base/api/testHelperServiceprovider.page";
 import { UserInfo } from "../base/api/testHelper.page";
-import { addSystemrechtToRolle, deleteRolle } from "../base/api/testHelperRolle.page";
+import { addSystemrechtToRolle } from "../base/api/testHelperRolle.page";
 import { FooterDataTablePage } from "../pages/FooterDataTable.page";
 import { LONG, SHORT, STAGE } from "../base/tags";
+import { deletePersonById, deleteRolleById } from "../base/testHelperDeleteTestdata";
 
 const PW = process.env.PW;
 const ADMIN = process.env.USER;
 const FRONTEND_URL = process.env.FRONTEND_URL || "";
+
+let personId: string[] = []; // Im afterEchh Block werden alle Testdaten gelöscht
+let roleId: string[] = []; // Im afterEchh Block werden alle Testdaten gelöscht
 
 test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }) => {
@@ -33,6 +37,30 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
   });
 
   test.afterEach(async ({ page }) => {
+    const Header = new HeaderPage(page);
+    const Landing = new LandingPage(page);
+    const Login = new LoginPage(page);
+
+    await test.step(`Testdaten löschen via API`, async () => {
+      if (personId) { // nur wenn der Testfall auch mind. einen Benutzer angelegt hat
+        await Header.button_logout.click();
+        await Landing.button_Anmelden.click();
+        await Login.login(ADMIN, PW);
+        
+        await deletePersonById(personId, page);
+        personId = [];
+      }
+  
+      if (roleId) { // nur wenn der Testfall auch mind. einen Benutzer angelegt hat
+        await Header.button_logout.click();
+        await Landing.button_Anmelden.click();
+        await Login.login(ADMIN, PW);
+        
+        await deleteRolleById(roleId, page);
+        roleId = [];
+      }
+    });
+
     await test.step(`Abmelden`, async () => {
       const Header = new HeaderPage(page);
       await Header.button_logout.click();
@@ -118,6 +146,8 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
     const Startseite: StartPage = await test.step(`Testdaten: Schuladmin anlegen und mit diesem anmelden`, async () => {
       const idSP = await getSPId(page, 'Schulportal-Administration');
       userInfo = await createPersonWithUserContext(page, 'Testschule Schulportal', 'LEIT', 'TAuto-PW-B-MeierLEIT', 'TAuto-PW-B-Hans', idSP, 'TAuto-PW-R-RolleLEIT');
+      personId.push(userInfo.personId); 
+      roleId.push(userInfo.rolleId);
       await addSystemrechtToRolle(page, userInfo.rolleId, 'SCHULEN_VERWALTEN');
 
       await Header.button_logout.click();
@@ -158,15 +188,6 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
       await expect(SchuleCreationView.data_Schulname).toHaveText(SCHULNAME);
       await expect(SchuleCreationView.button_WeitereSchuleAnlegen).toBeVisible();
       await expect(SchuleCreationView.button_ZurueckErgebnisliste).toBeVisible();
-    });
-
-    await test.step(`Testdaten löschen`, async () => {
-      await Header.button_logout.click();
-      const Login = await Landing.login();
-      await Login.login(ADMIN, PW);
-      await expect(Startseite.text_h2_Ueberschrift).toBeVisible();
-      await deletePersonen(page, userInfo.personId);
-      await deleteRolle(page, userInfo.rolleId);
     });
   });
 });
