@@ -16,7 +16,8 @@ export class StartPage {
       .locator('[href="https://de.wikipedia.org/wiki/E-Mail"]')
       .first();
     this.card_item_itslearning = page.locator(
-      '[href="https://sh-staging.itslintegrations.com/"]',
+      '[data-testid^="service-provider-card"]',
+      { hasText: "itslearning" }
     );
     this.card_item_schulportal_administration = page.getByText(
       "Schulportal-Administration",

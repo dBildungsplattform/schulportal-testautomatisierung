@@ -6,7 +6,6 @@ export class PersonDetailsViewPage{
     readonly button_pwChange: Locator;
     readonly button_pwReset: Locator;
     readonly text_pwResetInfo: Locator; 
-    readonly icon_pwVisible: Locator;
     readonly input_pw: Locator;
     readonly button_close_pwreset: Locator;
     readonly button_deletePerson: Locator;
@@ -19,7 +18,6 @@ export class PersonDetailsViewPage{
         this.button_pwChange = page.getByTestId('open-password-reset-dialog-icon');     
         this.button_pwReset = page.getByTestId('password-reset-button');
         this.text_pwResetInfo = page.getByTestId('password-reset-info-text');
-        this.icon_pwVisible = page.getByTestId('show-password-icon');
         this.input_pw = page.locator('[data-testid="password-output-field"] input'); 
         this.button_close_pwreset = page.getByTestId('close-password-reset-dialog-button');
         this.button_deletePerson = page.getByTestId('open-person-delete-dialog-icon');
