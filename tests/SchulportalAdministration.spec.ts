@@ -8,7 +8,7 @@ import { createPersonWithUserContext } from "../base/api/testHelperPerson.page";
 import { addSystemrechtToRolle } from "../base/api/testHelperRolle.page";
 import { UserInfo } from "../base/api/testHelper.page";
 import { LONG, SHORT, STAGE } from "../base/tags";
-import { deletePersonById, deleteRolleById } from "../base/testHelperDeleteTestdata";
+import { deletePersonById, deleteRoleById } from "../base/testHelperDeleteTestdata";
 
 const PW = process.env.PW;
 const ADMIN = process.env.USER;
@@ -33,12 +33,12 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
                 personId = [];
             }
     
-            if (rolleId) { // nur wenn der Testfall auch mind. einen Benutzer angelegt hat
+            if (rolleId) { // nur wenn der Testfall auch mind. eine Rolle angelegt hat
                 await Header.button_logout.click();
                 await Landing.button_Anmelden.click();
                 await Login.login(ADMIN, PW);
                 
-                await deleteRolleById(rolleId, page);
+                await deleteRoleById(rolleId, page);
                 rolleId = [];
             }
         });

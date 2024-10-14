@@ -13,7 +13,7 @@ import { UserInfo } from "../base/api/testHelper.page";
 import { addSystemrechtToRolle } from "../base/api/testHelperRolle.page";
 import { FooterDataTablePage } from "../pages/FooterDataTable.page";
 import { LONG, SHORT, STAGE } from "../base/tags";
-import { deletePersonById, deleteRolleById } from "../base/testHelperDeleteTestdata";
+import { deletePersonById, deleteRoleById } from "../base/testHelperDeleteTestdata";
 
 const PW = process.env.PW;
 const ADMIN = process.env.USER;
@@ -51,12 +51,12 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
         personId = [];
       }
   
-      if (roleId) { // nur wenn der Testfall auch mind. einen Benutzer angelegt hat
+      if (roleId) { // nur wenn der Testfall auch mind. eine Rolle angelegt hat
         await Header.button_logout.click();
         await Landing.button_Anmelden.click();
         await Login.login(ADMIN, PW);
         
-        await deleteRolleById(roleId, page);
+        await deleteRoleById(roleId, page);
         roleId = [];
       }
     });

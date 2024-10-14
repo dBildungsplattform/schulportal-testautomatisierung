@@ -13,7 +13,7 @@ import { getSPId } from "../base/api/testHelperServiceprovider.page";
 import { UserInfo } from "../base/api/testHelper.page";
 import { addSystemrechtToRolle } from "../base/api/testHelperRolle.page";
 import { LONG, SHORT, STAGE } from "../base/tags";
-import { deletePersonByUsername, deleteRolleById, deleteRoleByName } from "../base/testHelperDeleteTestdata.ts";
+import { deletePersonByUsername, deleteRoleById, deleteRoleByName } from "../base/testHelperDeleteTestdata.ts";
 
 const PW = process.env.PW;
 const ADMIN = process.env.USER;
@@ -51,16 +51,16 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         username = [];
       }
 
-      if (roleId) { // nur wenn der Testfall auch mind. einen Benutzer angelegt hat
+      if (roleId) { // nur wenn der Testfall auch mind. eine Rolle angelegt hat
         await Header.button_logout.click();
         await Landing.button_Anmelden.click();
         await Login.login(ADMIN, PW);
         
-        await deleteRolleById(roleId, page);
+        await deleteRoleById(roleId, page);
         roleId = [];
       }
 
-      if (roleName) { // nur wenn der Testfall auch mind. einen Benutzer angelegt hat
+      if (roleName) { // nur wenn der Testfall auch mind. eine Rolle angelegt hat
         await Header.button_logout.click();
         await Landing.button_Anmelden.click();
         await Login.login(ADMIN, PW);

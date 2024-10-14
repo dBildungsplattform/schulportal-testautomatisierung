@@ -11,7 +11,7 @@ import { getOrganisationId } from "../base/api/testHelperOrganisation.page";
 import { UserInfo } from "../base/api/testHelper.page";
 import { addSystemrechtToRolle } from "../base/api/testHelperRolle.page";
 import { LONG, SHORT, STAGE } from "../base/tags";
-import { deleteRolleById, deletePersonByUsername} from "../base/testHelperDeleteTestdata";
+import { deleteRoleById, deletePersonByUsername} from "../base/testHelperDeleteTestdata";
 
 const PW = process.env.PW;
 const ADMIN = process.env.USER;
@@ -50,7 +50,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       }
 
       if (roleId) {
-        deleteRolleById(roleId, page);
+        deleteRoleById(roleId, page);
         roleId = [];
       }
     });
