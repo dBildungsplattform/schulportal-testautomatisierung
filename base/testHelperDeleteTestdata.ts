@@ -9,7 +9,7 @@ export async function deletePersonById(personId, page){  // personId ist ein arr
     }
 }
 
-export async function deleteRolleById(roleId, page){  // roleId ist ein array mit allen zu löschenden Benutzern
+export async function deleteRolleById(roleId, page){  // roleId ist ein array mit allen zu löschenden Rollen
     for (const item in roleId){
         await deleteRolle(page, roleId[item]);
     }
@@ -29,7 +29,7 @@ export async function deleteRoleByName(roleName, page){  // roleName ist ein arr
     }
   }
 
-  export async function deleteClassByName(className, page){  // className ist ein array mit allen zu löschenden Benutzern
+  export async function deleteClassByName(className, page){  // className ist ein array mit allen zu löschenden Klassen
     for (const item in className){
       const classId = await getKlasseId(page, className[item]);
       await deleteKlasse(page, classId);
