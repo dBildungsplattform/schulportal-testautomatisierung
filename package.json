@@ -21,7 +21,7 @@
   },
   "name": "schulportal-testautomatisierung",
   "description": "",
-  "version": "1.0.0",
+  "version": "0.6.0",
   "main": "index.js",
   "directories": {
     "test": "tests"
