@@ -8,12 +8,15 @@ import { PersonManagementViewPage } from "../pages/admin/PersonManagementView.pa
 import { PersonDetailsViewPage } from "../pages/admin/PersonDetailsView.page";
 import { HeaderPage } from "../pages/Header.page";
 import { LONG, SHORT, STAGE } from "../base/tags";
+import { CalendarPage } from "../pages/Cards/Calendar.page";
+import { DirectoryPage } from "../pages/Cards/Directory.page";
 
 const PW = process.env.PW;
 const ADMIN = process.env.USER;
 const FRONTEND_URL = process.env.FRONTEND_URL || "";
+const ENV = process.env.ENV;
 
-test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
+test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }) => {
     await test.step(`Login`, async () => {
       const Landing = new LandingPage(page);
@@ -31,20 +34,52 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.U
     const Startseite = new StartPage(page);
 
     await test.step(`Kacheln Email für Lehrkräfte und Itslearning öffnen, danach beide Kacheln wieder schließen`, async () => {
+      // email
+      // Die Schnittstelle email für Lehrkräfte(ox) gibt es nur auf stage
+      // Auf dev wird nur getestet, dass die url für ox aufgerufen wird wenn man die Kachel email anklickt
+      // Wenn SPSH-1043 auf stage deployed ist, muss der Test erweitert werden. Hier muss dann das erwartete Verhalten getestet werden, wenn man auf stage auf die Kachel(email, Adressbuch, Kalender)  klickt
       const page_Email4Teacher_Promise = page.waitForEvent("popup");
       await Startseite.card_item_email.click();
       const page_Email4Teacher = await page_Email4Teacher_Promise;
-      const Email4Teacher = new Email4TeacherPage(page_Email4Teacher);
-      await expect(Email4Teacher.text_h1).toBeVisible();
+      const email4Teacher = new Email4TeacherPage(page_Email4Teacher);
+      switch (ENV) {
+        case 'dev':
+          await expect(email4Teacher.text_h1).toBeVisible(); // dummy Seite email wikipedia
+          break;
+      }
+      await page_Email4Teacher.close();
 
+      // Kalender
+      const page_Kalender_Promise = page.waitForEvent("popup");
+      await Startseite.card_item_kalender.click();
+      const page_Kalender = await page_Kalender_Promise;
+      const kalender = new CalendarPage(page_Kalender);
+      switch (ENV) {
+        case 'dev':
+          await expect(kalender.text_h1).toBeVisible(); // dummy Seite Kalender wikipedia
+          break;
+      }
+      await page_Kalender.close();
+
+       // Adressbuch
+       const page_Adressbuch_Promise = page.waitForEvent("popup");
+       await Startseite.card_item_adressbuch.click();
+       const page_Adressbuch = await page_Adressbuch_Promise;
+       const adressbuch = new DirectoryPage(page_Adressbuch);
+       switch (ENV) {
+         case 'dev':
+           await expect(adressbuch.text_h1).toBeVisible(); // dummy Seite Adressbuch wikipedia
+           break;
+       }
+       await page_Adressbuch.close();
+     
+      // itslearning
       const page_Itslearning_Promise = page.waitForEvent("popup");
       await Startseite.card_item_itslearning.click();
       const page_Itslearning = await page_Itslearning_Promise;
       const Itslearning = new ItsLearningPage(page_Itslearning);
       await expect(Itslearning.text_h1).toBeVisible();
-
       await page_Itslearning.close();
-      await page_Email4Teacher.close();
     });
 
     await test.step(`Prüfen, dass die Startseite noch geöffnet ist`, async () => {
