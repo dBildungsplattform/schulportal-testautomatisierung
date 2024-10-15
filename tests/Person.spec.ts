@@ -105,7 +105,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await PersonManagementView.input_Suchfeld.fill(Nachname);
       await PersonManagementView.button_Suchen.click();
       await page.getByRole("cell", { name: Nachname, exact: true }).click();
-      await page.getByTestId("open-person-delete-dialog-icon").click();
+      await page.getByTestId("open-person-delete-dialog-button").click();
       await page.getByTestId("person-delete-button").click();
       await page
         .getByTestId("close-person-delete-success-dialog-button")
@@ -151,7 +151,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await PersonManagementView.input_Suchfeld.fill(Nachname);
       await PersonManagementView.button_Suchen.click();
       await page.getByRole("cell", { name: Nachname, exact: true }).click();
-      await page.getByTestId("open-person-delete-dialog-icon").click();
+      await page.getByTestId("open-person-delete-dialog-button").click();
       await page.getByTestId("person-delete-button").click();
       await page.getByTestId("close-person-delete-success-dialog-button").click();
     });
@@ -196,7 +196,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await PersonManagementView.input_Suchfeld.fill(Nachname);
       await PersonManagementView.button_Suchen.click();
       await page.getByRole("cell", { name: Nachname, exact: true }).click();
-      await page.getByTestId("open-person-delete-dialog-icon").click();
+      await page.getByTestId("open-person-delete-dialog-button").click();
       await page.getByTestId("person-delete-button").click();
       await page.getByTestId("close-person-delete-success-dialog-button").click();
     });
@@ -239,7 +239,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await PersonManagementView.input_Suchfeld.fill(Nachname);
       await PersonManagementView.button_Suchen.click();
       await page.getByRole("cell", { name: Nachname, exact: true }).click();
-      await page.getByTestId("open-person-delete-dialog-icon").click();
+      await page.getByTestId("open-person-delete-dialog-button").click();
       await page.getByTestId("person-delete-button").click();
       await page.getByTestId("close-person-delete-success-dialog-button").click();
     });
@@ -285,7 +285,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await PersonManagementView.input_Suchfeld.fill(Nachname);
       await PersonManagementView.button_Suchen.click();
       await page.getByRole("cell", { name: Nachname, exact: true }).click();
-      await page.getByTestId("open-person-delete-dialog-icon").click();
+      await page.getByTestId("open-person-delete-dialog-button").click();
       await page.getByTestId("person-delete-button").click();
       await page.getByTestId("close-person-delete-success-dialog-button").click();
     });
@@ -450,7 +450,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await PersonManagementView.input_Suchfeld.fill(Nachname);
       await PersonManagementView.button_Suchen.click();
       await page.getByRole("cell", { name: Nachname, exact: true }).click();
-      await page.getByTestId("open-person-delete-dialog-icon").click();
+      await page.getByTestId("open-person-delete-dialog-button").click();
       await page.getByTestId("person-delete-button").click();
       await page.getByTestId("close-person-delete-success-dialog-button").click();
     });
