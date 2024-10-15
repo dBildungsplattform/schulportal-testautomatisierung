@@ -9,7 +9,8 @@ export async function createRolle(page: Page, rollenArt: string, organisationId:
             "administeredBySchulstrukturknoten": organisationId,
             "rollenart": rollenArt,
             "merkmale": [],
-            "systemrechte": []
+            "systemrechte": [],
+            "version": 1,
         }
     });
     expect(response.status()).toBe(201);
@@ -20,9 +21,8 @@ export async function createRolle(page: Page, rollenArt: string, organisationId:
 export async function addSPToRolle(page: Page, rolleId: string, idSP: string): Promise<void> {
     const response = await page.request.put(FRONTEND_URL + `api/rolle/${rolleId}/serviceProviders`, {
         data: {
-            "serviceProviderIds": [
-                idSP
-            ] 
+            "serviceProviderIds": [idSP],
+            "version": 1,
         }
     });
     expect(response.status()).toBe(201);
@@ -31,7 +31,8 @@ export async function addSPToRolle(page: Page, rolleId: string, idSP: string): P
 export async function addSystemrechtToRolle(page: Page, rolleId: string, systemrecht: string): Promise<void> {
     const response = await page.request.patch(FRONTEND_URL + `api/rolle/${rolleId}`, {
         data: {
-            "systemRecht": systemrecht
+            "systemRecht": systemrecht,
+            "version": 1,
         }
     });
     expect(response.status()).toBe(200);
