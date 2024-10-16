@@ -84,7 +84,9 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
       await rolleCreationView.angebote.selectByTitle(Angebot1);
       await rolleCreationView.button_RolleAnlegen.click();
       await expect(rolleCreationView.text_success).toBeVisible();
-      rolleName.push(ROLLENNAME1); 
+      await expect(rolleCreationView.data_Administrationsebene).toHaveText(SCHULSTRUKTURKNOTEN1);
+      await expect(rolleCreationView.icon_success).toBeVisible();
+      await expect(rolleCreationView.data_Angebote).toHaveText(Angebot1);
     });
 
     await test.step(`Zweite Rolle anlegen`, async () => {
@@ -100,6 +102,10 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
       await rolleCreationView.angebote.selectByTitle(AngebotB2);
       await rolleCreationView.button_RolleAnlegen.click();
       await expect(rolleCreationView.text_success).toBeVisible();
+      await expect(rolleCreationView.data_Administrationsebene).toHaveText(SCHULSTRUKTURKNOTEN2);
+      await expect(rolleCreationView.icon_success).toBeVisible();
+      await expect(rolleCreationView.data_Angebote).toContainText(AngebotA2);
+      await expect(rolleCreationView.data_Angebote).toContainText(AngebotB2);
       rolleName.push(ROLLENNAME2);
     });
 
@@ -266,9 +272,10 @@ test.describe("Testet die Anlage einer neuen Rolle", () => {
     const rolleManagementPage =
       await test.step("Anlage prüfen und zurück", async () => {
         const { rolleCreationConfirmPage } = rolleCreationConfirm;
-        await expect(
-          rolleCreationConfirmPage.confirmationMessage,
-        ).toBeVisible();
+        await expect(rolleCreationConfirmPage.confirmationMessage).toBeVisible();
+        await expect(rolleCreationView.data_Administrationsebene).toHaveText('Land Schleswig-Holstein');
+        await expect(rolleCreationView.icon_success).toBeVisible();
+        await expect(rolleCreationView.data_Angebote).toContainText('E-Mail');
         return rolleCreationConfirmPage.backToResultList();
       });
 
