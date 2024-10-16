@@ -44,6 +44,8 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await Header.button_logout.click();
         await Landing.button_Anmelden.click();
         await Login.login(ADMIN, PW);
+        const Startseite = new StartPage(page);
+        await expect(Startseite.text_h2_Ueberschrift).toBeVisible();
         
         await deletePersonByUsername(username, page);
         username = [];
