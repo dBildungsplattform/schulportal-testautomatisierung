@@ -16,6 +16,12 @@
 
 ### Tests lokal ausführen:
 
+#### Lokale Installation
+
+npm ci
+npx playwright install
+npx playwright install-deps
+
 #### Alle Tests mit einer beliebigen URL ausführen
 
 USER='xxx' PW='xxx' FRONTEND_URL='https://main.dev.spsh.dbildungsplattform.de/' npx playwright test
