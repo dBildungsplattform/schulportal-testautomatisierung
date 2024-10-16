@@ -8,9 +8,12 @@ import { getRolleId, deleteRolle } from "../base/api/testHelperRolle.page";
 import { RolleCreationConfirmPage } from "../pages/admin/RolleCreationConfirm.page";
 import FromAnywhere from "../pages/FromAnywhere";
 import { LONG, SHORT, STAGE } from "../base/tags";
+import { deleteRoleByName } from "../base/testHelperDeleteTestdata";
 
 let startseite: StartPage;
 let loggedIn = false;
+let rolleName: string[] = []; // Im afterEchh Block werden alle Testdaten gelöscht 
+
 test.beforeEach(async ({ page }) => {
   startseite = await test.step(`Login`, async () => {
     const startPage = await FromAnywhere(page)
@@ -23,6 +26,13 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.afterEach(async ({ page }) => {
+  await test.step(`Testdaten löschen via API`, async () => {
+    if (rolleName) { // nur wenn der Testfall auch mind. eine Rolle angelegt hat   
+      await deleteRoleByName(rolleName, page);
+      rolleName = [];
+    }
+  });
+
   if (loggedIn) {
     await test.step(`Abmelden`, async () => {
       const Header = new HeaderPage(page);
@@ -74,6 +84,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
       await rolleCreationView.angebote.selectByTitle(Angebot1);
       await rolleCreationView.button_RolleAnlegen.click();
       await expect(rolleCreationView.text_success).toBeVisible();
+      rolleName.push(ROLLENNAME1); 
     });
 
     await test.step(`Zweite Rolle anlegen`, async () => {
@@ -89,6 +100,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
       await rolleCreationView.angebote.selectByTitle(AngebotB2);
       await rolleCreationView.button_RolleAnlegen.click();
       await expect(rolleCreationView.text_success).toBeVisible();
+      rolleName.push(ROLLENNAME2);
     });
 
     await test.step(`In der Ergebnisliste prüfen dass die beiden neuen Rollen angezeigt sind`, async () => {
@@ -100,13 +112,6 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
       );
       await expect(page.getByRole("cell", { name: ROLLENNAME1 })).toBeVisible();
       await expect(page.getByRole("cell", { name: ROLLENNAME2 })).toBeVisible();
-    });
-
-    await test.step(`Rollen wieder löschen`, async () => {
-      const RollenID1 = await getRolleId(page, ROLLENNAME1);
-      const RollenID2 = await getRolleId(page, ROLLENNAME2);
-      await deleteRolle(page, RollenID1);
-      await deleteRolle(page, RollenID2);
     });
   });
 
@@ -127,9 +132,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     });
   });
 
-  test("Eine Rolle anlegen und die Bestätigungsseite vollständig prüfen als Landesadmin", {tag: [LONG, SHORT, STAGE]}, async ({
-    page,
-  }) => {
+  test("Eine Rolle anlegen und die Bestätigungsseite vollständig prüfen als Landesadmin", {tag: [LONG, SHORT, STAGE]}, async ( ) => {
     const ROLLENNAME =
       "TAuto-PW-R-" + faker.lorem.word({ length: { min: 8, max: 12 } });
     const DIENSTSTELLENNUMMER = "1111111";
@@ -176,7 +179,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
       );
       await expect(rolleCreationConfirmPage.button_Schliessen).toBeVisible();
       await expect(rolleCreationConfirmPage.text_success).toBeVisible();
-      await expect(rolleCreationConfirmPage.icon_success).toBeVisible();
+      rolleName.push(ROLLENNAME);
       await expect(rolleCreationConfirmPage.text_DatenGespeichert).toHaveText(
         "Folgende Daten wurden gespeichert:",
       );
@@ -226,11 +229,6 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
       await expect(
         rolleCreationConfirmPage.button_ZurueckErgebnisliste,
       ).toBeVisible();
-    });
-
-    await test.step(`Rolle wieder löschen`, async () => {
-      const RollenID = await getRolleId(page, ROLLENNAME);
-      await deleteRolle(page, RollenID);
     });
   });
 });
