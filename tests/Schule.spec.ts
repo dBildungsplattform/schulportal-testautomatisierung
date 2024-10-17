@@ -43,18 +43,22 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
 
     await test.step(`Testdaten löschen via API`, async () => {
       if (personId) { // nur wenn der Testfall auch mind. einen Benutzer angelegt hat
+        const Startseite = new StartPage(page);
         await Header.button_logout.click();
         await Landing.button_Anmelden.click();
         await Login.login(ADMIN, PW);
+        await expect(Startseite.text_h2_Ueberschrift).toBeVisible();
         
         await deletePersonById(personId, page);
         personId = [];
       }
   
       if (roleId) { // nur wenn der Testfall auch mind. eine Rolle angelegt hat
+        const Startseite = new StartPage(page);
         await Header.button_logout.click();
         await Landing.button_Anmelden.click();
         await Login.login(ADMIN, PW);
+        await expect(Startseite.text_h2_Ueberschrift).toBeVisible();
         
         await deleteRoleById(roleId, page);
         roleId = [];

@@ -40,12 +40,14 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     const Header = new HeaderPage(page);
     const Landing = new LandingPage(page);
     const Login = new LoginPage(page);
+    const Startseite = new StartPage(page);
 
     await test.step(`Testdaten(Benutzer) löschen via API`, async () => {
       if (username) { // nur wenn der Testfall auch mind. einen Benutzer angelegt hat
         await Header.button_logout.click();
         await Landing.button_Anmelden.click();
         await Login.login(ADMIN, PW);
+        await expect(Startseite.text_h2_Ueberschrift).toBeVisible();
         
         await deletePersonByUsername(username, page);
         username = [];
@@ -55,6 +57,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await Header.button_logout.click();
         await Landing.button_Anmelden.click();
         await Login.login(ADMIN, PW);
+        await expect(Startseite.text_h2_Ueberschrift).toBeVisible();
         
         await deleteRoleById(roleId, page);
         roleId = [];
@@ -64,6 +67,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await Header.button_logout.click();
         await Landing.button_Anmelden.click();
         await Login.login(ADMIN, PW);
+        await expect(Startseite.text_h2_Ueberschrift).toBeVisible();
         
         await deleteRoleByName(roleName, page);
         roleName = [];
