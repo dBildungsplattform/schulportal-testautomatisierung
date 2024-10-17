@@ -303,7 +303,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
   });
 
-  test("Prüfung auf korrekte Rollen in dem Dropdown 'Rolle' nach Auswahl der Organisation bei Anlage eines Benutzer in der Rolle Landesadmin", {tag: [LONG, SHORT, STAGE]}, async ({page}) => {
+  test("Prüfung auf korrekte Rollen in dem Dropdown 'Rolle' nach Auswahl der Organisation bei Anlage eines Benutzer in der Rolle Landesadmin", {tag: [LONG, STAGE]}, async ({page}) => {
     const Startseite = new StartPage(page);
     const Menue = new MenuPage(page);
     const PersonCreationView = new PersonCreationViewPage(page);
@@ -330,7 +330,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await page.keyboard.type(Organisation_Land);
       await page.getByText(Organisation_Land, { exact: true }).nth(1).click();
 
-      await page.waitForTimeout(1000); // #todo: ist ein hack und muss noch sauber gelöst werden. Das Dropdown ist nicht immer vollständig geladen, darum wird 1s gewartet;
       await PersonCreationView.combobox_Rolle.click();
       await expect(PersonCreationView.body).toContainText(Rolle_Landesadmin);
       await expect(PersonCreationView.body).not.toContainText(Rolle_Lehr);
@@ -344,7 +343,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await PersonCreationView.combobox_Schulstrukturknoten.click();
       await page.keyboard.type(Organisation_OeffentlicheSchule);
       await page.getByText(Organisation_OeffentlicheSchule, { exact: true }).click();
-      await page.waitForTimeout(1000); // #todo: ist ein hack und muss noch sauber gelöst werden. Das Dropdown ist nicht immer vollständig geladen, darum wird 1s gewartet;
       await PersonCreationView.combobox_Rolle.click();
       await expect(PersonCreationView.body).toContainText(Rolle_Landesadmin);
       await expect(PersonCreationView.body).not.toContainText(Rolle_Lehr);
@@ -358,7 +356,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await PersonCreationView.combobox_Schulstrukturknoten.click();
       await page.keyboard.type(Organisation_Ersatzschule);
       await page.getByText(Organisation_Ersatzschule, { exact: true }).click();
-      await page.waitForTimeout(1000); // #todo: ist ein hack und muss noch sauber gelöst werden. Das Dropdown ist nicht immer vollständig geladen, darum wird 1s gewartet;
       await PersonCreationView.combobox_Rolle.click();
       await expect(PersonCreationView.body).toContainText(Rolle_Landesadmin);
       await expect(PersonCreationView.body).not.toContainText(Rolle_Lehr);
@@ -371,7 +368,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await PersonCreationView.combobox_Schulstrukturknoten_Clear.click();
       await PersonCreationView.combobox_Schulstrukturknoten.click();
       await page.getByText(Organisation_Schule).click();
-      await page.waitForTimeout(1000); // #todo: ist ein hack und muss noch sauber gelöst werden. Das Dropdown ist nicht immer vollständig geladen, darum wird 1s gewartet;
       await PersonCreationView.combobox_Rolle.click();
       await expect(PersonCreationView.body).toContainText(Rolle_Lehr);
       await expect(PersonCreationView.body).toContainText(Rolle_LiV);
