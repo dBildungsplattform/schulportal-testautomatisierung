@@ -40,12 +40,14 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     const Header = new HeaderPage(page);
     const Landing = new LandingPage(page);
     const Login = new LoginPage(page);
+    const Startseite = new StartPage(page);
 
     await test.step(`Testdaten(Benutzer) löschen via API`, async () => {
       if (username) { // nur wenn der Testfall auch mind. einen Benutzer angelegt hat
         await Header.button_logout.click();
         await Landing.button_Anmelden.click();
         await Login.login(ADMIN, PW);
+        await expect(Startseite.text_h2_Ueberschrift).toBeVisible();
         
         await deletePersonByUsername(username, page);
         username = [];
@@ -55,6 +57,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await Header.button_logout.click();
         await Landing.button_Anmelden.click();
         await Login.login(ADMIN, PW);
+        await expect(Startseite.text_h2_Ueberschrift).toBeVisible();
         
         await deleteRoleById(roleId, page);
         roleId = [];
@@ -64,6 +67,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await Header.button_logout.click();
         await Landing.button_Anmelden.click();
         await Login.login(ADMIN, PW);
+        await expect(Startseite.text_h2_Ueberschrift).toBeVisible();
         
         await deleteRoleByName(roleName, page);
         roleName = [];
@@ -303,7 +307,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
   });
 
-  test("Prüfung auf korrekte Rollen in dem Dropdown 'Rolle' nach Auswahl der Organisation bei Anlage eines Benutzer in der Rolle Landesadmin", {tag: [LONG, SHORT, STAGE]}, async ({page}) => {
+  test("Prüfung auf korrekte Rollen in dem Dropdown 'Rolle' nach Auswahl der Organisation bei Anlage eines Benutzer in der Rolle Landesadmin", {tag: [LONG, STAGE]}, async ({page}) => {
     const Startseite = new StartPage(page);
     const Menue = new MenuPage(page);
     const PersonCreationView = new PersonCreationViewPage(page);
@@ -329,6 +333,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await PersonCreationView.combobox_Schulstrukturknoten.click();
       await page.keyboard.type(Organisation_Land);
       await page.getByText(Organisation_Land, { exact: true }).nth(1).click();
+
       await PersonCreationView.combobox_Rolle.click();
       await expect(PersonCreationView.body).toContainText(Rolle_Landesadmin);
       await expect(PersonCreationView.body).not.toContainText(Rolle_Lehr);
