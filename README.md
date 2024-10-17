@@ -1,5 +1,16 @@
 # Schulportal Playwright, Doku für lokale Ausführung von den Tests
 
+## Playwright lokal installieren
+
+git clone https://github.com/dBildungsplattform/schulportal-testautomatisierung
+cd schulportal-testautomatisierung
+npm ci
+npx playwright install --with-deps
+
+## Entwicklungsumgebung
+
+Empfohlen wird VS-Code
+
 ## Oft verwendetet Konsolenbefehle
 
 ### Code-Generator lokal starten:
@@ -15,12 +26,6 @@
 #### npx playwright codegen https://localhost:8099/ --ignore-https-errors
 
 ### Tests lokal ausführen:
-
-#### Lokale Installation
-
-npm ci
-npx playwright install
-npx playwright install-deps
 
 #### Alle Tests mit einer beliebigen URL ausführen
 
@@ -72,20 +77,6 @@ aus faker oder einem festen Wert. Der Name einer Rolle ist z.B. TAuto-PW-R-xxxxx
 ### Während der Entwicklung nur einen Test markieren, der alleine ausgeführt wird(temporär only hinzufügen in dem Test)
 
 test.only('2 Schulen nacheinander anlegen', async ({ page }) => {
-
-## Playwright installieren unter Windows
-
-### git clone https://github.com/dBildungsplattform/schulportal-testautomatisierung
-
-### cd schulportal-testautomatisierung
-
-### npm ci
-
-### npx playwright install --with-deps
-
-## Entwicklungsumgebung
-
-Empfohlen wird VS-Code
 
 ## Definition Testsuiten
 ### smoke
