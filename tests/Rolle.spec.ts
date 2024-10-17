@@ -87,6 +87,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
       await expect(rolleCreationView.data_Administrationsebene).toHaveText(SCHULSTRUKTURKNOTEN1);
       await expect(rolleCreationView.icon_success).toBeVisible();
       await expect(rolleCreationView.data_Angebote).toHaveText(Angebot1);
+      rolleName.push(ROLLENNAME1);
     });
 
     await test.step(`Zweite Rolle anlegen`, async () => {
