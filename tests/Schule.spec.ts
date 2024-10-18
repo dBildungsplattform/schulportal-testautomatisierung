@@ -44,7 +44,7 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
     await test.step(`Testdaten löschen via API`, async () => {
       if (personId) { // nur wenn der Testfall auch mind. einen Benutzer angelegt hat
         const Startseite = new StartPage(page);
-        await Header.button_logout.click();
+        await Header.logout();
         await Landing.button_Anmelden.click();
         await Login.login(ADMIN, PW);
         await expect(Startseite.text_h2_Ueberschrift).toBeVisible();
@@ -55,7 +55,7 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
   
       if (roleId) { // nur wenn der Testfall auch mind. eine Rolle angelegt hat
         const Startseite = new StartPage(page);
-        await Header.button_logout.click();
+        await Header.logout();
         await Landing.button_Anmelden.click();
         await Login.login(ADMIN, PW);
         await expect(Startseite.text_h2_Ueberschrift).toBeVisible();
@@ -67,7 +67,7 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
 
     await test.step(`Abmelden`, async () => {
       const Header = new HeaderPage(page);
-      await Header.button_logout.click();
+      await Header.logout();
     });
   });
 
@@ -154,7 +154,7 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
       roleId.push(userInfo.rolleId);
       await addSystemrechtToRolle(page, userInfo.rolleId, 'SCHULEN_VERWALTEN');
 
-      await Header.button_logout.click();
+      await Header.logout();
       const Login = await Landing.login();
       const Startseite = await Login.login(userInfo.username, userInfo.password);
       userInfo.password = await Login.UpdatePW();

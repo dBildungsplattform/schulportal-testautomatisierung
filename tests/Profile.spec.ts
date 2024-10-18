@@ -41,7 +41,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
     await test.step(`Testdaten löschen via API`, async () => {
       if (username) { // nur wenn der Testfall auch mind. einen Benutzer angelegt hat
-        await Header.button_logout.click();
+        await Header.logout();
         await Landing.button_Anmelden.click();
         await Login.login(ADMIN, PW);
         const Startseite = new StartPage(page);
@@ -59,7 +59,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
     await test.step(`Abmelden`, async () => {
       const Header = new HeaderPage(page);
-      await Header.button_logout.click();
+      await Header.logout();
     });
   });
 
@@ -88,7 +88,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       await addSystemrechtToRolle(page, userInfo.rolleId, 'KLASSEN_VERWALTEN');
       await addSystemrechtToRolle(page, userInfo.rolleId, 'SCHULTRAEGER_VERWALTEN');
 
-      await Header.button_logout.click();
+      await Header.logout();
       await Header.button_login.click();
       await Login.login(userInfo.username, userInfo.password);
       await Login.UpdatePW();
@@ -146,7 +146,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       roleId.push(userInfo.rolleId);
       username.push(userInfo.username);
 
-      await Header.button_logout.click();
+      await Header.logout();
       await Header.button_login.click();
       await Login.login(userInfo.username, userInfo.password);
       await Login.UpdatePW();
@@ -203,7 +203,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       roleId.push(userInfo.rolleId);
       username.push(userInfo.username);
 
-      await Header.button_logout.click();
+      await Header.logout();
       await Header.button_login.click();
       await Login.login(userInfo.username, userInfo.password);
       await Login.UpdatePW();
@@ -260,7 +260,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       roleId.push(userInfo.rolleId);
       username.push(userInfo.username);
 
-      await Header.button_logout.click();
+      await Header.logout();
       await Header.button_login.click();
       await Login.login(userInfo.username, userInfo.password);
       await Login.UpdatePW();
@@ -322,7 +322,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       username.push(userInfo.username);
 
       await addSecondOrganisationToPerson(page, personId, await getOrganisationId(page, Organisation1), await getOrganisationId(page, Organisation2), roleId[0]);
-      await Header.button_logout.click();
+      await Header.logout();
       await Header.button_login.click();
       await Login.login(userInfo.username, userInfo.password);
       await Login.UpdatePW();

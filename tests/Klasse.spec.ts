@@ -39,8 +39,8 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     });
 
     await test.step(`Abmelden`, async () => {
-      const Header = new HeaderPage(page);
-      await Header.button_logout.click();
+      const header = new HeaderPage(page);
+      await header.logout();
     });
   });
 

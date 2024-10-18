@@ -36,7 +36,7 @@ test.afterEach(async ({ page }) => {
   if (loggedIn) {
     await test.step(`Abmelden`, async () => {
       const Header = new HeaderPage(page);
-      await Header.button_logout.click();
+      await Header.logout();
       loggedIn = false;
     });
   }

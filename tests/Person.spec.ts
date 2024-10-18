@@ -44,7 +44,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
     await test.step(`Testdaten(Benutzer) löschen via API`, async () => {
       if (username) { // nur wenn der Testfall auch mind. einen Benutzer angelegt hat
-        await Header.button_logout.click();
+        await Header.logout();
         await Landing.button_Anmelden.click();
         await Login.login(ADMIN, PW);
         await expect(Startseite.text_h2_Ueberschrift).toBeVisible();
@@ -54,7 +54,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       }
 
       if (roleId) { // nur wenn der Testfall auch mind. eine Rolle angelegt hat
-        await Header.button_logout.click();
+        await Header.logout();
         await Landing.button_Anmelden.click();
         await Login.login(ADMIN, PW);
         await expect(Startseite.text_h2_Ueberschrift).toBeVisible();
@@ -64,7 +64,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       }
 
       if (roleName) { // nur wenn der Testfall auch mind. eine Rolle angelegt hat
-        await Header.button_logout.click();
+        await Header.logout();
         await Landing.button_Anmelden.click();
         await Login.login(ADMIN, PW);
         await expect(Startseite.text_h2_Ueberschrift).toBeVisible();
@@ -76,7 +76,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
     await test.step(`Abmelden`, async () => {
       const Header = new HeaderPage(page);
-      await Header.button_logout.click();
+      await Header.logout();
     });
   });
 
@@ -130,7 +130,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
 
     await test.step(`Der neue Benutzer meldet sich mit dem temporären Passwort am Portal an und vergibt ein neues Passwort`, async () => {
-      await Header.button_logout.click();
+      await Header.logout();
       await Landing.button_Anmelden.click();
       await Login.login(username[0], einstiegspasswort);
       await Login.UpdatePW();
@@ -513,7 +513,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       username.push(userInfo.username);
       roleId.push(userInfo.rolleId);
 
-      await Header.button_logout.click();
+      await Header.logout();
       await Landing.button_Anmelden.click();
       await Login.login(userInfo.username, userInfo.password);
       userInfo.password = await Login.UpdatePW();

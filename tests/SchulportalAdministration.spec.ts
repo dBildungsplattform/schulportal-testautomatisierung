@@ -25,7 +25,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
 
         await test.step(`Testdaten löschen via API`, async () => {
             if (personId) { // nur wenn der Testfall auch mind. einen Benutzer angelegt hat
-                await Header.button_logout.click();
+                await Header.logout();
                 await Landing.button_Anmelden.click();
                 await Login.login(ADMIN, PW);
                 
@@ -34,7 +34,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
             }
     
             if (rolleId) { // nur wenn der Testfall auch mind. eine Rolle angelegt hat
-                await Header.button_logout.click();
+                await Header.logout();
                 await Landing.button_Anmelden.click();
                 await Login.login(ADMIN, PW);
                 
@@ -45,7 +45,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
 
         await test.step(`Abmelden`, async () => {
           const Header = new HeaderPage(page);
-          await Header.button_logout.click();
+          await Header.logout();
         });
       });
 
@@ -63,7 +63,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         const userInfo: UserInfo = await createPersonWithUserContext(page, 'Testschule Schulportal', 'LEHR', 'TAuto-PW-B-MeierLehrer', 'TAuto-PW-B-Hans', idSP, 'TAuto-PW-R-RolleLehrer');
         personId.push(userInfo.personId); 
         rolleId.push(userInfo.rolleId);
-        await Header.button_logout.click();
+        await Header.logout();
 
         // Test durchführen
         await Landing.button_Anmelden.click();
@@ -90,7 +90,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         const userInfo: UserInfo = await createPersonWithUserContext(page, 'Testschule Schulportal', 'LERN', 'TAuto-PW-B-JansenSchüler', 'TAuto-PW-B-Helga', idSP, 'TAuto-PW-R-RolleSuS');
         personId.push(userInfo.personId); 
         rolleId.push(userInfo.rolleId);
-        await Header.button_logout.click();
+        await Header.logout();
 
         // Test durchführen
         await Landing.button_Anmelden.click();
@@ -119,7 +119,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         rolleId.push(userInfo.rolleId);
 
         await addSystemrechtToRolle(page, userInfo.rolleId, 'PERSONEN_VERWALTEN');
-        await Header.button_logout.click();
+        await Header.logout();
 
         // Test durchführen
         await Landing.button_Anmelden.click();
