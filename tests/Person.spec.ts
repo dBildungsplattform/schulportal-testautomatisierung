@@ -665,6 +665,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     const rolle = "TAuto-PW-R-" + faker.lorem.word({ length: { min: 8, max: 12 }});
     const berechtigung = 'SYSADMIN';
     const idSP = await getSPId(page, 'Schulportal-Administration');
+    const header = new HeaderPage(page);
 
     await test.step(`Neuen Benutzer über die api anlegen`, async () => {
       await createPersonWithUserContext(page, 'Land Schleswig-Holstein', berechtigung, vorname, nachname, idSP, rolle);
@@ -679,6 +680,15 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await PersonDetailsView.button_deletePerson.click();
       await PersonDetailsView.button_deletePersonConfirm.click();
       await PersonDetailsView.button_closeDeletePersonConfirm.click();
+      await expect(PersonManagementView.text_h2_Benutzerverwaltung).toHaveText('Benutzerverwaltung');
+      // warten, dass die Seite mit dem Laden fertig ist, da z.B. icons mit ajax nachgeladen werden
+      // dieses ist nur ein workaround; im FE muss noch eine Lösung für den Status 'Seite ist vollständig geladen' geschaffen werden
+      await expect(header.icon_myProfil).toBeVisible(); 
+      await expect(header.icon_logout).toBeVisible();
+      await expect(PersonManagementView.comboboxDown_Schule).toBeVisible();
+      await expect(PersonManagementView.comboboxDown_Rolle).toBeVisible();
+      await expect(PersonManagementView.comboboxDown_Klasse).toBeVisible();
+      await expect(PersonManagementView.comboboxDown_Status).toBeVisible();
       await expect(page.getByRole("cell", { name: nachname, exact: true })).toBeHidden();
     });
   })

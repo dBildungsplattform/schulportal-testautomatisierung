@@ -169,7 +169,7 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
     });
 
     const schultraeger = await test.step(`Schule anlegen`, async () => {
-      const schultraeger = SchuleCreationView.radio_button_Public_Schule.innerText();
+      const schultraeger = await SchuleCreationView.radio_button_Public_Schule.innerText();
       await SchuleCreationView.radio_button_Public_Schule.click();
       await SchuleCreationView.input_Dienststellennummer.fill(DIENSTSTELLENNUMMER);
       await SchuleCreationView.input_Schulname.fill(SCHULNAME);

@@ -46,6 +46,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await Login.login(ADMIN, PW);
         const Startseite = new StartPage(page);
         await expect(Startseite.text_h2_Ueberschrift).toBeVisible();
+        await expect(Startseite.card_item_schulportal_administration).toBeVisible();
         
         await deletePersonByUsername(username, page);
         username = [];
