@@ -13,7 +13,7 @@ export class PersonManagementViewPage{
     readonly table_header_Rolle: Locator;
     readonly table_header_Zuordnungen: Locator;
     readonly table_header_Klasse: Locator;
-    readonly comboboxDown_Schule: Locator;
+    readonly comboboxMenuIcon_Schule: Locator;
     readonly comboboxDown_Rolle: Locator;
     readonly comboboxDown_Klasse: Locator;
     readonly comboboxDown_Status: Locator;
