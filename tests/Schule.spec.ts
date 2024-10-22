@@ -37,14 +37,14 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
   });
 
   test.afterEach(async ({ page }) => {
-    const Header = new HeaderPage(page);
+    const header = new HeaderPage(page);
     const Landing = new LandingPage(page);
     const Login = new LoginPage(page);
 
     await test.step(`Testdaten löschen via API`, async () => {
       if (personId) { // nur wenn der Testfall auch mind. einen Benutzer angelegt hat
         const Startseite = new StartPage(page);
-        await Header.logout();
+        await header.logout();
         await Landing.button_Anmelden.click();
         await Login.login(ADMIN, PW);
         await expect(Startseite.text_h2_Ueberschrift).toBeVisible();
@@ -55,7 +55,7 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
   
       if (roleId) { // nur wenn der Testfall auch mind. eine Rolle angelegt hat
         const Startseite = new StartPage(page);
-        await Header.logout();
+        await header.logout();
         await Landing.button_Anmelden.click();
         await Login.login(ADMIN, PW);
         await expect(Startseite.text_h2_Ueberschrift).toBeVisible();
@@ -66,8 +66,8 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
     });
 
     await test.step(`Abmelden`, async () => {
-      const Header = new HeaderPage(page);
-      await Header.logout();
+      const header = new HeaderPage(page);
+      await header.logout();
     });
   });
 
@@ -144,7 +144,7 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
     const SCHULNAME = "TAuto-PW-S1-" + faker.lorem.word({ length: { min: 8, max: 12 }}) + ZUFALLSNUMMER;
     const DIENSTSTELLENNUMMER = "0" + faker.number.bigInt({ min: 10000000, max: 100000000 });
     const Landing = new LandingPage(page);
-    const Header = new HeaderPage(page);
+    const header = new HeaderPage(page);
     let userInfo: UserInfo;
 
     const Startseite: StartPage = await test.step(`Testdaten: Schuladmin anlegen und mit diesem anmelden`, async () => {
@@ -154,7 +154,7 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
       roleId.push(userInfo.rolleId);
       await addSystemrechtToRolle(page, userInfo.rolleId, 'SCHULEN_VERWALTEN');
 
-      await Header.logout();
+      await header.logout();
       const Login = await Landing.login();
       const Startseite = await Login.login(userInfo.username, userInfo.password);
       userInfo.password = await Login.UpdatePW();

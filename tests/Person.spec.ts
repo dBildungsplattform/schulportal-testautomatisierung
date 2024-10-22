@@ -37,14 +37,14 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
   });
 
   test.afterEach(async ({ page }) => {
-    const Header = new HeaderPage(page);
+    const header = new HeaderPage(page);
     const Landing = new LandingPage(page);
     const Login = new LoginPage(page);
     const Startseite = new StartPage(page);
 
     await test.step(`Testdaten(Benutzer) löschen via API`, async () => {
       if (username) { // nur wenn der Testfall auch mind. einen Benutzer angelegt hat
-        await Header.logout();
+        await header.logout();
         await Landing.button_Anmelden.click();
         await Login.login(ADMIN, PW);
         await expect(Startseite.text_h2_Ueberschrift).toBeVisible();
@@ -54,7 +54,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       }
 
       if (roleId) { // nur wenn der Testfall auch mind. eine Rolle angelegt hat
-        await Header.logout();
+        await header.logout();
         await Landing.button_Anmelden.click();
         await Login.login(ADMIN, PW);
         await expect(Startseite.text_h2_Ueberschrift).toBeVisible();
@@ -64,7 +64,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       }
 
       if (roleName) { // nur wenn der Testfall auch mind. eine Rolle angelegt hat
-        await Header.logout();
+        await header.logout();
         await Landing.button_Anmelden.click();
         await Login.login(ADMIN, PW);
         await expect(Startseite.text_h2_Ueberschrift).toBeVisible();
@@ -75,8 +75,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
 
     await test.step(`Abmelden`, async () => {
-      const Header = new HeaderPage(page);
-      await Header.logout();
+      const header = new HeaderPage(page);
+      await header.logout();
     });
   });
 
@@ -89,7 +89,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     const Menue = new MenuPage(page);
     const PersonCreationView = new PersonCreationViewPage(page);
     const PersonManagementView = new PersonManagementViewPage(page);
-    const Header = new HeaderPage(page);
+    const header = new HeaderPage(page);
 
     const Rolle = "Lehrkraft";
     const Vorname = "TAuto-PW-V-" + faker.person.firstName();
@@ -130,7 +130,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
 
     await test.step(`Der neue Benutzer meldet sich mit dem temporären Passwort am Portal an und vergibt ein neues Passwort`, async () => {
-      await Header.logout();
+      await header.logout();
       await Landing.button_Anmelden.click();
       await Login.login(username[0], einstiegspasswort);
       await Login.UpdatePW();
@@ -495,7 +495,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     const Landing = new LandingPage(page);
     const Startseite = new StartPage(page);
     const Login = new LoginPage(page);
-    const Header = new HeaderPage(page);
+    const header = new HeaderPage(page);
     const PersonCreationView = new PersonCreationViewPage(page);
     let userInfo: UserInfo;
 
@@ -513,7 +513,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       username.push(userInfo.username);
       roleId.push(userInfo.rolleId);
 
-      await Header.logout();
+      await header.logout();
       await Landing.button_Anmelden.click();
       await Login.login(userInfo.username, userInfo.password);
       userInfo.password = await Login.UpdatePW();
@@ -685,10 +685,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       // dieses ist nur ein workaround; im FE muss noch eine Lösung für den Status 'Seite ist vollständig geladen' geschaffen werden
       await expect(header.icon_myProfil).toBeVisible(); 
       await expect(header.icon_logout).toBeVisible();
-      await expect(PersonManagementView.comboboxDown_Schule).toBeVisible();
-      await expect(PersonManagementView.comboboxDown_Rolle).toBeVisible();
-      await expect(PersonManagementView.comboboxDown_Klasse).toBeVisible();
-      await expect(PersonManagementView.comboboxDown_Status).toBeVisible();
+      await expect(PersonManagementView.comboboxMenuIcon_Schule).toBeVisible();
+      await expect(PersonManagementView.comboboxMenuIcon_Rolle).toBeVisible();
+      await expect(PersonManagementView.comboboxMenuIcon_Klasse).toBeVisible();
+      await expect(PersonManagementView.comboboxMenuIcon_Status).toBeVisible();
       await expect(page.getByRole("cell", { name: nachname, exact: true })).toBeHidden();
     });
   })

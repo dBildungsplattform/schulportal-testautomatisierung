@@ -14,9 +14,9 @@ export class PersonManagementViewPage{
     readonly table_header_Zuordnungen: Locator;
     readonly table_header_Klasse: Locator;
     readonly comboboxMenuIcon_Schule: Locator;
-    readonly comboboxDown_Rolle: Locator;
-    readonly comboboxDown_Klasse: Locator;
-    readonly comboboxDown_Status: Locator;
+    readonly comboboxMenuIcon_Rolle: Locator;
+    readonly comboboxMenuIcon_Klasse: Locator;
+    readonly comboboxMenuIcon_Status: Locator;
    
     constructor(page){
         this.page = page;  
@@ -31,9 +31,9 @@ export class PersonManagementViewPage{
         this.table_header_Rolle = page.getByTestId('person-table').getByText('Rolle', { exact: true });
         this.table_header_Zuordnungen = page.getByText('Zuordnung(en)');
         this.table_header_Klasse =  page.getByTestId('person-table').getByText('Klasse', { exact: true });
-        this.comboboxDown_Schule =  page.locator('[data-testid="schule-select"] .mdi-menu-down');
-        this.comboboxDown_Rolle =  page.locator('[data-testid="rolle-select"] .mdi-menu-down');
-        this.comboboxDown_Klasse =  page.locator('[data-testid="klasse-select"] .mdi-menu-down');
-        this.comboboxDown_Status =  page.locator('[data-testid="status-select"] .mdi-menu-down');
+        this.comboboxMenuIcon_Schule = page.locator('[data-testid="schule-select"] .mdi-menu-down');
+        this.comboboxMenuIcon_Rolle = page.locator('[data-testid="rolle-select"] .mdi-menu-down');
+        this.comboboxMenuIcon_Klasse = page.locator('[data-testid="klasse-select"] .mdi-menu-down');
+        this.comboboxMenuIcon_Status = page.locator('[data-testid="status-select"] .mdi-menu-down');
   }
 }

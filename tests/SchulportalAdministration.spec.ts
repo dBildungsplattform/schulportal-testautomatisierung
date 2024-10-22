@@ -19,13 +19,13 @@ let rolleId: string[] = []; // Im afterEchh Block werden alle Testdaten gelösch
 
 test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
     test.afterEach(async ({ page }) => {
-        const Header = new HeaderPage(page);
+        const header = new HeaderPage(page);
         const Landing = new LandingPage(page);
         const Login = new LoginPage(page);
 
         await test.step(`Testdaten löschen via API`, async () => {
             if (personId) { // nur wenn der Testfall auch mind. einen Benutzer angelegt hat
-                await Header.logout();
+                await header.logout();
                 await Landing.button_Anmelden.click();
                 await Login.login(ADMIN, PW);
                 
@@ -34,7 +34,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
             }
     
             if (rolleId) { // nur wenn der Testfall auch mind. eine Rolle angelegt hat
-                await Header.logout();
+                await header.logout();
                 await Landing.button_Anmelden.click();
                 await Login.login(ADMIN, PW);
                 
@@ -44,15 +44,15 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         });
 
         await test.step(`Abmelden`, async () => {
-          const Header = new HeaderPage(page);
-          await Header.logout();
+          const header = new HeaderPage(page);
+          await header.logout();
         });
       });
 
     test("Prüfen, dass die Schulportal-Administration Kachel nicht sichtbar ist für Lehrkräfte", {tag: [LONG, STAGE]}, async ({page}) => {
         const Landing = new LandingPage(page);
         const Login = new LoginPage(page);
-        const Header = new HeaderPage(page);
+        const header = new HeaderPage(page);
 
         // Testdaten erstellen
         await page.goto(FRONTEND_URL);
@@ -63,7 +63,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         const userInfo: UserInfo = await createPersonWithUserContext(page, 'Testschule Schulportal', 'LEHR', 'TAuto-PW-B-MeierLehrer', 'TAuto-PW-B-Hans', idSP, 'TAuto-PW-R-RolleLehrer');
         personId.push(userInfo.personId); 
         rolleId.push(userInfo.rolleId);
-        await Header.logout();
+        await header.logout();
 
         // Test durchführen
         await Landing.button_Anmelden.click();
@@ -79,7 +79,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
     test("Prüfen, dass die Schulportal-Administration Kachel nicht sichtbar ist für Schüler", {tag: [LONG, SHORT, STAGE]}, async ({page}) => {
         const Landing = new LandingPage(page);
         const Login = new LoginPage(page);
-        const Header = new HeaderPage(page);
+        const header = new HeaderPage(page);
 
         // Testdaten erstellen
         await page.goto(FRONTEND_URL);
@@ -90,7 +90,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         const userInfo: UserInfo = await createPersonWithUserContext(page, 'Testschule Schulportal', 'LERN', 'TAuto-PW-B-JansenSchüler', 'TAuto-PW-B-Helga', idSP, 'TAuto-PW-R-RolleSuS');
         personId.push(userInfo.personId); 
         rolleId.push(userInfo.rolleId);
-        await Header.logout();
+        await header.logout();
 
         // Test durchführen
         await Landing.button_Anmelden.click();
@@ -106,7 +106,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
     test("Prüfen, dass die Schulportal-Administration Kachel sichtbar ist für Schuladmins", {tag: [LONG, STAGE]}, async ({page}) => {
         const Landing = new LandingPage(page);
         const Login = new LoginPage(page);
-        const Header = new HeaderPage(page);
+        const header = new HeaderPage(page);
 
         // Testdaten erstellen
         await page.goto(FRONTEND_URL);
@@ -119,7 +119,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         rolleId.push(userInfo.rolleId);
 
         await addSystemrechtToRolle(page, userInfo.rolleId, 'PERSONEN_VERWALTEN');
-        await Header.logout();
+        await header.logout();
 
         // Test durchführen
         await Landing.button_Anmelden.click();

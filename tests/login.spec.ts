@@ -14,7 +14,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.UM
     const Login = new LoginPage(page);
     const Landing = new LandingPage(page);
     const Start = new StartPage(page);
-    const Header = new HeaderPage(page);
+    const header = new HeaderPage(page);
 
     await test.step(`Anmelden mit Benutzer ${USER}`, async () => {
       await page.goto(FRONTEND_URL);
@@ -22,7 +22,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.UM
       await Landing.button_Anmelden.click();
       await Login.login(USER, PW);
       await expect(Start.text_h2_Ueberschrift).toBeVisible();
-      await Header.button_logout.click();
+      await header.button_logout.click();
     })
   })
 

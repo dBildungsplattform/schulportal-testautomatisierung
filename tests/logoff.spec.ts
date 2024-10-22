@@ -14,7 +14,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.UM
     const Landing = new LandingPage(page);
     const Startseite = new StartPage(page);
     const Login = new LoginPage(page);
-    const Header = new HeaderPage(page);
+    const header = new HeaderPage(page);
 
     await test.step(`Annmelden mit Benutzer ${USER}`, async () => {
       await page.goto(FRONTEND_URL);
@@ -24,7 +24,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.UM
     })
     
     await test.step(`Abmelden Benutzer ${USER}`, async () => {
-      await Header.button_logout.click(); 
+      await header.button_logout.click(); 
       await expect(Landing.text_Willkommen).toBeEnabled();
     })
   })

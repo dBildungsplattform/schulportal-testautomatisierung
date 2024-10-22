@@ -26,8 +26,8 @@ test.describe(`Testfälle für die Hauptmenue-Leiste: Umgebung: ${process.env.UM
 
   test.afterEach(async ({ page }) => {
     await test.step(`Abmelden`, async () => {
-      const Header = new HeaderPage(page);
-      await Header.button_logout.click();
+      const header = new HeaderPage(page);
+      await header.button_logout.click();
     });
   });
 

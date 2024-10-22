@@ -35,13 +35,13 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
   });
 
   test.afterEach(async ({ page }) => {
-    const Header = new HeaderPage(page);
+    const header = new HeaderPage(page);
     const Landing = new LandingPage(page);
     const Login = new LoginPage(page);
 
     await test.step(`Testdaten löschen via API`, async () => {
       if (username) { // nur wenn der Testfall auch mind. einen Benutzer angelegt hat
-        await Header.logout();
+        await header.logout();
         await Landing.button_Anmelden.click();
         await Login.login(ADMIN, PW);
         const Startseite = new StartPage(page);
@@ -59,14 +59,14 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
     });
 
     await test.step(`Abmelden`, async () => {
-      const Header = new HeaderPage(page);
-      await Header.logout();
+      const header = new HeaderPage(page);
+      await header.logout();
     });
   });
 
   test("Das eigene Profil öffnen und auf Vollständigkeit prüfen als Landesadmin", {tag: [LONG, STAGE]}, async ({ page }) => {
     const ProfileView = new ProfilePage(page);
-    const Header = new HeaderPage(page);
+    const header = new HeaderPage(page);
     const Login = new LoginPage(page);
 
     const Vorname = "TAuto-PW-V-" + faker.person.firstName();
@@ -89,14 +89,14 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       await addSystemrechtToRolle(page, userInfo.rolleId, 'KLASSEN_VERWALTEN');
       await addSystemrechtToRolle(page, userInfo.rolleId, 'SCHULTRAEGER_VERWALTEN');
 
-      await Header.logout();
-      await Header.button_login.click();
+      await header.logout();
+      await header.button_login.click();
       await Login.login(userInfo.username, userInfo.password);
       await Login.UpdatePW();
     });
 
     await test.step(`Profil öffnen`, async () => {
-      await Header.button_profil.click();
+      await header.button_profil.click();
     });
 
     await test.step(`Profil auf Vollständigkeit prüfen`, async () => {
@@ -131,7 +131,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
   test("Das eigene Profil öffnen und auf Vollständigkeit prüfen als Lehrer mit einer Schulzuordnung", {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
     const ProfileView = new ProfilePage(page);
-    const Header = new HeaderPage(page);
+    const header = new HeaderPage(page);
     const Login = new LoginPage(page);
 
     const Vorname = "TAuto-PW-V-" + faker.person.firstName();
@@ -147,14 +147,14 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       roleId.push(userInfo.rolleId);
       username.push(userInfo.username);
 
-      await Header.logout();
-      await Header.button_login.click();
+      await header.logout();
+      await header.button_login.click();
       await Login.login(userInfo.username, userInfo.password);
       await Login.UpdatePW();
     });
 
     await test.step(`Profil öffnen`, async () => {
-      await Header.button_profil.click();
+      await header.button_profil.click();
     });
 
     await test.step(`Profil auf Vollständigkeit prüfen`, async () => {
@@ -188,7 +188,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
   test("Das eigene Profil öffnen und auf Vollständigkeit prüfen als Schüler mit einer Schulzuordnung", {tag: [LONG, STAGE]}, async ({ page }) => {
     const ProfileView = new ProfilePage(page);
-    const Header = new HeaderPage(page);
+    const header = new HeaderPage(page);
     const Login = new LoginPage(page);
 
     const Vorname = "TAuto-PW-V-" + faker.person.firstName();
@@ -204,14 +204,14 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       roleId.push(userInfo.rolleId);
       username.push(userInfo.username);
 
-      await Header.logout();
-      await Header.button_login.click();
+      await header.logout();
+      await header.button_login.click();
       await Login.login(userInfo.username, userInfo.password);
       await Login.UpdatePW();
     });
 
     await test.step(`Profil öffnen`, async () => {
-      await Header.button_profil.click();
+      await header.button_profil.click();
     });
 
     await test.step(`Profil auf Vollständigkeit prüfen`, async () => {
@@ -245,7 +245,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
   test("Das eigene Profil öffnen und auf Vollständigkeit prüfen als Schuladmin mit einer Schulzuordnung", {tag: [LONG, STAGE]}, async ({ page }) => {
     const ProfileView = new ProfilePage(page);
-    const Header = new HeaderPage(page);
+    const header = new HeaderPage(page);
     const Login = new LoginPage(page);
 
     const Vorname = "TAuto-PW-V-" + faker.person.firstName();
@@ -261,14 +261,14 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       roleId.push(userInfo.rolleId);
       username.push(userInfo.username);
 
-      await Header.logout();
-      await Header.button_login.click();
+      await header.logout();
+      await header.button_login.click();
       await Login.login(userInfo.username, userInfo.password);
       await Login.UpdatePW();
     });
 
     await test.step(`Profil öffnen`, async () => {
-      await Header.button_profil.click();
+      await header.button_profil.click();
     });
 
     await test.step(`Profil auf Vollständigkeit prüfen`, async () => {
@@ -302,7 +302,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
   test("Das eigene Profil öffnen und auf Vollständigkeit prüfen als Lehrkraft mit 2 Schulzuordnungen", {tag: [LONG, STAGE]}, async ({ page }) => {
     const ProfileView = new ProfilePage(page);
-    const Header = new HeaderPage(page);
+    const header = new HeaderPage(page);
     const Login = new LoginPage(page);
 
     let personId = '';
@@ -323,14 +323,14 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       username.push(userInfo.username);
 
       await addSecondOrganisationToPerson(page, personId, await getOrganisationId(page, Organisation1), await getOrganisationId(page, Organisation2), roleId[0]);
-      await Header.logout();
-      await Header.button_login.click();
+      await header.logout();
+      await header.button_login.click();
       await Login.login(userInfo.username, userInfo.password);
       await Login.UpdatePW();
     });
 
     await test.step(`Profil öffnen`, async () => {
-      await Header.button_profil.click();
+      await header.button_profil.click();
     });
 
     await test.step(`Profil auf Vollständigkeit prüfen`, async () => {

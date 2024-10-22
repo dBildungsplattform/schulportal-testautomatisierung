@@ -93,7 +93,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
     const Startseite = new StartPage(page);
     const PersonManagement = new PersonManagementViewPage(page);
     const PersonManagementDetail = new PersonDetailsViewPage(page);
-    const Header = new HeaderPage(page);
+    const header = new HeaderPage(page);
     const lastname = "AutoTester";
     const username = "autotester";
     let new_password = "";
@@ -121,7 +121,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
     });
 
     await test.step(`Login für Benutzer ${lastname} mit dem neuen PW`, async () => {
-      await Header.logout();
+      await header.logout();
       await Landing.button_Anmelden.click();
       await Login.login(username, new_password);
     });
