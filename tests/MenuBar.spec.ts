@@ -13,53 +13,53 @@ const FRONTEND_URL = process.env.FRONTEND_URL || '';
 test.describe(`Testfälle für die Hauptmenue-Leiste: Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }) => {
     await test.step(`Login`, async () => {
-      const Landing = new LandingPage(page);
-      const Startseite = new StartPage(page);
-      const Login = new LoginPage(page);
+      const landing = new LandingPage(page);
+      const startseite = new StartPage(page);
+      const login = new LoginPage(page);
 
       await page.goto(FRONTEND_URL);
-      await Landing.button_Anmelden.click();
-      await Login.login(ADMIN, PW);
-      await expect(Startseite.text_h2_Ueberschrift).toBeVisible();
+      await landing.button_Anmelden.click();
+      await login.login(ADMIN, PW);
+      await expect(startseite.text_h2_Ueberschrift).toBeVisible();
     });
   });
 
   test.afterEach(async ({ page }) => {
     await test.step(`Abmelden`, async () => {
-      const Header = new HeaderPage(page);
-      await Header.button_logout.click();
+      const header = new HeaderPage(page);
+      await header.button_logout.click();
     });
   });
 
   test('Test der Hauptmenue-Leiste und Untermenues auf Vollständigkeit', {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
-    const Startseite = new StartPage(page)
-    const MenuBar = new MenuPage(page);
+    const startseite = new StartPage(page)
+    const menuBar = new MenuPage(page);
 
     await test.step(`Pruefen der Hauptmenueleiste mit Untermenues`, async () => {
-      await Startseite.card_item_schulportal_administration.click();
-      await expect(MenuBar.header_label_Navigation).toBeVisible();
-      await expect(MenuBar.button_BackStartpage).toBeVisible();
-      await expect(MenuBar.label_Benutzerverwaltung).toBeVisible();
-      await expect(MenuBar.menueItem_AlleBenutzerAnzeigen).toBeVisible();
-      await expect(MenuBar.menueItem_BenutzerAnlegen).toBeVisible();
-      await expect(MenuBar.label_Klassenverwaltung).toBeVisible();
-      await expect(MenuBar.label_Rollenverwaltung).toBeVisible();
-      await expect(MenuBar.menueItem_AlleRollenAnzeigen).toBeVisible();
-      await expect(MenuBar.menueItem_RolleAnlegen).toBeVisible();
-      await expect(MenuBar.label_Schulverwaltung).toBeVisible();
-      await expect(MenuBar.label_Schultraegerverwaltung).toBeVisible();
+      await startseite.card_item_schulportal_administration.click();
+      await expect(menuBar.header_label_Navigation).toBeVisible();
+      await expect(menuBar.button_BackStartpage).toBeVisible();
+      await expect(menuBar.label_Benutzerverwaltung).toBeVisible();
+      await expect(menuBar.menueItem_AlleBenutzerAnzeigen).toBeVisible();
+      await expect(menuBar.menueItem_BenutzerAnlegen).toBeVisible();
+      await expect(menuBar.label_Klassenverwaltung).toBeVisible();
+      await expect(menuBar.label_Rollenverwaltung).toBeVisible();
+      await expect(menuBar.menueItem_AlleRollenAnzeigen).toBeVisible();
+      await expect(menuBar.menueItem_RolleAnlegen).toBeVisible();
+      await expect(menuBar.label_Schulverwaltung).toBeVisible();
+      await expect(menuBar.label_Schultraegerverwaltung).toBeVisible();
     })
   })
 
   test('Test der Funktion "Zurueck zur Startseite"', {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
-    const Startseite = new StartPage(page)
-    const MenuBar = new MenuPage(page);
+    const startseite = new StartPage(page)
+    const menuBar = new MenuPage(page);
 
     await test.step(`Menue-Eintrag zum Rücksprung auf die Startseite klicken`, async () => {
-      await Startseite.card_item_schulportal_administration.click();
-      await expect(MenuBar.header_label_Navigation).toBeVisible();
-      await MenuBar.button_BackStartpage.click();
-      await expect(Startseite.text_h2_Ueberschrift).toBeVisible();
+      await startseite.card_item_schulportal_administration.click();
+      await expect(menuBar.header_label_Navigation).toBeVisible();
+      await menuBar.button_BackStartpage.click();
+      await expect(startseite.text_h2_Ueberschrift).toBeVisible();
     })
   })
 })
