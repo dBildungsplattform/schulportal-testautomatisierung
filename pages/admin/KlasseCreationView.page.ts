@@ -24,7 +24,7 @@ export class KlasseCreationViewPage{
         this.button_Schliessen = page.getByTestId('close-layout-card-button');
         this.combobox_Schulstrukturknoten = page.getByTestId('schule-select').locator('.v-input__control'); 
         this.input_Klassenname = page.getByTestId('klassenname-input').locator('input');
-        this.button_KlasseAnlegen = page.getByTestId('klasse-form-create-button');
+        this.button_KlasseAnlegen = page.getByTestId('klasse-form-submit-button');
         // Bestätigungsseite Klasse
         this.text_success = page.getByTestId('klasse-success-text');
         this.icon_success = page.locator('.mdi-check-circle');
