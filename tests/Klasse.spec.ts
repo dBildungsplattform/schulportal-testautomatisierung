@@ -19,14 +19,14 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
   
   test.beforeEach(async ({ page }) => {
     await test.step(`Login`, async () => {
-      const Landing = new LandingPage(page);
-      const Startseite = new StartPage(page);
-      const Login = new LoginPage(page);
+      const landing = new LandingPage(page);
+      const startseite = new StartPage(page);
+      const login = new LoginPage(page);
 
       await page.goto(FRONTEND_URL);
-      await Landing.button_Anmelden.click();
-      await Login.login(ADMIN, PW);
-      await expect(Startseite.text_h2_Ueberschrift).toBeVisible();
+      await landing.button_Anmelden.click();
+      await login.login(ADMIN, PW);
+      await expect(startseite.text_h2_Ueberschrift).toBeVisible();
     });
   });
 
@@ -45,38 +45,38 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
   });
 
   test("Eine Klasse als Landesadmin anlegen und die Klasse anschließend in der Ergebnisliste suchen und dann löschen", {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
-    const Startseite = new StartPage(page);
-    const Menue = new MenuPage(page);
-    const KlasseCreationView = new KlasseCreationViewPage(page);
-    const KlasseManagementView = new KlasseManagementViewPage(page);
-    const SCHULNAME = "Testschule Schulportal";
-    const ZUFALLSNUMMER = faker.number.bigInt({ min: 1000, max: 9000 })
-    const KLASSENNAME = "TAuto-PW-K-12 " + faker.lorem.word({ length: { min: 10, max: 10 }}) + ZUFALLSNUMMER;
+    const startseite = new StartPage(page);
+    const menue = new MenuPage(page);
+    const klasseCreationView = new KlasseCreationViewPage(page);
+    const klasseManagementView = new KlasseManagementViewPage(page);
+    const schulname = "Testschule Schulportal";
+    const zufallsnummer = faker.number.bigInt({ min: 1000, max: 9000 })
+    const klassenname = "TAuto-PW-K-12 " + faker.lorem.word({ length: { min: 10, max: 10 }}) + zufallsnummer;
 
     await test.step(`Dialog Schule anlegen öffnen`, async () => {
-      await Startseite.card_item_schulportal_administration.click();
-      await Menue.menueItem_KlasseAnlegen.click();
-      await expect(KlasseCreationView.text_h2_KlasseAnlegen).toHaveText("Neue Klasse hinzufügen");
+      await startseite.card_item_schulportal_administration.click();
+      await menue.menueItem_KlasseAnlegen.click();
+      await expect(klasseCreationView.text_h2_KlasseAnlegen).toHaveText("Neue Klasse hinzufügen");
     });
 
     await test.step(`Klasse anlegen`, async () => {
-      await KlasseCreationView.combobox_Schulstrukturknoten.click();
-      await page.getByText(SCHULNAME).click();
-      await KlasseCreationView.input_Klassenname.fill(KLASSENNAME);
-      await KlasseCreationView.button_KlasseAnlegen.click();
-      await expect(KlasseCreationView.text_success).toBeVisible();
+      await klasseCreationView.combobox_Schulstrukturknoten.click();
+      await page.getByText(schulname).click();
+      await klasseCreationView.input_Klassenname.fill(klassenname);
+      await klasseCreationView.button_KlasseAnlegen.click();
+      await expect(klasseCreationView.text_success).toBeVisible();
     });
 
     await test.step(`In der Ergebnisliste prüfen, dass die neue Klasse angezeigt wird`, async () => {
-      await Menue.menueItem_AlleKlassenAnzeigen.click(); 
-      await KlasseManagementView.combobox_Filter_Schule.fill(SCHULNAME);
-      await page.getByText(`${SCHULNAME}`, { exact: true }).click();
-      await KlasseManagementView.text_h2_Klassenverwaltung.click(); // dies schließt das Dropdown Klasse
-      await expect(page.getByRole('cell', { name: KLASSENNAME })).toBeVisible();
+      await menue.menueItem_AlleKlassenAnzeigen.click(); 
+      await klasseManagementView.combobox_Filter_Schule.fill(schulname);
+      await page.getByText(`${schulname}`, { exact: true }).click();
+      await klasseManagementView.text_h2_Klassenverwaltung.click(); // dies schließt das Dropdown Klasse
+      await expect(page.getByRole('cell', { name: klassenname })).toBeVisible();
     });
 
     await test.step(`Klasse löschen`, async () => {
-      await page.getByRole('cell', { name: KLASSENNAME }).click();
+      await page.getByRole('cell', { name: klassenname }).click();
       await page.getByTestId('open-klasse-delete-dialog-button').click();
       await page.getByTestId('klasse-delete-button').click();
       await page.getByTestId('close-klasse-delete-success-dialog-button').click();
@@ -84,19 +84,19 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
   });
 
   test("Ergebnisliste Klassen als Landesadmin auf Vollständigkeit prüfen", {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
-    const Startseite = new StartPage(page);
-    const Menue = new MenuPage(page);
-    const KlasseManagementView = new KlasseManagementViewPage(page);
+    const startseite = new StartPage(page);
+    const menue = new MenuPage(page);
+    const klasseManagementView = new KlasseManagementViewPage(page);
 
     await test.step(`Klassenverwaltung öffnen und Alle Elemente in der Ergebnisliste auf Existenz prüfen`, async () => {
-      await Startseite.card_item_schulportal_administration.click();
-      await Menue.menueItem_AlleKlassenAnzeigen.click();
-      await expect(KlasseManagementView.text_h1_Administrationsbereich).toBeVisible();
-      await expect(KlasseManagementView.text_h2_Klassenverwaltung).toHaveText("Klassenverwaltung");
-      await expect(KlasseManagementView.combobox_Filter_Schule).toBeVisible();
-      await expect(KlasseManagementView.combobox_Filter_Klasse).toBeVisible();
-      await expect(KlasseManagementView.table_header_Dienststellennummer).toBeVisible();
-      await expect(KlasseManagementView.table_header_Klassenname).toBeVisible();
+      await startseite.card_item_schulportal_administration.click();
+      await menue.menueItem_AlleKlassenAnzeigen.click();
+      await expect(klasseManagementView.text_h1_Administrationsbereich).toBeVisible();
+      await expect(klasseManagementView.text_h2_Klassenverwaltung).toHaveText("Klassenverwaltung");
+      await expect(klasseManagementView.combobox_Filter_Schule).toBeVisible();
+      await expect(klasseManagementView.combobox_Filter_Klasse).toBeVisible();
+      await expect(klasseManagementView.table_header_Dienststellennummer).toBeVisible();
+      await expect(klasseManagementView.table_header_Klassenname).toBeVisible();
     });
   });
 

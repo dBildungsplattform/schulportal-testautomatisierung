@@ -25,40 +25,40 @@ let roleId: string[] = []; // Im afterEchh Block werden alle Testdaten gelöscht
 test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }) => {
     await test.step(`Login`, async () => {
-      const Landing = new LandingPage(page);
-      const Startseite = new StartPage(page);
-      const Login = new LoginPage(page);
+      const landing = new LandingPage(page);
+      const startseite = new StartPage(page);
+      const login = new LoginPage(page);
 
       await page.goto(FRONTEND_URL);
-      await Landing.button_Anmelden.click();
-      await Login.login(ADMIN, PW);
-      await expect(Startseite.text_h2_Ueberschrift).toBeVisible();
+      await landing.button_Anmelden.click();
+      await login.login(ADMIN, PW);
+      await expect(startseite.text_h2_Ueberschrift).toBeVisible();
     });
   });
 
   test.afterEach(async ({ page }) => {
     const header = new HeaderPage(page);
-    const Landing = new LandingPage(page);
-    const Login = new LoginPage(page);
+    const landing = new LandingPage(page);
+    const login = new LoginPage(page);
 
     await test.step(`Testdaten löschen via API`, async () => {
       if (personId) { // nur wenn der Testfall auch mind. einen Benutzer angelegt hat
-        const Startseite = new StartPage(page);
+        const startseite = new StartPage(page);
         await header.logout();
-        await Landing.button_Anmelden.click();
-        await Login.login(ADMIN, PW);
-        await expect(Startseite.text_h2_Ueberschrift).toBeVisible();
+        await landing.button_Anmelden.click();
+        await login.login(ADMIN, PW);
+        await expect(startseite.text_h2_Ueberschrift).toBeVisible();
         
         await deletePersonById(personId, page);
         personId = [];
       }
   
       if (roleId) { // nur wenn der Testfall auch mind. eine Rolle angelegt hat
-        const Startseite = new StartPage(page);
+        const startseite = new StartPage(page);
         await header.logout();
-        await Landing.button_Anmelden.click();
-        await Login.login(ADMIN, PW);
-        await expect(Startseite.text_h2_Ueberschrift).toBeVisible();
+        await landing.button_Anmelden.click();
+        await login.login(ADMIN, PW);
+        await expect(startseite.text_h2_Ueberschrift).toBeVisible();
         
         await deleteRoleById(roleId, page);
         roleId = [];
@@ -72,82 +72,82 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
   });
 
   test("2 Schulen nacheinander anlegen als Landesadmin", {tag: [LONG]}, async ({ page }) => {
-    const Startseite = new StartPage(page);
-    const SchuleManagementView = new SchuleManagementViewPage(page);
-    const FooterDataTable = new FooterDataTablePage(page);
+    const startseite = new StartPage(page);
+    const schuleManagementView = new SchuleManagementViewPage(page);
+    const footerDataTable = new FooterDataTablePage(page);
 
     // Schulen können noch nicht gelöscht werden. Um doppelte Namen zu vermeiden, wird am dem Schulnamen eine Zufallszahl angehängt
-    const ZUFALLSNUMMER = faker.number.bigInt({ min: 1000, max: 9000 })
-    const SCHULNAME1 = "TAuto-PW-S1-" + faker.lorem.word({ length: { min: 8, max: 12 }}) + ZUFALLSNUMMER;
-    const SCHULNAME2 = "TAuto-PW-S2-" + faker.lorem.word({ length: { min: 8, max: 12 }}) + ZUFALLSNUMMER;
-    const DIENSTSTELLENNUMMER1 = "0" + faker.number.bigInt({ min: 10000000, max: 100000000 });
-    const DIENSTSTELLENNUMMER2 = "0" + faker.number.bigInt({ min: 10000000, max: 100000000 });
+    const zufallsNr = faker.number.bigInt({ min: 1000, max: 9000 })
+    const schulname1 = "TAuto-PW-S1-" + faker.lorem.word({ length: { min: 8, max: 12 }}) + zufallsNr;
+    const schulname2 = "TAuto-PW-S2-" + faker.lorem.word({ length: { min: 8, max: 12 }}) + zufallsNr;
+    const dienststellenNr1 = "0" + faker.number.bigInt({ min: 10000000, max: 100000000 });
+    const dienststellenNr2 = "0" + faker.number.bigInt({ min: 10000000, max: 100000000 });
 
-    const { Menue, SchuleCreationView }: { Menue: MenuPage; SchuleCreationView: SchuleCreationViewPage } =
-      await test.step(`Dialog Schule anlegen öffnen`, async (): Promise<{ Menue: MenuPage; SchuleCreationView: SchuleCreationViewPage }> => {
-        const Menue: MenuPage = await Startseite.administration();
-        const SchuleCreationView: SchuleCreationViewPage = await Menue.schuleAnlegen();
-        await Menue.menueItem_SchuleAnlegen.click();
-        await expect(SchuleCreationView.text_h2_SchuleAnlegen).toHaveText("Neue Schule hinzufügen");
-        return {Menue, SchuleCreationView};
+    const { menue, schuleCreationView }: { menue: MenuPage; schuleCreationView: SchuleCreationViewPage } =
+      await test.step(`Dialog Schule anlegen öffnen`, async (): Promise<{ menue: MenuPage; schuleCreationView: SchuleCreationViewPage }> => {
+        const menue: MenuPage = await startseite.administration();
+        const schuleCreationView: SchuleCreationViewPage = await menue.schuleAnlegen();
+        await menue.menueItem_SchuleAnlegen.click();
+        await expect(schuleCreationView.text_h2_SchuleAnlegen).toHaveText("Neue Schule hinzufügen");
+        return {menue, schuleCreationView};
     });
 
     await test.step(`Erste Schule anlegen`, async () => {
-      await SchuleCreationView.radio_button_Public_Schule.click();
+      await schuleCreationView.radio_button_Public_Schule.click();
 
-      await SchuleCreationView.input_Dienststellennummer.fill(DIENSTSTELLENNUMMER1);
-      await SchuleCreationView.input_Schulname.fill(SCHULNAME1);
-      await SchuleCreationView.button_SchuleAnlegen.click();
-      await expect(SchuleCreationView.text_success).toBeVisible();
+      await schuleCreationView.input_Dienststellennummer.fill(dienststellenNr1);
+      await schuleCreationView.input_Schulname.fill(schulname1);
+      await schuleCreationView.button_SchuleAnlegen.click();
+      await expect(schuleCreationView.text_success).toBeVisible();
     });
 
     await test.step(`Zweite Schule anlegen`, async () => {
-      await SchuleCreationView.button_WeitereSchuleAnlegen.click();
-      await SchuleCreationView.radio_button_Public_Schule.click();
+      await schuleCreationView.button_WeitereSchuleAnlegen.click();
+      await schuleCreationView.radio_button_Public_Schule.click();
 
-      await SchuleCreationView.input_Dienststellennummer.click();
-      await SchuleCreationView.input_Dienststellennummer.fill(DIENSTSTELLENNUMMER2);
+      await schuleCreationView.input_Dienststellennummer.click();
+      await schuleCreationView.input_Dienststellennummer.fill(dienststellenNr2);
 
-      await SchuleCreationView.input_Schulname.fill(SCHULNAME2);
-      await SchuleCreationView.button_SchuleAnlegen.click();
-      await expect(SchuleCreationView.text_success).toBeVisible();
+      await schuleCreationView.input_Schulname.fill(schulname2);
+      await schuleCreationView.button_SchuleAnlegen.click();
+      await expect(schuleCreationView.text_success).toBeVisible();
     });
 
     await test.step(`In der Ergebnisliste prüfen, dass die beiden neuen Schulen angezeigt werden`, async () => {
-      await Menue.menueItem_AlleSchulenAnzeigen.click();
-      await FooterDataTable.combobox_AnzahlEintraege.click();
+      await menue.menueItem_AlleSchulenAnzeigen.click();
+      await footerDataTable.combobox_AnzahlEintraege.click();
       await page.getByText('300', { exact: true }).click();
-      await expect(SchuleManagementView.text_h2_Schulverwaltung).toHaveText("Schulverwaltung");
-      await expect(page.getByRole("cell", { name: SCHULNAME1 })).toBeVisible();
-      await expect(page.getByRole("cell", { name: SCHULNAME2 })).toBeVisible();
+      await expect(schuleManagementView.text_h2_Schulverwaltung).toHaveText("Schulverwaltung");
+      await expect(page.getByRole("cell", { name: schulname1 })).toBeVisible();
+      await expect(page.getByRole("cell", { name: schulname2 })).toBeVisible();
     });
   });
 
   test("Ergebnisliste Schulen auf Vollständigkeit prüfen als Landesadmin", {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
-    const Startseite = new StartPage(page);
+    const startseite = new StartPage(page);
 
     await test.step(`Schulverwaltung öffnen und Alle Elemente in der Ergebnisliste auf Existenz prüfen`, async () => {
-      const Menue: MenuPage = await Startseite.administration();
-      const SchuleManagementView: SchuleManagementViewPage = await Menue.alleSchulenAnzeigen();
-      await expect(SchuleManagementView.text_h1_Administrationsbereich).toBeVisible();
-      await expect(SchuleManagementView.text_h2_Schulverwaltung).toBeVisible();
-      await expect(SchuleManagementView.text_h2_Schulverwaltung).toHaveText("Schulverwaltung");
-      await expect(SchuleManagementView.table_header_Dienststellennummer).toBeVisible();
-      await expect(SchuleManagementView.table_header_Schulname).toBeVisible();
+      const menue: MenuPage = await startseite.administration();
+      const schuleManagementView: SchuleManagementViewPage = await menue.alleSchulenAnzeigen();
+      await expect(schuleManagementView.text_h1_Administrationsbereich).toBeVisible();
+      await expect(schuleManagementView.text_h2_Schulverwaltung).toBeVisible();
+      await expect(schuleManagementView.text_h2_Schulverwaltung).toHaveText("Schulverwaltung");
+      await expect(schuleManagementView.table_header_Dienststellennummer).toBeVisible();
+      await expect(schuleManagementView.table_header_Schulname).toBeVisible();
     });
   });
 
   test("Eine Schule anlegen als Schuladmin und die Bestätigungsseite vollständig prüfen", {tag: [LONG, SHORT]}, async ({ page }) => {
 
     // Schulen können noch nicht gelöscht werden. Um doppelte Namen zu vermeiden, wird am dem Schulnamen eine Zufallszahl angehängt
-    const ZUFALLSNUMMER = faker.number.bigInt({ min: 1000, max: 9000 });
-    const SCHULNAME = "TAuto-PW-S1-" + faker.lorem.word({ length: { min: 8, max: 12 }}) + ZUFALLSNUMMER;
-    const DIENSTSTELLENNUMMER = "0" + faker.number.bigInt({ min: 10000000, max: 100000000 });
-    const Landing = new LandingPage(page);
+    const zufallsNr = faker.number.bigInt({ min: 1000, max: 9000 });
+    const schulname = "TAuto-PW-S1-" + faker.lorem.word({ length: { min: 8, max: 12 }}) + zufallsNr;
+    const dienststellenNr = "0" + faker.number.bigInt({ min: 10000000, max: 100000000 });
+    const landing = new LandingPage(page);
     const header = new HeaderPage(page);
     let userInfo: UserInfo;
 
-    const Startseite: StartPage = await test.step(`Testdaten: Schuladmin anlegen und mit diesem anmelden`, async () => {
+    const startseite: StartPage = await test.step(`Testdaten: Schuladmin anlegen und mit diesem anmelden`, async () => {
       const idSP = await getSPId(page, 'Schulportal-Administration');
       userInfo = await createPersonWithUserContext(page, 'Testschule Schulportal', 'LEIT', 'TAuto-PW-B-MeierLEIT', 'TAuto-PW-B-Hans', idSP, 'TAuto-PW-R-RolleLEIT');
       personId.push(userInfo.personId); 
@@ -155,43 +155,43 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
       await addSystemrechtToRolle(page, userInfo.rolleId, 'SCHULEN_VERWALTEN');
 
       await header.logout();
-      const Login = await Landing.login();
-      const Startseite = await Login.login(userInfo.username, userInfo.password);
-      userInfo.password = await Login.UpdatePW();
-      await expect(Startseite.text_h2_Ueberschrift).toBeVisible();
-      return Startseite
+      const login = await landing.login();
+      const startseite = await login.login(userInfo.username, userInfo.password);
+      userInfo.password = await login.UpdatePW();
+      await expect(startseite.text_h2_Ueberschrift).toBeVisible();
+      return startseite
     });
 
-    const SchuleCreationView = await test.step(`Dialog Schule anlegen öffnen als Schuladmin`, async () => {
-      const Menue: MenuPage = await Startseite.administration();
-        const SchuleCreationView: SchuleCreationViewPage = await Menue.schuleAnlegen();
-        return SchuleCreationView;
+    const schuleCreationView = await test.step(`Dialog Schule anlegen öffnen als Schuladmin`, async () => {
+      const menue: MenuPage = await startseite.administration();
+        const schuleCreationView: SchuleCreationViewPage = await menue.schuleAnlegen();
+        return schuleCreationView;
     });
 
     const schultraeger = await test.step(`Schule anlegen`, async () => {
-      const schultraeger = await SchuleCreationView.radio_button_Public_Schule.innerText();
-      await SchuleCreationView.radio_button_Public_Schule.click();
-      await SchuleCreationView.input_Dienststellennummer.fill(DIENSTSTELLENNUMMER);
-      await SchuleCreationView.input_Schulname.fill(SCHULNAME);
-      await SchuleCreationView.button_SchuleAnlegen.click();
+      const schultraeger = await schuleCreationView.radio_button_Public_Schule.innerText();
+      await schuleCreationView.radio_button_Public_Schule.click();
+      await schuleCreationView.input_Dienststellennummer.fill(dienststellenNr);
+      await schuleCreationView.input_Schulname.fill(schulname);
+      await schuleCreationView.button_SchuleAnlegen.click();
       return schultraeger;
     });
 
     await test.step(`Bestätigungsseite prüfen`, async () => {
-      await expect(SchuleCreationView.text_success).toBeVisible();
-      await expect(SchuleCreationView.text_h2_SchuleAnlegen).toHaveText('Neue Schule hinzufügen');
-      await expect(SchuleCreationView.button_Schliessen).toBeVisible();
-      await expect(SchuleCreationView.text_success).toBeVisible();
-      await expect(SchuleCreationView.icon_success).toBeVisible();
-      await expect(SchuleCreationView.text_DatenGespeichert).toHaveText('Folgende Daten wurden gespeichert:');
-      await expect(SchuleCreationView.label_Schulform).toHaveText('Schulform:');
-      await expect(SchuleCreationView.data_Schulform).toContainText(schultraeger);
-      await expect(SchuleCreationView.label_Dienststellennummer).toHaveText('Dienststellennummer:');
-      await expect(SchuleCreationView.data_Dienststellennummer).toHaveText(DIENSTSTELLENNUMMER);
-      await expect(SchuleCreationView.label_Schulname).toHaveText('Schulname:');
-      await expect(SchuleCreationView.data_Schulname).toHaveText(SCHULNAME);
-      await expect(SchuleCreationView.button_WeitereSchuleAnlegen).toBeVisible();
-      await expect(SchuleCreationView.button_ZurueckErgebnisliste).toBeVisible();
+      await expect(schuleCreationView.text_success).toBeVisible();
+      await expect(schuleCreationView.text_h2_SchuleAnlegen).toHaveText('Neue Schule hinzufügen');
+      await expect(schuleCreationView.button_Schliessen).toBeVisible();
+      await expect(schuleCreationView.text_success).toBeVisible();
+      await expect(schuleCreationView.icon_success).toBeVisible();
+      await expect(schuleCreationView.text_DatenGespeichert).toHaveText('Folgende Daten wurden gespeichert:');
+      await expect(schuleCreationView.label_Schulform).toHaveText('Schulform:');
+      await expect(schuleCreationView.data_Schulform).toContainText(schultraeger);
+      await expect(schuleCreationView.label_Dienststellennummer).toHaveText('Dienststellennummer:');
+      await expect(schuleCreationView.data_Dienststellennummer).toHaveText(dienststellenNr);
+      await expect(schuleCreationView.label_Schulname).toHaveText('Schulname:');
+      await expect(schuleCreationView.data_Schulname).toHaveText(schulname);
+      await expect(schuleCreationView.button_WeitereSchuleAnlegen).toBeVisible();
+      await expect(schuleCreationView.button_ZurueckErgebnisliste).toBeVisible();
     });
   });
 });

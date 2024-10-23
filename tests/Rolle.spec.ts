@@ -46,23 +46,23 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
   test("2 Rollen nacheinander anlegen mit Rollenarten LERN und LEHR als Landesadmin", {tag: [LONG, SHORT, STAGE]}, async ({
     page,
   }) => {
-    const ZUFALLSNUMMER = faker.number.bigInt({ min: 1000, max: 9000 });
-    const ROLLENNAME1 =
+    const zufallsnummer = faker.number.bigInt({ min: 1000, max: 9000 });
+    const rollenname1 =
       "TAuto-PW-R1-" +
       faker.lorem.word({ length: { min: 8, max: 12 } }) +
-      ZUFALLSNUMMER;
-    const ROLLENNAME2 =
+      zufallsnummer;
+    const rollenname2 =
       "TAuto-PW-R2-" +
       faker.lorem.word({ length: { min: 8, max: 12 } }) +
-      ZUFALLSNUMMER;
-    const SCHULSTRUKTURKNOTEN1 = "Land Schleswig-Holstein";
-    const SCHULSTRUKTURKNOTEN2 = "0703754 (Amalie-Sieveking-Schule)";
-    const ROLLENART1 = "Lern";
-    const ROLLENART2 = "Lehr";
-    const Merkmal2 = "KoPers.-Nr. ist Pflichtangabe";
-    const Angebot1 = "itslearning";
-    const AngebotA2 = "E-Mail";
-    const AngebotB2 = "Kalender";
+      zufallsnummer;
+    const schulstrukturknoten1 = "Land Schleswig-Holstein";
+    const schulstrukturknoten2 = "0703754 (Amalie-Sieveking-Schule)";
+    const rollenart1 = "Lern";
+    const rollenart2 = "Lehr";
+    const merkmal2 = "KoPers.-Nr. ist Pflichtangabe";
+    const angebot1 = "itslearning";
+    const angebotA2 = "E-Mail";
+    const angebotB2 = "Kalender";
 
     const rolleCreationView =
       await test.step(`Dialog Rolle anlegen öffnen`, async () => {
@@ -77,37 +77,37 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
 
     await test.step(`Erste Rolle anlegen`, async () => {
       await rolleCreationView.schulstrukturknoten.selectByTitle(
-        SCHULSTRUKTURKNOTEN1,
+        schulstrukturknoten1,
       );
-      await rolleCreationView.rollenarten.selectByTitle(ROLLENART1);
-      await rolleCreationView.enterRollenname(ROLLENNAME1);
-      await rolleCreationView.angebote.selectByTitle(Angebot1);
+      await rolleCreationView.rollenarten.selectByTitle(rollenart1);
+      await rolleCreationView.enterRollenname(rollenname1);
+      await rolleCreationView.angebote.selectByTitle(angebot1);
       await rolleCreationView.button_RolleAnlegen.click();
       await expect(rolleCreationView.text_success).toBeVisible();
-      await expect(rolleCreationView.data_Administrationsebene).toHaveText(SCHULSTRUKTURKNOTEN1);
+      await expect(rolleCreationView.data_Administrationsebene).toHaveText(schulstrukturknoten1);
       await expect(rolleCreationView.icon_success).toBeVisible();
-      await expect(rolleCreationView.data_Angebote).toHaveText(Angebot1);
-      rolleName.push(ROLLENNAME1);
+      await expect(rolleCreationView.data_Angebote).toHaveText(angebot1);
+      rolleName.push(rollenname1);
     });
 
     await test.step(`Zweite Rolle anlegen`, async () => {
       await rolleCreationView.button_WeitereRolleAnlegen.click();
 
       await rolleCreationView.schulstrukturknoten.selectByTitle(
-        SCHULSTRUKTURKNOTEN2,
+        schulstrukturknoten2,
       );
-      await rolleCreationView.rollenarten.selectByTitle(ROLLENART2);
-      await rolleCreationView.enterRollenname(ROLLENNAME2);
-      await rolleCreationView.merkmale.selectByTitle(Merkmal2);
-      await rolleCreationView.angebote.selectByTitle(AngebotA2);
-      await rolleCreationView.angebote.selectByTitle(AngebotB2);
+      await rolleCreationView.rollenarten.selectByTitle(rollenart2);
+      await rolleCreationView.enterRollenname(rollenname2);
+      await rolleCreationView.merkmale.selectByTitle(merkmal2);
+      await rolleCreationView.angebote.selectByTitle(angebotA2);
+      await rolleCreationView.angebote.selectByTitle(angebotB2);
       await rolleCreationView.button_RolleAnlegen.click();
       await expect(rolleCreationView.text_success).toBeVisible();
-      await expect(rolleCreationView.data_Administrationsebene).toHaveText(SCHULSTRUKTURKNOTEN2);
+      await expect(rolleCreationView.data_Administrationsebene).toHaveText(schulstrukturknoten2);
       await expect(rolleCreationView.icon_success).toBeVisible();
-      await expect(rolleCreationView.data_Angebote).toContainText(AngebotA2);
-      await expect(rolleCreationView.data_Angebote).toContainText(AngebotB2);
-      rolleName.push(ROLLENNAME2);
+      await expect(rolleCreationView.data_Angebote).toContainText(angebotA2);
+      await expect(rolleCreationView.data_Angebote).toContainText(angebotB2);
+      rolleName.push(rollenname2);
     });
 
     await test.step(`In der Ergebnisliste prüfen dass die beiden neuen Rollen angezeigt sind`, async () => {
@@ -117,8 +117,8 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
       await expect(rolleManagementView.text_h2_Rollenverwaltung).toHaveText(
         "Rollenverwaltung",
       );
-      await expect(page.getByRole("cell", { name: ROLLENNAME1 })).toBeVisible();
-      await expect(page.getByRole("cell", { name: ROLLENNAME2 })).toBeVisible();
+      await expect(page.getByRole("cell", { name: rollenname1 })).toBeVisible();
+      await expect(page.getByRole("cell", { name: rollenname2 })).toBeVisible();
     });
   });
 
@@ -140,19 +140,19 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
   });
 
   test("Eine Rolle anlegen und die Bestätigungsseite vollständig prüfen als Landesadmin", {tag: [LONG, SHORT, STAGE]}, async ( ) => {
-    const ROLLENNAME =
+    const rollenname =
       "TAuto-PW-R-" + faker.lorem.word({ length: { min: 8, max: 12 } });
     const DIENSTSTELLENNUMMER = "1111111";
-    const SCHULSTRUKTURKNOTEN =
+    const schulstrukturknoten =
       DIENSTSTELLENNUMMER + " (Testschule Schulportal)";
-    const ROLLENART = "Leit";
-    const Merkmal = "KoPers.-Nr. ist Pflichtangabe";
-    const AngebotA = "E-Mail";
-    const AngebotB = "Schulportal-Administration";
-    const AngebotC = "Kalender";
-    const SystemrechtA = "Darf Benutzer verwalten";
-    const SystemrechtB = "Darf Schulen verwalten";
-    const SystemrechtC = "Darf Klassen verwalten";
+    const rollenart = "Leit";
+    const merkmal = "KoPers.-Nr. ist Pflichtangabe";
+    const angebotA = "E-Mail";
+    const angebotB = "Schulportal-Administration";
+    const angebotC = "Kalender";
+    const systemrechtA = "Darf Benutzer verwalten";
+    const systemrechtB = "Darf Schulen verwalten";
+    const systemrechtC = "Darf Klassen verwalten";
 
     const rolleCreationView =
       await test.step(`Dialog Rolle anlegen öffnen`, async () => {
@@ -164,18 +164,18 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     const rolleCreationConfirmPage: RolleCreationConfirmPage =
       await test.step(`Rolle anlegen`, async () => {
         await rolleCreationView.schulstrukturknoten.selectByTitle(
-          SCHULSTRUKTURKNOTEN,
+          schulstrukturknoten,
         );
-        await rolleCreationView.rollenarten.selectByTitle(ROLLENART);
-        await rolleCreationView.enterRollenname(ROLLENNAME);
-        await rolleCreationView.merkmale.selectByTitle(Merkmal);
-        await rolleCreationView.angebote.selectByTitle(AngebotA);
-        await rolleCreationView.angebote.selectByTitle(AngebotB);
-        await rolleCreationView.angebote.selectByTitle(AngebotC);
+        await rolleCreationView.rollenarten.selectByTitle(rollenart);
+        await rolleCreationView.enterRollenname(rollenname);
+        await rolleCreationView.merkmale.selectByTitle(merkmal);
+        await rolleCreationView.angebote.selectByTitle(angebotA);
+        await rolleCreationView.angebote.selectByTitle(angebotB);
+        await rolleCreationView.angebote.selectByTitle(angebotC);
 
-        await rolleCreationView.systemrechte.selectByTitle(SystemrechtA);
-        await rolleCreationView.systemrechte.selectByTitle(SystemrechtB);
-        await rolleCreationView.systemrechte.selectByTitle(SystemrechtC);
+        await rolleCreationView.systemrechte.selectByTitle(systemrechtA);
+        await rolleCreationView.systemrechte.selectByTitle(systemrechtB);
+        await rolleCreationView.systemrechte.selectByTitle(systemrechtC);
 
         return await rolleCreationView.createRolle();
       });
@@ -186,7 +186,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
       );
       await expect(rolleCreationConfirmPage.button_Schliessen).toBeVisible();
       await expect(rolleCreationConfirmPage.text_success).toBeVisible();
-      rolleName.push(ROLLENNAME);
+      rolleName.push(rollenname);
       await expect(rolleCreationConfirmPage.text_DatenGespeichert).toHaveText(
         "Folgende Daten wurden gespeichert:",
       );
@@ -195,40 +195,40 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
       ).toHaveText("Administrationsebene:");
       await expect(
         rolleCreationConfirmPage.data_Administrationsebene,
-      ).toHaveText(SCHULSTRUKTURKNOTEN);
+      ).toHaveText(schulstrukturknoten);
       await expect(rolleCreationConfirmPage.label_Rollenart).toHaveText(
         "Rollenart:",
       );
       await expect(rolleCreationConfirmPage.data_Rollenart).toHaveText(
-        ROLLENART,
+        rollenart,
       );
       await expect(rolleCreationConfirmPage.label_Rollenname).toHaveText(
         "Rollenname:",
       );
       await expect(rolleCreationConfirmPage.data_Rollenname).toHaveText(
-        ROLLENNAME,
+        rollenname,
       );
       await expect(rolleCreationConfirmPage.label_Merkmale).toHaveText(
         "Merkmale:",
       );
-      await expect(rolleCreationConfirmPage.data_Merkmale).toHaveText(Merkmal);
+      await expect(rolleCreationConfirmPage.data_Merkmale).toHaveText(merkmal);
       await expect(rolleCreationConfirmPage.label_Angebote).toHaveText(
         "Zugeordnete Angebote:",
       );
       await expect(rolleCreationConfirmPage.data_Angebote).toContainText(
-        AngebotA,
+        angebotA,
       );
       await expect(rolleCreationConfirmPage.data_Angebote).toContainText(
-        AngebotB,
+        angebotB,
       );
       await expect(rolleCreationConfirmPage.data_Angebote).toContainText(
-        AngebotC,
+        angebotC,
       );
       await expect(rolleCreationConfirmPage.label_Systemrechte).toHaveText(
         "Systemrechte:",
       );
       await expect(rolleCreationConfirmPage.data_Systemrechte).toContainText(
-        SystemrechtA + ", " + SystemrechtB + ", " + SystemrechtC,
+        systemrechtA + ", " + systemrechtB + ", " + systemrechtC,
       );
       await expect(
         rolleCreationConfirmPage.button_WeitereRolleAnlegen,

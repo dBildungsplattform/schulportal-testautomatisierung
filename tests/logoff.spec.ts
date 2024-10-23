@@ -11,21 +11,21 @@ const FRONTEND_URL = process.env.FRONTEND_URL || '';
 
 test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test('Erfolgreicher Standard Logoff als Landesadmin', {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
-    const Landing = new LandingPage(page);
-    const Startseite = new StartPage(page);
-    const Login = new LoginPage(page);
+    const landing = new LandingPage(page);
+    const startseite = new StartPage(page);
+    const login = new LoginPage(page);
     const header = new HeaderPage(page);
 
     await test.step(`Annmelden mit Benutzer ${USER}`, async () => {
       await page.goto(FRONTEND_URL);
-      await Landing.button_Anmelden.click();
-      await Login.login(USER, PW); 
-      await expect(Startseite.text_h2_Ueberschrift).toBeVisible();
+      await landing.button_Anmelden.click();
+      await login.login(USER, PW); 
+      await expect(startseite.text_h2_Ueberschrift).toBeVisible();
     })
     
     await test.step(`Abmelden Benutzer ${USER}`, async () => {
       await header.button_logout.click(); 
-      await expect(Landing.text_Willkommen).toBeEnabled();
+      await expect(landing.text_Willkommen).toBeEnabled();
     })
   })
 })
