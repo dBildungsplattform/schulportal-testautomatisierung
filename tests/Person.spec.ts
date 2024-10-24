@@ -508,6 +508,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await addSystemrechtToRolle(page, userInfo.rolleId, 'SCHULEN_VERWALTEN');
       await addSystemrechtToRolle(page, userInfo.rolleId, 'KLASSEN_VERWALTEN');
       await addSystemrechtToRolle(page, userInfo.rolleId, 'SCHULTRAEGER_VERWALTEN');
+      await addSystemrechtToRolle(page, userInfo.rolleId, 'PERSONEN_ANLEGEN');
       // Benutzer wird im afterEach-Block gelöscht
       // gesteuert wird die Löschung über die Variable username
       username.push(userInfo.username);
