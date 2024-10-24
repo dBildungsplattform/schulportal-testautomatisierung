@@ -49,7 +49,7 @@ export class PersonCreationViewPage{
         this.Input_Kopersnr = page.getByTestId('kopersnr-input').locator('.v-field__input');
         this.combobox_Schulstrukturknoten = page.getByTestId('organisation-select').locator('.v-field__input');
         this.combobox_Klasse = page.getByTestId('klasse-select').locator('.v-field__input');
-        this.button_PersonAnlegen = page.getByTestId('person-creation-form-create-button');
+        this.button_PersonAnlegen = page.getByTestId('person-creation-form-submit-button');
         // Bestätigungsseite Klasse
         this.text_success = page.getByTestId('person-success-text');
         this.icon_success = page.locator('.mdi-check-circle');
