@@ -79,7 +79,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     const adminNachname = "TAuto-PW-N-" + faker.person.lastName();
     const adminRolle = "TAuto-PW-LEIT-" + faker.lorem.word({ length: { min: 8, max: 12 }});
     const adminRollenart = 'LEIT';
-    const adminOrganisation = 'Testschule Schulportal';
+    const adminOrganisation = 'Testschule-PW65';
     const adminIdSP = await getSPId(page, 'Schulportal-Administration');
     let userInfoAdmin: UserInfo;
 
@@ -87,7 +87,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     const lehrerNachname = "TAuto-PW-N-" + faker.person.lastName();
     const lehrerRolle = "TAuto-PW-LEHR-" + faker.lorem.word({ length: { min: 8, max: 12 }});
     const lehrerRollenart = 'LEHR';
-    const lehrerOrganisation = 'Testschule Schulportal';
+    const lehrerOrganisation = 'Testschule-PW65';
     const lehrerIdSP = await getSPId(page, 'E-Mail');
     let userInfoLehrer: UserInfo;
     let lehrerBeenutzername = '';
@@ -135,8 +135,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
 
     await test.step(`In der Gesamtübersicht die neue Schulzuordnung prüfen`, async () => {
-      await expect(page.getByTestId('person-details-card')).toContainText('1111111 (Testschule Schulportal): LiV (befristet bis');
-      await expect(page.getByTestId('person-details-card')).toContainText('1111111 (Testschule Schulportal): ' + lehrerRolle);
+      await expect(page.getByTestId('person-details-card')).toContainText('1111165 (Testschule-PW65): LiV (befristet bis');
+      await expect(page.getByTestId('person-details-card')).toContainText('1111165 (Testschule-PW65): ' + lehrerRolle);
     });
   })
 });
