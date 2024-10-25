@@ -656,16 +656,16 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
   });
 
-  test("Einen Benutzer über das FE löschen @long @short @stage", async ({page, }) => {
+  test("Einen Benutzer über das FE löschen", {tag: [LONG, SHORT, STAGE]}, async ({page, }) => {
     const personManagementView = new PersonManagementViewPage(page);
     const PersonDetailsView = new PersonDetailsViewPage(page);
+    const header = new HeaderPage(page);
 
     const vorname = "TAuto-PW-V-" + faker.person.firstName();
     const nachname = "TAuto-PW-N-" + faker.person.lastName();
     const rolle = "TAuto-PW-R-" + faker.lorem.word({ length: { min: 8, max: 12 }});
     const berechtigung = 'SYSADMIN';
     const idSP = await getSPId(page, 'Schulportal-Administration');
-    const header = new HeaderPage(page);
 
     await test.step(`Neuen Benutzer über die api anlegen`, async () => {
       await createPersonWithUserContext(page, 'Land Schleswig-Holstein', berechtigung, vorname, nachname, idSP, rolle);
