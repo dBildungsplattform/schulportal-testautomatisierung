@@ -170,7 +170,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       // Benutzer wird im afterEach-Block gelöscht
       // gesteuert wird die Löschung über die Variable username
       username.push(await personCreationView.data_Benutzername.innerText());
-      await expect(personCreationView.data_Rolle).toHaveText("Landesadmin");
+      await expect(personCreationView.data_Rolle).toHaveText(landesadminRolle);
     });
   });
 
