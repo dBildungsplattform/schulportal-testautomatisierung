@@ -2,22 +2,32 @@ import { Page, expect } from '@playwright/test';
 import { getOrganisationId } from "./testHelperOrganisation.page";
 import { createRolle, addSPToRolle } from "./testHelperRolle.page";
 import { UserInfo } from "./testHelper.page";
+import { HeaderPage } from '../../pages/Header.page';
+import { LoginPage } from '../../pages/LoginView.page';
+import { faker } from '@faker-js/faker';
+import { getSPId } from './testHelperServiceprovider.page';
+import { lehrkraftOeffentlichRolle } from '../roles';
 
 const FRONTEND_URL = process.env.FRONTEND_URL || "";
 
-export async function createPerson(page: Page, familienname: string, vorname: string, organisationId: string, rolleId: string): Promise<UserInfo> {
-    const response = await page.request.post(FRONTEND_URL + 'api/personenkontext-workflow/', {
+export async function createPerson(page: Page, familienname: string, vorname: string, organisationId: string, rolleId: string, koPersNr?: string): Promise<UserInfo> {
+    const requestData = {
         data: {
-            "familienname": familienname,
-            "vorname": vorname,
-            "createPersonenkontexte": [
+            familienname,
+            vorname,
+            createPersonenkontexte: [
                 {
-                    "organisationId": organisationId,
-                    "rolleId": rolleId
+                    organisationId,
+                    rolleId
                 }
-            ]     
+            ]
         }
-    });
+
+    };
+    if(koPersNr) {
+        requestData.data['personalnummer'] = koPersNr;
+    }
+    const response = await page.request.post(FRONTEND_URL + 'api/personenkontext-workflow/', requestData);
     expect(response.status()).toBe(201);
     const json = await response.json();
     return {
@@ -29,13 +39,13 @@ export async function createPerson(page: Page, familienname: string, vorname: st
     }
 }
 
-export async function createPersonWithUserContext(page: Page, organisationName: string, rollenArt: string, familienname: string, vorname: string, idSP: string, rolleName: string): Promise<UserInfo> {
+export async function createPersonWithUserContext(page: Page, organisationName: string, rollenArt: string, familienname: string, vorname: string, idSP: string, rolleName: string, koPersNr?: string): Promise<UserInfo> {
     // Organisation wird nicht angelegt, da diese zur Zeit nicht gelöscht werden kann
     // API-Calls machen und Benutzer mit Kontext anlegen
     const organisationId: string = await getOrganisationId(page, organisationName);
     const rolleId: string = await createRolle(page, rollenArt, organisationId, rolleName);
     await addSPToRolle(page, rolleId, idSP);
-    const userInfo: UserInfo = await createPerson(page, familienname, vorname, organisationId, rolleId);
+    const userInfo: UserInfo = await createPerson(page, familienname, vorname, organisationId, rolleId, koPersNr);
     return userInfo;
 }
 
@@ -68,8 +78,25 @@ export async function deletePersonen(page: Page, personId: string): Promise<void
 }
 
 export async function getPersonId(page: Page, Benutzername: string): Promise<string> {
-    const response = await page.request.get(FRONTEND_URL + `api/personen-frontend?suchFilter=${Benutzername}`, {});  
-    expect(response.status()).toBe(200); 
-    const json = await response.json(); 
+    const response = await page.request.get(FRONTEND_URL + `api/personen-frontend?suchFilter=${Benutzername}`, {});
+    expect(response.status()).toBe(200);
+    const json = await response.json();
     return json.items[0].person.id;
+}
+
+export async function createTeacherAndLogin(page) {
+    const header = new HeaderPage(page);
+    const login = new LoginPage(page);
+    const vorname = "TAuto-PW-V-" + faker.person.firstName();
+    const nachname = "TAuto-PW-N-" + faker.person.lastName();
+    const organisation = 'Testschule Schulportal';
+    const rollenart = 'LEHR';
+    const kopersNr = '0815' + faker.string.numeric({ length: 3 });
+
+    const idSP = await getSPId(page, 'E-Mail');
+    const userInfo: UserInfo = await createPersonWithUserContext(page, organisation, rollenart, nachname, vorname, idSP, lehrkraftOeffentlichRolle, kopersNr);
+    await header.logout();
+    await header.button_login.click();
+    await login.login(userInfo.username, userInfo.password);
+    await login.UpdatePW();
 }
