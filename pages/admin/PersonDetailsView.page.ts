@@ -39,7 +39,7 @@ export class PersonDetailsViewPage{
         this.button_close_pwreset = page.getByTestId('close-password-reset-dialog-button');
 
         // Benutzer löschen
-        this.button_deletePerson = page.getByTestId('open-person-delete-dialog-icon');
+        this.button_deletePerson = page.getByTestId('open-person-delete-dialog-button');
         this.button_deletePersonConfirm = page.getByTestId('person-delete-button');
         this.button_closeDeletePersonConfirm = page.getByTestId('close-person-delete-success-dialog-button');
 
