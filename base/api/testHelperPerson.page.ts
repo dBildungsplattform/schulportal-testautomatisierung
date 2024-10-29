@@ -73,3 +73,13 @@ export async function getPersonId(page: Page, Benutzername: string): Promise<str
     const json = await response.json(); 
     return json.items[0].person.id;
 }
+
+export async function lockPerson(page: Page, personId: string, organisationId: string): Promise<void> {
+    const response = await page.request.put(FRONTEND_URL + `api/personen/${personId}/lock-user`, {
+        data: {
+            "lock": true,
+            "locked_from": organisationId,
+        }
+    });
+    expect(response.status()).toBe(202);
+}
