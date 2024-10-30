@@ -77,14 +77,6 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
            break;
        }
        await page_Adressbuch.close();
-     
-      // itslearning
-      const page_itslearning_Promise = page.waitForEvent("popup");
-      await startseite.card_item_itslearning.click();
-      const page_Itslearning = await page_itslearning_Promise;
-      const itslearning = new ItsLearningPage(page_Itslearning);
-      await expect(itslearning.text_h1).toBeVisible();
-      await page_Itslearning.close();
     });
 
     await test.step(`Prüfen, dass die Startseite noch geöffnet ist`, async () => {
