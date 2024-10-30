@@ -11,6 +11,9 @@ export class PersonDetailsViewPage{
     readonly button_deletePerson: Locator;
     readonly button_deletePersonConfirm: Locator;
     readonly button_closeDeletePersonConfirm: Locator;
+    readonly button_lockPerson: Locator;
+    readonly button_lockPersonConfirm: Locator;
+    readonly button_lockDeletePersonConfirm: Locator;
     
     constructor(page){
         this.page = page;  
@@ -23,5 +26,8 @@ export class PersonDetailsViewPage{
         this.button_deletePerson = page.getByTestId('open-person-delete-dialog-button');
         this.button_deletePersonConfirm = page.getByTestId('person-delete-button');
         this.button_closeDeletePersonConfirm = page.getByTestId('close-person-delete-success-dialog-button');
+        this.button_lockPerson = page.getByTestId('open-person-delete-dialog-button');
+        this.button_lockPersonConfirm = page.getByTestId('person-delete-button');
+        this.button_lockDeletePersonConfirm = page.getByTestId('close-person-delete-success-dialog-button');
     }
 }

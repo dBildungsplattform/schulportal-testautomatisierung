@@ -692,4 +692,37 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await expect(page.getByRole("cell", { name: nachname, exact: true })).toBeHidden();
     });
   })
+
+  test.only("Einen Benutzer über das FE sperren @long @stage", async ({page, }) => {
+    const login = new LoginPage(page);
+    const landing = new LandingPage(page);
+    const personManagementView = new PersonManagementViewPage(page);
+    const PersonDetailsView = new PersonDetailsViewPage(page);
+
+    const lehrerVorname = "TAuto-PW-V-" + faker.person.firstName();
+    const lehrerNachname = "TAuto-PW-N-" + faker.person.lastName();
+    const lehrerRolle = "TAuto-PW-LEHR-" + faker.lorem.word({ length: { min: 8, max: 12 }});
+    const lehrerRollenart = 'LEHR';
+    const lehrerOrganisation = 'Testschule Schulportal';
+    let userInfoLehrer: UserInfo;
+    const lehrerIdSP = await getSPId(page, 'E-Mail');
+ 
+    await test.step(`Testdaten: Lehrer über die api anlegen ${ADMIN}`, async () => {
+      userInfoLehrer = await createPersonWithUserContext(page, lehrerOrganisation, lehrerRollenart, lehrerVorname, lehrerNachname, lehrerIdSP, lehrerRolle);
+      username.push(userInfoLehrer.username);
+      roleId.push(userInfoLehrer.rolleId);
+    })
+
+    await test.step(`Lehrer sperren als Landesadmin ${ADMIN}`, async () => {
+      await page.goto(FRONTEND_URL + "admin/personen");
+      await personManagementView.input_Suchfeld.fill(userInfoLehrer.username);
+      await personManagementView.button_Suchen.click();
+      await page.getByRole("cell", { name: userInfoLehrer.username, exact: true }).click();
+      await PersonDetailsView.button_lockPerson.click();
+      
+    })
+    
+
+   
+  })
 });
