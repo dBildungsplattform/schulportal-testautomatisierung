@@ -56,7 +56,6 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.UM
         await landing.button_Anmelden.click();
         await login.login(ADMIN, PW);
         await expect(startseite.text_h2_Ueberschrift).toBeVisible();
-        
         await deleteRoleById(roleId, page);
         roleId = [];
       }
@@ -102,7 +101,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.UM
     })
   })
 
-  test('Erfolgloser Login mit einem gesperrten Benutzer Rolle Lehrer', {tag: [LONG, STAGE]}, async ({ page }) => {
+  test.only('Erfolgloser Login mit einem gesperrten Benutzer Rolle Lehrer', {tag: [LONG, STAGE]}, async ({ page }) => {
     const login = new LoginPage(page);
     const landing = new LandingPage(page);
     const header = new HeaderPage(page);

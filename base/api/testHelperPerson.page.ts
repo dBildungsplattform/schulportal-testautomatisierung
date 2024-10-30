@@ -78,7 +78,7 @@ export async function lockPerson(page: Page, personId: string, organisationId: s
     const response = await page.request.put(FRONTEND_URL + `api/personen/${personId}/lock-user`, {
         data: {
             "lock": true,
-            "locked_from": organisationId,
+            "locked_by": organisationId
         }
     });
     expect(response.status()).toBe(202);
