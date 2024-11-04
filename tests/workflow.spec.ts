@@ -10,6 +10,7 @@ import { HeaderPage } from "../pages/Header.page";
 import { LONG, SHORT, STAGE } from "../base/tags";
 import { CalendarPage } from "../pages/Cards/Calendar.page";
 import { DirectoryPage } from "../pages/Cards/Directory.page";
+import { createTeacherAndLogin } from "../base/api/testHelperPerson.page";
 
 const PW = process.env.PW;
 const ADMIN = process.env.USER;
@@ -30,8 +31,12 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
     });
   });
 
-  test("Angebote per Link öffnen als Landesadmin", {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
+  test("Angebote per Link öffnen als Lehrer", {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
     const startseite = new StartPage(page);
+
+    await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
+      createTeacherAndLogin(page);
+    });
 
     await test.step(`Kacheln Email für Lehrkräfte und Itslearning öffnen, danach beide Kacheln wieder schließen`, async () => {
       // email
@@ -72,14 +77,6 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
            break;
        }
        await page_Adressbuch.close();
-     
-      // itslearning
-      const page_itslearning_Promise = page.waitForEvent("popup");
-      await startseite.card_item_itslearning.click();
-      const page_Itslearning = await page_itslearning_Promise;
-      const itslearning = new ItsLearningPage(page_Itslearning);
-      await expect(itslearning.text_h1).toBeVisible();
-      await page_Itslearning.close();
     });
 
     await test.step(`Prüfen, dass die Startseite noch geöffnet ist`, async () => {

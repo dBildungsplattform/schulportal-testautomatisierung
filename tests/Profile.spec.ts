@@ -6,7 +6,7 @@ import { faker } from "@faker-js/faker/locale/de";
 import { HeaderPage } from "../pages/Header.page";
 import { ProfilePage } from "../pages/ProfileView.page";
 import { getSPId } from "../base/api/testHelperServiceprovider.page";
-import { createPersonWithUserContext, addSecondOrganisationToPerson } from "../base/api/testHelperPerson.page";
+import { createRolleAndPersonWithUserContext, addSecondOrganisationToPerson } from "../base/api/testHelperPerson.page";
 import { getOrganisationId } from "../base/api/testHelperOrganisation.page";
 import { UserInfo } from "../base/api/testHelper.page";
 import { addSystemrechtToRolle } from "../base/api/testHelperRolle.page";
@@ -77,7 +77,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
     await test.step(`Landesadmin via api anlegen und mit diesem anmelden`, async () => {
       const idSP = await getSPId(page, 'Schulportal-Administration');
-      const userInfo: UserInfo = await createPersonWithUserContext(page, organisation, rollenart, nachname, vorname, idSP, rollenname);
+      const userInfo: UserInfo = await createRolleAndPersonWithUserContext(page, organisation, rollenart, nachname, vorname, idSP, rollenname);
       //personId = userInfo.personId;
       roleId.push(userInfo.rolleId);
       username.push(userInfo.username);
@@ -143,7 +143,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
     await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
       const idSP = await getSPId(page, 'E-Mail');
-      const userInfo: UserInfo = await createPersonWithUserContext(page, organisation, rollenart, nachname, vorname, idSP, rollenname);
+      const userInfo: UserInfo = await createRolleAndPersonWithUserContext(page, organisation, rollenart, nachname, vorname, idSP, rollenname);
       roleId.push(userInfo.rolleId);
       username.push(userInfo.username);
 
@@ -200,7 +200,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
     await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
       const idSP = await getSPId(page, 'itslearning');
-      const userInfo: UserInfo = await createPersonWithUserContext(page, organisation, rollenart, nachname, vorname, idSP, rollenname);
+      const userInfo: UserInfo = await createRolleAndPersonWithUserContext(page, organisation, rollenart, nachname, vorname, idSP, rollenname);
       roleId.push(userInfo.rolleId);
       username.push(userInfo.username);
 
@@ -257,7 +257,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
     await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
       const idSP = await getSPId(page, 'Schulportal-Administration');
-      const userInfo: UserInfo = await createPersonWithUserContext(page, organisation, rollenart, nachname, vorname, idSP, rollenname);
+      const userInfo: UserInfo = await createRolleAndPersonWithUserContext(page, organisation, rollenart, nachname, vorname, idSP, rollenname);
       roleId.push(userInfo.rolleId);
       username.push(userInfo.username);
 
@@ -317,7 +317,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
     await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
       const idSP = await getSPId(page, 'Schulportal-Administration');
-      const userInfo: UserInfo = await createPersonWithUserContext(page, organisation1, rollenart, nachname, vorname, idSP, rollenname);
+      const userInfo: UserInfo = await createRolleAndPersonWithUserContext(page, organisation1, rollenart, nachname, vorname, idSP, rollenname);
       personId = userInfo.personId;
       roleId.push(userInfo.rolleId);
       username.push(userInfo.username);
