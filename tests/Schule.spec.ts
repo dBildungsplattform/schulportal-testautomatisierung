@@ -7,7 +7,7 @@ import { SchuleCreationViewPage } from "../pages/admin/SchuleCreationView.page";
 import { SchuleManagementViewPage } from "../pages/admin/SchuleManagementView.page";
 import { faker } from "@faker-js/faker/locale/de";
 import { HeaderPage } from "../pages/Header.page";
-import { createPersonWithUserContext } from "../base/api/testHelperPerson.page";
+import { createRolleAndPersonWithUserContext } from "../base/api/testHelperPerson.page";
 import { getSPId } from "../base/api/testHelperServiceprovider.page";
 import { UserInfo } from "../base/api/testHelper.page";
 import { addSystemrechtToRolle } from "../base/api/testHelperRolle.page";
@@ -149,8 +149,8 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
 
     const startseite: StartPage = await test.step(`Testdaten: Schuladmin anlegen und mit diesem anmelden`, async () => {
       const idSP = await getSPId(page, 'Schulportal-Administration');
-      userInfo = await createPersonWithUserContext(page, 'Testschule Schulportal', 'LEIT', 'TAuto-PW-B-MeierLEIT', 'TAuto-PW-B-Hans', idSP, 'TAuto-PW-R-RolleLEIT');
-      personId.push(userInfo.personId); 
+      userInfo = await createRolleAndPersonWithUserContext(page, 'Testschule Schulportal', 'LEIT', 'TAuto-PW-B-MeierLEIT', 'TAuto-PW-B-Hans', idSP, 'TAuto-PW-R-RolleLEIT');
+      personId.push(userInfo.personId);
       roleId.push(userInfo.rolleId);
       await addSystemrechtToRolle(page, userInfo.rolleId, 'SCHULEN_VERWALTEN');
 
