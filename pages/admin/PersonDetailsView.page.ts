@@ -20,7 +20,7 @@ export class PersonDetailsViewPage{
         this.text_pwResetInfo = page.getByTestId('password-reset-info-text');
         this.input_pw = page.locator('[data-testid="password-output-field"] input'); 
         this.button_close_pwreset = page.getByTestId('close-password-reset-dialog-button');
-        this.button_deletePerson = page.getByTestId('open-person-delete-dialog-icon');
+        this.button_deletePerson = page.getByTestId('open-person-delete-dialog-button');
         this.button_deletePersonConfirm = page.getByTestId('person-delete-button');
         this.button_closeDeletePersonConfirm = page.getByTestId('close-person-delete-success-dialog-button');
     }
