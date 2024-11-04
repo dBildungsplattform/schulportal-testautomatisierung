@@ -6,7 +6,7 @@ import { PersonManagementViewPage } from "../pages/admin/PersonManagementView.pa
 import { PersonDetailsViewPage } from "../pages/admin/PersonDetailsView.page.ts";
 import { HeaderPage } from "../pages/Header.page.ts";
 import { faker } from "@faker-js/faker/locale/de";
-import { createPersonWithUserContext } from "../base/api/testHelperPerson.page.ts";
+import { createRolleAndPersonWithUserContext } from "../base/api/testHelperPerson.page.ts";
 import { getSPId } from "../base/api/testHelperServiceprovider.page.ts";
 import { UserInfo } from "../base/api/testHelper.page.ts";
 import { addSystemrechtToRolle } from "../base/api/testHelperRolle.page.ts";
@@ -79,7 +79,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     const adminNachname = "TAuto-PW-N-" + faker.person.lastName();
     const adminRolle = "TAuto-PW-LEIT-" + faker.lorem.word({ length: { min: 8, max: 12 }});
     const adminRollenart = 'LEIT';
-    const adminOrganisation = 'Testschule-PW65';
+    const adminOrganisation = 'Testschule-PW665';
     const adminIdSP = await getSPId(page, 'Schulportal-Administration');
     let userInfoAdmin: UserInfo;
 
@@ -87,7 +87,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     const lehrerNachname = "TAuto-PW-N-" + faker.person.lastName();
     const lehrerRolle = "TAuto-PW-LEHR-" + faker.lorem.word({ length: { min: 8, max: 12 }});
     const lehrerRollenart = 'LEHR';
-    const lehrerOrganisation = 'Testschule-PW65';
+    const lehrerOrganisation = 'Testschule-PW665';
     const lehrerIdSP = await getSPId(page, 'E-Mail');
     let userInfoLehrer: UserInfo;
     let lehrerBeenutzername = '';
@@ -96,13 +96,13 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
     await test.step(`Einen Schuladmin und einen zu bearbeitenden Lehrer mit je einer einer Schulzuordnung(Schule ist an einer Position > 25 in der DB) über die api anlegen und mit diesem Schuladmin anmelden`, async () => {
       // Schuladmin
-      userInfoAdmin = await createPersonWithUserContext(page, adminOrganisation, adminRollenart, addminVorname, adminNachname, adminIdSP, adminRolle);
+      userInfoAdmin = await createRolleAndPersonWithUserContext(page, adminOrganisation, adminRollenart, addminVorname, adminNachname, adminIdSP, adminRolle);
       await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'PERSONEN_VERWALTEN');
       username.push(userInfoAdmin.username);
       roleId.push(userInfoAdmin.rolleId);
 
       // Lehrer
-      userInfoLehrer = await createPersonWithUserContext(page, lehrerOrganisation, lehrerRollenart, lehrerVorname, lehrerNachname, lehrerIdSP, lehrerRolle);
+      userInfoLehrer = await createRolleAndPersonWithUserContext(page, lehrerOrganisation, lehrerRollenart, lehrerVorname, lehrerNachname, lehrerIdSP, lehrerRolle);
       username.push(userInfoLehrer.username);
       roleId.push(userInfoLehrer.rolleId);
       lehrerBeenutzername = userInfoLehrer.username;
@@ -135,8 +135,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
 
     await test.step(`In der Gesamtübersicht die neue Schulzuordnung prüfen`, async () => {
-      await expect(page.getByTestId('person-details-card')).toContainText('1111165 (Testschule-PW65): LiV (befristet bis');
-      await expect(page.getByTestId('person-details-card')).toContainText('1111165 (Testschule-PW65): ' + lehrerRolle);
+      await expect(page.getByTestId('person-details-card')).toContainText('1111165 (Testschule-PW665): LiV (befristet bis');
+      await expect(page.getByTestId('person-details-card')).toContainText('1111165 (Testschule-PW665): ' + lehrerRolle);
     });
   })
 });
