@@ -56,7 +56,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.UM
         await landing.button_Anmelden.click();
         await login.login(ADMIN, PW);
         await expect(startseite.text_h2_Ueberschrift).toBeVisible();
-        await deleteRoleById(roleId, page);
+        await deleteRolleById(roleId, page);
         roleId = [];
       }
     });
