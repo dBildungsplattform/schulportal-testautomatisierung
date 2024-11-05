@@ -8,14 +8,14 @@ import { createRolleAndPersonWithUserContext } from "../base/api/testHelperPerso
 import { addSystemrechtToRolle } from "../base/api/testHelperRolle.page";
 import { UserInfo } from "../base/api/testHelper.page";
 import { LONG, SHORT, STAGE } from "../base/tags";
-import { deletePersonById, deleteRoleById } from "../base/testHelperDeleteTestdata";
+import { deletePersonById, deleteRolleById } from "../base/testHelperDeleteTestdata";
 
 const PW = process.env.PW;
 const ADMIN = process.env.USER;
 const FRONTEND_URL = process.env.FRONTEND_URL || "";
 
-let personId: string[] = []; // Im afterEchh Block werden alle Testdaten gelöscht
-let rolleId: string[] = []; // Im afterEchh Block werden alle Testdaten gelöscht
+let personId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
+let rolleId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
 
 test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
     test.afterEach(async ({ page }) => {
@@ -38,7 +38,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
                 await landing.button_Anmelden.click();
                 await login.login(ADMIN, PW);
                 
-                await deleteRoleById(rolleId, page);
+                await deleteRolleById(rolleId, page);
                 rolleId = [];
             }
         });

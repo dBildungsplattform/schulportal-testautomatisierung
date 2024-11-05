@@ -4,7 +4,7 @@ import { LandingPage } from '../pages/LandingView.page';
 import { StartPage } from '../pages/StartView.page';
 import { HeaderPage } from "../pages/Header.page";
 import { LONG, SHORT, SMOKE, STAGE } from '../base/tags';
-import { createPersonWithUserContext, lockPerson } from "../base/api/testHelperPerson.page.ts";
+import { createRolleAndPersonWithUserContext, lockPerson } from "../base/api/testHelperPerson.page.ts";
 import { getSPId } from "../base/api/testHelperServiceprovider.page.ts";
 import { faker } from "@faker-js/faker/locale/de";
 import { UserInfo } from "../base/api/testHelper.page.ts";
@@ -51,13 +51,13 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.UM
         username = [];
       }
 
-      if (roleId) { // nur wenn der Testfall auch mind. eine Rolle angelegt hat
+      if (rolleId) { // nur wenn der Testfall auch mind. eine Rolle angelegt hat
         await header.logout();
         await landing.button_Anmelden.click();
         await login.login(ADMIN, PW);
         await expect(startseite.text_h2_Ueberschrift).toBeVisible();
-        await deleteRolleById(roleId, page);
-        roleId = [];
+        await deleteRolleById(rolleId, page);
+        rolleId = [];
       }
     });
 
@@ -101,7 +101,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.UM
     })
   })
 
-  test.only('Erfolgloser Login mit einem gesperrten Benutzer Rolle Lehrer', {tag: [LONG, STAGE]}, async ({ page }) => {
+  test('Erfolgloser Login mit einem gesperrten Benutzer Rolle Lehrer', {tag: [LONG, STAGE]}, async ({ page }) => {
     const login = new LoginPage(page);
     const landing = new LandingPage(page);
     const header = new HeaderPage(page);
@@ -121,9 +121,9 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.UM
       await login.login(ADMIN, PW);
       lehrerIdSP = await getSPId(page, 'E-Mail');
       organisationIDLandSh = await getOrganisationId(page, 'Land Schleswig-Holstein');
-      userInfoLehrer = await createPersonWithUserContext(page, lehrerOrganisation, lehrerRollenart, lehrerVorname, lehrerNachname, lehrerIdSP, lehrerRolle);
+      userInfoLehrer = await createRolleAndPersonWithUserContext(page, lehrerOrganisation, lehrerRollenart, lehrerVorname, lehrerNachname, lehrerIdSP, lehrerRolle);
       username.push(userInfoLehrer.username);
-      roleId.push(userInfoLehrer.rolleId);
+      rolleId.push(userInfoLehrer.rolleId);
       await lockPerson(page, userInfoLehrer.personId, organisationIDLandSh);
       await header.logout();
     })
@@ -131,7 +131,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.UM
     await test.step(`Gesperrter Lehrer versucht sich am Portal anzumelden`, async () => {
       await landing.button_Anmelden.click();
       await login.login(userInfoLehrer.username, userInfoLehrer.password);
-      await expect(login.text_span_alertBox).toHaveText('Ihr Benutzerkonto ist gesperrt. Bitte wenden Sie sich an Ihren schulischen Administrator/Ihre schulische Administratorin.');
+      await expect(login.text_span_alertBox).toHaveText('Ihr Benutzerkonto ist gesperrt. Bitte wenden Sie sich an Ihre schulischen Administratorinnen und Administratoren.');
       loggedIn = false;
     })
   })

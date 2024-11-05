@@ -12,7 +12,7 @@ import { deleteRolleByName } from "../base/testHelperDeleteTestdata";
 
 let startseite: StartPage;
 let loggedIn = false;
-let rolleName: string[] = []; // Im afterEchh Block werden alle Testdaten gelöscht 
+let rolleName: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht 
 
 test.beforeEach(async ({ page }) => {
   startseite = await test.step(`Login`, async () => {
