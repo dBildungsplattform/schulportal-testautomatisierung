@@ -13,7 +13,11 @@ export class PersonDetailsViewPage{
     readonly button_closeDeletePersonConfirm: Locator;
     readonly button_lockPerson: Locator;
     readonly button_lockPersonConfirm: Locator;
-    readonly button_lockDeletePersonConfirm: Locator;
+    readonly text_h2_dialogBenutzerSperren: Locator;
+    readonly combobox_organisation: Locator;
+    readonly text_infoLockedUser: Locator;
+    readonly icon_lockedUser: Locator;
+    readonly text_lockedUser: Locator;
     
     constructor(page){
         this.page = page;  
@@ -26,8 +30,12 @@ export class PersonDetailsViewPage{
         this.button_deletePerson = page.getByTestId('open-person-delete-dialog-button');
         this.button_deletePersonConfirm = page.getByTestId('person-delete-button');
         this.button_closeDeletePersonConfirm = page.getByTestId('close-person-delete-success-dialog-button');
-        this.button_lockPerson = page.getByTestId('open-person-delete-dialog-button');
-        this.button_lockPersonConfirm = page.getByTestId('person-delete-button');
-        this.button_lockDeletePersonConfirm = page.getByTestId('close-person-delete-success-dialog-button');
+        this.button_lockPerson = page.getByTestId('open-lock-dialog-icon');
+        this.button_lockPersonConfirm = page.getByTestId('lock-user-button');
+        this.text_h2_dialogBenutzerSperren = page.getByTestId('person-lock-card').getByTestId('layout-card-headline');
+        this.combobox_organisation = page.locator('.v-select__selection-text');
+        this.text_infoLockedUser = page.getByTestId('lock-user-info-text');
+        this.icon_lockedUser = page.getByTestId('person-lock-info').locator('i');
+        this.text_lockedUser = page.getByText('Dieser Benutzer ist gesperrt.');
     }
 }

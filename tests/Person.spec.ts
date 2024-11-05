@@ -687,9 +687,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
   })
 
-  test.only("Einen Benutzer über das FE sperren @long @stage", async ({page, }) => {
-    const login = new LoginPage(page);
-    const landing = new LandingPage(page);
+  test("Einen Benutzer über das FE sperren @long @stage", async ({page, }) => {
     const personManagementView = new PersonManagementViewPage(page);
     const PersonDetailsView = new PersonDetailsViewPage(page);
 
@@ -702,7 +700,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     const lehrerIdSP = await getSPId(page, 'E-Mail');
  
     await test.step(`Testdaten: Lehrer über die api anlegen ${ADMIN}`, async () => {
-      userInfoLehrer = await createPersonWithUserContext(page, lehrerOrganisation, lehrerRollenart, lehrerVorname, lehrerNachname, lehrerIdSP, lehrerRolle);
+      userInfoLehrer = await createRolleAndPersonWithUserContext(page, lehrerOrganisation, lehrerRollenart, lehrerVorname, lehrerNachname, lehrerIdSP, lehrerRolle);
       username.push(userInfoLehrer.username);
       roleId.push(userInfoLehrer.rolleId);
     })
@@ -713,10 +711,12 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await personManagementView.button_Suchen.click();
       await page.getByRole("cell", { name: userInfoLehrer.username, exact: true }).click();
       await PersonDetailsView.button_lockPerson.click();
-      
+      await expect(PersonDetailsView.text_h2_dialogBenutzerSperren).toHaveText('Benutzer sperren');
+      await expect(PersonDetailsView.combobox_organisation).toHaveText('Land Schleswig-Holstein');
+      await expect(PersonDetailsView.text_infoLockedUser).toHaveText('Für die Dauer der Sperre hat der Benutzer keinen Zugriff mehr auf das Schulportal SH und die daran angeschlossenen Dienste.');
+      await PersonDetailsView.button_lockPersonConfirm.click();
+      await expect(PersonDetailsView.icon_lockedUser).toBeVisible();
+      await expect(PersonDetailsView.text_infoLockedUser).toBeVisible();
     })
-    
-
-   
   })
 });
