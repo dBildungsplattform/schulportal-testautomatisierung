@@ -8,7 +8,7 @@ import { createPersonWithUserContext, lockPerson } from "../base/api/testHelperP
 import { getSPId } from "../base/api/testHelperServiceprovider.page.ts";
 import { faker } from "@faker-js/faker/locale/de";
 import { UserInfo } from "../base/api/testHelper.page.ts";
-import { deletePersonByUsername, deleteRoleById } from "../base/testHelperDeleteTestdata.ts";
+import { deletePersonByUsername, deleteRolleById } from "../base/testHelperDeleteTestdata.ts";
 import { getOrganisationId } from "../base/api/testHelperOrganisation.page.ts";
 
 const PW = process.env.PW;
