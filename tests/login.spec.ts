@@ -16,8 +16,8 @@ const ADMIN = process.env.USER;
 const FRONTEND_URL = process.env.FRONTEND_URL || '';
 
 let loggedIn = false;
-let username: string[] = []; // Im afterEchh Block werden alle Testdaten gelöscht
-let roleId: string[] = []; // Im afterEchh Block werden alle Testdaten gelöscht
+let username: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
+let rolleId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
 
 test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.afterEach(async ({ page }) => {
