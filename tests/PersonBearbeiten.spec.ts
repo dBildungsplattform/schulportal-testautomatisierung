@@ -17,8 +17,8 @@ const PW = process.env.PW;
 const ADMIN = process.env.USER;
 const FRONTEND_URL = process.env.FRONTEND_URL || "";
 
-let username: string[] = []; // Im afterEchh Block werden alle Testdaten gelöscht
-let roleId: string[] = []; // Im afterEchh Block werden alle Testdaten gelöscht
+let username: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
+let rolleId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
 
 test.describe(`Testfälle für die Administration von Personen": Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }) => {
