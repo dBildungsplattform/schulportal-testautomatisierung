@@ -11,7 +11,7 @@ import { getSPId } from "../base/api/testHelperServiceprovider.page.ts";
 import { UserInfo } from "../base/api/testHelper.page.ts";
 import { addSystemrechtToRolle } from "../base/api/testHelperRolle.page.ts";
 import { LONG, STAGE } from "../base/tags.ts";
-import { deletePersonByUsername, deleteRoleById } from "../base/testHelperDeleteTestdata.ts";
+import { deletePersonByUsername, deleteRolleById } from "../base/testHelperDeleteTestdata.ts";
 
 const PW = process.env.PW;
 const ADMIN = process.env.USER;
@@ -56,7 +56,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await login.login(ADMIN, PW);
         await expect(startseite.text_h2_Ueberschrift).toBeVisible();
         
-        await deleteRolleById(rolleId, page);
+        await deleteRolleById(roleId, page);
         roleId = [];
       }
     });
