@@ -27,7 +27,7 @@ export class PersonDetailsViewPage{
     readonly button_saveAssignmentChanges: Locator;
     readonly button_closeSaveAssignmentChanges: Locator;
     
-    constructor( page ){
+    constructor(page){
         this.page = page;  
         this.text_h2_benutzerBearbeiten = page.getByTestId('layout-card-headline');
 
