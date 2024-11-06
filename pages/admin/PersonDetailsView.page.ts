@@ -44,13 +44,13 @@ export class PersonDetailsViewPage{
         this.button_closeDeletePersonConfirm = page.getByTestId('close-person-delete-success-dialog-button');
 
         // Schulzuordnungen
-        this.button_editSchoollAssignment = page.locator('div').filter({ hasText: /^Schulzuordnung\(en\)Bearbeiten$/ }).getByTestId('zuordnung-edit-button');
-        this.button_addSchoollAssignment = page.getByTestId('zuordnung-create-button');
+        this.button_editSchulzuordnung = page.locator('div').filter({ hasText: /^Schulzuordnung\(en\)Bearbeiten$/ }).getByTestId('zuordnung-edit-button');
+        this.button_addSchulzuordnung = page.getByTestId('zuordnung-create-button');
         this.combobox_organisation = page.getByTestId('organisation-select').locator('.v-field__input');
         this.combobox_rolle = page.getByTestId('rolle-select').locator('.v-field__input');
         this.input_kopersNr = page.getByTestId('kopersnr-input').locator('.v-field__input');
-        this.button_addSchoollAssignmentSubmit = page.getByTestId('zuordnung-creation-submit-button');
-        this.button_confirmAddSchoollAssignment = page.getByRole('button', { name: 'Ja' });
+        this.button_submitAddSchulzuordnung = page.getByTestId('zuordnung-creation-submit-button');
+        this.button_confirmAddSchulzuordnung = page.getByRole('button', { name: 'Ja' });
         this.button_saveAssignmentChanges = page.getByTestId('zuordnung-changes-save');
         this.button_closeSaveAssignmentChanges = page.getByRole('dialog').getByRole('button', { name: 'Schließen' });
     }

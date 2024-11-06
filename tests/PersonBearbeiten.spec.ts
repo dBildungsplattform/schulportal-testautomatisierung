@@ -50,14 +50,14 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         username = [];
       }
 
-      if (roleId) { // nur wenn der Testfall auch mind. eine Rolle angelegt hat
+      if (rolleId) { // nur wenn der Testfall auch mind. eine Rolle angelegt hat
         await header.logout();
         await landing.button_Anmelden.click();
         await login.login(ADMIN, PW);
         await expect(startseite.text_h2_Ueberschrift).toBeVisible();
         
-        await deleteRolleById(roleId, page);
-        roleId = [];
+        await deleteRolleById(rolleId, page);
+        rolleId = [];
       }
     });
 
@@ -99,12 +99,12 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       userInfoAdmin = await createRolleAndPersonWithUserContext(page, adminOrganisation, adminRollenart, addminVorname, adminNachname, adminIdSP, adminRolle);
       await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'PERSONEN_VERWALTEN');
       username.push(userInfoAdmin.username);
-      roleId.push(userInfoAdmin.rolleId);
+      rolleId.push(userInfoAdmin.rolleId);
 
       // Lehrer
       userInfoLehrer = await createRolleAndPersonWithUserContext(page, lehrerOrganisation, lehrerRollenart, lehrerVorname, lehrerNachname, lehrerIdSP, lehrerRolle);
       username.push(userInfoLehrer.username);
-      roleId.push(userInfoLehrer.rolleId);
+      rolleId.push(userInfoLehrer.rolleId);
       lehrerBeenutzername = userInfoLehrer.username;
 
       await header.logout();
@@ -122,14 +122,14 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
 
     await test.step(`Eine zweite Schulzuordnung hinzufügen`, async () => {
-      await PersonDetailsView.button_editSchoollAssignment.click();
-      await PersonDetailsView.button_addSchoollAssignment.click();
+      await PersonDetailsView.button_editSchulzuordnung.click();
+      await PersonDetailsView.button_addSchulzuordnung.click();
       expect(await PersonDetailsView.combobox_organisation.innerText()).toContain(adminOrganisation);
       await PersonDetailsView.combobox_rolle.click();
       await page.getByText(rolle, { exact: true }).click();
       await PersonDetailsView.input_kopersNr.fill(kopersNr);
-      await PersonDetailsView.button_addSchoollAssignmentSubmit.click();
-      await PersonDetailsView.button_confirmAddSchoollAssignment.click();
+      await PersonDetailsView.button_submitAddSchulzuordnung.click();
+      await PersonDetailsView.button_confirmAddSchulzuordnung.click();
       await PersonDetailsView.button_saveAssignmentChanges.click();
       await PersonDetailsView.button_closeSaveAssignmentChanges.click();
     });
