@@ -56,7 +56,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await login.login(ADMIN, PW);
         await expect(startseite.text_h2_Ueberschrift).toBeVisible();
         
-        await deleteRoleById(roleId, page);
+        await deleteRolleById(rolleId, page);
         roleId = [];
       }
     });
