@@ -17,7 +17,8 @@
     "@fast-csv/format": "^4.3.5",
     "@fast-csv/parse": "^4.3.6",
     "fast-csv": "^4.3.6",
-    "generate-password-ts": "^1.6.5"
+    "generate-password-ts": "^1.6.5",
+    "moment": "^2.30.1"
   },
   "name": "schulportal-testautomatisierung",
   "description": "",

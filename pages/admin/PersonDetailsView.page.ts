@@ -18,6 +18,10 @@ export class PersonDetailsViewPage{
     readonly text_infoLockedUser: Locator;
     readonly icon_lockedUser: Locator;
     readonly text_lockedUser: Locator;
+    readonly input_befristungSperre: Locator;
+    readonly radio_button_befristet: Locator;
+    readonly text_sperrdatumAb: Locator;
+    readonly text_sperrdatumBis: Locator;
     
     constructor(page){
         this.page = page;  
@@ -37,5 +41,9 @@ export class PersonDetailsViewPage{
         this.text_infoLockedUser = page.getByTestId('lock-user-info-text');
         this.icon_lockedUser = page.getByTestId('person-lock-info').locator('i');
         this.text_lockedUser = page.getByText('Dieser Benutzer ist gesperrt.');
+        this.input_befristungSperre = page.getByTestId('befristung-input').getByPlaceholder('TT.MM.JJJJ');
+        this.radio_button_befristet = page.getByTestId('befristet-radio-button').getByLabel('Befristet');
+        this.text_sperrdatumAb = page.getByTestId('lock-info-1-attribute');
+        this.text_sperrdatumBis = page.getByTestId('lock-info-2-attribute');
     }
 }
