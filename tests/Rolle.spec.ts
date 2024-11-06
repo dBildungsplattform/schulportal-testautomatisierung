@@ -8,11 +8,11 @@ import { getRolleId, deleteRolle } from "../base/api/testHelperRolle.page";
 import { RolleCreationConfirmPage } from "../pages/admin/RolleCreationConfirm.page";
 import FromAnywhere from "../pages/FromAnywhere";
 import { LONG, SHORT, STAGE } from "../base/tags";
-import { deleteRoleByName } from "../base/testHelperDeleteTestdata";
+import { deleteRolleByName } from "../base/testHelperDeleteTestdata";
 
 let startseite: StartPage;
 let loggedIn = false;
-let rolleName: string[] = []; // Im afterEchh Block werden alle Testdaten gelöscht 
+let rolleName: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht 
 
 test.beforeEach(async ({ page }) => {
   startseite = await test.step(`Login`, async () => {
@@ -28,7 +28,7 @@ test.beforeEach(async ({ page }) => {
 test.afterEach(async ({ page }) => {
   await test.step(`Testdaten löschen via API`, async () => {
     if (rolleName) { // nur wenn der Testfall auch mind. eine Rolle angelegt hat   
-      await deleteRoleByName(rolleName, page);
+      await deleteRolleByName(rolleName, page);
       rolleName = [];
     }
   });

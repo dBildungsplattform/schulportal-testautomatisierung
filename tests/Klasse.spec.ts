@@ -15,7 +15,7 @@ const ADMIN = process.env.USER;
 const FRONTEND_URL = process.env.FRONTEND_URL || "";
 
 test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
-  let className: string[] = []; // Im afterEchh Block werden alle Testdaten gelöscht
+  let className: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
   
   test.beforeEach(async ({ page }) => {
     await test.step(`Login`, async () => {
