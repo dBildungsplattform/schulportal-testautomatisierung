@@ -22,8 +22,8 @@ export class PersonDetailsViewPage{
     readonly combobox_organisation: Locator;
     readonly combobox_rolle: Locator;
     readonly input_kopersNr: Locator;
-    readonly button_addSchoollAssignmentSubmit: Locator;
-    readonly button_confirmAddSchoollAssignment: Locator;
+    readonly button_submitAddSchulzuordnung: Locator;
+    readonly button_confirmAddSchulzuordnung: Locator;
     readonly button_saveAssignmentChanges: Locator;
     readonly button_closeSaveAssignmentChanges: Locator;
     
