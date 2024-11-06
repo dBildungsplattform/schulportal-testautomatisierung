@@ -13,6 +13,7 @@ export class LoginPage {
   readonly text_h1: Locator;
   readonly text_h1_updatePW: Locator;
   readonly text_span_inputerror: Locator;
+  readonly text_span_alertBox: Locator;
 
   constructor(page) {
     this.page = page;
@@ -27,6 +28,7 @@ export class LoginPage {
     this.text_span_inputerror = page.getByText(
       "Ungültiger Benutzername oder Passwort",
     );
+    this.text_span_alertBox = page.locator('.pf-c-alert__title');
   }
 
   async login(

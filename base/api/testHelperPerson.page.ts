@@ -106,3 +106,14 @@ export async function createTeacherAndLogin(page) {
     await login.login(userInfo.username, userInfo.password);
     await login.UpdatePW();
 }
+
+
+export async function lockPerson(page: Page, personId: string, organisationId: string): Promise<void> {
+    const response = await page.request.put(FRONTEND_URL + `api/personen/${personId}/lock-user`, {
+        data: {
+            "lock": true,
+            "locked_by": organisationId
+        }
+    });
+    expect(response.status()).toBe(202);
+}

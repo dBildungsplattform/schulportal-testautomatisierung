@@ -13,14 +13,14 @@ import { UserInfo } from "../base/api/testHelper.page";
 import { addSystemrechtToRolle } from "../base/api/testHelperRolle.page";
 import { FooterDataTablePage } from "../pages/FooterDataTable.page";
 import { LONG, SHORT, STAGE } from "../base/tags";
-import { deletePersonById, deleteRoleById } from "../base/testHelperDeleteTestdata";
+import { deletePersonById, deleteRolleById } from "../base/testHelperDeleteTestdata";
 
 const PW = process.env.PW;
 const ADMIN = process.env.USER;
 const FRONTEND_URL = process.env.FRONTEND_URL || "";
 
-let personId: string[] = []; // Im afterEchh Block werden alle Testdaten gelöscht
-let roleId: string[] = []; // Im afterEchh Block werden alle Testdaten gelöscht
+let personId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
+let roleId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
 
 test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }) => {
@@ -60,7 +60,7 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
         await login.login(ADMIN, PW);
         await expect(startseite.text_h2_Ueberschrift).toBeVisible();
         
-        await deleteRoleById(roleId, page);
+        await deleteRolleById(roleId, page);
         roleId = [];
       }
     });

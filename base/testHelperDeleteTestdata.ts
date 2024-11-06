@@ -9,13 +9,13 @@ export async function deletePersonById(personId, page){  // personId ist ein arr
     }
 }
 
-export async function deleteRoleById(roleId, page){  // roleId ist ein array mit allen zu löschenden Rollen
+export async function deleteRolleById(roleId, page){  // roleId ist ein array mit allen zu löschenden Rollen
     for (const item in roleId){
         await deleteRolle(page, roleId[item]);
     }
 }
 
-export async function deleteRoleByName(roleName, page){  // roleName ist ein array mit allen zu löschenden Rollen
+export async function deleteRolleByName(roleName, page){  // roleName ist ein array mit allen zu löschenden Rollen
     for (const item in roleName){
       const roleId = await getRolleId(page, roleName[item]);
       await deleteRolle(page, roleId);
