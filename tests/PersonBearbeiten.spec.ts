@@ -90,7 +90,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     const lehrerOrganisation = 'Testschule-PW665';
     const lehrerIdSP = await getSPId(page, 'E-Mail');
     let userInfoLehrer: UserInfo;
-    let lehrerBeenutzername = '';
+    let lehrerBenutzername = '';
     const rolle = 'LiV';
     const kopersNr = faker.number.bigInt({ min: 100000, max: 900000 }).toString();
 
