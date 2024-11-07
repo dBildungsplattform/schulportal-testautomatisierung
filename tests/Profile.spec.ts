@@ -124,9 +124,10 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       await expect(profileView.cardHeadline_Passwort).toHaveText('Passwort');
       await expect(profileView.button_NeuesPasswortSetzen).toBeEnabled();
       // 2FA
-      await expect(profileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
-      await expect(profileView.text_no2FA).toHaveText('Es wurde noch kein zweiter Faktor für Sie eingerichtet.');
-      await expect(profileView.button_2FAEinrichten).toBeEnabled();
+      // Aktuell wird der Abschnitt 2FA generell nicht angezeigt
+      // await expect(profileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
+      // await expect(profileView.text_no2FA).toHaveText('Es wurde noch kein zweiter Faktor für Sie eingerichtet.');
+      // await expect(profileView.button_2FAEinrichten).toBeEnabled();
     });
   });
 
@@ -182,8 +183,9 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       await expect(profileView.cardHeadline_Passwort).toHaveText('Passwort');
       await expect(profileView.button_NeuesPasswortSetzen).toBeEnabled();
       // 2FA
-      await expect(profileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
-      await expect(profileView.button_2FAEinrichten).toBeEnabled();
+      // Aktuell wird der Abschnitt 2FA generell nicht angezeigt
+      // await expect(profileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
+      // await expect(profileView.button_2FAEinrichten).toBeEnabled();
     });
   });
 
@@ -296,8 +298,9 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       await expect(profileView.cardHeadline_Passwort).toHaveText('Passwort');
       await expect(profileView.button_NeuesPasswortSetzen).toBeEnabled();
       // 2FA
-      await expect(profileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
-      await expect(profileView.button_2FAEinrichten).toBeEnabled();
+      // Aktuell wird der Abschnitt 2FA generell nicht angezeigt
+      // await expect(profileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
+      // await expect(profileView.button_2FAEinrichten).toBeEnabled();
     });
   });
 
@@ -366,8 +369,9 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       await expect(profileView.cardHeadline_Passwort).toHaveText('Passwort');
       await expect(profileView.button_NeuesPasswortSetzen).toBeEnabled();
       // 2FA
-      await expect(profileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
-      await expect(profileView.button_2FAEinrichten).toBeEnabled();
+      // Aktuell wird der Abschnitt 2FA generell nicht angezeigt
+      // await expect(profileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
+      // await expect(profileView.button_2FAEinrichten).toBeEnabled();
     });
   });
 });
