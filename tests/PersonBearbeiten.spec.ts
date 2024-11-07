@@ -105,7 +105,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       userInfoLehrer = await createRolleAndPersonWithUserContext(page, lehrerOrganisation, lehrerRollenart, lehrerVorname, lehrerNachname, lehrerIdSP, lehrerRolle);
       username.push(userInfoLehrer.username);
       rolleId.push(userInfoLehrer.rolleId);
-      lehrerBeenutzername = userInfoLehrer.username;
+      lehrerBenutzername = userInfoLehrer.username;
 
       await header.logout();
       await landing.button_Anmelden.click();
@@ -116,9 +116,9 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
     await test.step(`Die Gesamtübersicht des Lehrers öffnen`, async () => {
       await page.goto(FRONTEND_URL + "admin/personen");
-      await personManagementView.input_Suchfeld.fill(lehrerBeenutzername);
+      await personManagementView.input_Suchfeld.fill(lehrerBenutzername);
       await personManagementView.button_Suchen.click();
-      await page.getByRole("cell", { name: lehrerBeenutzername, exact: true }).click();
+      await page.getByRole("cell", { name: lehrerBenutzername, exact: true }).click();
     });
 
     await test.step(`Eine zweite Schulzuordnung hinzufügen`, async () => {
