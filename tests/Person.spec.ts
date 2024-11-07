@@ -13,16 +13,16 @@ import { getSPId } from "../base/api/testHelperServiceprovider.page";
 import { UserInfo } from "../base/api/testHelper.page";
 import { addSystemrechtToRolle } from "../base/api/testHelperRolle.page";
 import { LONG, SHORT, STAGE } from "../base/tags";
-import { deletePersonByUsername, deleteRoleById, deleteRoleByName } from "../base/testHelperDeleteTestdata.ts";
+import { deletePersonByUsername, deleteRolleById, deleteRolleByName } from "../base/testHelperDeleteTestdata.ts";
 import { landesadminRolle, schuelerRolle, schuladminOeffentlichRolle } from "../base/roles.ts";
 
 const PW = process.env.PW;
 const ADMIN = process.env.USER;
 const FRONTEND_URL = process.env.FRONTEND_URL || "";
 
-let username: string[] = []; // Im afterEchh Block werden alle Testdaten gelöscht
-let roleId: string[] = []; // Im afterEchh Block werden alle Testdaten gelöscht
-let roleName: string[] = []; // Im afterEchh Block werden alle Testdaten gelöscht
+let username: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
+let roleId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
+let roleName: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
 
 test.describe(`Testfälle für die Administration von Personen": Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }) => {
@@ -60,7 +60,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await login.login(ADMIN, PW);
         await expect(startseite.text_h2_Ueberschrift).toBeVisible();
         
-        await deleteRoleById(roleId, page);
+        await deleteRolleById(roleId, page);
         roleId = [];
       }
 
@@ -70,7 +70,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await login.login(ADMIN, PW);
         await expect(startseite.text_h2_Ueberschrift).toBeVisible();
         
-        await deleteRoleByName(roleName, page);
+        await deleteRolleByName(roleName, page);
         roleName = [];
       }
     });
@@ -503,6 +503,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await addSystemrechtToRolle(page, userInfo.rolleId, 'SCHULEN_VERWALTEN');
       await addSystemrechtToRolle(page, userInfo.rolleId, 'KLASSEN_VERWALTEN');
       await addSystemrechtToRolle(page, userInfo.rolleId, 'SCHULTRAEGER_VERWALTEN');
+      await addSystemrechtToRolle(page, userInfo.rolleId, 'PERSONEN_ANLEGEN');
       // Benutzer wird im afterEach-Block gelöscht
       // gesteuert wird die Löschung über die Variable username
       username.push(userInfo.username);

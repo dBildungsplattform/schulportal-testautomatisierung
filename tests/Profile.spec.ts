@@ -11,14 +11,14 @@ import { getOrganisationId } from "../base/api/testHelperOrganisation.page";
 import { UserInfo } from "../base/api/testHelper.page";
 import { addSystemrechtToRolle } from "../base/api/testHelperRolle.page";
 import { LONG, SHORT, STAGE } from "../base/tags";
-import { deleteRoleById, deletePersonByUsername} from "../base/testHelperDeleteTestdata";
+import { deleteRolleById, deletePersonByUsername} from "../base/testHelperDeleteTestdata";
 
 const PW = process.env.PW;
 const ADMIN = process.env.USER;
 const FRONTEND_URL = process.env.FRONTEND_URL || "";
 
-let username: string[] = []; // Im afterEchh Block werden alle Testdaten gelöscht
-let roleId: string[] = []; // Im afterEchh Block werden alle Testdaten gelöscht
+let username: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
+let roleId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
 
 test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }) => {
@@ -53,7 +53,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       }
 
       if (roleId) {
-        deleteRoleById(roleId, page);
+        deleteRolleById(roleId, page);
         roleId = [];
       }
     });
@@ -88,6 +88,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       await addSystemrechtToRolle(page, userInfo.rolleId, 'SCHULEN_VERWALTEN');
       await addSystemrechtToRolle(page, userInfo.rolleId, 'KLASSEN_VERWALTEN');
       await addSystemrechtToRolle(page, userInfo.rolleId, 'SCHULTRAEGER_VERWALTEN');
+      await addSystemrechtToRolle(page, userInfo.rolleId, 'PERSONEN_ANLEGEN');
 
       await header.logout();
       await header.button_login.click();
@@ -123,9 +124,10 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       await expect(profileView.cardHeadline_Passwort).toHaveText('Passwort');
       await expect(profileView.button_NeuesPasswortSetzen).toBeEnabled();
       // 2FA
-      await expect(profileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
-      await expect(profileView.text_no2FA).toHaveText('Es wurde noch kein zweiter Faktor für Sie eingerichtet.');
-      await expect(profileView.button_2FAEinrichten).toBeEnabled();
+      // Aktuell wird der Abschnitt 2FA generell nicht angezeigt
+      // await expect(profileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
+      // await expect(profileView.text_no2FA).toHaveText('Es wurde noch kein zweiter Faktor für Sie eingerichtet.');
+      // await expect(profileView.button_2FAEinrichten).toBeEnabled();
     });
   });
 
@@ -181,8 +183,9 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       await expect(profileView.cardHeadline_Passwort).toHaveText('Passwort');
       await expect(profileView.button_NeuesPasswortSetzen).toBeEnabled();
       // 2FA
-      await expect(profileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
-      await expect(profileView.button_2FAEinrichten).toBeEnabled();
+      // Aktuell wird der Abschnitt 2FA generell nicht angezeigt
+      // await expect(profileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
+      // await expect(profileView.button_2FAEinrichten).toBeEnabled();
     });
   });
 
@@ -295,8 +298,9 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       await expect(profileView.cardHeadline_Passwort).toHaveText('Passwort');
       await expect(profileView.button_NeuesPasswortSetzen).toBeEnabled();
       // 2FA
-      await expect(profileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
-      await expect(profileView.button_2FAEinrichten).toBeEnabled();
+      // Aktuell wird der Abschnitt 2FA generell nicht angezeigt
+      // await expect(profileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
+      // await expect(profileView.button_2FAEinrichten).toBeEnabled();
     });
   });
 
@@ -365,8 +369,9 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       await expect(profileView.cardHeadline_Passwort).toHaveText('Passwort');
       await expect(profileView.button_NeuesPasswortSetzen).toBeEnabled();
       // 2FA
-      await expect(profileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
-      await expect(profileView.button_2FAEinrichten).toBeEnabled();
+      // Aktuell wird der Abschnitt 2FA generell nicht angezeigt
+      // await expect(profileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
+      // await expect(profileView.button_2FAEinrichten).toBeEnabled();
     });
   });
 });
