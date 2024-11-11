@@ -652,16 +652,16 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
   });
 
-  test("Einen Benutzer über das FE löschen @long @short @stage", async ({page, }) => {
+  test("Einen Benutzer über das FE löschen", {tag: [LONG, SHORT, STAGE]}, async ({page, }) => {
     const personManagementView = new PersonManagementViewPage(page);
     const PersonDetailsView = new PersonDetailsViewPage(page);
+    const header = new HeaderPage(page);
 
     const vorname = "TAuto-PW-V-" + faker.person.firstName();
     const nachname = "TAuto-PW-N-" + faker.person.lastName();
     const rolle = "TAuto-PW-R-" + faker.lorem.word({ length: { min: 8, max: 12 }});
     const berechtigung = 'SYSADMIN';
     const idSP = await getSPId(page, 'Schulportal-Administration');
-    const header = new HeaderPage(page);
 
     await test.step(`Neuen Benutzer über die api anlegen`, async () => {
       await createRolleAndPersonWithUserContext(page, 'Land Schleswig-Holstein', berechtigung, vorname, nachname, idSP, rolle);
@@ -712,10 +712,11 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await page.goto(FRONTEND_URL + "admin/personen");
       await personManagementView.input_Suchfeld.fill(userInfoLehrer.username);
       await personManagementView.button_Suchen.click();
+      await expect(personManagementView.comboboxMenuIcon_Status).toBeVisible();
       await page.getByRole("cell", { name: userInfoLehrer.username, exact: true }).click();
       await PersonDetailsView.button_lockPerson.click();
       await expect(PersonDetailsView.text_h2_dialogBenutzerSperren).toHaveText('Benutzer sperren');
-      await expect(PersonDetailsView.combobox_organisation).toHaveText('Land Schleswig-Holstein');
+      await expect(PersonDetailsView.combobox_organisationDialogBenutzerSperren).toHaveText('Land Schleswig-Holstein');
       await expect(PersonDetailsView.text_infoLockedUser).toHaveText('Für die Dauer der Sperre hat der Benutzer keinen Zugriff mehr auf das Schulportal SH und die daran angeschlossenen Dienste.');
       await expect(PersonDetailsView.input_befristungSperre).toBeHidden();
       await PersonDetailsView.button_lockPersonConfirm.click();
@@ -724,9 +725,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     await test.step(`Prüfen, dass die Sperre gesetzt ist`, async () => {
       await expect(PersonDetailsView.icon_lockedUser).toBeVisible();
       await expect(PersonDetailsView.text_lockedUser).toBeVisible();
-      await page.pause();
       await expect(PersonDetailsView.text_sperrdatumAb).toHaveText(sperrDatumAb);
-      await page.pause();
     })
   })
 
@@ -754,10 +753,11 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await page.goto(FRONTEND_URL + "admin/personen");
       await personManagementView.input_Suchfeld.fill(userInfoLehrer.username);
       await personManagementView.button_Suchen.click();
+      await expect(personManagementView.comboboxMenuIcon_Status).toBeVisible();
       await page.getByRole("cell", { name: userInfoLehrer.username, exact: true }).click();
       await PersonDetailsView.button_lockPerson.click();
       await expect(PersonDetailsView.text_h2_dialogBenutzerSperren).toHaveText('Benutzer sperren');
-      await expect(PersonDetailsView.combobox_organisation).toHaveText('Land Schleswig-Holstein');
+      await expect(PersonDetailsView.combobox_organisationDialogBenutzerSperren).toHaveText('Land Schleswig-Holstein');
       await expect(PersonDetailsView.text_infoLockedUser).toHaveText('Für die Dauer der Sperre hat der Benutzer keinen Zugriff mehr auf das Schulportal SH und die daran angeschlossenen Dienste.');
       await PersonDetailsView.radio_button_befristet.click();
       await PersonDetailsView.input_befristungSperre.fill(sperrDatumBis);
