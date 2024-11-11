@@ -86,10 +86,7 @@ export class RolleCreationViewPage {
 
     this.angebote = new ComboBox(this.page, this.combobox_Angebote);
     this.merkmale = new ComboBox(this.page, this.combobox_Merkmal);
-    this.schulstrukturknoten = new ComboBox(
-      this.page,
-      this.combobox_Schulstrukturknoten,
-    );
+    this.schulstrukturknoten = new ComboBox(this.page, this.combobox_Schulstrukturknoten,);
     this.rollenarten = new ComboBox(this.page, this.combobox_Rollenart);
     this.systemrechte = new ComboBox(this.page, this.combobox_Systemrechte)
   }
