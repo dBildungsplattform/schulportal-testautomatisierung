@@ -10,7 +10,7 @@ import { createRolleAndPersonWithUserContext } from "../base/api/testHelperPerso
 import { getSPId } from "../base/api/testHelperServiceprovider.page.ts";
 import { UserInfo } from "../base/api/testHelper.page.ts";
 import { addSystemrechtToRolle } from "../base/api/testHelperRolle.page.ts";
-import { LONG, STAGE } from "../base/tags.ts";
+import { LONG } from "../base/tags.ts";
 import { deletePersonByUsername, deleteRolleById } from "../base/testHelperDeleteTestdata.ts";
 
 const PW = process.env.PW;
@@ -67,7 +67,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
   });
 
-  test("Eine Schulzuordnung bei einem bestehenden Benutzer hinzufügen", {tag: [LONG, STAGE]}, async ({ page }) => {
+  test("Eine Schulzuordnung bei einem bestehenden Benutzer hinzufügen", {tag: [LONG]}, async ({ page }) => {
     const personManagementView = new PersonManagementViewPage(page);
     const PersonDetailsView = new PersonDetailsViewPage(page);
     const header = new HeaderPage(page);

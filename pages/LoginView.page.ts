@@ -49,7 +49,7 @@ export class LoginPage {
   }
 
   async UpdatePW() {
-    const new_Password = generator.generate({ length: 10, numbers: true });
+    const new_Password = generator.generate({ length: 8, numbers: true }) + '1Aa!';
     await expect(this.text_h1_updatePW).toBeVisible();
     await this.input_NewPassword.click();
     await this.input_NewPassword.fill(new_Password);
