@@ -139,12 +139,10 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     });
   });
 
-  test("Eine Rolle anlegen und die Bestätigungsseite vollständig prüfen als Landesadmin", {tag: [LONG, SHORT, STAGE]}, async ( ) => {
+  test.only("Eine Rolle anlegen und die Bestätigungsseite vollständig prüfen als Landesadmin", {tag: [LONG, SHORT, STAGE]}, async ( ) => {
     const rollenname =
       "TAuto-PW-R-" + faker.lorem.word({ length: { min: 8, max: 12 } });
-    const DIENSTSTELLENNUMMER = "1111111";
-    const schulstrukturknoten =
-      DIENSTSTELLENNUMMER + " (Testschule Schulportal)";
+    const schulstrukturknoten = "Land Schleswig-Holstein";
     const rollenart = "Leit";
     const merkmal = "KoPers.-Nr. ist Pflichtangabe";
     const angebotA = "E-Mail";
@@ -163,9 +161,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
 
     const rolleCreationConfirmPage: RolleCreationConfirmPage =
       await test.step(`Rolle anlegen`, async () => {
-        await rolleCreationView.schulstrukturknoten.selectByTitle(
-          schulstrukturknoten,
-        );
+        await rolleCreationView.schulstrukturknoten.selectByTitle(schulstrukturknoten);
         await rolleCreationView.rollenarten.selectByTitle(rollenart);
         await rolleCreationView.enterRollenname(rollenname);
         await rolleCreationView.merkmale.selectByTitle(merkmal);
