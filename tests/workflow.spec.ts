@@ -101,6 +101,8 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
 
     await test.step(`In der Benutzerverwaltung die Zeile für Benutzer ${lastname} anklicken und User-Details öffnen`, async () => {
       await expect(personManagement.text_h2_Benutzerverwaltung).toBeVisible();
+      await personManagement.input_Suchfeld.fill(username);
+      await personManagement.button_Suchen.click();
       await page.getByRole("cell", { name: lastname, exact: true }).click();
     });
 
