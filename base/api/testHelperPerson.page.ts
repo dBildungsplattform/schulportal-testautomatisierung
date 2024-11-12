@@ -7,7 +7,7 @@ import { LoginPage } from '../../pages/LoginView.page';
 import { faker } from '@faker-js/faker';
 import { lehrkraftOeffentlichRolle } from '../roles';
 
-const FRONTEND_URL = process.env.FRONTEND_URL || "";
+const FRONTEND_URL: string | undefined = process.env.FRONTEND_URL || "";
 
 export async function createPerson(page: Page, familienname: string, vorname: string, organisationId: string, rolleId: string, koPersNr?: string): Promise<UserInfo> {
     const requestData = {

@@ -10,9 +10,9 @@ import { UserInfo } from "../base/api/testHelper.page";
 import { LONG, SHORT, STAGE } from "../base/tags";
 import { deletePersonById, deleteRolleById } from "../base/testHelperDeleteTestdata";
 
-const PW = process.env.PW;
-const ADMIN = process.env.USER;
-const FRONTEND_URL = process.env.FRONTEND_URL || "";
+const PW: string | undefined = process.env.PW;
+const ADMIN: string | undefined = process.env.USER;
+const FRONTEND_URL: string | undefined = process.env.FRONTEND_URL || "";
 
 let personId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
 let rolleId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
