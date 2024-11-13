@@ -19,6 +19,7 @@ import { lehrer } from "../base/rolesTypes.ts";
 import { testschule } from "../base/organisation.ts";
 import { email } from "../base/sp.ts";
 import { generateLehrerVorname, generateLehrerNachname, generateRolleName } from "../base/testHelperGenerateTestdataNames.ts";
+import { gotoTargetURL } from "../base/testHelperUtils.ts";
 import  moment from 'moment';
 
 const PW = process.env.PW;
@@ -35,7 +36,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const landing = new LandingPage(page);
       const startseite = new StartPage(page);
       const login = new LoginPage(page);
-      await page.goto(FRONTEND_URL);
+      await page.goto('/');
       await landing.button_Anmelden.click();
       await login.login(ADMIN, PW);
       await expect(startseite.text_h2_Ueberschrift).toBeVisible();
@@ -693,7 +694,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
   })
 
-  test.only("Einen Benutzer über das FE unbefristet sperren @long @stage", async ({page, }) => {
+  test("Einen Benutzer über das FE unbefristet sperren @long @stage", async ({page, }) => {
     let userInfoLehrer: UserInfo;
     const sperrDatumAb = moment().format('DD.MM.YYYY');
  
@@ -705,7 +706,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
     const personManagementView: PersonManagementViewPage = new  PersonManagementViewPage(page);
     await test.step(`Zu sperrenden Lehrer suchen und Gesamtübersicht öffnen`, async () => {
-      await page.goto(FRONTEND_URL + "admin/personen");
+      await gotoTargetURL(page, "admin/personen");
       await personManagementView.searchBySuchfeld(userInfoLehrer.username);
       await personManagementView.openGesamtübersichtPerson(page, userInfoLehrer.username);
     })
@@ -718,7 +719,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     })
   })
 
-  test.only("Einen Benutzer über das FE befristet sperren @long @stage", async ({page, }) => {
+  test("Einen Benutzer über das FE befristet sperren @long @stage", async ({page, }) => {
     let userInfoLehrer: UserInfo;
     const sperrDatumAb = moment().format('DD.MM.YYYY');
     const sperrDatumBis = moment().add({ days: 5, months: 2 }).format('DD.MM.YYYY');
@@ -731,7 +732,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
     const personManagementView: PersonManagementViewPage = new  PersonManagementViewPage(page);
     await test.step(`Zu sperrenden Lehrer suchen und Gesamtübersicht öffnen`, async () => {
-      await page.goto(FRONTEND_URL + "admin/personen");
+      await gotoTargetURL(page, "admin/personen");
       await personManagementView.searchBySuchfeld(userInfoLehrer.username);
       await personManagementView.openGesamtübersichtPerson(page, userInfoLehrer.username);
     })

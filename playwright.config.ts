@@ -2,6 +2,8 @@ import { defineConfig, devices } from "@playwright/test";
 import dotenv from "dotenv";
 import * as path from "node:path";
 
+const FRONTEND_URL = process.env.FRONTEND_URL || "";
+
 dotenv.config({
   path: "./.env.dev",
 });
@@ -23,6 +25,7 @@ export default defineConfig({
     locale: "de-DE",
     timezoneId: "Europe/Brussels",
     screenshot: "only-on-failure",
+    baseURL: FRONTEND_URL,
   },
 
   projects: [
