@@ -1,1 +1,1 @@
-export const lehrer = "LEHR";
+export const typelehrer = "LEHR";
