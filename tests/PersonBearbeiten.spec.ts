@@ -15,12 +15,9 @@ import {deletePersonByUsername, deleteRolleById} from "../base/testHelperDeleteT
 import {typelehrer} from "../base/rolesTypes.ts";
 import {testschule} from "../base/organisation.ts";
 import {email} from "../base/sp.ts";
-import {
-    generateLehrerNachname,
-    generateLehrerVorname,
-    generateRolleName
-} from "../base/testHelperGenerateTestdataNames.ts";
+import {generateLehrerNachname, generateLehrerVorname, generateRolleName} from "../base/testHelperGenerateTestdataNames.ts";
 import {generateDateFuture, generateDateToday, gotoTargetURL} from "../base/testHelperUtils.ts";
+import FromAnywhere from "../pages/FromAnywhere";
 
 const PW = process.env.PW;
 const ADMIN = process.env.USER;
@@ -154,22 +151,23 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         const sperrDatumAb = await generateDateToday() // Konkrete Testdaten für diesen Testfall
 
         await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) und SP(email) über die api anlegen ${ADMIN}`, async () => {
-            userInfoLehrer = await createRolleAndPersonWithUserContext(page, testschule, typelehrer, await generateLehrerNachname(), await generateLehrerVorname(), await getSPId(page, email), await generateRolleName());
-            username.push(userInfoLehrer.username);
-            rolleId.push(userInfoLehrer.rolleId);
+          userInfoLehrer = await createRolleAndPersonWithUserContext(page, testschule, typelehrer, await generateLehrerNachname(), await generateLehrerVorname(), await getSPId(page, email), await generateRolleName());
+          username.push(userInfoLehrer.username);
+          rolleId.push(userInfoLehrer.rolleId);
         })
+
         const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
 
         const personDetailsView: PersonDetailsViewPage = await test.step(`Zu sperrenden Lehrer suchen und Gesamtübersicht öffnen`, async () => {
-            await gotoTargetURL(page, "admin/personen"); // Die Navigation ist nicht Bestandteil des Tests
-            await personManagementView.searchBySuchfeld(userInfoLehrer.username);
-            return await personManagementView.openGesamtübersichtPerson(page, userInfoLehrer.username); // Klick auf den Benutzernamen
+          await gotoTargetURL(page, "admin/personen"); // Die Navigation ist nicht Bestandteil des Tests
+          await personManagementView.searchBySuchfeld(userInfoLehrer.username);
+          return await personManagementView.openGesamtuebersichtPerson(page, userInfoLehrer.username); // Klick auf den Benutzernamen
         })
 
         await test.step(`Lehrer sperren und anschließend prüfen, dass die Sperre gesetzt ist`, async () => {
-            await personDetailsView.lockUserWithoutDate();
-            await personDetailsView.checkUserIslocked(); // Das Icon und der Text für die Sperre muss angezeigt werden
-            await personDetailsView.checkLockDateFrom(sperrDatumAb); // Der Benutzer muss ab heute gesperrt sein
+          await personDetailsView.lockUserWithoutDate();
+          await personDetailsView.checkUserIslocked(); // Das Icon und der Text für die Sperre muss angezeigt werden
+          await personDetailsView.checkLockDateFrom(sperrDatumAb); // Der Benutzer muss ab heute gesperrt sein
         })
     })
 
@@ -185,13 +183,13 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         })
 
         const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
-        await test.step(`Zu sperrenden Lehrer suchen und Gesamtübersicht öffnen`, async () => {
+
+        const personDetailsView: PersonDetailsViewPage = await test.step(`Zu sperrenden Lehrer suchen und Gesamtübersicht öffnen`, async () => {
             await gotoTargetURL(page, "admin/personen"); // Die Navigation ist nicht Bestandteil des Tests
             await personManagementView.searchBySuchfeld(userInfoLehrer.username);
-            await personManagementView.openGesamtübersichtPerson(page, userInfoLehrer.username); // Klick auf den Benutzernamen
+            return await personManagementView.openGesamtuebersichtPerson(page, userInfoLehrer.username); // Klick auf den Benutzernamen
         })
 
-        const personDetailsView: PersonDetailsViewPage = new PersonDetailsViewPage(page);
         await test.step(`Lehrer sperren und anschließend prüfen, dass die Sperre gesetzt ist`, async () => {
             await personDetailsView.lockUserWithDate(sperrDatumBis);
             await personDetailsView.checkUserIslocked(); // Das Icon und der Text für die Sperre muss angezeigt werden

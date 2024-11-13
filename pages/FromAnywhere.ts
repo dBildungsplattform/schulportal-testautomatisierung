@@ -5,7 +5,7 @@ function FromAnywhere(page: Page) {
   return {
     async start(): Promise<LandingPage> {
       return page
-        .goto(process.env.FRONTEND_URL)
+        .goto('/')
         .then(() => new LandingPage(page));
     },
   };

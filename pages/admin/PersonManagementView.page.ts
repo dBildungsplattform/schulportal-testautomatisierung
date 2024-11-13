@@ -44,7 +44,7 @@ export class PersonManagementViewPage{
     await expect(this.comboboxMenuIcon_Status).toBeVisible();
   }
 
-  public async openGesamtübersichtPerson(page: Page, name: string): Promise<PersonDetailsViewPage> {
+  public async openGesamtuebersichtPerson(page: Page, name: string): Promise<PersonDetailsViewPage> {
     await page.getByRole("cell", { name: name, exact: true }).click();
     return new PersonDetailsViewPage(page);
   } 
