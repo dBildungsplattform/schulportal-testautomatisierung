@@ -1,4 +1,5 @@
 import { type Locator, Page, expect } from '@playwright/test';
+import {PersonDetailsViewPage} from "./PersonDetailsView.page.js";
 
 export class PersonManagementViewPage{
     readonly page: Page;
@@ -43,7 +44,8 @@ export class PersonManagementViewPage{
     await expect(this.comboboxMenuIcon_Status).toBeVisible();
   }
 
-  public async openGesamtübersichtPerson(page: Page, name: string) {
-    await page.getByRole("cell", { name: name, exact: true }).click(); 
+  public async openGesamtübersichtPerson(page: Page, name: string): Promise<PersonDetailsViewPage> {
+    await page.getByRole("cell", { name: name, exact: true }).click();
+    return new PersonDetailsViewPage(page);
   } 
 }
