@@ -33,6 +33,10 @@ export class ProfilePage{
     readonly cardHeadline_Passwort: Locator;
     readonly icon_Schluessel_Passwort: Locator;
     readonly button_NeuesPasswortSetzen: Locator;
+    readonly button_PasswortAendern: Locator;
+    readonly label_username: Locator;
+    readonly text_p_LoginPrompt: Locator;
+    readonly input_password: Locator;
     // 2FA
     readonly cardHeadline_2FA: Locator;
     readonly icon_Schild2FA: Locator;
@@ -72,9 +76,15 @@ export class ProfilePage{
         // Passwort
         this.cardHeadline_Passwort = page.getByTestId('new-password-card');
         this.button_NeuesPasswortSetzen = page.getByTestId('open-change-password-dialog');
+        this.button_PasswortAendern = page.getByTestId('change-password-button');
+        this.label_username = page.locator('#kc-attempted-username');
+        this.text_p_LoginPrompt = page.getByTestId('login-prompt-text');
+        this.input_password = page.getByTestId('password-input');
+        
          // 2FA
          this.cardHeadline_2FA = page.getByTestId('two-factor-card');
          this.text_no2FA = page.getByText('Es wurde noch kein zweiter Faktor für Sie eingerichtet.');
          this.button_2FAEinrichten = page.getByTestId('open-2FA-self-service-dialog-icon');
+         
     }
 }
