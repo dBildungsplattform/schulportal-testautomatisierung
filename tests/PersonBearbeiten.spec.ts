@@ -73,13 +73,13 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         });
     });
 
-    test("Eine Schulzuordnung bei einem bestehenden Benutzer hinzufügen", {tag: [LONG, STAGE]}, async ({page}) => {
-        const personManagementView = new PersonManagementViewPage(page);
-        const PersonDetailsView = new PersonDetailsViewPage(page);
-        const header = new HeaderPage(page);
-        const landing = new LandingPage(page);
-        const login = new LoginPage(page);
-        const startseite = new StartPage(page);
+  test("Eine Schulzuordnung bei einem bestehenden Benutzer hinzufügen", {tag: [LONG]}, async ({ page }) => {
+    const personManagementView = new PersonManagementViewPage(page);
+    const PersonDetailsView = new PersonDetailsViewPage(page);
+    const header = new HeaderPage(page);
+    const landing = new LandingPage(page);
+    const login = new LoginPage(page);
+    const startseite = new StartPage(page);
 
         const addminVorname = "TAuto-PW-V-" + faker.person.firstName();
         const adminNachname = "TAuto-PW-N-" + faker.person.lastName();
