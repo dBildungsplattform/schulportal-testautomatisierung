@@ -12,10 +12,15 @@ import { UserInfo } from "../base/api/testHelper.page.ts";
 import { addSystemrechtToRolle } from "../base/api/testHelperRolle.page.ts";
 import { LONG, STAGE } from "../base/tags.ts";
 import { deletePersonByUsername, deleteRolleById } from "../base/testHelperDeleteTestdata.ts";
+import { typelehrer } from "../base/rolesTypes.ts";
+import { testschule } from "../base/organisation.ts";
+import { email } from "../base/sp.ts";
+import { generateLehrerVorname, generateLehrerNachname, generateRolleName } from "../base/testHelperGenerateTestdataNames.ts";
+import { gotoTargetURL, generateDateToday, generateDateFuture } from "../base/testHelperUtils.ts";
 
 const PW = process.env.PW;
 const ADMIN = process.env.USER;
-const FRONTEND_URL = process.env.FRONTEND_URL || "";
+//const FRONTEND_URL = process.env.FRONTEND_URL || "";
 
 let username: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
 let rolleId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
@@ -26,7 +31,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const landing = new LandingPage(page);
       const startseite = new StartPage(page);
       const login = new LoginPage(page);
-      await page.goto(FRONTEND_URL);
+      await page.goto('/');
       await landing.button_Anmelden.click();
       await login.login(ADMIN, PW);
       await expect(startseite.text_h2_Ueberschrift).toBeVisible();
@@ -115,7 +120,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     })
 
     await test.step(`Die Gesamtübersicht des Lehrers öffnen`, async () => {
-      await page.goto(FRONTEND_URL + "admin/personen");
+      await gotoTargetURL(page, "admin/personen");
       await personManagementView.input_Suchfeld.fill(lehrerBenutzername);
       await personManagementView.button_Suchen.click();
       await page.getByRole("cell", { name: lehrerBenutzername, exact: true }).click();
@@ -138,5 +143,57 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await expect(page.getByTestId('person-details-card')).toContainText('1111165 (Testschule-PW665): LiV (befristet bis');
       await expect(page.getByTestId('person-details-card')).toContainText('1111165 (Testschule-PW665): ' + lehrerRolle);
     });
+  })
+
+  test("Einen Benutzer über das FE unbefristet sperren @long @stage", async ({page, }) => {
+    let userInfoLehrer: UserInfo;
+    const sperrDatumAb = await generateDateToday() // Konkrete Testdaten für diesen Testfall
+ 
+    await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) und SP(email) über die api anlegen ${ADMIN}`, async () => {
+      userInfoLehrer = await createRolleAndPersonWithUserContext(page, testschule, typelehrer, await generateLehrerNachname(), await generateLehrerVorname(), await getSPId(page, email), await generateRolleName());
+      username.push(userInfoLehrer.username);
+      rolleId.push(userInfoLehrer.rolleId);
+    })
+
+    const personManagementView: PersonManagementViewPage = new  PersonManagementViewPage(page);
+    await test.step(`Zu sperrenden Lehrer suchen und Gesamtübersicht öffnen`, async () => {
+      await gotoTargetURL(page, "admin/personen"); // Die Navigation ist nicht Bestandteil des Tests
+      await personManagementView.searchBySuchfeld(userInfoLehrer.username);
+      await personManagementView.openGesamtübersichtPerson(page, userInfoLehrer.username); // Klick auf den Benutzernamen
+    })
+    
+    const personDetailsView: PersonDetailsViewPage = new PersonDetailsViewPage(page);
+    await test.step(`Lehrer sperren und anschließend prüfen, dass die Sperre gesetzt ist`, async () => {
+      await personDetailsView.lockUserWithoutDate();
+      await personDetailsView.checkUserIslocked(); // Das Icon und der Text für die Sperre muss angezeigt werden
+      await personDetailsView.checkLockDateFrom(sperrDatumAb); // Der Benutzer muss ab heute gesperrt sein
+    })
+  })
+
+  test("Einen Benutzer über das FE befristet sperren @long @stage", async ({page, }) => {
+    let userInfoLehrer: UserInfo;
+    const sperrDatumAb = await generateDateToday() // Konkrete Testdaten für diesen Testfall
+    const sperrDatumBis = await generateDateFuture(5, 2); // Konkrete Testdaten für diesen Testfall
+ 
+    await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) und SP(email) über die api anlegen ${ADMIN}`, async () => {
+      userInfoLehrer = await createRolleAndPersonWithUserContext(page, testschule, typelehrer, await generateLehrerNachname(), await generateLehrerVorname(), await getSPId(page, email), await generateRolleName());
+      username.push(userInfoLehrer.username);
+      rolleId.push(userInfoLehrer.rolleId);
+    })
+
+    const personManagementView: PersonManagementViewPage = new  PersonManagementViewPage(page);
+    await test.step(`Zu sperrenden Lehrer suchen und Gesamtübersicht öffnen`, async () => {
+      await gotoTargetURL(page, "admin/personen"); // Die Navigation ist nicht Bestandteil des Tests
+      await personManagementView.searchBySuchfeld(userInfoLehrer.username);
+      await personManagementView.openGesamtübersichtPerson(page, userInfoLehrer.username); // Klick auf den Benutzernamen
+    })
+    
+    const personDetailsView: PersonDetailsViewPage = new PersonDetailsViewPage(page);
+    await test.step(`Lehrer sperren und anschließend prüfen, dass die Sperre gesetzt ist`, async () => {
+      await personDetailsView.lockUserWithDate(sperrDatumBis);
+      await personDetailsView.checkUserIslocked(); // Das Icon und der Text für die Sperre muss angezeigt werden
+      await personDetailsView.checkLockDateFrom(sperrDatumAb); // Der Benutzer muss ab heute gesperrt sein
+      await personDetailsView.checkLockDateTo(sperrDatumBis); // Der Benutzer muss gesperrt sein bis zun dem eingegebenen Datum
+    })
   })
 });

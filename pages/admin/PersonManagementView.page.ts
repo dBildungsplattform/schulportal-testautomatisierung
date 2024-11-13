@@ -18,7 +18,7 @@ export class PersonManagementViewPage{
     readonly comboboxMenuIcon_Klasse: Locator;
     readonly comboboxMenuIcon_Status: Locator;
    
-    constructor(page){
+    constructor(page: Page){
         this.page = page;  
         this.text_h1_Administrationsbereich = page.getByTestId('admin-headline');
         this.text_h2_Benutzerverwaltung = page.getByTestId('layout-card-headline');
@@ -43,7 +43,7 @@ export class PersonManagementViewPage{
     await expect(this.comboboxMenuIcon_Status).toBeVisible();
   }
 
-  public async openGesamtübersichtPerson(page, name: string) {
-    await page.getByRole("cell", { name: name, exact: true }).click();
-}
+  public async openGesamtübersichtPerson(page: Page, name: string) {
+    await page.getByRole("cell", { name: name, exact: true }).click(); 
+  } 
 }

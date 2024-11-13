@@ -15,12 +15,6 @@ import { addSystemrechtToRolle } from "../base/api/testHelperRolle.page";
 import { LONG, SHORT, STAGE } from "../base/tags";
 import { deletePersonByUsername, deleteRolleById, deleteRolleByName } from "../base/testHelperDeleteTestdata.ts";
 import { landesadminRolle, schuelerRolle, schuladminOeffentlichRolle } from "../base/roles.ts";
-import { typelehrer } from "../base/rolesTypes.ts";
-import { testschule } from "../base/organisation.ts";
-import { email } from "../base/sp.ts";
-import { generateLehrerVorname, generateLehrerNachname, generateRolleName } from "../base/testHelperGenerateTestdataNames.ts";
-import { gotoTargetURL } from "../base/testHelperUtils.ts";
-import  moment from 'moment';
 
 const PW = process.env.PW;
 const ADMIN = process.env.USER;
@@ -692,57 +686,5 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await expect(personManagementView.comboboxMenuIcon_Status).toBeVisible();
       await expect(page.getByRole("cell", { name: nachname, exact: true })).toBeHidden();
     });
-  })
-
-  test("Einen Benutzer über das FE unbefristet sperren @long @stage", async ({page, }) => {
-    let userInfoLehrer: UserInfo;
-    const sperrDatumAb = moment().format('DD.MM.YYYY');
- 
-    await test.step(`Testdaten: Lehrer über die api anlegen ${ADMIN}`, async () => {
-      userInfoLehrer = await createRolleAndPersonWithUserContext(page, testschule, typelehrer, await generateLehrerNachname(), await generateLehrerVorname(), await getSPId(page, email), await generateRolleName());
-      username.push(userInfoLehrer.username);
-      roleId.push(userInfoLehrer.rolleId);
-    })
-
-    const personManagementView: PersonManagementViewPage = new  PersonManagementViewPage(page);
-    await test.step(`Zu sperrenden Lehrer suchen und Gesamtübersicht öffnen`, async () => {
-      await gotoTargetURL(page, "admin/personen"); // Die Navigation ist nicht Bestandteil des Tests
-      await personManagementView.searchBySuchfeld(userInfoLehrer.username);
-      await personManagementView.openGesamtübersichtPerson(page, userInfoLehrer.username);
-    })
-    
-    const personDetailsView: PersonDetailsViewPage = new PersonDetailsViewPage(page);
-    await test.step(`Lehrer sperren und anschließend prüfen, dass die Sperre gesetzt ist`, async () => {
-      await personDetailsView.lockUserWithoutDate();
-      await personDetailsView.checkUserIslocked(); // Das Icon und der Text für die Sperre muss angezeigt werden
-      await personDetailsView.checkLockDateFrom(sperrDatumAb); // Der Benutzer muss ab heute gesperrt sein
-    })
-  })
-
-  test("Einen Benutzer über das FE befristet sperren @long @stage", async ({page, }) => {
-    let userInfoLehrer: UserInfo;
-    const sperrDatumAb = moment().format('DD.MM.YYYY');
-    const sperrDatumBis = moment().add({ days: 5, months: 2 }).format('DD.MM.YYYY');
- 
-    await test.step(`Testdaten: Lehrer über die api anlegen ${ADMIN}`, async () => {
-      userInfoLehrer = await createRolleAndPersonWithUserContext(page, testschule, typelehrer, await generateLehrerNachname(), await generateLehrerVorname(), await getSPId(page, email), await generateRolleName());
-      username.push(userInfoLehrer.username);
-      roleId.push(userInfoLehrer.rolleId);
-    })
-
-    const personManagementView: PersonManagementViewPage = new  PersonManagementViewPage(page);
-    await test.step(`Zu sperrenden Lehrer suchen und Gesamtübersicht öffnen`, async () => {
-      await gotoTargetURL(page, "admin/personen"); // Die Navigation ist nicht Bestandteil des Tests
-      await personManagementView.searchBySuchfeld(userInfoLehrer.username);
-      await personManagementView.openGesamtübersichtPerson(page, userInfoLehrer.username);
-    })
-    
-    const personDetailsView: PersonDetailsViewPage = new PersonDetailsViewPage(page);
-    await test.step(`Lehrer sperren und anschließend prüfen, dass die Sperre gesetzt ist`, async () => {
-      await personDetailsView.lockUserWithDate(sperrDatumBis);
-      await personDetailsView.checkUserIslocked(); // Das Icon und der Text für die Sperre muss angezeigt werden
-      await personDetailsView.checkLockDateFrom(sperrDatumAb); // Der Benutzer muss ab heute gesperrt sein
-      await personDetailsView.checkLockDateTo(sperrDatumBis); // Der Benutzer muss gesperrt sein bis zun dem eingegebenen Datum
-    })
   })
 });
