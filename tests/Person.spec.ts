@@ -15,6 +15,10 @@ import { addSystemrechtToRolle } from "../base/api/testHelperRolle.page";
 import { LONG, SHORT, STAGE } from "../base/tags";
 import { deletePersonByUsername, deleteRolleById, deleteRolleByName } from "../base/testHelperDeleteTestdata.ts";
 import { landesadminRolle, schuelerRolle, schuladminOeffentlichRolle } from "../base/roles.ts";
+import { lehrer } from "../base/rolesTypes.ts";
+import { testschule } from "../base/organisation.ts";
+import { email } from "../base/sp.ts";
+import { generateLehrerVorname } from "../base/testHelperGenerateTestdataNames.ts";
 import  moment from 'moment';
 
 const PW = process.env.PW;
@@ -689,86 +693,65 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
   })
 
-  test("Einen Benutzer über das FE unbefristet sperren @long @stage", async ({page, }) => {
-    const personManagementView = new PersonManagementViewPage(page);
-    const PersonDetailsView = new PersonDetailsViewPage(page);
-
-    const lehrerVorname = "TAuto-PW-V-" + faker.person.firstName();
+  test.("Einen Benutzer über das FE unbefristet sperren @long @stage", async ({page, }) => {
+    //const lehrerVorname = "TAuto-PW-V-" + faker.person.firstName();
     const lehrerNachname = "TAuto-PW-N-" + faker.person.lastName();
     const lehrerRolle = "TAuto-PW-LEHR-" + faker.lorem.word({ length: { min: 8, max: 12 }});
-    const lehrerRollenart = 'LEHR';
-    const lehrerOrganisation = 'Testschule Schulportal';
+    
     let userInfoLehrer: UserInfo;
-    const lehrerIdSP = await getSPId(page, 'E-Mail');
+    const lehrerIdSP = await getSPId(page, email);
     const sperrDatumAb = moment().format('DD.MM.YYYY');
  
     await test.step(`Testdaten: Lehrer über die api anlegen ${ADMIN}`, async () => {
-      userInfoLehrer = await createRolleAndPersonWithUserContext(page, lehrerOrganisation, lehrerRollenart, lehrerVorname, lehrerNachname, lehrerIdSP, lehrerRolle);
+      userInfoLehrer = await createRolleAndPersonWithUserContext(page, testschule, lehrer, lehrerNachname, await generateLehrerVorname(), lehrerIdSP, lehrerRolle);
       username.push(userInfoLehrer.username);
       roleId.push(userInfoLehrer.rolleId);
     })
 
-    await test.step(`Lehrer unbefristet sperren als Landesadmin ${ADMIN}`, async () => {
+    const personManagementView: PersonManagementViewPage = new  PersonManagementViewPage(page);
+    await test.step(`Zu sperrenden Lehrer suchen und Gesamtübersicht öffnen`, async () => {
       await page.goto(FRONTEND_URL + "admin/personen");
-      await personManagementView.input_Suchfeld.fill(userInfoLehrer.username);
-      await personManagementView.button_Suchen.click();
-      await expect(personManagementView.comboboxMenuIcon_Status).toBeVisible();
-      await page.getByRole("cell", { name: userInfoLehrer.username, exact: true }).click();
-      await PersonDetailsView.button_lockPerson.click();
-      await expect(PersonDetailsView.text_h2_dialogBenutzerSperren).toHaveText('Benutzer sperren');
-      await expect(PersonDetailsView.combobox_organisationDialogBenutzerSperren).toHaveText('Land Schleswig-Holstein');
-      await expect(PersonDetailsView.text_infoLockedUser).toHaveText('Für die Dauer der Sperre hat der Benutzer keinen Zugriff mehr auf das Schulportal SH und die daran angeschlossenen Dienste.');
-      await expect(PersonDetailsView.input_befristungSperre).toBeHidden();
-      await PersonDetailsView.button_lockPersonConfirm.click();
+      await personManagementView.searchBySuchfeld(userInfoLehrer.username);
+      await personManagementView.openGesamtübersichtPerson(page, userInfoLehrer.username);
+      await page.pause();
     })
-
-    await test.step(`Prüfen, dass die Sperre gesetzt ist`, async () => {
-      await expect(PersonDetailsView.icon_lockedUser).toBeVisible();
-      await expect(PersonDetailsView.text_lockedUser).toBeVisible();
-      await expect(PersonDetailsView.text_sperrdatumAb).toHaveText(sperrDatumAb);
+    
+    const personDetailsView: PersonDetailsViewPage = new PersonDetailsViewPage(page);
+    await test.step(`Lehrer sperren und anschließend prüfen, dass die Sperre gesetzt ist`, async () => {
+      await personDetailsView.lockUserWithoutDate();
+      await personDetailsView.checkUserIslocked();
+      await personDetailsView.checkLockDateFrom(sperrDatumAb);
     })
   })
 
   test("Einen Benutzer über das FE befristet sperren @long @stage", async ({page, }) => {
-    const personManagementView = new PersonManagementViewPage(page);
-    const PersonDetailsView = new PersonDetailsViewPage(page);
-
     const lehrerVorname = "TAuto-PW-V-" + faker.person.firstName();
     const lehrerNachname = "TAuto-PW-N-" + faker.person.lastName();
     const lehrerRolle = "TAuto-PW-LEHR-" + faker.lorem.word({ length: { min: 8, max: 12 }});
-    const lehrerRollenart = 'LEHR';
-    const lehrerOrganisation = 'Testschule Schulportal';
     let userInfoLehrer: UserInfo;
-    const lehrerIdSP = await getSPId(page, 'E-Mail');
+    const lehrerIdSP = await getSPId(page, email);
     const sperrDatumAb = moment().format('DD.MM.YYYY');
     const sperrDatumBis = moment().add({ days: 5, months: 2 }).format('DD.MM.YYYY');
  
     await test.step(`Testdaten: Lehrer über die api anlegen ${ADMIN}`, async () => {
-      userInfoLehrer = await createRolleAndPersonWithUserContext(page, lehrerOrganisation, lehrerRollenart, lehrerVorname, lehrerNachname, lehrerIdSP, lehrerRolle);
+      userInfoLehrer = await createRolleAndPersonWithUserContext(page, testschule, lehrer, lehrerVorname, lehrerNachname, lehrerIdSP, lehrerRolle);
       username.push(userInfoLehrer.username);
       roleId.push(userInfoLehrer.rolleId);
     })
 
-    await test.step(`Lehrer befristet sperren als Landesadmin ${ADMIN}`, async () => {
+    const personManagementView: PersonManagementViewPage = new  PersonManagementViewPage(page);
+    await test.step(`Zu sperrenden Lehrer suchen und Gesamtübersicht öffnen`, async () => {
       await page.goto(FRONTEND_URL + "admin/personen");
-      await personManagementView.input_Suchfeld.fill(userInfoLehrer.username);
-      await personManagementView.button_Suchen.click();
-      await expect(personManagementView.comboboxMenuIcon_Status).toBeVisible();
-      await page.getByRole("cell", { name: userInfoLehrer.username, exact: true }).click();
-      await PersonDetailsView.button_lockPerson.click();
-      await expect(PersonDetailsView.text_h2_dialogBenutzerSperren).toHaveText('Benutzer sperren');
-      await expect(PersonDetailsView.combobox_organisationDialogBenutzerSperren).toHaveText('Land Schleswig-Holstein');
-      await expect(PersonDetailsView.text_infoLockedUser).toHaveText('Für die Dauer der Sperre hat der Benutzer keinen Zugriff mehr auf das Schulportal SH und die daran angeschlossenen Dienste.');
-      await PersonDetailsView.radio_button_befristet.click();
-      await PersonDetailsView.input_befristungSperre.fill(sperrDatumBis);
-      await PersonDetailsView.button_lockPersonConfirm.click();
+      await personManagementView.searchBySuchfeld(userInfoLehrer.username);
+      await personManagementView.openGesamtübersichtPerson(page, userInfoLehrer.username);
     })
-
-    await test.step(`Prüfen, dass die Sperre gesetzt ist`, async () => {
-      await expect(PersonDetailsView.icon_lockedUser).toBeVisible();
-      await expect(PersonDetailsView.text_lockedUser).toBeVisible();
-      await expect(PersonDetailsView.text_sperrdatumAb).toHaveText(sperrDatumAb);
-      await expect(PersonDetailsView.text_sperrdatumBis).toHaveText(sperrDatumBis);
+    
+    const personDetailsView: PersonDetailsViewPage = new PersonDetailsViewPage(page);
+    await test.step(`Lehrer sperren und anschließend prüfen, dass die Sperre gesetzt ist`, async () => {
+      await personDetailsView.lockUserWithDate(sperrDatumBis);
+      await personDetailsView.checkUserIslocked();
+      await personDetailsView.checkLockDateFrom(sperrDatumAb);
+      await personDetailsView.checkLockDateTo(sperrDatumBis);
     })
   })
 });

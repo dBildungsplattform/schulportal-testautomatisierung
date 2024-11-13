@@ -1,4 +1,4 @@
-import { type Locator, Page } from '@playwright/test';
+import { type Locator, Page, expect } from '@playwright/test';
 
 export class PersonDetailsViewPage{
     readonly page: Page;
@@ -33,6 +33,7 @@ export class PersonDetailsViewPage{
     readonly text_infoLockedUser: Locator;
     readonly icon_lockedUser: Locator;
     readonly text_lockedUser: Locator;
+    readonly text_unlockedUser: Locator;
     readonly input_befristungSperre: Locator;
     readonly radio_button_befristet: Locator;
     readonly text_sperrdatumAb: Locator;
@@ -71,9 +72,43 @@ export class PersonDetailsViewPage{
         this.text_infoLockedUser = page.getByTestId('lock-user-info-text');
         this.icon_lockedUser = page.getByTestId('person-lock-info').locator('i');
         this.text_lockedUser = page.getByText('Dieser Benutzer ist gesperrt.');
+        this.text_unlockedUser = page.getByText('Dieser Benutzer ist aktiv.');
         this.input_befristungSperre = page.getByTestId('befristung-input').getByPlaceholder('TT.MM.JJJJ');
         this.radio_button_befristet = page.getByTestId('befristet-radio-button').getByLabel('Befristet');
         this.text_sperrdatumAb = page.getByTestId('lock-info-1-attribute');
         this.text_sperrdatumBis = page.getByTestId('lock-info-2-attribute');
+    }
+
+    public async lockUserWithoutDate() {
+        await this.button_lockPerson.click();
+        await expect(this.text_h2_dialogBenutzerSperren).toHaveText('Benutzer sperren');
+        await expect(this.combobox_organisationDialogBenutzerSperren).toHaveText('Land Schleswig-Holstein');
+        await expect(this.text_infoLockedUser).toHaveText('Für die Dauer der Sperre hat der Benutzer keinen Zugriff mehr auf das Schulportal SH und die daran angeschlossenen Dienste.');
+        await expect(this.input_befristungSperre).toBeHidden();
+        await this.button_lockPersonConfirm.click()
+    }
+
+    public async lockUserWithDate(lockDateTo) {
+        await this.button_lockPerson.click();
+        await expect(this.text_h2_dialogBenutzerSperren).toHaveText('Benutzer sperren');
+        await expect(this.combobox_organisationDialogBenutzerSperren).toHaveText('Land Schleswig-Holstein');
+        await expect(this.text_infoLockedUser).toHaveText('Für die Dauer der Sperre hat der Benutzer keinen Zugriff mehr auf das Schulportal SH und die daran angeschlossenen Dienste.');
+        await this.radio_button_befristet.click();
+        await expect(this.input_befristungSperre).toBeVisible();
+        await this.input_befristungSperre.fill(lockDateTo);
+        await this.button_lockPersonConfirm.click()
+    }
+
+    public async checkUserIslocked() {
+        await expect(this.icon_lockedUser).toBeVisible();
+        await expect(this.text_lockedUser).toBeVisible();
+    }
+
+    public async checkLockDateFrom(lockDateFrom: string) {
+        await expect(this.text_sperrdatumAb).toHaveText(lockDateFrom);
+    }
+
+    public async checkLockDateTo(lockDateTo: string) {
+        await expect(this.text_sperrdatumBis).toHaveText(lockDateTo);
     }
 }
