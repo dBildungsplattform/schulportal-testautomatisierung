@@ -18,7 +18,7 @@ import { landesadminRolle, schuelerRolle, schuladminOeffentlichRolle } from "../
 import { lehrer } from "../base/rolesTypes.ts";
 import { testschule } from "../base/organisation.ts";
 import { email } from "../base/sp.ts";
-import { generateLehrerVorname } from "../base/testHelperGenerateTestdataNames.ts";
+import { generateLehrerVorname, generateLehrerNachname, generateRolleName } from "../base/testHelperGenerateTestdataNames.ts";
 import  moment from 'moment';
 
 const PW = process.env.PW;
@@ -693,17 +693,12 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
   })
 
-  test.("Einen Benutzer über das FE unbefristet sperren @long @stage", async ({page, }) => {
-    //const lehrerVorname = "TAuto-PW-V-" + faker.person.firstName();
-    const lehrerNachname = "TAuto-PW-N-" + faker.person.lastName();
-    const lehrerRolle = "TAuto-PW-LEHR-" + faker.lorem.word({ length: { min: 8, max: 12 }});
-    
+  test.only("Einen Benutzer über das FE unbefristet sperren @long @stage", async ({page, }) => {
     let userInfoLehrer: UserInfo;
-    const lehrerIdSP = await getSPId(page, email);
     const sperrDatumAb = moment().format('DD.MM.YYYY');
  
     await test.step(`Testdaten: Lehrer über die api anlegen ${ADMIN}`, async () => {
-      userInfoLehrer = await createRolleAndPersonWithUserContext(page, testschule, lehrer, lehrerNachname, await generateLehrerVorname(), lehrerIdSP, lehrerRolle);
+      userInfoLehrer = await createRolleAndPersonWithUserContext(page, testschule, lehrer, await generateLehrerNachname(), await generateLehrerVorname(), await getSPId(page, email), await generateRolleName());
       username.push(userInfoLehrer.username);
       roleId.push(userInfoLehrer.rolleId);
     })
@@ -713,7 +708,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await page.goto(FRONTEND_URL + "admin/personen");
       await personManagementView.searchBySuchfeld(userInfoLehrer.username);
       await personManagementView.openGesamtübersichtPerson(page, userInfoLehrer.username);
-      await page.pause();
     })
     
     const personDetailsView: PersonDetailsViewPage = new PersonDetailsViewPage(page);
@@ -724,17 +718,13 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     })
   })
 
-  test("Einen Benutzer über das FE befristet sperren @long @stage", async ({page, }) => {
-    const lehrerVorname = "TAuto-PW-V-" + faker.person.firstName();
-    const lehrerNachname = "TAuto-PW-N-" + faker.person.lastName();
-    const lehrerRolle = "TAuto-PW-LEHR-" + faker.lorem.word({ length: { min: 8, max: 12 }});
+  test.only("Einen Benutzer über das FE befristet sperren @long @stage", async ({page, }) => {
     let userInfoLehrer: UserInfo;
-    const lehrerIdSP = await getSPId(page, email);
     const sperrDatumAb = moment().format('DD.MM.YYYY');
     const sperrDatumBis = moment().add({ days: 5, months: 2 }).format('DD.MM.YYYY');
  
     await test.step(`Testdaten: Lehrer über die api anlegen ${ADMIN}`, async () => {
-      userInfoLehrer = await createRolleAndPersonWithUserContext(page, testschule, lehrer, lehrerVorname, lehrerNachname, lehrerIdSP, lehrerRolle);
+      userInfoLehrer = await createRolleAndPersonWithUserContext(page, testschule, lehrer, await generateLehrerNachname(), await generateLehrerVorname(), await getSPId(page, email), await generateRolleName());
       username.push(userInfoLehrer.username);
       roleId.push(userInfoLehrer.rolleId);
     })
