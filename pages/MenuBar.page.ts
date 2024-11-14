@@ -3,6 +3,7 @@ import { RolleCreationViewPage } from "./admin/RolleCreationView.page";
 import {RolleManagementViewPage} from "./admin/RolleManagementView.page";
 import { SchuleManagementViewPage } from "./admin/SchuleManagementView.page";
 import { SchuleCreationViewPage } from "./admin/SchuleCreationView.page";
+import { HeaderPage } from "./Header.page";
 
 export class MenuPage {
   readonly page: Page;
@@ -24,9 +25,7 @@ export class MenuPage {
 
   constructor(page) {
     this.page = page;
-    this.header_label_Navigation = page.locator(
-      '[data-testid="menu-bar-title"] .v-list-item-title',
-    );
+    this.header_label_Navigation = page.locator('[data-testid="menu-bar-title"] .v-list-item-title');
     this.button_BackStartpage = page.getByTestId("back-to-start-link");
     this.label_Benutzerverwaltung = page.locator(
       '[data-testid="person-management-title"] .v-list-item-title',
