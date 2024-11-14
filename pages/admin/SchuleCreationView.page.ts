@@ -28,7 +28,7 @@ export class SchuleCreationViewPage{
         this.radio_button_Public_Schule = page.getByTestId('schulform-radio-button-0');
         this.input_Dienststellennummer = page.getByTestId('dienststellennummer-input').locator('input');
         this.input_Schulname = page.getByTestId('schulname-input').locator('input');
-        this.button_SchuleAnlegen = page.getByTestId('schule-creation-form-create-button');
+        this.button_SchuleAnlegen = page.getByTestId('schule-creation-form-submit-button');
         this.button_WeitereSchuleAnlegen = page.getByTestId('create-another-schule-button');
         // Bestätigungsseite
         this.button_ZurueckErgebnisliste = page.getByTestId('back-to-list-button');
