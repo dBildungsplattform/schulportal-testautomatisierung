@@ -12,7 +12,7 @@ import {UserInfo} from "../base/api/testHelper.page.ts";
 import {addSystemrechtToRolle} from "../base/api/testHelperRolle.page.ts";
 import {LONG, STAGE} from "../base/tags.ts";
 import {deletePersonByUsername, deleteRolleById} from "../base/testHelperDeleteTestdata.ts";
-import {typelehrer} from "../base/rolesTypes.ts";
+import {typelehrer} from "../base/rollentypen.ts";
 import {testschule} from "../base/organisation.ts";
 import {email} from "../base/sp.ts";
 import {generateLehrerNachname, generateLehrerVorname, generateRolleName} from "../base/testHelperGenerateTestdataNames.ts";
