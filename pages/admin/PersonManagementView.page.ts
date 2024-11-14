@@ -45,7 +45,7 @@ export class PersonManagementViewPage{
   }
 
   public async openGesamtuebersichtPerson(page: Page, name: string): Promise<PersonDetailsViewPage> {
-    await page.getByRolle("cell", { name: name, exact: true }).click();
+    await page.getByRole("cell", { name: name, exact: true }).click();
     return new PersonDetailsViewPage(page);
   } 
 }
