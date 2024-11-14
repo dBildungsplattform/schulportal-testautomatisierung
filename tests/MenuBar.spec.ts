@@ -13,9 +13,9 @@ const FRONTEND_URL: string | undefined = process.env.FRONTEND_URL || "";
 test.describe(`Testfälle für die Hauptmenue-Leiste: Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }) => {
     await test.step(`Login`, async () => {
-      const landing = new LandingPage(page);
-      const startseite = new StartPage(page);
-      const login = new LoginPage(page);
+      const landing: LandingPage = new LandingPage(page);
+      const startseite: StartPage = new StartPage(page);
+      const login: LoginPage = new LoginPage(page);
 
       await page.goto(FRONTEND_URL);
       await landing.button_Anmelden.click();

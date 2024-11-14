@@ -19,9 +19,9 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
   
   test.beforeEach(async ({ page }) => {
     await test.step(`Login`, async () => {
-      const landing = new LandingPage(page);
-      const startseite = new StartPage(page);
-      const login = new LoginPage(page);
+      const landing: LandingPage = new LandingPage(page);
+      const startseite: StartPage = new StartPage(page);
+      const login: LoginPage = new LoginPage(page);
 
       await page.goto(FRONTEND_URL);
       await landing.button_Anmelden.click();
@@ -45,7 +45,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
   });
 
   test("Eine Klasse als Landesadmin anlegen und die Klasse anschließend in der Ergebnisliste suchen und dann löschen", {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
-    const startseite = new StartPage(page);
+    const startseite: StartPage = new StartPage(page);
     const menue = new MenuPage(page);
     const klasseCreationView = new KlasseCreationViewPage(page);
     const klasseManagementView = new KlasseManagementViewPage(page);
@@ -84,7 +84,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
   });
 
   test("Ergebnisliste Klassen als Landesadmin auf Vollständigkeit prüfen", {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
-    const startseite = new StartPage(page);
+    const startseite: StartPage = new StartPage(page);
     const menue = new MenuPage(page);
     const klasseManagementView = new KlasseManagementViewPage(page);
 

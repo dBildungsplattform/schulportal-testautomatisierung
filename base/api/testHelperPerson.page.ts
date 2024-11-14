@@ -94,7 +94,7 @@ export async function getPersonId(page: Page, Benutzername: string): Promise<str
 
 export async function createTeacherAndLogin(page) {
     const header = new HeaderPage(page);
-    const login = new LoginPage(page);
+    const login: LoginPage = new LoginPage(page);
     const vorname = "TAuto-PW-V-" + faker.person.firstName();
     const nachname = "TAuto-PW-N-" + faker.person.lastName();
     const organisation = 'Testschule Schulportal';
