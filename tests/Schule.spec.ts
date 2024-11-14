@@ -85,7 +85,7 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
 
     const { menue, schuleCreationView }: { menue: MenuPage; schuleCreationView: SchuleCreationViewPage } =
       await test.step(`Dialog Schule anlegen öffnen`, async (): Promise<{ menue: MenuPage; schuleCreationView: SchuleCreationViewPage }> => {
-        const menue: MenuPage = await startseite.administration();
+        const menue: MenuPage = await startseite.goToAdministration();
         const schuleCreationView: SchuleCreationViewPage = await menue.schuleAnlegen();
         await menue.menueItem_SchuleAnlegen.click();
         await expect(schuleCreationView.text_h2_SchuleAnlegen).toHaveText("Neue Schule hinzufügen");
@@ -127,7 +127,7 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
     const startseite = new StartPage(page);
 
     await test.step(`Schulverwaltung öffnen und Alle Elemente in der Ergebnisliste auf Existenz prüfen`, async () => {
-      const menue: MenuPage = await startseite.administration();
+      const menue: MenuPage = await startseite.goToAdministration();
       const schuleManagementView: SchuleManagementViewPage = await menue.alleSchulenAnzeigen();
       await expect(schuleManagementView.text_h1_Administrationsbereich).toBeVisible();
       await expect(schuleManagementView.text_h2_Schulverwaltung).toBeVisible();
@@ -155,7 +155,7 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
       await addSystemrechtToRolle(page, userInfo.rolleId, 'SCHULEN_VERWALTEN');
 
       await header.logout();
-      const login = await landing.login();
+      const login = await landing.goToLogin();
       const startseite = await login.login(userInfo.username, userInfo.password);
       userInfo.password = await login.UpdatePW();
       await expect(startseite.text_h2_Ueberschrift).toBeVisible();
@@ -163,7 +163,7 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
     });
 
     const schuleCreationView = await test.step(`Dialog Schule anlegen öffnen als Schuladmin`, async () => {
-      const menue: MenuPage = await startseite.administration();
+      const menue: MenuPage = await startseite.goToAdministration();
         const schuleCreationView: SchuleCreationViewPage = await menue.schuleAnlegen();
         return schuleCreationView;
     });

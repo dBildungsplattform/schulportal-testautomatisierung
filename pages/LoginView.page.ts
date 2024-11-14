@@ -32,8 +32,8 @@ export class LoginPage {
   }
 
   async login(
-    username = process.env.USER,
-    password = process.env.PW,
+    username: string = process.env.USER as string,
+    password: string = process.env.PW as string,
   ): Promise<StartPage> {
     await expect(this.text_h1).toBeVisible();
     await this.input_username.click();

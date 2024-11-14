@@ -12,7 +12,7 @@ export class LandingPage {
     this.button_Anmelden = page.getByTestId("login-button");
   }
 
-  public async login(): Promise<LoginPage> {
+  public async goToLogin(): Promise<LoginPage> {
     await this.button_Anmelden.click();
     return new LoginPage(this.page);
   }
