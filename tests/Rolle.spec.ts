@@ -139,7 +139,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     });
   });
 
-  test.only("Eine Rolle anlegen und die Bestätigungsseite vollständig prüfen als Landesadmin", {tag: [LONG, SHORT, STAGE]}, async ( ) => {
+  test("Eine Rolle anlegen und die Bestätigungsseite vollständig prüfen als Landesadmin", {tag: [LONG, SHORT, STAGE]}, async ( ) => {
     const rollenname =
       "TAuto-PW-R-" + faker.lorem.word({ length: { min: 8, max: 12 } });
     const schulstrukturknoten = "Land Schleswig-Holstein";
