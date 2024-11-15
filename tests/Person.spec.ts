@@ -14,7 +14,7 @@ import { UserInfo } from "../base/api/testHelper.page";
 import { addSystemrechtToRolle } from "../base/api/testHelperRolle.page";
 import { LONG, SHORT, STAGE } from "../base/tags";
 import { deletePersonByUsername, deleteRolleById, deleteRolleByName } from "../base/testHelperDeleteTestdata.ts";
-import { landesadminRolle, schuelerRolle, schuladminOeffentlichRolle } from "../base/roles.ts";
+import { landesadminRolle, schuelerRolle, schuladminOeffentlichRolle } from "../base/rollen.ts";
 
 const PW = process.env.PW;
 const ADMIN = process.env.USER;

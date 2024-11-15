@@ -5,7 +5,7 @@ import { UserInfo } from "./testHelper.page";
 import { HeaderPage } from '../../pages/Header.page';
 import { LoginPage } from '../../pages/LoginView.page';
 import { faker } from '@faker-js/faker';
-import { lehrkraftOeffentlichRolle } from '../roles';
+import { lehrkraftOeffentlichRolle } from '../rollen';
 
 const FRONTEND_URL = process.env.FRONTEND_URL || "";
 
