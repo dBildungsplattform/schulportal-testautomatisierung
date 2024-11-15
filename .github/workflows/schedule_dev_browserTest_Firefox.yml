@@ -1,4 +1,4 @@
-name: Scheduled main long 
+name: Scheduled main browserTest 
 on:
   workflow_dispatch:
   schedule:
