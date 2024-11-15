@@ -55,7 +55,7 @@ jobs:
     - name: List Playwright tests
       run: npx playwright test --list --grep "@short"
     - name: Run Playwright tests
-      run: npx playwright test --config=playwright.config.ts --grep "@SHORT" --project "chromium"
+      run: npx playwright test --config=playwright.config.ts --grep "@short" --project "chromium"
     
       env:
         USER: '${{ secrets.USER }}'
