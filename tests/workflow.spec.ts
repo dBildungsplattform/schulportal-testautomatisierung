@@ -7,7 +7,7 @@ import { ItsLearningPage } from "../pages/Cards/ItsLearning.page";
 import { PersonManagementViewPage } from "../pages/admin/PersonManagementView.page";
 import { PersonDetailsViewPage } from "../pages/admin/PersonDetailsView.page";
 import { HeaderPage } from "../pages/Header.page";
-import { LONG, SHORT, STAGE } from "../base/tags";
+import { LONG, SHORT, STAGE, BROWSER } from "../base/tags";
 import { CalendarPage } from "../pages/Cards/Calendar.page";
 import { DirectoryPage } from "../pages/Cards/Directory.page";
 import { createTeacherAndLogin } from "../base/api/testHelperPerson.page";
@@ -84,7 +84,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
     });
   });
 
-  test("Passwort Reset für einen Lehrer als Landesadmin", {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
+  test("Passwort Reset für einen Lehrer als Landesadmin", {tag: [LONG, SHORT, STAGE, BROWSER]}, async ({ page }) => {
     const landing = new LandingPage(page);
     const login = new LoginPage(page);
     const startseite = new StartPage(page);
@@ -103,7 +103,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
       await expect(personManagement.text_h2_Benutzerverwaltung).toBeVisible();
       await personManagement.input_Suchfeld.fill(username);
       await personManagement.button_Suchen.click();
-      await page.getByRole("cell", { name: lastname, exact: true }).click();
+      await page.getByRole("cell", { name: lastname, exact: true }).click({delay:500});
     });
 
     await test.step(`In den User-Details PW-Reset Dialog starten`, async () => {
