@@ -211,40 +211,73 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
   });
 
-  test("Einen Benutzer mit der Rolle Schuladmin anlegen als Landesadmin", {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
-    const startseite: StartPage = new StartPage(page);
-    const menue = new MenuPage(page);
-    const personCreationView = new PersonCreationViewPage(page);
-
-    const vorname = "TAuto-PW-V-" + faker.person.firstName();
-    const nachname = "TAuto-PW-N-" + faker.person.lastName();
-    const schulstrukturknoten = "(Testschule Schulportal)";
-
-    await test.step(`Dialog Person anlegen öffnen`, async () => {
-      await startseite.card_item_schulportal_administration.click();
-      await menue.menueItem_BenutzerAnlegen.click();
-      await expect(personCreationView.text_h2_PersonAnlegen).toHaveText("Neuen Benutzer hinzufügen");
-    });
-
-    await test.step(`Benutzer anlegen`, async () => {
-      await personCreationView.combobox_Schulstrukturknoten.click();
-      await page.getByText(schulstrukturknoten).click();
-      await personCreationView.combobox_Rolle.click();
-      await page.getByText(schuladminOeffentlichRolle, { exact: true }).click();
-      await personCreationView.Input_Vorname.fill(vorname);
-      await personCreationView.Input_Nachname.fill(nachname);
-      await personCreationView.button_PersonAnlegen.click();
-    });
-
-    await test.step(`Prüfen dass der Benutzer mit der Rolle Landesadmin angelegt wurde`, async () => {
-      await expect(personCreationView.text_success).toBeVisible();
-      // Benutzer wird im afterEach-Block gelöscht
-      // gesteuert wird die Löschung über die Variable username
-      username.push(await personCreationView.data_Benutzername.innerText()); 
-      await expect(personCreationView.data_Rolle).toHaveText(schuladminOeffentlichRolle);
-    });
-  });
-
+  test("Einen Benutzer mit der Rolle Schuladmin anlegen als Landesadmin und anschließend mit diesem Benutzer anmelden und einen weiteren Benutzer anlegen", 
+    { tag: [LONG, SHORT, STAGE] }, async ({ page }) => {
+      const startseite = new StartPage(page);
+      const menue = new MenuPage(page);
+      const personCreationView = new PersonCreationViewPage(page);
+      const login = new LoginPage(page);
+  
+      const vorname = "TAuto-PW-V-" + faker.person.firstName();
+      const nachname = "TAuto-PW-N-" + faker.person.lastName();
+      const schulstrukturknoten = "(Testschule Schulportal)";
+      let einstiegspasswort = "";
+  
+      // Step 1: Create a Schuladmin as Landesadmin
+      await test.step(`Dialog Person anlegen öffnen`, async () => {
+        await startseite.card_item_schulportal_administration.click();
+        await menue.menueItem_BenutzerAnlegen.click();
+        await expect(personCreationView.text_h2_PersonAnlegen).toHaveText("Neuen Benutzer hinzufügen");
+      });
+  
+      await test.step(`Benutzer anlegen`, async () => {
+        await personCreationView.combobox_Schulstrukturknoten.click();
+        await page.getByText(schulstrukturknoten).click();
+        await personCreationView.combobox_Rolle.click();
+        await page.getByText(schuladminOeffentlichRolle, { exact: true }).click();
+        await personCreationView.Input_Vorname.fill(vorname);
+        await personCreationView.Input_Nachname.fill(nachname);
+        await personCreationView.button_PersonAnlegen.click();
+      });
+  
+      await test.step(`Prüfen dass der Benutzer mit der Rolle Schuladmin angelegt wurde`, async () => {
+        await expect(personCreationView.text_success).toBeVisible();
+        // Save username and password for the created Schuladmin user
+        username.push(await personCreationView.data_Benutzername.innerText());
+        einstiegspasswort = await personCreationView.input_EinstiegsPasswort.inputValue(); // Save the password
+        await expect(personCreationView.data_Rolle).toHaveText(schuladminOeffentlichRolle);
+      });
+  
+      // Step 2: Login as the newly created Schuladmin user
+      await test.step(`Mit dem erstellten Schuladmin-Benutzer anmelden`, async () => {
+        await login.login(username[0], einstiegspasswort);
+        await expect(startseite.text_h2_Ueberschrift).toBeVisible();
+      });
+  
+      // Step 3: Create another user as Schuladmin
+      const newVorname = "TAuto-PW-V-" + faker.person.firstName();
+      const newNachname = "TAuto-PW-N-" + faker.person.lastName();
+      const newUsername = "newuser-" + faker.internet.userName();
+      const newKopersnr = faker.string.numeric(7);
+  
+      await test.step(`Erstellen eines neuen Benutzers durch den Schuladmin`, async () => {
+        await menue.menueItem_BenutzerAnlegen.click();
+        await expect(personCreationView.text_h2_PersonAnlegen).toHaveText("Neuen Benutzer hinzufügen");
+  
+        await personCreationView.combobox_Schulstrukturknoten.click();
+        await page.getByText(schulstrukturknoten).click();
+        await personCreationView.Input_Vorname.fill(newVorname);
+        await personCreationView.Input_Nachname.fill(newNachname);
+        await personCreationView.Input_Kopersnr.fill(newKopersnr);
+        await personCreationView.button_PersonAnlegen.click();
+        await expect(personCreationView.text_success).toBeVisible();
+        
+        // Save the username for cleanup
+        username.push(newUsername); 
+      });
+    }
+  );
+ 
   test("Einen Benutzer mit der Rolle Schueler anlegen als Landesadmin", {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
     const startseite: StartPage = new StartPage(page);
     const menue = new MenuPage(page);
