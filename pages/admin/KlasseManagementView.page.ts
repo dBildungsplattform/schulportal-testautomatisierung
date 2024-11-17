@@ -1,4 +1,5 @@
 import { type Locator, Page } from '@playwright/test';
+import { FooterDataTablePage } from '../FooterDataTable.page';
 
 export class KlasseManagementViewPage{
     readonly page: Page;
@@ -11,6 +12,8 @@ export class KlasseManagementViewPage{
     readonly icon_KlasseLoeschen: Locator;
     readonly button_KlasseLoeschen: Locator;
     readonly button_SchliesseKlasseLoeschenDialog: Locator;
+    readonly tableRows: Locator;
+    readonly footerDataTable: FooterDataTablePage;
    
     constructor(page){
         this.page = page;  
@@ -23,5 +26,7 @@ export class KlasseManagementViewPage{
         this.icon_KlasseLoeschen = page.getByTestId('open-klasse-delete-dialog-icon');
         this.button_KlasseLoeschen = page.getByTestId('klasse-delete-button');
         this.button_SchliesseKlasseLoeschenDialog = page.getByTestId('close-klasse-delete-success-dialog-button');
+        this.tableRows = page.locator('table >> tbody >> tr');
+        this.footerDataTable = new FooterDataTablePage(page);
     }
 }

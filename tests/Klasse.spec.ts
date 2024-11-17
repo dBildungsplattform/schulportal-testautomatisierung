@@ -134,51 +134,48 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     });
   });
 
-  test("Jede Klasse hat eine Dienststellennummer neben dem Klassennamen (mit Paginierung)", { tag: [LONG, SHORT, STAGE] }, async ({ page }) => {
+  test("Jede Klasse hat eine Dienststellennummer neben dem Klassennamen (ersten und letzten 100 Einträge)", { tag: [LONG, SHORT, STAGE] }, async ({ page }) => {
     const startseite = new StartPage(page);
     const menue = new MenuPage(page);
     const klasseManagementView = new KlasseManagementViewPage(page);
-
+  
     await test.step(`Klassenverwaltung öffnen und prüfen, dass jede Klasse eine Dienststellennummer hat`, async () => {
-        // Navigate to Klassenverwaltung
-        await startseite.card_item_schulportal_administration.click();
-        await menue.menueItem_AlleKlassenAnzeigen.click();
-
-        // Wait until the table is visible
-        await expect(klasseManagementView.text_h2_Klassenverwaltung).toHaveText("Klassenverwaltung");
-
-        // Define the selector for the 'Next' button
-        const nextPageButton = page.locator('.v-pagination__next button:not(.v-btn--disabled)');
-
-        // Loop over each page
-        let hasNextPage = true;
-        while (hasNextPage) {
-            // Get all rows in the current page's Klasse table
-            const rows = page.locator('table >> tbody >> tr');
-            const rowCount = await rows.count();
-
-            // Iterate over each row to check if Dienststellennummer and Klassenname are visible and not empty
-            for (let i = 0; i < rowCount; i++) {
-                const dienststellennummerCell = rows.nth(i).locator('td').nth(0);
-                const klassennameCell = rows.nth(i).locator('td').nth(1);
-
-                await expect(dienststellennummerCell).toBeVisible();
-                await expect(dienststellennummerCell).not.toHaveText('---');
-                await expect(klassennameCell).toBeVisible();
-                await expect(klassennameCell).not.toBeEmpty();
-            }
-
-            // Check if there is a next page by verifying if the button is enabled
-            hasNextPage = await nextPageButton.isVisible();
-
-            // If there is another page, navigate to it
-            if (hasNextPage) {
-                await nextPageButton.click();
-                await page.waitForTimeout(500);
-            }
+      // Navigate to Klassenverwaltung
+      await startseite.card_item_schulportal_administration.click();
+      await menue.menueItem_AlleKlassenAnzeigen.click();
+  
+      // Wait until the table is visible
+      await expect(klasseManagementView.text_h2_Klassenverwaltung).toHaveText("Klassenverwaltung");
+  
+      // Show first 100 entries
+      await klasseManagementView.footerDataTable.combobox_AnzahlEintraege.click();
+      await page.getByRole('option', { name: '100' }).click();
+  
+      // Check the first 100 entries
+        const rows = klasseManagementView.tableRows;
+        const rowCount = await rows.count();
+  
+        for (let i = 0; i < rowCount; i++) {
+          const dienststellennummerCell = rows.nth(i).locator('td').nth(0);
+          const klassennameCell = rows.nth(i).locator('td').nth(1);
+  
+          await expect(dienststellennummerCell).toBeVisible();
+          await expect(dienststellennummerCell).not.toHaveText('---');
+          await expect(klassennameCell).toBeVisible();
+          await expect(klassennameCell).not.toBeEmpty();
+        }
+  
+      // Go to the last page
+      await klasseManagementView.footerDataTable.text_LetzteSeite.click();
+        for (let i = 0; i < rowCount; i++) {
+          const dienststellennummerCell = rows.nth(i).locator('td').nth(0);
+          const klassennameCell = rows.nth(i).locator('td').nth(1);
+  
+          await expect(dienststellennummerCell).toBeVisible();
+          await expect(dienststellennummerCell).not.toHaveText('---');
+          await expect(klassennameCell).toBeVisible();
+          await expect(klassennameCell).not.toBeEmpty();
         }
     });
-});
-
-
+  });
 });
