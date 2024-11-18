@@ -1,4 +1,5 @@
-import { type Locator, Page } from '@playwright/test';
+import { type Locator, Page, expect } from '@playwright/test';
+import {PersonDetailsViewPage} from "./PersonDetailsView.page.js";
 
 export class PersonManagementViewPage{
     readonly page: Page;
@@ -18,7 +19,7 @@ export class PersonManagementViewPage{
     readonly comboboxMenuIcon_Klasse: Locator;
     readonly comboboxMenuIcon_Status: Locator;
    
-    constructor(page){
+    constructor(page: Page){
         this.page = page;  
         this.text_h1_Administrationsbereich = page.getByTestId('admin-headline');
         this.text_h2_Benutzerverwaltung = page.getByTestId('layout-card-headline');
@@ -36,4 +37,15 @@ export class PersonManagementViewPage{
         this.comboboxMenuIcon_Klasse = page.locator('[data-testid="klasse-select"] .mdi-menu-down');
         this.comboboxMenuIcon_Status = page.locator('[data-testid="status-select"] .mdi-menu-down');
   }
+
+  public async searchBySuchfeld(name: string) {
+    await this.input_Suchfeld.fill(name);
+    await this.button_Suchen.click();
+    await expect(this.comboboxMenuIcon_Status).toBeVisible();
+  }
+
+  public async openGesamtuebersichtPerson(page: Page, name: string): Promise<PersonDetailsViewPage> {
+    await page.getByRole("cell", { name: name, exact: true }).click();
+    return new PersonDetailsViewPage(page);
+  } 
 }
