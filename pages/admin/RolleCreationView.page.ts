@@ -54,7 +54,7 @@ export class RolleCreationViewPage {
     this.input_Rollenname = page
       .getByTestId("rollenname-input")
       .locator("input");
-    this.button_RolleAnlegen = page.getByTestId("rolle-form-create-button");
+    this.button_RolleAnlegen = page.getByTestId("rolle-form-submit-button");
     this.button_WeitereRolleAnlegen = page.getByTestId(
       "create-another-rolle-button",
     );
