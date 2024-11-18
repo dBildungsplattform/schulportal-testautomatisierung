@@ -375,7 +375,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
     });
   });
 
-  test("Das eigene Profil öffnen, Passwort Ändern öffnen, und Status des Benutzernamenfelds prüfen ", {tag: [LONG, STAGE]}, async ({ page }) => {
+  test("Das eigene Profil öffnen, Passwort Ändern öffnen, und Status des Benutzernamenfelds prüfen", {tag: [LONG, STAGE]}, async ({ page }) => {
     const profileView = new ProfilePage(page);
     const header = new HeaderPage(page);
     const login = new LoginPage(page);
