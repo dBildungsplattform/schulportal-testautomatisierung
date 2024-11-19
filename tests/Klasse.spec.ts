@@ -151,31 +151,10 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       await klasseManagementView.footerDataTable.combobox_AnzahlEintraege.click();
       await page.getByRole('option', { name: '100' }).click();
   
-      // Check the first 100 entries
-        const rows = klasseManagementView.tableRows;
-        const rowCount = await rows.count();
-  
-        for (let i = 0; i < rowCount; i++) {
-          const dienststellennummerCell = rows.nth(i).locator('td').nth(0);
-          const klassennameCell = rows.nth(i).locator('td').nth(1);
-  
-          await expect(dienststellennummerCell).toBeVisible();
-          await expect(dienststellennummerCell).not.toHaveText('---');
-          await expect(klassennameCell).toBeVisible();
-          await expect(klassennameCell).not.toBeEmpty();
-        }
-  
+      await klasseManagementView.checkTableData();
       // Go to the last page
       await klasseManagementView.footerDataTable.text_LetzteSeite.click();
-        for (let i = 0; i < rowCount; i++) {
-          const dienststellennummerCell = rows.nth(i).locator('td').nth(0);
-          const klassennameCell = rows.nth(i).locator('td').nth(1);
-  
-          await expect(dienststellennummerCell).toBeVisible();
-          await expect(dienststellennummerCell).not.toHaveText('---');
-          await expect(klassennameCell).toBeVisible();
-          await expect(klassennameCell).not.toBeEmpty();
-        }
+      await klasseManagementView.checkTableData();
     });
   });
 });
