@@ -135,4 +135,27 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.UM
       loggedIn = false;
     })
   })
+
+  test('Erfolgloser Login mit falschem Benutzernamen und gültigem Passwort in der Rolle Landesadmin', {tag: [LONG, STAGE]}, async ({ page }) => {
+    const login = new LoginPage(page);
+    const landing = new LandingPage(page);
+    const start = new StartPage(page);
+
+    await test.step('Anmelden mit falschem Benutzernamen fake-username, Inputfeld für Benutzernamen bleibt änderbar', async () => {
+      await page.goto(FRONTEND_URL);
+      await expect(landing.text_Willkommen).toBeVisible();
+      await landing.button_Anmelden.click();
+      await login.login('fake-username', PW);
+      await expect(login.text_span_inputerror).toBeVisible();
+      await expect(login.text_h1).toBeVisible();
+      await expect(login.input_username).toBeEditable();
+      loggedIn = false;
+    })
+
+    await test.step(`Anmelden mit Benutzer ${ADMIN}`, async () => {
+      await login.login(ADMIN, PW);
+      await expect(start.text_h2_Ueberschrift).toBeVisible();
+      loggedIn = true;
+    })
+  })
 })
