@@ -4,7 +4,7 @@ import { StartPage } from '../pages/StartView.page';
 import { LoginPage } from '../pages/LoginView.page';
 import { MenuPage } from '../pages/MenuBar.page';
 import { HeaderPage } from "../pages/Header.page";
-import { LONG, SHORT, STAGE } from '../base/tags';
+import { LONG, SHORT, STAGE, BROWSER } from '../base/tags';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -31,7 +31,7 @@ test.describe(`Testfälle für die Hauptmenue-Leiste: Umgebung: ${process.env.UM
     });
   });
 
-  test('Test der Hauptmenue-Leiste und Untermenues auf Vollständigkeit', {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
+  test('Test der Hauptmenue-Leiste und Untermenues auf Vollständigkeit', {tag: [LONG, SHORT, STAGE, BROWSER]}, async ({ page }) => {
     const startseite = new StartPage(page)
     const menuBar = new MenuPage(page);
 

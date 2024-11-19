@@ -1,4 +1,4 @@
-name: Scheduled Playwright Smoketest(staging) 
+name: Scheduled stage smoke 
 on:
   workflow_dispatch:
   schedule:
@@ -21,7 +21,7 @@ jobs:
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
     - name: Run Playwright tests
-      run: ENV='stage' FRONTEND_URL='https://spsh.staging.spsh.dbildungsplattform.de/' npx playwright test -g "@smoke"
+      run: ENV='stage' FRONTEND_URL='https://spsh.staging.spsh.dbildungsplattform.de/' npx playwright test -g "@smoke" --project "chromium" 
       env:
         USER: '${{ secrets.USER }}'
         PW: '${{ secrets.PW }}'

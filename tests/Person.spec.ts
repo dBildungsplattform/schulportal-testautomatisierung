@@ -12,7 +12,7 @@ import { createRolleAndPersonWithUserContext } from "../base/api/testHelperPerso
 import { getSPId } from "../base/api/testHelperServiceprovider.page";
 import { UserInfo } from "../base/api/testHelper.page";
 import { addSystemrechtToRolle } from "../base/api/testHelperRolle.page";
-import { LONG, SHORT, STAGE } from "../base/tags";
+import { LONG, SHORT, STAGE, BROWSER } from "../base/tags";
 import { deletePersonByUsername, deleteRolleById, deleteRolleByName } from "../base/testHelperDeleteTestdata.ts";
 import { landesadminRolle, schuelerRolle, schuladminOeffentlichRolle } from "../base/roles.ts";
 
@@ -304,8 +304,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
   });
 
-  test("Ergebnisliste Benutzer auf Vollständigkeit prüfen als Landesadmin", {tag: [LONG, SHORT, STAGE]}, async ({page }) => {
-    const startseite: StartPage = new StartPage(page);
+  test("Ergebnisliste Benutzer auf Vollständigkeit prüfen als Landesadmin", {tag: [LONG, SHORT, STAGE, BROWSER]}, async ({page }) => {
+    const startseite = new StartPage(page);
     const menue = new MenuPage(page);
     const personManagementView = new PersonManagementViewPage(page);
 

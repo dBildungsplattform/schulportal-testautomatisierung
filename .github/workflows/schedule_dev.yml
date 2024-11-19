@@ -1,4 +1,4 @@
-name: Scheduled Playwright Alle Tests(main) 
+name: Scheduled main long 
 on:
   workflow_dispatch:
   schedule:
@@ -21,7 +21,7 @@ jobs:
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
     - name: Run Playwright tests
-      run: ENV='dev' FRONTEND_URL='https://main.dev.spsh.dbildungsplattform.de/' npx playwright test -g "@long"
+      run: ENV='dev' FRONTEND_URL='https://main.dev.spsh.dbildungsplattform.de/' npx playwright test -g "@long" --project "chromium"
       env:
         USER: '${{ secrets.USER }}'
         PW: '${{ secrets.PW }}'
