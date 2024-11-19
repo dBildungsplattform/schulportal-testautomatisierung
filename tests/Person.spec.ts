@@ -352,11 +352,11 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await page.getByText(Organisation_Land, { exact: true }).nth(1).click();
 
       await personCreationView.combobox_Rolle.click();
-      await expect(personCreationView.body).toContainText(landesadminRolle);
-      await expect(personCreationView.body).not.toContainText(rolleLehr);
-      await expect(personCreationView.body).not.toContainText(rolleLiV);
-      await expect(personCreationView.body).not.toContainText(schuladminOeffentlichRolle);
-      await expect(personCreationView.body).not.toContainText(schuelerRolle);
+      await expect(personCreationView.listbox_Rolle).toContainText(landesadminRolle);
+      await expect(personCreationView.listbox_Rolle).not.toContainText(rolleLehr);
+      await expect(personCreationView.listbox_Rolle).not.toContainText(rolleLiV);
+      await expect(personCreationView.listbox_Rolle).not.toContainText(schuladminOeffentlichRolle);
+      await expect(personCreationView.listbox_Rolle).not.toContainText(schuelerRolle);
     });
 
     await test.step(`Organisation 'Öffentliche Schulen Land Schleswig-Holstein' auswählen und Dropdown 'Rolle' prüfen`, async () => {
@@ -365,11 +365,11 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await page.keyboard.type(Organisation_OeffentlicheSchule);
       await page.getByText(Organisation_OeffentlicheSchule, { exact: true }).click();
       await personCreationView.combobox_Rolle.click();
-      await expect(personCreationView.body).toContainText(landesadminRolle);
-      await expect(personCreationView.body).not.toContainText(rolleLehr);
-      await expect(personCreationView.body).not.toContainText(rolleLiV);
-      await expect(personCreationView.body).not.toContainText(schuladminOeffentlichRolle);
-      await expect(personCreationView.body).not.toContainText(schuelerRolle);
+      await expect(personCreationView.listbox_Rolle).toContainText(landesadminRolle);
+      await expect(personCreationView.listbox_Rolle).not.toContainText(rolleLehr);
+      await expect(personCreationView.listbox_Rolle).not.toContainText(rolleLiV);
+      await expect(personCreationView.listbox_Rolle).not.toContainText(schuladminOeffentlichRolle);
+      await expect(personCreationView.listbox_Rolle).not.toContainText(schuelerRolle);
     });
 
     await test.step(`Organisation 'Ersatzschulen Land Schleswig-Holstein' auswählen und Dropdown 'Rolle' prüfen`, async () => {
@@ -378,11 +378,11 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await page.keyboard.type(Organisation_Ersatzschule);
       await page.getByText(Organisation_Ersatzschule, { exact: true }).click();
       await personCreationView.combobox_Rolle.click();
-      await expect(personCreationView.body).toContainText(landesadminRolle);
-      await expect(personCreationView.body).not.toContainText(rolleLehr);
-      await expect(personCreationView.body).not.toContainText(rolleLiV);
-      await expect(personCreationView.body).not.toContainText(schuladminOeffentlichRolle);
-      await expect(personCreationView.body).not.toContainText(schuelerRolle);
+      await expect(personCreationView.listbox_Rolle).toContainText(landesadminRolle);
+      await expect(personCreationView.listbox_Rolle).not.toContainText(rolleLehr);
+      await expect(personCreationView.listbox_Rolle).not.toContainText(rolleLiV);
+      await expect(personCreationView.listbox_Rolle).not.toContainText(schuladminOeffentlichRolle);
+      await expect(personCreationView.listbox_Rolle).not.toContainText(schuelerRolle);
     });
 
     await test.step(`Organisation 'Schule' auswählen und Dropdown 'Rolle' prüfen`, async () => {
@@ -390,11 +390,11 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await personCreationView.combobox_Schulstrukturknoten.click();
       await page.getByText(Organisation_Schule).click();
       await personCreationView.combobox_Rolle.click();
-      await expect(personCreationView.body).toContainText(rolleLehr);
-      await expect(personCreationView.body).toContainText(rolleLiV);
-      await expect(personCreationView.body).toContainText(schuladminOeffentlichRolle);
-      await expect(personCreationView.body).toContainText(schuelerRolle);
-      await expect(personCreationView.body).not.toContainText(landesadminRolle);
+      await expect(personCreationView.listbox_Rolle).toContainText(rolleLehr);
+      await expect(personCreationView.listbox_Rolle).toContainText(rolleLiV);
+      await expect(personCreationView.listbox_Rolle).toContainText(schuladminOeffentlichRolle);
+      await expect(personCreationView.listbox_Rolle).toContainText(schuelerRolle);
+      await expect(personCreationView.listbox_Rolle).not.toContainText(landesadminRolle);
     });
   });
 
