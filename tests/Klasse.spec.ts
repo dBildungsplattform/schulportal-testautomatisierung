@@ -7,7 +7,7 @@ import { KlasseCreationViewPage } from "../pages/admin/KlasseCreationView.page";
 import { KlasseManagementViewPage } from "../pages/admin/KlasseManagementView.page";
 import { faker } from "@faker-js/faker/locale/de";
 import { HeaderPage } from "../pages/Header.page";
-import { LONG, SHORT, STAGE } from "../base/tags";
+import { LONG, SHORT, STAGE, BROWSER } from "../base/tags";
 import { deleteClassByName } from "../base/testHelperDeleteTestdata.ts";
 
 const PW = process.env.PW;
@@ -100,7 +100,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     });
   });
 
-  test("Eine Klasse als Landesadmin anlegen und die Bestätigungsseite vollständig prüfen", {tag: [LONG, STAGE]}, async ({ page }) => {
+  test("Eine Klasse als Landesadmin anlegen und die Bestätigungsseite vollständig prüfen", {tag: [LONG, STAGE, BROWSER]}, async ({ page }) => {
     const klasseCreationView = new KlasseCreationViewPage(page);
     const dienststellennummer = '1111111';
     const nameSchule = "Testschule Schulportal";

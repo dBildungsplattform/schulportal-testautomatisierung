@@ -3,7 +3,7 @@ import { LoginPage } from '../pages/LoginView.page';
 import { LandingPage } from '../pages/LandingView.page';
 import { StartPage } from '../pages/StartView.page';
 import { HeaderPage } from "../pages/Header.page";
-import { LONG, SHORT, SMOKE, STAGE } from '../base/tags';
+import { LONG, SHORT, SMOKE, STAGE, BROWSER } from '../base/tags';
 import { createRolleAndPersonWithUserContext, lockPerson } from "../base/api/testHelperPerson.page.ts";
 import { getSPId } from "../base/api/testHelperServiceprovider.page.ts";
 import { faker } from "@faker-js/faker/locale/de";
@@ -70,7 +70,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.UM
     }
   });
 
-   test('Erfolgreicher Standard Login Landesadmin', {tag: [LONG, SMOKE, STAGE]}, async ({ page }) => {
+   test('Erfolgreicher Standard Login Landesadmin', {tag: [LONG, SMOKE, STAGE, BROWSER]}, async ({ page }) => {
     const login = new LoginPage(page);
     const landing = new LandingPage(page);
     const start = new StartPage(page);
