@@ -12,13 +12,13 @@ import { getSPId } from "../base/api/testHelperServiceprovider.page";
 import { UserInfo } from "../base/api/testHelper.page";
 import { addSystemrechtToRolle } from "../base/api/testHelperRolle.page";
 import { FooterDataTablePage } from "../pages/FooterDataTable.page";
-import { LONG, SHORT, STAGE } from "../base/tags";
+import { LONG, SHORT, STAGE, BROWSER } from "../base/tags";
 import { deletePersonById, deleteRolleById } from "../base/testHelperDeleteTestdata";
 import { generateRolleName } from "../base/testHelperGenerateTestdataNames";
 
-const PW = process.env.PW;
-const ADMIN = process.env.USER;
-const FRONTEND_URL = process.env.FRONTEND_URL || "";
+const PW: string | undefined = process.env.PW;
+const ADMIN: string | undefined = process.env.USER;
+const FRONTEND_URL: string | undefined = process.env.FRONTEND_URL || "";
 
 let personId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
 let roleId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
@@ -26,9 +26,9 @@ let roleId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
 test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }) => {
     await test.step(`Login`, async () => {
-      const landing = new LandingPage(page);
-      const startseite = new StartPage(page);
-      const login = new LoginPage(page);
+      const landing: LandingPage = new LandingPage(page);
+      const startseite: StartPage = new StartPage(page);
+      const login: LoginPage = new LoginPage(page);
 
       await page.goto(FRONTEND_URL);
       await landing.button_Anmelden.click();
@@ -39,12 +39,12 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
 
   test.afterEach(async ({ page }) => {
     const header = new HeaderPage(page);
-    const landing = new LandingPage(page);
-    const login = new LoginPage(page);
+    const landing: LandingPage = new LandingPage(page);
+    const login: LoginPage = new LoginPage(page);
 
     await test.step(`Testdaten löschen via API`, async () => {
       if (personId) { // nur wenn der Testfall auch mind. einen Benutzer angelegt hat
-        const startseite = new StartPage(page);
+        const startseite: StartPage = new StartPage(page);
         await header.logout();
         await landing.button_Anmelden.click();
         await login.login(ADMIN, PW);
@@ -55,7 +55,7 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
       }
   
       if (roleId) { // nur wenn der Testfall auch mind. eine Rolle angelegt hat
-        const startseite = new StartPage(page);
+        const startseite: StartPage = new StartPage(page);
         await header.logout();
         await landing.button_Anmelden.click();
         await login.login(ADMIN, PW);
@@ -73,7 +73,7 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
   });
 
   test("2 Schulen nacheinander anlegen als Landesadmin", {tag: [LONG]}, async ({ page }) => {
-    const startseite = new StartPage(page);
+    const startseite: StartPage = new StartPage(page);
     const schuleManagementView = new SchuleManagementViewPage(page);
     const footerDataTable = new FooterDataTablePage(page);
 
@@ -124,7 +124,7 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
     });
   });
 
-  test("Ergebnisliste Schulen auf Vollständigkeit prüfen als Landesadmin", {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
+  test("Ergebnisliste Schulen auf Vollständigkeit prüfen als Landesadmin", {tag: [LONG, SHORT, STAGE, BROWSER]}, async ({ page }) => {
     const startseite = new StartPage(page);
 
     await test.step(`Schulverwaltung öffnen und Alle Elemente in der Ergebnisliste auf Existenz prüfen`, async () => {
@@ -144,7 +144,7 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
     const zufallsNr = faker.number.bigInt({ min: 1000, max: 9000 });
     const schulname = "TAuto-PW-S1-" + faker.lorem.word({ length: { min: 8, max: 12 }}) + zufallsNr;
     const dienststellenNr = "0" + faker.number.bigInt({ min: 10000000, max: 100000000 });
-    const landing = new LandingPage(page);
+    const landing: LandingPage = new LandingPage(page);
     const header = new HeaderPage(page);
     let userInfo: UserInfo;
 

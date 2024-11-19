@@ -10,13 +10,13 @@ import { createRolleAndPersonWithUserContext, addSecondOrganisationToPerson } fr
 import { getOrganisationId } from "../base/api/testHelperOrganisation.page";
 import { UserInfo } from "../base/api/testHelper.page";
 import { addSystemrechtToRolle } from "../base/api/testHelperRolle.page";
-import { LONG, SHORT, STAGE } from "../base/tags";
+import { LONG, SHORT, STAGE, BROWSER } from "../base/tags";
 import { deleteRolleById, deletePersonByUsername} from "../base/testHelperDeleteTestdata";
 import { generateRolleName } from "../base/testHelperGenerateTestdataNames";
 
-const PW = process.env.PW;
-const ADMIN = process.env.USER;
-const FRONTEND_URL = process.env.FRONTEND_URL || "";
+const PW: string | undefined = process.env.PW;
+const ADMIN: string | undefined = process.env.USER;
+const FRONTEND_URL: string | undefined = process.env.FRONTEND_URL || "";
 
 let username: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
 let roleId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
@@ -24,9 +24,9 @@ let roleId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
 test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }) => {
     await test.step(`Login`, async () => {
-      const landing = new LandingPage(page);
-      const startseite = new StartPage(page);
-      const login = new LoginPage(page);
+      const landing: LandingPage = new LandingPage(page);
+      const startseite: StartPage = new StartPage(page);
+      const login: LoginPage = new LoginPage(page);
 
       await page.goto(FRONTEND_URL);
       await landing.button_Anmelden.click();
@@ -37,15 +37,15 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
   test.afterEach(async ({ page }) => {
     const header = new HeaderPage(page);
-    const landing = new LandingPage(page);
-    const login = new LoginPage(page);
+    const landing: LandingPage = new LandingPage(page);
+    const login: LoginPage = new LoginPage(page);
 
     await test.step(`Testdaten löschen via API`, async () => {
       if (username) { // nur wenn der Testfall auch mind. einen Benutzer angelegt hat
         await header.logout();
         await landing.button_Anmelden.click();
         await login.login(ADMIN, PW);
-        const startseite = new StartPage(page);
+        const startseite: StartPage = new StartPage(page);
         await expect(startseite.text_h2_Ueberschrift).toBeVisible();
         await expect(startseite.card_item_schulportal_administration).toBeVisible();
         
@@ -65,10 +65,10 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
     });
   });
 
-  test("Das eigene Profil öffnen und auf Vollständigkeit prüfen als Landesadmin", {tag: [LONG, STAGE]}, async ({ page }) => {
+  test("Das eigene Profil öffnen und auf Vollständigkeit prüfen als Landesadmin", {tag: [LONG, STAGE, BROWSER]}, async ({ page }) => {
     const profileView = new ProfilePage(page);
     const header = new HeaderPage(page);
-    const login = new LoginPage(page);
+    const login: LoginPage = new LoginPage(page);
 
     const vorname = "TAuto-PW-V-" + faker.person.firstName();
     const nachname = "TAuto-PW-N-" + faker.person.lastName();
@@ -135,7 +135,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
   test("Das eigene Profil öffnen und auf Vollständigkeit prüfen als Lehrer mit einer Schulzuordnung", {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
     const profileView = new ProfilePage(page);
     const header = new HeaderPage(page);
-    const login = new LoginPage(page);
+    const login: LoginPage = new LoginPage(page);
 
     const vorname = "TAuto-PW-V-" + faker.person.firstName();
     const nachname = "TAuto-PW-N-" + faker.person.lastName();
@@ -193,7 +193,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
   test("Das eigene Profil öffnen und auf Vollständigkeit prüfen als Schüler mit einer Schulzuordnung", {tag: [LONG, STAGE]}, async ({ page }) => {
     const profileView = new ProfilePage(page);
     const header = new HeaderPage(page);
-    const login = new LoginPage(page);
+    const login: LoginPage = new LoginPage(page);
 
     const vorname = "TAuto-PW-V-" + faker.person.firstName();
     const nachname = "TAuto-PW-N-" + faker.person.lastName();
@@ -250,7 +250,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
   test("Das eigene Profil öffnen und auf Vollständigkeit prüfen als Schuladmin mit einer Schulzuordnung", {tag: [LONG, STAGE]}, async ({ page }) => {
     const profileView = new ProfilePage(page);
     const header = new HeaderPage(page);
-    const login = new LoginPage(page);
+    const login: LoginPage = new LoginPage(page);
 
     const vorname = "TAuto-PW-V-" + faker.person.firstName();
     const nachname = "TAuto-PW-N-" + faker.person.lastName();
@@ -308,7 +308,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
   test("Das eigene Profil öffnen und auf Vollständigkeit prüfen als Lehrkraft mit 2 Schulzuordnungen", {tag: [LONG, STAGE]}, async ({ page }) => {
     const profileView = new ProfilePage(page);
     const header = new HeaderPage(page);
-    const login = new LoginPage(page);
+    const login: LoginPage = new LoginPage(page);
 
     let personId = '';
     const vorname = "TAuto-PW-V-" + faker.person.firstName();

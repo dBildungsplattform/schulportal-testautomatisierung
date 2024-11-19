@@ -12,7 +12,7 @@ export class KlasseManagementViewPage{
     readonly button_KlasseLoeschen: Locator;
     readonly button_SchliesseKlasseLoeschenDialog: Locator;
    
-    constructor(page){
+    constructor(page: Page){
         this.page = page;  
         this.text_h1_Administrationsbereich = page.getByTestId('admin-headline');
         this.text_h2_Klassenverwaltung = page.getByTestId('layout-card-headline');

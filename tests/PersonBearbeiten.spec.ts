@@ -27,9 +27,9 @@ let rolleId: string[] = []; // Im afterEach Block werden alle Testdaten gelösch
 test.describe(`Testfälle für die Administration von Personen": Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
     test.beforeEach(async ({page}) => {
         await test.step(`Login`, async () => {
-            const landing = new LandingPage(page);
-            const startseite = new StartPage(page);
-            const login = new LoginPage(page);
+            const landing: LandingPage = new LandingPage(page);
+            const startseite: StartPage = new StartPage(page);
+            const login: LoginPage = new LoginPage(page);
             await page.goto('/');
             await landing.button_Anmelden.click();
             await login.login(ADMIN, PW);
@@ -75,9 +75,9 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     const personManagementView = new PersonManagementViewPage(page);
     const PersonDetailsView = new PersonDetailsViewPage(page);
     const header = new HeaderPage(page);
-    const landing = new LandingPage(page);
-    const login = new LoginPage(page);
-    const startseite = new StartPage(page);
+    const landing: LandingPage = new LandingPage(page);
+    const login: LoginPage = new LoginPage(page);
+    const startseite: StartPage = new StartPage(page);
 
     const addminVorname = "TAuto-PW-V-" + faker.person.firstName();
     const adminNachname = "TAuto-PW-N-" + faker.person.lastName();
