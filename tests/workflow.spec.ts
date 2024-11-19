@@ -7,22 +7,22 @@ import { ItsLearningPage } from "../pages/Cards/ItsLearning.page";
 import { PersonManagementViewPage } from "../pages/admin/PersonManagementView.page";
 import { PersonDetailsViewPage } from "../pages/admin/PersonDetailsView.page";
 import { HeaderPage } from "../pages/Header.page";
-import { LONG, SHORT, STAGE } from "../base/tags";
+import { LONG, SHORT, STAGE, BROWSER } from "../base/tags";
 import { CalendarPage } from "../pages/Cards/Calendar.page";
 import { DirectoryPage } from "../pages/Cards/Directory.page";
 import { createTeacherAndLogin } from "../base/api/testHelperPerson.page";
 
-const PW = process.env.PW;
-const ADMIN = process.env.USER;
-const FRONTEND_URL = process.env.FRONTEND_URL || "";
-const ENV = process.env.ENV;
+const PW: string | undefined = process.env.PW;
+const ADMIN: string | undefined = process.env.USER;
+const FRONTEND_URL: string | undefined = process.env.FRONTEND_URL || "";
+const ENV: string | undefined = process.env.ENV;
 
 test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }) => {
     await test.step(`Login`, async () => {
-      const landing = new LandingPage(page);
-      const startseite = new StartPage(page);
-      const login = new LoginPage(page);
+      const landing: LandingPage = new LandingPage(page);
+      const startseite: StartPage = new StartPage(page);
+      const login: LoginPage = new LoginPage(page);
 
       await page.goto(FRONTEND_URL);
       await landing.button_Anmelden.click();
@@ -32,10 +32,10 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
   });
 
   test("Angebote per Link öffnen als Lehrer", {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
-    const startseite = new StartPage(page);
+    const startseite: StartPage = new StartPage(page);
 
-    await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
-      createTeacherAndLogin(page);
+    await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => { 
+      await createTeacherAndLogin(page);
     });
 
     await test.step(`Kacheln Email für Lehrkräfte und Itslearning öffnen, danach beide Kacheln wieder schließen`, async () => {
@@ -84,7 +84,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
     });
   });
 
-  test("Passwort Reset für einen Lehrer als Landesadmin", {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
+  test("Passwort Reset für einen Lehrer als Landesadmin", {tag: [LONG, SHORT, STAGE, BROWSER]}, async ({ page }) => {
     const landing = new LandingPage(page);
     const login = new LoginPage(page);
     const startseite = new StartPage(page);
@@ -103,7 +103,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
       await expect(personManagement.text_h2_Benutzerverwaltung).toBeVisible();
       await personManagement.input_Suchfeld.fill(username);
       await personManagement.button_Suchen.click();
-      await page.getByRole("cell", { name: lastname, exact: true }).click();
+      await page.getByRole("cell", { name: lastname, exact: true }).click({delay:500});
     });
 
     await test.step(`In den User-Details PW-Reset Dialog starten`, async () => {
