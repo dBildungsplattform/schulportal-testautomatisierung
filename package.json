@@ -1,4 +1,18 @@
 {
+  "name": "schulportal-testautomatisierung",
+  "description": "",
+  "version": "0.6.0",
+  "main": "index.js",
+  "type": "module",
+  "directories": {
+    "test": "tests"
+  },
+  "keywords": [],
+  "author": "Dataport AöR",
+  "license": "EUPL-1.2",
+  "scripts": {
+    "lint": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
+  },
   "devDependencies": {
     "@playwright/test": "^1.47.2",
     "@types/node": "^20.16.10",
@@ -9,15 +23,13 @@
     "eslint-plugin-playwright": "^0.18.0",
     "typescript": "^5.6.2"
   },
-  "scripts": {
-    "lint": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
-  },
   "dependencies": {
     "@faker-js/faker": "^8.4.1",
     "@fast-csv/format": "^4.3.5",
     "@fast-csv/parse": "^4.3.6",
     "fast-csv": "^4.3.6",
-    "generate-password-ts": "^1.6.5"
+    "generate-password-ts": "^1.6.5",
+    "moment": "^2.30.1"
   },
   "name": "schulportal-testautomatisierung",
   "description": "",

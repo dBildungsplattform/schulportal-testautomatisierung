@@ -1,7 +1,7 @@
 import { Page, expect } from '@playwright/test';
 import { faker } from "@faker-js/faker/locale/de";
 
-const FRONTEND_URL = process.env.FRONTEND_URL || "";
+const FRONTEND_URL: string | undefined = process.env.FRONTEND_URL || "";
 
 export async function createOrganisation(page: Page, name: string): Promise<string> {
     const response = await page.request.post(FRONTEND_URL + 'api/organisationen/', {

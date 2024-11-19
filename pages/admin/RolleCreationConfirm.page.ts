@@ -1,4 +1,4 @@
-import { Locator, Page } from "@playwright/test";
+import { type Locator, Page } from "@playwright/test";
 import { RolleManagementViewPage } from "./RolleManagementView.page";
 
 export class RolleCreationConfirmPage {
