@@ -1,6 +1,6 @@
 import { Page, expect } from '@playwright/test';
 
-const FRONTEND_URL = process.env.FRONTEND_URL || "";
+const FRONTEND_URL: string | undefined = process.env.FRONTEND_URL || "";
 
 export async function createRolle(page: Page, rollenArt: string, organisationId: string, rolleName?: string): Promise<string> {
     const response = await page.request.post(FRONTEND_URL + 'api/rolle/', {

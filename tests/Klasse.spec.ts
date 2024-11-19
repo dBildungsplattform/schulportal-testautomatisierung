@@ -10,18 +10,18 @@ import { HeaderPage } from "../pages/Header.page";
 import { LONG, SHORT, STAGE, BROWSER } from "../base/tags";
 import { deleteClassByName } from "../base/testHelperDeleteTestdata.ts";
 
-const PW = process.env.PW;
-const ADMIN = process.env.USER;
-const FRONTEND_URL = process.env.FRONTEND_URL || "";
+const PW: string | undefined = process.env.PW;
+const ADMIN: string | undefined = process.env.USER;
+const FRONTEND_URL: string | undefined = process.env.FRONTEND_URL || "";
 
 test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
   let className: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
   
   test.beforeEach(async ({ page }) => {
     await test.step(`Login`, async () => {
-      const landing = new LandingPage(page);
-      const startseite = new StartPage(page);
-      const login = new LoginPage(page);
+      const landing: LandingPage = new LandingPage(page);
+      const startseite: StartPage = new StartPage(page);
+      const login: LoginPage = new LoginPage(page);
 
       await page.goto(FRONTEND_URL);
       await landing.button_Anmelden.click();
@@ -45,7 +45,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
   });
 
   test("Eine Klasse als Landesadmin anlegen und die Klasse anschließend in der Ergebnisliste suchen und dann löschen", {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
-    const startseite = new StartPage(page);
+    const startseite: StartPage = new StartPage(page);
     const menue = new MenuPage(page);
     const klasseCreationView = new KlasseCreationViewPage(page);
     const klasseManagementView = new KlasseManagementViewPage(page);
@@ -84,7 +84,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
   });
 
   test("Ergebnisliste Klassen als Landesadmin auf Vollständigkeit prüfen", {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
-    const startseite = new StartPage(page);
+    const startseite: StartPage = new StartPage(page);
     const menue = new MenuPage(page);
     const klasseManagementView = new KlasseManagementViewPage(page);
 

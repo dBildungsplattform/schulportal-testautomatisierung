@@ -11,9 +11,9 @@ import { UserInfo } from "../base/api/testHelper.page.ts";
 import { deletePersonByUsername, deleteRolleById } from "../base/testHelperDeleteTestdata.ts";
 import { getOrganisationId } from "../base/api/testHelperOrganisation.page.ts";
 
-const PW = process.env.PW;
-const ADMIN = process.env.USER;
-const FRONTEND_URL = process.env.FRONTEND_URL || '';
+const PW: string | undefined = process.env.PW;
+const ADMIN: string | undefined = process.env.USER;
+const FRONTEND_URL: string | undefined = process.env.FRONTEND_URL || "";
 
 let loggedIn = false;
 let username: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
@@ -22,16 +22,16 @@ let rolleId: string[] = []; // Im afterEach Block werden alle Testdaten gelösch
 test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.afterEach(async ({ page }) => {
     const header = new HeaderPage(page);
-    const landing = new LandingPage(page);
-    const login = new LoginPage(page);
-    const startseite = new StartPage(page);
+    const landing: LandingPage = new LandingPage(page);
+    const login: LoginPage = new LoginPage(page);
+    const startseite: StartPage = new StartPage(page);
 
     await test.step(`Testdaten(Benutzer) löschen via API`, async () => {
       if (!loggedIn) {
         await test.step(`Abmelden`, async () => {
-          const landing = new LandingPage(page);
-          const startseite = new StartPage(page);
-          const login = new LoginPage(page);
+          const landing: LandingPage = new LandingPage(page);
+          const startseite: StartPage = new StartPage(page);
+          const login: LoginPage = new LoginPage(page);
           
           await page.goto(FRONTEND_URL);
           await landing.button_Anmelden.click();
@@ -87,8 +87,8 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.UM
   })
 
   test('Erfolgloser Login mit falschem Passwort und gültigem Benutzernamen in der Rolle Landesadmin', {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
-    const login = new LoginPage(page);
-    const landing = new LandingPage(page);
+    const login: LoginPage = new LoginPage(page);
+    const landing: LandingPage = new LandingPage(page);
 
     await test.step(`Anmelden mit Benutzer ${ADMIN}`, async () => {
       await page.goto(FRONTEND_URL);
@@ -102,8 +102,8 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.UM
   })
 
   test('Erfolgloser Login mit einem gesperrten Benutzer Rolle Lehrer', {tag: [LONG, STAGE]}, async ({ page }) => {
-    const login = new LoginPage(page);
-    const landing = new LandingPage(page);
+    const login: LoginPage = new LoginPage(page);
+    const landing: LandingPage = new LandingPage(page);
     const header = new HeaderPage(page);
 
     const lehrerVorname = "TAuto-PW-V-" + faker.person.firstName();

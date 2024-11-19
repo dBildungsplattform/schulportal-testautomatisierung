@@ -7,7 +7,7 @@ import { LoginPage } from '../../pages/LoginView.page';
 import { faker } from '@faker-js/faker';
 import { lehrkraftOeffentlichRolle } from '../roles';
 
-const FRONTEND_URL = process.env.FRONTEND_URL || "";
+const FRONTEND_URL: string | undefined = process.env.FRONTEND_URL || "";
 
 export async function createPerson(page: Page, familienname: string, vorname: string, organisationId: string, rolleId: string, koPersNr?: string): Promise<UserInfo> {
     const requestData = {
@@ -94,7 +94,7 @@ export async function getPersonId(page: Page, Benutzername: string): Promise<str
 
 export async function createTeacherAndLogin(page) {
     const header = new HeaderPage(page);
-    const login = new LoginPage(page);
+    const login: LoginPage = new LoginPage(page);
     const vorname = "TAuto-PW-V-" + faker.person.firstName();
     const nachname = "TAuto-PW-N-" + faker.person.lastName();
     const organisation = 'Testschule Schulportal';
