@@ -12,13 +12,13 @@ import { createRolleAndPersonWithUserContext } from "../base/api/testHelperPerso
 import { getSPId } from "../base/api/testHelperServiceprovider.page";
 import { UserInfo } from "../base/api/testHelper.page";
 import { addSystemrechtToRolle } from "../base/api/testHelperRolle.page";
-import { LONG, SHORT, STAGE } from "../base/tags";
+import { LONG, SHORT, STAGE, BROWSER } from "../base/tags";
 import { deletePersonByUsername, deleteRolleById, deleteRolleByName } from "../base/testHelperDeleteTestdata.ts";
 import { landesadminRolle, schuelerRolle, schuladminOeffentlichRolle } from "../base/roles.ts";
 
-const PW = process.env.PW;
-const ADMIN = process.env.USER;
-const FRONTEND_URL = process.env.FRONTEND_URL || "";
+const PW: string | undefined = process.env.PW;
+const ADMIN: string | undefined = process.env.USER;
+const FRONTEND_URL: string | undefined = process.env.FRONTEND_URL || "";
 
 let username: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
 let roleId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
@@ -39,9 +39,9 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test.afterEach(async ({ page }) => {
     const header = new HeaderPage(page);
-    const landing = new LandingPage(page);
-    const login = new LoginPage(page);
-    const startseite = new StartPage(page);
+    const landing: LandingPage = new LandingPage(page);
+    const login: LoginPage = new LoginPage(page);
+    const startseite: StartPage = new StartPage(page);
 
     await test.step(`Testdaten(Benutzer) löschen via API`, async () => {
       if (username) { // nur wenn der Testfall auch mind. einen Benutzer angelegt hat
@@ -84,9 +84,9 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
   test("Einen Benutzer mit der Rolle Lehrkraft anlegen als Landesadmin und anschließend mit diesem Benutzer anmelden", {tag: [LONG, SHORT, STAGE]}, async ({
     page,
   }) => {
-    const landing = new LandingPage(page);
-    const startseite = new StartPage(page);
-    const login = new LoginPage(page);
+    const landing: LandingPage = new LandingPage(page);
+    const startseite: StartPage = new StartPage(page);
+    const login: LoginPage = new LoginPage(page);
     const menue = new MenuPage(page);
     const personCreationView = new PersonCreationViewPage(page);
     const personManagementView = new PersonManagementViewPage(page);
@@ -140,7 +140,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
   });
 
   test("Einen Benutzer mit der Rolle Landesadmin anlegen", {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
-    const startseite = new StartPage(page);
+    const startseite: StartPage = new StartPage(page);
     const menue = new MenuPage(page);
     const personCreationView = new PersonCreationViewPage(page);
 
@@ -175,7 +175,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
   });
 
   test("Einen Benutzer mit der Rolle LiV anlegen als Landesadmin", {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
-    const startseite = new StartPage(page);
+    const startseite: StartPage = new StartPage(page);
     const menue = new MenuPage(page);
     const personCreationView = new PersonCreationViewPage(page);
 
@@ -268,7 +268,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
   );
 
   test("Einen Benutzer mit der Rolle Schueler anlegen als Landesadmin", {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
-    const startseite = new StartPage(page);
+    const startseite: StartPage = new StartPage(page);
     const menue = new MenuPage(page);
     const personCreationView = new PersonCreationViewPage(page);
 
@@ -304,7 +304,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
   });
 
-  test("Ergebnisliste Benutzer auf Vollständigkeit prüfen als Landesadmin", {tag: [LONG, SHORT, STAGE]}, async ({page }) => {
+  test("Ergebnisliste Benutzer auf Vollständigkeit prüfen als Landesadmin", {tag: [LONG, SHORT, STAGE, BROWSER]}, async ({page }) => {
     const startseite = new StartPage(page);
     const menue = new MenuPage(page);
     const personManagementView = new PersonManagementViewPage(page);
@@ -328,7 +328,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
   });
 
   test("Prüfung auf korrekte Rollen in dem Dropdown 'Rolle' nach Auswahl der Organisation bei Anlage eines Benutzer in der Rolle Landesadmin", {tag: [LONG, STAGE]}, async ({page}) => {
-    const startseite = new StartPage(page);
+    const startseite: StartPage = new StartPage(page);
     const menue = new MenuPage(page);
     const personCreationView = new PersonCreationViewPage(page);
 
@@ -352,11 +352,11 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await page.getByText(Organisation_Land, { exact: true }).nth(1).click();
 
       await personCreationView.combobox_Rolle.click();
-      await expect(personCreationView.body).toContainText(landesadminRolle);
-      await expect(personCreationView.body).not.toContainText(rolleLehr);
-      await expect(personCreationView.body).not.toContainText(rolleLiV);
-      await expect(personCreationView.body).not.toContainText(schuladminOeffentlichRolle);
-      await expect(personCreationView.body).not.toContainText(schuelerRolle);
+      await expect(personCreationView.listbox_Rolle).toContainText(landesadminRolle);
+      await expect(personCreationView.listbox_Rolle).not.toContainText(rolleLehr);
+      await expect(personCreationView.listbox_Rolle).not.toContainText(rolleLiV);
+      await expect(personCreationView.listbox_Rolle).not.toContainText(schuladminOeffentlichRolle);
+      await expect(personCreationView.listbox_Rolle).not.toContainText(schuelerRolle);
     });
 
     await test.step(`Organisation 'Öffentliche Schulen Land Schleswig-Holstein' auswählen und Dropdown 'Rolle' prüfen`, async () => {
@@ -365,11 +365,11 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await page.keyboard.type(Organisation_OeffentlicheSchule);
       await page.getByText(Organisation_OeffentlicheSchule, { exact: true }).click();
       await personCreationView.combobox_Rolle.click();
-      await expect(personCreationView.body).toContainText(landesadminRolle);
-      await expect(personCreationView.body).not.toContainText(rolleLehr);
-      await expect(personCreationView.body).not.toContainText(rolleLiV);
-      await expect(personCreationView.body).not.toContainText(schuladminOeffentlichRolle);
-      await expect(personCreationView.body).not.toContainText(schuelerRolle);
+      await expect(personCreationView.listbox_Rolle).toContainText(landesadminRolle);
+      await expect(personCreationView.listbox_Rolle).not.toContainText(rolleLehr);
+      await expect(personCreationView.listbox_Rolle).not.toContainText(rolleLiV);
+      await expect(personCreationView.listbox_Rolle).not.toContainText(schuladminOeffentlichRolle);
+      await expect(personCreationView.listbox_Rolle).not.toContainText(schuelerRolle);
     });
 
     await test.step(`Organisation 'Ersatzschulen Land Schleswig-Holstein' auswählen und Dropdown 'Rolle' prüfen`, async () => {
@@ -378,11 +378,11 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await page.keyboard.type(Organisation_Ersatzschule);
       await page.getByText(Organisation_Ersatzschule, { exact: true }).click();
       await personCreationView.combobox_Rolle.click();
-      await expect(personCreationView.body).toContainText(landesadminRolle);
-      await expect(personCreationView.body).not.toContainText(rolleLehr);
-      await expect(personCreationView.body).not.toContainText(rolleLiV);
-      await expect(personCreationView.body).not.toContainText(schuladminOeffentlichRolle);
-      await expect(personCreationView.body).not.toContainText(schuelerRolle);
+      await expect(personCreationView.listbox_Rolle).toContainText(landesadminRolle);
+      await expect(personCreationView.listbox_Rolle).not.toContainText(rolleLehr);
+      await expect(personCreationView.listbox_Rolle).not.toContainText(rolleLiV);
+      await expect(personCreationView.listbox_Rolle).not.toContainText(schuladminOeffentlichRolle);
+      await expect(personCreationView.listbox_Rolle).not.toContainText(schuelerRolle);
     });
 
     await test.step(`Organisation 'Schule' auswählen und Dropdown 'Rolle' prüfen`, async () => {
@@ -390,11 +390,11 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await personCreationView.combobox_Schulstrukturknoten.click();
       await page.getByText(Organisation_Schule).click();
       await personCreationView.combobox_Rolle.click();
-      await expect(personCreationView.body).toContainText(rolleLehr);
-      await expect(personCreationView.body).toContainText(rolleLiV);
-      await expect(personCreationView.body).toContainText(schuladminOeffentlichRolle);
-      await expect(personCreationView.body).toContainText(schuelerRolle);
-      await expect(personCreationView.body).not.toContainText(landesadminRolle);
+      await expect(personCreationView.listbox_Rolle).toContainText(rolleLehr);
+      await expect(personCreationView.listbox_Rolle).toContainText(rolleLiV);
+      await expect(personCreationView.listbox_Rolle).toContainText(schuladminOeffentlichRolle);
+      await expect(personCreationView.listbox_Rolle).toContainText(schuelerRolle);
+      await expect(personCreationView.listbox_Rolle).not.toContainText(landesadminRolle);
     });
   });
 
@@ -509,9 +509,9 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
   });
 
   test("Mehrere Benutzer hintereinander anlegen in der Rolle Landesadmin für die Rollenarten LERN und LEHR und die Bestätigungsseiten vollständig prüfen", {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
-    const landing = new LandingPage(page);
-    const startseite = new StartPage(page);
-    const login = new LoginPage(page);
+    const landing: LandingPage = new LandingPage(page);
+    const startseite: StartPage = new StartPage(page);
+    const login: LoginPage = new LoginPage(page);
     const header = new HeaderPage(page);
     const personCreationView = new PersonCreationViewPage(page);
     let userInfo: UserInfo;
