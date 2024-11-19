@@ -8,7 +8,7 @@ import { KlasseManagementViewPage } from "../pages/admin/KlasseManagementView.pa
 import { faker } from "@faker-js/faker/locale/de";
 import { HeaderPage } from "../pages/Header.page";
 import { LONG, SHORT, STAGE } from "../base/tags";
-import { deleteClassByName } from "../base/testHelperDeleteTestdata.ts";
+import { deleteKlasseByName } from "../base/testHelperDeleteTestdata.ts";
 
 const PW = process.env.PW;
 const ADMIN = process.env.USER;
@@ -33,7 +33,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
   test.afterEach(async ({ page }) => {
     await test.step(`Testdaten löschen via API`, async () => {
       if (className) { // nur wenn der Testfall auch mind. eine Klasse angelegt hat
-        await deleteClassByName(className, page);
+        await deleteKlasseByName(className, page);
         className = [];
       }
     });

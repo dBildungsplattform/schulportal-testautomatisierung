@@ -1,24 +1,30 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, Download } from "@playwright/test";
 import { HeaderPage } from "../pages/Header.page";
 import { LONG } from "../base/tags";
 import { schuelerRolle } from "../base/rollen";
-import { PersonImportViewPage } from "../pages/admin/PersonImportView.page";
-import path from "path";
 import FromAnywhere from "../pages/FromAnywhere";
+import { PersonImportViewPage } from "../pages/admin/PersonImportView.page";
+import { PersonManagementViewPage } from "../pages/admin/PersonManagementView.page";
+import path from "path";
+import fs from "fs";
 
 const PW: string = process.env.PW as string;
 const ADMIN: string = process.env.USER as string;
 const FRONTEND_URL: string = process.env.FRONTEND_URL || "";
-let importPage: PersonImportViewPage = undefined as unknown as PersonImportViewPage;
+let personImportPage: PersonImportViewPage = undefined as unknown as PersonImportViewPage;
 
 // schulen cannot be deleted yet, so we use this testschule, which should already exist
 const schulname = "Testschule-PW665";
 
 test.describe(`Testfälle für den Benutzerimport": Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
+  // convert csv to array to make person data accessible, also trim data and filter empty lines
+  const csvPath = path.join(__dirname, '../fixtures/Benutzerimport_Lernrolle_UTF-8.csv');
+  const csvAsArray: Array<string> = fs.readFileSync(csvPath).toString().split('\n').map(el => el.trim()).filter(e => e !== '');
+
   test.beforeEach(async ({ page }) => {
     await test.step(`Einloggen und zu Benutzerimport navigieren`, async () => {
       await page.goto(FRONTEND_URL);
-      importPage = (await
+      personImportPage = (await
         (await
           (await
             (await
@@ -28,13 +34,20 @@ test.describe(`Testfälle für den Benutzerimport": Umgebung: ${process.env.UMGE
         .goToAdministration())
       .goToBenutzerImport());
 
-      await expect(importPage.headlineBenutzerImport).toBeVisible();
+      await expect(personImportPage.headlineBenutzerImport).toBeVisible();
     });
   });
 
   test.afterEach(async ({ page }) => {
     await test.step(`Testdaten löschen via API`, async () => {
-      // delete imported users
+      // delete imported users - but how to we identify the imported users?
+      // csvAsArray.forEach(async (person, index) => {
+      //   // index has to be greater than 0, because the first line is the header
+      //   if (index > 0) {
+      //     const nachname = person.split(';')[0];
+      //     await deletePersonByNachname(nachname, page);
+      //   }
+      // });
     });
 
     await test.step(`Abmelden`, async () => {
@@ -45,32 +58,63 @@ test.describe(`Testfälle für den Benutzerimport": Umgebung: ${process.env.UMGE
 
   test("Als Landesadmin eine CSV-Datei mit Benutzerdaten hochladen und importieren", {tag: [LONG]}, async ({ page }) => {
     await test.step(``, async () => {
+
       // select schule
-      await importPage.schuleSelectInput.click();
-      await importPage.schuleSelectInput.fill(schulname);
-      await page.getByRole('option', { name: `(${schulname})` }).click();
-      // await page.getByText(schulname).click();
+      await personImportPage.schuleSelectCombobox.searchByTitle(schulname);
 
       // select rolle
-      await importPage.rolleSelectInput.click();
+      await personImportPage.rolleSelectInput.click();
       await page.getByRole('option', { name: schuelerRolle }).click();
 
       // upload CSV file
-      await importPage.fileInput.setInputFiles(path.join(__dirname, '../fixtures/Benutzerimport_Lernrolle_UTF-8.csv'));
+      await personImportPage.fileInput.setInputFiles(csvPath);
 
-      // submit
+      // submit and assert text
+      // calculate number of personen in csv
+      const personenTotal = csvAsArray.length - 1;
+      await personImportPage.submitFileUploadButton.click();
+      await expect(personImportPage.uploadSuccessText).toHaveText(`Die Datei wurde erfolgreich hochgeladen. ${personenTotal} Datensätze stehen zum Import bereit.`);
 
-      // check success message with data sets
-
-      // click import
-
-      // check success message
+      // click import and assert success message
+      await personImportPage.openConfirmationDialogButton.click();
+      await expect(personImportPage.importConfirmationText).toHaveText('Achtung, diese Aktion kann nicht rückgängig gemacht werden. Möchten Sie den Import wirklich durchführen?');
+      await personImportPage.executeImportButton.click();
+      await expect(personImportPage.importSuccessText).toHaveText('Die Daten wurden erfolgreich importiert. Die importierten Daten stehen zum Download bereit.');
 
       // download file
-
-      // check file content
+      const downloadPromise = page.waitForEvent('download');
+      await personImportPage.downloadFileButton.click();
+      const download: Download = await downloadPromise;
+      expect(download.suggestedFilename()).toBe('Benutzerdaten.txt');
 
       // check imported users in person management view
+      // get first person from csv and split data by ";"
+      const firstPerson: Array<string> = csvAsArray[1].split(';');
+      // get last name from first person to search in person management view
+      const firstPersonLastName: string = firstPerson[0];
+      
+      const personManagementPage: PersonManagementViewPage = await personImportPage.navigateToPersonManagementView();
+      await page.waitForURL('**/admin/personen');
+      await personManagementPage.input_Suchfeld.fill(firstPersonLastName);
+      await personManagementPage.button_Suchen.click();
+      await expect(page.getByRole("cell", { name: firstPersonLastName, exact: true })).toBeVisible();
+      await personManagementPage.input_Suchfeld.clear();
+
+      // delete imported users
+      csvAsArray.forEach(async (person, index) => {
+        // index has to be greater than 0, because the first line is the header
+        if (index > 0) {
+          const nachname: string = person.split(';')[0];
+          await personManagementPage.input_Suchfeld.clear();
+          await personManagementPage.input_Suchfeld.fill(nachname);
+          await personManagementPage.button_Suchen.click();
+          await page.getByRole("cell", { name: nachname, exact: true }).isVisible();
+          const personDetailsPage = await personManagementPage.navigateToPersonDetailsViewByNachname(nachname);
+          await personDetailsPage.button_deletePerson.click();
+          await personDetailsPage.button_deletePersonConfirm.click();
+          await personDetailsPage.button_closeDeletePersonConfirm.click();
+        }
+      });
     });
   });
 });
