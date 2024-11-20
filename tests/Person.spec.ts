@@ -392,9 +392,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await personCreationView.combobox_Rolle.click();
       await expect(personCreationView.listbox_Rolle).toContainText(rolleLehr);
       await expect(personCreationView.listbox_Rolle).toContainText(rolleLiV);
-      await expect(personCreationView.listbox_Rolle).toContainText(schuladminOeffentlichRolle);
       await expect(personCreationView.listbox_Rolle).toContainText(schuelerRolle);
       await expect(personCreationView.listbox_Rolle).not.toContainText(landesadminRolle);
+      await page.keyboard.type(schuladminOeffentlichRolle);
+      await expect(personCreationView.listbox_Rolle).toContainText(schuladminOeffentlichRolle);
     });
   });
 

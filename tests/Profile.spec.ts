@@ -12,6 +12,7 @@ import { UserInfo } from "../base/api/testHelper.page";
 import { addSystemrechtToRolle } from "../base/api/testHelperRolle.page";
 import { LONG, SHORT, STAGE, BROWSER } from "../base/tags";
 import { deleteRolleById, deletePersonByUsername} from "../base/testHelperDeleteTestdata";
+import {generateLehrerNachname, generateLehrerVorname, generateRolleName} from "../base/testHelperGenerateTestdataNames.ts";
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -310,13 +311,13 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
     const login: LoginPage = new LoginPage(page);
 
     let personId = '';
-    const vorname = "TAuto-PW-V-" + faker.person.firstName();
-    const nachname = "TAuto-PW-N-" + faker.person.lastName();
+    const vorname = await generateLehrerVorname();
+    const nachname = await generateLehrerNachname();
     const organisation1 = 'Testschule Schulportal';
     const organisation2 = 'Carl-Orff-Schule';
     const dienststellenNr1 = '1111111';
     const dienststellenNr2 = '0702948';
-    const rollenname = 'TAuto-PW-R-RolleLehrer';
+    const rollenname = await generateRolleName();
     const rollenart = 'LEHR';
 
     await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
@@ -349,29 +350,62 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       await expect(profileView.label_KopersNr).toBeHidden();
       await expect(profileView.data_KopersNr).toBeHidden();
       await expect(profileView.icon_InfoPersoenlicheDaten).toBeVisible();
-      // Schulzuordnung 1
-      await expect(profileView.cardHeadline_Schulzuordnung1).toHaveText('Schulzuordnung 1');
-      await expect(profileView.label_Schule1).toHaveText('Schule:');
-      await expect(profileView.data_Schule1).toHaveText(organisation1);
-      await expect(profileView.label_Rolle1).toHaveText('Rolle:');
-      await expect(profileView.data_Rolle1).toHaveText(rollenname);
-      await expect(profileView.label_Dienststellennummer1).toHaveText('DStNr.:');
-      await expect(profileView.data_Dienststellennummer1).toHaveText(dienststellenNr1);
-      // Schulzuordnung 2
-      await expect(profileView.cardHeadline_Schulzuordnung2).toHaveText('Schulzuordnung 2');
-      await expect(profileView.label_Schule2).toHaveText('Schule:');
-      await expect(profileView.data_Schule2).toHaveText(organisation2);
-      await expect(profileView.label_Rolle2).toHaveText('Rolle:');
-      await expect(profileView.data_Rolle2).toHaveText(rollenname);
-      await expect(profileView.label_Dienststellennummer2).toHaveText('DStNr.:');
-      await expect(profileView.data_Dienststellennummer2).toHaveText(dienststellenNr2);
-      // Passwort
-      await expect(profileView.cardHeadline_Passwort).toHaveText('Passwort');
-      await expect(profileView.button_NeuesPasswortSetzen).toBeEnabled();
-      // 2FA
-      // Aktuell wird der Abschnitt 2FA generell nicht angezeigt
-      // await expect(profileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
-      // await expect(profileView.button_2FAEinrichten).toBeEnabled();
+      
+      // prüfen, welche von den beiden Schulen zuerst angezeigt wird in der Tabelle
+      if(await profileView.data_Schule1.innerText() == organisation1) {
+        // Schulzuordnung 1
+        await expect(profileView.cardHeadline_Schulzuordnung1).toHaveText('Schulzuordnung 1');
+        await expect(profileView.label_Schule1).toHaveText('Schule:');
+        await expect(profileView.data_Schule1).toHaveText(organisation1);
+        await expect(profileView.label_Rolle1).toHaveText('Rolle:');
+        await expect(profileView.data_Rolle1).toHaveText(rollenname);
+        await expect(profileView.label_Dienststellennummer1).toHaveText('DStNr.:');
+        await expect(profileView.data_Dienststellennummer1).toHaveText(dienststellenNr1);
+
+        // Schulzuordnung 2
+        await expect(profileView.cardHeadline_Schulzuordnung2).toHaveText('Schulzuordnung 2');
+        await expect(profileView.label_Schule2).toHaveText('Schule:');
+        await expect(profileView.data_Schule2).toHaveText(organisation2);
+        await expect(profileView.label_Rolle2).toHaveText('Rolle:');
+        await expect(profileView.data_Rolle2).toHaveText(rollenname);
+        await expect(profileView.label_Dienststellennummer2).toHaveText('DStNr.:');
+        await expect(profileView.data_Dienststellennummer2).toHaveText(dienststellenNr2);
+        // Passwort
+        await expect(profileView.cardHeadline_Passwort).toHaveText('Passwort');
+        await expect(profileView.button_NeuesPasswortSetzen).toBeEnabled();
+        // 2FA
+        // Aktuell wird der Abschnitt 2FA generell nicht angezeigt
+        // await expect(profileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
+        // await expect(profileView.button_2FAEinrichten).toBeEnabled();
+      } 
+      else {
+        // Schulzuordnung 1
+        await expect(profileView.cardHeadline_Schulzuordnung2).toHaveText('Schulzuordnung 2');
+        await expect(profileView.label_Schule2).toHaveText('Schule:');
+        await expect(profileView.data_Schule2).toHaveText(organisation1);
+        await expect(profileView.label_Rolle2).toHaveText('Rolle:');
+        await expect(profileView.data_Rolle2).toHaveText(rollenname);
+        await expect(profileView.label_Dienststellennummer2).toHaveText('DStNr.:');
+        await expect(profileView.data_Dienststellennummer2).toHaveText(dienststellenNr2);
+
+        // Schulzuordnung 2
+        await expect(profileView.cardHeadline_Schulzuordnung1).toHaveText('Schulzuordnung 1');
+        await expect(profileView.label_Schule1).toHaveText('Schule:');
+        await expect(profileView.data_Schule1).toHaveText(organisation2);
+        await expect(profileView.label_Rolle1).toHaveText('Rolle:');
+        await expect(profileView.data_Rolle1).toHaveText(rollenname);
+        await expect(profileView.label_Dienststellennummer1).toHaveText('DStNr.:');
+        await expect(profileView.data_Dienststellennummer1).toHaveText(dienststellenNr1);
+        
+        // Passwort
+        await expect(profileView.cardHeadline_Passwort).toHaveText('Passwort');
+        await expect(profileView.button_NeuesPasswortSetzen).toBeEnabled();
+        // 2FA
+        // Aktuell wird der Abschnitt 2FA generell nicht angezeigt
+        // await expect(profileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
+        // await expect(profileView.button_2FAEinrichten).toBeEnabled();
+        
+      }
     });
   });
 
@@ -380,15 +414,12 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
     const header = new HeaderPage(page);
     const login = new LoginPage(page);
 
-    const vorname = "TAuto-PW-V-" + faker.person.firstName();
-    const nachname = "TAuto-PW-N-" + faker.person.lastName();
     const organisation = 'Testschule Schulportal';
-    const rollenname = 'TAuto-PW-R-RolleSchüler';
     const rollenart = 'LERN';
 
     await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
       const idSP = await getSPId(page, 'itslearning');
-      const userInfo: UserInfo = await createRolleAndPersonWithUserContext(page, organisation, rollenart, nachname, vorname, idSP, rollenname);
+      const userInfo: UserInfo = await createRolleAndPersonWithUserContext(page, organisation, rollenart, await generateLehrerNachname(), await generateLehrerVorname(), idSP, await generateRolleName());
       roleId.push(userInfo.rolleId);
       username.push(userInfo.username);
 
