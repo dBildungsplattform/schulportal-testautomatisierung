@@ -34,6 +34,7 @@ export class PersonCreationViewPage{
     readonly data_Organisationsebene: Locator;
     readonly label_Klasse: Locator;
     readonly data_Klasse: Locator;
+    readonly listbox_Rolle: Locator;
    
     constructor(page){
         // Anlage Person
@@ -70,5 +71,6 @@ export class PersonCreationViewPage{
         this.input_EinstiegsPasswort = page.locator('[data-testid="password-output-field"] input'); 
         this.button_ZurueckErgebnisliste = page.getByTestId('back-to-list-button');
         this.button_WeiterenBenutzerAnlegen = page.getByTestId('create-another-person-button');
+        this.listbox_Rolle = page.locator('.v-list');
     }
 }
