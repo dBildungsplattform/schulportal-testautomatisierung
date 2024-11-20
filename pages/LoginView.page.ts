@@ -37,9 +37,9 @@ export class LoginPage {
   ): Promise<StartPage> {
     await expect(this.text_h1).toBeVisible();
     await this.input_username.click();
-    await this.input_username.fill(username!);
+    await this.input_username.fill(username);
     await this.input_password.click();
-    await this.input_password.fill(password!);
+    await this.input_password.fill(password);
     await this.button_login.click();
     // BE requests laufen zeitverzögert zum FE; dieses muss im FE behoben werden; solange dies nicht der Fall ist, brauchen wir diesen workaround
     // Wenn auf login/logout geklickt wird, sind teilweise noch requests am laufen

@@ -42,7 +42,6 @@ export class ProfilePage{
     readonly icon_Schild2FA: Locator;
     readonly text_no2FA: Locator;
     readonly button_2FAEinrichten: Locator;
-    readonly text_2FA_info: Locator;
 
     constructor(page){
         this.page = page;  
@@ -86,6 +85,5 @@ export class ProfilePage{
          this.cardHeadline_2FA = page.getByTestId('two-factor-card');
          this.text_no2FA = page.getByText('Es wurde noch kein zweiter Faktor für Sie eingerichtet.');
          this.button_2FAEinrichten = page.getByTestId('open-2FA-self-service-dialog-icon');
-         this.text_2FA_info = page.getByTestId('two-factor-info');
     }
 }
