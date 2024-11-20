@@ -15,7 +15,7 @@ import { addSystemrechtToRolle } from "../base/api/testHelperRolle.page";
 import { LONG, SHORT, STAGE, BROWSER } from "../base/tags";
 import { deletePersonByUsername, deleteRolleById, deleteRolleByName } from "../base/testHelperDeleteTestdata.ts";
 import { landesadminRolle, schuelerRolle, schuladminOeffentlichRolle } from "../base/roles.ts";
-import { generateRolleName } from "../base/testHelperGenerateTestdataNames.ts";
+import { generateLehrerNachname, generateLehrerVorname, generateRolleName } from "../base/testHelperGenerateTestdataNames.ts";
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -680,8 +680,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     const PersonDetailsView = new PersonDetailsViewPage(page);
     const header = new HeaderPage(page);
 
-    const vorname = "TAuto-PW-V-" + faker.person.firstName();
-    const nachname = "TAuto-PW-N-" + faker.person.lastName();
+    const vorname = await generateLehrerVorname();
+    const nachname = await generateLehrerNachname();
     const rolle = await generateRolleName();
     const berechtigung = 'SYSADMIN';
     const idSP = await getSPId(page, 'Schulportal-Administration');

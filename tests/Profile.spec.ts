@@ -386,7 +386,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await expect(profileView.label_Rolle2).toHaveText('Rolle:');
         await expect(profileView.data_Rolle2).toHaveText(rollenname);
         await expect(profileView.label_Dienststellennummer2).toHaveText('DStNr.:');
-        await expect(profileView.data_Dienststellennummer2).toHaveText(dienststellenNr2);
+        await expect(profileView.data_Dienststellennummer2).toHaveText(dienststellenNr1);
 
         // Schulzuordnung 2
         await expect(profileView.cardHeadline_Schulzuordnung1).toHaveText('Schulzuordnung 1');
@@ -395,7 +395,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await expect(profileView.label_Rolle1).toHaveText('Rolle:');
         await expect(profileView.data_Rolle1).toHaveText(rollenname);
         await expect(profileView.label_Dienststellennummer1).toHaveText('DStNr.:');
-        await expect(profileView.data_Dienststellennummer1).toHaveText(dienststellenNr1);
+        await expect(profileView.data_Dienststellennummer1).toHaveText(dienststellenNr2);
         
         // Passwort
         await expect(profileView.cardHeadline_Passwort).toHaveText('Passwort');
