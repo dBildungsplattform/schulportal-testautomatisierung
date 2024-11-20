@@ -93,20 +93,21 @@ test.describe(`Testfälle für den Benutzerimport": Umgebung: ${process.env.UMGE
       await personManagementPage.input_Suchfeld.clear();
 
       // delete imported users via UI to clean up
-      csvAsArray.forEach(async (person, index) => {
-        // index has to be greater than 0, because the first line is the header
-        if (index > 0) {
-          const nachname: string = person.split(';')[0];
-          await personManagementPage.input_Suchfeld.clear();
-          await personManagementPage.input_Suchfeld.fill(nachname);
-          await personManagementPage.button_Suchen.click();
-          await page.getByRole("cell", { name: nachname, exact: true }).isVisible();
-          const personDetailsPage = await personManagementPage.navigateToPersonDetailsViewByNachname(nachname);
-          await personDetailsPage.button_deletePerson.click();
-          await personDetailsPage.button_deletePersonConfirm.click();
-          await personDetailsPage.button_closeDeletePersonConfirm.click();
-        }
-      });
+      // index has to be greater than 0, because the first line is the header
+      for (let index = 1; index < csvAsArray.length; index++) {
+        const person = csvAsArray[index];
+        const nachname: string = person.split(';')[0];
+      
+        await personManagementPage.input_Suchfeld.clear();
+        await personManagementPage.input_Suchfeld.fill(nachname);
+        await personManagementPage.button_Suchen.click();
+      
+        await page.getByRole("cell", { name: nachname, exact: true }).isVisible();
+        const personDetailsPage = await personManagementPage.navigateToPersonDetailsViewByNachname(nachname);
+        await personDetailsPage.button_deletePerson.click();
+        await personDetailsPage.button_deletePersonConfirm.click();
+        await personDetailsPage.button_closeDeletePersonConfirm.click();
+      }
     });
   });
 });
