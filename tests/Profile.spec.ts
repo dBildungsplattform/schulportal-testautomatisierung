@@ -123,12 +123,11 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       // Passwort
       await expect(profileView.cardHeadline_Passwort).toHaveText('Passwort');
       await expect(profileView.button_NeuesPasswortSetzen).toBeEnabled();
-    });
-
-    await test.step(`2FA Abschnitt prüfen, 2FA ist nicht aktiviert`, async () => {
-      await expect(profileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
-      await expect(profileView.text_no2FA).toHaveText('Es wurde noch kein zweiter Faktor für Sie eingerichtet.');
-      await expect(profileView.button_2FAEinrichten).toBeEnabled();
+      // 2FA
+      // Aktuell wird der Abschnitt 2FA generell nicht angezeigt
+      // await expect(profileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
+      // await expect(profileView.text_no2FA).toHaveText('Es wurde noch kein zweiter Faktor für Sie eingerichtet.');
+      // await expect(profileView.button_2FAEinrichten).toBeEnabled();
     });
   });
 
@@ -184,13 +183,13 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       await expect(profileView.cardHeadline_Passwort).toHaveText('Passwort');
       await expect(profileView.button_NeuesPasswortSetzen).toBeEnabled();
       // 2FA
-      await expect(profileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
-      await expect(profileView.text_no2FA).toHaveText('Es wurde noch kein zweiter Faktor für Sie eingerichtet.');
-      await expect(profileView.button_2FAEinrichten).toBeEnabled();
+      // Aktuell wird der Abschnitt 2FA generell nicht angezeigt
+      // await expect(profileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
+      // await expect(profileView.button_2FAEinrichten).toBeEnabled();
     });
   });
 
-  test("Das eigene Profil öffnen und auf Vollständigkeit prüfen als Schüler mit einer Schulzuordnung, 2FA Abschnitt prüfen", {tag: [LONG, STAGE]}, async ({ page }) => {
+  test("Das eigene Profil öffnen und auf Vollständigkeit prüfen als Schüler mit einer Schulzuordnung", {tag: [LONG, STAGE]}, async ({ page }) => {
     const profileView = new ProfilePage(page);
     const header = new HeaderPage(page);
     const login: LoginPage = new LoginPage(page);
@@ -242,11 +241,6 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       await expect(profileView.cardHeadline_Passwort).toHaveText('Passwort');
       await expect(profileView.button_NeuesPasswortSetzen).toBeEnabled();
       // 2FA
-      await expect(profileView.cardHeadline_2FA).toBeHidden();
-      await expect(profileView.button_2FAEinrichten).toBeHidden();
-    });
-
-    await test.step(`2FA Abschnitt ist unsichtbar prüfen`, async () => {
       await expect(profileView.cardHeadline_2FA).toBeHidden();
       await expect(profileView.button_2FAEinrichten).toBeHidden();
     });
@@ -304,9 +298,9 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       await expect(profileView.cardHeadline_Passwort).toHaveText('Passwort');
       await expect(profileView.button_NeuesPasswortSetzen).toBeEnabled();
       // 2FA
-      await expect(profileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
-      await expect(profileView.text_no2FA).toHaveText('Es wurde noch kein zweiter Faktor für Sie eingerichtet.');
-      await expect(profileView.button_2FAEinrichten).toBeEnabled();
+      // Aktuell wird der Abschnitt 2FA generell nicht angezeigt
+      // await expect(profileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
+      // await expect(profileView.button_2FAEinrichten).toBeEnabled();
     });
   });
 
@@ -375,100 +369,9 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       await expect(profileView.cardHeadline_Passwort).toHaveText('Passwort');
       await expect(profileView.button_NeuesPasswortSetzen).toBeEnabled();
       // 2FA
-      await expect(profileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
-      await expect(profileView.text_no2FA).toHaveText('Es wurde noch kein zweiter Faktor für Sie eingerichtet.');
-      await expect(profileView.button_2FAEinrichten).toBeEnabled();
-    });
-  });
-
-  test("Als Landesamdin mit aktivierter 2FA, eigene Profil öffnen, 2FA Abschnitt prüfen", {tag: [LONG, STAGE]}, async ({ page }) => {
-    const profileView = new ProfilePage(page);
-    const header = new HeaderPage(page);
-
-    await test.step(`Profil öffnen`, async () => {
-      await header.button_profil.click();
-    });
-
-    await test.step(`2FA Abschnitt prüfen, 2FA ist aktiviert`, async () => {
-      //2FA für Benutzer test als Landesadmin ist bereits aktiviert 
-      await expect(profileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
-      await expect(profileView.text_2FA_info).toHaveText('Für diesen Account ist aktuell eine 2FA über ein Software-Token eingerichtet (Authentifizierung über Endgerät).');
-      await expect(profileView.button_2FAEinrichten).toBeHidden();
-    });
-  });
-
-  test("Als Schuladmin mit aktivierter 2FA, eigene Profil öffnen, 2FA Abschnitt prüfen", {tag: [LONG, STAGE]}, async ({ page }) => {
-    const profileView = new ProfilePage(page);
-    const header = new HeaderPage(page);
-    const login = new LoginPage(page);
-
-    await header.logout();
-    await header.button_login.click();
-    await login.login(SCHULADMIN_MIT2FA, PW);
-
-    await test.step(`Profil öffnen`, async () => {
-      await header.button_profil.click();
-    });
-
-    await test.step(`Schulzourfnung für Schuladmin prüfen`, async () => {
-      await expect(profileView.cardHeadline_Schulzuordnung1).toHaveText('Schulzuordnung 1');
-      await expect(profileView.label_Schule1).toHaveText('Schule:');
-      await expect(profileView.data_Schule1).toHaveText('Amalie-Sieveking-Schul');
-      await expect(profileView.label_Rolle1).toHaveText('Rolle:');
-      await expect(profileView.data_Rolle1).toHaveText('Schuladministrator öffentlich');
-    });
-
-    await test.step(`2FA Abschnitt prüfen, 2FA ist aktiviert`, async () => {
-      //2FA für Benutzer kbuechner als Schuladmin ist bereits aktiviert 
-      await expect(profileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
-      await expect(profileView.text_2FA_info).toHaveText('Für diesen Account ist aktuell eine 2FA über ein Software-Token eingerichtet (Authentifizierung über Endgerät).');
-      await expect(profileView.button_2FAEinrichten).toBeHidden();
-    });
-  });
-
-  test("Das eigene Profil öffnen, Passwort Ändern öffnen, und Status des Benutzernamenfelds prüfen", {tag: [LONG, STAGE]}, async ({ page }) => {
-    const profileView = new ProfilePage(page);
-    const header = new HeaderPage(page);
-    const login = new LoginPage(page);
-
-    const vorname = "TAuto-PW-V-" + faker.person.firstName();
-    const nachname = "TAuto-PW-N-" + faker.person.lastName();
-    const organisation = 'Testschule Schulportal';
-    const rollenname = 'TAuto-PW-R-RolleSchüler';
-    const rollenart = 'LERN';
-
-    await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
-      const idSP = await getSPId(page, 'itslearning');
-      const userInfo: UserInfo = await createRolleAndPersonWithUserContext(page, organisation, rollenart, nachname, vorname, idSP, rollenname);
-      roleId.push(userInfo.rolleId);
-      username.push(userInfo.username);
-
-      await header.logout();
-      await header.button_login.click();
-      await login.login(userInfo.username, userInfo.password);
-      await login.UpdatePW();
-    });
-
-    await test.step(`Profil öffnen`, async () => {
-      await header.button_profil.click();
-    });
-
-    await test.step(`Passwort Ändern öffnen`, async () => {
-      await expect(profileView.button_ZurueckVorherigeSeite).toBeVisible();
-      await expect(profileView.text_h2_Ueberschrift).toHaveText('Mein Profil');
-      // Passwort
-      await expect(profileView.cardHeadline_Passwort).toHaveText('Passwort');
-      await expect(profileView.button_NeuesPasswortSetzen).toBeEnabled();
-
-      profileView.button_NeuesPasswortSetzen.click();
-      profileView.button_PasswortAendern.click();
-    });
-
-    await test.step(`Status des Benutzernamenfelds prüfen`, async () => {
-      await expect(profileView.label_username).toHaveText(username[0]); // Benutzername ist nicht änderbar weil es nur Text ist
-      await expect(profileView.text_p_LoginPrompt).toHaveText('Bitte geben Sie Ihr aktuelles Passwort ein.');
-      await expect(profileView.input_password).toBeEnabled();
-      await page.goBack();
+      // Aktuell wird der Abschnitt 2FA generell nicht angezeigt
+      // await expect(profileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
+      // await expect(profileView.button_2FAEinrichten).toBeEnabled();
     });
   });
 

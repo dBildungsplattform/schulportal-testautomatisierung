@@ -195,4 +195,188 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
             await personDetailsView.checkLockDateTo(sperrDatumBis); // Der Benutzer muss gesperrt sein bis zun dem eingegebenen Datum
         })
     })
+
+    test("Gesamtübersicht für einen Benutzer als Schueler öffnen und Unsichtbarkeit des 2FA Abschnitts prüfen", {tag: [LONG, STAGE]}, async ({ page }) => {
+        const vorname = "TAuto-PW-V-" + faker.person.firstName();
+        const nachname = "TAuto-PW-N-" + faker.person.lastName();
+        let userInfoLehrer: UserInfo;
+
+        await test.step(`Testdaten: Lehrer mit einer Rolle(LERN) über die api anlegen ${ADMIN}`, async () => {
+            userInfoLehrer = await createRolleAndPersonWithUserContext(page, testschule, 'LERN', nachname, vorname, await getSPId(page, 'itslearning'), await generateRolleName());
+            username.push(userInfoLehrer.username);
+            rolleId.push(userInfoLehrer.rolleId);
+        })
+
+        const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
+
+        const personDetailsView: PersonDetailsViewPage = await test.step(`Gesamtübersicht öffnen`, async () => {
+            await gotoTargetURL(page, "admin/personen"); 
+            await personManagementView.searchBySuchfeld(userInfoLehrer.username);
+            return await personManagementView.openGesamtuebersichtPerson(page, userInfoLehrer.username);
+        })
+
+        await test.step(`Unsichtbarkeit des 2FA Abschnitts prüfen`, async () => {
+            await expect(personDetailsView.text_h3_2FA).toBeHidden();
+            await expect(personDetailsView.text_token_IstEingerichtet_info).toBeHidden();
+            await expect(personDetailsView.text_neuen_token_einrichten_info).toBeHidden();
+            await expect(personDetailsView.text_kein_token_ist_Eingerichtet).toBeHidden();
+            await expect(personDetailsView.button_2FAEinrichten).toBeHidden();
+        })
+    })
+
+    test("Gesamtübersicht für einen Benutzer als Lehrkraft öffnen und 2FA Status prüfen dass kein Token eingerichtet ist", {tag: [LONG, STAGE]}, async ({ page }) => {
+        let userInfoLehrer: UserInfo;
+
+        await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) über die api anlegen ${ADMIN}`, async () => {
+            userInfoLehrer = await createRolleAndPersonWithUserContext(page, testschule, typelehrer, await generateLehrerNachname(), await generateLehrerVorname(), await getSPId(page, email), await generateRolleName());
+            username.push(userInfoLehrer.username);
+            rolleId.push(userInfoLehrer.rolleId);
+        })
+
+        const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
+
+        const personDetailsView: PersonDetailsViewPage = await test.step(`Gesamtübersicht öffnen`, async () => {
+            await gotoTargetURL(page, "admin/personen");
+            await personManagementView.searchBySuchfeld(userInfoLehrer.username);
+            return await personManagementView.openGesamtuebersichtPerson(page, userInfoLehrer.username);
+        })
+
+        await test.step(`2FA Status prüfen dass kein Token eingerichtet ist`, async () => {
+            await expect(personDetailsView.text_h3_2FA).toBeVisible();
+            await expect(personDetailsView.text_kein_token_ist_Eingerichtet).toBeVisible();
+        })
+    })
+
+    test("Gesamtübersicht für einen Benutzer als Schuladmin öffnen und 2FA Status prüfen dass kein Token eingerichtet ist", {tag: [LONG, STAGE]}, async ({ page }) => {
+        const addminVorname = "TAuto-PW-V-" + faker.person.firstName();
+        const adminNachname = "TAuto-PW-N-" + faker.person.lastName();
+        const adminRollenart = 'LEIT';
+        const adminOrganisation = 'Testschule-PW665';
+        const adminIdSP = await getSPId(page, 'Schulportal-Administration');
+        let userInfoAdmin: UserInfo;
+
+        await test.step(`Testdaten: Schuladmin mit einer Rolle(LEIT) über die api anlegen ${ADMIN}`, async () => {
+            userInfoAdmin = await createRolleAndPersonWithUserContext(page, adminOrganisation, adminRollenart, addminVorname, adminNachname, adminIdSP, await generateRolleName());
+        await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'PERSONEN_VERWALTEN');
+        username.push(userInfoAdmin.username);
+        rolleId.push(userInfoAdmin.rolleId);
+        })
+
+        const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
+
+        const personDetailsView: PersonDetailsViewPage = await test.step(`Gesamtübersicht öffnen`, async () => {
+            await gotoTargetURL(page, "admin/personen"); 
+            await personManagementView.searchBySuchfeld(userInfoAdmin.username);
+            return await personManagementView.openGesamtuebersichtPerson(page, userInfoAdmin.username);
+        })
+
+        await test.step(`2FA Status prüfen dass kein Token eingerichtet ist`, async () => {
+            await expect(personDetailsView.text_h3_2FA).toBeVisible();
+            await expect(personDetailsView.text_kein_token_ist_Eingerichtet).toBeVisible();
+        })
+    })
+
+    test("Gesamtübersicht für einen Benutzer als Landesadmin öffnen, 2FA Token einrichten und 2FA Status prüfen dass ein Token eingerichtet ist", {tag: [LONG, STAGE]}, async ({ page }) => {
+        const addminVorname = "TAuto-PW-V-" + faker.person.firstName();
+        const adminNachname = "TAuto-PW-N-" + faker.person.lastName();
+        const organisation = 'Land Schleswig-Holstein';
+        const rollenart = 'SYSADMIN'
+        const adminIdSP = await getSPId(page, 'Schulportal-Administration');
+
+        let userInfoAdmin: UserInfo;
+
+        await test.step(`Testdaten: Landesadmin mit einer Rolle(SYSADMIN) über die api anlegen ${ADMIN}`, async () => {
+            userInfoAdmin = await createRolleAndPersonWithUserContext(page, organisation, rollenart, addminVorname, adminNachname, adminIdSP, await generateRolleName());
+            await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'ROLLEN_VERWALTEN');
+            await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'PERSONEN_SOFORT_LOESCHEN');
+            await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'PERSONEN_VERWALTEN');
+            await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'SCHULEN_VERWALTEN');
+            await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'KLASSEN_VERWALTEN');
+            await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'SCHULTRAEGER_VERWALTEN');
+            await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'PERSONEN_ANLEGEN');
+
+            username.push(userInfoAdmin.username);
+            rolleId.push(userInfoAdmin.rolleId);
+        })
+
+        const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
+
+        const personDetailsView: PersonDetailsViewPage = await test.step(`Gesamtübersicht öffnen`, async () => {
+            await gotoTargetURL(page, "admin/personen"); 
+            await personManagementView.searchBySuchfeld(userInfoAdmin.username);
+            return await personManagementView.openGesamtuebersichtPerson(page, userInfoAdmin.username);
+        })
+
+        await test.step(`2FA Token einrichten`, async () => {
+            await expect(personDetailsView.text_h3_2FA).toBeVisible();
+            await personDetailsView.tokenEinrichten();
+        })
+
+        await test.step(`2FA Status prüfen dass ein Token eingerichtet ist`, async () => {
+            await expect(personDetailsView.text_token_IstEingerichtet_info).toBeVisible();
+            await expect(personDetailsView.text_neuen_token_einrichten_info).toBeVisible();
+        })
+    })
+
+    test("Gesamtübersicht für einen Benutzer als Schuladmin öffnen, 2FA Token einrichten und 2FA Status prüfen dass ein Token eingerichtet ist", {tag: [LONG, STAGE]}, async ({ page }) => {
+        const addminVorname = "TAuto-PW-V-" + faker.person.firstName();
+        const adminNachname = "TAuto-PW-N-" + faker.person.lastName();
+        const adminRollenart = 'LEIT';
+        const adminOrganisation = 'Testschule-PW665';
+        const adminIdSP = await getSPId(page, 'Schulportal-Administration');
+        let userInfoAdmin: UserInfo;
+
+        await test.step(`Testdaten: Schuladmin mit einer Rolle(LEIT) über die api anlegen ${ADMIN}`, async () => {
+            userInfoAdmin = await createRolleAndPersonWithUserContext(page, adminOrganisation, adminRollenart, addminVorname, adminNachname, adminIdSP, await generateRolleName());
+            await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'PERSONEN_VERWALTEN');
+            username.push(userInfoAdmin.username);
+            rolleId.push(userInfoAdmin.rolleId);
+        })
+
+        const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
+
+        const personDetailsView: PersonDetailsViewPage = await test.step(`Gesamtübersicht öffnen`, async () => {
+            await gotoTargetURL(page, "admin/personen"); 
+            await personManagementView.searchBySuchfeld(userInfoAdmin.username);
+            return await personManagementView.openGesamtuebersichtPerson(page, userInfoAdmin.username);
+        })
+
+        await test.step(`2FA Token einrichten`, async () => {
+            await expect(personDetailsView.text_h3_2FA).toBeVisible();
+            await personDetailsView.tokenEinrichten();
+        })
+
+        await test.step(`2FA Status prüfen dass ein Token eingerichtet ist`, async () => {
+            await expect(personDetailsView.text_token_IstEingerichtet_info).toBeVisible();
+            await expect(personDetailsView.text_neuen_token_einrichten_info).toBeVisible();
+        })
+    })
+
+    test("Gesamtübersicht für einen Benutzer als Lehrkraft öffnen, 2FA Token einrichten und 2FA Status prüfen dass ein Token eingerichtet ist", {tag: [LONG, STAGE]}, async ({ page }) => {
+        let userInfoLehrer: UserInfo;
+
+        await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) über die api anlegen ${ADMIN}`, async () => {
+            userInfoLehrer = await createRolleAndPersonWithUserContext(page, testschule, typelehrer, await generateLehrerNachname(), await generateLehrerVorname(), await getSPId(page, email), await generateRolleName());
+            username.push(userInfoLehrer.username);
+            rolleId.push(userInfoLehrer.rolleId);
+        })
+
+        const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
+
+        const personDetailsView: PersonDetailsViewPage = await test.step(`Gesamtübersicht öffnen`, async () => {
+            await gotoTargetURL(page, "admin/personen"); 
+            await personManagementView.searchBySuchfeld(userInfoLehrer.username);
+            return await personManagementView.openGesamtuebersichtPerson(page, userInfoLehrer.username);
+        })
+
+        await test.step(`2FA Token einrichten`, async () => {
+            await expect(personDetailsView.text_h3_2FA).toBeVisible();
+            await personDetailsView.tokenEinrichten();
+        })
+
+        await test.step(`2FA Status prüfen dass ein Token eingerichtet ist`, async () => {
+            await expect(personDetailsView.text_token_IstEingerichtet_info).toBeVisible();
+            await expect(personDetailsView.text_neuen_token_einrichten_info).toBeVisible();
+        })
+    })
 });

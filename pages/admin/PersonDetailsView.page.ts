@@ -38,6 +38,22 @@ export class PersonDetailsViewPage{
     readonly radio_button_befristet: Locator;
     readonly text_sperrdatumAb: Locator;
     readonly text_sperrdatumBis: Locator;
+
+     // 2FA
+     readonly text_h3_2FA: Locator;
+     readonly text_token_IstEingerichtet_info: Locator;
+     readonly text_neuen_token_einrichten_info: Locator;
+     readonly text_kein_token_ist_Eingerichtet: Locator;
+     readonly button_2FAEinrichten: Locator;
+     readonly text_2FA_info: Locator;
+     readonly dialog_2FA_Einrichten: Locator;
+     readonly text_h2_2FA_cardheadline: Locator;
+     readonly selectOption_2FA_softwareToken: Locator;
+     readonly text_2FA_softwareToken_info: Locator;
+     readonly button_2FA_Einrichten_Weiter: Locator;
+     readonly button_close_softwareToken_dialog: Locator;
+     readonly button_2FA_Zuruecksetzen_Weiter: Locator;
+
     
     constructor(page){
         this.page = page;  
@@ -77,6 +93,20 @@ export class PersonDetailsViewPage{
         this.radio_button_befristet = page.getByTestId('befristet-radio-button').getByLabel('Befristet');
         this.text_sperrdatumAb = page.getByTestId('lock-info-1-attribute');
         this.text_sperrdatumBis = page.getByTestId('lock-info-2-attribute');
+
+        //2FA
+        this.text_h3_2FA = page.getByText('Zwei-Faktor-Authentifizierung (2FA)');
+        this.text_kein_token_ist_Eingerichtet = page.getByText('Für diesen Benutzer ist aktuell keine 2FA eingerichtet.');
+        this.text_token_IstEingerichtet_info = page.getByText('Für diesen Benutzer ist aktuell ein Software-Token eingerichtet.');
+        this.text_neuen_token_einrichten_info = page.getByText('Um einen neuen Token einzurichten, muss der aktuelle Token durch die schulischen Administratorinnen und Administratoren zurückgesetzt werden.');
+        this.button_2FAEinrichten = page.getByTestId('open-2FA-dialog-icon');
+        this.dialog_2FA_Einrichten = page.getByTestId('two-factor-authentication-dialog');
+        this.text_h2_2FA_cardheadline = this.dialog_2FA_Einrichten.getByTestId('layout-card-headline');
+        this.text_2FA_softwareToken_info = page.getByText('Ein QR-Code wird generiert, welcher direkt eingescannt oder ausgedruckt werden kann.');
+        this.selectOption_2FA_softwareToken = page.getByTestId('software-token-radio-button');
+        this.button_2FA_Einrichten_Weiter = page.getByTestId('proceed-two-factor-authentication-dialog-button');
+        this.button_close_softwareToken_dialog = page.getByTestId('close-software-token-dialog-button');
+        this.button_2FA_Zuruecksetzen_Weiter = page.getByTestId('two-way-authentification-set-up-button');
     }
 
     public async lockUserWithoutDate() {
@@ -111,4 +141,16 @@ export class PersonDetailsViewPage{
     public async checkLockDateTo(lockDateTo: string) {
         await expect(this.text_sperrdatumBis).toHaveText(lockDateTo);
     }
+
+    public async tokenEinrichten() {
+        await this.button_2FAEinrichten.click();
+        await expect(this.text_h2_2FA_cardheadline).toHaveText('Zwei-Faktor-Authentifizierung einrichten');
+        await expect(this.selectOption_2FA_softwareToken).toHaveText('Software-Token einrichten');
+        await expect(this.text_2FA_softwareToken_info).toBeVisible();
+        await this.button_2FA_Einrichten_Weiter.click();
+
+        await expect(this.text_h2_2FA_cardheadline).toHaveText('Software-Token einrichten');
+        await this.button_close_softwareToken_dialog.click();
+    }
+
 }
