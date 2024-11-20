@@ -109,7 +109,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.UM
 
     const lehrerVorname = "TAuto-PW-V-" + faker.person.firstName();
     const lehrerNachname = "TAuto-PW-N-" + faker.person.lastName();
-    const lehrerRolle = generateRolleName();
+    const lehrerRolle = await generateRolleName();
     const lehrerRollenart = 'LEHR';
     const lehrerOrganisation = 'Testschule Schulportal';
     let userInfoLehrer: UserInfo;
