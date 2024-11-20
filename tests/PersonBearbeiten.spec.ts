@@ -81,7 +81,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
     const addminVorname = "TAuto-PW-V-" + faker.person.firstName();
     const adminNachname = "TAuto-PW-N-" + faker.person.lastName();
-    const adminRolle = "TAuto-PW-LEIT-" + faker.lorem.word({length: {min: 8, max: 12}});
+    const adminRolle = generateRolleName();
     const adminRollenart = 'LEIT';
     const adminOrganisation = 'Testschule-PW665';
     const adminIdSP = await getSPId(page, 'Schulportal-Administration');
@@ -89,7 +89,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
     const lehrerVorname = "TAuto-PW-V-" + faker.person.firstName();
     const lehrerNachname = "TAuto-PW-N-" + faker.person.lastName();
-    const lehrerRolle = "TAuto-PW-LEHR-" + faker.lorem.word({length: {min: 8, max: 12}});
+    const lehrerRolle = generateRolleName();
     const lehrerRollenart = 'LEHR';
     const lehrerOrganisation = 'Testschule-PW665';
     const lehrerIdSP = await getSPId(page, 'E-Mail');
@@ -149,7 +149,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         const sperrDatumAb = await generateDateToday() // Konkrete Testdaten für diesen Testfall
 
         await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) und SP(email) über die api anlegen ${ADMIN}`, async () => {
-          userInfoLehrer = await createRolleAndPersonWithUserContext(page, testschule, typelehrer, await generateLehrerNachname(), await generateLehrerVorname(), await getSPId(page, email), await generateRolleName());
+          userInfoLehrer = await createRolleAndPersonWithUserContext(page, testschule, typelehrer, await generateLehrerNachname(), await generateLehrerVorname(), await getSPId(page, email), generateRolleName());
           username.push(userInfoLehrer.username);
           rolleId.push(userInfoLehrer.rolleId);
         })
@@ -175,7 +175,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         const sperrDatumBis = await generateDateFuture(5, 2); // Konkrete Testdaten für diesen Testfall
 
         await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) und SP(email) über die api anlegen ${ADMIN}`, async () => {
-            userInfoLehrer = await createRolleAndPersonWithUserContext(page, testschule, typelehrer, await generateLehrerNachname(), await generateLehrerVorname(), await getSPId(page, email), await generateRolleName());
+            userInfoLehrer = await createRolleAndPersonWithUserContext(page, testschule, typelehrer, await generateLehrerNachname(), await generateLehrerVorname(), await getSPId(page, email), generateRolleName());
             username.push(userInfoLehrer.username);
             rolleId.push(userInfoLehrer.rolleId);
         })
