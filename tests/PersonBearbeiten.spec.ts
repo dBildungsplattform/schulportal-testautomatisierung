@@ -149,7 +149,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         const sperrDatumAb = await generateDateToday() // Konkrete Testdaten für diesen Testfall
 
         await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) und SP(email) über die api anlegen ${ADMIN}`, async () => {
-          userInfoLehrer = await createRolleAndPersonWithUserContext(page, testschule, typelehrer, await generateLehrerNachname(), await generateLehrerVorname(), await getSPId(page, email), await generateRolleName());
+          userInfoLehrer = await createRolleAndPersonWithUserContext(page, testschule, typelehrer, await generateLehrerNachname(), await generateLehrerVorname(), await getSPId(page, email), generateRolleName());
           username.push(userInfoLehrer.username);
           rolleId.push(userInfoLehrer.rolleId);
         })
@@ -175,7 +175,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         const sperrDatumBis = await generateDateFuture(5, 2); // Konkrete Testdaten für diesen Testfall
 
         await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) und SP(email) über die api anlegen ${ADMIN}`, async () => {
-            userInfoLehrer = await createRolleAndPersonWithUserContext(page, testschule, typelehrer, await generateLehrerNachname(), await generateLehrerVorname(), await getSPId(page, email), await generateRolleName());
+            userInfoLehrer = await createRolleAndPersonWithUserContext(page, testschule, typelehrer, await generateLehrerNachname(), await generateLehrerVorname(), await getSPId(page, email), generateRolleName());
             username.push(userInfoLehrer.username);
             rolleId.push(userInfoLehrer.rolleId);
         })
