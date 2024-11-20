@@ -10,6 +10,7 @@ import { faker } from "@faker-js/faker/locale/de";
 import { UserInfo } from "../base/api/testHelper.page.ts";
 import { deletePersonByUsername, deleteRolleById } from "../base/testHelperDeleteTestdata.ts";
 import { getOrganisationId } from "../base/api/testHelperOrganisation.page.ts";
+import { generateRolleName } from '../base/testHelperGenerateTestdataNames.ts';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -108,7 +109,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.UM
 
     const lehrerVorname = "TAuto-PW-V-" + faker.person.firstName();
     const lehrerNachname = "TAuto-PW-N-" + faker.person.lastName();
-    const lehrerRolle = "TAuto-PW-LEHR-" + faker.lorem.word({ length: { min: 8, max: 12 }});
+    const lehrerRolle = await generateRolleName();
     const lehrerRollenart = 'LEHR';
     const lehrerOrganisation = 'Testschule Schulportal';
     let userInfoLehrer: UserInfo;

@@ -11,5 +11,3 @@ export async function generateLehrerNachname(){
 export async function generateRolleName(){  
   return "TAuto-PW-R-" + faker.lorem.word({ length: { min: 8, max: 12 }});
 }
-
-
