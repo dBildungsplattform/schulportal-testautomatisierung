@@ -73,7 +73,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
     const vorname = "TAuto-PW-V-" + faker.person.firstName();
     const nachname = "TAuto-PW-N-" + faker.person.lastName();
     const organisation = 'Land Schleswig-Holstein';
-    const rollenname = generateRolleName();
+    const rollenname = await generateRolleName();
     const rollenart = 'SYSADMIN'
 
     await test.step(`Landesadmin via api anlegen und mit diesem anmelden`, async () => {
@@ -141,7 +141,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
     const nachname = "TAuto-PW-N-" + faker.person.lastName();
     const organisation = 'Testschule Schulportal';
     const dienststellenNr = '1111111';
-    const rollenname =  generateRolleName();
+    const rollenname =  await generateRolleName();
     const rollenart = 'LEHR';
 
     await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
@@ -199,7 +199,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
     const nachname = "TAuto-PW-N-" + faker.person.lastName();
     const organisation = 'Testschule Schulportal';
     const dienststellenNr = '1111111';
-    const rollenname =  generateRolleName();
+    const rollenname =  await generateRolleName();
     const rollenart = 'LERN';
 
     await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
@@ -256,7 +256,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
     const nachname = "TAuto-PW-N-" + faker.person.lastName();
     const organisation = 'Testschule Schulportal';
     const dienststellenNr = '1111111';
-    const rollenname =  generateRolleName();
+    const rollenname =  await generateRolleName();
     const rollenart = 'LEIT'
 
     await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
@@ -317,7 +317,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
     const organisation2 = 'Carl-Orff-Schule';
     const dienststellenNr1 = '1111111';
     const dienststellenNr2 = '0702948';
-    const rollenname =  generateRolleName();
+    const rollenname =  await generateRolleName();
     const rollenart = 'LEHR';
 
     await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
@@ -384,7 +384,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
     const vorname = "TAuto-PW-V-" + faker.person.firstName();
     const nachname = "TAuto-PW-N-" + faker.person.lastName();
     const organisation = 'Testschule Schulportal';
-    const rollenname =  generateRolleName();
+    const rollenname =  await generateRolleName();
     const rollenart = 'LERN';
 
     await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {

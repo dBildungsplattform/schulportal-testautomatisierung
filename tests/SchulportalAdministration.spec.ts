@@ -61,7 +61,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         await login.login(ADMIN, PW);
 
         const idSP = await getSPId(page, 'E-Mail');
-        const userInfo: UserInfo = await createRolleAndPersonWithUserContext(page, 'Testschule Schulportal', 'LEHR', 'TAuto-PW-B-MeierLehrer', 'TAuto-PW-B-Hans', idSP, generateRolleName());
+        const userInfo: UserInfo = await createRolleAndPersonWithUserContext(page, 'Testschule Schulportal', 'LEHR', 'TAuto-PW-B-MeierLehrer', 'TAuto-PW-B-Hans', idSP, await generateRolleName());
         personId.push(userInfo.personId); 
         rolleId.push(userInfo.rolleId);
         await header.logout();
@@ -88,7 +88,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         await login.login(ADMIN, PW);
 
         const idSP = await getSPId(page, 'itslearning');
-        const userInfo: UserInfo = await createRolleAndPersonWithUserContext(page, 'Testschule Schulportal', 'LERN', 'TAuto-PW-B-JansenSchüler', 'TAuto-PW-B-Helga', idSP, generateRolleName());
+        const userInfo: UserInfo = await createRolleAndPersonWithUserContext(page, 'Testschule Schulportal', 'LERN', 'TAuto-PW-B-JansenSchüler', 'TAuto-PW-B-Helga', idSP, await generateRolleName());
         personId.push(userInfo.personId); 
         rolleId.push(userInfo.rolleId);
         await header.logout();
@@ -115,7 +115,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         await login.login(ADMIN, PW);
 
         const idSP = await getSPId(page, 'Schulportal-Administration');
-        const userInfo: UserInfo = await createRolleAndPersonWithUserContext(page, 'Testschule Schulportal', 'LEIT', 'TAuto-PW-B-MeierAdmin', 'TAuto-PW-B-Peter', idSP, generateRolleName());
+        const userInfo: UserInfo = await createRolleAndPersonWithUserContext(page, 'Testschule Schulportal', 'LEIT', 'TAuto-PW-B-MeierAdmin', 'TAuto-PW-B-Peter', idSP, await generateRolleName());
         personId.push(userInfo.personId); 
         rolleId.push(userInfo.rolleId);
 

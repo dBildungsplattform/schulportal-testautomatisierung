@@ -81,7 +81,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
     const addminVorname = "TAuto-PW-V-" + faker.person.firstName();
     const adminNachname = "TAuto-PW-N-" + faker.person.lastName();
-    const adminRolle = generateRolleName();
+    const adminRolle = await generateRolleName();
     const adminRollenart = 'LEIT';
     const adminOrganisation = 'Testschule-PW665';
     const adminIdSP = await getSPId(page, 'Schulportal-Administration');
@@ -89,7 +89,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
     const lehrerVorname = "TAuto-PW-V-" + faker.person.firstName();
     const lehrerNachname = "TAuto-PW-N-" + faker.person.lastName();
-    const lehrerRolle = generateRolleName();
+    const lehrerRolle = await generateRolleName();
     const lehrerRollenart = 'LEHR';
     const lehrerOrganisation = 'Testschule-PW665';
     const lehrerIdSP = await getSPId(page, 'E-Mail');
