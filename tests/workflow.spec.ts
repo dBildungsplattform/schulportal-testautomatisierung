@@ -33,6 +33,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
 
   test("Angebote per Link öffnen als Lehrer", {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
     const startseite: StartPage = new StartPage(page);
+    const header: HeaderPage = new HeaderPage(page);
 
     await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => { 
       await createTeacherAndLogin(page);
@@ -43,6 +44,8 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
       // Die Schnittstelle email für Lehrkräfte(ox) gibt es nur auf stage
       // Auf dev wird nur getestet, dass die url für ox aufgerufen wird wenn man die Kachel email anklickt
       // Wenn SPSH-1043 auf stage deployed ist, muss der Test erweitert werden. Hier muss dann das erwartete Verhalten getestet werden, wenn man auf stage auf die Kachel(email, Adressbuch, Kalender)  klickt
+      await expect(startseite.card_item_email).toBeVisible(); // warten bis die Seite geladen ist
+
       const page_Email4Teacher_Promise = page.waitForEvent("popup");
       await startseite.card_item_email.click();
       const page_Email4Teacher = await page_Email4Teacher_Promise;

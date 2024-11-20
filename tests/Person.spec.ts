@@ -15,7 +15,7 @@ import { addSystemrechtToRolle } from "../base/api/testHelperRolle.page";
 import { LONG, SHORT, STAGE, BROWSER } from "../base/tags";
 import { deletePersonByUsername, deleteRolleById, deleteRolleByName } from "../base/testHelperDeleteTestdata.ts";
 import { landesadminRolle, schuelerRolle, schuladminOeffentlichRolle } from "../base/roles.ts";
-import { generateRolleName } from "../base/testHelperGenerateTestdataNames.ts";
+import { generateLehrerNachname, generateLehrerVorname, generateRolleName } from "../base/testHelperGenerateTestdataNames.ts";
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -230,7 +230,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       // Step 1:  Create a Schuladmin as Landesadmin and login as the newly created Schuladmin user
       await test.step(`Schuladmin anlegen und mit diesem anmelden`, async () => {
         const idSP = await getSPId(page, 'Schulportal-Administration');
-        userInfo = await createRolleAndPersonWithUserContext(page, schulstrukturknoten, 'LEIT', nachname, vorname, idSP, generateRolleName());
+        userInfo = await createRolleAndPersonWithUserContext(page, schulstrukturknoten, 'LEIT', nachname, vorname, idSP, await generateRolleName());
         await addSystemrechtToRolle(page, userInfo.rolleId, 'PERSONEN_VERWALTEN');
         await addSystemrechtToRolle(page, userInfo.rolleId, 'PERSONEN_ANLEGEN');
 
@@ -393,9 +393,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await personCreationView.combobox_Rolle.click();
       await expect(personCreationView.listbox_Rolle).toContainText(rolleLehr);
       await expect(personCreationView.listbox_Rolle).toContainText(rolleLiV);
-      await expect(personCreationView.listbox_Rolle).toContainText(schuladminOeffentlichRolle);
       await expect(personCreationView.listbox_Rolle).toContainText(schuelerRolle);
       await expect(personCreationView.listbox_Rolle).not.toContainText(landesadminRolle);
+      await page.keyboard.type(schuladminOeffentlichRolle);
+      await expect(personCreationView.listbox_Rolle).toContainText(schuladminOeffentlichRolle);
     });
   });
 
@@ -544,7 +545,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
     await test.step(`Testdaten: Landesadmin anlegen und mit diesem anmelden`, async () => {
       const idSP = await getSPId(page, 'Schulportal-Administration');
-      userInfo = await createRolleAndPersonWithUserContext(page, 'Land Schleswig-Holstein', 'SYSADMIN', 'TAuto-PW-B-Master', 'TAuto-PW-B-Hans', idSP, generateRolleName());
+      userInfo = await createRolleAndPersonWithUserContext(page, 'Land Schleswig-Holstein', 'SYSADMIN', 'TAuto-PW-B-Master', 'TAuto-PW-B-Hans', idSP, await generateRolleName());
       await addSystemrechtToRolle(page, userInfo.rolleId, 'ROLLEN_VERWALTEN');
       await addSystemrechtToRolle(page, userInfo.rolleId, 'PERSONEN_SOFORT_LOESCHEN');
       await addSystemrechtToRolle(page, userInfo.rolleId, 'PERSONEN_VERWALTEN');
@@ -704,9 +705,9 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     const PersonDetailsView = new PersonDetailsViewPage(page);
     const header = new HeaderPage(page);
 
-    const vorname = "TAuto-PW-V-" + faker.person.firstName();
-    const nachname = "TAuto-PW-N-" + faker.person.lastName();
-    const rolle = generateRolleName();
+    const vorname = await generateLehrerVorname();
+    const nachname = await generateLehrerNachname();
+    const rolle = await generateRolleName();
     const berechtigung = 'SYSADMIN';
     const idSP = await getSPId(page, 'Schulportal-Administration');
 
