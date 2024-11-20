@@ -7,6 +7,7 @@ import { PersonImportViewPage } from "../pages/admin/PersonImportView.page";
 import { PersonManagementViewPage } from "../pages/admin/PersonManagementView.page";
 import path from "path";
 import fs from "fs";
+import { fileURLToPath } from "url";
 
 const PW: string = process.env.PW as string;
 const ADMIN: string = process.env.USER as string;
@@ -18,7 +19,9 @@ const schulname = "Testschule-PW665";
 
 test.describe(`Testfälle für den Benutzerimport": Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
   // convert csv to array to make person data accessible, also trim data and filter empty lines
-  const csvPath = path.join(__dirname, '../fixtures/Benutzerimport_Lernrolle_UTF-8.csv');
+  const filename: string = fileURLToPath(import.meta.url);
+  const dirname: string = path.dirname(filename);
+  const csvPath: string = path.join(dirname, '../fixtures/Benutzerimport_Lernrolle_UTF-8.csv');
   const csvAsArray: Array<string> = fs.readFileSync(csvPath).toString().split('\n').map(el => el.trim()).filter(e => e !== '');
 
   test.beforeEach(async ({ page }) => {
@@ -39,17 +42,6 @@ test.describe(`Testfälle für den Benutzerimport": Umgebung: ${process.env.UMGE
   });
 
   test.afterEach(async ({ page }) => {
-    await test.step(`Testdaten löschen via API`, async () => {
-      // delete imported users - but how to we identify the imported users?
-      // csvAsArray.forEach(async (person, index) => {
-      //   // index has to be greater than 0, because the first line is the header
-      //   if (index > 0) {
-      //     const nachname = person.split(';')[0];
-      //     await deletePersonByNachname(nachname, page);
-      //   }
-      // });
-    });
-
     await test.step(`Abmelden`, async () => {
       const header = new HeaderPage(page);
       await header.logout();
@@ -100,7 +92,7 @@ test.describe(`Testfälle für den Benutzerimport": Umgebung: ${process.env.UMGE
       await expect(page.getByRole("cell", { name: firstPersonLastName, exact: true })).toBeVisible();
       await personManagementPage.input_Suchfeld.clear();
 
-      // delete imported users
+      // delete imported users via UI to clean up
       csvAsArray.forEach(async (person, index) => {
         // index has to be greater than 0, because the first line is the header
         if (index > 0) {
