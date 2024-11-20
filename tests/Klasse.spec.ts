@@ -70,7 +70,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     await test.step(`In der Ergebnisliste prüfen, dass die neue Klasse angezeigt wird`, async () => {
       await menue.menueItem_AlleKlassenAnzeigen.click(); 
       await klasseManagementView.combobox_Filter_Schule.fill(schulname);
-      await page.getByText(`${schulname}`, { exact: true }).click();
+      await page.getByText(`${schulname}`, { exact: true }).click({delay:1000});
       await klasseManagementView.text_h2_Klassenverwaltung.click(); // dies schließt das Dropdown Klasse
       await expect(page.getByRole('cell', { name: klassenname })).toBeVisible();
     });
