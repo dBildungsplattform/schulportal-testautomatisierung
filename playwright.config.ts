@@ -1,6 +1,10 @@
 import { defineConfig, devices } from "@playwright/test";
 import dotenv from "dotenv";
 import * as path from "node:path";
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const FRONTEND_URL = process.env.FRONTEND_URL || "";
 
@@ -34,20 +38,22 @@ export default defineConfig({
       use: {
         ...devices["Desktop Chrome"],
         viewport: { width: 1280, height: 720 },
-        ignoreHTTPSErrors: true,
-      },
+        ignoreHTTPSErrors: true
+      }
     },
-
+    {
+      name: "firefox",
+      use: {
+        ...devices["Desktop Firefox"],
+        ignoreHTTPSErrors: true
+      }
+    }
+    
     // {
-    //   name: 'firefox',
-    //   use: { ...devices['Desktop Firefox'] },
-    // },
-    /*
-        {
-          name: 'webkit',
-          use: { ...devices['Desktop Safari'] },
-        },
-    */
+    //   name: 'webkit',
+    //   use: { ...devices['Desktop Safari'] },
+    // }
+    
     /* Test against mobile viewports. */
     // {
     //   name: 'Mobile Chrome',

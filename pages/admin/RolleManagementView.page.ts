@@ -10,7 +10,7 @@ export class RolleManagementViewPage {
   readonly table_header_Administrationsebene: Locator;
   private readonly rolleOverviewTable: Locator;
 
-  constructor(page) {
+  constructor(page: Page) {
     this.page = page;
     this.text_h1_Administrationsbereich = page.getByTestId("admin-headline");
     this.text_h2_Rollenverwaltung = page.getByTestId("layout-card-headline");
