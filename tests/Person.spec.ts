@@ -461,6 +461,31 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
   });
 
+
+  test("In der Ergebnisliste die Filterfunktion der Schulen benutzen als Landesadmin", {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
+    const personManagementView = new PersonManagementViewPage(page);
+    const schulstrukturknoten = "Testschule-PW665";
+
+    await test.step(`Filter öffnen und Schule selektieren`, async () => {
+      await page.goto(FRONTEND_URL + "admin/personen");
+      await expect(personManagementView.text_h2_Benutzerverwaltung).toHaveText("Benutzerverwaltung");
+
+      // Fill the input with the name of the Schule and let the autocomplete find it
+      await personManagementView.comboboxMenuIcon_Schule_input.fill(schulstrukturknoten);
+
+      // Click on the found Schule
+      await page.getByText(schulstrukturknoten).click();
+
+      // Close the dropdown
+      await personManagementView.comboboxMenuIcon_Schule.click();
+
+      // Click elsewhere on the page to fully confirm the selected Schule
+      await page.locator('body').click();
+
+      await expect(page.getByTestId('schule-select')).toHaveText('1111165 (Testschule-PW665)');
+    });
+});
+
   test("Eine Lehrkraft anlegen in der Rolle Landesadmin und die Bestätigungsseite vollständig prüfen", {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
     const personCreationView = new PersonCreationViewPage(page);
     const rolle = "Lehrkraft";
