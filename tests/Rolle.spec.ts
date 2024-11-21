@@ -56,7 +56,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
       faker.lorem.word({ length: { min: 8, max: 12 } }) +
       zufallsnummer;
     const schulstrukturknoten1 = "Land Schleswig-Holstein";
-    const schulstrukturknoten2 = "0703754 (Amalie-Sieveking-Schule)";
+    const schulstrukturknoten2 = "Ersatzschulen Land Schleswig-Holstein";;
     const rollenart1 = "Lern";
     const rollenart2 = "Lehr";
     const merkmal2 = "KoPers.-Nr. ist Pflichtangabe";
@@ -92,10 +92,8 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
 
     await test.step(`Zweite Rolle anlegen`, async () => {
       await rolleCreationView.button_WeitereRolleAnlegen.click();
-
-      await rolleCreationView.schulstrukturknoten.selectByTitle(
-        schulstrukturknoten2,
-      );
+      await rolleCreationView.schulstrukturknoten.selectByTitle(schulstrukturknoten2);
+      await page.pause();
       await rolleCreationView.rollenarten.selectByTitle(rollenart2);
       await rolleCreationView.enterRollenname(rollenname2);
       await rolleCreationView.merkmale.selectByTitle(merkmal2);
