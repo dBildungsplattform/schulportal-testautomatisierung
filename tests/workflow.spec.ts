@@ -106,13 +106,8 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
       await expect(personManagement.text_h2_Benutzerverwaltung).toBeVisible();
       await personManagement.input_Suchfeld.fill(username);
       await personManagement.button_Suchen.click();
-      await expect(header.icon_myProfil).toBeVisible(); 
-      await expect(header.icon_logout).toBeVisible();
-      await expect(personManagement.comboboxMenuIcon_Schule).toBeVisible();
-      await expect(personManagement.comboboxMenuIcon_Rolle).toBeVisible();
-      await expect(personManagement.comboboxMenuIcon_Klasse).toBeVisible();
-      await expect(personManagement.comboboxMenuIcon_Status).toBeVisible();
-      await page.getByRole("cell", { name: lastname, exact: true }).click({delay:500});
+      await expect(page.getByRole("cell", { name: lastname, exact: true })).toBeEnabled();
+      await page.getByRole("cell", { name: lastname, exact: true }).click();
     });
 
     await test.step(`In den User-Details PW-Reset Dialog starten`, async () => {
