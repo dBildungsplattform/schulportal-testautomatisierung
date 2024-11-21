@@ -112,6 +112,14 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
       await expect(personManagement.comboboxMenuIcon_Rolle).toBeVisible();
       await expect(personManagement.comboboxMenuIcon_Klasse).toBeVisible();
       await expect(personManagement.comboboxMenuIcon_Status).toBeVisible();
+
+      // Die Gesamtübersichtperson öffnen durch einen Klick auf die Zeile in der Tabelle ist gesperrt, solange die Seite nicht vollständig geladen ist.
+      // await page.waitForTimeout(1000); 
+      // await expect(page.getByRole("cell", { name: lastname, exact: true })).toBeEnabled();
+      // await page.getByRole("cell", { name: lastname, exact: true }).click();
+
+
+
       await page.getByRole("cell", { name: lastname, exact: true }).click({delay:500});
     });
 
