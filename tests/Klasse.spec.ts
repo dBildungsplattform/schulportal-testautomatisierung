@@ -133,4 +133,28 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       await expect(klasseCreationView.button_ZurueckErgebnisliste).toBeVisible();
     });
   });
+
+  test("Jede Klasse hat eine Dienststellennummer neben dem Klassennamen (ersten und letzten 100 Einträge)", { tag: [LONG, SHORT, STAGE] }, async ({ page }) => {
+    const startseite = new StartPage(page);
+    const menue = new MenuPage(page);
+    const klasseManagementView = new KlasseManagementViewPage(page);
+  
+    await test.step(`Klassenverwaltung öffnen und prüfen, dass jede Klasse eine Dienststellennummer hat`, async () => {
+      // Navigate to Klassenverwaltung
+      await startseite.card_item_schulportal_administration.click();
+      await menue.menueItem_AlleKlassenAnzeigen.click();
+  
+      // Wait until the table is visible
+      await expect(klasseManagementView.text_h2_Klassenverwaltung).toHaveText("Klassenverwaltung");
+  
+      // Show first 100 entries
+      await klasseManagementView.footerDataTable.combobox_AnzahlEintraege.click();
+      await page.getByRole('option', { name: '100' }).click();
+  
+      await klasseManagementView.checkTableData();
+      // Go to the last page
+      await klasseManagementView.footerDataTable.text_LetzteSeite.click();
+      await klasseManagementView.checkTableData();
+    });
+  });
 });
