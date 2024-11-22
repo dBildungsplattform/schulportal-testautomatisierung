@@ -18,6 +18,7 @@ export class PersonManagementViewPage{
     readonly comboboxMenuIcon_Rolle: Locator;
     readonly comboboxMenuIcon_Klasse: Locator;
     readonly comboboxMenuIcon_Status: Locator;
+    readonly comboboxMenuIcon_Schule_input: Locator;
    
     constructor(page: Page){
         this.page = page;  
@@ -33,6 +34,7 @@ export class PersonManagementViewPage{
         this.table_header_Zuordnungen = page.getByText('Zuordnung(en)');
         this.table_header_Klasse =  page.getByTestId('person-table').getByText('Klasse', { exact: true });
         this.comboboxMenuIcon_Schule = page.locator('[data-testid="schule-select"] .mdi-menu-down');
+        this.comboboxMenuIcon_Schule_input = page.locator('[data-testid="schule-select"] input');
         this.comboboxMenuIcon_Rolle = page.locator('[data-testid="rolle-select"] .mdi-menu-down');
         this.comboboxMenuIcon_Klasse = page.locator('[data-testid="klasse-select"] .mdi-menu-down');
         this.comboboxMenuIcon_Status = page.locator('[data-testid="status-select"] .mdi-menu-down');
