@@ -12,7 +12,7 @@ import { UserInfo } from "../base/api/testHelper.page";
 import { addSystemrechtToRolle } from "../base/api/testHelperRolle.page";
 import { LONG, SHORT, STAGE, BROWSER } from "../base/tags";
 import { deleteRolleById, deletePersonByUsername} from "../base/testHelperDeleteTestdata";
-import { generateLehrerNachname, generateLehrerVorname, generateRolleName } from "../base/testHelperGenerateTestdataNames.ts";
+import { generateNachname, generateVorname, generateRolleName } from "../base/testHelperGenerateTestdataNames.ts";
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -311,8 +311,8 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
     const login: LoginPage = new LoginPage(page);
 
     let personId = '';
-    const vorname = await generateLehrerVorname();
-    const nachname = await generateLehrerNachname();
+    const vorname = await generateVorname();
+    const nachname = await generateNachname();
     const organisation1 = 'Testschule Schulportal';
     const organisation2 = 'Carl-Orff-Schule';
     const dienststellenNr1 = '1111111';
@@ -420,7 +420,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
     await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
       const idSP = await getSPId(page, 'itslearning');
-      const userInfo: UserInfo = await createRolleAndPersonWithUserContext(page, organisation, rollenart, await generateLehrerNachname(), await generateLehrerVorname(), idSP, await generateRolleName());
+      const userInfo: UserInfo = await createRolleAndPersonWithUserContext(page, organisation, rollenart, await generateNachname(), await generateVorname(), idSP, await generateRolleName());
       roleId.push(userInfo.rolleId);
       username.push(userInfo.username);
 

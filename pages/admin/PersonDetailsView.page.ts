@@ -5,6 +5,7 @@ export class PersonDetailsViewPage{
     readonly text_h2_benutzerBearbeiten: Locator;
 
     // Passwort
+    readonly text_h3_passwort_headline: Locator;
     readonly button_pwChange: Locator;
     readonly button_pwReset: Locator;
     readonly text_pwResetInfo: Locator; 
@@ -17,6 +18,7 @@ export class PersonDetailsViewPage{
     readonly button_closeDeletePersonConfirm: Locator;
 
     // Schulzuordnungen
+    readonly text_h3_schulzuordnung_headline: Locator;
     readonly button_editSchulzuordnung: Locator;
     readonly button_addSchulzuordnung: Locator;
     readonly combobox_organisation: Locator;
@@ -27,6 +29,9 @@ export class PersonDetailsViewPage{
     readonly button_confirmAddSchulzuordnung: Locator;
     readonly button_saveAssignmentChanges: Locator;
     readonly button_closeSaveAssignmentChanges: Locator;
+
+    // Benutzer sperren
+    readonly text_h3_lockPerson_headline: Locator;
     readonly button_lockPerson: Locator;
     readonly button_lockPersonConfirm: Locator;
     readonly text_h2_dialogBenutzerSperren: Locator;
@@ -60,6 +65,7 @@ export class PersonDetailsViewPage{
         this.text_h2_benutzerBearbeiten = page.getByTestId('layout-card-headline');
 
         // Passwort
+        this.text_h3_passwort_headline = page.getByText('Passwort');
         this.button_pwChange = page.getByTestId('open-password-reset-dialog-icon');     
         this.button_pwReset = page.getByTestId('password-reset-button');
         this.text_pwResetInfo = page.getByTestId('password-reset-info-text');
@@ -72,6 +78,7 @@ export class PersonDetailsViewPage{
         this.button_closeDeletePersonConfirm = page.getByTestId('close-person-delete-success-dialog-button');
 
         // Schulzuordnungen
+        this.text_h3_schulzuordnung_headline = page.getByText('Schulzuordnung(en)');
         this.button_editSchulzuordnung = page.locator('div').filter({ hasText: /^Schulzuordnung\(en\)Bearbeiten$/ }).getByTestId('zuordnung-edit-button');
         this.button_addSchulzuordnung = page.getByTestId('zuordnung-create-button');
         this.combobox_organisationDialogBenutzerSperren = page.getByTestId('person-lock-card').locator('.v-field__input');
@@ -82,6 +89,9 @@ export class PersonDetailsViewPage{
         this.button_confirmAddSchulzuordnung = page.getByRole('button', { name: 'Ja' });
         this.button_saveAssignmentChanges = page.getByTestId('zuordnung-changes-save');
         this.button_closeSaveAssignmentChanges = page.getByRole('dialog').getByRole('button', { name: 'Schließen' });
+
+        // Benutzer sperren
+        this.text_h3_lockPerson_headline = page.getByTestId('person-lock-info').getByText('Status');
         this.button_lockPerson = page.getByTestId('open-lock-dialog-button');
         this.button_lockPersonConfirm = page.getByTestId('lock-user-button');
         this.text_h2_dialogBenutzerSperren = page.getByTestId('person-lock-card').getByTestId('layout-card-headline');
@@ -142,7 +152,7 @@ export class PersonDetailsViewPage{
         await expect(this.text_sperrdatumBis).toHaveText(lockDateTo);
     }
 
-    public async tokenEinrichten() {
+    public async softwareTokenEinrichten() {
         await this.button_2FAEinrichten.click();
         await expect(this.text_h2_2FA_cardheadline).toHaveText('Zwei-Faktor-Authentifizierung einrichten');
         await expect(this.selectOption_2FA_softwareToken).toHaveText('Software-Token einrichten');
