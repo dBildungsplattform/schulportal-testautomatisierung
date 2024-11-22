@@ -11,11 +11,15 @@ import { LONG, SHORT, STAGE, BROWSER } from "../base/tags";
 import { CalendarPage } from "../pages/Cards/Calendar.page";
 import { DirectoryPage } from "../pages/Cards/Directory.page";
 import { createTeacherAndLogin } from "../base/api/testHelperPerson.page";
+import { UserInfo} from "../base/api/testHelper.page.ts";
+import { deletePersonByUsername } from "../base/testHelperDeleteTestdata.ts";
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
 const FRONTEND_URL: string | undefined = process.env.FRONTEND_URL || "";
 const ENV: string | undefined = process.env.ENV;
+
+let username: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
 
 test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }) => {
@@ -31,12 +35,39 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
     });
   });
 
+  test.afterEach(async ({page}) => {
+    const header = new HeaderPage(page);
+    const landing = new LandingPage(page);
+    const login = new LoginPage(page);
+    const startseite = new StartPage(page);
+
+    await test.step(`Testdaten(Benutzer) löschen via API`, async () => {
+        if (username) { // nur wenn der Testfall auch mind. einen Benutzer angelegt hat
+            await header.logout();
+            await landing.button_Anmelden.click();
+            await login.login(ADMIN, PW);
+            await expect(startseite.text_h2_Ueberschrift).toBeVisible();
+
+            await deletePersonByUsername(username, page);
+            username = [];
+        }
+    });
+
+    await test.step(`Abmelden`, async () => {
+        const header = new HeaderPage(page);
+        await header.logout();
+    });
+});
+
   test("Angebote per Link öffnen als Lehrer", {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
     const startseite: StartPage = new StartPage(page);
     const header: HeaderPage = new HeaderPage(page);
 
+    let userInfoAdmin: UserInfo;
+
     await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => { 
-      await createTeacherAndLogin(page);
+      userInfoAdmin = await createTeacherAndLogin(page);
+      username.push(userInfoAdmin.username);
     });
 
     await test.step(`Kacheln Email für Lehrkräfte und Itslearning öffnen, danach beide Kacheln wieder schließen`, async () => {
