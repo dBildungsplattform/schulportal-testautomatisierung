@@ -6,7 +6,7 @@ import { HeaderPage } from '../../pages/Header.page';
 import { LoginPage } from '../../pages/LoginView.page';
 import { faker } from '@faker-js/faker';
 import { lehrkraftOeffentlichRolle } from '../roles';
-import { generateLehrerNachname, generateLehrerVorname, generateKopersMr } from "../testHelperGenerateTestdataNames";
+import { generateLehrerNachname, generateLehrerVorname, generateKopersNr } from "../testHelperGenerateTestdataNames";
 import { testschule } from "../organisation";
 
 const FRONTEND_URL: string | undefined = process.env.FRONTEND_URL || "";
@@ -101,7 +101,7 @@ export async function createTeacherAndLogin(page: Page) {
     const login: LoginPage = new LoginPage(page);
     const organisation = testschule;
 
-    const userInfo: UserInfo = await createPersonWithUserContext(page, organisation, await generateLehrerNachname(), await generateLehrerVorname(), lehrkraftOeffentlichRolle, await generateKopersMr());
+    const userInfo: UserInfo = await createPersonWithUserContext(page, organisation, await generateLehrerNachname(), await generateLehrerVorname(), lehrkraftOeffentlichRolle, await generateKopersNr());
     await header.logout();
     await header.button_login.click();
     await login.login(userInfo.username, userInfo.password);

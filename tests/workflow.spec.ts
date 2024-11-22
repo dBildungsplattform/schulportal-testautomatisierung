@@ -41,6 +41,8 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
     const login = new LoginPage(page);
     const startseite = new StartPage(page);
 
+    await page.pause();
+
     await test.step(`Testdaten(Benutzer) löschen via API`, async () => {
         if (username) { // nur wenn der Testfall auch mind. einen Benutzer angelegt hat
             await header.logout();
