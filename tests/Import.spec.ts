@@ -9,13 +9,13 @@ import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
 
+// schulen cannot be deleted yet, so we use this testschule, which should already exist
+import { testschule665 } from "../base/organisation.ts";
+
 const PW: string = process.env.PW as string;
 const ADMIN: string = process.env.USER as string;
 const FRONTEND_URL: string = process.env.FRONTEND_URL || "";
 let personImportPage: PersonImportViewPage = undefined as unknown as PersonImportViewPage;
-
-// schulen cannot be deleted yet, so we use this testschule, which should already exist
-const schulname = "Testschule-PW665";
 
 test.describe(`Testfälle für den Benutzerimport": Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
   // convert csv to array to make person data accessible, also trim data and filter empty lines
@@ -52,7 +52,7 @@ test.describe(`Testfälle für den Benutzerimport": Umgebung: ${process.env.UMGE
     await test.step(``, async () => {
 
       // select schule
-      await personImportPage.schuleSelectCombobox.searchByTitle(schulname);
+      await personImportPage.schuleSelectCombobox.searchByTitle(testschule665);
 
       // select rolle
       await personImportPage.rolleSelectInput.click();
