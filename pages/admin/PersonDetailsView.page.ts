@@ -65,7 +65,7 @@ export class PersonDetailsViewPage{
         this.text_h2_benutzerBearbeiten = page.getByTestId('layout-card-headline');
 
         // Passwort
-        this.text_h3_passwort_headline = page.getByText('Passwort');
+        this.text_h3_passwort_headline = page.locator( `//h3[text()='Passwort']`);
         this.button_pwChange = page.getByTestId('open-password-reset-dialog-icon');     
         this.button_pwReset = page.getByTestId('password-reset-button');
         this.text_pwResetInfo = page.getByTestId('password-reset-info-text');
