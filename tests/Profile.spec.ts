@@ -71,8 +71,8 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
     const login: LoginPage = new LoginPage(page);
     const startseite: StartPage = new StartPage(page);
 
-    const vorname = await generateLehrerVorname();
-    const nachname = await generateLehrerNachname();
+    const vorname = await generateVorname();
+    const nachname = await generateNachname();
     const organisation = landSH;
     const rollenname = await generateRolleName();
     const rollenart = 'SYSADMIN'
@@ -138,8 +138,8 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
     const header = new HeaderPage(page);
     const login: LoginPage = new LoginPage(page);
 
-    const vorname = await generateLehrerVorname();
-    const nachname = await generateLehrerNachname();
+    const vorname = await generateVorname();
+    const nachname = await generateNachname();
     const organisation = testschule;
     const dienststellenNr = '1111111';
     const rollenname =  await generateRolleName();
@@ -196,8 +196,8 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
     const header = new HeaderPage(page);
     const login: LoginPage = new LoginPage(page);
 
-    const vorname = await generateLehrerVorname();
-    const nachname = await generateLehrerNachname();
+    const vorname = await generateVorname();
+    const nachname = await generateNachname();
     const organisation = testschule;
     const dienststellenNr = '1111111';
     const rollenname =  await generateRolleName();
@@ -253,8 +253,8 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
     const header = new HeaderPage(page);
     const login: LoginPage = new LoginPage(page);
 
-    const vorname = await generateLehrerVorname();
-    const nachname = await generateLehrerNachname();
+    const vorname = await generateVorname();
+    const nachname = await generateNachname();
     const organisation = testschule;
     const dienststellenNr = '1111111';
     const rollenname =  await generateRolleName();
