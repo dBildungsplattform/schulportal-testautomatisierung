@@ -1,4 +1,5 @@
-import { type Locator, Page } from '@playwright/test';
+import { expect, type Locator, Page } from '@playwright/test';
+import { FooterDataTablePage } from '../FooterDataTable.page';
 
 export class KlasseManagementViewPage{
     readonly page: Page;
@@ -11,6 +12,8 @@ export class KlasseManagementViewPage{
     readonly icon_KlasseLoeschen: Locator;
     readonly button_KlasseLoeschen: Locator;
     readonly button_SchliesseKlasseLoeschenDialog: Locator;
+    readonly tableRows: Locator;
+    readonly footerDataTable: FooterDataTablePage;
    
     constructor(page: Page){
         this.page = page;  
@@ -23,5 +26,21 @@ export class KlasseManagementViewPage{
         this.icon_KlasseLoeschen = page.getByTestId('open-klasse-delete-dialog-icon');
         this.button_KlasseLoeschen = page.getByTestId('klasse-delete-button');
         this.button_SchliesseKlasseLoeschenDialog = page.getByTestId('close-klasse-delete-success-dialog-button');
+        this.tableRows = page.locator('table >> tbody >> tr');
+        this.footerDataTable = new FooterDataTablePage(page);
+    }
+
+    // Loops through the Data in the table and checks if the Dienstellennummer and Klassenname are not empty
+    public async checkTableData() {
+        const tableRowsCount = await this.tableRows.count();
+        for (let i = 0; i < tableRowsCount; i++) {
+            const dienststellennummerCell =  this.tableRows.nth(i).locator('td').nth(0);
+            const klassennameCell =  this.tableRows.nth(i).locator('td').nth(1);
+    
+            await expect(dienststellennummerCell).toBeVisible();
+            await expect(dienststellennummerCell).not.toHaveText('---');
+            await expect(klassennameCell).toBeVisible();
+            await expect(klassennameCell).not.toBeEmpty();
+          }
     }
 }

@@ -6,6 +6,7 @@ import { HeaderPage } from '../../pages/Header.page';
 import { LoginPage } from '../../pages/LoginView.page';
 import { faker } from '@faker-js/faker';
 import { lehrkraftOeffentlichRolle } from '../rollen';
+import { generateLehrerNachname, generateLehrerVorname } from "../testHelperGenerateTestdataNames";
 
 const FRONTEND_URL: string | undefined = process.env.FRONTEND_URL || "";
 
@@ -43,6 +44,8 @@ export async function createPersonWithUserContext(page: Page, organisationName: 
     // API-Calls machen und Benutzer mit Kontext anlegen
     const organisationId: string = await getOrganisationId(page, organisationName);
     const rolleId: string = await getRolleId(page, rolleName);
+    console.log('rolleName: ' + rolleName);
+    console.log('rolleId: ' + rolleId);
     const userInfo: UserInfo = await createPerson(page, familienname, vorname, organisationId, rolleId, koPersNr);
     return userInfo;
 }
@@ -95,8 +98,8 @@ export async function getPersonId(page: Page, Benutzername: string): Promise<str
 export async function createTeacherAndLogin(page) {
     const header = new HeaderPage(page);
     const login: LoginPage = new LoginPage(page);
-    const vorname = "TAuto-PW-V-" + faker.person.firstName();
-    const nachname = "TAuto-PW-N-" + faker.person.lastName();
+    const vorname = await generateLehrerVorname();
+    const nachname = await generateLehrerNachname();
     const organisation = 'Testschule Schulportal';
     const kopersNr = '0815' + faker.string.numeric({ length: 3 });
 
@@ -105,6 +108,8 @@ export async function createTeacherAndLogin(page) {
     await header.button_login.click();
     await login.login(userInfo.username, userInfo.password);
     await login.UpdatePW();
+    await expect(header.icon_myProfil).toBeVisible(); 
+    await expect(header.icon_logout).toBeVisible();
 }
 
 export async function lockPerson(page: Page, personId: string, organisationId: string): Promise<void> {

@@ -15,7 +15,7 @@ import { addSystemrechtToRolle } from "../base/api/testHelperRolle.page";
 import { LONG, SHORT, STAGE, BROWSER } from "../base/tags";
 import { deletePersonByUsername, deleteRolleById, deleteRolleByName } from "../base/testHelperDeleteTestdata.ts";
 import { landesadminRolle, schuelerRolle, schuladminOeffentlichRolle } from "../base/rollen.ts";
-import { generateRolleName } from "../base/testHelperGenerateTestdataNames.ts";
+import { generateLehrerNachname, generateLehrerVorname, generateRolleName } from "../base/testHelperGenerateTestdataNames.ts";
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -393,9 +393,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await personCreationView.combobox_Rolle.click();
       await expect(personCreationView.listbox_Rolle).toContainText(rolleLehr);
       await expect(personCreationView.listbox_Rolle).toContainText(rolleLiV);
-      await expect(personCreationView.listbox_Rolle).toContainText(schuladminOeffentlichRolle);
       await expect(personCreationView.listbox_Rolle).toContainText(schuelerRolle);
       await expect(personCreationView.listbox_Rolle).not.toContainText(landesadminRolle);
+      await page.keyboard.type(schuladminOeffentlichRolle);
+      await expect(personCreationView.listbox_Rolle).toContainText(schuladminOeffentlichRolle);
     });
   });
 
@@ -459,6 +460,31 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await expect(page.locator("v-data-table__td")).toHaveCount(0);
     });
   });
+
+
+  test("In der Ergebnisliste die Filterfunktion der Schulen benutzen als Landesadmin", {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
+    const personManagementView = new PersonManagementViewPage(page);
+    const schulstrukturknoten = "Testschule-PW665";
+
+    await test.step(`Filter öffnen und Schule selektieren`, async () => {
+      await page.goto(FRONTEND_URL + "admin/personen");
+      await expect(personManagementView.text_h2_Benutzerverwaltung).toHaveText("Benutzerverwaltung");
+
+      // Fill the input with the name of the Schule and let the autocomplete find it
+      await personManagementView.comboboxMenuIcon_Schule_input.fill(schulstrukturknoten);
+
+      // Click on the found Schule
+      await page.getByText(schulstrukturknoten).click();
+
+      // Close the dropdown
+      await personManagementView.comboboxMenuIcon_Schule.click();
+
+      // Click elsewhere on the page to fully confirm the selected Schule
+      await page.locator('body').click();
+
+      await expect(page.getByTestId('schule-select')).toHaveText('1111165 (Testschule-PW665)');
+    });
+});
 
   test("Eine Lehrkraft anlegen in der Rolle Landesadmin und die Bestätigungsseite vollständig prüfen", {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
     const personCreationView = new PersonCreationViewPage(page);
@@ -679,8 +705,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     const PersonDetailsView = new PersonDetailsViewPage(page);
     const header = new HeaderPage(page);
 
-    const vorname = "TAuto-PW-V-" + faker.person.firstName();
-    const nachname = "TAuto-PW-N-" + faker.person.lastName();
+    const vorname = await generateLehrerVorname();
+    const nachname = await generateLehrerNachname();
     const rolle = await generateRolleName();
     const berechtigung = 'SYSADMIN';
     const idSP = await getSPId(page, 'Schulportal-Administration');
