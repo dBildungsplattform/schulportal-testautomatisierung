@@ -8,7 +8,7 @@ import { createRolleAndPersonWithUserContext, lockPerson } from "../base/api/tes
 import { getSPId } from "../base/api/testHelperServiceprovider.page.ts";
 import { faker } from "@faker-js/faker/locale/de";
 import { UserInfo } from "../base/api/testHelper.page.ts";
-import { deletePersonByUsername, deleteRolleById } from "../base/testHelperDeleteTestdata.ts";
+import { deletePersonenBySearchStrings, deleteRolleById } from "../base/testHelperDeleteTestdata.ts";
 import { getOrganisationId } from "../base/api/testHelperOrganisation.page.ts";
 import { generateRolleName } from '../base/testHelperGenerateTestdataNames.ts';
 
@@ -48,7 +48,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.UM
         await login.login(ADMIN, PW);
         await expect(startseite.text_h2_Ueberschrift).toBeVisible();
         
-        await deletePersonByUsername(username, page);
+        await deletePersonenBySearchStrings(page, username);
         username = [];
       }
 

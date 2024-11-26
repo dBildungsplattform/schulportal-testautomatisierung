@@ -1,11 +1,11 @@
 import { deleteRolle, getRolleId} from "./api/testHelperRolle.page";
-import { deletePersonen, getPersonId } from "./api/testHelperPerson.page";
+import { deletePerson, getPersonId } from "./api/testHelperPerson.page";
 import { getKlasseId, deleteKlasse } from "./api/testHelperOrganisation.page";
 
 
 export async function deletePersonById(personId, page){  // personId ist ein array mit allen zu löschenden Benutzern
   for (const item in personId){
-    await deletePersonen(page, personId[item]);
+    await deletePerson(page, personId[item]);
   }
 }
 
@@ -22,11 +22,16 @@ export async function deleteRolleByName(roleName, page){  // roleName ist ein ar
   }
 }
 
-export async function deletePersonByUsername(username, page){  // username ist ein array mit allen zu löschenden Benutzern
-  for (const item in username){
-    const personId = await getPersonId(page, username[item]);
-    await deletePersonen(page, personId);
+export async function deletePersonenBySearchStrings(page, searchStringArray){
+  for (const item in searchStringArray){
+    const personId = await getPersonId(page, searchStringArray[item]);
+    await deletePerson(page, personId);
   }
+}
+
+export async function deletePersonBySearchString(page, searchString){
+    const personId = await getPersonId(page, searchString);
+    await deletePerson(page, personId);
 }
 
 export async function deleteKlasseByName(klassenName, page){  // klassenName ist ein array mit allen zu löschenden Klassen

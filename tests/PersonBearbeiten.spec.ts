@@ -11,7 +11,7 @@ import {getSPId} from "../base/api/testHelperServiceprovider.page.ts";
 import {UserInfo} from "../base/api/testHelper.page.ts";
 import {addSystemrechtToRolle} from "../base/api/testHelperRolle.page.ts";
 import {LONG, STAGE} from "../base/tags.ts";
-import {deletePersonByUsername, deleteRolleById} from "../base/testHelperDeleteTestdata.ts";
+import {deletePersonenBySearchStrings, deleteRolleById} from "../base/testHelperDeleteTestdata.ts";
 import {typelehrer} from "../base/rollentypen.ts";
 import {testschule} from "../base/organisation.ts";
 import {email} from "../base/sp.ts";
@@ -50,7 +50,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
                 await login.login(ADMIN, PW);
                 await expect(startseite.text_h2_Ueberschrift).toBeVisible();
 
-                await deletePersonByUsername(username, page);
+                await deletePersonenBySearchStrings(page, username);
                 username = [];
             }
 

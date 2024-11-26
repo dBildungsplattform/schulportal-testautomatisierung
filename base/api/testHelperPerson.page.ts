@@ -83,13 +83,13 @@ export async function addSecondOrganisationToPerson(page: Page, personId: string
     expect(response.status()).toBe(200);
 }
 
-export async function deletePersonen(page: Page, personId: string): Promise<void> {
+export async function deletePerson(page: Page, personId: string): Promise<void> {
     const response = await page.request.delete(FRONTEND_URL + `api/personen/${personId}`, {});
     expect(response.status()).toBe(204);
 }
 
-export async function getPersonId(page: Page, Benutzername: string): Promise<string> {
-    const response = await page.request.get(FRONTEND_URL + `api/personen-frontend?suchFilter=${Benutzername}`, {});
+export async function getPersonId(page: Page, searchString: string): Promise<string> {
+    const response = await page.request.get(FRONTEND_URL + `api/personen-frontend?suchFilter=${searchString}`, {});
     expect(response.status()).toBe(200);
     const json = await response.json();
     return json.items[0].person.id;

@@ -8,6 +8,7 @@ import { PersonManagementViewPage } from "../pages/admin/PersonManagementView.pa
 import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
+import { deletePersonBySearchString } from "../base/testHelperDeleteTestdata.ts";
 
 // schulen cannot be deleted yet, so we use this testschule, which should already exist
 import { testschule665 } from "../base/organisation.ts";
@@ -25,7 +26,7 @@ test.describe(`Testfälle für den Benutzerimport": Umgebung: ${process.env.UMGE
   const csvAsArray: Array<string> = fs.readFileSync(csvPath).toString().split('\n').map(el => el.trim()).filter(e => e !== '');
 
   test.beforeEach(async ({ page }) => {
-    await test.step(`Einloggen und zu Benutzerimport navigieren`, async () => {
+    await test.step('Einloggen und zu Benutzerimport navigieren', async () => {
       await page.goto(FRONTEND_URL);
       personImportPage = (await
         (await
@@ -42,15 +43,23 @@ test.describe(`Testfälle für den Benutzerimport": Umgebung: ${process.env.UMGE
   });
 
   test.afterEach(async ({ page }) => {
+    await test.step('Importierte Daten über die API löschen', async () => {
+      for (let index = 1; index < csvAsArray.length; index++) {
+        const person = csvAsArray[index];
+        const nachname: string = person.split(';')[0];
+
+        await deletePersonBySearchString(page, nachname);
+      };
+    });
+
     await test.step(`Abmelden`, async () => {
       const header = new HeaderPage(page);
       await header.logout();
     });
   });
 
-  test("Als Landesadmin eine CSV-Datei mit Benutzerdaten hochladen und importieren", {tag: [LONG]}, async ({ page }) => {
-    await test.step(``, async () => {
-
+  test('Als Landesadmin eine CSV-Datei mit Benutzerdaten hochladen und importieren', {tag: [LONG]}, async ({ page }) => {
+    await test.step('CSV-Datei hochladen, importieren und importierte Daten downloaden', async () => {
       // select schule
       await personImportPage.schuleSelectCombobox.searchByTitle(testschule665);
 
@@ -89,25 +98,8 @@ test.describe(`Testfälle für den Benutzerimport": Umgebung: ${process.env.UMGE
       await page.waitForURL('**/admin/personen');
       await personManagementPage.input_Suchfeld.fill(firstPersonLastName);
       await personManagementPage.button_Suchen.click();
-      await expect(page.getByRole("cell", { name: firstPersonLastName, exact: true })).toBeVisible();
+      await expect(page.getByRole('cell', { name: firstPersonLastName, exact: true })).toBeVisible();
       await personManagementPage.input_Suchfeld.clear();
-
-      // delete imported users via UI to clean up
-      // index has to be greater than 0, because the first line is the header
-      for (let index = 1; index < csvAsArray.length; index++) {
-        const person = csvAsArray[index];
-        const nachname: string = person.split(';')[0];
-      
-        await personManagementPage.input_Suchfeld.clear();
-        await personManagementPage.input_Suchfeld.fill(nachname);
-        await personManagementPage.button_Suchen.click();
-      
-        await page.getByRole("cell", { name: nachname, exact: true }).isVisible();
-        const personDetailsPage = await personManagementPage.navigateToPersonDetailsViewByNachname(nachname);
-        await personDetailsPage.button_deletePerson.click();
-        await personDetailsPage.button_deletePersonConfirm.click();
-        await personDetailsPage.button_closeDeletePersonConfirm.click();
-      }
     });
   });
 });
