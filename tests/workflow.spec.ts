@@ -42,14 +42,14 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
     const startseite = new StartPage(page);
 
     await test.step(`Testdaten(Benutzer) löschen via API`, async () => {
-        if (username) { // nur wenn der Testfall auch mind. einen Benutzer angelegt hat
+        if (usernames) { // nur wenn der Testfall auch mind. einen Benutzer angelegt hat
             await header.logout();
             await landing.button_Anmelden.click();
             await login.login(ADMIN, PW);
             await expect(startseite.text_h2_Ueberschrift).toBeVisible();
 
-            await deletePersonByUsername(username, page);
-            username = [];
+            await deletePersonByUsername(usernames, page);
+            usernames = [];
         }
     });
 
@@ -67,7 +67,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
 
     await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => { 
       userInfoAdmin = await createTeacherAndLogin(page);
-      username.push(userInfoAdmin.username);
+      usernames.push(userInfoAdmin.username);
     });
 
     await test.step(`Kacheln Email für Lehrkräfte und Itslearning öffnen, danach beide Kacheln wieder schließen`, async () => {
