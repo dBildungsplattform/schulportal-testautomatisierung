@@ -19,7 +19,7 @@ const ADMIN: string | undefined = process.env.USER;
 const FRONTEND_URL: string | undefined = process.env.FRONTEND_URL || "";
 const ENV: string | undefined = process.env.ENV;
 
-let username: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
+let usernames: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
 
 test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }) => {
