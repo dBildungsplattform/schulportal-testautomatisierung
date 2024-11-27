@@ -5,7 +5,7 @@ export async function generateVorname(){
   return "TAuto-PW-V-" + faker.person.firstName() + generateRandomString({length: 3,charSetType: CharacterSetType.Alphabetic})
 }
 
-export async function generateLehrerNachname(){  
+export async function generateNachname(){  
   return "TAuto-PW-N-" + faker.person.lastName() + generateRandomString({length: 3,charSetType: CharacterSetType.Alphabetic})
 }
 

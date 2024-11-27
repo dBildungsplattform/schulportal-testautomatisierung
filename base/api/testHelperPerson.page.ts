@@ -104,7 +104,7 @@ export async function createTeacherAndLogin(page: Page) {
     const organisation = testschule;
     const kopersNr = '0815' + faker.string.numeric({ length: 3 });
 
-    const userInfo: UserInfo = await createPersonWithUserContext(page, organisation, await generateLehrerNachname(), await generateLehrerVorname(), lehrkraftOeffentlichRolle, await generateKopersNr());
+    const userInfo: UserInfo = await createPersonWithUserContext(page, organisation, await generateNachname(), await generateVorname(), lehrkraftOeffentlichRolle, await generateKopersNr());
     await header.logout();
     await header.button_login.click();
     await login.login(userInfo.username, userInfo.password);
