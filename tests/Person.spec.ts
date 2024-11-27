@@ -16,6 +16,8 @@ import { LONG, SHORT, STAGE, BROWSER } from "../base/tags";
 import { deletePersonByUsername, deleteRolleById, deleteRolleByName } from "../base/testHelperDeleteTestdata.ts";
 import { landesadminRolle, schuelerRolle, schuladminOeffentlichRolle } from "../base/roles.ts";
 import { generateNachname, generateVorname, generateRolleName } from "../base/testHelperGenerateTestdataNames.ts";
+import { testschule665 } from "../base/organisation.ts";
+import { gotoTargetURL } from "../base/testHelperUtils.ts";
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -464,23 +466,22 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test("In der Ergebnisliste die Filterfunktion der Schulen benutzen als Landesadmin", {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
     const personManagementView = new PersonManagementViewPage(page);
-    const schulstrukturknoten = "Testschule-PW665";
 
     await test.step(`Filter öffnen und Schule selektieren`, async () => {
-      await page.goto(FRONTEND_URL + "admin/personen");
+      await gotoTargetURL(page, "admin/personen");
       await expect(personManagementView.text_h2_Benutzerverwaltung).toHaveText("Benutzerverwaltung");
 
       // Fill the input with the name of the Schule and let the autocomplete find it
-      await personManagementView.comboboxMenuIcon_Schule_input.fill(schulstrukturknoten);
+      await personManagementView.comboboxMenuIcon_Schule_input.fill(testschule665);
 
       // Click on the found Schule
-      await page.getByText(schulstrukturknoten).click();
-
+      await page.getByRole('option', { name: testschule665 }).click();
+      
       // Close the dropdown
       await personManagementView.comboboxMenuIcon_Schule.click();
 
       // Click elsewhere on the page to fully confirm the selected Schule
-      await page.locator('body').click();
+      await personManagementView.button_Suchen.click();
 
       await expect(page.getByTestId('schule-select')).toHaveText('1111165 (Testschule-PW665)');
     });
