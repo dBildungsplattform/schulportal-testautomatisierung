@@ -85,6 +85,5 @@ export class ProfilePage{
          this.cardHeadline_2FA = page.getByTestId('two-factor-card');
          this.text_no2FA = page.getByText('Es wurde noch kein zweiter Faktor für Sie eingerichtet.');
          this.button_2FAEinrichten = page.getByTestId('open-2FA-self-service-dialog-icon');
-         
     }
 }
