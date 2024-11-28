@@ -99,7 +99,6 @@ test.describe(`Testfälle für den Benutzerimport": Umgebung: ${process.env.UMGE
       await personManagementPage.input_Suchfeld.fill(firstPersonLastName);
       await personManagementPage.button_Suchen.click();
       await expect(page.getByRole('cell', { name: firstPersonLastName, exact: true })).toBeVisible();
-      await personManagementPage.input_Suchfeld.clear();
     });
   });
 });
