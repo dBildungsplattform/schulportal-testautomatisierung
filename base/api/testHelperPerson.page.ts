@@ -22,9 +22,11 @@ export async function createPerson(page: Page, familienname: string, vorname: st
                     rolleId
                 }
             ]
-        }
-
+        },
+        failOnStatusCode: false, 
+        maxRetries: 3
     };
+
     if(koPersNr) {
         requestData.data['personalnummer'] = koPersNr;
     }
@@ -79,18 +81,20 @@ export async function addSecondOrganisationToPerson(page: Page, personId: string
                     "rolleId": rolleId
                 }
             ]
-        }
+        },
+        failOnStatusCode: false, 
+        maxRetries: 3
     });
     expect(response.status()).toBe(200);
 }
 
 export async function deletePersonen(page: Page, personId: string): Promise<void> {
-    const response = await page.request.delete(FRONTEND_URL + `api/personen/${personId}`, {});
+    const response = await page.request.delete(FRONTEND_URL + `api/personen/${personId}`, {failOnStatusCode: false, maxRetries: 3});
     expect(response.status()).toBe(204);
 }
 
 export async function getPersonId(page: Page, Benutzername: string): Promise<string> {
-    const response = await page.request.get(FRONTEND_URL + `api/personen-frontend?suchFilter=${Benutzername}`, {});
+    const response = await page.request.get(FRONTEND_URL + `api/personen-frontend?suchFilter=${Benutzername}`, {failOnStatusCode: false, maxRetries: 3});
     expect(response.status()).toBe(200);
     const json = await response.json();
     return json.items[0].person.id;
@@ -119,7 +123,9 @@ export async function lockPerson(page: Page, personId: string, organisationId: s
         data: {
             "lock": true,
             "locked_by": organisationId
-        }
+        },
+        failOnStatusCode: false, 
+        maxRetries: 3
     });
     expect(response.status()).toBe(202);
 }
