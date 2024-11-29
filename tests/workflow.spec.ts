@@ -12,7 +12,7 @@ import { CalendarPage } from "../pages/Cards/Calendar.page";
 import { DirectoryPage } from "../pages/Cards/Directory.page";
 import { createTeacherAndLogin } from "../base/api/testHelperPerson.page";
 import { UserInfo} from "../base/api/testHelper.page.ts";
-import { deletePersonByUsername } from "../base/testHelperDeleteTestdata.ts";
+import { deletePersonenBySearchStrings } from "../base/testHelperDeleteTestdata.ts";
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -48,7 +48,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
             await login.login(ADMIN, PW);
             await expect(startseite.text_h2_Ueberschrift).toBeVisible();
 
-            await deletePersonByUsername(usernames, page);
+            await deletePersonenBySearchStrings(page, usernames);
             usernames = [];
         }
     });

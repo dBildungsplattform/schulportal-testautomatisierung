@@ -11,7 +11,7 @@ import { getOrganisationId } from "../base/api/testHelperOrganisation.page";
 import { UserInfo } from "../base/api/testHelper.page";
 import { addSystemrechtToRolle } from "../base/api/testHelperRolle.page";
 import { LONG, SHORT, STAGE, BROWSER } from "../base/tags";
-import { deleteRolleById, deletePersonByUsername} from "../base/testHelperDeleteTestdata";
+import { deleteRolleById, deletePersonenBySearchStrings} from "../base/testHelperDeleteTestdata";
 import { generateNachname, generateVorname, generateRolleName } from "../base/testHelperGenerateTestdataNames.ts";
 import { testschule, testschule665, landSH } from "../base/organisation.ts";
 
@@ -49,7 +49,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await expect(startseite.text_h2_Ueberschrift).toBeVisible();
         await expect(startseite.card_item_schulportal_administration).toBeVisible();
         
-        await deletePersonByUsername(username, page);
+        await deletePersonenBySearchStrings(page, username);
         username = [];
       }
 
