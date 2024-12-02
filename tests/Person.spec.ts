@@ -16,7 +16,7 @@ import { LONG, SHORT, STAGE, BROWSER } from "../base/tags";
 import { deletePersonByUsername, deleteRolleById, deleteRolleByName } from "../base/testHelperDeleteTestdata.ts";
 import { landesadminRolle, schuelerRolle, schuladminOeffentlichRolle } from "../base/roles.ts";
 import { generateNachname, generateVorname, generateRolleName } from "../base/testHelperGenerateTestdataNames.ts";
-import { testschule665 } from "../base/organisation.ts";
+import { testschule665, testschule  } from "../base/organisation.ts";
 import { gotoTargetURL } from "../base/testHelperUtils.ts";
 
 const PW: string | undefined = process.env.PW;
@@ -277,8 +277,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
     const vorname = "TAuto-PW-V-" + faker.person.firstName();
     const nachname = "TAuto-PW-N-" + faker.person.lastName();
-    const schulstrukturknoten = "(Carl-Orff-Schule)";
-    const klasse = "9a";
+    const schulstrukturknoten = testschule;
+    const klasse = "Playwright3a";
 
     await test.step(`Dialog Person anlegen öffnen`, async () => {
       await startseite.card_item_schulportal_administration.click();
