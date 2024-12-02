@@ -18,7 +18,7 @@ test.beforeEach(async ({ page }) => {
   startseite = await test.step(`Login`, async () => {
     const startPage = await FromAnywhere(page)
       .start()
-      .then((landing) => landing.login())
+      .then((landing) => landing.goToLogin())
       .then((login) => login.login());
     loggedIn = true;
     return startPage;
@@ -67,7 +67,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     const rolleCreationView =
       await test.step(`Dialog Rolle anlegen öffnen`, async () => {
         const rolleCreationView = await startseite
-          .administration()
+          .goToAdministration()
           .then((menu) => menu.rolleAnlegen());
         await expect(rolleCreationView.text_h2_RolleAnlegen).toHaveText(
           "Neue Rolle hinzufügen",
@@ -122,7 +122,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
 
   test("Ergebnisliste Rollen auf Vollständigkeit prüfen als Landesadmin", {tag: [LONG, SHORT, STAGE]}, async () => {
     await test.step(`Rollenverwaltung öffnen und alle Elemente in der Ergebnisliste auf Existenz prüfen`, async () => {
-      const menu: MenuPage = await startseite.administration();
+      const menu: MenuPage = await startseite.goToAdministration();
       const rolleManagement = await menu.alleRollenAnzeigen();
       await expect(
         rolleManagement.text_h1_Administrationsbereich,
@@ -153,7 +153,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     const rolleCreationView =
       await test.step(`Dialog Rolle anlegen öffnen`, async () => {
         return await startseite
-          .administration()
+          .goToAdministration()
           .then((menu) => menu.rolleAnlegen());
       });
 
@@ -241,7 +241,7 @@ test.describe("Testet die Anlage einer neuen Rolle", () => {
     const rolleCreationView: RolleCreationViewPage =
       await test.step("Rolle anlegen aufrufen", async () => {
         return await startseite
-          .administration()
+          .goToAdministration()
           .then((menu) => menu.rolleAnlegen());
       });
 

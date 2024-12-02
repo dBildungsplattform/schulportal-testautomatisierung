@@ -21,7 +21,7 @@ export class StartPage {
     this.card_item_schulportal_administration = page.locator('[data-testid^="service-provider-card"]', { hasText: "Schulportal-Administration" });
   }
 
-  public async administration(): Promise<MenuPage> {
+  public async goToAdministration(): Promise<MenuPage> {
     await this.card_item_schulportal_administration.click();
     return new MenuPage(this.page);
   }

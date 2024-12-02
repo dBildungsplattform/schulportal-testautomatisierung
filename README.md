@@ -21,8 +21,6 @@ Empfohlen wird VS-Code
 
 #### npx playwright codegen https://spsh.staging.spsh.dbildungsplattform.de
 
-#### npx playwright codegen https://test.dev.spsh.dbildungsplattform.de
-
 #### npx playwright codegen https://localhost:8099/ --ignore-https-errors
 
 ### Tests lokal ausführen:
