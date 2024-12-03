@@ -5,7 +5,7 @@ import { UserInfo } from "./testHelper.page";
 import { HeaderPage } from '../../pages/Header.page';
 import { LoginPage } from '../../pages/LoginView.page';
 import { faker } from '@faker-js/faker';
-import { lehrkraftOeffentlichRolle } from '../roles';
+import { lehrkraftOeffentlichRolle } from '../rollen';
 import { generateNachname, generateVorname, generateKopersNr } from "../testHelperGenerateTestdataNames";
 import { testschule } from "../organisation";
 
@@ -93,8 +93,8 @@ export async function deletePersonen(page: Page, personId: string): Promise<void
     expect(response.status()).toBe(204);
 }
 
-export async function getPersonId(page: Page, Benutzername: string): Promise<string> {
-    const response = await page.request.get(FRONTEND_URL + `api/personen-frontend?suchFilter=${Benutzername}`, {failOnStatusCode: false, maxRetries: 3});
+export async function getPersonId(page: Page, searchString: string): Promise<string> {
+    const response = await page.request.get(FRONTEND_URL + `api/personen-frontend?suchFilter=${searchString}`, {});
     expect(response.status()).toBe(200);
     const json = await response.json();
     return json.items[0].person.id;
