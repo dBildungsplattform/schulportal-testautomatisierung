@@ -9,7 +9,7 @@ const PW: string | undefined = process.env.PW;
 const USER = process.env.USER;
 const FRONTEND_URL: string | undefined = process.env.FRONTEND_URL || "";
 
-test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
+test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test('Erfolgreicher Standard Logoff als Landesadmin', {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
     const landing: LandingPage = new LandingPage(page);
     const startseite: StartPage = new StartPage(page);

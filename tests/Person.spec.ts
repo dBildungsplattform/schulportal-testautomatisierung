@@ -27,7 +27,7 @@ let username: string[] = []; // Im afterEach Block werden alle Testdaten gelösc
 let roleId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
 let roleName: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
 
-test.describe(`Testfälle für die Administration von Personen": Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
+test.describe(`Testfälle für die Administration von Personen": Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }) => {
     await test.step(`Login`, async () => {
       const landing = new LandingPage(page);

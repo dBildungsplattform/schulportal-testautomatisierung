@@ -9,12 +9,13 @@ import { faker } from "@faker-js/faker/locale/de";
 import { HeaderPage } from "../pages/Header.page";
 import { LONG, SHORT, STAGE, BROWSER } from "../base/tags";
 import { deleteKlasseByName } from "../base/testHelperDeleteTestdata.ts";
+import { testschule } from "../base/organisation.ts";
+import { generateKlassenname } from "../base/testHelperGenerateTestdataNames.ts";
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
-const FRONTEND_URL: string | undefined = process.env.FRONTEND_URL || "";
 
-test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
+test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   let className: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
   
   test.beforeEach(async ({ page }) => {
@@ -23,7 +24,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       const startseite: StartPage = new StartPage(page);
       const login: LoginPage = new LoginPage(page);
 
-      await page.goto(FRONTEND_URL);
+      await page.goto('/');
       await landing.button_Anmelden.click();
       await login.login(ADMIN, PW);
       await expect(startseite.text_h2_Ueberschrift).toBeVisible();
@@ -46,12 +47,11 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
 
   test("Eine Klasse als Landesadmin anlegen und die Klasse anschließend in der Ergebnisliste suchen und dann löschen", {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
     const startseite: StartPage = new StartPage(page);
-    const menue = new MenuPage(page);
-    const klasseCreationView = new KlasseCreationViewPage(page);
-    const klasseManagementView = new KlasseManagementViewPage(page);
-    const schulname = "Testschule Schulportal";
-    const zufallsnummer = faker.number.bigInt({ min: 1000, max: 9000 })
-    const klassenname = "TAuto-PW-K-12 " + faker.lorem.word({ length: { min: 10, max: 10 }}) + zufallsnummer;
+    const menue: MenuPage = new MenuPage(page);
+    const klasseCreationView: KlasseCreationViewPage = new KlasseCreationViewPage(page);
+    const klasseManagementView: KlasseManagementViewPage = new KlasseManagementViewPage(page);
+    const schulname: string = testschule;
+    const klassenname: string = await generateKlassenname();
 
     await test.step(`Dialog Schule anlegen öffnen`, async () => {
       await startseite.card_item_schulportal_administration.click();
@@ -101,14 +101,13 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
   });
 
   test("Eine Klasse als Landesadmin anlegen und die Bestätigungsseite vollständig prüfen", {tag: [LONG, STAGE, BROWSER]}, async ({ page }) => {
-    const klasseCreationView = new KlasseCreationViewPage(page);
-    const dienststellennummer = '1111111';
-    const nameSchule = "Testschule Schulportal";
-    const zufallsnummer = faker.number.bigInt({ min: 1000, max: 9000 })
-    const klasseName = "TAuto-PW-K-12 " + faker.lorem.word({ length: { min: 10, max: 10 }}) + zufallsnummer;
+    const klasseCreationView: KlasseCreationViewPage = new KlasseCreationViewPage(page);
+    const dienststellennummer: string = '1111111';
+    const nameSchule: string = testschule;
+    const klasseName: string = await generateKlassenname();
 
     await test.step(`Dialog Schule anlegen öffnen`, async () => {
-      await page.goto(FRONTEND_URL + 'admin/klassen/new');
+      await page.goto('/' + 'admin/klassen/new');
     });
 
     await test.step(`Klasse anlegen`, async () => {
@@ -135,9 +134,9 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
   });
 
   test("Jede Klasse hat eine Dienststellennummer neben dem Klassennamen (ersten und letzten 100 Einträge)", { tag: [LONG, SHORT, STAGE] }, async ({ page }) => {
-    const startseite = new StartPage(page);
-    const menue = new MenuPage(page);
-    const klasseManagementView = new KlasseManagementViewPage(page);
+    const startseite: StartPage = new StartPage(page);
+    const menue:MenuPage = new MenuPage(page);
+    const klasseManagementView: KlasseManagementViewPage = new KlasseManagementViewPage(page);
   
     await test.step(`Klassenverwaltung öffnen und prüfen, dass jede Klasse eine Dienststellennummer hat`, async () => {
       // Navigate to Klassenverwaltung
