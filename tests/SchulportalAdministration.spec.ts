@@ -18,7 +18,7 @@ const FRONTEND_URL: string | undefined = process.env.FRONTEND_URL || "";
 let personId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
 let rolleId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
 
-test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
+test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
     test.afterEach(async ({ page }) => {
         const header = new HeaderPage(page);
         const landing: LandingPage = new LandingPage(page);

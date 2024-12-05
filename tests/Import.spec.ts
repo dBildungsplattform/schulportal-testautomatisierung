@@ -18,7 +18,7 @@ const ADMIN: string = process.env.USER as string;
 const FRONTEND_URL: string = process.env.FRONTEND_URL || "";
 let personImportPage: PersonImportViewPage = undefined as unknown as PersonImportViewPage;
 
-test.describe(`Testfälle für den Benutzerimport": Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
+test.describe(`Testfälle für den Benutzerimport": Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   // convert csv to array to make person data accessible, also trim data and filter empty lines
   const filename: string = fileURLToPath(import.meta.url);
   const dirname: string = path.dirname(filename);
