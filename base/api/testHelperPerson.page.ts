@@ -4,7 +4,6 @@ import { createRolle, addSPToRolle, getRolleId } from "./testHelperRolle.page";
 import { UserInfo } from "./testHelper.page";
 import { HeaderPage } from '../../pages/Header.page';
 import { LoginPage } from '../../pages/LoginView.page';
-import { faker } from '@faker-js/faker';
 import { lehrkraftOeffentlichRolle } from '../rollen';
 import { generateNachname, generateVorname, generateKopersNr } from "../testHelperGenerateTestdataNames";
 import { testschule } from "../organisation";
@@ -22,9 +21,11 @@ export async function createPerson(page: Page, familienname: string, vorname: st
                     rolleId
                 }
             ]
-        }
-
+        },
+        failOnStatusCode: false, 
+        maxRetries: 3
     };
+
     if(koPersNr) {
         requestData.data['personalnummer'] = koPersNr;
     }
@@ -45,8 +46,6 @@ export async function createPersonWithUserContext(page: Page, organisationName: 
     // API-Calls machen und Benutzer mit Kontext anlegen
     const organisationId: string = await getOrganisationId(page, organisationName);
     const rolleId: string = await getRolleId(page, rolleName);
-    console.log('rolleName: ' + rolleName);
-    console.log('rolleId: ' + rolleId);
     const userInfo: UserInfo = await createPerson(page, familienname, vorname, organisationId, rolleId, koPersNr);
     return userInfo;
 }
@@ -79,18 +78,20 @@ export async function addSecondOrganisationToPerson(page: Page, personId: string
                     "rolleId": rolleId
                 }
             ]
-        }
+        },
+        failOnStatusCode: false, 
+        maxRetries: 3
     });
     expect(response.status()).toBe(200);
 }
 
 export async function deletePerson(page: Page, personId: string): Promise<void> {
-    const response = await page.request.delete(FRONTEND_URL + `api/personen/${personId}`, {});
+    const response = await page.request.delete(FRONTEND_URL + `api/personen/${personId}`, {failOnStatusCode: false, maxRetries: 3});
     expect(response.status()).toBe(204);
 }
 
 export async function getPersonId(page: Page, searchString: string): Promise<string> {
-    const response = await page.request.get(FRONTEND_URL + `api/personen-frontend?suchFilter=${searchString}`, {});
+    const response = await page.request.get(FRONTEND_URL + `api/personen-frontend?suchFilter=${searchString}`, {failOnStatusCode: false, maxRetries: 3});
     expect(response.status()).toBe(200);
     const json = await response.json();
     return json.items[0].person.id;
@@ -99,10 +100,7 @@ export async function getPersonId(page: Page, searchString: string): Promise<str
 export async function createTeacherAndLogin(page: Page) {
     const header = new HeaderPage(page);
     const login: LoginPage = new LoginPage(page);
-    const vorname = await generateVorname();
-    const nachname = await generateNachname();
     const organisation = testschule;
-    const kopersNr = '0815' + faker.string.numeric({ length: 3 });
 
     const userInfo: UserInfo = await createPersonWithUserContext(page, organisation, await generateNachname(), await generateVorname(), lehrkraftOeffentlichRolle, await generateKopersNr());
     await header.logout();
@@ -119,7 +117,9 @@ export async function lockPerson(page: Page, personId: string, organisationId: s
         data: {
             "lock": true,
             "locked_by": organisationId
-        }
+        },
+        failOnStatusCode: false, 
+        maxRetries: 3
     });
     expect(response.status()).toBe(202);
 }

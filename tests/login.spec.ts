@@ -6,21 +6,20 @@ import { HeaderPage } from "../pages/Header.page";
 import { LONG, SHORT, SMOKE, STAGE, BROWSER } from '../base/tags';
 import { createRolleAndPersonWithUserContext, lockPerson } from "../base/api/testHelperPerson.page.ts";
 import { getSPId } from "../base/api/testHelperServiceprovider.page.ts";
-import { faker } from "@faker-js/faker/locale/de";
 import { UserInfo } from "../base/api/testHelper.page.ts";
 import { deletePersonenBySearchStrings, deleteRolleById } from "../base/testHelperDeleteTestdata.ts";
 import { getOrganisationId } from "../base/api/testHelperOrganisation.page.ts";
-import { generateRolleName } from '../base/testHelperGenerateTestdataNames.ts';
+import { generateRolleName, generateNachname, generateVorname } from '../base/testHelperGenerateTestdataNames.ts';
+import { testschule } from '../base/organisation.ts';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
-const FRONTEND_URL: string | undefined = process.env.FRONTEND_URL || "";
 
 let loggedIn = false;
 let username: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
 let rolleId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
 
-test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
+test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.afterEach(async ({ page }) => {
     const header = new HeaderPage(page);
     const landing: LandingPage = new LandingPage(page);
@@ -34,7 +33,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.UM
           const startseite: StartPage = new StartPage(page);
           const login: LoginPage = new LoginPage(page);
           
-          await page.goto(FRONTEND_URL);
+          await page.goto('/');
           await landing.button_Anmelden.click();
           await login.login(ADMIN, PW);
           await expect(startseite.text_h2_Ueberschrift).toBeVisible();
@@ -64,7 +63,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.UM
 
     if (loggedIn) {
       await test.step(`Abmelden`, async () => {
-        const header = new HeaderPage(page);
+        const header: HeaderPage = new HeaderPage(page);
         await header.logout();
         loggedIn = false;
       });
@@ -72,12 +71,12 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.UM
   });
 
    test('Erfolgreicher Standard Login Landesadmin', {tag: [LONG, SMOKE, STAGE, BROWSER]}, async ({ page }) => {
-    const login = new LoginPage(page);
-    const landing = new LandingPage(page);
-    const start = new StartPage(page);
+    const login: LoginPage = new LoginPage(page);
+    const landing: LandingPage = new LandingPage(page);
+    const start: StartPage = new StartPage(page);
 
     await test.step(`Anmelden mit Benutzer ${ADMIN}`, async () => {
-      await page.goto(FRONTEND_URL);
+      await page.goto('/');
       await expect(landing.text_Willkommen).toBeVisible();
       await landing.button_Anmelden.click();
       
@@ -92,7 +91,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.UM
     const landing: LandingPage = new LandingPage(page);
 
     await test.step(`Anmelden mit Benutzer ${ADMIN}`, async () => {
-      await page.goto(FRONTEND_URL);
+      await page.goto('/');
       await expect(landing.text_Willkommen).toBeVisible();
       await landing.button_Anmelden.click();
       await login.login(ADMIN, 'Mickeymouse');
@@ -107,17 +106,17 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.UM
     const landing: LandingPage = new LandingPage(page);
     const header = new HeaderPage(page);
 
-    const lehrerVorname = "TAuto-PW-V-" + faker.person.firstName();
-    const lehrerNachname = "TAuto-PW-N-" + faker.person.lastName();
-    const lehrerRolle = await generateRolleName();
-    const lehrerRollenart = 'LEHR';
-    const lehrerOrganisation = 'Testschule Schulportal';
+    const lehrerVorname: string = await generateVorname();
+    const lehrerNachname: string =await generateNachname();
+    const lehrerRolle:string = await generateRolleName();
+    const lehrerRollenart: string = 'LEHR';
+    const lehrerOrganisation: string = testschule;
     let userInfoLehrer: UserInfo;
-    let lehrerIdSP = '';
-    let organisationIDLandSh = '';
+    let lehrerIdSP: string = '';
+    let organisationIDLandSh: string = '';
  
     await test.step(`Testdaten: Gesperrten Lehrer über die api anlegen ${ADMIN}`, async () => {
-      await page.goto(FRONTEND_URL);
+      await page.goto('/');
       await landing.button_Anmelden.click();
       await login.login(ADMIN, PW);
       lehrerIdSP = await getSPId(page, 'E-Mail');
@@ -143,7 +142,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.UM
     const start = new StartPage(page);
 
     await test.step('Anmelden mit falschem Benutzernamen fake-username, Inputfeld für Benutzernamen bleibt änderbar', async () => {
-      await page.goto(FRONTEND_URL);
+      await page.goto('/');
       await expect(landing.text_Willkommen).toBeVisible();
       await landing.button_Anmelden.click();
       await login.login('fake-username', PW);

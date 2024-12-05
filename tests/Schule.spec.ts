@@ -23,7 +23,7 @@ const FRONTEND_URL: string | undefined = process.env.FRONTEND_URL || "";
 let personId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
 let roleId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
 
-test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
+test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }) => {
     await test.step(`Login`, async () => {
       const landing: LandingPage = new LandingPage(page);

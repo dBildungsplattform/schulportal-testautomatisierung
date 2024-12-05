@@ -16,3 +16,7 @@ export async function generateRolleName(){
 export async function generateKopersNr(){  
   return '0815' + faker.string.numeric({ length: 3 });
 }
+
+export async function generateKlassenname(){  
+  return "TAuto-PW-K-12a " + faker.lorem.word({ length: { min: 8, max: 8 }}) + generateRandomString({length: 3,charSetType: CharacterSetType.Alphabetic});
+}
