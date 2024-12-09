@@ -9,8 +9,8 @@ import { faker } from "@faker-js/faker/locale/de";
 import { HeaderPage } from "../pages/Header.page";
 import { LONG, SHORT, STAGE, BROWSER } from "../base/tags";
 import { deleteKlasseByName, deletePersonenBySearchStrings, deleteRolleById } from "../base/testHelperDeleteTestdata.ts";
-import { testschule } from "../base/organisation.ts";
-import { generateKlassenname, generateRolleName } from "../base/testHelperGenerateTestdataNames.ts";
+import { landSH, testschule } from "../base/organisation.ts";
+import { generateKlassenname, generateNachname, generateRolleName, generateVorname } from "../base/testHelperGenerateTestdataNames.ts";
 import { createRolleAndPersonWithUserContext } from "../base/api/testHelperPerson.page.ts";
 import { addSystemrechtToRolle } from "../base/api/testHelperRolle.page.ts";
 import { getSPId } from "../base/api/testHelperServiceprovider.page.ts";
@@ -198,15 +198,15 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     const klasseManagementView = new KlasseManagementViewPage(page);
     const klasseCreationView = new KlasseCreationViewPage(page);
     const klasseDetailsView = new KlasseDetailsViewPage(page);
-    const schulname = 'Testschule Schulportal';
+    const schulname = testschule;
     let klassenname = await generateKlassenname();
 
     await test.step(`Landesadmin anlegen`, async () => {
-      const addminVorname = 'TAuto-PW-V-' + faker.person.firstName();
-      const adminNachname = 'TAuto-PW-N-' + faker.person.lastName();
+      const addminVorname = await generateVorname();
+      const adminNachname = await generateNachname();
       const adminRolle = await generateRolleName();
       const adminRollenart = 'SYSADMIN';
-      const adminOrganisation = 'Land Schleswig-Holstein';
+      const adminOrganisation = landSH;
       const adminIdSP = await getSPId(page, 'Schulportal-Administration');
 
       userInfoAdmin = await createRolleAndPersonWithUserContext(
@@ -272,15 +272,15 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     const klasseManagementView = new KlasseManagementViewPage(page);
     const klasseCreationView = new KlasseCreationViewPage(page);
     const klasseDetailsView = new KlasseDetailsViewPage(page);
-    const schulname = 'Testschule Schulportal';
+    const schulname = testschule;
     let klassenname = await generateKlassenname();
 
     await test.step(`Schuladmin anlegen`, async () => {
-      const addminVorname = 'TAuto-PW-V-' + faker.person.firstName();
-      const adminNachname = 'TAuto-PW-N-' + faker.person.lastName();
+      const addminVorname = await generateVorname();
+      const adminNachname = await generateNachname();
       const adminRolle = await generateRolleName();
       const adminRollenart = 'LEIT';
-      const adminOrganisation = 'Testschule Schulportal';
+      const adminOrganisation = testschule;
       const adminIdSP = await getSPId(page, 'Schulportal-Administration');
 
       userInfoAdmin = await createRolleAndPersonWithUserContext(
