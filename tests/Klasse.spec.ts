@@ -8,15 +8,22 @@ import { KlasseManagementViewPage } from "../pages/admin/KlasseManagementView.pa
 import { faker } from "@faker-js/faker/locale/de";
 import { HeaderPage } from "../pages/Header.page";
 import { LONG, SHORT, STAGE, BROWSER } from "../base/tags";
-import { deleteKlasseByName } from "../base/testHelperDeleteTestdata.ts";
-import { testschule } from "../base/organisation.ts";
-import { generateKlassenname } from "../base/testHelperGenerateTestdataNames.ts";
+import { deleteKlasseByName, deletePersonenBySearchStrings, deleteRolleById } from "../base/testHelperDeleteTestdata.ts";
+import { landSH, testschule } from "../base/organisation.ts";
+import { generateKlassenname, generateNachname, generateRolleName, generateVorname } from "../base/testHelperGenerateTestdataNames.ts";
+import { createRolleAndPersonWithUserContext } from "../base/api/testHelperPerson.page.ts";
+import { addSystemrechtToRolle } from "../base/api/testHelperRolle.page.ts";
+import { getSPId } from "../base/api/testHelperServiceprovider.page.ts";
+import { KlasseDetailsViewPage } from "../pages/admin/KlasseDetailsView.page.ts";
+import { UserInfo } from "../base/api/testHelper.page.ts";
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
 
 test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   let className: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
+  let username: string[] = [];
+  let rolleId: string[] = [];
   
   test.beforeEach(async ({ page }) => {
     await test.step(`Login`, async () => {
@@ -32,11 +39,35 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
   });
 
   test.afterEach(async ({ page }) => {
+    const header = new HeaderPage(page);
+    const landing = new LandingPage(page);
+    const login = new LoginPage(page);
+    const startseite = new StartPage(page);
     await test.step(`Testdaten löschen via API`, async () => {
-      if (className) { // nur wenn der Testfall auch mind. eine Klasse angelegt hat
+      if (className) {
+        // nur wenn der Testfall auch mind. eine Klasse angelegt hat
         await deleteKlasseByName(className, page);
         className = [];
       }
+      if (username) { // nur wenn der Testfall auch mind. einen Benutzer angelegt hat
+        await header.logout();
+        await landing.button_Anmelden.click();
+        await login.login(ADMIN, PW);
+        await expect(startseite.text_h2_Ueberschrift).toBeVisible();
+
+        await deletePersonenBySearchStrings(page, username);
+        username = [];
+    }
+      if (rolleId) { // nur wenn der Testfall auch mind. eine Rolle angelegt hat
+        await header.logout();
+        await landing.button_Anmelden.click();
+        await login.login(ADMIN, PW);
+        await expect(startseite.text_h2_Ueberschrift).toBeVisible();
+
+        await deleteRolleById(rolleId, page);
+        rolleId = [];
+      }
+
     });
 
     await test.step(`Abmelden`, async () => {
@@ -156,4 +187,146 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       await klasseManagementView.checkTableData();
     });
   });
+  test('Klasse bearbeiten als Landesadmin', { tag: [LONG, SHORT, STAGE] }, async ({ page }) => {
+    const header = new HeaderPage(page);
+    const landing: LandingPage = new LandingPage(page);
+    const login: LoginPage = new LoginPage(page);
+
+    let userInfoAdmin: UserInfo;
+    const startseite = new StartPage(page);
+    const menue = new MenuPage(page);
+    const klasseManagementView = new KlasseManagementViewPage(page);
+    const klasseCreationView = new KlasseCreationViewPage(page);
+    const klasseDetailsView = new KlasseDetailsViewPage(page);
+    const schulname = testschule;
+    let klassenname = await generateKlassenname();
+
+    await test.step(`Landesadmin anlegen`, async () => {
+      const addminVorname = await generateVorname();
+      const adminNachname = await generateNachname();
+      const adminRolle = await generateRolleName();
+      const adminRollenart = 'SYSADMIN';
+      const adminOrganisation = landSH;
+      const adminIdSP = await getSPId(page, 'Schulportal-Administration');
+
+      userInfoAdmin = await createRolleAndPersonWithUserContext(
+        page,
+        adminOrganisation,
+        adminRollenart,
+        addminVorname,
+        adminNachname,
+        adminIdSP,
+        adminRolle
+      );
+      await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'ROLLEN_VERWALTEN');
+      await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'PERSONEN_SOFORT_LOESCHEN');
+      await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'PERSONEN_VERWALTEN');
+      await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'SCHULEN_VERWALTEN');
+      await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'KLASSEN_VERWALTEN');
+      await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'SCHULTRAEGER_VERWALTEN');
+      await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'PERSONEN_ANLEGEN');
+
+      username.push(userInfoAdmin.username);
+      rolleId.push(userInfoAdmin.rolleId);
+
+      //login als Schuladmin
+      await header.logout();
+      await landing.button_Anmelden.click();
+      await login.login(userInfoAdmin.username, userInfoAdmin.password);
+      await login.UpdatePW();
+      await expect(startseite.text_h2_Ueberschrift).toBeVisible();
+    });
+
+    await test.step(`Klasse anlegen`, async () => {
+      await startseite.card_item_schulportal_administration.click();
+      await menue.menueItem_KlasseAnlegen.click();
+      await expect(klasseCreationView.text_h2_KlasseAnlegen).toHaveText('Neue Klasse hinzufügen');
+
+      await klasseCreationView.combobox_Schulstrukturknoten.click();
+      await page.getByText(schulname).click();
+      await klasseCreationView.input_Klassenname.fill(klassenname);
+      await klasseCreationView.button_KlasseAnlegen.click();
+      await expect(klasseCreationView.text_success).toBeVisible();
+    });
+
+    await test.step(`Klasse bearbeiten als Landesadmin`, async () => {
+      await menue.menueItem_AlleKlassenAnzeigen.click();
+      await klasseManagementView.combobox_Filter_Schule.fill(schulname);
+      await page.getByText(`${schulname}`, { exact: true }).click();
+      await klasseManagementView.combobox_Filter_Klasse.fill(klassenname);
+      await page.getByRole('cell', { name: klassenname, exact: true }).click();
+      klassenname = await generateKlassenname();
+      await klasseDetailsView.klasseBearbeiten(klassenname);
+      await expect(klasseDetailsView.text_success).toBeVisible();
+      className.push(klassenname);
+    });
+  });
+  test('Klasse bearbeiten als Schuladmin', { tag: [LONG, SHORT, STAGE] }, async ({ page }) => {
+    const header = new HeaderPage(page);
+    const landing: LandingPage = new LandingPage(page);
+    const login: LoginPage = new LoginPage(page);
+
+    let userInfoAdmin: UserInfo;
+    const startseite = new StartPage(page);
+    const menue = new MenuPage(page);
+    const klasseManagementView = new KlasseManagementViewPage(page);
+    const klasseCreationView = new KlasseCreationViewPage(page);
+    const klasseDetailsView = new KlasseDetailsViewPage(page);
+    const schulname = testschule;
+    let klassenname = await generateKlassenname();
+
+    await test.step(`Schuladmin anlegen`, async () => {
+      const addminVorname = await generateVorname();
+      const adminNachname = await generateNachname();
+      const adminRolle = await generateRolleName();
+      const adminRollenart = 'LEIT';
+      const adminOrganisation = testschule;
+      const adminIdSP = await getSPId(page, 'Schulportal-Administration');
+
+      userInfoAdmin = await createRolleAndPersonWithUserContext(
+        page,
+        adminOrganisation,
+        adminRollenart,
+        addminVorname,
+        adminNachname,
+        adminIdSP,
+        adminRolle
+      );
+      await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'PERSONEN_VERWALTEN');
+      await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'KLASSEN_VERWALTEN');
+
+      username.push(userInfoAdmin.username);
+      rolleId.push(userInfoAdmin.rolleId);
+
+      //login als Schuladmin
+      await header.logout();
+      await landing.button_Anmelden.click();
+      await login.login(userInfoAdmin.username, userInfoAdmin.password);
+      await login.UpdatePW();
+      await expect(startseite.text_h2_Ueberschrift).toBeVisible();
+    });
+
+    await test.step(`Klasse anlegen`, async () => {
+      await startseite.card_item_schulportal_administration.click();
+      await menue.menueItem_KlasseAnlegen.click();
+      await expect(klasseCreationView.text_h2_KlasseAnlegen).toHaveText('Neue Klasse hinzufügen');
+
+      await klasseCreationView.input_Klassenname.fill(klassenname);
+      await klasseCreationView.button_KlasseAnlegen.click();
+      await expect(klasseCreationView.text_success).toBeVisible();
+    });
+
+    await test.step(`Klasse bearbeiten als Schuladmin`, async () => {
+      await menue.menueItem_AlleKlassenAnzeigen.click();
+      await klasseManagementView.combobox_Filter_Schule.fill(schulname);
+      await page.getByText(`${schulname}`, { exact: true }).click();
+      await klasseManagementView.combobox_Filter_Klasse.fill(klassenname);
+      await page.getByRole('cell', { name: klassenname, exact: true }).click();
+      klassenname = await generateKlassenname();
+      await klasseDetailsView.klasseBearbeiten(klassenname);
+      await expect(klasseDetailsView.text_success).toBeVisible();
+      className.push(klassenname);
+    });
+  });
+
 });
