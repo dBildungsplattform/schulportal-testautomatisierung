@@ -21,7 +21,6 @@ import { gotoTargetURL } from "../base/testHelperUtils.ts";
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
-const FRONTEND_URL: string | undefined = process.env.FRONTEND_URL || "";
 
 let username: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
 let roleId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
@@ -96,8 +95,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     const header = new HeaderPage(page);
 
     const rolle = "Lehrkraft";
-    const vorname = "TAuto-PW-V-" + faker.person.firstName();
-    const nachname = "TAuto-PW-N-" + faker.person.lastName();
+    const vorname = await generateVorname();
+    const nachname = await generateNachname();
     const kopersnr = faker.string.numeric(7);
     const schulstrukturknoten = "Testschule Schulportal";
     let einstiegspasswort = "";
@@ -126,7 +125,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
     await test.step(`In der Ergebnisliste prüfen dass der neue Benutzer ${nachname} angezeigt wird`, async () => {
       // Der Klick auf die Ergebnisliste funktioniert nicht zuverlaessig, darum der direkte Sprung in die Ergebnisliste via URL
-      await page.goto(FRONTEND_URL + "admin/personen");
+      await page.goto('/' + "admin/personen");
       await expect(personManagementView.text_h2_Benutzerverwaltung).toHaveText("Benutzerverwaltung");
       await personManagementView.input_Suchfeld.fill(nachname);
       await personManagementView.button_Suchen.click();
@@ -413,7 +412,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     const schulstrukturknoten = "Testschule Schulportal";
 
     await test.step(`Benutzer Lehrkraft anlegen`, async () => {
-      await page.goto(FRONTEND_URL + "admin/personen/new");
+      await page.goto('/' + "admin/personen/new");
       await personCreationView.combobox_Schulstrukturknoten.click();
       await page.getByText(schulstrukturknoten).click();
       await personCreationView.combobox_Rolle.click();
@@ -430,7 +429,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
 
     await test.step(`Benutzerverwaltung öffnen und Suche nach Vornamen `, async () => {
-      await page.goto(FRONTEND_URL + "admin/personen");
+      await page.goto('/' + "admin/personen");
       await expect(personManagementView.text_h2_Benutzerverwaltung).toHaveText("Benutzerverwaltung");
       await personManagementView.input_Suchfeld.fill(vorname);
       await personManagementView.button_Suchen.click();
@@ -496,7 +495,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     const dienststellenNr = "1111111";
 
     await test.step(`Dialog Person anlegen öffnen`, async () => {
-      await page.goto(FRONTEND_URL + 'admin/personen/new');
+      await page.goto('/' + 'admin/personen/new');
     });
 
     await test.step(`Benutzer anlegen`, async () => {
@@ -583,7 +582,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     const kopersnr3 = faker.string.numeric(7);
 
     await test.step(`Dialog Person anlegen öffnen`, async () => {
-      await page.goto(FRONTEND_URL + 'admin/personen/new');
+      await page.goto('/' + 'admin/personen/new');
     });
 
     await test.step(`Benutzer Schüler anlegen`, async () => {
@@ -717,7 +716,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     })
 
     await test.step(`Benutzer wieder löschen über das FE`, async () => {
-      await page.goto(FRONTEND_URL + "admin/personen");
+      await page.goto('/' + "admin/personen");
       await personManagementView.input_Suchfeld.fill(nachname);
       await personManagementView.button_Suchen.click();
       await page.getByRole("cell", { name: nachname, exact: true }).click();

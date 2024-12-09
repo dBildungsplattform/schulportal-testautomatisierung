@@ -13,7 +13,6 @@ import { generateRolleName } from "../base/testHelperGenerateTestdataNames";
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
-const FRONTEND_URL: string | undefined = process.env.FRONTEND_URL || "";
 
 let personId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
 let rolleId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
@@ -56,7 +55,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         const header = new HeaderPage(page);
 
         // Testdaten erstellen
-        await page.goto(FRONTEND_URL);
+        await page.goto('/');
         await landing.button_Anmelden.click();
         await login.login(ADMIN, PW);
 
@@ -83,7 +82,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         const header = new HeaderPage(page);
 
         // Testdaten erstellen
-        await page.goto(FRONTEND_URL);
+        await page.goto('/');
         await landing.button_Anmelden.click();
         await login.login(ADMIN, PW);
 
@@ -110,7 +109,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         const header = new HeaderPage(page);
 
         // Testdaten erstellen
-        await page.goto(FRONTEND_URL);
+        await page.goto('/');
         await landing.button_Anmelden.click();
         await login.login(ADMIN, PW);
 
