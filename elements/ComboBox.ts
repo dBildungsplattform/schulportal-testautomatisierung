@@ -9,6 +9,7 @@ export class ComboBox {
   private readonly itemsLocator = this.page.locator(
     "div.v-overlay.v-menu div.v-list-item",
   );
+  private readonly modalToggle = this.locator.locator(".v-field__append-inner");
 
   public async selectByPosition(selection: number[]): Promise<string[]> {
     const selectedItems: string[] = [];
@@ -29,5 +30,9 @@ export class ComboBox {
     });
     await item.waitFor({ state: "visible" });
     await item.click();
+  }
+
+  public async toggleModal(): Promise<void> {
+    await this.modalToggle.click();
   }
 }

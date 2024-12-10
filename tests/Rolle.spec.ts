@@ -162,14 +162,19 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
         await rolleCreationView.schulstrukturknoten.selectByTitle(schulstrukturknoten);
         await rolleCreationView.rollenarten.selectByTitle(rollenart);
         await rolleCreationView.enterRollenname(rollenname);
+
         await rolleCreationView.merkmale.selectByTitle(merkmal);
+        await rolleCreationView.merkmale.toggleModal();
+
         await rolleCreationView.angebote.selectByTitle(angebotA);
         await rolleCreationView.angebote.selectByTitle(angebotB);
         await rolleCreationView.angebote.selectByTitle(angebotC);
+        await rolleCreationView.angebote.toggleModal();
 
         await rolleCreationView.systemrechte.selectByTitle(systemrechtA);
         await rolleCreationView.systemrechte.selectByTitle(systemrechtB);
         await rolleCreationView.systemrechte.selectByTitle(systemrechtC);
+        await rolleCreationView.systemrechte.toggleModal();
 
         return await rolleCreationView.createRolle();
       });
