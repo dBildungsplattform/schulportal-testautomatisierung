@@ -16,7 +16,6 @@ import { deletePersonenBySearchStrings } from "../base/testHelperDeleteTestdata.
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
-const FRONTEND_URL: string | undefined = process.env.FRONTEND_URL || "";
 const ENV: string | undefined = process.env.ENV;
 
 let usernames: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
@@ -28,7 +27,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
       const startseite: StartPage = new StartPage(page);
       const login: LoginPage = new LoginPage(page);
 
-      await page.goto(FRONTEND_URL);
+      await page.goto('/');
       await landing.button_Anmelden.click();
       await login.login(ADMIN, PW);
       await expect(startseite.text_h2_Ueberschrift).toBeVisible();
