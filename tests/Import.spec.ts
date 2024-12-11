@@ -15,7 +15,6 @@ import { testschule665 } from "../base/organisation.ts";
 
 const PW: string = process.env.PW as string;
 const ADMIN: string = process.env.USER as string;
-const FRONTEND_URL: string = process.env.FRONTEND_URL || "";
 let personImportPage: PersonImportViewPage = undefined as unknown as PersonImportViewPage;
 
 test.describe(`Testfälle für den Benutzerimport": Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
@@ -27,7 +26,7 @@ test.describe(`Testfälle für den Benutzerimport": Umgebung: ${process.env.ENV}
 
   test.beforeEach(async ({ page }) => {
     await test.step('Einloggen und zu Benutzerimport navigieren', async () => {
-      await page.goto(FRONTEND_URL);
+      await page.goto('/');
       personImportPage = (await
         (await
           (await
