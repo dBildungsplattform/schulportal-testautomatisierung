@@ -5,7 +5,6 @@ import { StartPage } from "../pages/StartView.page";
 import { MenuPage } from "../pages/MenuBar.page";
 import { KlasseCreationViewPage } from "../pages/admin/KlasseCreationView.page";
 import { KlasseManagementViewPage } from "../pages/admin/KlasseManagementView.page";
-import { faker } from "@faker-js/faker/locale/de";
 import { HeaderPage } from "../pages/Header.page";
 import { LONG, SHORT, STAGE, BROWSER } from "../base/tags";
 import { deleteKlasseByName, deletePersonenBySearchStrings, deleteRolleById } from "../base/testHelperDeleteTestdata.ts";
@@ -16,6 +15,7 @@ import { addSystemrechtToRolle } from "../base/api/testHelperRolle.page.ts";
 import { getSPId } from "../base/api/testHelperServiceprovider.page.ts";
 import { KlasseDetailsViewPage } from "../pages/admin/KlasseDetailsView.page.ts";
 import { UserInfo } from "../base/api/testHelper.page.ts";
+import { getOrganisationId } from "../base/api/testHelperOrganisation.page.ts";
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -207,7 +207,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       const adminRolle = await generateRolleName();
       const adminRollenart = 'SYSADMIN';
       const adminOrganisation = landSH;
-      const adminIdSP = await getSPId(page, 'Schulportal-Administration');
+      const adminIdSPs: Array<string> = [await getSPId(page, 'Schulportal-Administration')];
 
       userInfoAdmin = await createRolleAndPersonWithUserContext(
         page,
@@ -215,7 +215,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
         adminRollenart,
         addminVorname,
         adminNachname,
-        adminIdSP,
+        adminIdSPs,
         adminRolle
       );
       await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'ROLLEN_VERWALTEN');
@@ -281,7 +281,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       const adminRolle = await generateRolleName();
       const adminRollenart = 'LEIT';
       const adminOrganisation = testschule;
-      const adminIdSP = await getSPId(page, 'Schulportal-Administration');
+      const adminIdSPs: Array<string> = [await getSPId(page, 'Schulportal-Administration')];;
 
       userInfoAdmin = await createRolleAndPersonWithUserContext(
         page,
@@ -289,7 +289,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
         adminRollenart,
         addminVorname,
         adminNachname,
-        adminIdSP,
+        adminIdSPs,
         adminRolle
       );
       await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'PERSONEN_VERWALTEN');
@@ -311,13 +311,14 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       await menue.menueItem_KlasseAnlegen.click();
       await expect(klasseCreationView.text_h2_KlasseAnlegen).toHaveText('Neue Klasse hinzufügen');
 
+      await expect(klasseCreationView.combobox_Schulstrukturknoten).toContainText(testschule);
       await klasseCreationView.input_Klassenname.fill(klassenname);
       await klasseCreationView.button_KlasseAnlegen.click();
       await expect(klasseCreationView.text_success).toBeVisible();
     });
 
     await test.step(`Klasse bearbeiten als Schuladmin`, async () => {
-      await menue.menueItem_AlleKlassenAnzeigen.click();
+      await page.goto('/admin/klassen');
       await klasseManagementView.combobox_Filter_Schule.fill(schulname);
       await page.getByText(`${schulname}`, { exact: true }).click();
       await klasseManagementView.combobox_Filter_Klasse.fill(klassenname);
