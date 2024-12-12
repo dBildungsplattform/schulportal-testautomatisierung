@@ -68,7 +68,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
     });
 });
 
-  test.only("Angebote per Link öffnen als Lehrer", {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
+  test("Angebote per Link öffnen als Lehrer", {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
     const startseite: StartPage = new StartPage(page);
     const header: HeaderPage = new HeaderPage(page);
 

@@ -230,8 +230,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
   
       // Step 1:  Create a Schuladmin as Landesadmin and login as the newly created Schuladmin user
       await test.step(`Schuladmin anlegen und mit diesem anmelden`, async () => {
-        const idSP = await getSPId(page, 'Schulportal-Administration');
-        userInfo = await createRolleAndPersonWithUserContext(page, schulstrukturknoten, 'LEIT', nachname, vorname, idSP, await generateRolleName());
+        const idSPs: Array<string> = [await getSPId(page, 'Schulportal-Administration')];
+        userInfo = await createRolleAndPersonWithUserContext(page, schulstrukturknoten, 'LEIT', nachname, vorname, idSPs, await generateRolleName());
         await addSystemrechtToRolle(page, userInfo.rolleId, 'PERSONEN_VERWALTEN');
         await addSystemrechtToRolle(page, userInfo.rolleId, 'PERSONEN_ANLEGEN');
 
@@ -543,8 +543,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     let userInfo: UserInfo;
 
     await test.step(`Testdaten: Landesadmin anlegen und mit diesem anmelden`, async () => {
-      const idSP = await getSPId(page, 'Schulportal-Administration');
-      userInfo = await createRolleAndPersonWithUserContext(page, 'Land Schleswig-Holstein', 'SYSADMIN', 'TAuto-PW-B-Master', 'TAuto-PW-B-Hans', idSP, await generateRolleName());
+      const idSPs: Array<string> = [await getSPId(page, 'Schulportal-Administration')];
+      userInfo = await createRolleAndPersonWithUserContext(page, 'Land Schleswig-Holstein', 'SYSADMIN', 'TAuto-PW-B-Master', 'TAuto-PW-B-Hans', idSPs, await generateRolleName());
       await addSystemrechtToRolle(page, userInfo.rolleId, 'ROLLEN_VERWALTEN');
       await addSystemrechtToRolle(page, userInfo.rolleId, 'PERSONEN_SOFORT_LOESCHEN');
       await addSystemrechtToRolle(page, userInfo.rolleId, 'PERSONEN_VERWALTEN');
@@ -708,10 +708,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     const nachname = await generateNachname();
     const rolle = await generateRolleName();
     const berechtigung = 'SYSADMIN';
-    const idSP = await getSPId(page, 'Schulportal-Administration');
+    const idSPs: Array<string> = [await getSPId(page, 'Schulportal-Administration')];
 
     await test.step(`Neuen Benutzer über die api anlegen`, async () => {
-      await createRolleAndPersonWithUserContext(page, 'Land Schleswig-Holstein', berechtigung, vorname, nachname, idSP, rolle);
+      await createRolleAndPersonWithUserContext(page, 'Land Schleswig-Holstein', berechtigung, vorname, nachname, idSPs, rolle);
       roleName.push(rolle);
     })
 

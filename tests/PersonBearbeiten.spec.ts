@@ -84,7 +84,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     const adminRolle = await generateRolleName();
     const adminRollenart = 'LEIT';
     const adminOrganisation = 'Testschule-PW665';
-    const adminIdSP = await getSPId(page, 'Schulportal-Administration');
+    const adminIdSPs: Array<string> = [await getSPId(page, 'Schulportal-Administration')];
     let userInfoAdmin: UserInfo;
 
     const lehrerVorname = "TAuto-PW-V-" + faker.person.firstName();
@@ -92,7 +92,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     const lehrerRolle = await generateRolleName();
     const lehrerRollenart = 'LEHR';
     const lehrerOrganisation = 'Testschule-PW665';
-    const lehrerIdSP = await getSPId(page, 'E-Mail');
+    const lehrerIdSPs: Array<string> = [await getSPId(page, 'E-Mail')];
+    
     let userInfoLehrer: UserInfo;
     let lehrerBenutzername = '';
     const rolle = 'LiV';
@@ -100,13 +101,13 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
     await test.step(`Einen Schuladmin und einen zu bearbeitenden Lehrer mit je einer einer Schulzuordnung(Schule ist an einer Position > 25 in der DB) über die api anlegen und mit diesem Schuladmin anmelden`, async () => {
         // Schuladmin
-        userInfoAdmin = await createRolleAndPersonWithUserContext(page, adminOrganisation, adminRollenart, addminVorname, adminNachname, adminIdSP, adminRolle);
+        userInfoAdmin = await createRolleAndPersonWithUserContext(page, adminOrganisation, adminRollenart, addminVorname, adminNachname, adminIdSPs, adminRolle);
         await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'PERSONEN_VERWALTEN');
         username.push(userInfoAdmin.username);
         rolleId.push(userInfoAdmin.rolleId);
 
         // Lehrer
-        userInfoLehrer = await createRolleAndPersonWithUserContext(page, lehrerOrganisation, lehrerRollenart, lehrerVorname, lehrerNachname, lehrerIdSP, lehrerRolle);
+        userInfoLehrer = await createRolleAndPersonWithUserContext(page, lehrerOrganisation, lehrerRollenart, lehrerVorname, lehrerNachname, lehrerIdSPs, lehrerRolle);
         username.push(userInfoLehrer.username);
         rolleId.push(userInfoLehrer.rolleId);
         lehrerBenutzername = userInfoLehrer.username;
@@ -149,7 +150,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         const sperrDatumAb = await generateDateToday() // Konkrete Testdaten für diesen Testfall
 
         await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) und SP(email) über die api anlegen ${ADMIN}`, async () => {
-          userInfoLehrer = await createRolleAndPersonWithUserContext(page, testschule, typelehrer, await generateNachname(), await generateVorname(), await getSPId(page, email), await generateRolleName());
+          userInfoLehrer = await createRolleAndPersonWithUserContext(page, testschule, typelehrer, await generateNachname(), await generateVorname(), [await getSPId(page, email)], await generateRolleName());
           username.push(userInfoLehrer.username);
           rolleId.push(userInfoLehrer.rolleId);
         })
