@@ -112,7 +112,6 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
     const lehrerRollenart: string = 'LEHR';
     const lehrerOrganisation: string = testschule;
     let userInfoLehrer: UserInfo;
-    let lehrerIdSP: string = '';
     let organisationIDLandSh: string = '';
  
     await test.step(`Testdaten: Gesperrten Lehrer über die api anlegen ${ADMIN}`, async () => {
