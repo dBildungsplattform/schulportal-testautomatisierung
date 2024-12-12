@@ -187,7 +187,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       await klasseManagementView.checkTableData();
     });
   });
-  test('Klasse bearbeiten als Landesadmin', { tag: [LONG, SHORT, STAGE] }, async ({ page }) => {
+  test('Klasse bearbeiten als Landesadmin', { tag: [LONG] }, async ({ page }) => {
     const header = new HeaderPage(page);
     const landing: LandingPage = new LandingPage(page);
     const login: LoginPage = new LoginPage(page);
@@ -261,7 +261,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       className.push(klassenname);
     });
   });
-  test('Klasse bearbeiten als Schuladmin', { tag: [LONG, SHORT, STAGE] }, async ({ page }) => {
+  test('Klasse bearbeiten als Schuladmin', { tag: [LONG] }, async ({ page }) => {
     const header = new HeaderPage(page);
     const landing: LandingPage = new LandingPage(page);
     const login: LoginPage = new LoginPage(page);
