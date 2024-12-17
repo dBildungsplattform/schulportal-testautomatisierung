@@ -172,10 +172,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     
         await test.step(`Befristung bei ${unbefristeteRolle} und ${befristeteRolle} überprüfen`, async () => {
             await personDetailsView.rollen.selectByTitle(befristeteRolle);
-            await expect(personDetailsView.button_befristetSchuljahresende).toBeChecked({ timeout: 1000 });
+            await expect(personDetailsView.button_befristetSchuljahresende).toBeChecked();
         
             await personDetailsView.rollen.selectByTitle(unbefristeteRolle);
-            await expect(personDetailsView.button_befristungUnbefristet).toBeChecked({ timeout: 1000 });
+            await expect(personDetailsView.button_befristungUnbefristet).toBeChecked();
         });
     })
 
