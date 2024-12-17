@@ -1,43 +1,26 @@
-import { Page, expect } from '@playwright/test';
-import { faker } from "@faker-js/faker/locale/de";
+import { Page } from "@playwright/test";
+import { KlasseManagementViewPage } from './KlasseManagementView.page';
 
-const FRONTEND_URL: string | undefined = process.env.FRONTEND_URL || "";
+export class KlasseDeletionErrorPage {
+    constructor(private page: Page) {}
 
-export async function createOrganisation(page: Page, name: string): Promise<string> {
-    const response = await page.request.post(FRONTEND_URL + 'api/organisationen/',  {
-        data: {
-            "administriertVon": null,
-            "zugehoerigZu": null,
-            "kennung": faker.string.numeric({length: 6}),
-            "name": name,
-            "namensergaenzung": null,
-            "kuerzel": null,
-            "typ": "SCHULE",
-            "traegerschaft": null
-        },
-        failOnStatusCode: false, 
-        maxRetries: 3
-    });
-    expect(response.status()).toBe(201);
-    const json = await response.json();
-    return json.id;
-}
+    public readonly text_title_error = this.page.getByTestId(
+      "alert-title",
+    );
 
-export async function getOrganisationId(page: Page, nameOrganisation: string): Promise<string> {
-    const response = await page.request.get(FRONTEND_URL + `api/organisationen?name=${nameOrganisation}`, {failOnStatusCode: false, maxRetries: 3});  
-    expect(response.status()).toBe(200); 
-    const json = await response.json(); 
-    return json[0].id;
-}
+    public readonly text_message_error = this.page.getByTestId(
+      "alert-text",
+    );
 
-export async function deleteKlasse(page: Page, KlasseId: string): Promise<void> {
-    const response = await page.request.delete(FRONTEND_URL + `api/organisationen/${KlasseId}/klasse`, {failOnStatusCode: false, maxRetries: 3});
-    expect(response.status()).toBe(204);
-}
+    public readonly icon_failure = this.page.locator(".mdi-close-circle");
 
-export async function getKlasseId(page: Page, Klassennname: string): Promise<string> {
-    const response = await page.request.get(FRONTEND_URL + `api/organisationen?name=${Klassennname}&excludeTyp=ROOT&excludeTyp=LAND&excludeTyp=TRAEGER&excludeTyp=SCHULE&excludeTyp=ANBIETER&excludeTyp=SONSTIGE%20ORGANISATION%20%2F%20EINRICHTUNG&excludeTyp=UNBESTAETIGT`, {failOnStatusCode: false, maxRetries: 3});  
-    expect(response.status()).toBe(200); 
-    const json = await response.json(); 
-    return json[0].id;
+    public readonly button_ZurueckErgebnisliste = this.page.getByTestId(
+      "back-to-list-button",
+    );
+
+    public async backToResultList(): Promise<KlasseManagementViewPage> {
+        await this.button_ZurueckErgebnisliste.click();
+
+        return new KlasseManagementViewPage(this.page);
+    }
 }

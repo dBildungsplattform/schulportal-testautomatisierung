@@ -1,21 +1,35 @@
-import { test, expect } from "@playwright/test";
-import { LandingPage } from "../pages/LandingView.page";
-import { LoginPage } from "../pages/LoginView.page";
-import { StartPage } from "../pages/StartView.page";
-import { MenuPage } from "../pages/MenuBar.page";
-import { KlasseCreationViewPage } from "../pages/admin/KlasseCreationView.page";
-import { KlasseManagementViewPage } from "../pages/admin/KlasseManagementView.page";
-import { faker } from "@faker-js/faker/locale/de";
-import { HeaderPage } from "../pages/Header.page";
-import { LONG, SHORT, STAGE, BROWSER } from "../base/tags";
-import { deleteKlasseByName, deletePersonenBySearchStrings, deleteRolleById } from "../base/testHelperDeleteTestdata.ts";
-import { landSH, testschule } from "../base/organisation.ts";
-import { generateKlassenname, generateNachname, generateRolleName, generateVorname } from "../base/testHelperGenerateTestdataNames.ts";
-import { createRolleAndPersonWithUserContext } from "../base/api/testHelperPerson.page.ts";
-import { addSystemrechtToRolle } from "../base/api/testHelperRolle.page.ts";
-import { getSPId } from "../base/api/testHelperServiceprovider.page.ts";
-import { KlasseDetailsViewPage } from "../pages/admin/KlasseDetailsView.page.ts";
-import { UserInfo } from "../base/api/testHelper.page.ts";
+import { expect, test } from '@playwright/test';
+import { LandingPage } from '../pages/LandingView.page';
+import { LoginPage } from '../pages/LoginView.page';
+import { StartPage } from '../pages/StartView.page';
+import { MenuPage } from '../pages/MenuBar.page';
+import { KlasseCreationViewPage } from '../pages/admin/KlasseCreationView.page';
+import { KlasseManagementViewPage } from '../pages/admin/KlasseManagementView.page';
+import { HeaderPage } from '../pages/Header.page';
+import { BROWSER, LONG, SHORT, STAGE } from '../base/tags';
+import {
+  deleteKlasseByName,
+  deletePersonenBySearchStrings,
+  deleteRolleById
+} from '../base/testHelperDeleteTestdata.ts';
+import { landSH, testschule } from '../base/organisation.ts';
+import {
+  generateKlassenname, generateKopersNr,
+  generateNachname,
+  generateRolleName,
+  generateVorname
+} from '../base/testHelperGenerateTestdataNames.ts';
+import { createPersonWithUserContext, createRolleAndPersonWithUserContext } from '../base/api/testHelperPerson.page.ts';
+import { addSystemrechtToRolle } from '../base/api/testHelperRolle.page.ts';
+import { getSPId } from '../base/api/testHelperServiceprovider.page.ts';
+import { KlasseDetailsViewPage } from '../pages/admin/KlasseDetailsView.page.ts';
+import { UserInfo } from '../base/api/testHelper.page.ts';
+import {
+  createKlasse,
+  getOrganisationId,
+} from '../base/api/testHelperOrganisation.page';
+import { schuelerRolle } from '../base/rollen';
+import { KlasseDeletionErrorPage } from '../pages/admin/KlasseDeletionError.page';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -24,7 +38,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
   let className: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
   let username: string[] = [];
   let rolleId: string[] = [];
-  
+
   test.beforeEach(async ({ page }) => {
     await test.step(`Login`, async () => {
       const landing: LandingPage = new LandingPage(page);
@@ -57,7 +71,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
 
         await deletePersonenBySearchStrings(page, username);
         username = [];
-    }
+      }
       if (rolleId) { // nur wenn der Testfall auch mind. eine Rolle angelegt hat
         await header.logout();
         await landing.button_Anmelden.click();
@@ -99,7 +113,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     });
 
     await test.step(`In der Ergebnisliste prüfen, dass die neue Klasse angezeigt wird`, async () => {
-      await menue.menueItem_AlleKlassenAnzeigen.click(); 
+      await menue.menueItem_AlleKlassenAnzeigen.click();
       await klasseManagementView.combobox_Filter_Schule.fill(schulname);
       await page.getByText(`${schulname}`, { exact: true }).click({delay:1000});
       await klasseManagementView.text_h2_Klassenverwaltung.click(); // dies schließt das Dropdown Klasse
@@ -168,19 +182,19 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     const startseite: StartPage = new StartPage(page);
     const menue:MenuPage = new MenuPage(page);
     const klasseManagementView: KlasseManagementViewPage = new KlasseManagementViewPage(page);
-  
+
     await test.step(`Klassenverwaltung öffnen und prüfen, dass jede Klasse eine Dienststellennummer hat`, async () => {
       // Navigate to Klassenverwaltung
       await startseite.card_item_schulportal_administration.click();
       await menue.menueItem_AlleKlassenAnzeigen.click();
-  
+
       // Wait until the table is visible
       await expect(klasseManagementView.text_h2_Klassenverwaltung).toHaveText("Klassenverwaltung");
-  
+
       // Show first 100 entries
       await klasseManagementView.footerDataTable.combobox_AnzahlEintraege.click();
       await page.getByRole('option', { name: '100' }).click();
-  
+
       await klasseManagementView.checkTableData();
       // Go to the last page
       await klasseManagementView.footerDataTable.text_LetzteSeite.click();
@@ -326,6 +340,156 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       await klasseDetailsView.klasseBearbeiten(klassenname);
       await expect(klasseDetailsView.text_success).toBeVisible();
       className.push(klassenname);
+    });
+  });
+
+  test("Eine Klasse ohne zugeordnete Personen als Landesadmin via Quickaction löschen", {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
+    const startseite: StartPage = new StartPage(page);
+    const menue: MenuPage = new MenuPage(page);
+    const klasseManagementView: KlasseManagementViewPage = new KlasseManagementViewPage(page);
+    const schulname: string = testschule;
+    const klassenname: string = await generateKlassenname();
+
+    await test.step('Klasse zum Löschen via Quickaction generieren', async () => {
+      const schuleId: string = await getOrganisationId(page, schulname);
+      await createKlasse(
+        page,
+        klassenname,
+        schuleId,
+        schuleId,
+      );
+      className.push(klassenname);
+      await startseite.card_item_schulportal_administration.click();
+      await menue.menueItem_AlleKlassenAnzeigen.click();
+      await expect(klasseManagementView.text_h2_Klassenverwaltung).toHaveText("Klassenverwaltung");
+    });
+
+    await test.step(`In Ergebnisliste prüfen, dass generierte Klasse angezeigt wird`, async () => {
+      await klasseManagementView.combobox_Filter_Schule.fill(`${schulname}`, {});
+      await page.getByText(`${schulname}`, { exact: true }).click({delay:1000});
+      await klasseManagementView.text_h2_Klassenverwaltung.click(); // dies schließt das Dropdown Klasse
+      await expect(page.getByRole('cell', { name: klassenname })).toBeVisible();
+    });
+
+    await test.step(`Generierte Klasse via Quickaction löschen`, async () => {
+      await page.getByRole('cell', { name: klassenname }).click();
+      await page.getByTestId('open-klasse-delete-dialog-button').click();
+      await page.getByTestId('klasse-delete-button').click();
+      await page.getByTestId('close-klasse-delete-success-dialog-button').click();
+    });
+  });
+
+  test("Eine Klasse mit zugeordneter Lehrkraft als Landesadmin via Quickaction löschen", {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
+    const startseite: StartPage = new StartPage(page);
+    const menue: MenuPage = new MenuPage(page);
+    const klasseManagementView: KlasseManagementViewPage = new KlasseManagementViewPage(page);
+    const klassenDeletionErrorPage: KlasseDeletionErrorPage = new KlasseDeletionErrorPage(page);
+    const schulname: string = testschule;
+    const klassenname: string = await generateKlassenname();
+
+    await test.step('Klasse zum Löschen via Quickaction generieren und Schüler zuordnen', async () => {
+      const schuleId: string = await getOrganisationId(page, schulname);
+      await createKlasse(
+        page,
+        klassenname,
+        schuleId,
+        schuleId,
+      );
+      className.push(klassenname);
+      const userInfoSchueler: UserInfo = await createPersonWithUserContext(page, klassenname, await generateNachname(), await generateVorname(), schuelerRolle, await generateKopersNr());
+      username.push(userInfoSchueler.username);
+      await startseite.card_item_schulportal_administration.click();
+      await menue.menueItem_AlleKlassenAnzeigen.click();
+      await expect(klasseManagementView.text_h2_Klassenverwaltung).toHaveText("Klassenverwaltung");
+    });
+
+    await test.step(`In Ergebnisliste prüfen, dass generierte Klasse angezeigt wird`, async () => {
+      await klasseManagementView.combobox_Filter_Schule.fill(`${schulname}`, {});
+      await page.getByText(`${schulname}`, { exact: true }).click({delay:1000});
+      await klasseManagementView.text_h2_Klassenverwaltung.click(); // dies schließt das Dropdown Klasse
+      await expect(page.getByRole('cell', { name: klassenname })).toBeVisible();
+    });
+
+    await test.step(`Generierte Klasse via Quickaction löschen nicht möglich`, async () => {
+      await page.getByRole('cell', { name: klassenname }).click();
+      await page.getByTestId('open-klasse-delete-dialog-button').click();
+      await page.getByTestId('klasse-delete-button').click();
+
+      await expect(klassenDeletionErrorPage.text_title_error).toHaveText("Fehler beim Löschen");
+      await expect(klassenDeletionErrorPage.text_message_error).toHaveText("Die Klasse kann nicht gelöscht werden, da noch Benutzer zugeordnet sind.");
+    });
+  });
+
+  test("Eine Klasse ohne zugeordnete Personen als Schuladmin via Quickaction löschen", {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
+    const header = new HeaderPage(page);
+    const landing: LandingPage = new LandingPage(page);
+    const login: LoginPage = new LoginPage(page);
+    let userInfoAdmin: UserInfo;
+
+    const startseite: StartPage = new StartPage(page);
+    const menue: MenuPage = new MenuPage(page);
+    const klasseManagementView: KlasseManagementViewPage = new KlasseManagementViewPage(page);
+    const schulname: string = testschule;
+    const klassenname: string = await generateKlassenname();
+
+    await test.step(`Schuladmin anlegen`, async () => {
+      const addminVorname = await generateVorname();
+      const adminNachname = await generateNachname();
+      const adminRolle = await generateRolleName();
+      const adminRollenart = 'LEIT';
+      const adminOrganisation = testschule;
+      const adminIdSP = await getSPId(page, 'Schulportal-Administration');
+
+      userInfoAdmin = await createRolleAndPersonWithUserContext(
+        page,
+        adminOrganisation,
+        adminRollenart,
+        addminVorname,
+        adminNachname,
+        adminIdSP,
+        adminRolle
+      );
+      await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'PERSONEN_VERWALTEN');
+      await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'KLASSEN_VERWALTEN');
+
+      username.push(userInfoAdmin.username);
+      console.log(userInfoAdmin.username);
+      rolleId.push(userInfoAdmin.rolleId);
+
+      //login als Schuladmin
+      await header.logout();
+      await landing.button_Anmelden.click();
+      await login.login(userInfoAdmin.username, userInfoAdmin.password);
+      await login.UpdatePW();
+      await expect(startseite.text_h2_Ueberschrift).toBeVisible();
+    });
+
+    await test.step('Klasse zum Löschen via Quickaction generieren', async () => {
+      const schuleId: string = await getOrganisationId(page, schulname);
+      await createKlasse(
+        page,
+        klassenname,
+        schuleId,
+        schuleId,
+      );
+      className.push(klassenname);
+      await startseite.card_item_schulportal_administration.click();
+      await menue.menueItem_AlleKlassenAnzeigen.click();
+      await expect(klasseManagementView.text_h2_Klassenverwaltung).toHaveText("Klassenverwaltung");
+    });
+
+    await test.step(`In Ergebnisliste prüfen, dass generierte Klasse angezeigt wird`, async () => {
+      await klasseManagementView.combobox_Filter_Schule.fill(`${schulname}`, {});
+      await page.getByText(`${schulname}`, { exact: true }).click({delay:1000});
+      await klasseManagementView.text_h2_Klassenverwaltung.click(); // dies schließt das Dropdown Klasse
+      await expect(page.getByRole('cell', { name: klassenname })).toBeVisible();
+    });
+
+    await test.step(`Generierte Klasse via Quickaction löschen`, async () => {
+      await page.getByRole('cell', { name: klassenname }).click();
+      await page.getByTestId('open-klasse-delete-dialog-button').click();
+      await page.getByTestId('klasse-delete-button').click();
+      await page.getByTestId('close-klasse-delete-success-dialog-button').click();
     });
   });
 
