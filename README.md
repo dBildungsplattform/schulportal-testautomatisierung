@@ -37,7 +37,7 @@ USER="xxx" PW="xxx" npx playwright test login.spec.ts
 
 USER='xxx' PW='xxx' FRONTEND_URL='https://main.dev.spsh.dbildungsplattform.de/' npx playwright test -g "Einen Benutzer mit der Rolle Lehrkraft anlegen" --headed
 
-#### Alle Tests einer bestimmten ausführen:
+#### Alle Tests einer bestimmten Datei ausführen:
 
 USER='xxx' PW='xxx' FRONTEND_URL='https://main.dev.spsh.dbildungsplattform.de/' npx playwright test Schule.spec.ts
 
