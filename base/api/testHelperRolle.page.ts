@@ -20,7 +20,7 @@ export async function createRolle(page: Page, rollenArt: string, organisationId:
     return json.id;
 }
 
-export async function addSPToRolle(page: Page, rolleId: string, idSPs: Array<string>): Promise<void> { // version=1 for the first update
+export async function addSPToRolle(page: Page, rolleId: string, idSPs: Array<string>): Promise<void> { 
     const response = await page.request.put(FRONTEND_URL + `api/rolle/${rolleId}/serviceProviders`, {
         data: {
             "serviceProviderIds": idSPs,

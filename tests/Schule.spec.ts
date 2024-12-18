@@ -13,7 +13,7 @@ import { addSystemrechtToRolle } from "../base/api/testHelperRolle.page";
 import { FooterDataTablePage } from "../pages/FooterDataTable.page";
 import { LONG, SHORT, STAGE, BROWSER } from "../base/tags";
 import { deletePersonById, deleteRolleById } from "../base/testHelperDeleteTestdata";
-import { generateRolleName, generateSchulname, generateDienstellenNr, generateNachname, generateVorname } from "../base/testHelperGenerateTestdataNames";
+import { generateRolleName, generateSchulname, generateDienststellenNr, generateNachname, generateVorname } from "../base/testHelperGenerateTestdataNames";
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -78,8 +78,8 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
     // Schulen können noch nicht gelöscht werden. Um doppelte Namen zu vermeiden, wird am dem Schulnamen eine Zufallszahl angehängt
     const schulname1 = await generateSchulname();
     const schulname2 = await generateSchulname();
-    const dienststellenNr1 = await generateDienstellenNr();
-    const dienststellenNr2 = await generateDienstellenNr();
+    const dienststellenNr1 = await generateDienststellenNr();
+    const dienststellenNr2 = await generateDienststellenNr();
 
     const { menue, schuleCreationView }: { menue: MenuPage; schuleCreationView: SchuleCreationViewPage } =
       await test.step(`Dialog Schule anlegen öffnen`, async (): Promise<{ menue: MenuPage; schuleCreationView: SchuleCreationViewPage }> => {

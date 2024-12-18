@@ -91,7 +91,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     const lehrerRolle = await generateRolleName();
     const lehrerRollenart = 'LEHR';
     const lehrerOrganisation = 'Testschule-PW665';
-    const lehrerIdSPs: Array<string> = [await getSPId(page, 'E-Mail')];
     
     let userInfoLehrer: UserInfo;
     let lehrerBenutzername = '';
@@ -106,7 +105,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         rolleId.push(userInfoAdmin.rolleId);
 
         // Lehrer
-        userInfoLehrer = await createRolleAndPersonWithUserContext(page, lehrerOrganisation, lehrerRollenart, lehrerVorname, lehrerNachname, lehrerIdSPs, lehrerRolle);
+        userInfoLehrer = await createRolleAndPersonWithUserContext(page, lehrerOrganisation, lehrerRollenart, lehrerVorname, lehrerNachname, [await getSPId(page, 'E-Mail')], lehrerRolle);
         username.push(userInfoLehrer.username);
         rolleId.push(userInfoLehrer.rolleId);
         lehrerBenutzername = userInfoLehrer.username;
@@ -261,7 +260,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         let userInfoAdmin: UserInfo;
 
         await test.step(`Testdaten: Schuladmin mit einer Rolle(LEIT) über die api anlegen ${ADMIN}`, async () => {
-            userInfoAdmin = await createRolleAndPersonWithUserContext(page, adminOrganisation, adminRollenart, addminVorname, adminNachname, adminIdSPs, await generateRolleName());
+            userInfoAdmin = await createRolleAndPersonWithUserContext(page, adminOrganisation, adminRollenart, addminVorname, adminNachname, [await getSPId(page, 'Schulportal-Administration')], await generateRolleName());
         await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'PERSONEN_VERWALTEN');
         username.push(userInfoAdmin.username);
         rolleId.push(userInfoAdmin.rolleId);
@@ -286,12 +285,11 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         const adminNachname = await generateNachname();
         const organisation = 'Land Schleswig-Holstein';
         const rollenart = 'SYSADMIN'
-        const adminIdSPs: Array<string> = [await getSPId(page, 'Schulportal-Administration')];
 
         let userInfoAdmin: UserInfo;
 
         await test.step(`Testdaten: Landesadmin mit einer Rolle(SYSADMIN) über die api anlegen ${ADMIN}`, async () => {
-            userInfoAdmin = await createRolleAndPersonWithUserContext(page, organisation, rollenart, addminVorname, adminNachname, adminIdSPs, await generateRolleName());
+            userInfoAdmin = await createRolleAndPersonWithUserContext(page, organisation, rollenart, addminVorname, adminNachname, [await getSPId(page, 'Schulportal-Administration')], await generateRolleName());
             await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'ROLLEN_VERWALTEN');
             await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'PERSONEN_SOFORT_LOESCHEN');
             await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'PERSONEN_VERWALTEN');
@@ -326,11 +324,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     test("Gesamtübersicht für einen Benutzer als Schuladmin öffnen, 2FA Token einrichten und 2FA Status prüfen dass ein Token eingerichtet ist", {tag: [LONG]}, async ({ page }) => {
         const adminRollenart = 'LEIT';
         const adminOrganisation = 'Testschule-PW665';
-        const adminIdSPs: Array<string> = [await getSPId(page, 'Schulportal-Administration')];
         let userInfoAdmin: UserInfo;
 
         await test.step(`Testdaten: Schuladmin mit einer Rolle(LEIT) über die api anlegen ${ADMIN}`, async () => {
-            userInfoAdmin = await createRolleAndPersonWithUserContext(page, adminOrganisation, adminRollenart, await generateNachname(), await generateVorname(), adminIdSPs, await generateRolleName());
+            userInfoAdmin = await createRolleAndPersonWithUserContext(page, adminOrganisation, adminRollenart, await generateNachname(), await generateVorname(), [await getSPId(page, 'Schulportal-Administration')], await generateRolleName());
             await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'PERSONEN_VERWALTEN');
             username.push(userInfoAdmin.username);
             rolleId.push(userInfoAdmin.rolleId);
