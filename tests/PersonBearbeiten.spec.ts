@@ -143,6 +143,41 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         });
     })
 
+    test("Befristung beim hinzufügen von Personenkontexten", { tag: [LONG, STAGE] }, async ({ page }) => {
+        let userInfoLehrer: UserInfo;
+
+        const unbefristeteRolle = "Lehrkraft";
+        const befristeteRolle = "LiV";
+
+        await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) und SP(email) über die api anlegen ${ADMIN}`, async () => {
+            userInfoLehrer = await createRolleAndPersonWithUserContext(page, testschule, typelehrer, await generateNachname(), await generateVorname(), await getSPId(page, email), await generateRolleName());
+            username.push(userInfoLehrer.username);
+            rolleId.push(userInfoLehrer.rolleId);
+        })
+
+        const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
+
+        const personDetailsView: PersonDetailsViewPage = await test.step(`Zu testenden Lehrer suchen und Gesamtübersicht öffnen`, async () => {
+            await gotoTargetURL(page, "admin/personen"); // Die Navigation ist nicht Bestandteil des Tests
+            await personManagementView.searchBySuchfeld(userInfoLehrer.username);
+            return await personManagementView.openGesamtuebersichtPerson(page, userInfoLehrer.username); // Klick auf den Benutzernamen
+        })
+
+        await test.step(`Ansicht für neuen Personenkontext öffnen`, async () => {
+            await personDetailsView.button_editSchulzuordnung.click();
+            await personDetailsView.button_addSchulzuordnung.click();
+            await personDetailsView.organisationen.selectByTitle(testschule);
+        })
+    
+        await test.step(`Befristung bei ${unbefristeteRolle} und ${befristeteRolle} überprüfen`, async () => {
+            await personDetailsView.rollen.selectByTitle(befristeteRolle);
+            await expect(personDetailsView.button_befristetSchuljahresende).toBeChecked();
+        
+            await personDetailsView.rollen.selectByTitle(unbefristeteRolle);
+            await expect(personDetailsView.button_befristungUnbefristet).toBeChecked();
+        });
+    })
+
     test("Einen Benutzer über das FE unbefristet sperren @long @stage", {tag: [LONG, STAGE]}, async ({ page }) => {
         let userInfoLehrer: UserInfo;
         const sperrDatumAb = await generateDateToday() // Konkrete Testdaten für diesen Testfall
