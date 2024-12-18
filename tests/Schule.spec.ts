@@ -139,7 +139,7 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
 
     // Schulen können noch nicht gelöscht werden. Um doppelte Namen zu vermeiden, wird am dem Schulnamen eine Zufallszahl angehängt
     const schulname = await generateSchulname();
-    const dienststellenNr = await generateDienstellenNr();
+    const dienststellenNr = await generateDienststellenNr();
     const landing: LandingPage = new LandingPage(page);
     const header = new HeaderPage(page);
     let userInfo: UserInfo;
