@@ -25,6 +25,6 @@ export async function generateSchulname(){
   return "TAuto-PW-S-" + faker.lorem.word({ length: { min: 8, max: 8 }}) + generateRandomString({length: 3,charSetType: CharacterSetType.Alphabetic});
 }
 
-export async function generateDienstellenNr(){  
+export async function generateDienststellenNr(){  
   return "0" + faker.number.bigInt({ min: 10000000, max: 100000000 });
 }
