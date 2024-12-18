@@ -1,26 +1,74 @@
-import { Page } from "@playwright/test";
-import { KlasseManagementViewPage } from './KlasseManagementView.page';
+import { Page, expect } from '@playwright/test';
+import { faker } from "@faker-js/faker/locale/de";
 
-export class KlasseDeletionErrorPage {
-    constructor(private page: Page) {}
+export enum OrganisationsTyp {
+    ROOT = 'ROOT',
+    LAND = 'LAND',
+    TRAEGER = 'TRAEGER',
+    SCHULE = 'SCHULE',
+    KLASSE = 'KLASSE',
+    ANBIETER = 'ANBIETER',
+    SONSTIGE = 'SONSTIGE ORGANISATION / EINRICHTUNG',
+    UNBEST = 'UNBESTAETIGT',
+}
 
-    public readonly text_title_error = this.page.getByTestId(
-      "alert-title",
-    );
+const FRONTEND_URL: string | undefined = process.env.FRONTEND_URL || "";
 
-    public readonly text_message_error = this.page.getByTestId(
-      "alert-text",
-    );
+export async function createSchule(page: Page, name: string): Promise<string> {
+    const response = await page.request.post(FRONTEND_URL + 'api/organisationen/',  {
+        data: {
+            "administriertVon": null,
+            "zugehoerigZu": null,
+            "kennung": faker.string.numeric({length: 6}),
+            "name": name,
+            "namensergaenzung": null,
+            "kuerzel": null,
+            "typ": OrganisationsTyp.SCHULE,
+            "traegerschaft": null
+        },
+        failOnStatusCode: false,
+        maxRetries: 3
+    });
+    expect(response.status()).toBe(201);
+    const json = await response.json();
+    return json.id;
+}
 
-    public readonly icon_failure = this.page.locator(".mdi-close-circle");
+export async function createKlasse(page: Page, name: string, administriertVon: string, zugehoerigZu: string): Promise<string> {
+    const response = await page.request.post(FRONTEND_URL + 'api/organisationen/',  {
+        data: {
+            "administriertVon": administriertVon,
+            "zugehoerigZu": zugehoerigZu,
+            "kennung": faker.string.numeric({length: 6}),
+            "name": name,
+            "namensergaenzung": null,
+            "kuerzel": null,
+            "typ": OrganisationsTyp.KLASSE,
+            "traegerschaft": null
+        },
+        failOnStatusCode: false,
+        maxRetries: 3
+    });
+    expect(response.status()).toBe(201);
+    const json = await response.json();
+    return json.id;
+}
 
-    public readonly button_ZurueckErgebnisliste = this.page.getByTestId(
-      "back-to-list-button",
-    );
+export async function getOrganisationId(page: Page, nameOrganisation: string): Promise<string> {
+    const response = await page.request.get(FRONTEND_URL + `api/organisationen?name=${nameOrganisation}`, {failOnStatusCode: false, maxRetries: 3});
+    expect(response.status()).toBe(200);
+    const json = await response.json();
+    return json[0].id;
+}
 
-    public async backToResultList(): Promise<KlasseManagementViewPage> {
-        await this.button_ZurueckErgebnisliste.click();
+export async function deleteKlasse(page: Page, KlasseId: string): Promise<void> {
+    const response = await page.request.delete(FRONTEND_URL + `api/organisationen/${KlasseId}/klasse`, {failOnStatusCode: false, maxRetries: 3});
+    expect(response.status()).toBe(204);
+}
 
-        return new KlasseManagementViewPage(this.page);
-    }
+export async function getKlasseId(page: Page, Klassennname: string): Promise<string> {
+    const response = await page.request.get(FRONTEND_URL + `api/organisationen?name=${Klassennname}&excludeTyp=ROOT&excludeTyp=LAND&excludeTyp=TRAEGER&excludeTyp=SCHULE&excludeTyp=ANBIETER&excludeTyp=SONSTIGE%20ORGANISATION%20%2F%20EINRICHTUNG&excludeTyp=UNBESTAETIGT`, {failOnStatusCode: false, maxRetries: 3});
+    expect(response.status()).toBe(200);
+    const json = await response.json();
+    return json[0].id;
 }
