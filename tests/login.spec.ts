@@ -112,16 +112,15 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
     const lehrerRollenart: string = 'LEHR';
     const lehrerOrganisation: string = testschule;
     let userInfoLehrer: UserInfo;
-    let lehrerIdSP: string = '';
     let organisationIDLandSh: string = '';
  
     await test.step(`Testdaten: Gesperrten Lehrer über die api anlegen ${ADMIN}`, async () => {
       await page.goto('/');
       await landing.button_Anmelden.click();
       await login.login(ADMIN, PW);
-      lehrerIdSP = await getSPId(page, 'E-Mail');
+      const lehrerIdSPs: Array<string> = [await getSPId(page, 'E-Mail')];
       organisationIDLandSh = await getOrganisationId(page, 'Land Schleswig-Holstein');
-      userInfoLehrer = await createRolleAndPersonWithUserContext(page, lehrerOrganisation, lehrerRollenart, lehrerVorname, lehrerNachname, lehrerIdSP, lehrerRolle);
+      userInfoLehrer = await createRolleAndPersonWithUserContext(page, lehrerOrganisation, lehrerRollenart, lehrerVorname, lehrerNachname, lehrerIdSPs, lehrerRolle);
       username.push(userInfoLehrer.username);
       rolleId.push(userInfoLehrer.rolleId);
       await lockPerson(page, userInfoLehrer.personId, organisationIDLandSh);

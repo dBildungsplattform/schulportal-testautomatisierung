@@ -2,13 +2,14 @@ import { expect, test } from "@playwright/test";
 import { StartPage } from "../pages/StartView.page";
 import { MenuPage } from "../pages/MenuBar.page";
 import { RolleCreationViewPage } from "../pages/admin/RolleCreationView.page";
-import { faker } from "@faker-js/faker/locale/de";
 import { HeaderPage } from "../pages/Header.page";
 import { getRolleId, deleteRolle } from "../base/api/testHelperRolle.page";
 import { RolleCreationConfirmPage } from "../pages/admin/RolleCreationConfirm.page";
 import FromAnywhere from "../pages/FromAnywhere";
 import { LONG, SHORT, STAGE } from "../base/tags";
 import { deleteRolleByName } from "../base/testHelperDeleteTestdata";
+import { generate } from "generate-password-ts";
+import { generateRolleName } from "../base/testHelperGenerateTestdataNames";
 
 let startseite: StartPage;
 let loggedIn = false;
@@ -46,15 +47,8 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
   test("2 Rollen nacheinander anlegen mit Rollenarten LERN und LEHR als Landesadmin", {tag: [LONG, SHORT, STAGE]}, async ({
     page,
   }) => {
-    const zufallsnummer = faker.number.bigInt({ min: 1000, max: 9000 });
-    const rollenname1 =
-      "TAuto-PW-R1-" +
-      faker.lorem.word({ length: { min: 8, max: 12 } }) +
-      zufallsnummer;
-    const rollenname2 =
-      "TAuto-PW-R2-" +
-      faker.lorem.word({ length: { min: 8, max: 12 } }) +
-      zufallsnummer;
+    const rollenname1 = await generateRolleName();
+    const rollenname2 = await generateRolleName();
     const schulstrukturknoten1 = "Land Schleswig-Holstein";
     const schulstrukturknoten2 = "Ersatzschulen Land Schleswig-Holstein";;
     const rollenart1 = "Lern";
@@ -131,15 +125,12 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
       await expect(rolleManagement.table_header_Rollenname).toBeVisible();
       await expect(rolleManagement.table_header_Rollenart).toBeVisible();
       await expect(rolleManagement.table_header_Merkmale).toBeVisible();
-      await expect(
-        rolleManagement.table_header_Administrationsebene,
-      ).toBeVisible();
+      await expect(rolleManagement.table_header_Administrationsebene).toBeVisible();
     });
   });
 
   test("Eine Rolle anlegen und die Bestätigungsseite vollständig prüfen als Landesadmin", {tag: [LONG, SHORT, STAGE]}, async ( ) => {
-    const rollenname =
-      "TAuto-PW-R-" + faker.lorem.word({ length: { min: 8, max: 12 } });
+    const rollenname = await generateRolleName()
     const schulstrukturknoten = "Land Schleswig-Holstein";
     const rollenart = "Leit";
     const merkmal = "KoPers.-Nr. ist Pflichtangabe";

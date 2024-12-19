@@ -5,7 +5,6 @@ import { StartPage } from "../pages/StartView.page";
 import { MenuPage } from "../pages/MenuBar.page";
 import { SchuleCreationViewPage } from "../pages/admin/SchuleCreationView.page";
 import { SchuleManagementViewPage } from "../pages/admin/SchuleManagementView.page";
-import { faker } from "@faker-js/faker/locale/de";
 import { HeaderPage } from "../pages/Header.page";
 import { createRolleAndPersonWithUserContext } from "../base/api/testHelperPerson.page";
 import { getSPId } from "../base/api/testHelperServiceprovider.page";
@@ -14,7 +13,7 @@ import { addSystemrechtToRolle } from "../base/api/testHelperRolle.page";
 import { FooterDataTablePage } from "../pages/FooterDataTable.page";
 import { LONG, SHORT, STAGE, BROWSER } from "../base/tags";
 import { deletePersonById, deleteRolleById } from "../base/testHelperDeleteTestdata";
-import { generateRolleName } from "../base/testHelperGenerateTestdataNames";
+import { generateRolleName, generateSchulname, generateDienststellenNr, generateNachname, generateVorname } from "../base/testHelperGenerateTestdataNames";
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -77,11 +76,10 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
     const footerDataTable = new FooterDataTablePage(page);
 
     // Schulen können noch nicht gelöscht werden. Um doppelte Namen zu vermeiden, wird am dem Schulnamen eine Zufallszahl angehängt
-    const zufallsNr = faker.number.bigInt({ min: 1000, max: 9000 })
-    const schulname1 = "TAuto-PW-S1-" + faker.lorem.word({ length: { min: 8, max: 12 }}) + zufallsNr;
-    const schulname2 = "TAuto-PW-S2-" + faker.lorem.word({ length: { min: 8, max: 12 }}) + zufallsNr;
-    const dienststellenNr1 = "0" + faker.number.bigInt({ min: 10000000, max: 100000000 });
-    const dienststellenNr2 = "0" + faker.number.bigInt({ min: 10000000, max: 100000000 });
+    const schulname1 = await generateSchulname();
+    const schulname2 = await generateSchulname();
+    const dienststellenNr1 = await generateDienststellenNr();
+    const dienststellenNr2 = await generateDienststellenNr();
 
     const { menue, schuleCreationView }: { menue: MenuPage; schuleCreationView: SchuleCreationViewPage } =
       await test.step(`Dialog Schule anlegen öffnen`, async (): Promise<{ menue: MenuPage; schuleCreationView: SchuleCreationViewPage }> => {
@@ -140,16 +138,15 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
   test("Eine Schule anlegen als Schuladmin und die Bestätigungsseite vollständig prüfen", {tag: [LONG, SHORT]}, async ({ page }) => {
 
     // Schulen können noch nicht gelöscht werden. Um doppelte Namen zu vermeiden, wird am dem Schulnamen eine Zufallszahl angehängt
-    const zufallsNr = faker.number.bigInt({ min: 1000, max: 9000 });
-    const schulname = "TAuto-PW-S1-" + faker.lorem.word({ length: { min: 8, max: 12 }}) + zufallsNr;
-    const dienststellenNr = "0" + faker.number.bigInt({ min: 10000000, max: 100000000 });
+    const schulname = await generateSchulname();
+    const dienststellenNr = await generateDienststellenNr();
     const landing: LandingPage = new LandingPage(page);
     const header = new HeaderPage(page);
     let userInfo: UserInfo;
 
     const startseite: StartPage = await test.step(`Testdaten: Schuladmin anlegen und mit diesem anmelden`, async () => {
-      const idSP = await getSPId(page, 'Schulportal-Administration');
-      userInfo = await createRolleAndPersonWithUserContext(page, 'Testschule Schulportal', 'LEIT', 'TAuto-PW-B-MeierLEIT', 'TAuto-PW-B-Hans', idSP, await generateRolleName());
+      const idSPs: Array<string> = [await getSPId(page, 'Schulportal-Administration')];
+      userInfo = await createRolleAndPersonWithUserContext(page, 'Testschule Schulportal', 'LEIT', await generateNachname(), await generateVorname(), idSPs, await generateRolleName());
       personId.push(userInfo.personId);
       roleId.push(userInfo.rolleId);
       await addSystemrechtToRolle(page, userInfo.rolleId, 'SCHULEN_VERWALTEN');

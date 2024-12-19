@@ -1,12 +1,14 @@
 import { Page, expect } from '@playwright/test';
 import { getOrganisationId } from "./testHelperOrganisation.page";
 import { createRolle, addSPToRolle, getRolleId } from "./testHelperRolle.page";
+import { getSPId } from "./testHelperServiceprovider.page";
 import { UserInfo } from "./testHelper.page";
 import { HeaderPage } from '../../pages/Header.page';
 import { LoginPage } from '../../pages/LoginView.page';
-import { lehrkraftOeffentlichRolle } from '../rollen';
-import { generateNachname, generateVorname, generateKopersNr } from "../testHelperGenerateTestdataNames";
+import { generateNachname, generateVorname, generateKopersNr, generateRolleName } from "../testHelperGenerateTestdataNames";
 import { testschule } from "../organisation";
+import { email, kalender, adressbuch } from "../sp";
+import { typelehrer } from "../rollentypen";
 
 const FRONTEND_URL: string | undefined = process.env.FRONTEND_URL || "";
 
@@ -50,12 +52,13 @@ export async function createPersonWithUserContext(page: Page, organisationName: 
     return userInfo;
 }
 
-export async function createRolleAndPersonWithUserContext(page: Page, organisationName: string, rollenArt: string, familienname: string, vorname: string, idSP: string, rolleName: string, koPersNr?: string): Promise<UserInfo> {
+export async function createRolleAndPersonWithUserContext(page: Page, organisationName: string, rollenArt: string, familienname: string, vorname: string, idSPs: Array<string>, rolleName: string, koPersNr?: string): Promise<UserInfo> {
     // Organisation wird nicht angelegt, da diese zur Zeit nicht gelöscht werden kann
     // API-Calls machen und Benutzer mit Kontext anlegen
     const organisationId: string = await getOrganisationId(page, organisationName);
     const rolleId: string = await createRolle(page, rollenArt, organisationId, rolleName);
-    await addSPToRolle(page, rolleId, idSP);
+
+    await addSPToRolle(page, rolleId, idSPs);
     const userInfo: UserInfo = await createPerson(page, familienname, vorname, organisationId, rolleId, koPersNr);
     return userInfo;
 }
@@ -100,9 +103,8 @@ export async function getPersonId(page: Page, searchString: string): Promise<str
 export async function createTeacherAndLogin(page: Page) {
     const header = new HeaderPage(page);
     const login: LoginPage = new LoginPage(page);
-    const organisation = testschule;
-
-    const userInfo: UserInfo = await createPersonWithUserContext(page, organisation, await generateNachname(), await generateVorname(), lehrkraftOeffentlichRolle, await generateKopersNr());
+    const userInfo: UserInfo = await createRolleAndPersonWithUserContext(page, testschule, typelehrer, await generateNachname(), await generateVorname(), [await getSPId(page, email), await getSPId(page, kalender), await getSPId(page, adressbuch)], await generateRolleName(), await generateKopersNr());
+   
     await header.logout();
     await header.button_login.click();
     await login.login(userInfo.username, userInfo.password);

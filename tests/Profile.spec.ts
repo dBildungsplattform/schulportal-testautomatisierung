@@ -2,7 +2,6 @@ import { test, expect } from "@playwright/test";
 import { LandingPage } from "../pages/LandingView.page";
 import { LoginPage } from "../pages/LoginView.page";
 import { StartPage } from "../pages/StartView.page";
-import { faker } from "@faker-js/faker/locale/de";
 import { HeaderPage } from "../pages/Header.page";
 import { ProfilePage } from "../pages/ProfileView.page";
 import { getSPId } from "../base/api/testHelperServiceprovider.page";
@@ -78,8 +77,8 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
     const rollenart = 'SYSADMIN'
 
     await test.step(`Landesadmin via api anlegen und mit diesem anmelden`, async () => {
-      const idSP = await getSPId(page, 'Schulportal-Administration');
-      const userInfo: UserInfo = await createRolleAndPersonWithUserContext(page, organisation, rollenart, nachname, vorname, idSP, rollenname);
+      const idSPs: Array<string> = [await getSPId(page, 'Schulportal-Administration')];
+      const userInfo: UserInfo = await createRolleAndPersonWithUserContext(page, organisation, rollenart, nachname, vorname, idSPs, rollenname);
       roleId.push(userInfo.rolleId);
       username.push(userInfo.username);
 
@@ -146,8 +145,8 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
     const rollenart = 'LEHR';
 
     await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
-      const idSP = await getSPId(page, 'E-Mail');
-      const userInfo: UserInfo = await createRolleAndPersonWithUserContext(page, organisation, rollenart, nachname, vorname, idSP, rollenname);
+      const idSPs: Array<string> = [await getSPId(page, 'E-Mail')];
+      const userInfo: UserInfo = await createRolleAndPersonWithUserContext(page, organisation, rollenart, nachname, vorname, idSPs, rollenname);
       roleId.push(userInfo.rolleId);
       username.push(userInfo.username);
 
@@ -204,8 +203,8 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
     const rollenart = 'LERN';
 
     await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
-      const idSP = await getSPId(page, 'itslearning');
-      const userInfo: UserInfo = await createRolleAndPersonWithUserContext(page, organisation, rollenart, nachname, vorname, idSP, rollenname);
+      const idSPs: Array<string> = [await getSPId(page, 'itslearning')];
+      const userInfo: UserInfo = await createRolleAndPersonWithUserContext(page, organisation, rollenart, nachname, vorname, idSPs, rollenname);
       roleId.push(userInfo.rolleId);
       username.push(userInfo.username);
 
@@ -261,8 +260,8 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
     const rollenart = 'LEIT'
 
     await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
-      const idSP = await getSPId(page, 'Schulportal-Administration');
-      const userInfo: UserInfo = await createRolleAndPersonWithUserContext(page, organisation, rollenart, nachname, vorname, idSP, rollenname);
+      const idSPs: Array<string> = [await getSPId(page, 'Schulportal-Administration')];
+      const userInfo: UserInfo = await createRolleAndPersonWithUserContext(page, organisation, rollenart, nachname, vorname, idSPs, rollenname);
       roleId.push(userInfo.rolleId);
       username.push(userInfo.username);
 
@@ -322,8 +321,8 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
     const rollenart = 'LEHR';
 
     await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
-      const idSP = await getSPId(page, 'Schulportal-Administration');
-      const userInfo: UserInfo = await createRolleAndPersonWithUserContext(page, organisation1, rollenart, nachname, vorname, idSP, rollenname);
+      const idSPs: Array<string> = [await getSPId(page, 'Schulportal-Administration')];
+      const userInfo: UserInfo = await createRolleAndPersonWithUserContext(page, organisation1, rollenart, nachname, vorname, idSPs, rollenname);
       personId = userInfo.personId;
       roleId.push(userInfo.rolleId);
       username.push(userInfo.username);
@@ -419,8 +418,8 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
     const rollenart = 'LERN';
 
     await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
-      const idSP = await getSPId(page, 'itslearning');
-      const userInfo: UserInfo = await createRolleAndPersonWithUserContext(page, organisation, rollenart, await generateNachname(), await generateVorname(), idSP, await generateRolleName());
+      const idSPs: Array<string> = [await getSPId(page, 'itslearning')];
+      const userInfo: UserInfo = await createRolleAndPersonWithUserContext(page, organisation, rollenart, await generateNachname(), await generateVorname(), idSPs, await generateRolleName());
       roleId.push(userInfo.rolleId);
       username.push(userInfo.username);
 
