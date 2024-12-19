@@ -13,7 +13,7 @@ import { UserInfo } from "../base/api/testHelper.page";
 import { addSystemrechtToRolle } from "../base/api/testHelperRolle.page";
 import { LONG, SHORT, STAGE, BROWSER } from "../base/tags";
 import { deletePersonenBySearchStrings, deleteRolleById, deleteRolleByName } from "../base/testHelperDeleteTestdata.ts";
-import { landesadminRolle, schuelerRolle, schuladminOeffentlichRolle } from "../base/roles.ts";
+import { landesadminRolle, schuelerRolle, schuladminOeffentlichRolle } from "../base/rollen.ts";
 import { generateNachname, generateVorname, generateRolleName, generateKopersNr } from "../base/testHelperGenerateTestdataNames.ts";
 import { testschule665, testschule  } from "../base/organisation.ts";
 import { gotoTargetURL } from "../base/testHelperUtils.ts";
