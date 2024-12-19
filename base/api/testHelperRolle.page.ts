@@ -11,20 +11,25 @@ export async function createRolle(page: Page, rollenArt: string, organisationId:
             "merkmale": [],
             "systemrechte": [],
             "version": 1,
-        }
+        },
+        failOnStatusCode: false, 
+        maxRetries: 3
     });
     expect(response.status()).toBe(201);
     const json = await response.json();
     return json.id;
 }
 
-export async function addSPToRolle(page: Page, rolleId: string, idSP: string): Promise<void> {
+export async function addSPToRolle(page: Page, rolleId: string, idSPs: Array<string>): Promise<void> { 
     const response = await page.request.put(FRONTEND_URL + `api/rolle/${rolleId}/serviceProviders`, {
         data: {
-            "serviceProviderIds": [idSP],
+            "serviceProviderIds": idSPs,
             "version": 1,
-        }
+        },
+        failOnStatusCode: false,
+        maxRetries: 3
     });
+
     expect(response.status()).toBe(201);
 }
 
@@ -33,18 +38,20 @@ export async function addSystemrechtToRolle(page: Page, rolleId: string, systemr
         data: {
             "systemRecht": systemrecht,
             "version": 1,
-        }
+        },
+        failOnStatusCode: false, 
+        maxRetries: 3
     });
     expect(response.status()).toBe(200);
 }
 
 export async function deleteRolle(page: Page, RolleId: string): Promise<void> {
-    const response = await page.request.delete(FRONTEND_URL + `api/rolle/${RolleId}`, {});
+    const response = await page.request.delete(FRONTEND_URL + `api/rolle/${RolleId}`, {failOnStatusCode: false, maxRetries: 3});
     expect(response.status()).toBe(204);
 }
 
 export async function getRolleId(page: Page, Rollenname: string): Promise<string> {
-    const response = await page.request.get(FRONTEND_URL + `api/rolle?searchStr=${Rollenname}`, {});  
+    const response = await page.request.get(FRONTEND_URL + `api/rolle?searchStr=${Rollenname}`, {failOnStatusCode: false, maxRetries: 3});  
     expect(response.status()).toBe(200); 
     const json = await response.json(); 
     return json[0].id;

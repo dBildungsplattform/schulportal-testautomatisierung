@@ -3,7 +3,6 @@ import { LandingPage } from "../pages/LandingView.page";
 import { LoginPage } from "../pages/LoginView.page";
 import { StartPage } from "../pages/StartView.page";
 import { Email4TeacherPage } from "../pages/Cards/Email4Teacher.page";
-import { ItsLearningPage } from "../pages/Cards/ItsLearning.page";
 import { PersonManagementViewPage } from "../pages/admin/PersonManagementView.page";
 import { PersonDetailsViewPage } from "../pages/admin/PersonDetailsView.page";
 import { HeaderPage } from "../pages/Header.page";
@@ -12,14 +11,14 @@ import { CalendarPage } from "../pages/Cards/Calendar.page";
 import { DirectoryPage } from "../pages/Cards/Directory.page";
 import { createTeacherAndLogin } from "../base/api/testHelperPerson.page";
 import { UserInfo} from "../base/api/testHelper.page.ts";
-import { deletePersonByUsername } from "../base/testHelperDeleteTestdata.ts";
+import { deletePersonenBySearchStrings, deleteRolleById } from "../base/testHelperDeleteTestdata.ts";
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
-const FRONTEND_URL: string | undefined = process.env.FRONTEND_URL || "";
 const ENV: string | undefined = process.env.ENV;
 
 let usernames: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
+let rolleIds: string[] = [];
 
 test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }) => {
@@ -28,7 +27,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
       const startseite: StartPage = new StartPage(page);
       const login: LoginPage = new LoginPage(page);
 
-      await page.goto(FRONTEND_URL);
+      await page.goto('/');
       await landing.button_Anmelden.click();
       await login.login(ADMIN, PW);
       await expect(startseite.text_h2_Ueberschrift).toBeVisible();
@@ -48,9 +47,19 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
             await login.login(ADMIN, PW);
             await expect(startseite.text_h2_Ueberschrift).toBeVisible();
 
-            await deletePersonByUsername(usernames, page);
+            await deletePersonenBySearchStrings(page, usernames);
             usernames = [];
         }
+
+        if (rolleIds) { // nur wenn der Testfall auch mind. eine Rolle angelegt hat
+          await header.logout();
+          await landing.button_Anmelden.click();
+          await login.login(ADMIN, PW);
+          await expect(startseite.text_h2_Ueberschrift).toBeVisible();
+
+          await deleteRolleById(rolleIds, page);
+          rolleIds = [];
+      }
     });
 
     await test.step(`Abmelden`, async () => {
@@ -68,6 +77,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
     await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => { 
       userInfoAdmin = await createTeacherAndLogin(page);
       usernames.push(userInfoAdmin.username);
+      rolleIds.push(userInfoAdmin.rolleId);
     });
 
     await test.step(`Kacheln Email für Lehrkräfte und Itslearning öffnen, danach beide Kacheln wieder schließen`, async () => {

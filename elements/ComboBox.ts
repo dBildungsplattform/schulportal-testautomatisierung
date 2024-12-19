@@ -30,4 +30,14 @@ export class ComboBox {
     await item.waitFor({ state: "visible" });
     await item.click();
   }
+
+  public async searchByTitle(title: string): Promise<void> {
+    await this.locator.click();
+    await this.locator.fill(title);
+    const item = this.itemsLocator.filter({
+      has: this.page.getByText(title, { exact: true }),
+    });
+    await item.waitFor({ state: "visible" });
+    await item.click();
+  }
 }
