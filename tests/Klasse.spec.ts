@@ -261,7 +261,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       className.push(klassenname);
     });
   });
-  test.only('Klasse bearbeiten als Schuladmin', { tag: [LONG] }, async ({ page }) => {
+  test('Klasse bearbeiten als Schuladmin', { tag: [LONG] }, async ({ page }) => {
     const header = new HeaderPage(page);
     const landing: LandingPage = new LandingPage(page);
     const login: LoginPage = new LoginPage(page);
