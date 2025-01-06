@@ -1,6 +1,8 @@
 import { expect, test } from '@playwright/test';
 import { deleteRolle, getRolleId } from '../base/api/testHelperRolle.page';
+import { ersatzschulenSH, landSH } from '../base/organisation';
 import { landesadminRolle } from '../base/rollen';
+import { email, itslearning, kalender, schulportaladmin } from '../base/sp';
 import { LONG, SHORT, STAGE } from '../base/tags';
 import { deleteRolleByName } from '../base/testHelperDeleteTestdata';
 import { generateRolleName } from '../base/testHelperGenerateTestdataNames';
@@ -47,19 +49,20 @@ test.afterEach(async ({ page }) => {
 });
 
 test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
-  test("2 Rollen nacheinander anlegen mit Rollenarten LERN und LEHR als Landesadmin", {tag: [LONG, SHORT, STAGE]}, async ({
-    page,
-  }) => {
-    const rollenname1 = await generateRolleName();
-    const rollenname2 = await generateRolleName();
-    const schulstrukturknoten1 = "Land Schleswig-Holstein";
-    const schulstrukturknoten2 = "Ersatzschulen Land Schleswig-Holstein";
-    const rollenart1 = "Lern";
-    const rollenart2 = "Lehr";
-    const merkmal2 = "KoPers.-Nr. ist Pflichtangabe";
-    const angebot1 = "itslearning";
-    const angebotA2 = "E-Mail";
-    const angebotB2 = "Kalender";
+  test(
+    '2 Rollen nacheinander anlegen mit Rollenarten LERN und LEHR als Landesadmin',
+    { tag: [LONG, SHORT, STAGE] },
+    async ({ page }) => {
+      const rollenname1 = await generateRolleName();
+      const rollenname2 = await generateRolleName();
+      const schulstrukturknoten1 = landSH;
+      const schulstrukturknoten2 = ersatzschulenSH;
+      const rollenart1 = 'Lern';
+      const rollenart2 = 'Lehr';
+      const merkmal2 = 'KoPers.-Nr. ist Pflichtangabe';
+      const angebot1 = itslearning;
+      const angebotA2 = email;
+      const angebotB2 = kalender;
 
       const rolleCreationView = await test.step(`Dialog Rolle anlegen öffnen`, async () => {
         const rolleCreationView = await startseite.goToAdministration().then((menu) => menu.rolleAnlegen());
@@ -125,12 +128,12 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     { tag: [LONG, SHORT, STAGE] },
     async () => {
       const rollenname = await generateRolleName();
-      const administrationsebene = 'Land Schleswig-Holstein';
+      const administrationsebene = landSH;
       const rollenart = 'Leit';
       const merkmal = 'KoPers.-Nr. ist Pflichtangabe';
-      const angebotA = 'E-Mail';
-      const angebotB = 'Schulportal-Administration';
-      const angebotC = 'Kalender';
+      const angebotA = email;
+      const angebotB = schulportaladmin;
+      const angebotC = kalender;
       const systemrechtA = 'Darf Benutzer verwalten';
       const systemrechtB = 'Darf Schulen verwalten';
       const systemrechtC = 'Darf Klassen verwalten';
