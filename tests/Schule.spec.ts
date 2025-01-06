@@ -5,7 +5,6 @@ import { StartPage } from "../pages/StartView.page";
 import { MenuPage } from "../pages/MenuBar.page";
 import { SchuleCreationViewPage } from "../pages/admin/SchuleCreationView.page";
 import { SchuleManagementViewPage } from "../pages/admin/SchuleManagementView.page";
-import { faker } from "@faker-js/faker/locale/de";
 import { HeaderPage } from "../pages/Header.page";
 import { createRolleAndPersonWithUserContext } from "../base/api/testHelperPerson.page";
 import { getSPId } from "../base/api/testHelperServiceprovider.page";
@@ -14,23 +13,22 @@ import { addSystemrechtToRolle } from "../base/api/testHelperRolle.page";
 import { FooterDataTablePage } from "../pages/FooterDataTable.page";
 import { LONG, SHORT, STAGE, BROWSER } from "../base/tags";
 import { deletePersonById, deleteRolleById } from "../base/testHelperDeleteTestdata";
-import { generateRolleName } from "../base/testHelperGenerateTestdataNames";
+import { generateRolleName, generateSchulname, generateDienststellenNr, generateNachname, generateVorname } from "../base/testHelperGenerateTestdataNames";
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
-const FRONTEND_URL: string | undefined = process.env.FRONTEND_URL || "";
 
 let personId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
 let roleId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
 
-test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
+test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }) => {
     await test.step(`Login`, async () => {
       const landing: LandingPage = new LandingPage(page);
       const startseite: StartPage = new StartPage(page);
       const login: LoginPage = new LoginPage(page);
 
-      await page.goto(FRONTEND_URL);
+      await page.goto('/');
       await landing.button_Anmelden.click();
       await login.login(ADMIN, PW);
       await expect(startseite.text_h2_Ueberschrift).toBeVisible();
@@ -78,15 +76,14 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
     const footerDataTable = new FooterDataTablePage(page);
 
     // Schulen können noch nicht gelöscht werden. Um doppelte Namen zu vermeiden, wird am dem Schulnamen eine Zufallszahl angehängt
-    const zufallsNr = faker.number.bigInt({ min: 1000, max: 9000 })
-    const schulname1 = "TAuto-PW-S1-" + faker.lorem.word({ length: { min: 8, max: 12 }}) + zufallsNr;
-    const schulname2 = "TAuto-PW-S2-" + faker.lorem.word({ length: { min: 8, max: 12 }}) + zufallsNr;
-    const dienststellenNr1 = "0" + faker.number.bigInt({ min: 10000000, max: 100000000 });
-    const dienststellenNr2 = "0" + faker.number.bigInt({ min: 10000000, max: 100000000 });
+    const schulname1 = await generateSchulname();
+    const schulname2 = await generateSchulname();
+    const dienststellenNr1 = await generateDienststellenNr();
+    const dienststellenNr2 = await generateDienststellenNr();
 
     const { menue, schuleCreationView }: { menue: MenuPage; schuleCreationView: SchuleCreationViewPage } =
       await test.step(`Dialog Schule anlegen öffnen`, async (): Promise<{ menue: MenuPage; schuleCreationView: SchuleCreationViewPage }> => {
-        const menue: MenuPage = await startseite.administration();
+        const menue: MenuPage = await startseite.goToAdministration();
         const schuleCreationView: SchuleCreationViewPage = await menue.schuleAnlegen();
         await menue.menueItem_SchuleAnlegen.click();
         await expect(schuleCreationView.text_h2_SchuleAnlegen).toHaveText("Neue Schule hinzufügen");
@@ -128,7 +125,7 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
     const startseite = new StartPage(page);
 
     await test.step(`Schulverwaltung öffnen und Alle Elemente in der Ergebnisliste auf Existenz prüfen`, async () => {
-      const menue: MenuPage = await startseite.administration();
+      const menue: MenuPage = await startseite.goToAdministration();
       const schuleManagementView: SchuleManagementViewPage = await menue.alleSchulenAnzeigen();
       await expect(schuleManagementView.text_h1_Administrationsbereich).toBeVisible();
       await expect(schuleManagementView.text_h2_Schulverwaltung).toBeVisible();
@@ -141,22 +138,21 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
   test("Eine Schule anlegen als Schuladmin und die Bestätigungsseite vollständig prüfen", {tag: [LONG, SHORT]}, async ({ page }) => {
 
     // Schulen können noch nicht gelöscht werden. Um doppelte Namen zu vermeiden, wird am dem Schulnamen eine Zufallszahl angehängt
-    const zufallsNr = faker.number.bigInt({ min: 1000, max: 9000 });
-    const schulname = "TAuto-PW-S1-" + faker.lorem.word({ length: { min: 8, max: 12 }}) + zufallsNr;
-    const dienststellenNr = "0" + faker.number.bigInt({ min: 10000000, max: 100000000 });
+    const schulname = await generateSchulname();
+    const dienststellenNr = await generateDienststellenNr();
     const landing: LandingPage = new LandingPage(page);
     const header = new HeaderPage(page);
     let userInfo: UserInfo;
 
     const startseite: StartPage = await test.step(`Testdaten: Schuladmin anlegen und mit diesem anmelden`, async () => {
-      const idSP = await getSPId(page, 'Schulportal-Administration');
-      userInfo = await createRolleAndPersonWithUserContext(page, 'Testschule Schulportal', 'LEIT', 'TAuto-PW-B-MeierLEIT', 'TAuto-PW-B-Hans', idSP, await generateRolleName());
+      const idSPs: Array<string> = [await getSPId(page, 'Schulportal-Administration')];
+      userInfo = await createRolleAndPersonWithUserContext(page, 'Testschule Schulportal', 'LEIT', await generateNachname(), await generateVorname(), idSPs, await generateRolleName());
       personId.push(userInfo.personId);
       roleId.push(userInfo.rolleId);
       await addSystemrechtToRolle(page, userInfo.rolleId, 'SCHULEN_VERWALTEN');
 
       await header.logout();
-      const login = await landing.login();
+      const login = await landing.goToLogin();
       const startseite = await login.login(userInfo.username, userInfo.password);
       userInfo.password = await login.UpdatePW();
       await expect(startseite.text_h2_Ueberschrift).toBeVisible();
@@ -164,7 +160,7 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
     });
 
     const schuleCreationView = await test.step(`Dialog Schule anlegen öffnen als Schuladmin`, async () => {
-      const menue: MenuPage = await startseite.administration();
+      const menue: MenuPage = await startseite.goToAdministration();
         const schuleCreationView: SchuleCreationViewPage = await menue.schuleAnlegen();
         return schuleCreationView;
     });
