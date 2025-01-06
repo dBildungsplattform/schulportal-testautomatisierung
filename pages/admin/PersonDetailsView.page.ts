@@ -95,7 +95,7 @@ export class PersonDetailsViewPage{
         this.button_confirmAddSchulzuordnung = page.getByRole('button', { name: 'Ja' });
         this.button_saveAssignmentChanges = page.getByTestId('zuordnung-changes-save');
         this.button_closeSaveAssignmentChanges = page.getByRole('dialog').getByRole('button', { name: 'Schließen' });
-        this.button_befristetSchuljahresende = page.getByLabel('Bis Schuljahresende (31.7.')
+        this.button_befristetSchuljahresende = page.getByLabel('Bis Schuljahresende (31.7.');
         this.button_befristungUnbefristet = page.getByLabel('Unbefristet');
 
         this.organisationen = new ComboBox(this.page, this.combobox_organisation);
