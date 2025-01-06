@@ -50,7 +50,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     const rollenname1 = await generateRolleName();
     const rollenname2 = await generateRolleName();
     const schulstrukturknoten1 = "Land Schleswig-Holstein";
-    const schulstrukturknoten2 = "Ersatzschulen Land Schleswig-Holstein";;
+    const schulstrukturknoten2 = "Ersatzschulen Land Schleswig-Holstein";
     const rollenart1 = "Lern";
     const rollenart2 = "Lehr";
     const merkmal2 = "KoPers.-Nr. ist Pflichtangabe";
@@ -76,6 +76,8 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
       await rolleCreationView.rollenarten.selectByTitle(rollenart1);
       await rolleCreationView.enterRollenname(rollenname1);
       await rolleCreationView.angebote.selectByTitle(angebot1);
+      await rolleCreationView.angebote.toggleModal();
+
       await rolleCreationView.button_RolleAnlegen.click();
       await expect(rolleCreationView.text_success).toBeVisible();
       await expect(rolleCreationView.data_Administrationsebene).toHaveText(schulstrukturknoten1);
@@ -91,8 +93,12 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
       await rolleCreationView.rollenarten.selectByTitle(rollenart2);
       await rolleCreationView.enterRollenname(rollenname2);
       await rolleCreationView.merkmale.selectByTitle(merkmal2);
+      await rolleCreationView.merkmale.toggleModal();
+
       await rolleCreationView.angebote.selectByTitle(angebotA2);
       await rolleCreationView.angebote.selectByTitle(angebotB2);
+      await rolleCreationView.angebote.toggleModal();
+
       await rolleCreationView.button_RolleAnlegen.click();
       await expect(rolleCreationView.text_success).toBeVisible();
       await expect(rolleCreationView.data_Administrationsebene).toHaveText(schulstrukturknoten2);
@@ -249,11 +255,14 @@ test.describe("Testet die Anlage einer neuen Rolle", () => {
         "Land Schleswig-Holstein",
       );
       await rolleCreationView.rollenarten.selectByTitle("Lehr");
-      roleName = "Neue Rolle aus Test";
+      roleName = await generateRolleName();
       await rolleCreationView.enterRollenname(roleName);
+
       const theFirstSeven = Array.from({ length: 7 }, (_, key) => key);
       const selectedItems: string[] =
         await rolleCreationView.angebote.selectByPosition(theFirstSeven);
+        await rolleCreationView.angebote.toggleModal();
+
       return {
         rolleCreationConfirmPage: await rolleCreationView.createRolle(),
         selectedSPs: selectedItems,
