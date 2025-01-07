@@ -5,16 +5,16 @@ import { addSecondOrganisationToPerson, createRolleAndPersonWithUserContext } fr
 import { addSystemrechtToRolle } from '../base/api/testHelperRolle.page';
 import { getSPId } from '../base/api/testHelperServiceprovider.page';
 import { landSH, testschule, testschule665 } from '../base/organisation.ts';
+import { typelehrer } from '../base/rollentypen.ts';
+import { email } from '../base/sp.ts';
 import { BROWSER, LONG, SHORT, STAGE } from '../base/tags';
-import { deletePersonByUsername, deleteRolleById } from '../base/testHelperDeleteTestdata';
+import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata';
 import { generateNachname, generateRolleName, generateVorname } from '../base/testHelperGenerateTestdataNames.ts';
 import { HeaderPage } from '../pages/Header.page';
 import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
 import { ProfilePage } from '../pages/ProfileView.page';
 import { StartPage } from '../pages/StartView.page';
-import { typelehrer } from '../base/rollentypen.ts';
-import { email } from '../base/sp.ts';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -22,8 +22,8 @@ const ADMIN: string | undefined = process.env.USER;
 let username: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
 let roleId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
 
-test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
-  test.beforeEach(async ({ page }) => {
+test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
+  test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
     await test.step(`Login`, async () => {
       const landing: LandingPage = new LandingPage(page);
       const startseite: StartPage = new StartPage(page);
@@ -36,8 +36,8 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
     });
   });
 
-  test.afterEach(async ({ page }) => {
-    const header = new HeaderPage(page);
+  test.afterEach(async ({ page }: PlaywrightTestArgs) => {
+    const header: HeaderPage = new HeaderPage(page);
     const landing: LandingPage = new LandingPage(page);
     const login: LoginPage = new LoginPage(page);
 
@@ -55,7 +55,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await expect(startseite.text_h2_Ueberschrift).toBeVisible();
         await expect(startseite.card_item_schulportal_administration).toBeVisible();
 
-        await deletePersonByUsername(username, page);
+        await deletePersonenBySearchStrings(page, username);
         username = [];
       }
 
@@ -66,7 +66,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
     });
 
     await test.step(`Abmelden`, async () => {
-      const header = new HeaderPage(page);
+      const header: HeaderPage = new HeaderPage(page);
       await header.logout();
     });
   });
@@ -74,27 +74,27 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
   test(
     'Das eigene Profil öffnen und auf Vollständigkeit prüfen als Landesadmin',
     { tag: [LONG, STAGE, BROWSER] },
-    async ({ page }) => {
-      const profileView = new ProfilePage(page);
-      const header = new HeaderPage(page);
+    async ({ page }: PlaywrightTestArgs) => {
+      const profileView: ProfilePage = new ProfilePage(page);
+      const header: HeaderPage = new HeaderPage(page);
       const login: LoginPage = new LoginPage(page);
       const startseite: StartPage = new StartPage(page);
 
-      const vorname = await generateVorname();
-      const nachname = await generateNachname();
-      const organisation = landSH;
-      const rollenname = await generateRolleName();
-      const rollenart = 'SYSADMIN';
+      const vorname: string = await generateVorname();
+      const nachname: string = await generateNachname();
+      const organisation: string = landSH;
+      const rollenname: string = await generateRolleName();
+      const rollenart: string = 'SYSADMIN';
 
       await test.step(`Landesadmin via api anlegen und mit diesem anmelden`, async () => {
-        const idSP = await getSPId(page, 'Schulportal-Administration');
+        const idSPs: string[] = [await getSPId(page, 'Schulportal-Administration')];
         const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
           page,
           organisation,
           rollenart,
           nachname,
           vorname,
-          idSP,
+          idSPs,
           rollenname
         );
         roleId.push(userInfo.rolleId);
@@ -143,10 +143,9 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await expect(profileView.cardHeadline_Passwort).toHaveText('Passwort');
         await expect(profileView.button_NeuesPasswortSetzen).toBeEnabled();
         // 2FA
-        // Aktuell wird der Abschnitt 2FA generell nicht angezeigt
-        // await expect(profileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
-        // await expect(profileView.text_no2FA).toHaveText('Es wurde noch kein zweiter Faktor für Sie eingerichtet.');
-        // await expect(profileView.button_2FAEinrichten).toBeEnabled();
+        await expect(profileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
+        await expect(profileView.text_no2FA).toHaveText('Es wurde noch kein zweiter Faktor für Sie eingerichtet.');
+        await expect(profileView.button_2FAEinrichten).toBeEnabled();
       });
     }
   );
@@ -154,27 +153,27 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
   test(
     'Das eigene Profil öffnen und auf Vollständigkeit prüfen als Lehrer mit einer Schulzuordnung',
     { tag: [LONG, SHORT, STAGE] },
-    async ({ page }) => {
-      const profileView = new ProfilePage(page);
-      const header = new HeaderPage(page);
+    async ({ page }: PlaywrightTestArgs) => {
+      const profileView: ProfilePage = new ProfilePage(page);
+      const header: HeaderPage = new HeaderPage(page);
       const login: LoginPage = new LoginPage(page);
 
-      const vorname = await generateVorname();
-      const nachname = await generateNachname();
-      const organisation = testschule;
-      const dienststellenNr = '1111111';
-      const rollenname = await generateRolleName();
-      const rollenart = 'LEHR';
+      const vorname: string = await generateVorname();
+      const nachname: string = await generateNachname();
+      const organisation: string = testschule;
+      const dienststellenNr: string = '1111111';
+      const rollenname: string = await generateRolleName();
+      const rollenart: string = 'LEHR';
 
       await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
-        const idSP = await getSPId(page, 'E-Mail');
+        const idSPs: string[] = [await getSPId(page, 'E-Mail')];
         const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
           page,
           organisation,
           rollenart,
           nachname,
           vorname,
-          idSP,
+          idSPs,
           rollenname
         );
         roleId.push(userInfo.rolleId);
@@ -214,9 +213,8 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await expect(profileView.cardHeadline_Passwort).toHaveText('Passwort');
         await expect(profileView.button_NeuesPasswortSetzen).toBeEnabled();
         // 2FA
-        // Aktuell wird der Abschnitt 2FA generell nicht angezeigt
-        // await expect(profileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
-        // await expect(profileView.button_2FAEinrichten).toBeEnabled();
+        await expect(profileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
+        await expect(profileView.button_2FAEinrichten).toBeEnabled();
       });
     }
   );
@@ -224,27 +222,27 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
   test(
     'Das eigene Profil öffnen und auf Vollständigkeit prüfen als Schüler mit einer Schulzuordnung',
     { tag: [LONG, STAGE] },
-    async ({ page }) => {
-      const profileView = new ProfilePage(page);
-      const header = new HeaderPage(page);
+    async ({ page }: PlaywrightTestArgs) => {
+      const profileView: ProfilePage = new ProfilePage(page);
+      const header: HeaderPage = new HeaderPage(page);
       const login: LoginPage = new LoginPage(page);
 
-      const vorname = await generateVorname();
-      const nachname = await generateNachname();
-      const organisation = testschule;
-      const dienststellenNr = '1111111';
-      const rollenname = await generateRolleName();
-      const rollenart = 'LERN';
+      const vorname: string = await generateVorname();
+      const nachname: string = await generateNachname();
+      const organisation: string = testschule;
+      const dienststellenNr: string = '1111111';
+      const rollenname: string = await generateRolleName();
+      const rollenart: string = 'LERN';
 
       await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
-        const idSP = await getSPId(page, 'itslearning');
+        const idSPs: string[] = [await getSPId(page, 'itslearning')];
         const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
           page,
           organisation,
           rollenart,
           nachname,
           vorname,
-          idSP,
+          idSPs,
           rollenname
         );
         roleId.push(userInfo.rolleId);
@@ -293,27 +291,27 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
   test(
     'Das eigene Profil öffnen und auf Vollständigkeit prüfen als Schuladmin mit einer Schulzuordnung',
     { tag: [LONG, STAGE] },
-    async ({ page }) => {
-      const profileView = new ProfilePage(page);
-      const header = new HeaderPage(page);
+    async ({ page }: PlaywrightTestArgs) => {
+      const profileView: ProfilePage = new ProfilePage(page);
+      const header: HeaderPage = new HeaderPage(page);
       const login: LoginPage = new LoginPage(page);
 
-      const vorname = await generateVorname();
-      const nachname = await generateNachname();
-      const organisation = testschule;
-      const dienststellenNr = '1111111';
-      const rollenname = await generateRolleName();
-      const rollenart = 'LEIT';
+      const vorname: string = await generateVorname();
+      const nachname: string = await generateNachname();
+      const organisation: string = testschule;
+      const dienststellenNr: string = '1111111';
+      const rollenname: string = await generateRolleName();
+      const rollenart: string = 'LEIT';
 
       await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
-        const idSP = await getSPId(page, 'Schulportal-Administration');
+        const idSPs: string[] = [await getSPId(page, 'Schulportal-Administration')];
         const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
           page,
           organisation,
           rollenart,
           nachname,
           vorname,
-          idSP,
+          idSPs,
           rollenname
         );
         roleId.push(userInfo.rolleId);
@@ -353,9 +351,8 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await expect(profileView.cardHeadline_Passwort).toHaveText('Passwort');
         await expect(profileView.button_NeuesPasswortSetzen).toBeEnabled();
         // 2FA
-        // Aktuell wird der Abschnitt 2FA generell nicht angezeigt
-        // await expect(profileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
-        // await expect(profileView.button_2FAEinrichten).toBeEnabled();
+        await expect(profileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
+        await expect(profileView.button_2FAEinrichten).toBeEnabled();
       });
     }
   );
@@ -363,39 +360,37 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
   test(
     'Das eigene Profil öffnen und auf Vollständigkeit prüfen als Lehrkraft mit 2 Schulzuordnungen',
     { tag: [LONG, STAGE] },
-    async ({ page }) => {
-      const profileView = new ProfilePage(page);
-      const header = new HeaderPage(page);
+    async ({ page }: PlaywrightTestArgs) => {
+      const profileView: ProfilePage = new ProfilePage(page);
+      const header: HeaderPage = new HeaderPage(page);
       const login: LoginPage = new LoginPage(page);
 
-      let personId = '';
-      const vorname = await generateVorname();
-      const nachname = await generateNachname();
-      const organisation1 = testschule;
-      const organisation2 = testschule665;
-      const dienststellenNr1 = '1111111';
-      const dienststellenNr2 = '1111165';
-      const rollenname = await generateRolleName();
-      const rollenart = 'LEHR';
+      const vorname: string = await generateVorname();
+      const nachname: string = await generateNachname();
+      const organisation1: string = testschule;
+      const organisation2: string = testschule665;
+      const dienststellenNr1: string = '1111111';
+      const dienststellenNr2: string = '1111165';
+      const rollenname: string = await generateRolleName();
+      const rollenart: string = 'LEHR';
 
       await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
-        const idSP = await getSPId(page, 'Schulportal-Administration');
+        const idSPs: string[] = [await getSPId(page, 'itslearning')];
         const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
           page,
           organisation1,
           rollenart,
-          nachname,
-          vorname,
-          idSP,
-          rollenname
+          await generateNachname(),
+          await generateVorname(),
+          idSPs,
+          await generateRolleName()
         );
-        personId = userInfo.personId;
         roleId.push(userInfo.rolleId);
         username.push(userInfo.username);
 
         await addSecondOrganisationToPerson(
           page,
-          personId,
+          userInfo.personId,
           await getOrganisationId(page, organisation1),
           await getOrganisationId(page, organisation2),
           roleId[0]
@@ -446,9 +441,8 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
           await expect(profileView.cardHeadline_Passwort).toHaveText('Passwort');
           await expect(profileView.button_NeuesPasswortSetzen).toBeEnabled();
           // 2FA
-          // Aktuell wird der Abschnitt 2FA generell nicht angezeigt
-          // await expect(profileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
-          // await expect(profileView.button_2FAEinrichten).toBeEnabled();
+          await expect(profileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
+          await expect(profileView.button_2FAEinrichten).toBeEnabled();
         } else {
           // Schulzuordnung 1
           await expect(profileView.cardHeadline_Schulzuordnung2).toHaveText('Schulzuordnung 2');
@@ -472,9 +466,8 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
           await expect(profileView.cardHeadline_Passwort).toHaveText('Passwort');
           await expect(profileView.button_NeuesPasswortSetzen).toBeEnabled();
           // 2FA
-          // Aktuell wird der Abschnitt 2FA generell nicht angezeigt
-          // await expect(profileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
-          // await expect(profileView.button_2FAEinrichten).toBeEnabled();
+          await expect(profileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
+          await expect(profileView.button_2FAEinrichten).toBeEnabled();
         }
       });
     }
@@ -484,22 +477,22 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
     'Das eigene Profil öffnen, Passwort Ändern öffnen, und Status des Benutzernamenfelds prüfen',
     { tag: [LONG, STAGE] },
     async ({ page }) => {
-      const profileView = new ProfilePage(page);
-      const header = new HeaderPage(page);
-      const login = new LoginPage(page);
+      const profileView: ProfilePage = new ProfilePage(page);
+      const header: HeaderPage = new HeaderPage(page);
+      const login: LoginPage = new LoginPage(page);
 
-      const organisation = testschule;
-      const rollenart = 'LERN';
+      const organisation: string = testschule;
+      const rollenart: string = 'LERN';
 
       await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
-        const idSP = await getSPId(page, 'itslearning');
+        const idSPs: string[] = [await getSPId(page, 'itslearning')];
         const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
           page,
           organisation,
           rollenart,
           await generateNachname(),
           await generateVorname(),
-          idSP,
+          idSPs,
           await generateRolleName()
         );
         roleId.push(userInfo.rolleId);
@@ -547,14 +540,14 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       const rollenart: string = typelehrer;
 
       await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
-        const idSP: string = await getSPId(page, email);
+        const idSPs: string[] = [await getSPId(page, email)];
         const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
           page,
           organisation,
           rollenart,
           await generateNachname(),
           await generateVorname(),
-          idSP,
+          idSPs,
           await generateRolleName()
         );
         roleId.push(userInfo.rolleId);

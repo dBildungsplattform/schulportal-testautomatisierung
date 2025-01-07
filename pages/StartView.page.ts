@@ -1,6 +1,7 @@
 import { type Locator, Page } from "@playwright/test";
 import { MenuPage } from "./MenuBar.page";
 import { LandingPage } from "./LandingView.page";
+import { expect } from '@playwright/test';
 
 export class StartPage {
   readonly page: Page;
@@ -21,7 +22,7 @@ export class StartPage {
     this.card_item_schulportal_administration = page.locator('[data-testid^="service-provider-card"]', { hasText: "Schulportal-Administration" });
   }
 
-  public async administration(): Promise<MenuPage> {
+  public async goToAdministration(): Promise<MenuPage> {
     await this.card_item_schulportal_administration.click();
     return new MenuPage(this.page);
   }
@@ -29,5 +30,9 @@ export class StartPage {
   public async start(): Promise<LandingPage> {
     await this.page.goto(process.env.FRONTEND_URL || "/");
     return new LandingPage(this.page);
+  }
+
+  public async checkHeadlineIsVisible() {
+    await expect(this.text_h2_Ueberschrift).toBeVisible();
   }
 }

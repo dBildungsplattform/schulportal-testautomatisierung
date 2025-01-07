@@ -9,16 +9,15 @@ import { addSystemrechtToRolle } from "../base/api/testHelperRolle.page";
 import { UserInfo } from "../base/api/testHelper.page";
 import { LONG, SHORT, STAGE } from "../base/tags";
 import { deletePersonById, deleteRolleById } from "../base/testHelperDeleteTestdata";
-import { generateRolleName } from "../base/testHelperGenerateTestdataNames";
+import { generateNachname, generateRolleName, generateVorname } from "../base/testHelperGenerateTestdataNames";
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
-const FRONTEND_URL: string | undefined = process.env.FRONTEND_URL || "";
 
 let personId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
 let rolleId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
 
-test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.env.UMGEBUNG}: URL: ${process.env.FRONTEND_URL}:`, () => {
+test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
     test.afterEach(async ({ page }) => {
         const header = new HeaderPage(page);
         const landing: LandingPage = new LandingPage(page);
@@ -56,12 +55,12 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         const header = new HeaderPage(page);
 
         // Testdaten erstellen
-        await page.goto(FRONTEND_URL);
+        await page.goto('/');
         await landing.button_Anmelden.click();
         await login.login(ADMIN, PW);
 
-        const idSP = await getSPId(page, 'E-Mail');
-        const userInfo: UserInfo = await createRolleAndPersonWithUserContext(page, 'Testschule Schulportal', 'LEHR', 'TAuto-PW-B-MeierLehrer', 'TAuto-PW-B-Hans', idSP, await generateRolleName());
+        const idSPs: Array<string> = [await getSPId(page, 'E-Mail')];
+        const userInfo: UserInfo = await createRolleAndPersonWithUserContext(page, 'Testschule Schulportal', 'LEHR', await generateNachname(), await generateVorname(), idSPs, await generateRolleName());
         personId.push(userInfo.personId); 
         rolleId.push(userInfo.rolleId);
         await header.logout();
@@ -83,12 +82,12 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         const header = new HeaderPage(page);
 
         // Testdaten erstellen
-        await page.goto(FRONTEND_URL);
+        await page.goto('/');
         await landing.button_Anmelden.click();
         await login.login(ADMIN, PW);
 
-        const idSP = await getSPId(page, 'itslearning');
-        const userInfo: UserInfo = await createRolleAndPersonWithUserContext(page, 'Testschule Schulportal', 'LERN', 'TAuto-PW-B-JansenSchüler', 'TAuto-PW-B-Helga', idSP, await generateRolleName());
+        const idSPs: Array<string> = [await getSPId(page, 'itslearning')];
+        const userInfo: UserInfo = await createRolleAndPersonWithUserContext(page, 'Testschule Schulportal', 'LERN', await generateNachname(), await generateVorname(), idSPs, await generateRolleName());
         personId.push(userInfo.personId); 
         rolleId.push(userInfo.rolleId);
         await header.logout();
@@ -110,12 +109,12 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         const header = new HeaderPage(page);
 
         // Testdaten erstellen
-        await page.goto(FRONTEND_URL);
+        await page.goto('/');
         await landing.button_Anmelden.click();
         await login.login(ADMIN, PW);
 
-        const idSP = await getSPId(page, 'Schulportal-Administration');
-        const userInfo: UserInfo = await createRolleAndPersonWithUserContext(page, 'Testschule Schulportal', 'LEIT', 'TAuto-PW-B-MeierAdmin', 'TAuto-PW-B-Peter', idSP, await generateRolleName());
+        const idSPs: Array<string> = [await getSPId(page, 'Schulportal-Administration')];
+        const userInfo: UserInfo = await createRolleAndPersonWithUserContext(page, 'Testschule Schulportal', 'LEIT', await generateNachname(), await generateVorname(), idSPs, await generateRolleName());
         personId.push(userInfo.personId); 
         rolleId.push(userInfo.rolleId);
 

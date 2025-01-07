@@ -3,16 +3,11 @@ import { Page, expect } from '@playwright/test';
 const FRONTEND_URL: string | undefined = process.env.FRONTEND_URL || "";
 
 export async function getSPId(page: Page, nameSP: string): Promise<string> {
-    let response = await page.request.get(FRONTEND_URL + `api/provider/all`, {});   
-    if(response.status() != 200) {
-        console.log(response);
-        response = await page.request.get(FRONTEND_URL + `api/provider/all`, {}); 
-    }
+    let response = await page.request.get(FRONTEND_URL + `api/provider/all`, {failOnStatusCode: false, maxRetries: 3}); 
     expect(response.status()).toBe(200);
-    const json = await response.json(); 
-    expect(response.status()).toBe(200);
-    let idSP = '';
     
+    const json = await response.json(); 
+    let idSP = '';
     json.forEach((element) => {
         if (element.name === nameSP) {
             idSP = element.id;

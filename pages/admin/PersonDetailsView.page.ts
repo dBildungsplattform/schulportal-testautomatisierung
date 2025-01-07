@@ -1,4 +1,5 @@
 import { type Locator, Page, expect } from '@playwright/test';
+import { ComboBox } from '../../elements/ComboBox';
 
 export class PersonDetailsViewPage{
     readonly page: Page;
@@ -29,6 +30,11 @@ export class PersonDetailsViewPage{
     readonly button_confirmAddSchulzuordnung: Locator;
     readonly button_saveAssignmentChanges: Locator;
     readonly button_closeSaveAssignmentChanges: Locator;
+    readonly button_befristetSchuljahresende: Locator;
+    readonly button_befristungUnbefristet: Locator;
+    
+    readonly organisationen: ComboBox;
+    readonly rollen: ComboBox;
 
     // Benutzer sperren
     readonly text_h3_lockPerson_headline: Locator;
@@ -89,6 +95,11 @@ export class PersonDetailsViewPage{
         this.button_confirmAddSchulzuordnung = page.getByRole('button', { name: 'Ja' });
         this.button_saveAssignmentChanges = page.getByTestId('zuordnung-changes-save');
         this.button_closeSaveAssignmentChanges = page.getByRole('dialog').getByRole('button', { name: 'Schließen' });
+        this.button_befristetSchuljahresende = page.getByRole('schuljahresende-radio-button').locator('input');
+        this.button_befristungUnbefristet = page.getByRole('unbefristet-radio-button').locator('input');
+
+        this.organisationen = new ComboBox(this.page, this.combobox_organisation);
+        this.rollen = new ComboBox(this.page, this.combobox_rolle);
 
         // Benutzer sperren
         this.text_h3_lockPerson_headline = page.getByTestId('person-lock-info').getByText('Status');
