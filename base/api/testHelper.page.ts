@@ -3,5 +3,5 @@ export interface UserInfo {
     password: string,
     rolleId: string,
     organisationId: string,
-    personId: string;
+    personId: string
 }

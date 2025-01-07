@@ -3,7 +3,7 @@ import { faker } from "@faker-js/faker/locale/de";
 
 const FRONTEND_URL: string | undefined = process.env.FRONTEND_URL || "";
 
-export async function createOrganisation(page: Page, name: string): Promise<string> {
+export async function createSchule(page: Page, name: string): Promise<string> {
     const response = await page.request.post(FRONTEND_URL + 'api/organisationen/',  {
         data: {
             "administriertVon": null,
@@ -14,6 +14,22 @@ export async function createOrganisation(page: Page, name: string): Promise<stri
             "kuerzel": null,
             "typ": "SCHULE",
             "traegerschaft": null
+        },
+        failOnStatusCode: false, 
+        maxRetries: 3
+    });
+    expect(response.status()).toBe(201);
+    const json = await response.json();
+    return json.id;
+}
+
+export async function createKlasse(page: Page, administriertVon: string, zugehoerigZu: string, name: string): Promise<string> {
+    const response = await page.request.post(FRONTEND_URL + 'api/organisationen/',  {
+        data: {
+            "administriertVon": administriertVon,
+            "zugehoerigZu": zugehoerigZu,
+            "name": name,
+            "typ": "KLASSE"
         },
         failOnStatusCode: false, 
         maxRetries: 3

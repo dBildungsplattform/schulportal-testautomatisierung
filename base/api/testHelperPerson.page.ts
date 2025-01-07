@@ -1,5 +1,5 @@
 import { Page, expect } from '@playwright/test';
-import { getOrganisationId } from "./testHelperOrganisation.page";
+import { getKlasseId, getOrganisationId } from "./testHelperOrganisation.page";
 import { createRolle, addSPToRolle, getRolleId } from "./testHelperRolle.page";
 import { getSPId } from "./testHelperServiceprovider.page";
 import { UserInfo } from "./testHelper.page";
@@ -31,6 +31,7 @@ export async function createPerson(page: Page, familienname: string, vorname: st
     if(koPersNr) {
         requestData.data['personalnummer'] = koPersNr;
     }
+
     const response = await page.request.post(FRONTEND_URL + 'api/personenkontext-workflow/', requestData);
     expect(response.status()).toBe(201);
     const json = await response.json();
@@ -39,7 +40,7 @@ export async function createPerson(page: Page, familienname: string, vorname: st
         password: json.person.startpasswort,
         rolleId: rolleId,
         organisationId: organisationId,
-        personId: json.person.id
+        personId: json.person.id,
     }
 }
 
@@ -51,6 +52,17 @@ export async function createPersonWithUserContext(page: Page, organisationName: 
     const userInfo: UserInfo = await createPerson(page, familienname, vorname, organisationId, rolleId, koPersNr);
     return userInfo;
 }
+
+// export async function createRolleAndPersonWithUserContext(page: Page, organisationName: string, rollenArt: string, familienname: string, vorname: string, idSPs: Array<string>, rolleName: string, koPersNr?: string): Promise<UserInfo> {
+//     // Organisation wird nicht angelegt, da diese zur Zeit nicht gelöscht werden kann
+//     // API-Calls machen und Benutzer mit Kontext anlegen
+//     const organisationId: string = await getOrganisationId(page, organisationName);
+//     const rolleId: string = await createRolle(page, rollenArt, organisationId, rolleName);
+
+//     await addSPToRolle(page, rolleId, idSPs);
+//     const userInfo: UserInfo = await createPerson(page, familienname, vorname, organisationId, rolleId, koPersNr);
+//     return userInfo;
+// }
 
 export async function createRolleAndPersonWithUserContext(page: Page, organisationName: string, rollenArt: string, familienname: string, vorname: string, idSPs: Array<string>, rolleName: string, koPersNr?: string): Promise<UserInfo> {
     // Organisation wird nicht angelegt, da diese zur Zeit nicht gelöscht werden kann
