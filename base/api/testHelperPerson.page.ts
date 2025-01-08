@@ -52,7 +52,7 @@ export async function createPersonWithUserContext(page: Page, organisationName: 
     return userInfo;
 }
 
-export async function createRolleAndPersonWithUserContext(page: Page, organisationName: string, rollenArt: string, familienname: string, vorname: string, idSPs: Array<string>, rolleName: string, koPersNr?: string): Promise<UserInfo> {
+export async function createRolleAndPersonWithUserContext(page: Page, organisationName: string, rollenArt: string, familienname: string, vorname: string, idSPs: string[], rolleName: string, koPersNr?: string): Promise<UserInfo> {
     // Organisation wird nicht angelegt, da diese zur Zeit nicht gelöscht werden kann
     // API-Calls machen und Benutzer mit Kontext anlegen
     const organisationId: string = await getOrganisationId(page, organisationName);

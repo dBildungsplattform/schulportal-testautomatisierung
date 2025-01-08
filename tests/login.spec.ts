@@ -118,7 +118,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
       await page.goto('/');
       await landing.button_Anmelden.click();
       await login.login(ADMIN, PW);
-      const lehrerIdSPs: Array<string> = [await getSPId(page, 'E-Mail')];
+      const lehrerIdSPs: string[] = [await getSPId(page, 'E-Mail')];
       organisationIDLandSh = await getOrganisationId(page, 'Land Schleswig-Holstein');
       userInfoLehrer = await createRolleAndPersonWithUserContext(page, lehrerOrganisation, lehrerRollenart, lehrerVorname, lehrerNachname, lehrerIdSPs, lehrerRolle);
       username.push(userInfoLehrer.username);
