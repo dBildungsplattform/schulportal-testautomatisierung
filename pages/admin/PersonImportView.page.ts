@@ -44,7 +44,6 @@ export class PersonImportViewPage {
 
   public async navigateToPersonManagementView(): Promise<PersonManagementViewPage> {
     await this.closeCardButton.click();
-    await this.confirmUnsavedChangesButton.click();
 
     return new PersonManagementViewPage(this.page);
   }
