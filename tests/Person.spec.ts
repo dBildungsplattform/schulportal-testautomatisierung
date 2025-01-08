@@ -4,7 +4,7 @@ import { createRolleAndPersonWithUserContext } from "../base/api/testHelperPerso
 import { addSystemrechtToRolle } from "../base/api/testHelperRolle.page";
 import { getSPId } from "../base/api/testHelperServiceprovider.page";
 import { testschule, testschule665 } from "../base/organisation.ts";
-import { landesadminRolle, schuelerRolle, schuladminOeffentlichRolle } from "../base/roles.ts";
+import { landesadminRolle, schuelerRolle, schuladminOeffentlichRolle } from "../base/rollen.ts";
 import { BROWSER, LONG, SHORT, STAGE } from "../base/tags";
 import { deletePersonenBySearchStrings, deleteRolleById, deleteRolleByName } from "../base/testHelperDeleteTestdata.ts";
 import { generateKopersNr, generateNachname, generateRolleName, generateVorname } from "../base/testHelperGenerateTestdataNames.ts";
