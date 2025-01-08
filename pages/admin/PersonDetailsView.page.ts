@@ -90,6 +90,8 @@ export class PersonDetailsViewPage{
         this.combobox_organisationDialogBenutzerSperren = page.getByTestId('person-lock-card').locator('.v-field__input');
         this.combobox_organisation = page.getByTestId('organisation-select').locator('.v-field__input');
         this.combobox_rolle = page.getByTestId('rolle-select').locator('.v-field__input');
+        this.combobox_organisation = page.getByTestId('organisation-select').locator('.v-field');
+        this.combobox_rolle = page.getByTestId('rolle-select').locator('.v-field');
         this.input_kopersNr = page.getByTestId('kopersnr-input').locator('.v-field__input');
         this.button_submitAddSchulzuordnung = page.getByTestId('zuordnung-creation-submit-button');
         this.button_confirmAddSchulzuordnung = page.getByRole('button', { name: 'Ja' });
