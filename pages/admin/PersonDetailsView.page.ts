@@ -90,13 +90,15 @@ export class PersonDetailsViewPage{
         this.combobox_organisationDialogBenutzerSperren = page.getByTestId('person-lock-card').locator('.v-field__input');
         this.combobox_organisation = page.getByTestId('organisation-select').locator('.v-field__input');
         this.combobox_rolle = page.getByTestId('rolle-select').locator('.v-field__input');
+        this.combobox_organisation = page.getByTestId('organisation-select').locator('.v-field');
+        this.combobox_rolle = page.getByTestId('rolle-select').locator('.v-field');
         this.input_kopersNr = page.getByTestId('kopersnr-input').locator('.v-field__input');
         this.button_submitAddSchulzuordnung = page.getByTestId('zuordnung-creation-submit-button');
         this.button_confirmAddSchulzuordnung = page.getByRole('button', { name: 'Ja' });
         this.button_saveAssignmentChanges = page.getByTestId('zuordnung-changes-save');
         this.button_closeSaveAssignmentChanges = page.getByRole('dialog').getByRole('button', { name: 'Schließen' });
-        this.button_befristetSchuljahresende = page.getByRole('schuljahresende-radio-button').locator('input');
-        this.button_befristungUnbefristet = page.getByRole('unbefristet-radio-button').locator('input');
+        this.button_befristetSchuljahresende = page.getByLabel('Bis Schuljahresende (31.7.');
+        this.button_befristungUnbefristet = page.getByLabel('Unbefristet');
 
         this.organisationen = new ComboBox(this.page, this.combobox_organisation);
         this.rollen = new ComboBox(this.page, this.combobox_rolle);
