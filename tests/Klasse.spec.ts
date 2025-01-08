@@ -319,8 +319,6 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
 
     await test.step(`Klasse bearbeiten als Schuladmin`, async () => {
       await page.goto('/admin/klassen');
-      await klasseManagementView.combobox_Filter_Schule.fill(schulname);
-      await page.getByText(`${schulname}`, { exact: true }).click();
       await klasseManagementView.combobox_Filter_Klasse.fill(klassenname);
       await page.getByRole('cell', { name: klassenname, exact: true }).click();
       klassenname = await generateKlassenname();
