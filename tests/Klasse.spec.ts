@@ -87,22 +87,22 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     await test.step(`Dialog Schule anlegen öffnen`, async () => {
       await startseite.card_item_schulportal_administration.click();
       await menue.menueItem_KlasseAnlegen.click();
-      await expect(klasseCreationView.text_h2_KlasseAnlegen).toHaveText("Neue Klasse hinzufügen");
+      await expect(klasseCreationView.textH2KlasseAnlegen).toHaveText("Neue Klasse hinzufügen");
     });
 
     await test.step(`Klasse anlegen`, async () => {
-      await klasseCreationView.combobox_Schulstrukturknoten.click();
+      await klasseCreationView.comboboxSchulstrukturknoten.click();
       await page.getByText(schulname).click();
-      await klasseCreationView.input_Klassenname.fill(klassenname);
-      await klasseCreationView.button_KlasseAnlegen.click();
-      await expect(klasseCreationView.text_success).toBeVisible();
+      await klasseCreationView.inputKlassenname.fill(klassenname);
+      await klasseCreationView.buttonKlasseAnlegen.click();
+      await expect(klasseCreationView.textSuccess).toBeVisible();
     });
 
     await test.step(`In der Ergebnisliste prüfen, dass die neue Klasse angezeigt wird`, async () => {
       await menue.menueItem_AlleKlassenAnzeigen.click(); 
-      await klasseManagementView.combobox_Filter_Schule.fill(schulname);
+      await klasseManagementView.comboboxFilterSchule.fill(schulname);
       await page.getByText(`${schulname}`, { exact: true }).click({delay:1000});
-      await klasseManagementView.text_h2_Klassenverwaltung.click(); // dies schließt das Dropdown Klasse
+      await klasseManagementView.textH2Klassenverwaltung.click(); // dies schließt das Dropdown Klasse
       await expect(page.getByRole('cell', { name: klassenname })).toBeVisible();
     });
 
@@ -122,12 +122,12 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     await test.step(`Klassenverwaltung öffnen und Alle Elemente in der Ergebnisliste auf Existenz prüfen`, async () => {
       await startseite.card_item_schulportal_administration.click();
       await menue.menueItem_AlleKlassenAnzeigen.click();
-      await expect(klasseManagementView.text_h1_Administrationsbereich).toBeVisible();
-      await expect(klasseManagementView.text_h2_Klassenverwaltung).toHaveText("Klassenverwaltung");
-      await expect(klasseManagementView.combobox_Filter_Schule).toBeVisible();
-      await expect(klasseManagementView.combobox_Filter_Klasse).toBeVisible();
-      await expect(klasseManagementView.table_header_Dienststellennummer).toBeVisible();
-      await expect(klasseManagementView.table_header_Klassenname).toBeVisible();
+      await expect(klasseManagementView.textH1Administrationsbereich).toBeVisible();
+      await expect(klasseManagementView.textH2Klassenverwaltung).toHaveText("Klassenverwaltung");
+      await expect(klasseManagementView.comboboxFilterSchule).toBeVisible();
+      await expect(klasseManagementView.comboboxFilterKlasse).toBeVisible();
+      await expect(klasseManagementView.tableHeaderDienststellennummer).toBeVisible();
+      await expect(klasseManagementView.tableHeaderKlassenname).toBeVisible();
     });
   });
 
@@ -142,25 +142,25 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     });
 
     await test.step(`Klasse anlegen`, async () => {
-      await klasseCreationView.combobox_Schulstrukturknoten.click();
+      await klasseCreationView.comboboxSchulstrukturknoten.click();
       await page.getByText(nameSchule).click();
-      await klasseCreationView.input_Klassenname.fill(klasseName);
-      await klasseCreationView.button_KlasseAnlegen.click();
+      await klasseCreationView.inputKlassenname.fill(klasseName);
+      await klasseCreationView.buttonKlasseAnlegen.click();
     });
 
     await test.step(`Bestätigungsseite prüfen`, async () => {
-      await expect(klasseCreationView.text_h2_KlasseAnlegen).toHaveText('Neue Klasse hinzufügen');
-      await expect(klasseCreationView.button_Schliessen).toBeVisible();
-      await expect(klasseCreationView.text_success).toHaveText('Die Klasse wurde erfolgreich hinzugefügt.');
+      await expect(klasseCreationView.textH2KlasseAnlegen).toHaveText('Neue Klasse hinzufügen');
+      await expect(klasseCreationView.buttonSchliessen).toBeVisible();
+      await expect(klasseCreationView.textSuccess).toHaveText('Die Klasse wurde erfolgreich hinzugefügt.');
       className.push(klasseName);
-      await expect(klasseCreationView.icon_success).toBeVisible();
-      await expect(klasseCreationView.text_DatenGespeichert).toBeVisible();
-      await expect(klasseCreationView.label_Schule).toBeVisible();
-      await expect(klasseCreationView.data_Schule).toHaveText(dienststellennummer + ' (' + nameSchule + ')');
-      await expect(klasseCreationView.label_Klasse).toBeVisible();
-      await expect(klasseCreationView.data_Klasse).toHaveText(klasseName);
-      await expect(klasseCreationView.button_WeitereKlasseAnlegen).toBeVisible();
-      await expect(klasseCreationView.button_ZurueckErgebnisliste).toBeVisible();
+      await expect(klasseCreationView.iconSuccess).toBeVisible();
+      await expect(klasseCreationView.textDatenGespeichert).toBeVisible();
+      await expect(klasseCreationView.labelSchule).toBeVisible();
+      await expect(klasseCreationView.dataSchule).toHaveText(dienststellennummer + ' (' + nameSchule + ')');
+      await expect(klasseCreationView.labelKlasse).toBeVisible();
+      await expect(klasseCreationView.dataKlasse).toHaveText(klasseName);
+      await expect(klasseCreationView.buttonWeitereKlasseAnlegen).toBeVisible();
+      await expect(klasseCreationView.buttonZurueckErgebnisliste).toBeVisible();
     });
   });
 
@@ -175,7 +175,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       await menue.menueItem_AlleKlassenAnzeigen.click();
   
       // Wait until the table is visible
-      await expect(klasseManagementView.text_h2_Klassenverwaltung).toHaveText("Klassenverwaltung");
+      await expect(klasseManagementView.textH2Klassenverwaltung).toHaveText("Klassenverwaltung");
   
       // Show first 100 entries
       await klasseManagementView.footerDataTable.combobox_AnzahlEintraege.click();
@@ -240,20 +240,20 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     await test.step(`Klasse anlegen`, async () => {
       await startseite.card_item_schulportal_administration.click();
       await menue.menueItem_KlasseAnlegen.click();
-      await expect(klasseCreationView.text_h2_KlasseAnlegen).toHaveText('Neue Klasse hinzufügen');
+      await expect(klasseCreationView.textH2KlasseAnlegen).toHaveText('Neue Klasse hinzufügen');
 
-      await klasseCreationView.combobox_Schulstrukturknoten.click();
+      await klasseCreationView.comboboxSchulstrukturknoten.click();
       await page.getByText(schulname).click();
-      await klasseCreationView.input_Klassenname.fill(klassenname);
-      await klasseCreationView.button_KlasseAnlegen.click();
-      await expect(klasseCreationView.text_success).toBeVisible();
+      await klasseCreationView.inputKlassenname.fill(klassenname);
+      await klasseCreationView.buttonKlasseAnlegen.click();
+      await expect(klasseCreationView.textSuccess).toBeVisible();
     });
 
     await test.step(`Klasse bearbeiten als Landesadmin`, async () => {
       await menue.menueItem_AlleKlassenAnzeigen.click();
-      await klasseManagementView.combobox_Filter_Schule.fill(schulname);
+      await klasseManagementView.comboboxFilterSchule.fill(schulname);
       await page.getByText(`${schulname}`, { exact: true }).click();
-      await klasseManagementView.combobox_Filter_Klasse.fill(klassenname);
+      await klasseManagementView.comboboxFilterKlasse.fill(klassenname);
       await page.getByRole('cell', { name: klassenname, exact: true }).click();
       klassenname = await generateKlassenname();
       await klasseDetailsView.klasseBearbeiten(klassenname);
@@ -309,17 +309,17 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     await test.step(`Klasse anlegen`, async () => {
       await startseite.card_item_schulportal_administration.click();
       await menue.menueItem_KlasseAnlegen.click();
-      await expect(klasseCreationView.text_h2_KlasseAnlegen).toHaveText('Neue Klasse hinzufügen');
+      await expect(klasseCreationView.textH2KlasseAnlegen).toHaveText('Neue Klasse hinzufügen');
 
-      await expect(klasseCreationView.combobox_Schulstrukturknoten).toContainText(testschule);
-      await klasseCreationView.input_Klassenname.fill(klassenname);
-      await klasseCreationView.button_KlasseAnlegen.click();
-      await expect(klasseCreationView.text_success).toBeVisible();
+      await expect(klasseCreationView.comboboxSchulstrukturknoten).toContainText(testschule);
+      await klasseCreationView.inputKlassenname.fill(klassenname);
+      await klasseCreationView.buttonKlasseAnlegen.click();
+      await expect(klasseCreationView.textSuccess).toBeVisible();
     });
 
     await test.step(`Klasse bearbeiten als Schuladmin`, async () => {
       await page.goto('/admin/klassen');
-      await klasseManagementView.combobox_Filter_Klasse.fill(klassenname);
+      await klasseManagementView.comboboxFilterKlasse.fill(klassenname);
       await page.getByRole('cell', { name: klassenname, exact: true }).click();
       klassenname = await generateKlassenname();
       await klasseDetailsView.klasseBearbeiten(klassenname);
