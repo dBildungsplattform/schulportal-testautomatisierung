@@ -351,7 +351,8 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
         schuleId,
         schuleId,
       );
-      className.push(klassenname);
+      // SKIP ADDING to className-array because afterEach-hook cannot delete a class that is already deleted in the test itself
+      //className.push(klassenname);
       await startseite.card_item_schulportal_administration.click();
       await menue.menueItem_AlleKlassenAnzeigen.click();
       await expect(klasseManagementView.textH2Klassenverwaltung).toHaveText("Klassenverwaltung");
@@ -388,7 +389,8 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
         schuleId,
         schuleId,
       );
-      className.push(klassenname);
+      // SKIP ADDING to className-array because afterEach-hook cannot delete a class that is already deleted in the test itself
+      //className.push(klassenname);
       const userInfoSchueler: UserInfo = await createPersonWithUserContext(page, klassenname, await generateNachname(), await generateVorname(), schuelerRolle, await generateKopersNr());
       username.push(userInfoSchueler.username);
       await startseite.card_item_schulportal_administration.click();
@@ -465,7 +467,8 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
         schuleId,
         schuleId,
       );
-      className.push(klassenname);
+      // SKIP ADDING to className-array because afterEach-hook cannot delete a class that is already deleted in the test itself
+      //className.push(klassenname);
       await startseite.card_item_schulportal_administration.click();
       await menue.menueItem_AlleKlassenAnzeigen.click();
       await expect(klasseManagementView.textH2Klassenverwaltung).toHaveText("Klassenverwaltung");
