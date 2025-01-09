@@ -1,11 +1,14 @@
 import { expect, type Locator, Page } from '@playwright/test';
 import { FooterDataTablePage } from '../FooterDataTable.page';
+import { Row } from '../../components/RolleForm/Row';
+import { ComboBox } from '../../elements/ComboBox';
 
 export class KlasseManagementViewPage{
     readonly page: Page;
     readonly textH1Administrationsbereich: Locator;
     readonly textH2Klassenverwaltung: Locator;
     readonly comboboxFilterSchule: Locator;
+    readonly combboxFilterSchule: Row<ComboBox, Locator>;
     readonly comboboxFilterKlasse: Locator;
     readonly tableHeaderDienststellennummer: Locator;
     readonly tableHeaderKlassenname: Locator;
@@ -28,6 +31,14 @@ export class KlasseManagementViewPage{
         this.buttonSchliesseKlasseLoeschenDialog = page.getByTestId('close-klasse-delete-success-dialog-button');
         this.tableRows = page.locator('table >> tbody >> tr');
         this.footerDataTable = new FooterDataTablePage(page);
+        this.combboxFilterSchule = new Row(
+          page.getByText('Schule', {
+              exact: true,
+          }),
+          page.getByPlaceholder('Schule'),
+          new ComboBox(this.page, page.getByPlaceholder('Schule')),
+          page.getByPlaceholder('Schule'),
+        );
     }
 
     // Loops through the Data in the table and checks if the Dienstellennummer and Klassenname are not empty

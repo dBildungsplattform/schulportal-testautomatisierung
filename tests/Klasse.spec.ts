@@ -29,9 +29,9 @@ const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
 
 test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
-  let className: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
-  let username: string[] = [];
-  let rolleId: string[] = [];
+  let klassenNames: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
+  let userNames: string[] = [];
+  let rollenIds: string[] = [];
 
   test.beforeEach(async ({ page }) => {
     await test.step(`Login`, async () => {
@@ -52,28 +52,28 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     const login = new LoginPage(page);
     const startseite = new StartPage(page);
     await test.step(`Testdaten löschen via API`, async () => {
-      if (className) {
+      if (klassenNames) {
         // nur wenn der Testfall auch mind. eine Klasse angelegt hat
-        await deleteKlasseByName(className, page);
-        className = [];
+        await deleteKlasseByName(klassenNames, page);
+        klassenNames = [];
       }
-      if (username) { // nur wenn der Testfall auch mind. einen Benutzer angelegt hat
+      if (userNames) { // nur wenn der Testfall auch mind. einen Benutzer angelegt hat
         await header.logout();
         await landing.button_Anmelden.click();
         await login.login(ADMIN, PW);
         await expect(startseite.text_h2_Ueberschrift).toBeVisible();
 
-        await deletePersonenBySearchStrings(page, username);
-        username = [];
+        await deletePersonenBySearchStrings(page, userNames);
+        userNames = [];
       }
-      if (rolleId) { // nur wenn der Testfall auch mind. eine Rolle angelegt hat
+      if (rollenIds) { // nur wenn der Testfall auch mind. eine Rolle angelegt hat
         await header.logout();
         await landing.button_Anmelden.click();
         await login.login(ADMIN, PW);
         await expect(startseite.text_h2_Ueberschrift).toBeVisible();
 
-        await deleteRolleById(rolleId, page);
-        rolleId = [];
+        await deleteRolleById(rollenIds, page);
+        rollenIds = [];
       }
 
     });
@@ -160,7 +160,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       await expect(klasseCreationView.textH2KlasseAnlegen).toHaveText('Neue Klasse hinzufügen');
       await expect(klasseCreationView.buttonSchliessen).toBeVisible();
       await expect(klasseCreationView.textSuccess).toHaveText('Die Klasse wurde erfolgreich hinzugefügt.');
-      className.push(klasseName);
+      klassenNames.push(klasseName);
       await expect(klasseCreationView.iconSuccess).toBeVisible();
       await expect(klasseCreationView.textDatenGespeichert).toBeVisible();
       await expect(klasseCreationView.labelSchule).toBeVisible();
@@ -234,8 +234,8 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'SCHULTRAEGER_VERWALTEN');
       await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'PERSONEN_ANLEGEN');
 
-      username.push(userInfoAdmin.username);
-      rolleId.push(userInfoAdmin.rolleId);
+      userNames.push(userInfoAdmin.username);
+      rollenIds.push(userInfoAdmin.rolleId);
 
       //login als Schuladmin
       await header.logout();
@@ -266,7 +266,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       klassenname = await generateKlassenname();
       await klasseDetailsView.klasseBearbeiten(klassenname);
       await expect(klasseDetailsView.text_success).toBeVisible();
-      className.push(klassenname);
+      klassenNames.push(klassenname);
     });
   });
   test('Klasse bearbeiten als Schuladmin', { tag: [LONG] }, async ({ page }) => {
@@ -303,8 +303,8 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'PERSONEN_VERWALTEN');
       await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'KLASSEN_VERWALTEN');
 
-      username.push(userInfoAdmin.username);
-      rolleId.push(userInfoAdmin.rolleId);
+      userNames.push(userInfoAdmin.username);
+      rollenIds.push(userInfoAdmin.rolleId);
 
       //login als Schuladmin
       await header.logout();
@@ -332,7 +332,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       klassenname = await generateKlassenname();
       await klasseDetailsView.klasseBearbeiten(klassenname);
       await expect(klasseDetailsView.text_success).toBeVisible();
-      className.push(klassenname);
+      klassenNames.push(klassenname);
     });
   });
 
@@ -351,8 +351,8 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
         schuleId,
         schuleId,
       );
-      // SKIP ADDING to className-array because afterEach-hook cannot delete a class that is already deleted in the test itself
-      //className.push(klassenname);
+      // SKIP ADDING to klassenNames-array because afterEach-hook cannot delete a class that is already deleted in the test itself
+      //klassenNames.push(klassenname);
       await startseite.card_item_schulportal_administration.click();
       await menue.menueItem_AlleKlassenAnzeigen.click();
       await expect(klasseManagementView.textH2Klassenverwaltung).toHaveText("Klassenverwaltung");
@@ -389,10 +389,10 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
         schuleId,
         schuleId,
       );
-      // SKIP ADDING to className-array because afterEach-hook cannot delete a class that is already deleted in the test itself
-      //className.push(klassenname);
+      // SKIP ADDING to klassenNames-array because afterEach-hook cannot delete a class that is already deleted in the test itself
+      //klassenNames.push(klassenname);
       const userInfoSchueler: UserInfo = await createPersonWithUserContext(page, klassenname, await generateNachname(), await generateVorname(), schuelerRolle, await generateKopersNr());
-      username.push(userInfoSchueler.username);
+      userNames.push(userInfoSchueler.username);
       await startseite.card_item_schulportal_administration.click();
       await menue.menueItem_AlleKlassenAnzeigen.click();
       await expect(klasseManagementView.textH2Klassenverwaltung).toHaveText("Klassenverwaltung");
@@ -447,9 +447,8 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'PERSONEN_VERWALTEN');
       await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'KLASSEN_VERWALTEN');
 
-      username.push(userInfoAdmin.username);
-      console.log(userInfoAdmin.username);
-      rolleId.push(userInfoAdmin.rolleId);
+      userNames.push(userInfoAdmin.username);
+      rollenIds.push(userInfoAdmin.rolleId);
 
       //login als Schuladmin
       await header.logout();
@@ -467,16 +466,23 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
         schuleId,
         schuleId,
       );
-      // SKIP ADDING to className-array because afterEach-hook cannot delete a class that is already deleted in the test itself
-      //className.push(klassenname);
+      // SKIP ADDING to klassenNames-array because afterEach-hook cannot delete a class that is already deleted in the test itself
+      //klassenNames.push(klassenname);
       await startseite.card_item_schulportal_administration.click();
       await menue.menueItem_AlleKlassenAnzeigen.click();
       await expect(klasseManagementView.textH2Klassenverwaltung).toHaveText("Klassenverwaltung");
     });
 
-    await test.step(`In Ergebnisliste prüfen, dass generierte Klasse angezeigt wird`, async () => {
+   /* await test.step(`In Ergebnisliste prüfen, dass generierte Klasse angezeigt wird`, async () => {
       await klasseManagementView.comboboxFilterSchule.fill(`${schulname}`, {});
       await page.getByText(`${schulname}`, { exact: true }).click({delay:1000});
+      await klasseManagementView.textH2Klassenverwaltung.click(); // dies schließt das Dropdown Klasse
+      await expect(page.getByRole('cell', { name: klassenname })).toBeVisible();
+    });*/
+    await test.step(`In Ergebnisliste prüfen, dass generierte Klasse angezeigt wird`, async () => {
+      await klasseManagementView.combboxFilterSchule.inputElement.selectByTitle(`${schulname}`);
+      await klasseManagementView.combboxFilterSchule.inputElement.closeModal();
+      //await page.getByText(`${schulname}`, { exact: true }).click({delay:1000});
       await klasseManagementView.textH2Klassenverwaltung.click(); // dies schließt das Dropdown Klasse
       await expect(page.getByRole('cell', { name: klassenname })).toBeVisible();
     });
