@@ -37,7 +37,7 @@ test.describe(`Testfälle für den Benutzerimport": Umgebung: ${process.env.ENV}
         .goToAdministration())
       .goToBenutzerImport());
 
-      await expect(personImportPage.headlineBenutzerImport).toBeVisible();
+      await expect(personImportPage.personImportCard).toBeVisible();
     });
   });
 
@@ -57,7 +57,7 @@ test.describe(`Testfälle für den Benutzerimport": Umgebung: ${process.env.ENV}
     });
   });
 
-  test.skip('Als Landesadmin eine CSV-Datei mit Benutzerdaten hochladen und importieren', {tag: [LONG]}, async ({ page }) => {
+  test('Als Landesadmin eine CSV-Datei mit Benutzerdaten hochladen und importieren', {tag: [LONG]}, async ({ page }) => {
     // Der Test ist aktuell rot, wird mit SPSH-1663 gefixed
     await test.step('CSV-Datei hochladen, importieren und importierte Daten downloaden', async () => {
       // select schule

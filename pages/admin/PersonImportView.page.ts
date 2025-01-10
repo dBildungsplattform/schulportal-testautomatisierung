@@ -5,6 +5,7 @@ import { ComboBox } from '../../elements/ComboBox';
 export class PersonImportViewPage {
   readonly page: Page;
   readonly body: Locator;
+  readonly personImportCard: Locator;
   readonly headlineBenutzerImport: Locator;
   readonly schuleSelectInput: Locator;
   readonly schuleSelectCombobox: ComboBox;
@@ -25,6 +26,7 @@ export class PersonImportViewPage {
     // Benutzerimport
     this.page = page;  
     this.body = page.locator('body');
+    this.personImportCard = page.getByTestId('person-import-card');
     this.headlineBenutzerImport = page.getByTestId('layout-card-headline');
     this.schuleSelectInput = page.getByTestId('schule-select').locator('input');
     this.schuleSelectCombobox = new ComboBox(this.page, this.schuleSelectInput,);
