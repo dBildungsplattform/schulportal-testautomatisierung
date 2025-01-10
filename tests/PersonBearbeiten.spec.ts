@@ -11,7 +11,7 @@ import { UserInfo }  from "../base/api/testHelper.page.ts";
 import { addSystemrechtToRolle } from "../base/api/testHelperRolle.page.ts";
 import { LONG, STAGE } from "../base/tags.ts";
 import { deletePersonenBySearchStrings, deleteRolleById } from "../base/testHelperDeleteTestdata.ts";
-import { typelehrer , typeSchueler, typeSchuladmin } from "../base/rollentypen.ts";
+import { typeLehrer , typeSchueler, typeSchuladmin } from "../base/rollentypen.ts";
 import { testschule, testschule665 } from "../base/organisation.ts";
 import { email , itslearning} from "../base/sp.ts";
 import { generateNachname, generateVorname, generateRolleName, generateKopersNr } from "../base/testHelperGenerateTestdataNames.ts";
@@ -84,13 +84,13 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     const adminRolle = await generateRolleName();
     const adminRollenart = typeSchuladmin;
     const adminOrganisation = 'Testschule-PW665';
-    const adminIdSPs: Array<string> = [await getSPId(page, 'Schulportal-Administration')];
+    const adminIdSPs: string[] = [await getSPId(page, 'Schulportal-Administration')];
     let userInfoAdmin: UserInfo;
 
     const lehrerVorname = await generateVorname();
     const lehrerNachname = await generateNachname();
     const lehrerRolle = await generateRolleName();
-    const lehrerRollenart = typelehrer;
+    const lehrerRollenart = typeLehrer;
     const lehrerOrganisation = testschule665;
     
     let userInfoLehrer: UserInfo;
@@ -150,7 +150,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         const befristeteRolle = lehrkraftInVertretungRolle;
 
         await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) und SP(email) über die api anlegen ${ADMIN}`, async () => {
-            userInfoLehrer = await createRolleAndPersonWithUserContext(page, testschule, typelehrer, await generateNachname(), await generateVorname(), [await getSPId(page, email)], await generateRolleName());
+            userInfoLehrer = await createRolleAndPersonWithUserContext(page, testschule, typeLehrer, await generateNachname(), await generateVorname(), [await getSPId(page, email)], await generateRolleName());
             username.push(userInfoLehrer.username);
             rolleId.push(userInfoLehrer.rolleId);
         })
@@ -182,7 +182,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         const sperrDatumAb = await generateDateToday() // Konkrete Testdaten für diesen Testfall
 
         await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) und SP(email) über die api anlegen ${ADMIN}`, async () => {
-          userInfoLehrer = await createRolleAndPersonWithUserContext(page, testschule, typelehrer, await generateNachname(), await generateVorname(), [await getSPId(page, email)], await generateRolleName());
+          userInfoLehrer = await createRolleAndPersonWithUserContext(page, testschule, typeLehrer, await generateNachname(), await generateVorname(), [await getSPId(page, email)], await generateRolleName());
           username.push(userInfoLehrer.username);
           rolleId.push(userInfoLehrer.rolleId);
         })
@@ -208,7 +208,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         const sperrDatumBis = await generateDateFuture(5, 2); // Konkrete Testdaten für diesen Testfall
 
         await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) und SP(email) über die api anlegen ${ADMIN}`, async () => {
-            userInfoLehrer = await createRolleAndPersonWithUserContext(page, testschule, typelehrer, await generateNachname(), await generateVorname(), [await getSPId(page, email)], await generateRolleName());
+            userInfoLehrer = await createRolleAndPersonWithUserContext(page, testschule, typeLehrer, await generateNachname(), await generateVorname(), [await getSPId(page, email)], await generateRolleName());
             username.push(userInfoLehrer.username);
             rolleId.push(userInfoLehrer.rolleId);
         })
@@ -266,7 +266,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         let userInfoLehrer: UserInfo;
 
         await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) über die api anlegen ${ADMIN}`, async () => {
-            userInfoLehrer = await createRolleAndPersonWithUserContext(page, testschule, typelehrer, await generateNachname(), await generateVorname(), [await getSPId(page, email)], await generateRolleName());
+            userInfoLehrer = await createRolleAndPersonWithUserContext(page, testschule, typeLehrer, await generateNachname(), await generateVorname(), [await getSPId(page, email)], await generateRolleName());
             username.push(userInfoLehrer.username);
             rolleId.push(userInfoLehrer.rolleId);
         })
@@ -389,7 +389,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         let userInfoLehrer: UserInfo;
 
         await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) über die api anlegen ${ADMIN}`, async () => {
-            userInfoLehrer = await createRolleAndPersonWithUserContext(page, testschule, typelehrer, await generateNachname(), await generateVorname(), [await getSPId(page, email)], await generateRolleName());
+            userInfoLehrer = await createRolleAndPersonWithUserContext(page, testschule, typeLehrer, await generateNachname(), await generateVorname(), [await getSPId(page, email)], await generateRolleName());
             username.push(userInfoLehrer.username);
             rolleId.push(userInfoLehrer.rolleId);
         })

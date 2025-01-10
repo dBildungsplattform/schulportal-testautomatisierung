@@ -1,21 +1,29 @@
-import { test, expect } from "@playwright/test";
-import { LandingPage } from "../pages/LandingView.page";
-import { LoginPage } from "../pages/LoginView.page";
-import { StartPage } from "../pages/StartView.page";
-import { MenuPage } from "../pages/MenuBar.page";
-import { KlasseCreationViewPage } from "../pages/admin/KlasseCreationView.page";
-import { KlasseManagementViewPage } from "../pages/admin/KlasseManagementView.page";
-import { HeaderPage } from "../pages/Header.page";
-import { LONG, SHORT, STAGE, BROWSER } from "../base/tags";
-import { deleteKlasseByName, deletePersonenBySearchStrings, deleteRolleById } from "../base/testHelperDeleteTestdata.ts";
-import { landSH, testschule } from "../base/organisation.ts";
-import { generateKlassenname, generateNachname, generateRolleName, generateVorname } from "../base/testHelperGenerateTestdataNames.ts";
-import { createRolleAndPersonWithUserContext } from "../base/api/testHelperPerson.page.ts";
-import { addSystemrechtToRolle } from "../base/api/testHelperRolle.page.ts";
-import { getSPId } from "../base/api/testHelperServiceprovider.page.ts";
-import { KlasseDetailsViewPage } from "../pages/admin/KlasseDetailsView.page.ts";
-import { UserInfo } from "../base/api/testHelper.page.ts";
-import { getOrganisationId } from "../base/api/testHelperOrganisation.page.ts";
+import { expect, test } from '@playwright/test';
+import { UserInfo } from '../base/api/testHelper.page.ts';
+import { createRolleAndPersonWithUserContext } from '../base/api/testHelperPerson.page.ts';
+import { addSystemrechtToRolle } from '../base/api/testHelperRolle.page.ts';
+import { getSPId } from '../base/api/testHelperServiceprovider.page.ts';
+import { landSH, testschule } from '../base/organisation.ts';
+import { BROWSER, LONG, SHORT, STAGE } from '../base/tags';
+import {
+  deleteKlasseByName,
+  deletePersonenBySearchStrings,
+  deleteRolleById,
+} from '../base/testHelperDeleteTestdata.ts';
+import {
+  generateKlassenname,
+  generateNachname,
+  generateRolleName,
+  generateVorname,
+} from '../base/testHelperGenerateTestdataNames.ts';
+import { KlasseCreationViewPage } from '../pages/admin/KlasseCreationView.page';
+import { KlasseDetailsViewPage } from '../pages/admin/KlasseDetailsView.page.ts';
+import { KlasseManagementViewPage } from '../pages/admin/KlasseManagementView.page';
+import { HeaderPage } from '../pages/Header.page';
+import { LandingPage } from '../pages/LandingView.page';
+import { LoginPage } from '../pages/LoginView.page';
+import { MenuPage } from '../pages/MenuBar.page';
+import { StartPage } from '../pages/StartView.page';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -24,7 +32,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
   let className: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
   let username: string[] = [];
   let rolleId: string[] = [];
-  
+
   test.beforeEach(async ({ page }) => {
     await test.step(`Login`, async () => {
       const landing: LandingPage = new LandingPage(page);
@@ -49,7 +57,8 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
         await deleteKlasseByName(className, page);
         className = [];
       }
-      if (username) { // nur wenn der Testfall auch mind. einen Benutzer angelegt hat
+      if (username) {
+        // nur wenn der Testfall auch mind. einen Benutzer angelegt hat
         await header.logout();
         await landing.button_Anmelden.click();
         await login.login(ADMIN, PW);
@@ -57,8 +66,9 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
 
         await deletePersonenBySearchStrings(page, username);
         username = [];
-    }
-      if (rolleId) { // nur wenn der Testfall auch mind. eine Rolle angelegt hat
+      }
+      if (rolleId) {
+        // nur wenn der Testfall auch mind. eine Rolle angelegt hat
         await header.logout();
         await landing.button_Anmelden.click();
         await login.login(ADMIN, PW);
@@ -67,7 +77,6 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
         await deleteRolleById(rolleId, page);
         rolleId = [];
       }
-
     });
 
     await test.step(`Abmelden`, async () => {
@@ -76,13 +85,16 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     });
   });
 
-  test("Eine Klasse als Landesadmin anlegen und die Klasse anschließend in der Ergebnisliste suchen und dann löschen", {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
-    const startseite: StartPage = new StartPage(page);
-    const menue: MenuPage = new MenuPage(page);
-    const klasseCreationView: KlasseCreationViewPage = new KlasseCreationViewPage(page);
-    const klasseManagementView: KlasseManagementViewPage = new KlasseManagementViewPage(page);
-    const schulname: string = testschule;
-    const klassenname: string = await generateKlassenname();
+  test(
+    'Eine Klasse als Landesadmin anlegen und die Klasse anschließend in der Ergebnisliste suchen und dann löschen',
+    { tag: [LONG, SHORT, STAGE] },
+    async ({ page }) => {
+      const startseite: StartPage = new StartPage(page);
+      const menue: MenuPage = new MenuPage(page);
+      const klasseCreationView: KlasseCreationViewPage = new KlasseCreationViewPage(page);
+      const klasseManagementView: KlasseManagementViewPage = new KlasseManagementViewPage(page);
+      const schulname: string = testschule;
+      const klassenname: string = await generateKlassenname();
 
     await test.step(`Dialog Schule anlegen öffnen`, async () => {
       await startseite.card_item_schulportal_administration.click();
@@ -106,18 +118,22 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       await expect(page.getByRole('cell', { name: klassenname })).toBeVisible();
     });
 
-    await test.step(`Klasse löschen`, async () => {
-      await page.getByRole('cell', { name: klassenname }).click();
-      await page.getByTestId('open-klasse-delete-dialog-button').click();
-      await page.getByTestId('klasse-delete-button').click();
-      await page.getByTestId('close-klasse-delete-success-dialog-button').click();
-    });
-  });
+      await test.step(`Klasse löschen`, async () => {
+        await page.getByRole('cell', { name: klassenname }).click();
+        await page.getByTestId('open-klasse-delete-dialog-button').click();
+        await page.getByTestId('klasse-delete-button').click();
+        await page.getByTestId('close-klasse-delete-success-dialog-button').click();
+      });
+    }
+  );
 
-  test("Ergebnisliste Klassen als Landesadmin auf Vollständigkeit prüfen", {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
-    const startseite: StartPage = new StartPage(page);
-    const menue = new MenuPage(page);
-    const klasseManagementView = new KlasseManagementViewPage(page);
+  test(
+    'Ergebnisliste Klassen als Landesadmin auf Vollständigkeit prüfen',
+    { tag: [LONG, SHORT, STAGE] },
+    async ({ page }) => {
+      const startseite: StartPage = new StartPage(page);
+      const menue = new MenuPage(page);
+      const klasseManagementView = new KlasseManagementViewPage(page);
 
     await test.step(`Klassenverwaltung öffnen und Alle Elemente in der Ergebnisliste auf Existenz prüfen`, async () => {
       await startseite.card_item_schulportal_administration.click();
@@ -131,15 +147,18 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     });
   });
 
-  test("Eine Klasse als Landesadmin anlegen und die Bestätigungsseite vollständig prüfen", {tag: [LONG, STAGE, BROWSER]}, async ({ page }) => {
-    const klasseCreationView: KlasseCreationViewPage = new KlasseCreationViewPage(page);
-    const dienststellennummer: string = '1111111';
-    const nameSchule: string = testschule;
-    const klasseName: string = await generateKlassenname();
+  test(
+    'Eine Klasse als Landesadmin anlegen und die Bestätigungsseite vollständig prüfen',
+    { tag: [LONG, STAGE, BROWSER] },
+    async ({ page }) => {
+      const klasseCreationView: KlasseCreationViewPage = new KlasseCreationViewPage(page);
+      const dienststellennummer: string = '1111111';
+      const nameSchule: string = testschule;
+      const klasseName: string = await generateKlassenname();
 
-    await test.step(`Dialog Schule anlegen öffnen`, async () => {
-      await page.goto('/' + 'admin/klassen/new');
-    });
+      await test.step(`Dialog Schule anlegen öffnen`, async () => {
+        await page.goto('/' + 'admin/klassen/new');
+      });
 
     await test.step(`Klasse anlegen`, async () => {
       await klasseCreationView.comboboxSchulstrukturknoten.click();
@@ -207,7 +226,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       const adminRolle = await generateRolleName();
       const adminRollenart = 'SYSADMIN';
       const adminOrganisation = landSH;
-      const adminIdSPs: Array<string> = [await getSPId(page, 'Schulportal-Administration')];
+      const adminIdSPs: string[] = [await getSPId(page, 'Schulportal-Administration')];
 
       userInfoAdmin = await createRolleAndPersonWithUserContext(
         page,
@@ -281,7 +300,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       const adminRolle = await generateRolleName();
       const adminRollenart = 'LEIT';
       const adminOrganisation = testschule;
-      const adminIdSPs: Array<string> = [await getSPId(page, 'Schulportal-Administration')];;
+      const adminIdSPs: string[] = [await getSPId(page, 'Schulportal-Administration')];
 
       userInfoAdmin = await createRolleAndPersonWithUserContext(
         page,
@@ -327,5 +346,4 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       className.push(klassenname);
     });
   });
-
 });

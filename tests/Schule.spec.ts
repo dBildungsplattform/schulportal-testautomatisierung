@@ -145,7 +145,7 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
     let userInfo: UserInfo;
 
     const startseite: StartPage = await test.step(`Testdaten: Schuladmin anlegen und mit diesem anmelden`, async () => {
-      const idSPs: Array<string> = [await getSPId(page, 'Schulportal-Administration')];
+      const idSPs: string[] = [await getSPId(page, 'Schulportal-Administration')];
       userInfo = await createRolleAndPersonWithUserContext(page, 'Testschule Schulportal', 'LEIT', await generateNachname(), await generateVorname(), idSPs, await generateRolleName());
       personId.push(userInfo.personId);
       roleId.push(userInfo.rolleId);
