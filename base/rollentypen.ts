@@ -1,3 +1,4 @@
-export const typelehrer = "LEHR";
-export const typeSchueler = "LERN";
-export const typeSchuladmin = "LEIT";
+export const typeLandesadmin: string = "SYSADMIN";
+export const typeLehrer: string = "LEHR";
+export const typeSchueler: string = "LERN";
+export const typeSchuladmin: string = "LEIT";

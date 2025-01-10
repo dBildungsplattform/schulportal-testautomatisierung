@@ -59,7 +59,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         await landing.button_Anmelden.click();
         await login.login(ADMIN, PW);
 
-        const idSPs: Array<string> = [await getSPId(page, 'E-Mail')];
+        const idSPs: string[] = [await getSPId(page, 'E-Mail')];
         const userInfo: UserInfo = await createRolleAndPersonWithUserContext(page, 'Testschule Schulportal', 'LEHR', await generateNachname(), await generateVorname(), idSPs, await generateRolleName());
         personId.push(userInfo.personId); 
         rolleId.push(userInfo.rolleId);
@@ -86,7 +86,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         await landing.button_Anmelden.click();
         await login.login(ADMIN, PW);
 
-        const idSPs: Array<string> = [await getSPId(page, 'itslearning')];
+        const idSPs: string[] = [await getSPId(page, 'itslearning')];
         const userInfo: UserInfo = await createRolleAndPersonWithUserContext(page, 'Testschule Schulportal', 'LERN', await generateNachname(), await generateVorname(), idSPs, await generateRolleName());
         personId.push(userInfo.personId); 
         rolleId.push(userInfo.rolleId);
@@ -113,7 +113,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         await landing.button_Anmelden.click();
         await login.login(ADMIN, PW);
 
-        const idSPs: Array<string> = [await getSPId(page, 'Schulportal-Administration')];
+        const idSPs: string[] = [await getSPId(page, 'Schulportal-Administration')];
         const userInfo: UserInfo = await createRolleAndPersonWithUserContext(page, 'Testschule Schulportal', 'LEIT', await generateNachname(), await generateVorname(), idSPs, await generateRolleName());
         personId.push(userInfo.personId); 
         rolleId.push(userInfo.rolleId);

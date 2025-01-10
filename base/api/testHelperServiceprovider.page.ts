@@ -3,7 +3,7 @@ import { Page, expect } from '@playwright/test';
 const FRONTEND_URL: string | undefined = process.env.FRONTEND_URL || "";
 
 export async function getSPId(page: Page, nameSP: string): Promise<string> {
-    let response = await page.request.get(FRONTEND_URL + `api/provider/all`, {failOnStatusCode: false, maxRetries: 3}); 
+    const response = await page.request.get(FRONTEND_URL + `api/provider/all`, {failOnStatusCode: false, maxRetries: 3}); 
     expect(response.status()).toBe(200);
     
     const json = await response.json(); 
