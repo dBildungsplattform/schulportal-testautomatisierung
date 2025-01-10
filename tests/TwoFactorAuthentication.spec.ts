@@ -59,52 +59,48 @@ test.describe(`Testfälle für TwoFactorAuthentication": Umgebung: ${process.env
     });
   });
 
-  test(
-    'Prüfen, ob es möglich ist einen Token zurückzusetzen',
-    { tag: [LONG, STAGE] },
-    async ({ page }: { page: Page }) => {
-      let userInfoLehrer: UserInfo;
+  test('Prüfen, ob es möglich ist einen Token zurückzusetzen', { tag: [LONG] }, async ({ page }: { page: Page }) => {
+    let userInfoLehrer: UserInfo;
 
-      await test.step(`Testdaten erstellen`, async () => {
-        userInfoLehrer = await createRolleAndPersonWithUserContext(
-          page,
-          testschule,
-          typelehrer,
-          await generateNachname(),
-          await generateVorname(),
-          [await getSPId(page, email)],
-          await generateRolleName()
-        );
-        username.push(userInfoLehrer.username);
-      });
+    await test.step(`Testdaten erstellen`, async () => {
+      userInfoLehrer = await createRolleAndPersonWithUserContext(
+        page,
+        testschule,
+        typelehrer,
+        await generateNachname(),
+        await generateVorname(),
+        [await getSPId(page, email)],
+        await generateRolleName()
+      );
+      username.push(userInfoLehrer.username);
+    });
 
-      const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
+    const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
 
-      const personDetailsView: PersonDetailsViewPage = await test.step(`Gesamtübersicht öffnen`, async () => {
-        await gotoTargetURL(page, 'admin/personen');
-        await personManagementView.searchBySuchfeld(userInfoLehrer.username);
-        return await personManagementView.openGesamtuebersichtPerson(page, userInfoLehrer.username);
-      });
+    const personDetailsView: PersonDetailsViewPage = await test.step(`Gesamtübersicht öffnen`, async () => {
+      await gotoTargetURL(page, 'admin/personen');
+      await personManagementView.searchBySuchfeld(userInfoLehrer.username);
+      return await personManagementView.openGesamtuebersichtPerson(page, userInfoLehrer.username);
+    });
 
-      await test.step(`Token einrichten`, async () => {
-        await personDetailsView.softwareTokenEinrichten();
-      });
+    await test.step(`Token einrichten`, async () => {
+      await personDetailsView.softwareTokenEinrichten();
+    });
 
-      await test.step(`2FA Status prüfen dass ein Token eingerichtet ist`, async () => {
-        await expect(personDetailsView.text_token_IstEingerichtet_info).toBeVisible();
-        await expect(personDetailsView.text_neuen_token_einrichten_info).toBeVisible();
-      });
+    await test.step(`2FA Status prüfen dass ein Token eingerichtet ist`, async () => {
+      await expect(personDetailsView.text_token_IstEingerichtet_info).toBeVisible();
+      await expect(personDetailsView.text_neuen_token_einrichten_info).toBeVisible();
+    });
 
-      await expect(personDetailsView.button_2FAEinrichten).toHaveText('Token zurücksetzen');
-      await personDetailsView.button_2FAEinrichten.click();
+    await expect(personDetailsView.button_2FAEinrichten).toHaveText('Token zurücksetzen');
+    await personDetailsView.button_2FAEinrichten.click();
 
-      await expect(personDetailsView.button_2FA_Zuruecksetzen_Weiter).toHaveText('Zurücksetzen');
-      await personDetailsView.button_2FA_Zuruecksetzen_Weiter.click();
+    await expect(personDetailsView.button_2FA_Zuruecksetzen_Weiter).toHaveText('Zurücksetzen');
+    await personDetailsView.button_2FA_Zuruecksetzen_Weiter.click();
 
-      await expect(personDetailsView.button_2FA_Zuruecksetzen_Weiter).toHaveText('Schließen');
-      await personDetailsView.button_2FA_Zuruecksetzen_Weiter.click();
+    await expect(personDetailsView.button_2FA_Zuruecksetzen_Weiter).toHaveText('Schließen');
+    await personDetailsView.button_2FA_Zuruecksetzen_Weiter.click();
 
-      await expect(personDetailsView.text_kein_token_ist_Eingerichtet).toBeVisible();
-    }
-  );
+    await expect(personDetailsView.text_kein_token_ist_Eingerichtet).toBeVisible();
+  });
 });
