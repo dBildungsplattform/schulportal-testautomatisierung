@@ -13,9 +13,13 @@ import { email } from '../base/sp';
 import { gotoTargetURL } from '../base/testHelperUtils';
 import { PersonDetailsViewPage } from '../pages/admin/PersonDetailsView.page';
 import { PersonManagementViewPage } from '../pages/admin/PersonManagementView.page';
+import { HeaderPage } from '../pages/Header.page.ts';
+import { deletePersonenBySearchStrings } from '../base/testHelperDeleteTestdata.ts';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
+
+let username: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
 
 test.describe(`Testfälle für TwoFactorAuthentication": Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }: { page: Page }) => {
@@ -27,6 +31,31 @@ test.describe(`Testfälle für TwoFactorAuthentication": Umgebung: ${process.env
       await landing.button_Anmelden.click();
       await login.login(ADMIN, PW);
       await expect(startseite.text_h2_Ueberschrift).toBeVisible();
+    });
+  });
+
+  test.afterEach(async ({ page }: { page: Page }) => {
+    const header: HeaderPage = new HeaderPage(page);
+    const landing: LandingPage = new LandingPage(page);
+    const startseite: StartPage = new StartPage(page);
+    const login: LoginPage = new LoginPage(page);
+
+    await test.step(`Testdaten(Benutzer) löschen via API`, async () => {
+      if (username) {
+        // nur wenn der Testfall auch mind. einen Benutzer angelegt hat
+        await header.logout();
+        await landing.button_Anmelden.click();
+        await login.login(ADMIN, PW);
+        await expect(startseite.text_h2_Ueberschrift).toBeVisible();
+
+        await deletePersonenBySearchStrings(page, username);
+        username = [];
+      }
+    });
+
+    await test.step(`Abmelden`, async () => {
+      const header: HeaderPage = new HeaderPage(page);
+      await header.logout();
     });
   });
 
@@ -46,6 +75,7 @@ test.describe(`Testfälle für TwoFactorAuthentication": Umgebung: ${process.env
           [await getSPId(page, email)],
           await generateRolleName()
         );
+        username.push(userInfoLehrer.username);
       });
 
       const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
