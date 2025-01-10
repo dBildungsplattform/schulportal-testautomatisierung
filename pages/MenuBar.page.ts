@@ -24,7 +24,7 @@ export class MenuPage {
   readonly label_Schultraegerverwaltung: Locator;
   readonly menuItem_BenutzerImportieren: Locator;
 
-  constructor(page) {
+  constructor(page: Page) {
     this.page = page;
     this.header_label_Navigation = page.locator('[data-testid="menu-bar-title"] .v-list-item-title');
     this.button_BackStartpage = page.getByTestId('back-to-start-link');
@@ -37,8 +37,8 @@ export class MenuPage {
     this.label_Schulverwaltung = page.locator('[data-testid="schule-management-title"] .v-list-item-title');
     this.menueItem_AlleBenutzerAnzeigen = page.getByTestId('person-management-menu-item');
     this.menueItem_AlleKlassenAnzeigen = page.getByTestId('klassen-management-menu-item');
-    this.menueItem_AlleRollenAnzeigen = page.locator('[data-testid="rolle-management-menu-item"] .v-list-item-title');
-    this.menueItem_AlleSchulenAnzeigen = page.locator('[data-testid="schule-management-menu-item"] .v-list-item-title');
+    this.menueItem_AlleRollenAnzeigen = page.getByTestId('rolle-management-menu-item');
+    this.menueItem_AlleSchulenAnzeigen = page.getByTestId('schule-management-menu-item');
     this.menueItem_BenutzerAnlegen = page.getByTestId('person-creation-menu-item');
     this.menueItem_KlasseAnlegen = page.getByTestId('klasse-creation-menu-item');
     this.menueItem_RolleAnlegen = page.getByTestId('rolle-creation-menu-item');
@@ -53,6 +53,7 @@ export class MenuPage {
 
   public async alleRollenAnzeigen(): Promise<RolleManagementViewPage> {
     await this.menueItem_AlleRollenAnzeigen.click();
+    await this.page.waitForURL("**/admin/rollen");
     return new RolleManagementViewPage(this.page);
   }
 
