@@ -120,8 +120,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
     await test.step(`Die Gesamtübersicht des Lehrers öffnen`, async () => {
         await gotoTargetURL(page, "admin/personen");
-        await personManagementView.input_Suchfeld.fill(lehrerBenutzername);
-        await personManagementView.button_Suchen.click();
+        await personManagementView.searchBySuchfeld(lehrerBenutzername);
         await page.getByRole("cell", {name: lehrerBenutzername, exact: true}).click();
     });
 
@@ -166,7 +165,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await test.step(`Ansicht für neuen Personenkontext öffnen`, async () => {
             await personDetailsView.button_editSchulzuordnung.click();
             await personDetailsView.button_addSchulzuordnung.click();
-            await personDetailsView.organisationen.selectByTitle('1111111 (Testschule Schulportal)');
+            await personDetailsView.organisationen.selectByTitle('1111111 (Testschule Schulportal)', 'Testschule');
         })
     
         await test.step(`Befristung bei ${unbefristeteRolle} und ${befristeteRolle} überprüfen`, async () => {

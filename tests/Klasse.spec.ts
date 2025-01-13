@@ -104,6 +104,8 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
 
     await test.step(`Klasse anlegen`, async () => {
       await klasseCreationView.comboboxSchulstrukturknoten.click();
+      await page.keyboard.type(testschule);
+      await klasseCreationView.comboboxSchulstrukturknoten.click();
       await page.getByText(schulname).click();
       await klasseCreationView.inputKlassenname.fill(klassenname);
       await klasseCreationView.buttonKlasseAnlegen.click();
@@ -161,6 +163,8 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       });
 
     await test.step(`Klasse anlegen`, async () => {
+      await klasseCreationView.comboboxSchulstrukturknoten.click();
+      await page.keyboard.type(testschule);
       await klasseCreationView.comboboxSchulstrukturknoten.click();
       await page.getByText(nameSchule).click();
       await klasseCreationView.inputKlassenname.fill(klasseName);
@@ -261,6 +265,8 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       await menue.menueItem_KlasseAnlegen.click();
       await expect(klasseCreationView.textH2KlasseAnlegen).toHaveText('Neue Klasse hinzufügen');
 
+      await klasseCreationView.comboboxSchulstrukturknoten.click();
+      await page.keyboard.type(testschule);
       await klasseCreationView.comboboxSchulstrukturknoten.click();
       await page.getByText(schulname).click();
       await klasseCreationView.inputKlassenname.fill(klassenname);

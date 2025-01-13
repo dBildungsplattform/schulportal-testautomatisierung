@@ -1,4 +1,5 @@
 import { type Locator, Page } from '@playwright/test';
+import { ComboBox } from '../../elements/ComboBox';
 
 export class PersonCreationViewPage{
     readonly page: Page;
@@ -35,6 +36,10 @@ export class PersonCreationViewPage{
     readonly label_Klasse: Locator;
     readonly data_Klasse: Locator;
     readonly listbox_Rolle: Locator;
+
+    readonly organisationen: ComboBox;
+    readonly comboboxOrganisation: Locator;
+
    
     constructor(page){
         // Anlage Person
@@ -45,12 +50,16 @@ export class PersonCreationViewPage{
         this.combobox_Rolle = page.getByTestId('rolle-select').locator('.v-field__input');
         this.combobox_Rolle_Clear = page.getByTestId('rolle-select').getByLabel('leeren');
         this.combobox_Schulstrukturknoten_Clear = page.getByTestId('organisation-select').getByLabel('leeren');
+        this.comboboxOrganisation = page.getByTestId('organisation-select').locator('.v-field');
         this.Input_Vorname = page.getByTestId('vorname-input').locator('.v-field__input');
         this.Input_Nachname = page.getByTestId('familienname-input').locator('.v-field__input');
         this.Input_Kopersnr = page.getByTestId('kopersnr-input').locator('.v-field__input');
         this.combobox_Schulstrukturknoten = page.getByTestId('organisation-select').locator('.v-field__input');
         this.combobox_Klasse = page.getByTestId('klasse-select').locator('.v-field__input');
         this.button_PersonAnlegen = page.getByTestId('person-creation-form-submit-button');
+
+        this.organisationen = new ComboBox(this.page, this.comboboxOrganisation);
+
         // Bestätigungsseite Klasse
         this.text_success = page.getByTestId('person-success-text');
         this.icon_success = page.locator('.mdi-check-circle');

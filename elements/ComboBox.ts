@@ -30,9 +30,12 @@ export class ComboBox {
     return selectedItems;
   }
 
-  public async selectByTitle(title: string): Promise<void> {
+  public async selectByTitle(title: string, searchString?: string): Promise<void> {
     await this.openModal();
     await this.waitForData();
+    if(searchString) {
+      await this.page.keyboard.type(searchString);
+    }
     const item: Locator = this.itemsLocator.filter({
       has: this.page.getByText(title, { exact: true }),
     });
