@@ -316,7 +316,7 @@ test.describe('Testet die Anlage einer neuen Rolle', () => {
       await rolleCreationView.rolleForm.adminstrationsebene.inputElement.selectByPosition([0]);
       await expect(rolleCreationView.rolleForm.adminstrationsebene.messages).toHaveText("");
       await rolleCreationView.rolleForm.rollenart.inputElement.selectByPosition([0]);
-      await expect(await rolleCreationView.rolleForm.rollenart.messages).toHaveText("");
+      await expect(rolleCreationView.rolleForm.rollenart.messages).toHaveText("");
 
       await expect(rolleCreationView.rolleForm.rollenname.messages).toBeVisible();
       await expect(rolleCreationView.rolleForm.rollenname.messages).toHaveText(
