@@ -92,15 +92,17 @@ test.describe(`Testfälle für TwoFactorAuthentication": Umgebung: ${process.env
       await expect(personDetailsView.text_neuen_token_einrichten_info).toBeVisible();
     });
 
-    await expect(personDetailsView.button_2FAEinrichten).toHaveText('Token zurücksetzen');
-    await personDetailsView.button_2FAEinrichten.click();
+    await test.step(`Token zurücksetzen`, async () => {
+      await expect(personDetailsView.button_2FAEinrichten).toHaveText('Token zurücksetzen');
+      await personDetailsView.button_2FAEinrichten.click();
 
-    await expect(personDetailsView.button_2FA_Zuruecksetzen_Weiter).toHaveText('Zurücksetzen');
-    await personDetailsView.button_2FA_Zuruecksetzen_Weiter.click();
+      await expect(personDetailsView.button_2FA_Zuruecksetzen_Weiter).toHaveText('Zurücksetzen');
+      await personDetailsView.button_2FA_Zuruecksetzen_Weiter.click();
 
-    await expect(personDetailsView.button_2FA_Zuruecksetzen_Weiter).toHaveText('Schließen');
-    await personDetailsView.button_2FA_Zuruecksetzen_Weiter.click();
+      await expect(personDetailsView.button_2FA_Zuruecksetzen_Weiter).toHaveText('Schließen');
+      await personDetailsView.button_2FA_Zuruecksetzen_Weiter.click();
 
-    await expect(personDetailsView.text_kein_token_ist_Eingerichtet).toBeVisible();
+      await expect(personDetailsView.text_kein_token_ist_Eingerichtet).toBeVisible();
+    });
   });
 });
