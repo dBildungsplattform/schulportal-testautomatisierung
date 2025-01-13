@@ -3,7 +3,7 @@ import { LandingPage } from '../pages/LandingView.page';
 import { UserInfo } from '../base/api/testHelper.page.ts';
 import { createRolleAndPersonWithUserContext } from '../base/api/testHelperPerson.page';
 import { getSPId } from '../base/api/testHelperServiceprovider.page';
-import { LONG, STAGE } from '../base/tags';
+import { LONG } from '../base/tags';
 import { generateNachname, generateVorname, generateRolleName } from '../base/testHelperGenerateTestdataNames';
 import { LoginPage } from '../pages/LoginView.page';
 import { StartPage } from '../pages/StartView.page';
@@ -14,12 +14,13 @@ import { gotoTargetURL } from '../base/testHelperUtils';
 import { PersonDetailsViewPage } from '../pages/admin/PersonDetailsView.page';
 import { PersonManagementViewPage } from '../pages/admin/PersonManagementView.page';
 import { HeaderPage } from '../pages/Header.page.ts';
-import { deletePersonenBySearchStrings } from '../base/testHelperDeleteTestdata.ts';
+import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata.ts';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
 
 let username: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
+let rolleId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
 
 test.describe(`Testfälle für TwoFactorAuthentication": Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }: { page: Page }) => {
@@ -51,6 +52,16 @@ test.describe(`Testfälle für TwoFactorAuthentication": Umgebung: ${process.env
         await deletePersonenBySearchStrings(page, username);
         username = [];
       }
+      if (rolleId) {
+        // nur wenn der Testfall auch mind. eine Rolle angelegt hat
+        await header.logout();
+        await landing.button_Anmelden.click();
+        await login.login(ADMIN, PW);
+        await expect(startseite.text_h2_Ueberschrift).toBeVisible();
+
+        await deleteRolleById(rolleId, page);
+        rolleId = [];
+      }
     });
 
     await test.step(`Abmelden`, async () => {
@@ -73,6 +84,7 @@ test.describe(`Testfälle für TwoFactorAuthentication": Umgebung: ${process.env
         await generateRolleName()
       );
       username.push(userInfoLehrer.username);
+      rolleId.push(userInfoLehrer.rolleId);
     });
 
     const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
