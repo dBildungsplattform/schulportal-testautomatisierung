@@ -117,8 +117,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
       await test.step(`Benutzer mit Kopers Nummer anlegen`, async () => {
         await personCreationView.organisationen.selectByTitle(schulstrukturknoten, 'Testschule Schulportal');
-        // await personCreationView.combobox_Schulstrukturknoten.click();
-        // await page.getByText(schulstrukturknoten).click();
         await personCreationView.combobox_Rolle.click();
         await page.getByText(rolle, { exact: true }).click();
         await personCreationView.Input_Vorname.fill(vorname);
@@ -673,8 +671,9 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
       await test.step(`Weiteren Benutzer Lehrer1 anlegen`, async () => {
         await personCreationView.button_WeiterenBenutzerAnlegen.click();
-        await personCreationView.combobox_Schulstrukturknoten.click();
-        await page.getByText(schulstrukturknoten).click();
+        await personCreationView.organisationen.selectByTitle(schulstrukturknoten, schulstrukturknoten);
+        // await personCreationView.combobox_Schulstrukturknoten.click();
+        // await page.getByText(schulstrukturknoten).click();
         await personCreationView.combobox_Rolle.click();
         await page.getByText(rolle2, { exact: true }).click();
         await personCreationView.Input_Vorname.fill(vorname2);

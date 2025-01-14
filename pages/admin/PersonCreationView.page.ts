@@ -40,7 +40,6 @@ export class PersonCreationViewPage{
     readonly organisationen: ComboBox;
     readonly comboboxOrganisation: Locator;
 
-   
     constructor(page){
         // Anlage Person
         this.page = page;  

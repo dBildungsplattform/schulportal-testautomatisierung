@@ -31,8 +31,7 @@ export class PersonDetailsViewPage{
     readonly button_saveAssignmentChanges: Locator;
     readonly button_closeSaveAssignmentChanges: Locator;
     readonly button_befristetSchuljahresende: Locator;
-    readonly button_befristungUnbefristet: Locator;
-    
+    readonly button_befristungUnbefristet: Locator;    
     readonly organisationen: ComboBox;
     readonly rollen: ComboBox;
 
@@ -65,7 +64,6 @@ export class PersonDetailsViewPage{
      readonly button_close_softwareToken_dialog: Locator;
      readonly button_2FA_Zuruecksetzen_Weiter: Locator;
 
-    
     constructor(page){
         this.page = page;  
         this.text_h2_benutzerBearbeiten = page.getByTestId('layout-card-headline');
@@ -99,7 +97,6 @@ export class PersonDetailsViewPage{
         this.button_closeSaveAssignmentChanges = page.getByRole('dialog').getByRole('button', { name: 'Schließen' });
         this.button_befristetSchuljahresende = page.getByLabel('Bis Schuljahresende (31.7.');
         this.button_befristungUnbefristet = page.getByLabel('Unbefristet');
-
         this.organisationen = new ComboBox(this.page, this.combobox_organisation);
         this.rollen = new ComboBox(this.page, this.combobox_rolle);
 

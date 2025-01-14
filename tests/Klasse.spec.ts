@@ -103,10 +103,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     });
 
     await test.step(`Klasse anlegen`, async () => {
-      await klasseCreationView.comboboxSchulstrukturknoten.click();
-      await page.keyboard.type(testschule);
-      await klasseCreationView.comboboxSchulstrukturknoten.click();
-      await page.getByText(schulname).click();
+      await klasseCreationView.organisationen.selectByTitle(testschule, testschule);
       await klasseCreationView.inputKlassenname.fill(klassenname);
       await klasseCreationView.buttonKlasseAnlegen.click();
       await expect(klasseCreationView.textSuccess).toBeVisible();
@@ -163,10 +160,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       });
 
     await test.step(`Klasse anlegen`, async () => {
-      await klasseCreationView.comboboxSchulstrukturknoten.click();
-      await page.keyboard.type(testschule);
-      await klasseCreationView.comboboxSchulstrukturknoten.click();
-      await page.getByText(nameSchule).click();
+      await klasseCreationView.organisationen.selectByTitle(nameSchule, nameSchule);
       await klasseCreationView.inputKlassenname.fill(klasseName);
       await klasseCreationView.buttonKlasseAnlegen.click();
     });
@@ -221,7 +215,6 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     const klasseManagementView = new KlasseManagementViewPage(page);
     const klasseCreationView = new KlasseCreationViewPage(page);
     const klasseDetailsView = new KlasseDetailsViewPage(page);
-    const schulname = testschule;
     let klassenname = await generateKlassenname();
 
     await test.step(`Landesadmin anlegen`, async () => {
@@ -265,10 +258,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       await menue.menueItem_KlasseAnlegen.click();
       await expect(klasseCreationView.textH2KlasseAnlegen).toHaveText('Neue Klasse hinzufügen');
 
-      await klasseCreationView.comboboxSchulstrukturknoten.click();
-      await page.keyboard.type(testschule);
-      await klasseCreationView.comboboxSchulstrukturknoten.click();
-      await page.getByText(schulname).click();
+      await klasseCreationView.organisationen.selectByTitle(testschule, testschule);
       await klasseCreationView.inputKlassenname.fill(klassenname);
       await klasseCreationView.buttonKlasseAnlegen.click();
       await expect(klasseCreationView.textSuccess).toBeVisible();
@@ -276,9 +266,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
 
     await test.step(`Klasse bearbeiten als Landesadmin`, async () => {
       await menue.menueItem_AlleKlassenAnzeigen.click();
-      await klasseManagementView.comboboxFilterSchule.fill(schulname);
-      await page.getByText(`${schulname}`, { exact: true }).click();
-      await klasseManagementView.comboboxFilterKlasse.fill(klassenname);
+      await klasseCreationView.organisationen.selectByTitle(testschule, testschule);
       await page.getByRole('cell', { name: klassenname, exact: true }).click();
       klassenname = await generateKlassenname();
       await klasseDetailsView.klasseBearbeiten(klassenname);
@@ -297,7 +285,6 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     const klasseManagementView = new KlasseManagementViewPage(page);
     const klasseCreationView = new KlasseCreationViewPage(page);
     const klasseDetailsView = new KlasseDetailsViewPage(page);
-    const schulname = testschule;
     let klassenname = await generateKlassenname();
 
     await test.step(`Schuladmin anlegen`, async () => {

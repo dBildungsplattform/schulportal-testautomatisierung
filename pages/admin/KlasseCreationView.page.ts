@@ -1,4 +1,5 @@
 import { type Locator, Page } from '@playwright/test';
+import { ComboBox } from '../../elements/ComboBox';
 
 export class KlasseCreationViewPage{
     readonly page: Page;
@@ -16,6 +17,8 @@ export class KlasseCreationViewPage{
     readonly dataKlasse: Locator;
     readonly buttonZurueckErgebnisliste: Locator;
     readonly buttonWeitereKlasseAnlegen: Locator;
+
+    readonly organisationen: ComboBox;
    
     constructor(page){
         // Anlage Klasse
@@ -35,5 +38,7 @@ export class KlasseCreationViewPage{
         this.dataKlasse =  page.getByTestId('created-klasse-name');
         this.buttonZurueckErgebnisliste = page.getByTestId('back-to-list-button');
         this.buttonWeitereKlasseAnlegen = page.getByTestId('create-another-klasse-button');
+
+        this.organisationen = new ComboBox(this.page, this.comboboxSchulstrukturknoten);
     }
 }
