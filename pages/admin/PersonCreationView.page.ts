@@ -38,7 +38,9 @@ export class PersonCreationViewPage{
     readonly listbox_Rolle: Locator;
 
     readonly organisationen: ComboBox;
+    readonly organisationenInput: ComboBox;
     readonly comboboxOrganisation: Locator;
+    readonly comboboxOrganisationInput: Locator;
 
     constructor(page){
         // Anlage Person
@@ -50,6 +52,7 @@ export class PersonCreationViewPage{
         this.combobox_Rolle_Clear = page.getByTestId('rolle-select').getByLabel('leeren');
         this.combobox_Schulstrukturknoten_Clear = page.getByTestId('organisation-select').getByLabel('leeren');
         this.comboboxOrganisation = page.getByTestId('organisation-select').locator('.v-field');
+        this.comboboxOrganisationInput = page.getByTestId('organisation-select').locator('input');
         this.Input_Vorname = page.getByTestId('vorname-input').locator('.v-field__input');
         this.Input_Nachname = page.getByTestId('familienname-input').locator('.v-field__input');
         this.Input_Kopersnr = page.getByTestId('kopersnr-input').locator('.v-field__input');
@@ -58,6 +61,7 @@ export class PersonCreationViewPage{
         this.button_PersonAnlegen = page.getByTestId('person-creation-form-submit-button');
 
         this.organisationen = new ComboBox(this.page, this.comboboxOrganisation);
+        this.organisationenInput = new ComboBox(this.page, this.comboboxOrganisationInput);
 
         // Bestätigungsseite Klasse
         this.text_success = page.getByTestId('person-success-text');

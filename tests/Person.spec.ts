@@ -351,7 +351,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     }
   );
 
-  test(
+  test.only(
     "Prüfung auf korrekte Rollen in dem Dropdown 'Rolle' nach Auswahl der Organisation bei Anlage eines Benutzer in der Rolle Landesadmin",
     { tag: [LONG, STAGE] },
     async ({ page }) => {
@@ -374,13 +374,14 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       });
 
       await test.step(`Organisation 'Land Schleswig-Holstein' auswählen und Dropdown 'Rolle' prüfen`, async () => {
-        await personCreationView.organisationen.selectByTitle(Organisation_Land, Organisation_Land);
+        await personCreationView.organisationenInput.searchByTitle(Organisation_Land);
         await personCreationView.combobox_Rolle.click();
         await expect(personCreationView.listbox_Rolle).toContainText(landesadminRolle);
         await expect(personCreationView.listbox_Rolle).not.toContainText(rolleLehr);
         await expect(personCreationView.listbox_Rolle).not.toContainText(rolleLiV);
         await expect(personCreationView.listbox_Rolle).not.toContainText(schuladminOeffentlichRolle);
         await expect(personCreationView.listbox_Rolle).not.toContainText(schuelerRolle);
+        await page.pause();
       });
 
       await test.step(`Organisation 'Öffentliche Schulen Land Schleswig-Holstein' auswählen und Dropdown 'Rolle' prüfen`, async () => {
