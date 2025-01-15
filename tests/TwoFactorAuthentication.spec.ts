@@ -8,7 +8,7 @@ import { generateNachname, generateVorname, generateRolleName } from '../base/te
 import { LoginPage } from '../pages/LoginView.page';
 import { StartPage } from '../pages/StartView.page';
 import { testschule } from '../base/organisation';
-import { typelehrer } from '../base/rollentypen';
+import { typeLehrer } from '../base/rollentypen';
 import { email } from '../base/sp';
 import { gotoTargetURL } from '../base/testHelperUtils';
 import { PersonDetailsViewPage } from '../pages/admin/PersonDetailsView.page';
@@ -77,7 +77,7 @@ test.describe(`Testfälle für TwoFactorAuthentication": Umgebung: ${process.env
       userInfoLehrer = await createRolleAndPersonWithUserContext(
         page,
         testschule,
-        typelehrer,
+        typeLehrer,
         await generateNachname(),
         await generateVorname(),
         [await getSPId(page, email)],
