@@ -30,12 +30,9 @@ export class ComboBox {
     return selectedItems;
   }
 
-  public async selectByTitle(title: string, searchString?: string): Promise<void> {
+  public async selectByTitle(title: string): Promise<void> {
     await this.openModal();
     await this.waitForData();
-    if(searchString) {
-      await this.page.keyboard.type(searchString);
-    }
     const item: Locator = this.itemsLocator.filter({
       has: this.page.getByText(title, { exact: true }),
     });
@@ -57,12 +54,23 @@ export class ComboBox {
     await this.modalToggle.click();
   }
 
-  public async searchByTitle(title: string): Promise<void> {
+  public async searchByTitle(title: string, isSchool: boolean): Promise<void> {
     await this.locator.click();
+    await this.locator.fill(title + ' ');  // sometimes the combobox doesn't excecute the search, however, this will fix the problem
     await this.locator.fill(title);
-    const item: Locator = this.itemsLocator.filter({
-      has: this.page.getByText(title, { exact: true }),
-    });
+  
+    let item: Locator
+    
+    if(isSchool) {  // Schools have the DienstellenNr(and also brackets) as a prefixe, therefore exact search isn't possible; the title must be unique
+      item = this.itemsLocator.filter({
+        has: this.page.getByText(title), 
+      })
+    } else {
+        item = this.itemsLocator.filter({
+          // has: this.page.getByText(title, { exact: true }), exact: true doesn't work for some reasons, therefore the usage of RegExp
+          hasText: new RegExp(`^${title}$`), 
+      })
+    }    
     await item.waitFor({ state: 'visible' });
     await item.click();
   }

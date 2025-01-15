@@ -19,6 +19,9 @@ export class KlasseCreationViewPage{
     readonly buttonWeitereKlasseAnlegen: Locator;
 
     readonly organisationen: ComboBox;
+    readonly organisationenInput: ComboBox;
+    readonly comboboxOrganisation: Locator;
+    readonly comboboxOrganisationInput: Locator;
    
     constructor(page){
         // Anlage Klasse
@@ -26,6 +29,8 @@ export class KlasseCreationViewPage{
         this.textH2KlasseAnlegen = page.getByTestId('layout-card-headline');
         this.buttonSchliessen = page.getByTestId('close-layout-card-button');
         this.comboboxSchulstrukturknoten = page.getByTestId('schule-select').locator('.v-input__control'); 
+        this.comboboxOrganisation = page.getByTestId('schule-select').locator('.v-field');
+        this.comboboxOrganisationInput = page.getByTestId('schule-select').locator('input');
         this.inputKlassenname = page.getByTestId('klassenname-input').locator('input');
         this.buttonKlasseAnlegen = page.getByTestId('klasse-form-submit-button');
         // Bestätigungsseite Klasse
@@ -39,6 +44,7 @@ export class KlasseCreationViewPage{
         this.buttonZurueckErgebnisliste = page.getByTestId('back-to-list-button');
         this.buttonWeitereKlasseAnlegen = page.getByTestId('create-another-klasse-button');
 
-        this.organisationen = new ComboBox(this.page, this.comboboxSchulstrukturknoten);
+        this.organisationen = new ComboBox(this.page, this.comboboxOrganisation);
+        this.organisationenInput = new ComboBox(this.page, this.comboboxOrganisationInput);
     }
 }

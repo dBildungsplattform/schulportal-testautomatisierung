@@ -83,7 +83,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     const adminNachname = await generateNachname();
     const adminRolle = await generateRolleName();
     const adminRollenart = typeSchuladmin;
-    const adminOrganisation = 'Testschule-PW665';
+    const adminOrganisation = testschule665;
     const adminIdSPs: string[] = [await getSPId(page, 'Schulportal-Administration')];
     let userInfoAdmin: UserInfo;
 
@@ -165,7 +165,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await test.step(`Ansicht für neuen Personenkontext öffnen`, async () => {
             await personDetailsView.button_editSchulzuordnung.click();
             await personDetailsView.button_addSchulzuordnung.click();
-            await personDetailsView.organisationen.selectByTitle('1111111 (Testschule Schulportal)', 'Testschule');
+            await personDetailsView.organisationenInput.searchByTitle(testschule, true);
         })
     
         await test.step(`Befristung bei ${unbefristeteRolle} und ${befristeteRolle} überprüfen`, async () => {

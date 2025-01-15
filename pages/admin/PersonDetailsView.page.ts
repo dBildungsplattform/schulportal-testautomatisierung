@@ -23,6 +23,7 @@ export class PersonDetailsViewPage{
     readonly button_editSchulzuordnung: Locator;
     readonly button_addSchulzuordnung: Locator;
     readonly combobox_organisation: Locator;
+    readonly comboboxOrganisationInput: Locator;
     readonly combobox_organisationDialogBenutzerSperren: Locator;
     readonly combobox_rolle: Locator;
     readonly input_kopersNr: Locator;
@@ -33,6 +34,7 @@ export class PersonDetailsViewPage{
     readonly button_befristetSchuljahresende: Locator;
     readonly button_befristungUnbefristet: Locator;    
     readonly organisationen: ComboBox;
+    readonly organisationenInput: ComboBox;
     readonly rollen: ComboBox;
 
     // Benutzer sperren
@@ -89,6 +91,9 @@ export class PersonDetailsViewPage{
         this.combobox_organisation = page.getByTestId('organisation-select').locator('.v-field__input');
         this.combobox_rolle = page.getByTestId('rolle-select').locator('.v-field__input');
         this.combobox_organisation = page.getByTestId('organisation-select').locator('.v-field');
+        this.comboboxOrganisationInput = page.getByTestId('organisation-select').locator('input');
+
+
         this.combobox_rolle = page.getByTestId('rolle-select').locator('.v-field');
         this.input_kopersNr = page.getByTestId('kopersnr-input').locator('.v-field__input');
         this.button_submitAddSchulzuordnung = page.getByTestId('zuordnung-creation-submit-button');
@@ -98,6 +103,10 @@ export class PersonDetailsViewPage{
         this.button_befristetSchuljahresende = page.getByLabel('Bis Schuljahresende (31.7.');
         this.button_befristungUnbefristet = page.getByLabel('Unbefristet');
         this.organisationen = new ComboBox(this.page, this.combobox_organisation);
+        this.organisationenInput = new ComboBox(this.page, this.comboboxOrganisationInput);
+
+
+
         this.rollen = new ComboBox(this.page, this.combobox_rolle);
 
         // Benutzer sperren
