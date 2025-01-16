@@ -42,12 +42,11 @@ export class PersonManagementViewPage{
 
   public async navigateToPersonDetailsViewByNachname(nachname: string): Promise<PersonDetailsViewPage> {
     await this.page.getByRole("cell", { name: nachname, exact: true }).click();
-
     return new PersonDetailsViewPage(this.page);
   }
 
   public async searchBySuchfeld(name: string) {
-    await this.page.waitForTimeout(1000);
+    await this.page.waitForTimeout(1000);  // Im ticket SPSH-1738 muss dieser workaroundt durch einen waitForResponse oder Ähnlichem ersetzt werden
     await this.input_Suchfeld.fill(name);
     await this.button_Suchen.click();
     await expect(this.comboboxMenuIcon_Status).toBeVisible(); 

@@ -176,9 +176,7 @@ export class PersonDetailsViewPage{
         await expect(this.selectOption_2FA_softwareToken).toHaveText('Software-Token einrichten');
         await expect(this.text_2FA_softwareToken_info).toBeVisible();
         await this.button_2FA_Einrichten_Weiter.click();
-
         await expect(this.text_h2_2FA_cardheadline).toHaveText('Software-Token einrichten');
         await this.button_close_softwareToken_dialog.click();
     }
-
 }

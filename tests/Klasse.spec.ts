@@ -24,6 +24,7 @@ import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
 import { MenuPage } from '../pages/MenuBar.page';
 import { StartPage } from '../pages/StartView.page';
+import { typeLandesadmin, typeSchuladmin } from '../base/rollentypen.ts';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -221,7 +222,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       const addminVorname = await generateVorname();
       const adminNachname = await generateNachname();
       const adminRolle = await generateRolleName();
-      const adminRollenart = 'SYSADMIN';
+      const adminRollenart = typeLandesadmin;
       const adminOrganisation = landSH;
       const adminIdSPs: string[] = [await getSPId(page, 'Schulportal-Administration')];
 
@@ -291,7 +292,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       const addminVorname = await generateVorname();
       const adminNachname = await generateNachname();
       const adminRolle = await generateRolleName();
-      const adminRollenart = 'LEIT';
+      const adminRollenart = typeSchuladmin;
       const adminOrganisation = testschule;
       const adminIdSPs: string[] = [await getSPId(page, 'Schulportal-Administration')];
 

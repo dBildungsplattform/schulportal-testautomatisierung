@@ -3,7 +3,7 @@ import { UserInfo } from '../base/api/testHelper.page';
 import { createRolleAndPersonWithUserContext } from '../base/api/testHelperPerson.page';
 import { addSystemrechtToRolle } from '../base/api/testHelperRolle.page';
 import { getSPId } from '../base/api/testHelperServiceprovider.page';
-import { testschule, testschule665 } from '../base/organisation.ts';
+import { landSH, testschule, testschule665, oeffentlichLandSH, ersatzschulenSH } from '../base/organisation.ts';
 import { landesadminRolle, schuelerRolle, schuladminOeffentlichRolle } from '../base/rollen.ts';
 import { BROWSER, LONG, SHORT, STAGE } from '../base/tags';
 import { deletePersonenBySearchStrings, deleteRolleById, deleteRolleByName } from '../base/testHelperDeleteTestdata.ts';
@@ -106,7 +106,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const vorname = await generateVorname();
       const nachname = await generateNachname();
       const kopersnr = await generateKopersNr();
-      const schulstrukturknoten = 'Testschule Schulportal';
+      const schulstrukturknoten = testschule;
       let einstiegspasswort = '';
 
       await test.step(`Dialog Person anlegen öffnen`, async () => {
@@ -191,7 +191,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     const vorname = await generateVorname();
     const nachname = await generateNachname();
     const kopersnr = await generateKopersNr();
-    const schulstrukturknoten = 'Testschule Schulportal';
+    const schulstrukturknoten = testschule;
 
     await test.step(`Dialog Person anlegen öffnen`, async () => {
       await startseite.card_item_schulportal_administration.click();
@@ -231,7 +231,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
       const vorname = await generateVorname();
       const nachname = await generateNachname();
-      const schulstrukturknoten = 'Testschule Schulportal';
+      const schulstrukturknoten = testschule;
       const rolle = 'Lehrkraft';
       let userInfo: UserInfo;
 
@@ -359,10 +359,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const menue = new MenuPage(page);
       const personCreationView = new PersonCreationViewPage(page);
 
-      const Organisation_Land = 'Land Schleswig-Holstein';
-      const Organisation_OeffentlicheSchule = 'Öffentliche Schulen Land Schleswig-Holstein';
-      const Organisation_Ersatzschule = 'Ersatzschulen Land Schleswig-Holstein';
-      const Organisation_Schule = 'Testschule Schulportal';
+      const Organisation_Land = landSH;
+      const Organisation_OeffentlicheSchule = oeffentlichLandSH;
+      const Organisation_Ersatzschule = ersatzschulenSH;
+      const Organisation_Schule = testschule;
 
       const rolleLehr = 'Lehrkraft';
       const rolleLiV = 'LiV';
@@ -430,7 +430,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const vorname = await generateVorname();
       const nachname = await generateNachname();
       const kopersnr = await generateKopersNr();
-      const schulstrukturknoten = 'Testschule Schulportal';
+      const schulstrukturknoten = testschule;
 
       await test.step(`Benutzer Lehrkraft anlegen`, async () => {
         await page.goto('/' + 'admin/personen/new');
@@ -518,7 +518,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const vorname = await generateVorname();
       const nachname = await generateNachname();
       const kopersnr = await generateKopersNr();
-      const schulstrukturknoten = 'Testschule Schulportal';
+      const schulstrukturknoten = testschule;
       const dienststellenNr = '1111111';
 
       await test.step(`Dialog Person anlegen öffnen`, async () => {
@@ -580,7 +580,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         const idSPs: string[] = [await getSPId(page, 'Schulportal-Administration')];
         userInfo = await createRolleAndPersonWithUserContext(
           page,
-          'Land Schleswig-Holstein',
+          landSH,
           'SYSADMIN',
           await generateNachname(),
           await generateVorname(),
@@ -607,7 +607,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       });
 
       // Testdaten
-      const schulstrukturknoten = 'Testschule Schulportal';
+      const schulstrukturknoten = testschule;
       const dienststellenNr = '1111111';
       const vorname1 = await generateVorname();
       const nachname1 = await generateNachname();
@@ -765,7 +765,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     await test.step(`Neuen Benutzer über die api anlegen`, async () => {
       await createRolleAndPersonWithUserContext(
         page,
-        'Land Schleswig-Holstein',
+        landSH,
         berechtigung,
         vorname,
         nachname,
