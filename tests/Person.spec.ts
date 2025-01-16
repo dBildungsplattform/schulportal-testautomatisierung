@@ -487,7 +487,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     { tag: [LONG, SHORT, STAGE] },
     async ({ page }) => {
       const personManagementView = new PersonManagementViewPage(page);
-      await page.pause();
+      
       await test.step(`Filter öffnen und Schule selektieren`, async () => {
         await gotoTargetURL(page, 'admin/personen');
         await expect(personManagementView.text_h2_Benutzerverwaltung).toHaveText('Benutzerverwaltung');
