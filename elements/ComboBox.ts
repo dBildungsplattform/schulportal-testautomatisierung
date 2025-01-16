@@ -58,7 +58,6 @@ export class ComboBox {
     await this.locator.click();
     await this.locator.fill(title + ' ');  // sometimes the combobox doesn't excecute the search, however, this will fix the problem
     await this.locator.fill(title);
-  
     let item: Locator
     
     if(isSchool) {  // Schools have the DienstellenNr(and also brackets) as a prefixe, therefore exact search isn't possible; the title must be unique

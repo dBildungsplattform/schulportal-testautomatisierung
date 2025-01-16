@@ -32,7 +32,8 @@ export class PersonDetailsViewPage{
     readonly button_saveAssignmentChanges: Locator;
     readonly button_closeSaveAssignmentChanges: Locator;
     readonly button_befristetSchuljahresende: Locator;
-    readonly button_befristungUnbefristet: Locator;    
+    readonly button_befristungUnbefristet: Locator; 
+
     readonly organisationen: ComboBox;
     readonly organisationenInput: ComboBox;
     readonly rollen: ComboBox;
@@ -102,11 +103,9 @@ export class PersonDetailsViewPage{
         this.button_closeSaveAssignmentChanges = page.getByRole('dialog').getByRole('button', { name: 'Schließen' });
         this.button_befristetSchuljahresende = page.getByLabel('Bis Schuljahresende (31.7.');
         this.button_befristungUnbefristet = page.getByLabel('Unbefristet');
+        
         this.organisationen = new ComboBox(this.page, this.combobox_organisation);
         this.organisationenInput = new ComboBox(this.page, this.comboboxOrganisationInput);
-
-
-
         this.rollen = new ComboBox(this.page, this.combobox_rolle);
 
         // Benutzer sperren
