@@ -32,7 +32,7 @@ export class PersonDetailsViewPage{
     readonly button_saveAssignmentChanges: Locator;
     readonly button_closeSaveAssignmentChanges: Locator;
     readonly button_befristetSchuljahresende: Locator;
-    readonly button_befristungUnbefristet: Locator; 
+    readonly button_befristungUnbefristet: Locator;
 
     readonly organisationen: ComboBox;
     readonly organisationenInput: ComboBox;
