@@ -14,7 +14,7 @@ export async function generateRolleName(){
 }
 
 export async function generateKopersNr(){  
-  return '0815' + faker.string.numeric({ length: 3 });
+  return '0815' + faker.string.numeric({ length: 8 });
 }
 
 export async function generateKlassenname(){  
