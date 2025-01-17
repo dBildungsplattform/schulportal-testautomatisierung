@@ -36,11 +36,10 @@ export class PersonCreationViewPage{
     readonly label_Klasse: Locator;
     readonly data_Klasse: Locator;
     readonly listbox_Rolle: Locator;
-
-    readonly organisationen: ComboBox;
-    readonly organisationenInput: ComboBox;
-    readonly comboboxOrganisation: Locator;
-    readonly comboboxOrganisationInput: Locator;
+    readonly comboboxOrganisation: ComboBox;
+    readonly comboboxOrganisationInput: ComboBox;
+    readonly organisation: Locator;
+    readonly organisationInput: Locator;
 
     constructor(page){
         // Anlage Person
@@ -51,17 +50,16 @@ export class PersonCreationViewPage{
         this.combobox_Rolle = page.getByTestId('rolle-select').locator('.v-field__input');
         this.combobox_Rolle_Clear = page.getByTestId('rolle-select').getByLabel('leeren');
         this.combobox_Schulstrukturknoten_Clear = page.getByTestId('organisation-select').getByLabel('leeren');
-        this.comboboxOrganisation = page.getByTestId('organisation-select').locator('.v-field');
-        this.comboboxOrganisationInput = page.getByTestId('organisation-select').locator('input');
+        this.organisation = page.getByTestId('organisation-select').locator('.v-field');
+        this.organisationInput = page.getByTestId('organisation-select').locator('input');
         this.Input_Vorname = page.getByTestId('vorname-input').locator('.v-field__input');
         this.Input_Nachname = page.getByTestId('familienname-input').locator('.v-field__input');
         this.Input_Kopersnr = page.getByTestId('kopersnr-input').locator('.v-field__input');
         this.combobox_Schulstrukturknoten = page.getByTestId('organisation-select').locator('.v-field__input');
         this.combobox_Klasse = page.getByTestId('klasse-select').locator('.v-field__input');
         this.button_PersonAnlegen = page.getByTestId('person-creation-form-submit-button');
-
-        this.organisationen = new ComboBox(this.page, this.comboboxOrganisation);
-        this.organisationenInput = new ComboBox(this.page, this.comboboxOrganisationInput);
+        this.comboboxOrganisation = new ComboBox(this.page, this.organisation);
+        this.comboboxOrganisationInput = new ComboBox(this.page, this.organisationInput);
 
         // Bestätigungsseite Klasse
         this.text_success = page.getByTestId('person-success-text');
@@ -80,7 +78,7 @@ export class PersonCreationViewPage{
         this.label_Klasse =  page.getByText('Klasse:', { exact: true });
         this.data_Klasse =  page.getByTestId('created-person-klasse');
         this.label_EinstiegsPasswort =  page.getByText(' Einstiegs-Passwort:', { exact: true });
-        this.input_EinstiegsPasswort = page.locator('[data-testid="password-output-field"] input'); 
+        this.input_EinstiegsPasswort = page.locator('[data-testid="password-output-field"] input');
         this.button_ZurueckErgebnisliste = page.getByTestId('back-to-list-button');
         this.button_WeiterenBenutzerAnlegen = page.getByTestId('create-another-person-button');
         this.listbox_Rolle = page.locator('.v-list');
