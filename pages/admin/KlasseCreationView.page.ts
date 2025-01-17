@@ -17,7 +17,6 @@ export class KlasseCreationViewPage{
     readonly dataKlasse: Locator;
     readonly buttonZurueckErgebnisliste: Locator;
     readonly buttonWeitereKlasseAnlegen: Locator;
-    readonly comboboxOrganisation: ComboBox;
     readonly comboboxOrganisationInput: ComboBox;
     readonly organisation: Locator;
     readonly organisationInput: Locator;
@@ -42,7 +41,6 @@ export class KlasseCreationViewPage{
         this.dataKlasse =  page.getByTestId('created-klasse-name');
         this.buttonZurueckErgebnisliste = page.getByTestId('back-to-list-button');
         this.buttonWeitereKlasseAnlegen = page.getByTestId('create-another-klasse-button');
-        this.comboboxOrganisation = new ComboBox(this.page, this.organisation);
         this.comboboxOrganisationInput = new ComboBox(this.page, this.organisationInput);
     }
 }

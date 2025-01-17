@@ -36,7 +36,6 @@ export class PersonCreationViewPage{
     readonly label_Klasse: Locator;
     readonly data_Klasse: Locator;
     readonly listbox_Rolle: Locator;
-    readonly comboboxOrganisation: ComboBox;
     readonly comboboxOrganisationInput: ComboBox;
     readonly organisation: Locator;
     readonly organisationInput: Locator;
@@ -58,7 +57,6 @@ export class PersonCreationViewPage{
         this.combobox_Schulstrukturknoten = page.getByTestId('organisation-select').locator('.v-field__input');
         this.combobox_Klasse = page.getByTestId('klasse-select').locator('.v-field__input');
         this.button_PersonAnlegen = page.getByTestId('person-creation-form-submit-button');
-        this.comboboxOrganisation = new ComboBox(this.page, this.organisation);
         this.comboboxOrganisationInput = new ComboBox(this.page, this.organisationInput);
 
         // Bestätigungsseite Klasse
