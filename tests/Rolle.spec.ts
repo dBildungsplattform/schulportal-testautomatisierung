@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { deleteRolle, getRolleId } from '../base/api/testHelperRolle.page';
-import { ersatzschulenSH, landSH } from '../base/organisation';
+import { ersatzLandSH, landSH } from '../base/organisation';
 import { landesadminRolle } from '../base/rollen';
 import { email, itslearning, kalender, schulportaladmin } from '../base/sp';
 import { LONG, SHORT, STAGE } from '../base/tags';
@@ -56,7 +56,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
       const rollenname1 = await generateRolleName();
       const rollenname2 = await generateRolleName();
       const schulstrukturknoten1 = landSH;
-      const schulstrukturknoten2 = ersatzschulenSH;
+      const schulstrukturknoten2 = ersatzLandSH;
       const rollenart1 = 'Lern';
       const rollenart2 = 'Lehr';
       const merkmal2 = 'KoPers.-Nr. ist Pflichtangabe';

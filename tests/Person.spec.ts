@@ -3,7 +3,7 @@ import { UserInfo } from '../base/api/testHelper.page';
 import { createRolleAndPersonWithUserContext } from '../base/api/testHelperPerson.page';
 import { addSystemrechtToRolle } from '../base/api/testHelperRolle.page';
 import { getSPId } from '../base/api/testHelperServiceprovider.page';
-import { landSH, testschule, testschule665, oeffentlichLandSH, ersatzschulenSH } from '../base/organisation.ts';
+import { landSH, testschule, testschule665, oeffentlichLandSH, ersatzLandSH } from '../base/organisation.ts';
 import { landesadminRolle, schuelerRolle, schuladminOeffentlichRolle } from '../base/rollen.ts';
 import { BROWSER, LONG, SHORT, STAGE } from '../base/tags';
 import { deletePersonenBySearchStrings, deleteRolleById, deleteRolleByName } from '../base/testHelperDeleteTestdata.ts';
@@ -361,7 +361,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
       const Organisation_Land = landSH;
       const Organisation_OeffentlicheSchule = oeffentlichLandSH;
-      const Organisation_Ersatzschule = ersatzschulenSH;
+      const Organisation_Ersatzschule = ersatzLandSH;
       const Organisation_Schule = testschule;
 
       const rolleLehr = 'Lehrkraft';
