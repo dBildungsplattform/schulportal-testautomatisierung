@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, PlaywrightTestArgs, test } from '@playwright/test';
 import { UserInfo } from '../base/api/testHelper.page';
 import { createRolleAndPersonWithUserContext } from '../base/api/testHelperPerson.page';
 import { addSystemrechtToRolle } from '../base/api/testHelperRolle.page';
@@ -499,12 +499,13 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
   test(
     'In der Ergebnisliste die Filterfunktion der Schulen benutzen als Landesadmin',
     { tag: [LONG, SHORT, STAGE] },
-    async ({ page }) => {
-      const personManagementView = new PersonManagementViewPage(page);
+    async ({ page }: PlaywrightTestArgs) => {
+      const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
 
       await test.step(`Filter öffnen und Schule selektieren`, async () => {
         await gotoTargetURL(page, 'admin/personen');
         await expect(personManagementView.text_h2_Benutzerverwaltung).toHaveText('Benutzerverwaltung');
+        await personManagementView.waitForData();
 
         // Fill the input with the name of the Schule and let the autocomplete find it
         await personManagementView.comboboxMenuIcon_Schule_input.fill(testschule665);
@@ -519,6 +520,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await personManagementView.button_Suchen.click();
 
         await expect(page.getByTestId('schule-select')).toHaveText('1111165 (Testschule-PW665)');
+
+        await expect(personManagementView.getRows().first()).toContainText('1111165');
       });
     }
   );
