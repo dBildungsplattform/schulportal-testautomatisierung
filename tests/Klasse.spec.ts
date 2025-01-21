@@ -104,7 +104,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     });
 
     await test.step(`Klasse anlegen`, async () => {
-      await klasseCreationView.comboboxOrganisationInput.searchByTitle(testschule, true);
+      await klasseCreationView.comboboxOrganisationInput.searchByTitle(testschule, false);
       await klasseCreationView.inputKlassenname.fill(klassenname);
       await klasseCreationView.buttonKlasseAnlegen.click();
       await expect(klasseCreationView.textSuccess).toBeVisible();
@@ -161,7 +161,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       });
 
     await test.step(`Klasse anlegen`, async () => {
-      await klasseCreationView.comboboxOrganisationInput.searchByTitle(nameSchule, true);
+      await klasseCreationView.comboboxOrganisationInput.searchByTitle(nameSchule, false);
       await klasseCreationView.inputKlassenname.fill(klasseName);
       await klasseCreationView.buttonKlasseAnlegen.click();
     });
@@ -259,7 +259,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       await menue.menueItem_KlasseAnlegen.click();
       await expect(klasseCreationView.textH2KlasseAnlegen).toHaveText('Neue Klasse hinzufügen');
 
-      await klasseCreationView.comboboxOrganisationInput.searchByTitle(testschule, true);
+      await klasseCreationView.comboboxOrganisationInput.searchByTitle(testschule, false);
       await klasseCreationView.inputKlassenname.fill(klassenname);
       await klasseCreationView.buttonKlasseAnlegen.click();
       await expect(klasseCreationView.textSuccess).toBeVisible();
@@ -267,7 +267,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
 
     await test.step(`Klasse bearbeiten als Landesadmin`, async () => {
       await menue.menueItem_AlleKlassenAnzeigen.click();
-      await klasseCreationView.comboboxOrganisationInput.searchByTitle(testschule, true);
+      await klasseCreationView.comboboxOrganisationInput.searchByTitle(testschule, false);
       await page.getByRole('cell', { name: klassenname, exact: true }).click();
       klassenname = await generateKlassenname();
       await klasseDetailsView.klasseBearbeiten(klassenname);

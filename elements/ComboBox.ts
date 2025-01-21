@@ -54,20 +54,21 @@ export class ComboBox {
     await this.modalToggle.click();
   }
 
-  public async searchByTitle(title: string, isSchool: boolean): Promise<void> {
+  public async searchByTitle(searchString: string, exactMatch: boolean): Promise<void> {
     await this.locator.click();
-    await this.locator.fill(title + ' ');  // sometimes the combobox doesn't excecute the search, however, this will fix the problem
-    await this.locator.fill(title);
+    await this.locator.fill(searchString + ' ');  // sometimes the combobox doesn't excecute the search, however, this will fix the problem
+    await this.locator.fill(searchString);
     let item: Locator
     
-    if(isSchool) {  // Schools have the DienstellenNr(and also brackets) as a prefixe, therefore exact search isn't possible; the title must be unique
+    if (exactMatch) {
       item = this.itemsLocator.filter({
-        has: this.page.getByText(title), 
+        // use regex to search for an exact match
+        hasText: new RegExp(`^${searchString}$`), 
       })
     } else {
-        item = this.itemsLocator.filter({
-          // has: this.page.getByText(title, { exact: true }), exact: true doesn't work for some reasons, therefore the usage of RegExp
-          hasText: new RegExp(`^${title}$`), 
+      // search for a string inside the item title
+      item = this.itemsLocator.filter({
+        has: this.page.getByText(searchString), 
       })
     }    
     await item.waitFor({ state: 'visible' });

@@ -165,7 +165,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await test.step(`Ansicht für neuen Personenkontext öffnen`, async () => {
             await personDetailsView.button_editSchulzuordnung.click();
             await personDetailsView.button_addSchulzuordnung.click();
-            await personDetailsView.organisationenInput.searchByTitle(testschule, true);
+            await personDetailsView.organisationenInput.searchByTitle(testschule, false);
         })
     
         await test.step(`Befristung bei ${unbefristeteRolle} und ${befristeteRolle} überprüfen`, async () => {
