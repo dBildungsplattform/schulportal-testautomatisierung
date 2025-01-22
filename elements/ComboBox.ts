@@ -56,7 +56,7 @@ export class ComboBox {
 
   public async searchByTitle(searchString: string, exactMatch: boolean): Promise<void> {
     await this.locator.click();
-    await this.locator.fill(searchString + ' ');  // sometimes the combobox doesn't excecute the search, however, this will fix the problem
+    await this.locator.fill(searchString + ' ');  // the combobox doesn't excecute the search correctly when creating a new class, however, this will fix the problem. The bug in the FE will be fixed in SPSH-1769 or SPSH-1733
     await this.locator.fill(searchString);
     let item: Locator
     
