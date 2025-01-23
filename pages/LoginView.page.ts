@@ -44,12 +44,11 @@ export class LoginPage {
     // BE requests laufen zeitverzögert zum FE; dieses muss im FE behoben werden; solange dies nicht der Fall ist, brauchen wir diesen workaround
     // Wenn auf login/logout geklickt wird, sind teilweise noch requests am laufen
     // await this.page.waitForTimeout(1000);
-    await this.page.waitForResponse(response => 
+    let a = await this.page.waitForResponse(response => 
       response.url().includes('/api/provider') && (response.status() === 200 || (response.status() === 304))
     );
-
     //  new RegExp(`^${searchString}$`)
-
+    console.log(a)
     return new StartPage(this.page);
   }
 

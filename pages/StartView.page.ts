@@ -35,4 +35,11 @@ export class StartPage {
   public async checkHeadlineIsVisible() {
     await expect(this.text_h2_Ueberschrift).toBeVisible();
   }
+
+  public async waitForResponses() {
+    let a = await this.page.waitForResponse(response => 
+      response.url().includes('/api/provider') && (response.status() === 200 || (response.status() === 304))
+    );
+    //  new RegExp(`^${searchString}$`)
+  }
 }
