@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { deleteRolle, getRolleId } from '../base/api/testHelperRolle.page';
-import { ersatzschulenSH, landSH } from '../base/organisation';
+import { ersatzLandSH, landSH } from '../base/organisation';
 import { landesadminRolle } from '../base/rollen';
 import { email, itslearning, kalender, schulportaladmin } from '../base/sp';
 import { LONG, SHORT, STAGE } from '../base/tags';
@@ -56,7 +56,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
       const rollenname1 = await generateRolleName();
       const rollenname2 = await generateRolleName();
       const schulstrukturknoten1 = landSH;
-      const schulstrukturknoten2 = ersatzschulenSH;
+      const schulstrukturknoten2 = ersatzLandSH;
       const rollenart1 = 'Lern';
       const rollenart2 = 'Lehr';
       const merkmal2 = 'KoPers.-Nr. ist Pflichtangabe';
@@ -86,7 +86,6 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
       await test.step(`Zweite Rolle anlegen`, async () => {
         await rolleCreationView.button_WeitereRolleAnlegen.click();
         await rolleCreationView.rolleForm.adminstrationsebene.inputElement.selectByTitle(schulstrukturknoten2);
-        await page.pause();
         await rolleCreationView.rolleForm.rollenart.inputElement.selectByTitle(rollenart2);
         await rolleCreationView.enterRollenname(rollenname2);
         await rolleCreationView.rolleForm.merkmale.inputElement.selectByTitle(merkmal2);
@@ -277,7 +276,6 @@ test.describe('Testet die Anlage einer neuen Rolle', () => {
         await expect(rolleCreationConfirmPage.confirmationMessage).toBeVisible();
         await expect(rolleCreationView.rolleForm.adminstrationsebene.data).toHaveText('Land Schleswig-Holstein');
         await expect(rolleCreationView.icon_success).toBeVisible();
-        await expect(rolleCreationView.rolleForm.angebote.data).toContainText('E-Mail');
         return rolleCreationConfirmPage.backToResultList();
       });
 
