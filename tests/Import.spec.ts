@@ -58,10 +58,9 @@ test.describe(`Testfälle für den Benutzerimport": Umgebung: ${process.env.ENV}
   });
 
   test('Als Landesadmin eine CSV-Datei mit Benutzerdaten hochladen und importieren', {tag: [LONG]}, async ({ page }) => {
-    // Der Test ist aktuell rot, wird mit SPSH-1663 gefixed
     await test.step('CSV-Datei hochladen, importieren und importierte Daten downloaden', async () => {
       // select schule
-      await personImportPage.schuleSelectCombobox.searchByTitle(testschule665);
+      await personImportPage.schuleSelectCombobox.searchByTitle(testschule665, false);
 
       // select rolle
       await personImportPage.rolleSelectInput.click();

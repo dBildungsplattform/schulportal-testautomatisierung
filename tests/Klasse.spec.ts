@@ -24,6 +24,7 @@ import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
 import { MenuPage } from '../pages/MenuBar.page';
 import { StartPage } from '../pages/StartView.page';
+import { typeLandesadmin, typeSchuladmin } from '../base/rollentypen.ts';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -103,8 +104,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     });
 
     await test.step(`Klasse anlegen`, async () => {
-      await klasseCreationView.comboboxSchulstrukturknoten.click();
-      await page.getByText(schulname).click();
+      await klasseCreationView.comboboxOrganisationInput.searchByTitle(testschule, false);
       await klasseCreationView.inputKlassenname.fill(klassenname);
       await klasseCreationView.buttonKlasseAnlegen.click();
       await expect(klasseCreationView.textSuccess).toBeVisible();
@@ -161,8 +161,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       });
 
     await test.step(`Klasse anlegen`, async () => {
-      await klasseCreationView.comboboxSchulstrukturknoten.click();
-      await page.getByText(nameSchule).click();
+      await klasseCreationView.comboboxOrganisationInput.searchByTitle(nameSchule, false);
       await klasseCreationView.inputKlassenname.fill(klasseName);
       await klasseCreationView.buttonKlasseAnlegen.click();
     });
@@ -217,14 +216,13 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     const klasseManagementView = new KlasseManagementViewPage(page);
     const klasseCreationView = new KlasseCreationViewPage(page);
     const klasseDetailsView = new KlasseDetailsViewPage(page);
-    const schulname = testschule;
     let klassenname = await generateKlassenname();
 
     await test.step(`Landesadmin anlegen`, async () => {
       const addminVorname = await generateVorname();
       const adminNachname = await generateNachname();
       const adminRolle = await generateRolleName();
-      const adminRollenart = 'SYSADMIN';
+      const adminRollenart = typeLandesadmin;
       const adminOrganisation = landSH;
       const adminIdSPs: string[] = [await getSPId(page, 'Schulportal-Administration')];
 
@@ -261,8 +259,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       await menue.menueItem_KlasseAnlegen.click();
       await expect(klasseCreationView.textH2KlasseAnlegen).toHaveText('Neue Klasse hinzufügen');
 
-      await klasseCreationView.comboboxSchulstrukturknoten.click();
-      await page.getByText(schulname).click();
+      await klasseCreationView.comboboxOrganisationInput.searchByTitle(testschule, false);
       await klasseCreationView.inputKlassenname.fill(klassenname);
       await klasseCreationView.buttonKlasseAnlegen.click();
       await expect(klasseCreationView.textSuccess).toBeVisible();
@@ -270,9 +267,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
 
     await test.step(`Klasse bearbeiten als Landesadmin`, async () => {
       await menue.menueItem_AlleKlassenAnzeigen.click();
-      await klasseManagementView.comboboxFilterSchule.fill(schulname);
-      await page.getByText(`${schulname}`, { exact: true }).click();
-      await klasseManagementView.comboboxFilterKlasse.fill(klassenname);
+      await klasseCreationView.comboboxOrganisationInput.searchByTitle(testschule, false);
       await page.getByRole('cell', { name: klassenname, exact: true }).click();
       klassenname = await generateKlassenname();
       await klasseDetailsView.klasseBearbeiten(klassenname);
@@ -291,14 +286,13 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     const klasseManagementView = new KlasseManagementViewPage(page);
     const klasseCreationView = new KlasseCreationViewPage(page);
     const klasseDetailsView = new KlasseDetailsViewPage(page);
-    const schulname = testschule;
     let klassenname = await generateKlassenname();
 
     await test.step(`Schuladmin anlegen`, async () => {
       const addminVorname = await generateVorname();
       const adminNachname = await generateNachname();
       const adminRolle = await generateRolleName();
-      const adminRollenart = 'LEIT';
+      const adminRollenart = typeSchuladmin;
       const adminOrganisation = testschule;
       const adminIdSPs: string[] = [await getSPId(page, 'Schulportal-Administration')];
 
