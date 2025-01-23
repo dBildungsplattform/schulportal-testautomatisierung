@@ -12,7 +12,7 @@ import { addSystemrechtToRolle } from "../base/api/testHelperRolle.page.ts";
 import { LONG, STAGE } from "../base/tags.ts";
 import { deletePersonenBySearchStrings, deleteRolleById } from "../base/testHelperDeleteTestdata.ts";
 import { typeLehrer , typeSchueler, typeSchuladmin } from "../base/rollentypen.ts";
-import { testschule, testschule665 } from "../base/organisation.ts";
+import { landSH, testschule, testschule665 } from "../base/organisation.ts";
 import { email , itslearning} from "../base/sp.ts";
 import { generateNachname, generateVorname, generateRolleName, generateKopersNr } from "../base/testHelperGenerateTestdataNames.ts";
 import { generateDateFuture, generateDateToday, gotoTargetURL } from "../base/testHelperUtils.ts";
@@ -83,7 +83,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     const adminNachname = await generateNachname();
     const adminRolle = await generateRolleName();
     const adminRollenart = typeSchuladmin;
-    const adminOrganisation = 'Testschule-PW665';
+    const adminOrganisation = testschule665;
     const adminIdSPs: string[] = [await getSPId(page, 'Schulportal-Administration')];
     let userInfoAdmin: UserInfo;
 
@@ -120,8 +120,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
     await test.step(`Die Gesamtübersicht des Lehrers öffnen`, async () => {
         await gotoTargetURL(page, "admin/personen");
-        await personManagementView.input_Suchfeld.fill(lehrerBenutzername);
-        await personManagementView.button_Suchen.click();
+        await personManagementView.searchBySuchfeld(lehrerBenutzername);
         await page.getByRole("cell", {name: lehrerBenutzername, exact: true}).click();
     });
 
@@ -166,7 +165,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await test.step(`Ansicht für neuen Personenkontext öffnen`, async () => {
             await personDetailsView.button_editSchulzuordnung.click();
             await personDetailsView.button_addSchulzuordnung.click();
-            await personDetailsView.organisationen.selectByTitle('1111111 (Testschule Schulportal)');
+            await personDetailsView.organisationenInput.searchByTitle(testschule, false);
         })
     
         await test.step(`Befristung bei ${unbefristeteRolle} und ${befristeteRolle} überprüfen`, async () => {
@@ -177,7 +176,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         });
     })
 
-    test("Einen Benutzer über das FE unbefristet sperren @long @stage", {tag: [LONG, STAGE]}, async ({ page }) => {
+    test("Einen Benutzer über das FE unbefristet sperren", {tag: [LONG, STAGE]}, async ({ page }) => {
         let userInfoLehrer: UserInfo;
         const sperrDatumAb = await generateDateToday() // Konkrete Testdaten für diesen Testfall
 
@@ -202,7 +201,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         })
     })
 
-    test("Einen Benutzer über das FE befristet sperren @long @stage", {tag: [LONG, STAGE]}, async ({ page }) => {
+    test("Einen Benutzer über das FE befristet sperren", {tag: [LONG, STAGE]}, async ({ page }) => {
         let userInfoLehrer: UserInfo;
         const sperrDatumAb = await generateDateToday() // Konkrete Testdaten für diesen Testfall
         const sperrDatumBis = await generateDateFuture(5, 2); // Konkrete Testdaten für diesen Testfall
@@ -316,7 +315,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     test("Gesamtübersicht für einen Benutzer als Landesadmin öffnen, 2FA Token einrichten und 2FA Status prüfen dass ein Token eingerichtet ist", {tag: [LONG]}, async ({ page }) => {
         const addminVorname = await generateVorname();
         const adminNachname = await generateNachname();
-        const organisation = 'Land Schleswig-Holstein';
+        const organisation = landSH;
         const rollenart = 'SYSADMIN'
 
         let userInfoAdmin: UserInfo;

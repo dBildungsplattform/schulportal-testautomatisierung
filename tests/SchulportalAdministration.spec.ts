@@ -10,6 +10,7 @@ import { UserInfo } from "../base/api/testHelper.page";
 import { LONG, SHORT, STAGE } from "../base/tags";
 import { deletePersonById, deleteRolleById } from "../base/testHelperDeleteTestdata";
 import { generateNachname, generateRolleName, generateVorname } from "../base/testHelperGenerateTestdataNames";
+import { testschule } from "../base/organisation";
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -60,7 +61,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         await login.login(ADMIN, PW);
 
         const idSPs: string[] = [await getSPId(page, 'E-Mail')];
-        const userInfo: UserInfo = await createRolleAndPersonWithUserContext(page, 'Testschule Schulportal', 'LEHR', await generateNachname(), await generateVorname(), idSPs, await generateRolleName());
+        const userInfo: UserInfo = await createRolleAndPersonWithUserContext(page, testschule, 'LEHR', await generateNachname(), await generateVorname(), idSPs, await generateRolleName());
         personId.push(userInfo.personId); 
         rolleId.push(userInfo.rolleId);
         await header.logout();
@@ -87,7 +88,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         await login.login(ADMIN, PW);
 
         const idSPs: string[] = [await getSPId(page, 'itslearning')];
-        const userInfo: UserInfo = await createRolleAndPersonWithUserContext(page, 'Testschule Schulportal', 'LERN', await generateNachname(), await generateVorname(), idSPs, await generateRolleName());
+        const userInfo: UserInfo = await createRolleAndPersonWithUserContext(page, testschule, 'LERN', await generateNachname(), await generateVorname(), idSPs, await generateRolleName());
         personId.push(userInfo.personId); 
         rolleId.push(userInfo.rolleId);
         await header.logout();
@@ -114,7 +115,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         await login.login(ADMIN, PW);
 
         const idSPs: string[] = [await getSPId(page, 'Schulportal-Administration')];
-        const userInfo: UserInfo = await createRolleAndPersonWithUserContext(page, 'Testschule Schulportal', 'LEIT', await generateNachname(), await generateVorname(), idSPs, await generateRolleName());
+        const userInfo: UserInfo = await createRolleAndPersonWithUserContext(page, testschule, 'LEIT', await generateNachname(), await generateVorname(), idSPs, await generateRolleName());
         personId.push(userInfo.personId); 
         rolleId.push(userInfo.rolleId);
 

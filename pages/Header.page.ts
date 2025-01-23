@@ -22,7 +22,7 @@ export class HeaderPage{
         const landingPage = new LandingPage(this.page);
         // BE requests laufen zeitverzögert zum FE; dieses muss im FE behoben werden; solange dies nicht der Fall ist, brauchen wir diesen workaround
         // Wenn auf login/logout geklickt wird, sind teilweise noch requests am laufen
-        await this.page.waitForTimeout(1000); 
+        await this.page.waitForTimeout(1000); // Im ticket SPSH-1738 muss dieser workaroundt durch einen waitForResponse oder Ähnlichem ersetzt werden
         await this.button_logout.click();
         await expect(landingPage.text_Willkommen).toBeVisible();
     }
