@@ -37,7 +37,7 @@ export class PersonImportViewPage {
     this.importConfirmationText = page.getByTestId('person-import-confirmation-text');
     this.executeImportButton = page.getByTestId('execute-import-button');
     this.importSuccessText = page.getByTestId('person-import-success-text');
-    this.downloadFileButton = page.getByTestId('download-all-files-button');
+    this.downloadFileButton = page.getByTestId('download-all-data-button');
     this.closeCardButton = page.getByTestId('close-layout-card-button');
     this.confirmUnsavedChangesButton = page.getByTestId('confirm-unsaved-changes-button');
   }
