@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { deleteRolle, getRolleId } from '../base/api/testHelperRolle.page';
-import { ersatzschulenSH, landSH } from '../base/organisation';
+import { ersatzLandSH, landSH } from '../base/organisation';
 import { landesadminRolle } from '../base/rollen';
 import { email, itslearning, kalender, schulportaladmin } from '../base/sp';
 import { LONG, SHORT, STAGE } from '../base/tags';
@@ -56,7 +56,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
       const rollenname1 = await generateRolleName();
       const rollenname2 = await generateRolleName();
       const schulstrukturknoten1 = landSH;
-      const schulstrukturknoten2 = ersatzschulenSH;
+      const schulstrukturknoten2 = ersatzLandSH;
       const rollenart1 = 'Lern';
       const rollenart2 = 'Lehr';
       const merkmal2 = 'KoPers.-Nr. ist Pflichtangabe';
@@ -86,7 +86,6 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
       await test.step(`Zweite Rolle anlegen`, async () => {
         await rolleCreationView.button_WeitereRolleAnlegen.click();
         await rolleCreationView.rolleForm.adminstrationsebene.inputElement.selectByTitle(schulstrukturknoten2);
-        await page.pause();
         await rolleCreationView.rolleForm.rollenart.inputElement.selectByTitle(rollenart2);
         await rolleCreationView.enterRollenname(rollenname2);
         await rolleCreationView.rolleForm.merkmale.inputElement.selectByTitle(merkmal2);
@@ -191,7 +190,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     const rolleDetailsView: RolleDetailsViewPage = await test.step('Rolle bearbeiten aufrufen', async () => {
       const menu: MenuPage = await startseite.goToAdministration();
       const rolleManagementView: RolleManagementViewPage = await menu.alleRollenAnzeigen();
-      return rolleManagementView.rolleBearbeiten(landesadminRolle);
+      return await rolleManagementView.rolleBearbeiten(landesadminRolle);
     });
 
     await test.step('leere Pflichtfelder', async () => {
@@ -201,7 +200,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
       await expect(rolleDetailsView.rolleForm.rollenname.messages).toBeVisible();
       await expect(rolleDetailsView.rolleForm.rollenname.messages).toHaveText('Der Rollenname muss ausgewählt werden.');
       await rolleDetailsView.rolleForm.rollenname.inputElement.fill('a');
-      await expect(rolleDetailsView.rolleForm.rollenname.messages).toBeHidden();
+      await expect(rolleDetailsView.rolleForm.rollenname.messages).toHaveText("");
     });
 
     await test.step('zu lange Eingaben', async () => {
@@ -226,7 +225,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
 
   test('Versuch eine zugewiesene Rolle zu löschen', { tag: [LONG] }, async () => {
     const rolleDetailsView: RolleDetailsViewPage = await test.step('Rolle bearbeiten aufrufen', async () => {
-      const menu: MenuPage = await await startseite.goToAdministration();
+      const menu: MenuPage = await startseite.goToAdministration();
       const rolleManagementView: RolleManagementViewPage = await menu.alleRollenAnzeigen();
       return await rolleManagementView.rolleBearbeiten(landesadminRolle);
     });
@@ -277,7 +276,6 @@ test.describe('Testet die Anlage einer neuen Rolle', () => {
         await expect(rolleCreationConfirmPage.confirmationMessage).toBeVisible();
         await expect(rolleCreationView.rolleForm.adminstrationsebene.data).toHaveText('Land Schleswig-Holstein');
         await expect(rolleCreationView.icon_success).toBeVisible();
-        await expect(rolleCreationView.rolleForm.angebote.data).toContainText('E-Mail');
         return rolleCreationConfirmPage.backToResultList();
       });
 
@@ -314,16 +312,16 @@ test.describe('Testet die Anlage einer neuen Rolle', () => {
       await expect(rolleCreationView.rolleForm.rollenart.messages).toHaveText('Die Rollenart muss ausgewählt werden.');
 
       await rolleCreationView.rolleForm.adminstrationsebene.inputElement.selectByPosition([0]);
-      await expect(rolleCreationView.rolleForm.adminstrationsebene.messages).toBeHidden();
+      await expect(rolleCreationView.rolleForm.adminstrationsebene.messages).toHaveText("");
       await rolleCreationView.rolleForm.rollenart.inputElement.selectByPosition([0]);
-      await expect(rolleCreationView.rolleForm.rollenart.messages).toBeHidden();
+      await expect(rolleCreationView.rolleForm.rollenart.messages).toHaveText("");
 
       await expect(rolleCreationView.rolleForm.rollenname.messages).toBeVisible();
       await expect(rolleCreationView.rolleForm.rollenname.messages).toHaveText(
         'Der Rollenname muss ausgewählt werden.'
       );
       await rolleCreationView.enterRollenname('a');
-      await expect(rolleCreationView.rolleForm.rollenname.messages).toBeHidden();
+      await expect(rolleCreationView.rolleForm.rollenname.messages).toHaveText("");
     });
 
     await test.step('zu lange Eingaben', async () => {

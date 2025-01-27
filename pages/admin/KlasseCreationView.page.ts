@@ -1,4 +1,5 @@
 import { type Locator, Page } from '@playwright/test';
+import { ComboBox } from '../../elements/ComboBox';
 
 export class KlasseCreationViewPage{
     readonly page: Page;
@@ -16,13 +17,18 @@ export class KlasseCreationViewPage{
     readonly dataKlasse: Locator;
     readonly buttonZurueckErgebnisliste: Locator;
     readonly buttonWeitereKlasseAnlegen: Locator;
+    readonly comboboxOrganisationInput: ComboBox;
+    readonly organisation: Locator;
+    readonly organisationInput: Locator;
    
     constructor(page){
         // Anlage Klasse
         this.page = page;
         this.textH2KlasseAnlegen = page.getByTestId('layout-card-headline');
         this.buttonSchliessen = page.getByTestId('close-layout-card-button');
-        this.comboboxSchulstrukturknoten = page.getByTestId('schule-select').locator('.v-input__control'); 
+        this.comboboxSchulstrukturknoten = page.getByTestId('schule-select').locator('.v-input__control');
+        this.organisation = page.getByTestId('schule-select').locator('.v-field');
+        this.organisationInput = page.getByTestId('schule-select').locator('input');
         this.inputKlassenname = page.getByTestId('klassenname-input').locator('input');
         this.buttonKlasseAnlegen = page.getByTestId('klasse-form-submit-button');
         // Bestätigungsseite Klasse
@@ -35,5 +41,6 @@ export class KlasseCreationViewPage{
         this.dataKlasse =  page.getByTestId('created-klasse-name');
         this.buttonZurueckErgebnisliste = page.getByTestId('back-to-list-button');
         this.buttonWeitereKlasseAnlegen = page.getByTestId('create-another-klasse-button');
+        this.comboboxOrganisationInput = new ComboBox(this.page, this.organisationInput);
     }
 }

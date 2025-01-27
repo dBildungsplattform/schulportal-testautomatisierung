@@ -1,4 +1,4 @@
-import { type Locator, Page } from '@playwright/test';
+import { expect, type Locator, Page } from '@playwright/test';
 import { RolleDetailsViewPage } from './RolleDetailsView.page';
 
 export class RolleManagementViewPage {
@@ -26,7 +26,8 @@ export class RolleManagementViewPage {
     return new RoleTableRow(this.rolleOverviewTable.locator(`tr:has-text('${roleName}')`));
   }
 
-  public rolleBearbeiten(roleName: string): RolleDetailsViewPage {
+  public async rolleBearbeiten(roleName: string): Promise<RolleDetailsViewPage> {
+    await expect(this.page.getByText("Keine Daten")).not.toBeAttached();
     this.rowByRoleName(roleName).locator.click();
     return new RolleDetailsViewPage(this.page);
   }

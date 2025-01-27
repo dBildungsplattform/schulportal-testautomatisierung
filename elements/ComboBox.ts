@@ -54,12 +54,23 @@ export class ComboBox {
     await this.modalToggle.click();
   }
 
-  public async searchByTitle(title: string): Promise<void> {
+  public async searchByTitle(searchString: string, exactMatch: boolean): Promise<void> {
     await this.locator.click();
-    await this.locator.fill(title);
-    const item: Locator = this.itemsLocator.filter({
-      has: this.page.getByText(title, { exact: true }),
-    });
+    await this.locator.fill(searchString + ' ');  // the combobox doesn't excecute the search correctly when creating a new class, however, this will fix the problem. The bug in the FE will be fixed in SPSH-1769 or SPSH-1733
+    await this.locator.fill(searchString);
+    let item: Locator
+    
+    if (exactMatch) {
+      item = this.itemsLocator.filter({
+        // use regex to search for an exact match
+        hasText: new RegExp(`^${searchString}$`), 
+      })
+    } else {
+      // search for a string inside the item title
+      item = this.itemsLocator.filter({
+        has: this.page.getByText(searchString), 
+      })
+    }    
     await item.waitFor({ state: 'visible' });
     await item.click();
   }
