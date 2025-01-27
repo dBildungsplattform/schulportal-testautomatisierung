@@ -31,7 +31,7 @@ test.describe(`Testfälle für TwoFactorAuthentication": Umgebung: ${process.env
       await page.goto('/');
       await landing.button_Anmelden.click();
       await login.login(ADMIN, PW);
-      await expect(startseite.text_h2_Ueberschrift).toBeVisible();
+      await startseite.checkHeadlineIsVisible();
     });
   });
 
@@ -47,7 +47,7 @@ test.describe(`Testfälle für TwoFactorAuthentication": Umgebung: ${process.env
         await header.logout();
         await landing.button_Anmelden.click();
         await login.login(ADMIN, PW);
-        await expect(startseite.text_h2_Ueberschrift).toBeVisible();
+        await startseite.checkHeadlineIsVisible();
 
         await deletePersonenBySearchStrings(page, username);
         username = [];

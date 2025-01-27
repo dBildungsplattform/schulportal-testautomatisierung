@@ -32,7 +32,7 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
       await page.goto('/');
       await landing.button_Anmelden.click();
       await login.login(ADMIN, PW);
-      await expect(startseite.text_h2_Ueberschrift).toBeVisible();
+      await startseite.checkHeadlineIsVisible();
     });
   });
 
@@ -47,7 +47,7 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
         await header.logout();
         await landing.button_Anmelden.click();
         await login.login(ADMIN, PW);
-        await expect(startseite.text_h2_Ueberschrift).toBeVisible();
+        await startseite.checkHeadlineIsVisible();
         
         await deletePersonById(personId, page);
         personId = [];
@@ -58,7 +58,7 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
         await header.logout();
         await landing.button_Anmelden.click();
         await login.login(ADMIN, PW);
-        await expect(startseite.text_h2_Ueberschrift).toBeVisible();
+        await startseite.checkHeadlineIsVisible();
         
         await deleteRolleById(roleId, page);
         roleId = [];
@@ -156,7 +156,7 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
       const login = await landing.goToLogin();
       const startseite = await login.login(userInfo.username, userInfo.password);
       userInfo.password = await login.UpdatePW();
-      await expect(startseite.text_h2_Ueberschrift).toBeVisible();
+      await startseite.checkHeadlineIsVisible();
       return startseite
     });
 

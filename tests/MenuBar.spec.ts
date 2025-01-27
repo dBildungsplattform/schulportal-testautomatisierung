@@ -19,7 +19,7 @@ test.describe(`Testfälle für die Hauptmenue-Leiste: Umgebung: ${process.env.EN
       await page.goto('/');
       await landing.button_Anmelden.click();
       await login.login(ADMIN, PW);
-      await expect(startseite.text_h2_Ueberschrift).toBeVisible();
+      await startseite.checkHeadlineIsVisible();
     });
   });
 
@@ -58,7 +58,7 @@ test.describe(`Testfälle für die Hauptmenue-Leiste: Umgebung: ${process.env.EN
       await startseite.card_item_schulportal_administration.click();
       await expect(menuBar.header_label_Navigation).toBeVisible();
       await menuBar.button_BackStartpage.click();
-      await expect(startseite.text_h2_Ueberschrift).toBeVisible();
+      await startseite.checkHeadlineIsVisible();
     })
   })
 })

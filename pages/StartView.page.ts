@@ -2,6 +2,8 @@ import { type Locator, Page } from "@playwright/test";
 import { MenuPage } from "./MenuBar.page";
 import { LandingPage } from "./LandingView.page";
 import { expect } from '@playwright/test';
+import { getSPId } from '../base/api/testHelperServiceprovider.page';
+import { schulportaladmin } from "../base/sp.ts";
 
 export class StartPage {
   readonly page: Page;
@@ -23,6 +25,7 @@ export class StartPage {
   }
 
   public async goToAdministration(): Promise<MenuPage> {
+    this.waitForResponseProviderFinished();
     await this.card_item_schulportal_administration.click();
     return new MenuPage(this.page);
   }
@@ -34,12 +37,12 @@ export class StartPage {
 
   public async checkHeadlineIsVisible() {
     await expect(this.text_h2_Ueberschrift).toBeVisible();
+    await this.waitForResponseProviderFinished();
   }
 
-  public async waitForResponses() {
-    let a = await this.page.waitForResponse(response => 
-      response.url().includes('/api/provider') && (response.status() === 200 || (response.status() === 304))
+  public async waitForResponseProviderFinished() {
+    const resp = await this.page.waitForResponse(response => 
+      response.url().includes('/api/provider') && (response.status() === 200 )
     );
-    //  new RegExp(`^${searchString}$`)
   }
 }

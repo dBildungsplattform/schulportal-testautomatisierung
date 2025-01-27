@@ -25,6 +25,7 @@ test.beforeEach(async ({ page }) => {
       .start()
       .then((landing) => landing.goToLogin())
       .then((login) => login.login());
+
     loggedIn = true;
     return startPage;
   });

@@ -43,7 +43,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       await page.goto('/');
       await landing.button_Anmelden.click();
       await login.login(ADMIN, PW);
-      await expect(startseite.text_h2_Ueberschrift).toBeVisible();
+      await startseite.checkHeadlineIsVisible();
     });
   });
 
@@ -52,41 +52,36 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     const landing = new LandingPage(page);
     const login = new LoginPage(page);
     const startseite = new StartPage(page);
+  
+    await header.logout();
+    await landing.button_Anmelden.click();
+    await login.login(ADMIN, PW);
+    await startseite.checkHeadlineIsVisible();
+
     await test.step(`Testdaten löschen via API`, async () => {
-      if (className) {
+      if (className.length > 0) {
         // nur wenn der Testfall auch mind. eine Klasse angelegt hat
         await deleteKlasseByName(className, page);
         className = [];
       }
-      if (username) {
+      if (username.length > 0) {
         // nur wenn der Testfall auch mind. einen Benutzer angelegt hat
-        await header.logout();
-        await landing.button_Anmelden.click();
-        await login.login(ADMIN, PW);
-        await expect(startseite.text_h2_Ueberschrift).toBeVisible();
-
         await deletePersonenBySearchStrings(page, username);
         username = [];
       }
-      if (rolleId) {
+      if (rolleId.length > 0) {
         // nur wenn der Testfall auch mind. eine Rolle angelegt hat
-        await header.logout();
-        await landing.button_Anmelden.click();
-        await login.login(ADMIN, PW);
-        await expect(startseite.text_h2_Ueberschrift).toBeVisible();
-
         await deleteRolleById(rolleId, page);
         rolleId = [];
       }
     });
 
     await test.step(`Abmelden`, async () => {
-      const header = new HeaderPage(page);
       await header.logout();
     });
   });
 
-  test(
+  test.only(
     'Eine Klasse als Landesadmin anlegen und die Klasse anschließend in der Ergebnisliste suchen und dann löschen',
     { tag: [LONG, SHORT, STAGE] },
     async ({ page }) => {
@@ -123,7 +118,11 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
         await page.getByTestId('open-klasse-delete-dialog-button').click();
         await page.getByTestId('klasse-delete-button').click();
         await page.getByTestId('close-klasse-delete-success-dialog-button').click();
-      });
+        await page.waitForResponse(response => 
+          response.url().includes('/api/organisationen') && (response.status() === 200 )
+        );
+        await expect(page.getByRole('cell', { name: klassenname })).toBeHidden();
+    });
     }
   );
 
@@ -251,7 +250,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       await landing.button_Anmelden.click();
       await login.login(userInfoAdmin.username, userInfoAdmin.password);
       await login.UpdatePW();
-      await expect(startseite.text_h2_Ueberschrift).toBeVisible();
+      await startseite.checkHeadlineIsVisible();
     });
 
     await test.step(`Klasse anlegen`, async () => {
@@ -316,7 +315,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       await landing.button_Anmelden.click();
       await login.login(userInfoAdmin.username, userInfoAdmin.password);
       await login.UpdatePW();
-      await expect(startseite.text_h2_Ueberschrift).toBeVisible();
+      await startseite.checkHeadlineIsVisible();
     });
 
     await test.step(`Klasse anlegen`, async () => {

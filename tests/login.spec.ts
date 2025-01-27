@@ -73,7 +73,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
    test('Erfolgreicher Standard Login Landesadmin', {tag: [LONG, SMOKE, STAGE, BROWSER]}, async ({ page }) => {
     const login: LoginPage = new LoginPage(page);
     const landing: LandingPage = new LandingPage(page);
-    const start: StartPage = new StartPage(page);
+    const startseite: StartPage = new StartPage(page);
 
     await test.step(`Anmelden mit Benutzer ${ADMIN}`, async () => {
       await page.goto('/');
@@ -81,7 +81,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
       await landing.button_Anmelden.click();
       
       await login.login(ADMIN, PW);
-      await expect(start.text_h2_Ueberschrift).toBeVisible();
+      await startseite.checkHeadlineIsVisible();
       loggedIn = true;
     })
   })

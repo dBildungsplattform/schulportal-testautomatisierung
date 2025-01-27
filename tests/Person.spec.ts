@@ -39,7 +39,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await page.goto('/');
       await landing.button_Anmelden.click();
       await login.login(ADMIN, PW);
-      await expect(startseite.text_h2_Ueberschrift).toBeVisible();
+      await startseite.checkHeadlineIsVisible();
     });
   });
 
@@ -66,7 +66,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await header.logout();
         await landing.button_Anmelden.click();
         await login.login(ADMIN, PW);
-        await expect(startseite.text_h2_Ueberschrift).toBeVisible();
+        await startseite.checkHeadlineIsVisible();
 
         await deleteRolleById(roleId, page);
         roleId = [];
@@ -77,7 +77,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await header.logout();
         await landing.button_Anmelden.click();
         await login.login(ADMIN, PW);
-        await expect(startseite.text_h2_Ueberschrift).toBeVisible();
+        await startseite.checkHeadlineIsVisible();
 
         await deleteRolleByName(roleName, page);
         roleName = [];
@@ -144,7 +144,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await landing.button_Anmelden.click();
         await login.login(username[0], einstiegspasswort);
         await login.UpdatePW();
-        await expect(startseite.text_h2_Ueberschrift).toBeVisible();
+        await startseite.checkHeadlineIsVisible();
       });
     }
   );
@@ -257,7 +257,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await landing.button_Anmelden.click();
         await login.login(userInfo.username, userInfo.password);
         userInfo.password = await login.UpdatePW();
-        await expect(startseite.text_h2_Ueberschrift).toBeVisible();
+        await startseite.checkHeadlineIsVisible();
       });
 
       // Step 2: Create another user as Schuladmin
@@ -603,7 +603,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await landing.button_Anmelden.click();
         await login.login(userInfo.username, userInfo.password);
         userInfo.password = await login.UpdatePW();
-        await expect(startseite.text_h2_Ueberschrift).toBeVisible();
+        await startseite.checkHeadlineIsVisible();
       });
 
       // Testdaten

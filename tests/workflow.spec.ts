@@ -30,7 +30,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
       await page.goto('/');
       await landing.button_Anmelden.click();
       await login.login(ADMIN, PW);
-      await expect(startseite.text_h2_Ueberschrift).toBeVisible();
+      await startseite.checkHeadlineIsVisible();
     });
   });
 
@@ -45,7 +45,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
             await header.logout();
             await landing.button_Anmelden.click();
             await login.login(ADMIN, PW);
-            await expect(startseite.text_h2_Ueberschrift).toBeVisible();
+            await startseite.checkHeadlineIsVisible();
 
             await deletePersonenBySearchStrings(page, usernames);
             usernames = [];
@@ -55,7 +55,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
           await header.logout();
           await landing.button_Anmelden.click();
           await login.login(ADMIN, PW);
-          await expect(startseite.text_h2_Ueberschrift).toBeVisible();
+          await startseite.checkHeadlineIsVisible();
 
           await deleteRolleById(rolleIds, page);
           rolleIds = [];
@@ -70,7 +70,6 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
 
   test("Angebote per Link öffnen als Lehrer", {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
     const startseite: StartPage = new StartPage(page);
-    const header: HeaderPage = new HeaderPage(page);
 
     let userInfoAdmin: UserInfo;
 

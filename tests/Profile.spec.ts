@@ -32,7 +32,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       await page.goto('/');
       await landing.button_Anmelden.click();
       await login.login(ADMIN, PW);
-      await expect(startseite.text_h2_Ueberschrift).toBeVisible();
+      await startseite.checkHeadlineIsVisible();
     });
   });
 
@@ -52,7 +52,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await landing.button_Anmelden.click();
         await login.login(ADMIN, PW);
         const startseite: StartPage = new StartPage(page);
-        await expect(startseite.text_h2_Ueberschrift).toBeVisible();
+        await startseite.checkHeadlineIsVisible();
         await expect(startseite.card_item_schulportal_administration).toBeVisible();
 
         await deletePersonenBySearchStrings(page, username);
