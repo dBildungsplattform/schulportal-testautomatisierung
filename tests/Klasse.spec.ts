@@ -81,48 +81,47 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     });
   });
 
-  test.only(
+  test(
     'Eine Klasse als Landesadmin anlegen und die Klasse anschließend in der Ergebnisliste suchen und dann löschen',
     { tag: [LONG, SHORT, STAGE] },
-    async ({ page }) => {
-      const startseite: StartPage = new StartPage(page);
-      const menue: MenuPage = new MenuPage(page);
-      const klasseCreationView: KlasseCreationViewPage = new KlasseCreationViewPage(page);
-      const klasseManagementView: KlasseManagementViewPage = new KlasseManagementViewPage(page);
-      const schulname: string = testschule;
-      const klassenname: string = await generateKlassenname();
+      async ({ page }) => {
+        const startseite: StartPage = new StartPage(page);
+        const menue: MenuPage = new MenuPage(page);
+        const klasseCreationView: KlasseCreationViewPage = new KlasseCreationViewPage(page);
+        const klasseManagementView: KlasseManagementViewPage = new KlasseManagementViewPage(page);
+        const schulname: string = testschule;
+        const klassenname: string = await generateKlassenname();
 
-    await test.step(`Dialog Schule anlegen öffnen`, async () => {
-      await startseite.card_item_schulportal_administration.click();
-      await menue.menueItem_KlasseAnlegen.click();
-      await expect(klasseCreationView.textH2KlasseAnlegen).toHaveText("Neue Klasse hinzufügen");
-    });
+        await test.step(`Dialog Schule anlegen öffnen`, async () => {
+          await startseite.card_item_schulportal_administration.click();
+          await menue.menueItem_KlasseAnlegen.click();
+          await expect(klasseCreationView.textH2KlasseAnlegen).toHaveText("Neue Klasse hinzufügen");
+        });
 
-    await test.step(`Klasse anlegen`, async () => {
-      await klasseCreationView.comboboxOrganisationInput.searchByTitle(testschule, false);
-      await klasseCreationView.inputKlassenname.fill(klassenname);
-      await klasseCreationView.buttonKlasseAnlegen.click();
-      await expect(klasseCreationView.textSuccess).toBeVisible();
-    });
+        await test.step(`Klasse anlegen`, async () => {
+          await klasseCreationView.comboboxOrganisationInput.searchByTitle(testschule, false);
+          await klasseCreationView.inputKlassenname.fill(klassenname);
+          await klasseCreationView.buttonKlasseAnlegen.click();
+          await expect(klasseCreationView.textSuccess).toBeVisible();
+        });
 
-    await test.step(`In der Ergebnisliste prüfen, dass die neue Klasse angezeigt wird`, async () => {
-      await menue.menueItem_AlleKlassenAnzeigen.click(); 
-      await klasseManagementView.comboboxFilterSchule.fill(schulname);
-      await page.getByText(`${schulname}`, { exact: true }).click({delay:1000});
-      await klasseManagementView.textH2Klassenverwaltung.click(); // dies schließt das Dropdown Klasse
-      await expect(page.getByRole('cell', { name: klassenname })).toBeVisible();
-    });
+        await test.step(`In der Ergebnisliste prüfen, dass die neue Klasse angezeigt wird`, async () => {
+          await menue.menueItem_AlleKlassenAnzeigen.click(); 
+          await klasseManagementView.comboboxFilterSchule.fill(schulname);
+          await page.getByText(`${schulname}`, { exact: true }).click({delay:1000});
+          await klasseManagementView.textH2Klassenverwaltung.click(); // dies schließt das Dropdown Klasse
+          await expect(page.getByRole('cell', { name: klassenname })).toBeVisible();
+        });
 
-      await test.step(`Klasse löschen`, async () => {
-        await page.getByRole('cell', { name: klassenname }).click();
-        await page.getByTestId('open-klasse-delete-dialog-button').click();
-        await page.getByTestId('klasse-delete-button').click();
-        await page.getByTestId('close-klasse-delete-success-dialog-button').click();
-        await page.waitForResponse(response => 
-          response.url().includes('/api/organisationen') && (response.status() === 200 )
-        );
-        await expect(page.getByRole('cell', { name: klassenname })).toBeHidden();
-    });
+        await test.step(`Klasse löschen`, async () => {
+          await page.getByRole('cell', { name: klassenname }).click();
+          await page.getByTestId('open-klasse-delete-dialog-button').click();
+          await page.getByTestId('klasse-delete-button').click();
+          await page.getByTestId('close-klasse-delete-success-dialog-button').click();
+          await klasseManagementView.waitForResponseErgebnislisteFinished();
+          await expect(page.getByRole('cell', { name: 'Playwright4b' })).toBeVisible();
+          await expect(page.getByRole('cell', { name: klassenname })).toBeHidden();
+        });
     }
   );
 

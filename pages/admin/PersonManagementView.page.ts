@@ -49,7 +49,7 @@ export class PersonManagementViewPage {
   }
 
   public async searchBySuchfeld(name: string): Promise<void> {
-    await this.page.waitForTimeout(1000);  // Im ticket SPSH-1738 muss dieser workaroundt durch einen waitForResponse oder Ähnlichem ersetzt werden
+    await this.waitForResponsePersonenuebersichtFinished();
     await this.input_Suchfeld.fill(name);
     await this.button_Suchen.click();
     await expect(this.comboboxMenuIcon_Status).toBeVisible();
@@ -66,5 +66,11 @@ export class PersonManagementViewPage {
 
   public getRows(): Locator {
     return this.table_wrapper.locator('.v-data-table__tr');
+  }
+
+  public async waitForResponsePersonenuebersichtFinished() {
+    await this.page.waitForResponse(response => 
+      response.url().includes('/api/dbiam/personenuebersicht') && (response.status() === 201 )
+    );
   }
 }

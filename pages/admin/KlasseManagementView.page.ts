@@ -43,4 +43,10 @@ export class KlasseManagementViewPage{
             await expect(klassennameCell).not.toBeEmpty();
           }
     }
+
+    public async waitForResponseErgebnislisteFinished() {
+        await this.page.waitForResponse(response => 
+          response.url().includes('/api/organisationen') && (response.status() === 200 )
+        );
+      }
 }
