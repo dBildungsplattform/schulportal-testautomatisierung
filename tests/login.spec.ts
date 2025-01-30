@@ -29,33 +29,20 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
     await test.step(`Testdaten(Benutzer) löschen via API`, async () => {
       if (!loggedIn) {
         await test.step(`Abmelden`, async () => {
-          const landing: LandingPage = new LandingPage(page);
-          const startseite: StartPage = new StartPage(page);
-          const login: LoginPage = new LoginPage(page);
-          
           await page.goto('/');
           await landing.button_Anmelden.click();
           await login.login(ADMIN, PW);
-          await expect(startseite.text_h2_Ueberschrift).toBeVisible();
+          await startseite.checkHeadlineIsVisible();
           loggedIn = true
         });
       }
 
-      if (username) { // nur wenn der Testfall auch mind. einen Benutzer angelegt hat
-        await header.logout();
-        await landing.button_Anmelden.click();
-        await login.login(ADMIN, PW);
-        await expect(startseite.text_h2_Ueberschrift).toBeVisible();
-        
+      if (username.length > 0) { 
         await deletePersonenBySearchStrings(page, username);
         username = [];
       }
 
-      if (rolleId) { // nur wenn der Testfall auch mind. eine Rolle angelegt hat
-        await header.logout();
-        await landing.button_Anmelden.click();
-        await login.login(ADMIN, PW);
-        await expect(startseite.text_h2_Ueberschrift).toBeVisible();
+      if (rolleId.length > 0) { 
         await deleteRolleById(rolleId, page);
         rolleId = [];
       }
@@ -63,7 +50,6 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
 
     if (loggedIn) {
       await test.step(`Abmelden`, async () => {
-        const header: HeaderPage = new HeaderPage(page);
         await header.logout();
         loggedIn = false;
       });
@@ -153,7 +139,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
 
     await test.step(`Anmelden mit Benutzer ${ADMIN}`, async () => {
       await login.login(ADMIN, PW);
-      await expect(start.text_h2_Ueberschrift).toBeVisible();
+      await start.checkHeadlineIsVisible();
       loggedIn = true;
     })
   })

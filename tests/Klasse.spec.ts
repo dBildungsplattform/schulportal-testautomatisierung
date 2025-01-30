@@ -25,6 +25,7 @@ import { LoginPage } from '../pages/LoginView.page';
 import { MenuPage } from '../pages/MenuBar.page';
 import { StartPage } from '../pages/StartView.page';
 import { typeLandesadmin, typeSchuladmin } from '../base/rollentypen.ts';
+import FromAnywhere from '../pages/FromAnywhere';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -33,17 +34,17 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
   let className: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
   let username: string[] = [];
   let rolleId: string[] = [];
+  let startseite: StartPage;
 
   test.beforeEach(async ({ page }) => {
-    await test.step(`Login`, async () => {
-      const landing: LandingPage = new LandingPage(page);
-      const startseite: StartPage = new StartPage(page);
-      const login: LoginPage = new LoginPage(page);
-
-      await page.goto('/');
-      await landing.button_Anmelden.click();
-      await login.login(ADMIN, PW);
-      await startseite.checkHeadlineIsVisible();
+    startseite = await test.step(`Login`, async () => {
+      const startPage = await FromAnywhere(page)
+        .start()
+        .then((landing) => landing.goToLogin())
+        .then((login) => login.login())
+        .then((startseite) => startseite.checkHeadlineIsVisible());
+  
+      return startPage;
     });
   });
 
@@ -60,17 +61,14 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
 
     await test.step(`Testdaten löschen via API`, async () => {
       if (className.length > 0) {
-        // nur wenn der Testfall auch mind. eine Klasse angelegt hat
         await deleteKlasseByName(className, page);
         className = [];
       }
       if (username.length > 0) {
-        // nur wenn der Testfall auch mind. einen Benutzer angelegt hat
         await deletePersonenBySearchStrings(page, username);
         username = [];
       }
       if (rolleId.length > 0) {
-        // nur wenn der Testfall auch mind. eine Rolle angelegt hat
         await deleteRolleById(rolleId, page);
         rolleId = [];
       }
@@ -121,6 +119,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
           await klasseManagementView.waitForResponseErgebnislisteFinished();
           await expect(page.getByRole('cell', { name: 'Playwright4b' })).toBeVisible();
           await expect(page.getByRole('cell', { name: klassenname })).toBeHidden();
+          console.log('################# Test #############');
         });
     }
   );

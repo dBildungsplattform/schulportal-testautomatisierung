@@ -8,6 +8,7 @@ export class HeaderPage{
     readonly button_profil: Locator;
     readonly icon_myProfil: Locator;
     readonly icon_logout: Locator;
+    readonly iconSchulportal: Locator;
    
     constructor(page){
         this.page = page;
@@ -16,13 +17,11 @@ export class HeaderPage{
         this.button_profil = page.getByTestId('nav-profile-button');
         this.icon_myProfil = page.locator('.mdi-account-outline');
         this.icon_logout = page.locator('.mdi-logout');
+        this.iconSchulportal = page.getByTestId('header').getByRole('link', { name: 'Logo Schulportal' })
     }
 
-    async logout() {
+    async logout(): Promise<void> {
         const landingPage = new LandingPage(this.page);
-        // BE requests laufen zeitverzögert zum FE
-        // Wenn auf login/logout geklickt wird, sind teilweise noch requests am laufen
-        // await this.page.waitForTimeout(1000); // Im ticket SPSH-1738 muss dieser workaroundt durch einen waitForResponse oder Ähnlichem ersetzt werden
         await this.button_logout.click();
         await expect(landingPage.text_Willkommen).toBeVisible();
     }

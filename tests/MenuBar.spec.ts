@@ -5,21 +5,23 @@ import { LoginPage } from '../pages/LoginView.page';
 import { MenuPage } from '../pages/MenuBar.page';
 import { HeaderPage } from "../pages/Header.page";
 import { LONG, SHORT, STAGE, BROWSER } from '../base/tags';
+import FromAnywhere from '../pages/FromAnywhere';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
 
 test.describe(`Testfälle für die Hauptmenue-Leiste: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
-  test.beforeEach(async ({ page }) => {
-    await test.step(`Login`, async () => {
-      const landing: LandingPage = new LandingPage(page);
-      const startseite: StartPage = new StartPage(page);
-      const login: LoginPage = new LoginPage(page);
+  let startseite: StartPage;
 
-      await page.goto('/');
-      await landing.button_Anmelden.click();
-      await login.login(ADMIN, PW);
-      await startseite.checkHeadlineIsVisible();
+  test.beforeEach(async ({ page }) => {
+    startseite = await test.step(`Login`, async () => {
+      const startPage = await FromAnywhere(page)
+        .start()
+        .then((landing) => landing.goToLogin())
+        .then((login) => login.login())
+        .then((startseite) => startseite.checkHeadlineIsVisible());
+  
+      return startPage;
     });
   });
 

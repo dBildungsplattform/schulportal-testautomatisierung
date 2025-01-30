@@ -35,14 +35,15 @@ export class StartPage {
     return new LandingPage(this.page);
   }
 
-  public async checkHeadlineIsVisible() {
-    await expect(this.text_h2_Ueberschrift).toBeVisible();
+  public async checkHeadlineIsVisible(): Promise<StartPage> {
     await this.waitForResponseProviderFinished();
+    await expect(this.text_h2_Ueberschrift).toBeVisible();
+    return new StartPage(this.page);
   }
 
-  public async waitForResponseProviderFinished() {
+  public async waitForResponseProviderFinished(): Promise<void> {
     const resp = await this.page.waitForResponse(response => 
-      response.url().includes('/api/provider') && (response.status() === 200 )
-    );
+      (response.url().includes('/api/provider') && ((response.status() === 200 ) || (response.status() === 304 )))
+   );
   }
 }

@@ -22,6 +22,7 @@ import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
 import { MenuPage } from '../pages/MenuBar.page';
 import { StartPage } from '../pages/StartView.page';
+import FromAnywhere from '../pages/FromAnywhere';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -31,15 +32,17 @@ let roleId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
 let roleName: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
 
 test.describe(`Testfälle für die Administration von Personen": Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
+  let startseite: StartPage;
+
   test.beforeEach(async ({ page }) => {
-    await test.step(`Login`, async () => {
-      const landing = new LandingPage(page);
-      const startseite = new StartPage(page);
-      const login = new LoginPage(page);
-      await page.goto('/');
-      await landing.button_Anmelden.click();
-      await login.login(ADMIN, PW);
-      await startseite.checkHeadlineIsVisible();
+    startseite = await test.step(`Login`, async () => {
+      const startPage = await FromAnywhere(page)
+        .start()
+        .then((landing) => landing.goToLogin())
+        .then((login) => login.login())
+        .then((startseite) => startseite.checkHeadlineIsVisible());
+  
+      return startPage;
     });
   });
 
@@ -49,43 +52,29 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     const login: LoginPage = new LoginPage(page);
     const startseite: StartPage = new StartPage(page);
 
-    await test.step(`Testdaten(Benutzer) löschen via API`, async () => {
-      if (username) {
-        // nur wenn der Testfall auch mind. einen Benutzer angelegt hat
-        await header.logout();
-        await landing.button_Anmelden.click();
-        await login.login(ADMIN, PW);
-        await expect(startseite.text_h2_Ueberschrift).toBeVisible();
+    await header.logout();
+    await landing.button_Anmelden.click();
+    await login.login(ADMIN, PW);
+    await startseite.checkHeadlineIsVisible();
 
+    await test.step(`Testdaten(Benutzer) löschen via API`, async () => {
+      if (username.length > 0) {
         await deletePersonenBySearchStrings(page, username);
         username = [];
       }
 
-      if (roleId) {
-        // nur wenn der Testfall auch mind. eine Rolle angelegt hat
-        await header.logout();
-        await landing.button_Anmelden.click();
-        await login.login(ADMIN, PW);
-        await startseite.checkHeadlineIsVisible();
-
+      if (roleId.length > 0) {
         await deleteRolleById(roleId, page);
         roleId = [];
       }
 
-      if (roleName) {
-        // nur wenn der Testfall auch mind. eine Rolle angelegt hat
-        await header.logout();
-        await landing.button_Anmelden.click();
-        await login.login(ADMIN, PW);
-        await startseite.checkHeadlineIsVisible();
-
+      if (roleName.length > 0) {
         await deleteRolleByName(roleName, page);
         roleName = [];
       }
     });
 
     await test.step(`Abmelden`, async () => {
-      const header = new HeaderPage(page);
       await header.logout();
     });
   });
@@ -335,6 +324,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await test.step(`Benutzerverwaltung öffnen und alle Elemente in der Ergebnisliste auf Existenz prüfen`, async () => {
         await startseite.card_item_schulportal_administration.click();
         await menue.menueItem_AlleBenutzerAnzeigen.click();
+        await personManagementView.waitForData();
         await expect(personManagementView.text_h1_Administrationsbereich).toBeVisible();
         await expect(personManagementView.text_h2_Benutzerverwaltung).toBeVisible();
         await expect(personManagementView.text_h2_Benutzerverwaltung).toHaveText('Benutzerverwaltung');
@@ -795,6 +785,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await expect(personManagementView.comboboxMenuIcon_Rolle).toBeVisible();
       await expect(personManagementView.comboboxMenuIcon_Klasse).toBeVisible();
       await expect(personManagementView.comboboxMenuIcon_Status).toBeVisible();
+      await personManagementView.waitForResponseErgebnislisteFinished();
       await expect(page.getByRole('cell', { name: nachname, exact: true })).toBeHidden();
     });
   });

@@ -5,7 +5,7 @@ function FromAnywhere(page: Page) {
   return {
     async start(): Promise<LandingPage> {
       return page
-        .goto('/')
+        .goto('/', { timeout: 30000 })
         .then(() => new LandingPage(page));
     },
   };

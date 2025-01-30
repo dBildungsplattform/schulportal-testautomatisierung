@@ -15,6 +15,8 @@ import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
 import { ProfilePage } from '../pages/ProfileView.page';
 import { StartPage } from '../pages/StartView.page';
+import FromAnywhere from '../pages/FromAnywhere'
+import { userInfo } from 'os';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -23,50 +25,48 @@ let username: string[] = []; // Im afterEach Block werden alle Testdaten gelösc
 let roleId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
 
 test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
-  test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
-    await test.step(`Login`, async () => {
-      const landing: LandingPage = new LandingPage(page);
-      const startseite: StartPage = new StartPage(page);
-      const login: LoginPage = new LoginPage(page);
+  let startseite: StartPage;
 
-      await page.goto('/');
-      await landing.button_Anmelden.click();
-      await login.login(ADMIN, PW);
-      await startseite.checkHeadlineIsVisible();
+  test.beforeEach(async ({ page }) => {
+    startseite = await test.step(`Login`, async () => {
+      const startPage = await FromAnywhere(page)
+        .start()
+        .then((landing) => landing.goToLogin())
+        .then((login) => login.login())
+        .then((startseite) => startseite.checkHeadlineIsVisible());
+  
+      return startPage;
     });
   });
 
   test.afterEach(async ({ page }: PlaywrightTestArgs) => {
-    const header: HeaderPage = new HeaderPage(page);
-    const landing: LandingPage = new LandingPage(page);
-    const login: LoginPage = new LoginPage(page);
-
     await test.step(`Offene Dialoge schließen`, async () => {
       page.keyboard.press('Escape');
     });
 
-    await test.step(`Testdaten löschen via API`, async () => {
-      if (username) {
-        // nur wenn der Testfall auch mind. einen Benutzer angelegt hat
-        await header.logout();
-        await landing.button_Anmelden.click();
-        await login.login(ADMIN, PW);
-        const startseite: StartPage = new StartPage(page);
-        await startseite.checkHeadlineIsVisible();
-        await expect(startseite.card_item_schulportal_administration).toBeVisible();
+    const header: HeaderPage = new HeaderPage(page);
+    const landing: LandingPage = new LandingPage(page);
+    const login: LoginPage = new LoginPage(page);
+    const startseite: StartPage = new StartPage(page);
 
+    await header.logout();
+    await landing.button_Anmelden.click();
+    await login.login(ADMIN, PW);
+    await startseite.checkHeadlineIsVisible();
+
+    await test.step(`Testdaten löschen via API`, async () => {
+      if (username.length > 0) {
         await deletePersonenBySearchStrings(page, username);
         username = [];
       }
 
-      if (roleId) {
+      if (roleId.length > 0) {
         deleteRolleById(roleId, page);
         roleId = [];
       }
     });
 
     await test.step(`Abmelden`, async () => {
-      const header: HeaderPage = new HeaderPage(page);
       await header.logout();
     });
   });
@@ -515,8 +515,8 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await expect(profileView.cardHeadline_Passwort).toHaveText('Passwort');
         await expect(profileView.button_NeuesPasswortSetzen).toBeEnabled();
 
-        profileView.button_NeuesPasswortSetzen.click();
-        profileView.button_PasswortAendern.click();
+        await profileView.button_NeuesPasswortSetzen.click();
+        await profileView.button_PasswortAendern.click();
       });
 
       await test.step(`Status des Benutzernamenfelds prüfen`, async () => {
@@ -524,6 +524,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await expect(profileView.text_p_LoginPrompt).toHaveText('Bitte geben Sie Ihr aktuelles Passwort ein.');
         await expect(profileView.input_password).toBeEnabled();
         await page.goBack();
+        await expect(profileView.cardHeadline_Passwort).toBeVisible();
       });
     }
   );

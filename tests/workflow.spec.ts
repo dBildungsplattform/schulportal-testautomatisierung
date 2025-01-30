@@ -12,6 +12,7 @@ import { DirectoryPage } from "../pages/Cards/Directory.page";
 import { createTeacherAndLogin } from "../base/api/testHelperPerson.page";
 import { UserInfo} from "../base/api/testHelper.page.ts";
 import { deletePersonenBySearchStrings, deleteRolleById } from "../base/testHelperDeleteTestdata.ts";
+import FromAnywhere from '../pages/FromAnywhere';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -21,16 +22,17 @@ let usernames: string[] = []; // Im afterEach Block werden alle Testdaten gelös
 let rolleIds: string[] = [];
 
 test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
-  test.beforeEach(async ({ page }) => {
-    await test.step(`Login`, async () => {
-      const landing: LandingPage = new LandingPage(page);
-      const startseite: StartPage = new StartPage(page);
-      const login: LoginPage = new LoginPage(page);
+  let startseite: StartPage;
 
-      await page.goto('/');
-      await landing.button_Anmelden.click();
-      await login.login(ADMIN, PW);
-      await startseite.checkHeadlineIsVisible();
+  test.beforeEach(async ({ page }) => {
+    startseite = await test.step(`Login`, async () => {
+      const startPage = await FromAnywhere(page)
+        .start()
+        .then((landing) => landing.goToLogin())
+        .then((login) => login.login())
+        .then((startseite) => startseite.checkHeadlineIsVisible());
+  
+      return startPage;
     });
   });
 
@@ -40,30 +42,24 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
     const login = new LoginPage(page);
     const startseite = new StartPage(page);
 
-    await test.step(`Testdaten(Benutzer) löschen via API`, async () => {
-        if (usernames) { // nur wenn der Testfall auch mind. einen Benutzer angelegt hat
-            await header.logout();
-            await landing.button_Anmelden.click();
-            await login.login(ADMIN, PW);
-            await startseite.checkHeadlineIsVisible();
+    await header.logout();
+    await landing.button_Anmelden.click();
+    await login.login(ADMIN, PW);
+    await startseite.checkHeadlineIsVisible();
 
+    await test.step(`Testdaten(Benutzer) löschen via API`, async () => {
+        if (usernames.length > 0) { 
             await deletePersonenBySearchStrings(page, usernames);
             usernames = [];
         }
 
-        if (rolleIds) { // nur wenn der Testfall auch mind. eine Rolle angelegt hat
-          await header.logout();
-          await landing.button_Anmelden.click();
-          await login.login(ADMIN, PW);
-          await startseite.checkHeadlineIsVisible();
-
+        if (rolleIds.length > 0) { 
           await deleteRolleById(rolleIds, page);
           rolleIds = [];
       }
     });
 
     await test.step(`Abmelden`, async () => {
-        const header = new HeaderPage(page);
         await header.logout();
     });
 });
@@ -171,7 +167,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
 
     await test.step(`Neues PW vergeben`, async () => {
       await login.UpdatePW();
-      await expect(startseite.text_h2_Ueberschrift).toBeVisible();
+      await startseite.checkHeadlineIsVisible();
     });
   });
 });

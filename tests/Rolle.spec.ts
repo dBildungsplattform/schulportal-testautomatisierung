@@ -15,16 +15,17 @@ import { HeaderPage } from '../pages/Header.page';
 import { MenuPage } from '../pages/MenuBar.page';
 import { StartPage } from '../pages/StartView.page';
 
-let startseite: StartPage;
 let loggedIn = false;
 let rolleName: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
+let startseite: StartPage;
 
 test.beforeEach(async ({ page }) => {
   startseite = await test.step(`Login`, async () => {
     const startPage = await FromAnywhere(page)
       .start()
       .then((landing) => landing.goToLogin())
-      .then((login) => login.login());
+      .then((login) => login.login())
+      .then((startseite) => startseite.checkHeadlineIsVisible());
 
     loggedIn = true;
     return startPage;
@@ -33,8 +34,7 @@ test.beforeEach(async ({ page }) => {
 
 test.afterEach(async ({ page }) => {
   await test.step(`Testdaten löschen via API`, async () => {
-    if (rolleName) {
-      // nur wenn der Testfall auch mind. eine Rolle angelegt hat
+    if (rolleName.length > 0) {
       await deleteRolleByName(rolleName, page);
       rolleName = [];
     }
@@ -110,7 +110,10 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     }
   );
 
-  test('Ergebnisliste Rollen auf Vollständigkeit prüfen als Landesadmin', { tag: [LONG, SHORT, STAGE] }, async () => {
+  test(
+    'Ergebnisliste Rollen auf Vollständigkeit prüfen als Landesadmin',
+    { tag: [LONG, SHORT, STAGE] },
+    async ({ page }) => {
     await test.step(`Rollenverwaltung öffnen und alle Elemente in der Ergebnisliste auf Existenz prüfen`, async () => {
       const menu: MenuPage = await startseite.goToAdministration();
       const rolleManagement = await menu.alleRollenAnzeigen();
@@ -120,6 +123,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
       await expect(rolleManagement.table_header_Rollenart).toBeVisible();
       await expect(rolleManagement.table_header_Merkmale).toBeVisible();
       await expect(rolleManagement.table_header_Administrationsebene).toBeVisible();
+      await expect(page.getByRole('cell', { name: 'itslearning-Schüler' })).toBeVisible();
     });
   });
 
