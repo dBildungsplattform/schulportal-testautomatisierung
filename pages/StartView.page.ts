@@ -42,7 +42,7 @@ export class StartPage {
   }
 
   public async waitForResponseProviderFinished(): Promise<void> {
-    const resp = await this.page.waitForResponse(response => 
+    await this.page.waitForResponse(response => 
       (response.url().includes('/api/provider') && ((response.status() === 200 ) || (response.status() === 304 )))
    );
   }
