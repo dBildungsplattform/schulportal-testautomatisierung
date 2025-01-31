@@ -51,9 +51,6 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       const login: LoginPage = new LoginPage(page);
       const startseite: StartPage = new StartPage(page);
 
-      // await page.goto('/');
-      // await startseite.checkHeadlineIsVisible();
-
       await header.logout();
       await landing.button_Anmelden.click();
       await login.login(ADMIN, PW);

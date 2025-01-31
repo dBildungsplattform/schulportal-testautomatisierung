@@ -25,7 +25,6 @@ export class StartPage {
   }
 
   public async goToAdministration(): Promise<MenuPage> {
-    this.waitForResponseProviderFinished();
     await this.card_item_schulportal_administration.click();
     return new MenuPage(this.page);
   }
@@ -36,13 +35,12 @@ export class StartPage {
   }
 
   public async checkHeadlineIsVisible(): Promise<StartPage> {
-    await this.waitForResponseProviderFinished();
     await expect(this.text_h2_Ueberschrift).toBeVisible();
     return new StartPage(this.page);
   }
 
   public async waitForResponseProviderFinished(): Promise<void> {
-    await this.page.waitForResponse(response => 
+    await this.page.waitForResponse(async response => 
       (response.url().includes('/api/provider') && ((response.status() === 200 ) || (response.status() === 304 )))
    );
   }

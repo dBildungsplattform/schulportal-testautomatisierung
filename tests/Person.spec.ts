@@ -54,9 +54,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const login: LoginPage = new LoginPage(page);
       const startseite: StartPage = new StartPage(page);
 
-      // await page.goto('/');
-      // await startseite.checkHeadlineIsVisible();
-
       await header.logout();
       await landing.button_Anmelden.click();
       await login.login(ADMIN, PW);

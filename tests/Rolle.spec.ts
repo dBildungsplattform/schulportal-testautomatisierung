@@ -14,6 +14,7 @@ import FromAnywhere from '../pages/FromAnywhere';
 import { HeaderPage } from '../pages/Header.page';
 import { MenuPage } from '../pages/MenuBar.page';
 import { StartPage } from '../pages/StartView.page';
+import { gotoTargetURL } from '../base/testHelperUtils';
 
 let loggedIn = false;
 let rolleName: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
@@ -114,16 +115,19 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     'Ergebnisliste Rollen auf Vollständigkeit prüfen als Landesadmin',
     { tag: [LONG, SHORT, STAGE] },
     async ({ page }) => {
-    await test.step(`Rollenverwaltung öffnen und alle Elemente in der Ergebnisliste auf Existenz prüfen`, async () => {
-      const menu: MenuPage = await startseite.goToAdministration();
-      const rolleManagement = await menu.alleRollenAnzeigen();
-      await expect(rolleManagement.text_h1_Administrationsbereich).toBeVisible();
-      await expect(rolleManagement.text_h2_Rollenverwaltung).toBeVisible();
-      await expect(rolleManagement.table_header_Rollenname).toBeVisible();
-      await expect(rolleManagement.table_header_Rollenart).toBeVisible();
-      await expect(rolleManagement.table_header_Merkmale).toBeVisible();
-      await expect(rolleManagement.table_header_Administrationsebene).toBeVisible();
-      await expect(page.getByRole('cell', { name: 'itslearning-Schüler' })).toBeVisible();
+      await test.step(`Rollenverwaltung öffnen und alle Elemente in der Ergebnisliste auf Existenz prüfen`, async () => {
+        const menu: MenuPage = await startseite.goToAdministration();   
+        await page.waitForResponse(async response => 
+          response.url().includes('/api/organisationen') && response.status() === 200
+        );  
+        const rolleManagement = await menu.alleRollenAnzeigen();
+        await expect(rolleManagement.text_h1_Administrationsbereich).toBeVisible();
+        await expect(rolleManagement.text_h2_Rollenverwaltung).toBeVisible();
+        await expect(rolleManagement.table_header_Rollenname).toBeVisible();
+        await expect(rolleManagement.table_header_Rollenart).toBeVisible();
+        await expect(rolleManagement.table_header_Merkmale).toBeVisible();
+        await expect(rolleManagement.table_header_Administrationsebene).toBeVisible();
+        await expect(page.getByRole('cell', { name: 'itslearning-Schüler' })).toBeVisible(); 
     });
   });
 
@@ -297,12 +301,12 @@ test.describe('Testet die Anlage einer neuen Rolle', () => {
     }
   );
 
-  test('Falsche Eingaben überprüfen', { tag: [LONG] }, async () => {
+  test('Falsche Eingaben überprüfen', { tag: [LONG] }, async ({ page }) => {
     const roleName: string = 'a'.repeat(201);
     const rolleCreationView: RolleCreationViewPage = await test.step('Rolle anlegen aufrufen', async () => {
       return await startseite.goToAdministration().then((menu) => menu.rolleAnlegen());
     });
-
+    
     await test.step('leere Pflichtfelder', async () => {
       await expect(rolleCreationView.rolleForm.adminstrationsebene.messages).toBeHidden();
       await expect(rolleCreationView.rolleForm.rollenart.messages).toBeHidden();

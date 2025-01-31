@@ -41,10 +41,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
             const landing: LandingPage = new LandingPage(page);
             const startseite: StartPage = new StartPage(page);
             const login: LoginPage = new LoginPage(page);
-
-            // await page.goto('/');
-            // await startseite.checkHeadlineIsVisible();
-
+            
             await header.logout();
             await landing.button_Anmelden.click();
             await login.login(ADMIN, PW);

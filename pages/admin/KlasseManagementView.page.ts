@@ -45,7 +45,7 @@ export class KlasseManagementViewPage{
     }
 
     public async waitForResponseErgebnislisteFinished() {
-        await this.page.waitForResponse(response => 
+        await this.page.waitForResponse(async response => 
           response.url().includes('/api/organisationen') && (response.status() === 200 )
         );
       }

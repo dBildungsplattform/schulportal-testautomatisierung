@@ -70,8 +70,10 @@ export class PersonManagementViewPage {
 
   public async waitForResponseErgebnislisteFinished() {
     await this.page.waitForResponse(response => 
-      (response.url().includes('/api/dbiam/personenuebersicht') && ((response.status() === 201 ) || (response.status() === 200) || (response.status() === 304))) ||
-      (response.url().includes('/api/person-administration/') && ((response.status() === 201 ) || (response.status() === 200) || (response.status() === 304)))
-    );
+      // (response.url().includes('/api/dbiam/personenuebersicht') && ((response.status() === 201 ) || (response.status() === 200) || (response.status() === 304))) ||
+      // (response.url().includes('/api/person-administration/') && ((response.status() === 201 ) || (response.status() === 200) || (response.status() === 304)))
+      (response.url().includes('/api/dbiam/personenuebersicht') && (response.status() === 201)) ||
+      (response.url().includes('/api/person-administration/') && (response.status() === 201) || (response.status() === 200))
+    )
   }
 }
