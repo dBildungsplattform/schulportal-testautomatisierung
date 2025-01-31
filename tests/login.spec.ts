@@ -27,24 +27,24 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
     const startseite: StartPage = new StartPage(page);
 
     await test.step(`Testdaten(Benutzer) löschen via API`, async () => {
-      if (!loggedIn) {
-        await test.step(`Abmelden`, async () => {
+      if (username.length > 0 || rolleId.length > 0) {
+        await test.step(`Anmelden`, async () => {
           await page.goto('/');
           await landing.button_Anmelden.click();
           await login.login(ADMIN, PW);
           await startseite.checkHeadlineIsVisible();
           loggedIn = true
         });
-      }
-
-      if (username.length > 0) { 
-        await deletePersonenBySearchStrings(page, username);
-        username = [];
-      }
-
-      if (rolleId.length > 0) { 
-        await deleteRolleById(rolleId, page);
-        rolleId = [];
+        
+        if (username.length > 0) { 
+          await deletePersonenBySearchStrings(page, username);
+          username = [];
+        }
+  
+        if (rolleId.length > 0) { 
+          await deleteRolleById(rolleId, page);
+          rolleId = [];
+        }
       }
     });
 

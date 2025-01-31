@@ -30,12 +30,13 @@ import FromAnywhere from '../pages/FromAnywhere';
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
 
-test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
-  let className: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
-  let username: string[] = [];
-  let rolleId: string[] = [];
-  let startseite: StartPage;
+let className: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
+let username: string[] = [];
+let rolleId: string[] = [];
+let startseite: StartPage;
+let currentUserIsLandesadministrator: boolean = true;
 
+test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }) => {
     startseite = await test.step(`Login`, async () => {
       const startPage = await FromAnywhere(page)
@@ -49,15 +50,17 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
   });
 
   test.afterEach(async ({ page }) => {
-    const header = new HeaderPage(page);
-    const landing = new LandingPage(page);
-    const login = new LoginPage(page);
-    const startseite = new StartPage(page);
-  
-    await header.logout();
-    await landing.button_Anmelden.click();
-    await login.login(ADMIN, PW);
-    await startseite.checkHeadlineIsVisible();
+    if(!currentUserIsLandesadministrator) {
+      const header = new HeaderPage(page);
+      const landing = new LandingPage(page);
+      const login = new LoginPage(page);
+      const startseite = new StartPage(page);
+    
+      await header.logout();
+      await landing.button_Anmelden.click();
+      await login.login(ADMIN, PW);
+      await startseite.checkHeadlineIsVisible();
+    }
 
     await test.step(`Testdaten löschen via API`, async () => {
       if (className.length > 0) {
@@ -75,6 +78,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     });
 
     await test.step(`Abmelden`, async () => {
+      const header = new HeaderPage(page);
       await header.logout();
     });
   });
@@ -244,6 +248,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       rolleId.push(userInfoAdmin.rolleId);
 
       //login als Schuladmin
+      currentUserIsLandesadministrator = false;
       await header.logout();
       await landing.button_Anmelden.click();
       await login.login(userInfoAdmin.username, userInfoAdmin.password);
@@ -309,6 +314,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       rolleId.push(userInfoAdmin.rolleId);
 
       //login als Schuladmin
+      currentUserIsLandesadministrator = false;
       await header.logout();
       await landing.button_Anmelden.click();
       await login.login(userInfoAdmin.username, userInfoAdmin.password);
