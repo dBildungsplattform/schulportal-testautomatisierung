@@ -20,6 +20,7 @@ const ENV: string | undefined = process.env.ENV;
 
 let usernames: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
 let rolleIds: string[] = [];
+let currentUserIsLandesadministrator: boolean = true;
 
 test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   let startseite: StartPage;
@@ -37,15 +38,20 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
   });
 
   test.afterEach(async ({page}) => {
-    const header = new HeaderPage(page);
-    const landing = new LandingPage(page);
-    const login = new LoginPage(page);
-    const startseite = new StartPage(page);
+    if(!currentUserIsLandesadministrator) {
+      const header = new HeaderPage(page);
+      const landing = new LandingPage(page);
+      const login = new LoginPage(page);
+      const startseite = new StartPage(page);
 
-    await header.logout();
-    await landing.button_Anmelden.click();
-    await login.login(ADMIN, PW);
-    await startseite.checkHeadlineIsVisible();
+      // await page.goto('/');
+      // await startseite.checkHeadlineIsVisible();
+
+      await header.logout();
+      await landing.button_Anmelden.click();
+      await login.login(ADMIN, PW);
+      await startseite.checkHeadlineIsVisible();
+    }
 
     await test.step(`Testdaten(Benutzer) löschen via API`, async () => {
         if (usernames.length > 0) { 
@@ -60,6 +66,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
     });
 
     await test.step(`Abmelden`, async () => {
+      const header = new HeaderPage(page);
         await header.logout();
     });
 });
@@ -71,6 +78,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
 
     await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => { 
       userInfoAdmin = await createTeacherAndLogin(page);
+      currentUserIsLandesadministrator = false;
       usernames.push(userInfoAdmin.username);
       rolleIds.push(userInfoAdmin.rolleId);
     });

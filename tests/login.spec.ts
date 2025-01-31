@@ -27,7 +27,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
     const startseite: StartPage = new StartPage(page);
 
     await test.step(`Testdaten(Benutzer) löschen via API`, async () => {
-      if (username.length > 0 || rolleId.length > 0) {
+      if ((username.length > 0 || rolleId.length > 0) && (!loggedIn)) {
         await test.step(`Anmelden`, async () => {
           await page.goto('/');
           await landing.button_Anmelden.click();

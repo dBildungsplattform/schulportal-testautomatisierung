@@ -1,5 +1,6 @@
 import { type Locator, Page, expect } from '@playwright/test';
 import { LandingPage } from "./LandingView.page";
+import { StartPage } from './StartView.page';
 
 export class HeaderPage{
     readonly page: Page;
@@ -21,6 +22,10 @@ export class HeaderPage{
     }
 
     async logout(): Promise<void> {
+        const startseite = new StartPage(this.page);
+        await this.page.goto('/');
+        await startseite.checkHeadlineIsVisible();
+
         const landingPage = new LandingPage(this.page);
         await this.button_logout.click();
         await expect(landingPage.text_Willkommen).toBeVisible();

@@ -39,16 +39,6 @@ test.describe(`Testfälle für TwoFactorAuthentication": Umgebung: ${process.env
   });
 
   test.afterEach(async ({ page }: { page: Page }) => {
-    const header: HeaderPage = new HeaderPage(page);
-    const landing: LandingPage = new LandingPage(page);
-    const startseite: StartPage = new StartPage(page);
-    const login: LoginPage = new LoginPage(page);
-
-    await header.logout();
-    await landing.button_Anmelden.click();
-    await login.login(ADMIN, PW);
-    await startseite.checkHeadlineIsVisible();
-
     await test.step(`Testdaten(Benutzer) löschen via API`, async () => {
       if (username.length > 0) {
         await deletePersonenBySearchStrings(page, username);
@@ -61,6 +51,7 @@ test.describe(`Testfälle für TwoFactorAuthentication": Umgebung: ${process.env
     });
 
     await test.step(`Abmelden`, async () => {
+      const header: HeaderPage = new HeaderPage(page);
       await header.logout();
     });
   });

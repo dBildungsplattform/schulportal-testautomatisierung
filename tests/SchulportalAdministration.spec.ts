@@ -18,6 +18,7 @@ const ADMIN: string | undefined = process.env.USER;
 
 let personId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
 let rolleId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
+let currentUserIsLandesadministrator: boolean = true;
 
 test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
     let startseite: StartPage;
@@ -35,15 +36,20 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
     });
 
     test.afterEach(async ({ page }) => {
-        const header = new HeaderPage(page);
-        const landing: LandingPage = new LandingPage(page);
-        const startseite: StartPage = new StartPage(page);
-        const login: LoginPage = new LoginPage(page);
+        if(!currentUserIsLandesadministrator) {
+            const header = new HeaderPage(page);
+            const landing: LandingPage = new LandingPage(page);
+            const startseite: StartPage = new StartPage(page);
+            const login: LoginPage = new LoginPage(page);
 
-        await header.logout();
-        await landing.button_Anmelden.click();
-        await login.login(ADMIN, PW);
-        await startseite.checkHeadlineIsVisible();
+            // await page.goto('/');
+            // await startseite.checkHeadlineIsVisible();
+
+            await header.logout();
+            await landing.button_Anmelden.click();
+            await login.login(ADMIN, PW);
+            await startseite.checkHeadlineIsVisible();
+        }
 
         await test.step(`Testdaten löschen via API`, async () => {
             if (personId.length > 0) {
@@ -58,6 +64,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         });
 
         await test.step(`Abmelden`, async () => {
+            const header = new HeaderPage(page);
           await header.logout();
         });
       });
@@ -79,6 +86,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         await landing.button_Anmelden.click();
         await login.login(userInfo.username, userInfo.password);
         await login.UpdatePW();
+        currentUserIsLandesadministrator = false;
         await startseite.checkHeadlineIsVisible();
         await test.step(`Prüfen, dass die Kachel E-Mail angezeigt wird und die Kachel Schulportal-Administration nicht angezeigt wird`, async () => {
             await expect(startseite.card_item_schulportal_administration).toBeHidden();
@@ -103,6 +111,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         await landing.button_Anmelden.click();
         await login.login(userInfo.username, userInfo.password);
         await login.UpdatePW();
+        currentUserIsLandesadministrator = false;
         await startseite.checkHeadlineIsVisible();
         await test.step(`Prüfen, dass die Kachel E-Mail angezeigt wird und die Kachel Schulportal-Administration nicht angezeigt wird`, async () => {
             await expect(startseite.card_item_schulportal_administration).toBeHidden();
@@ -129,6 +138,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         await landing.button_Anmelden.click();
         await login.login(userInfo.username, userInfo.password);
         await login.UpdatePW();
+        currentUserIsLandesadministrator = false;
         await startseite.checkHeadlineIsVisible();
         await test.step(`Prüfen, dass die Kachel E-Mail nicht angezeigt wird und die Kachel Schulportal-Administration angezeigt wird`, async () => {
             await expect(startseite.card_item_schulportal_administration).toBeVisible();

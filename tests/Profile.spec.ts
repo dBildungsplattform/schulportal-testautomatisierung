@@ -23,6 +23,7 @@ const ADMIN: string | undefined = process.env.USER;
 
 let username: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
 let roleId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
+let currentUserIsLandesadministrator: boolean = true;
 
 test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   let startseite: StartPage;
@@ -44,15 +45,20 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       page.keyboard.press('Escape');
     });
 
-    const header: HeaderPage = new HeaderPage(page);
-    const landing: LandingPage = new LandingPage(page);
-    const login: LoginPage = new LoginPage(page);
-    const startseite: StartPage = new StartPage(page);
+    if(!currentUserIsLandesadministrator) {
+      const header: HeaderPage = new HeaderPage(page);
+      const landing: LandingPage = new LandingPage(page);
+      const login: LoginPage = new LoginPage(page);
+      const startseite: StartPage = new StartPage(page);
 
-    await header.logout();
-    await landing.button_Anmelden.click();
-    await login.login(ADMIN, PW);
-    await startseite.checkHeadlineIsVisible();
+      // await page.goto('/');
+      // await startseite.checkHeadlineIsVisible();
+
+      await header.logout();
+      await landing.button_Anmelden.click();
+      await login.login(ADMIN, PW);
+      await startseite.checkHeadlineIsVisible();
+    }
 
     await test.step(`Testdaten löschen via API`, async () => {
       if (username.length > 0) {
@@ -67,6 +73,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
     });
 
     await test.step(`Abmelden`, async () => {
+      const header: HeaderPage = new HeaderPage(page);
       await header.logout();
     });
   });
@@ -111,6 +118,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await header.logout();
         await header.button_login.click();
         await login.login(userInfo.username, userInfo.password);
+        currentUserIsLandesadministrator = false;
         await login.UpdatePW();
       });
 
@@ -183,6 +191,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await header.button_login.click();
         await login.login(userInfo.username, userInfo.password);
         await login.UpdatePW();
+        currentUserIsLandesadministrator = false;
       });
 
       await test.step(`Profil öffnen`, async () => {
@@ -252,6 +261,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await header.button_login.click();
         await login.login(userInfo.username, userInfo.password);
         await login.UpdatePW();
+        currentUserIsLandesadministrator = false;
       });
 
       await test.step(`Profil öffnen`, async () => {
@@ -321,6 +331,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await header.button_login.click();
         await login.login(userInfo.username, userInfo.password);
         await login.UpdatePW();
+        currentUserIsLandesadministrator = false;
       });
 
       await test.step(`Profil öffnen`, async () => {
@@ -399,6 +410,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await header.button_login.click();
         await login.login(userInfo.username, userInfo.password);
         await login.UpdatePW();
+        currentUserIsLandesadministrator = false;
       });
 
       await test.step(`Profil öffnen`, async () => {
@@ -502,6 +514,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await header.button_login.click();
         await login.login(userInfo.username, userInfo.password);
         await login.UpdatePW();
+        currentUserIsLandesadministrator = false;
       });
 
       await test.step(`Profil öffnen`, async () => {
@@ -558,6 +571,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await header.button_login.click();
         await login.login(userInfo.username, userInfo.password);
         await login.UpdatePW();
+        currentUserIsLandesadministrator = false;
       });
 
       await test.step(`Profil öffnen`, async () => {

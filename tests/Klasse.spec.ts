@@ -55,6 +55,9 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       const landing = new LandingPage(page);
       const login = new LoginPage(page);
       const startseite = new StartPage(page);
+
+      // await page.goto('/');
+      // await startseite.checkHeadlineIsVisible();
     
       await header.logout();
       await landing.button_Anmelden.click();
@@ -248,11 +251,11 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       rolleId.push(userInfoAdmin.rolleId);
 
       //login als Schuladmin
-      currentUserIsLandesadministrator = false;
       await header.logout();
       await landing.button_Anmelden.click();
       await login.login(userInfoAdmin.username, userInfoAdmin.password);
       await login.UpdatePW();
+      currentUserIsLandesadministrator = false;
       await startseite.checkHeadlineIsVisible();
     });
 
