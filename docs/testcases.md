@@ -36,7 +36,7 @@
 ## Schule.spec.ts
 ### 2 Schulen nacheinander anlegen als Landesadmin @long
 ### Ergebnisliste Schulen auf Vollständigkeit prüfen als Landesadmin @long @short @stage
-### Eine Schule anlegen als Schuladmin und die Bestätigungsseite vollständig prüfen @long @short
+### Eine Schule anlegen als Landesadmin und die Bestätigungsseite vollständig prüfen @long @short
 
 ## SchulportalAdministration.spec.ts
 ### Prüfen, dass die Schulportal-Administration Kachel nicht sichtbar ist für Lehrkräfte @long @stage
