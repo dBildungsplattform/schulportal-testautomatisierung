@@ -86,7 +86,7 @@ export class ProfilePage {
     this.data_Dienststellennummer2 = page.getByTestId('dienststellennummer-value-2');
     // Passwort
     this.cardHeadline_Passwort = page.getByTestId('new-password-card');
-    this.button_NeuesPasswortSetzen = page.getByTestId('open-change-password-dialog');
+    this.button_NeuesPasswortSetzen = page.getByTestId('open-change-password-dialog-button');
     this.button_PasswortAendern = page.getByTestId('change-password-button');
     this.label_username = page.locator('#kc-attempted-username');
     this.text_p_LoginPrompt = page.getByTestId('login-prompt-text');
