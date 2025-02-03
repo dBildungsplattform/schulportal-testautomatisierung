@@ -23,6 +23,8 @@ export class HeaderPage{
 
     async logout(): Promise<void> {
         const landingPage = new LandingPage(this.page);
+        // Wenn man auf den Abmelden-Button klickt, laufen häufig noch diverse requests. Deshalb brauchen wir hier eine kurze Verzögerung
+        await this.page.waitForTimeout(1000);
         await this.button_logout.click();
         await expect(landingPage.text_Willkommen).toBeVisible();
     }

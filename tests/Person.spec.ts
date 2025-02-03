@@ -377,6 +377,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(personCreationView.listbox_Rolle).not.toContainText(rolleLiV);
         await expect(personCreationView.listbox_Rolle).not.toContainText(schuladminOeffentlichRolle);
         await expect(personCreationView.listbox_Rolle).not.toContainText(schuelerRolle);
+        // close opened combobox organisation
+        await personCreationView.text_h2_PersonAnlegen.click();
       });
 
       await test.step(`Organisation 'Öffentliche Schulen Land Schleswig-Holstein' auswählen und Dropdown 'Rolle' prüfen`, async () => {
@@ -388,6 +390,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(personCreationView.listbox_Rolle).not.toContainText(rolleLiV);
         await expect(personCreationView.listbox_Rolle).not.toContainText(schuladminOeffentlichRolle);
         await expect(personCreationView.listbox_Rolle).not.toContainText(schuelerRolle);
+         // close opened combobox organisation
+         await personCreationView.text_h2_PersonAnlegen.click();
       });
 
       await test.step(`Organisation 'Ersatzschulen Land Schleswig-Holstein' auswählen und Dropdown 'Rolle' prüfen`, async () => {
@@ -399,6 +403,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(personCreationView.listbox_Rolle).not.toContainText(rolleLiV);
         await expect(personCreationView.listbox_Rolle).not.toContainText(schuladminOeffentlichRolle);
         await expect(personCreationView.listbox_Rolle).not.toContainText(schuelerRolle);
+         // close opened combobox organisation
+         await personCreationView.text_h2_PersonAnlegen.click();
       });
 
       await test.step(`Organisation 'Schule' auswählen und Dropdown 'Rolle' prüfen`, async () => {
@@ -411,6 +417,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(personCreationView.listbox_Rolle).not.toContainText(landesadminRolle);
         await page.keyboard.type(schuladminOeffentlichRolle);
         await expect(personCreationView.listbox_Rolle).toContainText(schuladminOeffentlichRolle);
+         // close opened combobox organisation
+         await personCreationView.text_h2_PersonAnlegen.click();
       });
     }
   );
@@ -793,7 +801,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await expect(personManagementView.comboboxMenuIcon_Rolle).toBeVisible();
       await expect(personManagementView.comboboxMenuIcon_Klasse).toBeVisible();
       await expect(personManagementView.comboboxMenuIcon_Status).toBeVisible();
-      await personManagementView.waitForResponseErgebnislisteFinished();
       await expect(page.getByRole('cell', { name: nachname, exact: true })).toBeHidden();
     });
   });

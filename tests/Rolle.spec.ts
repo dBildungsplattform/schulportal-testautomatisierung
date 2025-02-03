@@ -117,9 +117,6 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     async ({ page }) => {
       await test.step(`Rollenverwaltung öffnen und alle Elemente in der Ergebnisliste auf Existenz prüfen`, async () => {
         const menu: MenuPage = await startseite.goToAdministration();   
-        await page.waitForResponse(async response => 
-          response.url().includes('/api/organisationen') && response.status() === 200
-        );  
         const rolleManagement = await menu.alleRollenAnzeigen();
         await expect(rolleManagement.text_h1_Administrationsbereich).toBeVisible();
         await expect(rolleManagement.text_h2_Rollenverwaltung).toBeVisible();

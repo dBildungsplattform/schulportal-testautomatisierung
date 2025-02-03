@@ -26,9 +26,6 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
     await test.step(`Annmelden mit Benutzer ${ADMIN}`, async () => {
       await page.goto('/');
       const login: LoginPage = await landing.goToLogin();
-      await page.waitForResponse(async response => 
-        (response.url().includes('/api/provider') && ((response.status() === 200 ) || (response.status() === 304 )))
-     )
       const startseite: StartPage = await login.login(ADMIN, PW); 
       await startseite.checkHeadlineIsVisible();
     })

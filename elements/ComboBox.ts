@@ -72,6 +72,7 @@ export class ComboBox {
       })
     }    
     await item.waitFor({ state: 'visible' });
-    await item.click();
+    // This delay is needed for testcases who are using the method searchByTitle several times. It guarantees that the next combobox data is loaded correctly
+    await item.click({delay: 1000});
   }
 }

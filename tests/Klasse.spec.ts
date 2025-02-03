@@ -120,10 +120,8 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
           await page.getByTestId('open-klasse-delete-dialog-button').click();
           await page.getByTestId('klasse-delete-button').click();
           await page.getByTestId('close-klasse-delete-success-dialog-button').click();
-          await klasseManagementView.waitForResponseErgebnislisteFinished();
           await expect(page.getByRole('cell', { name: 'Playwright4b' })).toBeVisible();
           await expect(page.getByRole('cell', { name: klassenname })).toBeHidden();
-          console.log('################# Test #############');
         });
     }
   );
