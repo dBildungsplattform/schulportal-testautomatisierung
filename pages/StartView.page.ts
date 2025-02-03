@@ -2,8 +2,6 @@ import { type Locator, Page } from "@playwright/test";
 import { MenuPage } from "./MenuBar.page";
 import { LandingPage } from "./LandingView.page";
 import { expect } from '@playwright/test';
-import { getSPId } from '../base/api/testHelperServiceprovider.page';
-import { schulportaladmin } from "../base/sp.ts";
 
 export class StartPage {
   readonly page: Page;

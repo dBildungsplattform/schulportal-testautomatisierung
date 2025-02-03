@@ -14,11 +14,11 @@ import FromAnywhere from '../pages/FromAnywhere';
 import { HeaderPage } from '../pages/Header.page';
 import { MenuPage } from '../pages/MenuBar.page';
 import { StartPage } from '../pages/StartView.page';
-import { gotoTargetURL } from '../base/testHelperUtils';
 
-let loggedIn = false;
-let rolleName: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
 let startseite: StartPage;
+let loggedIn = false;
+// The created test data will be deleted in the afterEach block
+let rolleName: string[] = [];
 
 test.beforeEach(async ({ page }) => {
   startseite = await test.step(`Login`, async () => {
@@ -298,7 +298,7 @@ test.describe('Testet die Anlage einer neuen Rolle', () => {
     }
   );
 
-  test('Falsche Eingaben überprüfen', { tag: [LONG] }, async ({ page }) => {
+  test('Falsche Eingaben überprüfen', { tag: [LONG] }, async () => {
     const roleName: string = 'a'.repeat(201);
     const rolleCreationView: RolleCreationViewPage = await test.step('Rolle anlegen aufrufen', async () => {
       return await startseite.goToAdministration().then((menu) => menu.rolleAnlegen());

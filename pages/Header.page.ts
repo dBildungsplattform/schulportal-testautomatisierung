@@ -1,6 +1,5 @@
 import { type Locator, Page, expect } from '@playwright/test';
 import { LandingPage } from "./LandingView.page";
-import { StartPage } from './StartView.page';
 
 export class HeaderPage{
     readonly page: Page;
@@ -9,7 +8,6 @@ export class HeaderPage{
     readonly button_profil: Locator;
     readonly icon_myProfil: Locator;
     readonly icon_logout: Locator;
-    readonly iconSchulportal: Locator;
    
     constructor(page){
         this.page = page;
@@ -18,7 +16,6 @@ export class HeaderPage{
         this.button_profil = page.getByTestId('nav-profile-button');
         this.icon_myProfil = page.locator('.mdi-account-outline');
         this.icon_logout = page.locator('.mdi-logout');
-        this.iconSchulportal = page.getByTestId('header').getByRole('link', { name: 'Logo Schulportal' })
     }
 
     async logout(): Promise<void> {

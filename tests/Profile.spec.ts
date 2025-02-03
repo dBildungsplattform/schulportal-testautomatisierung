@@ -16,13 +16,14 @@ import { LoginPage } from '../pages/LoginView.page';
 import { ProfilePage } from '../pages/ProfileView.page';
 import { StartPage } from '../pages/StartView.page';
 import FromAnywhere from '../pages/FromAnywhere'
-import { userInfo } from 'os';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
 
-let username: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
-let roleId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
+// The created test data will be deleted in the afterEach block
+let username: string[] = [];
+let roleId: string[] = [];
+// This variable must be set to false in the testcase when the logged in user is changed
 let currentUserIsLandesadministrator: boolean = true;
 
 test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {

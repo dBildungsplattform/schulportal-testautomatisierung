@@ -30,14 +30,16 @@ import FromAnywhere from '../pages/FromAnywhere';
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
 
-let className: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
+// The created test data will be deleted in the afterEach block
+let className: string[] = [];
 let username: string[] = [];
 let rolleId: string[] = [];
-let startseite: StartPage;
+// This variable must be set to false in the testcase when the logged in user is changed
 let currentUserIsLandesadministrator: boolean = true;
 
 test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }) => {
+    let startseite = new StartPage(page);
     startseite = await test.step(`Login`, async () => {
       const startPage = await FromAnywhere(page)
         .start()

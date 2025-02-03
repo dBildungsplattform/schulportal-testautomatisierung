@@ -1,14 +1,9 @@
 import { test, expect } from '@playwright/test';
-import { LandingPage } from '../pages/LandingView.page';
 import { StartPage } from '../pages/StartView.page';
-import { LoginPage } from '../pages/LoginView.page';
 import { MenuPage } from '../pages/MenuBar.page';
 import { HeaderPage } from "../pages/Header.page";
 import { LONG, SHORT, STAGE, BROWSER } from '../base/tags';
 import FromAnywhere from '../pages/FromAnywhere';
-
-const PW: string | undefined = process.env.PW;
-const ADMIN: string | undefined = process.env.USER;
 
 test.describe(`Testfälle für die Hauptmenue-Leiste: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   let startseite: StartPage;

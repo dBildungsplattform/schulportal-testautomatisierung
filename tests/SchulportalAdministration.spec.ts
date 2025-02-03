@@ -16,23 +16,24 @@ import FromAnywhere from '../pages/FromAnywhere';
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
 
+// The created test data will be deleted in the afterEach block
 let personId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
 let rolleId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
+// This variable must be set to false in the testcase when the logged in user is changed
 let currentUserIsLandesadministrator: boolean = true;
 
 test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
-    let startseite: StartPage;
-
     test.beforeEach(async ({ page }) => {
-      startseite = await test.step(`Login`, async () => {
+        let startseite: StartPage;
+        startseite = await test.step(`Login`, async () => {
         const startPage = await FromAnywhere(page)
-          .start()
-          .then((landing) => landing.goToLogin())
-          .then((login) => login.login())
-          .then((startseite) => startseite.checkHeadlineIsVisible());
-    
+            .start()
+            .then((landing) => landing.goToLogin())
+            .then((login) => login.login())
+            .then((startseite) => startseite.checkHeadlineIsVisible());
+
         return startPage;
-      });
+        });
     });
 
     test.afterEach(async ({ page }) => {
@@ -53,7 +54,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
                 await deletePersonById(personId, page);
                 personId = [];
             }
-    
+
             if (rolleId.length > 0) {       
                 await deleteRolleById(rolleId, page);
                 rolleId = [];
@@ -62,9 +63,9 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
 
         await test.step(`Abmelden`, async () => {
             const header = new HeaderPage(page);
-          await header.logout();
+            await header.logout();
         });
-      });
+        });
 
     test("Prüfen, dass die Schulportal-Administration Kachel nicht sichtbar ist für Lehrkräfte", {tag: [LONG, STAGE]}, async ({page}) => {
         const landing: LandingPage = new LandingPage(page);

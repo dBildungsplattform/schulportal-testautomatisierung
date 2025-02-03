@@ -20,14 +20,15 @@ import FromAnywhere from '../pages/FromAnywhere';
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
 
+// The created test data will be deleted in the afterEach block
 let personId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
 let roleId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
+// This variable must be set to false in the testcase when the logged in user is changed
 let currentUserIsLandesadministrator: boolean = true;
 
 test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
-  let startseite: StartPage;
-
   test.beforeEach(async ({ page }) => {
+    let startseite: StartPage;
     startseite = await test.step(`Login`, async () => {
       const startPage = await FromAnywhere(page)
         .start()

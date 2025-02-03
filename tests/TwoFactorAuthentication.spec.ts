@@ -17,11 +17,9 @@ import { HeaderPage } from '../pages/Header.page.ts';
 import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata.ts';
 import FromAnywhere from '../pages/FromAnywhere';
 
-const PW: string | undefined = process.env.PW;
-const ADMIN: string | undefined = process.env.USER;
-
-let username: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
-let rolleId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
+// The created test data will be deleted in the afterEach block
+let username: string[] = [];
+let rolleId: string[] = [];
 
 test.describe(`Testfälle für TwoFactorAuthentication": Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   let startseite: StartPage;

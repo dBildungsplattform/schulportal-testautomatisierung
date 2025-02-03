@@ -44,5 +44,3 @@ export class RoleTableRow {
     return this.locator.locator('td').nth(TableCells.ServiceProvider);
   }
 }
-
-

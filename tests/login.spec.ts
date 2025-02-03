@@ -15,9 +15,11 @@ import { testschule } from '../base/organisation.ts';
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
 
+// The created test data will be deleted in the afterEach block
+let username: string[] = [];
+let rolleId: string[] = [];
+
 let loggedIn = false;
-let username: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
-let rolleId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
 
 test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.afterEach(async ({ page }) => {

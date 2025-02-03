@@ -18,14 +18,15 @@ const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
 const ENV: string | undefined = process.env.ENV;
 
-let usernames: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
+// The created test data will be deleted in the afterEach block
+let usernames: string[] = [];
 let rolleIds: string[] = [];
+// This variable must be set to false in the testcase when the logged in user is changed
 let currentUserIsLandesadministrator: boolean = true;
 
 test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
-  let startseite: StartPage;
-
   test.beforeEach(async ({ page }) => {
+    let startseite: StartPage;
     startseite = await test.step(`Login`, async () => {
       const startPage = await FromAnywhere(page)
         .start()

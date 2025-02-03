@@ -27,15 +27,16 @@ import FromAnywhere from '../pages/FromAnywhere';
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
 
-let username: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
-let roleId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
-let roleName: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
+// The created test data will be deleted in the afterEach block
+let username: string[] = [];
+let roleId: string[] = [];
+let roleName: string[] = [];
+// This variable must be set to false in the testcase when the logged in user is changed
 let currentUserIsLandesadministrator: boolean = true;
 
 test.describe(`Testfälle für die Administration von Personen": Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
-  let startseite: StartPage;
-
   test.beforeEach(async ({ page }) => {
+    let startseite: StartPage;
     startseite = await test.step(`Login`, async () => {
       const startPage = await FromAnywhere(page)
         .start()
@@ -601,7 +602,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await addSystemrechtToRolle(page, userInfo.rolleId, 'KLASSEN_VERWALTEN');
         await addSystemrechtToRolle(page, userInfo.rolleId, 'SCHULTRAEGER_VERWALTEN');
         await addSystemrechtToRolle(page, userInfo.rolleId, 'PERSONEN_ANLEGEN');
-        await addSystemrechtToRolle(page, userInfo.rolleId, 'PERSON_SYNCHRONISIEREN');
         // Benutzer wird im afterEach-Block gelöscht
         // gesteuert wird die Löschung über die Variable username
         username.push(userInfo.username);
