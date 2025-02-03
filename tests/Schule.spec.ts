@@ -10,61 +10,23 @@ import { FooterDataTablePage } from '../pages/FooterDataTable.page';
 import { LONG, SHORT, STAGE, BROWSER } from '../base/tags';
 import { deletePersonById, deleteRolleById } from '../base/testHelperDeleteTestdata';
 import { generateSchulname, generateDienststellenNr } from '../base/testHelperGenerateTestdataNames';
-
-const PW: string | undefined = process.env.PW;
-const ADMIN: string | undefined = process.env.USER;
-
-// The created test data will be deleted in the afterEach block
-let personId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
-let roleId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
-// This variable must be set to false in the testcase when the logged in user is changed
-let currentUserIsLandesadministrator: boolean = true;
+import FromAnywhere from '../pages/FromAnywhere';
 
 test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }: { page: Page }) => {
-    await test.step(`Login`, async () => {
-      const landing: LandingPage = new LandingPage(page);
-      const startseite: StartPage = new StartPage(page);
-      const login: LoginPage = new LoginPage(page);
-
-      await page.goto('/');
-      await landing.button_Anmelden.click();
-      await login.login(ADMIN, PW);
-      await expect(startseite.text_h2_Ueberschrift).toBeVisible();
+    let startseite:StartPage;
+    startseite = await test.step(`Login`, async () => {
+      const startPage = await FromAnywhere(page)
+        .start()
+        .then((landing) => landing.goToLogin())
+        .then((login) => login.login())
+        .then((startseite) => startseite.checkHeadlineIsVisible());
+  
+      return startPage;
     });
   });
 
   test.afterEach(async ({ page }: { page: Page }) => {
-    const header: HeaderPage = new HeaderPage(page);
-    const landing: LandingPage = new LandingPage(page);
-    const login: LoginPage = new LoginPage(page);
-
-    await test.step(`Testdaten löschen via API`, async () => {
-      if (personId) {
-        // nur wenn der Testfall auch mind. einen Benutzer angelegt hat
-        const startseite: StartPage = new StartPage(page);
-        await header.logout();
-        await landing.button_Anmelden.click();
-        await login.login(ADMIN, PW);
-        await expect(startseite.text_h2_Ueberschrift).toBeVisible();
-
-        await deletePersonById(personId, page);
-        personId = [];
-      }
-
-      if (roleId) {
-        // nur wenn der Testfall auch mind. eine Rolle angelegt hat
-        const startseite: StartPage = new StartPage(page);
-        await header.logout();
-        await landing.button_Anmelden.click();
-        await login.login(ADMIN, PW);
-        await expect(startseite.text_h2_Ueberschrift).toBeVisible();
-
-        await deleteRolleById(roleId, page);
-        roleId = [];
-      }
-    });
-
     await test.step(`Abmelden`, async () => {
       const header: HeaderPage = new HeaderPage(page);
       await header.logout();

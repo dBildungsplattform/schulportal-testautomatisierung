@@ -44,10 +44,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
     test.afterEach(async ({page}) => {
         if(!currentUserIsLandesadministrator) {
-            const header = new HeaderPage(page);
-            const landing = new LandingPage(page);
-            const login = new LoginPage(page);
-            const startseite = new StartPage(page);
+            const header: HeaderPage = new HeaderPage(page);
+            const landing: LandingPage = new LandingPage(page);
+            const login: LoginPage = new LoginPage(page);
+            const startseite: StartPage = new StartPage(page);
 
             await header.logout();
             await landing.button_Anmelden.click();

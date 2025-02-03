@@ -39,7 +39,7 @@ let currentUserIsLandesadministrator: boolean = true;
 
 test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }) => {
-    let startseite = new StartPage(page);
+    let startseite: StartPage;
     startseite = await test.step(`Login`, async () => {
       const startPage = await FromAnywhere(page)
         .start()
@@ -53,10 +53,10 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
 
   test.afterEach(async ({ page }) => {
     if(!currentUserIsLandesadministrator) {
-      const header = new HeaderPage(page);
-      const landing = new LandingPage(page);
-      const login = new LoginPage(page);
-      const startseite = new StartPage(page);
+      const header: HeaderPage = new HeaderPage(page);
+      const landing: LandingPage = new LandingPage(page);
+      const login: LoginPage = new LoginPage(page);
+      const startseite: StartPage = new StartPage(page);
     
       await header.logout();
       await landing.button_Anmelden.click();
