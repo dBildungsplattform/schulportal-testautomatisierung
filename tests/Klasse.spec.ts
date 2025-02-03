@@ -80,7 +80,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     });
 
     await test.step(`Abmelden`, async () => {
-      const header = new HeaderPage(page);
+      const header: HeaderPage = new HeaderPage(page);
       await header.logout();
     });
   });
@@ -273,7 +273,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       await page.getByRole('cell', { name: klassenname, exact: true }).click();
       klassenname = await generateKlassenname();
       await klasseDetailsView.klasseBearbeiten(klassenname);
-      await expect(klasseDetailsView.text_success).toBeVisible();
+      await expect(klasseDetailsView.textSuccess).toBeVisible();
       className.push(klassenname);
     });
   });
@@ -339,7 +339,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       await page.getByRole('cell', { name: klassenname, exact: true }).click();
       klassenname = await generateKlassenname();
       await klasseDetailsView.klasseBearbeiten(klassenname);
-      await expect(klasseDetailsView.text_success).toBeVisible();
+      await expect(klasseDetailsView.textSuccess).toBeVisible();
       className.push(klassenname);
     });
   });

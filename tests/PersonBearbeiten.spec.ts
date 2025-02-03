@@ -68,7 +68,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         });
 
         await test.step(`Abmelden`, async () => {
-            const header = new HeaderPage(page);
+            const header: HeaderPage = new HeaderPage(page);
             await header.logout();
         });
     });

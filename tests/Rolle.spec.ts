@@ -68,7 +68,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
 
       const rolleCreationView = await test.step(`Dialog Rolle anlegen öffnen`, async () => {
         const rolleCreationView = await startseite.goToAdministration().then((menu) => menu.rolleAnlegen());
-        await expect(rolleCreationView.text_h2_RolleAnlegen).toHaveText('Neue Rolle hinzufügen');
+        await expect(rolleCreationView.textH2RolleAnlegen).toHaveText('Neue Rolle hinzufügen');
         return rolleCreationView;
       });
 
@@ -77,26 +77,26 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
         await rolleCreationView.rolleForm.rollenart.inputElement.selectByTitle(rollenart1);
         await rolleCreationView.enterRollenname(rollenname1);
         await rolleCreationView.rolleForm.angebote.inputElement.selectByTitle(angebot1);
-        await rolleCreationView.button_RolleAnlegen.click();
-        await expect(rolleCreationView.text_success).toBeVisible();
+        await rolleCreationView.buttonRolleAnlegen.click();
+        await expect(rolleCreationView.textSuccess).toBeVisible();
         await expect(rolleCreationView.rolleForm.adminstrationsebene.data).toHaveText(schulstrukturknoten1);
-        await expect(rolleCreationView.icon_success).toBeVisible();
+        await expect(rolleCreationView.iconSuccess).toBeVisible();
         await expect(rolleCreationView.rolleForm.angebote.data).toHaveText(angebot1);
         rolleName.push(rollenname1);
       });
 
       await test.step(`Zweite Rolle anlegen`, async () => {
-        await rolleCreationView.button_WeitereRolleAnlegen.click();
+        await rolleCreationView.buttonWeitereRolleAnlegen.click();
         await rolleCreationView.rolleForm.adminstrationsebene.inputElement.selectByTitle(schulstrukturknoten2);
         await rolleCreationView.rolleForm.rollenart.inputElement.selectByTitle(rollenart2);
         await rolleCreationView.enterRollenname(rollenname2);
         await rolleCreationView.rolleForm.merkmale.inputElement.selectByTitle(merkmal2);
         await rolleCreationView.rolleForm.angebote.inputElement.selectByTitle(angebotA2);
         await rolleCreationView.rolleForm.angebote.inputElement.selectByTitle(angebotB2);
-        await rolleCreationView.button_RolleAnlegen.click();
-        await expect(rolleCreationView.text_success).toBeVisible();
+        await rolleCreationView.buttonRolleAnlegen.click();
+        await expect(rolleCreationView.textSuccess).toBeVisible();
         await expect(rolleCreationView.rolleForm.adminstrationsebene.data).toHaveText(schulstrukturknoten2);
-        await expect(rolleCreationView.icon_success).toBeVisible();
+        await expect(rolleCreationView.iconSuccess).toBeVisible();
         await expect(rolleCreationView.rolleForm.angebote.data).toContainText(angebotA2);
         await expect(rolleCreationView.rolleForm.angebote.data).toContainText(angebotB2);
         rolleName.push(rollenname2);
@@ -104,7 +104,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
 
       await test.step(`In der Ergebnisliste prüfen dass die beiden neuen Rollen angezeigt sind`, async () => {
         const rolleManagementView = await rolleCreationView.menu().alleRollenAnzeigen();
-        await expect(rolleManagementView.text_h2_Rollenverwaltung).toHaveText('Rollenverwaltung');
+        await expect(rolleManagementView.textH2Rollenverwaltung).toHaveText('Rollenverwaltung');
         await expect(page.getByRole('cell', { name: rollenname1 })).toBeVisible();
         await expect(page.getByRole('cell', { name: rollenname2 })).toBeVisible();
       });
@@ -118,12 +118,12 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
       await test.step(`Rollenverwaltung öffnen und alle Elemente in der Ergebnisliste auf Existenz prüfen`, async () => {
         const menu: MenuPage = await startseite.goToAdministration();   
         const rolleManagement = await menu.alleRollenAnzeigen();
-        await expect(rolleManagement.text_h1_Administrationsbereich).toBeVisible();
-        await expect(rolleManagement.text_h2_Rollenverwaltung).toBeVisible();
-        await expect(rolleManagement.table_header_Rollenname).toBeVisible();
-        await expect(rolleManagement.table_header_Rollenart).toBeVisible();
-        await expect(rolleManagement.table_header_Merkmale).toBeVisible();
-        await expect(rolleManagement.table_header_Administrationsebene).toBeVisible();
+        await expect(rolleManagement.textH1Administrationsbereich).toBeVisible();
+        await expect(rolleManagement.textH2Rollenverwaltung).toBeVisible();
+        await expect(rolleManagement.tableHeaderRollenname).toBeVisible();
+        await expect(rolleManagement.tableHeaderRollenart).toBeVisible();
+        await expect(rolleManagement.tableHeaderMerkmale).toBeVisible();
+        await expect(rolleManagement.tableHeaderAdministrationsebene).toBeVisible();
         await expect(page.getByRole('cell', { name: 'itslearning-Schüler' })).toBeVisible(); 
     });
   });
@@ -200,7 +200,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     });
 
     await test.step('leere Pflichtfelder', async () => {
-      await rolleDetailsView.button_RolleBearbeiten.click();
+      await rolleDetailsView.buttonRolleBearbeiten.click();
 
       await rolleDetailsView.rolleForm.rollenname.inputElement.clear();
       await expect(rolleDetailsView.rolleForm.rollenname.messages).toBeVisible();
@@ -242,7 +242,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
         'Die Rolle kann nicht gelöscht werden, da die sie noch Benutzern zugeordnet ist. Nehmen Sie bitte zunächst alle Zuordnungen zurück.'
       );
       await expect(rolleDetailsView.alert.button).toHaveText('Zurück zur Ergebnisliste');
-      await expect(rolleDetailsView.text_success).toBeHidden();
+      await expect(rolleDetailsView.textSuccess).toBeHidden();
       await rolleDetailsView.alert.button.click();
     });
   });
@@ -281,7 +281,7 @@ test.describe('Testet die Anlage einer neuen Rolle', () => {
         const { rolleCreationConfirmPage } = rolleCreationConfirm;
         await expect(rolleCreationConfirmPage.confirmationMessage).toBeVisible();
         await expect(rolleCreationView.rolleForm.adminstrationsebene.data).toHaveText('Land Schleswig-Holstein');
-        await expect(rolleCreationView.icon_success).toBeVisible();
+        await expect(rolleCreationView.iconSuccess).toBeVisible();
         return rolleCreationConfirmPage.backToResultList();
       });
 
@@ -308,7 +308,7 @@ test.describe('Testet die Anlage einer neuen Rolle', () => {
       await expect(rolleCreationView.rolleForm.adminstrationsebene.messages).toBeHidden();
       await expect(rolleCreationView.rolleForm.rollenart.messages).toBeHidden();
 
-      await rolleCreationView.button_RolleAnlegen.click();
+      await rolleCreationView.buttonRolleAnlegen.click();
 
       await expect(rolleCreationView.rolleForm.adminstrationsebene.messages).toBeVisible();
       await expect(rolleCreationView.rolleForm.adminstrationsebene.messages).toHaveText(

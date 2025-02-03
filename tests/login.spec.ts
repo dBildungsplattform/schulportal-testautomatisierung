@@ -23,7 +23,7 @@ let loggedIn = false;
 
 test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.afterEach(async ({ page }) => {
-    const header = new HeaderPage(page);
+    const header: HeaderPage = new HeaderPage(page);
     const landing: LandingPage = new LandingPage(page);
     const login: LoginPage = new LoginPage(page);
     const startseite: StartPage = new StartPage(page);

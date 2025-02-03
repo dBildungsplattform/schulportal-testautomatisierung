@@ -62,7 +62,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         });
 
         await test.step(`Abmelden`, async () => {
-            const header = new HeaderPage(page);
+            const header: HeaderPage = new HeaderPage(page);
             await header.logout();
         });
         });

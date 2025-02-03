@@ -14,7 +14,7 @@ import FromAnywhere from '../pages/FromAnywhere';
 
 test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }: { page: Page }) => {
-    let startseite:StartPage;
+    let startseite: StartPage;
     startseite = await test.step(`Login`, async () => {
       const startPage = await FromAnywhere(page)
         .start()
@@ -52,36 +52,36 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
         const menue: MenuPage = await startseite.goToAdministration();
         const schuleCreationView: SchuleCreationViewPage = await menue.schuleAnlegen();
         await menue.menueItem_SchuleAnlegen.click();
-        await expect(schuleCreationView.text_h2_SchuleAnlegen).toHaveText('Neue Schule hinzufügen');
+        await expect(schuleCreationView.textH2SchuleAnlegen).toHaveText('Neue Schule hinzufügen');
         return { menue, schuleCreationView };
       });
 
     await test.step(`Erste Schule anlegen`, async () => {
-      await schuleCreationView.radio_button_Public_Schule.click();
+      await schuleCreationView.radioButtonPublicSchule.click();
 
-      await schuleCreationView.input_Dienststellennummer.fill(dienststellenNr1);
-      await schuleCreationView.input_Schulname.fill(schulname1);
-      await schuleCreationView.button_SchuleAnlegen.click();
-      await expect(schuleCreationView.text_success).toBeVisible();
+      await schuleCreationView.inputDienststellennummer.fill(dienststellenNr1);
+      await schuleCreationView.inputSchulname.fill(schulname1);
+      await schuleCreationView.buttonSchuleAnlegen.click();
+      await expect(schuleCreationView.textSuccess).toBeVisible();
     });
 
     await test.step(`Zweite Schule anlegen`, async () => {
-      await schuleCreationView.button_WeitereSchuleAnlegen.click();
-      await schuleCreationView.radio_button_Public_Schule.click();
+      await schuleCreationView.buttonWeitereSchuleAnlegen.click();
+      await schuleCreationView.radioButtonPublicSchule.click();
 
-      await schuleCreationView.input_Dienststellennummer.click();
-      await schuleCreationView.input_Dienststellennummer.fill(dienststellenNr2);
+      await schuleCreationView.inputDienststellennummer.click();
+      await schuleCreationView.inputDienststellennummer.fill(dienststellenNr2);
 
-      await schuleCreationView.input_Schulname.fill(schulname2);
-      await schuleCreationView.button_SchuleAnlegen.click();
-      await expect(schuleCreationView.text_success).toBeVisible();
+      await schuleCreationView.inputSchulname.fill(schulname2);
+      await schuleCreationView.buttonSchuleAnlegen.click();
+      await expect(schuleCreationView.textSuccess).toBeVisible();
     });
 
     await test.step(`In der Ergebnisliste prüfen, dass die beiden neuen Schulen angezeigt werden`, async () => {
       await menue.menueItem_AlleSchulenAnzeigen.click();
       await footerDataTable.combobox_AnzahlEintraege.click();
       await page.getByText('300', { exact: true }).click();
-      await expect(schuleManagementView.text_h2_Schulverwaltung).toHaveText('Schulverwaltung');
+      await expect(schuleManagementView.textH2Schulverwaltung).toHaveText('Schulverwaltung');
       await expect(page.getByRole('cell', { name: schulname1 })).toBeVisible();
       await expect(page.getByRole('cell', { name: schulname2 })).toBeVisible();
     });
@@ -96,11 +96,11 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
       await test.step(`Schulverwaltung öffnen und Alle Elemente in der Ergebnisliste auf Existenz prüfen`, async () => {
         const menue: MenuPage = await startseite.goToAdministration();
         const schuleManagementView: SchuleManagementViewPage = await menue.alleSchulenAnzeigen();
-        await expect(schuleManagementView.text_h1_Administrationsbereich).toBeVisible();
-        await expect(schuleManagementView.text_h2_Schulverwaltung).toBeVisible();
-        await expect(schuleManagementView.text_h2_Schulverwaltung).toHaveText('Schulverwaltung');
-        await expect(schuleManagementView.table_header_Dienststellennummer).toBeVisible();
-        await expect(schuleManagementView.table_header_Schulname).toBeVisible();
+        await expect(schuleManagementView.textH1Administrationsbereich).toBeVisible();
+        await expect(schuleManagementView.textH2Schulverwaltung).toBeVisible();
+        await expect(schuleManagementView.textH2Schulverwaltung).toHaveText('Schulverwaltung');
+        await expect(schuleManagementView.tableHeaderDienststellennummer).toBeVisible();
+        await expect(schuleManagementView.tableHeaderSchulname).toBeVisible();
       });
     }
   );
@@ -123,29 +123,29 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
         });
 
       const schultraeger: string = await test.step(`Schule anlegen`, async () => {
-        const schultraeger: string = await schuleCreationView.radio_button_Public_Schule.innerText();
-        await schuleCreationView.radio_button_Public_Schule.click();
-        await schuleCreationView.input_Dienststellennummer.fill(dienststellenNr);
-        await schuleCreationView.input_Schulname.fill(schulname);
-        await schuleCreationView.button_SchuleAnlegen.click();
+        const schultraeger: string = await schuleCreationView.radioButtonPublicSchule.innerText();
+        await schuleCreationView.radioButtonPublicSchule.click();
+        await schuleCreationView.inputDienststellennummer.fill(dienststellenNr);
+        await schuleCreationView.inputSchulname.fill(schulname);
+        await schuleCreationView.buttonSchuleAnlegen.click();
         return schultraeger;
       });
 
       await test.step(`Bestätigungsseite prüfen`, async () => {
-        await expect(schuleCreationView.text_success).toBeVisible();
-        await expect(schuleCreationView.text_h2_SchuleAnlegen).toHaveText('Neue Schule hinzufügen');
-        await expect(schuleCreationView.button_Schliessen).toBeVisible();
-        await expect(schuleCreationView.text_success).toBeVisible();
-        await expect(schuleCreationView.icon_success).toBeVisible();
-        await expect(schuleCreationView.text_DatenGespeichert).toHaveText('Folgende Daten wurden gespeichert:');
-        await expect(schuleCreationView.label_Schulform).toHaveText('Schulform:');
-        await expect(schuleCreationView.data_Schulform).toContainText(schultraeger);
-        await expect(schuleCreationView.label_Dienststellennummer).toHaveText('Dienststellennummer:');
-        await expect(schuleCreationView.data_Dienststellennummer).toHaveText(dienststellenNr);
-        await expect(schuleCreationView.label_Schulname).toHaveText('Schulname:');
-        await expect(schuleCreationView.data_Schulname).toHaveText(schulname);
-        await expect(schuleCreationView.button_WeitereSchuleAnlegen).toBeVisible();
-        await expect(schuleCreationView.button_ZurueckErgebnisliste).toBeVisible();
+        await expect(schuleCreationView.textSuccess).toBeVisible();
+        await expect(schuleCreationView.textH2SchuleAnlegen).toHaveText('Neue Schule hinzufügen');
+        await expect(schuleCreationView.buttonSchliessen).toBeVisible();
+        await expect(schuleCreationView.textSuccess).toBeVisible();
+        await expect(schuleCreationView.iconSuccess).toBeVisible();
+        await expect(schuleCreationView.textDatenGespeichert).toHaveText('Folgende Daten wurden gespeichert:');
+        await expect(schuleCreationView.labelSchulform).toHaveText('Schulform:');
+        await expect(schuleCreationView.dataSchulform).toContainText(schultraeger);
+        await expect(schuleCreationView.labelDienststellennummer).toHaveText('Dienststellennummer:');
+        await expect(schuleCreationView.dataDienststellennummer).toHaveText(dienststellenNr);
+        await expect(schuleCreationView.labelSchulname).toHaveText('Schulname:');
+        await expect(schuleCreationView.dataSchulname).toHaveText(schulname);
+        await expect(schuleCreationView.buttonWeitereSchuleAnlegen).toBeVisible();
+        await expect(schuleCreationView.buttonZurueckErgebnisliste).toBeVisible();
       });
     }
   );
