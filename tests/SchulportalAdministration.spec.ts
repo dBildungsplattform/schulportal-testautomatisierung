@@ -17,15 +17,14 @@ const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
 
 // The created test data will be deleted in the afterEach block
-let personId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
-let rolleId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
+let personIds: string[] = [];
+let rolleIds: string[] = [];
 // This variable must be set to false in the testcase when the logged in user is changed
 let currentUserIsLandesadministrator: boolean = true;
 
 test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
     test.beforeEach(async ({ page }) => {
-        let startseite: StartPage;
-        startseite = await test.step(`Login`, async () => {
+        await test.step(`Login`, async () => {
         const startPage = await FromAnywhere(page)
             .start()
             .then((landing) => landing.goToLogin())
@@ -50,14 +49,14 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         }
 
         await test.step(`Testdaten löschen via API`, async () => {
-            if (personId.length > 0) {
-                await deletePersonById(personId, page);
-                personId = [];
+            if (personIds.length > 0) {
+                await deletePersonById(personIds, page);
+                personIds = [];
             }
 
-            if (rolleId.length > 0) {       
-                await deleteRolleById(rolleId, page);
-                rolleId = [];
+            if (rolleIds.length > 0) {       
+                await deleteRolleById(rolleIds, page);
+                rolleIds = [];
             }
         });
 
@@ -76,8 +75,8 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         // Testdaten erstellen
         const idSPs: string[] = [await getSPId(page, 'E-Mail')];
         const userInfo: UserInfo = await createRolleAndPersonWithUserContext(page, testschule, 'LEHR', await generateNachname(), await generateVorname(), idSPs, await generateRolleName());
-        personId.push(userInfo.personId); 
-        rolleId.push(userInfo.rolleId);
+        personIds.push(userInfo.personId); 
+        rolleIds.push(userInfo.rolleId);
         await header.logout();
 
         // Test durchführen
@@ -101,8 +100,8 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         // Testdaten erstellen
         const idSPs: string[] = [await getSPId(page, 'itslearning')];
         const userInfo: UserInfo = await createRolleAndPersonWithUserContext(page, testschule, 'LERN', await generateNachname(), await generateVorname(), idSPs, await generateRolleName());
-        personId.push(userInfo.personId); 
-        rolleId.push(userInfo.rolleId);
+        personIds.push(userInfo.personId); 
+        rolleIds.push(userInfo.rolleId);
         await header.logout();
 
         // Test durchführen
@@ -126,8 +125,8 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         // Testdaten erstellen
         const idSPs: string[] = [await getSPId(page, 'Schulportal-Administration')];
         const userInfo: UserInfo = await createRolleAndPersonWithUserContext(page, testschule, 'LEIT', await generateNachname(), await generateVorname(), idSPs, await generateRolleName());
-        personId.push(userInfo.personId); 
-        rolleId.push(userInfo.rolleId);
+        personIds.push(userInfo.personId); 
+        rolleIds.push(userInfo.rolleId);
 
         await addSystemrechtToRolle(page, userInfo.rolleId, 'PERSONEN_VERWALTEN');
         await header.logout();

@@ -14,8 +14,7 @@ import FromAnywhere from '../pages/FromAnywhere';
 
 test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }: { page: Page }) => {
-    let startseite: StartPage;
-    startseite = await test.step(`Login`, async () => {
+    await test.step(`Login`, async () => {
       const startPage = await FromAnywhere(page)
         .start()
         .then((landing) => landing.goToLogin())

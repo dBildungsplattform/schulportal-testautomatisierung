@@ -20,8 +20,11 @@ export class HeaderPage{
     }
 
     async logout(): Promise<void> {
+        // Wenn man auf den Abmelden-Button klickt, laufen häufig noch diverse requests. Deshalb brauchen wir hier eine kurze Verzögerung bzw. einen Sprung auf die Startseite
+        // Wird mit SPSH-1809 überarbeitet
         await FromAnywhere(this.page).start();
         await this.page.waitForResponse(resp => resp.url().includes('/api/provider') && resp.status() === 200);
+        
         await this.button_logout.click();
         const landingPage: LandingPage = new LandingPage(this.page);
         await expect(landingPage.text_Willkommen).toBeVisible();

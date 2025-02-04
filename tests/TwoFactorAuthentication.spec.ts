@@ -18,14 +18,12 @@ import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelp
 import FromAnywhere from '../pages/FromAnywhere';
 
 // The created test data will be deleted in the afterEach block
-let username: string[] = [];
-let rolleId: string[] = [];
+let usernames: string[] = [];
+let rolleIds: string[] = [];
 
 test.describe(`Testfälle für TwoFactorAuthentication": Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
-  let startseite: StartPage;
-
   test.beforeEach(async ({ page }) => {
-    startseite = await test.step(`Login`, async () => {
+    await test.step(`Login`, async () => {
       const startPage = await FromAnywhere(page)
         .start()
         .then((landing) => landing.goToLogin())
@@ -38,13 +36,13 @@ test.describe(`Testfälle für TwoFactorAuthentication": Umgebung: ${process.env
 
   test.afterEach(async ({ page }: { page: Page }) => {
     await test.step(`Testdaten(Benutzer) löschen via API`, async () => {
-      if (username.length > 0) {
-        await deletePersonenBySearchStrings(page, username);
-        username = [];
+      if (usernames.length > 0) {
+        await deletePersonenBySearchStrings(page, usernames);
+        usernames = [];
       }
-      if (rolleId.length > 0) {
-        await deleteRolleById(rolleId, page);
-        rolleId = [];
+      if (rolleIds.length > 0) {
+        await deleteRolleById(rolleIds, page);
+        rolleIds = [];
       }
     });
 
@@ -67,8 +65,8 @@ test.describe(`Testfälle für TwoFactorAuthentication": Umgebung: ${process.env
         [await getSPId(page, email)],
         await generateRolleName()
       );
-      username.push(userInfoLehrer.username);
-      rolleId.push(userInfoLehrer.rolleId);
+      usernames.push(userInfoLehrer.username);
+      rolleIds.push(userInfoLehrer.rolleId);
     });
 
     const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);

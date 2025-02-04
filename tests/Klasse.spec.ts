@@ -64,17 +64,17 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     }
 
     await test.step(`Testdaten löschen via API`, async () => {
-      if (className.length > 0) {
-        await deleteKlasseByName(className, page);
-        className = [];
+      if (klasseNames.length > 0) {
+        await deleteKlasseByName(klasseNames, page);
+        klasseNames = [];
       }
-      if (username.length > 0) {
-        await deletePersonenBySearchStrings(page, username);
-        username = [];
+      if (usernames.length > 0) {
+        await deletePersonenBySearchStrings(page, usernames);
+        usernames = [];
       }
-      if (rolleId.length > 0) {
-        await deleteRolleById(rolleId, page);
-        rolleId = [];
+      if (rolleIds.length > 0) {
+        await deleteRolleById(rolleIds, page);
+        rolleIds = [];
       }
     });
 
@@ -170,7 +170,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       await expect(klasseCreationView.textH2KlasseAnlegen).toHaveText('Neue Klasse hinzufügen');
       await expect(klasseCreationView.buttonSchliessen).toBeVisible();
       await expect(klasseCreationView.textSuccess).toHaveText('Die Klasse wurde erfolgreich hinzugefügt.');
-      className.push(klasseName);
+      klasseNames.push(klasseName);
       await expect(klasseCreationView.iconSuccess).toBeVisible();
       await expect(klasseCreationView.textDatenGespeichert).toBeVisible();
       await expect(klasseCreationView.labelSchule).toBeVisible();
@@ -243,8 +243,8 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'SCHULTRAEGER_VERWALTEN');
       await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'PERSONEN_ANLEGEN');
 
-      username.push(userInfoAdmin.username);
-      rolleId.push(userInfoAdmin.rolleId);
+      usernames.push(userInfoAdmin.username);
+      rolleIds.push(userInfoAdmin.rolleId);
 
       //login als Schuladmin
       await header.logout();
@@ -273,7 +273,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       klassenname = await generateKlassenname();
       await klasseDetailsView.klasseBearbeiten(klassenname);
       await expect(klasseDetailsView.textSuccess).toBeVisible();
-      className.push(klassenname);
+      klasseNames.push(klassenname);
     });
   });
   test('Klasse bearbeiten als Schuladmin', { tag: [LONG] }, async ({ page }) => {
@@ -309,8 +309,8 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'PERSONEN_VERWALTEN');
       await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'KLASSEN_VERWALTEN');
 
-      username.push(userInfoAdmin.username);
-      rolleId.push(userInfoAdmin.rolleId);
+      usernames.push(userInfoAdmin.username);
+      rolleIds.push(userInfoAdmin.rolleId);
 
       //login als Schuladmin
       currentUserIsLandesadministrator = false;
@@ -339,7 +339,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       klassenname = await generateKlassenname();
       await klasseDetailsView.klasseBearbeiten(klassenname);
       await expect(klasseDetailsView.textSuccess).toBeVisible();
-      className.push(klassenname);
+      klasseNames.push(klassenname);
     });
   });
 });

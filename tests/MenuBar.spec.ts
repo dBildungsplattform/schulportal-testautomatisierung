@@ -6,10 +6,8 @@ import { LONG, SHORT, STAGE, BROWSER } from '../base/tags';
 import FromAnywhere from '../pages/FromAnywhere';
 
 test.describe(`Testfälle für die Hauptmenue-Leiste: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
-  let startseite: StartPage;
-
   test.beforeEach(async ({ page }) => {
-    startseite = await test.step(`Login`, async () => {
+    await test.step(`Login`, async () => {
       const startPage = await FromAnywhere(page)
         .start()
         .then((landing) => landing.goToLogin())

@@ -21,16 +21,14 @@ const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
 
 // The created test data will be deleted in the afterEach block
-let username: string[] = [];
-let roleId: string[] = [];
+let usernames: string[] = [];
+let rolleIds: string[] = [];
 // This variable must be set to false in the testcase when the logged in user is changed
 let currentUserIsLandesadministrator: boolean = true;
 
 test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
-  let startseite: StartPage;
-
   test.beforeEach(async ({ page }) => {
-    startseite = await test.step(`Login`, async () => {
+    await test.step(`Login`, async () => {
       const startPage = await FromAnywhere(page)
         .start()
         .then((landing) => landing.goToLogin())
@@ -59,14 +57,14 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
     }
 
     await test.step(`Testdaten löschen via API`, async () => {
-      if (username.length > 0) {
-        await deletePersonenBySearchStrings(page, username);
-        username = [];
+      if (usernames.length > 0) {
+        await deletePersonenBySearchStrings(page, usernames);
+        usernames = [];
       }
 
-      if (roleId.length > 0) {
-        deleteRolleById(roleId, page);
-        roleId = [];
+      if (rolleIds.length > 0) {
+        deleteRolleById(rolleIds, page);
+        rolleIds = [];
       }
     });
 
@@ -102,8 +100,8 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
           idSPs,
           rollenname
         );
-        roleId.push(userInfo.rolleId);
-        username.push(userInfo.username);
+        rolleIds.push(userInfo.rolleId);
+        usernames.push(userInfo.username);
 
         await addSystemrechtToRolle(page, userInfo.rolleId, 'ROLLEN_VERWALTEN');
         await addSystemrechtToRolle(page, userInfo.rolleId, 'PERSONEN_SOFORT_LOESCHEN');
@@ -133,7 +131,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await expect(profileView.label_VornameNachname).toHaveText('Vor- und Nachname:');
         await expect(profileView.data_VornameNachname).toHaveText(vorname + ' ' + nachname);
         await expect(profileView.label_Benutzername).toHaveText('Benutzername:');
-        await expect(profileView.data_Benutzername).toHaveText(username[0]);
+        await expect(profileView.data_Benutzername).toHaveText(usernames[0]);
         await expect(profileView.label_KopersNr).toBeHidden();
         await expect(profileView.data_KopersNr).toBeHidden();
         await expect(profileView.icon_InfoPersoenlicheDaten).toBeVisible();
@@ -182,8 +180,8 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
           idSPs,
           rollenname
         );
-        roleId.push(userInfo.rolleId);
-        username.push(userInfo.username);
+        rolleIds.push(userInfo.rolleId);
+        usernames.push(userInfo.username);
 
         await header.logout();
         await header.button_login.click();
@@ -204,7 +202,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await expect(profileView.label_VornameNachname).toHaveText('Vor- und Nachname:');
         await expect(profileView.data_VornameNachname).toHaveText(vorname + ' ' + nachname);
         await expect(profileView.label_Benutzername).toHaveText('Benutzername:');
-        await expect(profileView.data_Benutzername).toHaveText(username[0]);
+        await expect(profileView.data_Benutzername).toHaveText(usernames[0]);
         await expect(profileView.label_KopersNr).toBeHidden();
         await expect(profileView.data_KopersNr).toBeHidden();
         await expect(profileView.icon_InfoPersoenlicheDaten).toBeVisible();
@@ -252,8 +250,8 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
           idSPs,
           rollenname
         );
-        roleId.push(userInfo.rolleId);
-        username.push(userInfo.username);
+        rolleIds.push(userInfo.rolleId);
+        usernames.push(userInfo.username);
 
         await header.logout();
         await header.button_login.click();
@@ -274,7 +272,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await expect(profileView.label_VornameNachname).toHaveText('Vor- und Nachname:');
         await expect(profileView.data_VornameNachname).toHaveText(vorname + ' ' + nachname);
         await expect(profileView.label_Benutzername).toHaveText('Benutzername:');
-        await expect(profileView.data_Benutzername).toHaveText(username[0]);
+        await expect(profileView.data_Benutzername).toHaveText(usernames[0]);
         await expect(profileView.label_KopersNr).toBeHidden();
         await expect(profileView.data_KopersNr).toBeHidden();
         await expect(profileView.icon_InfoPersoenlicheDaten).toBeVisible();
@@ -322,8 +320,8 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
           idSPs,
           rollenname
         );
-        roleId.push(userInfo.rolleId);
-        username.push(userInfo.username);
+        rolleIds.push(userInfo.rolleId);
+        usernames.push(userInfo.username);
 
         await header.logout();
         await header.button_login.click();
@@ -344,7 +342,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await expect(profileView.label_VornameNachname).toHaveText('Vor- und Nachname:');
         await expect(profileView.data_VornameNachname).toHaveText(vorname + ' ' + nachname);
         await expect(profileView.label_Benutzername).toHaveText('Benutzername:');
-        await expect(profileView.data_Benutzername).toHaveText(username[0]);
+        await expect(profileView.data_Benutzername).toHaveText(usernames[0]);
         await expect(profileView.label_KopersNr).toBeHidden();
         await expect(profileView.data_KopersNr).toBeHidden();
         await expect(profileView.icon_InfoPersoenlicheDaten).toBeVisible();
@@ -394,15 +392,15 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
           idSPs,
           rollenname,
         );
-        roleId.push(userInfo.rolleId);
-        username.push(userInfo.username);
+        rolleIds.push(userInfo.rolleId);
+        usernames.push(userInfo.username);
 
         await addSecondOrganisationToPerson(
           page,
           userInfo.personId,
           await getOrganisationId(page, organisation1),
           await getOrganisationId(page, organisation2),
-          roleId[0]
+          rolleIds[0]
         );
         await header.logout();
         await header.button_login.click();
@@ -423,7 +421,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await expect(profileView.label_VornameNachname).toHaveText('Vor- und Nachname:');
         await expect(profileView.data_VornameNachname).toHaveText(vorname + ' ' + nachname);
         await expect(profileView.label_Benutzername).toHaveText('Benutzername:');
-        await expect(profileView.data_Benutzername).toHaveText(username[0]);
+        await expect(profileView.data_Benutzername).toHaveText(usernames[0]);
         await expect(profileView.label_KopersNr).toBeHidden();
         await expect(profileView.data_KopersNr).toBeHidden();
         await expect(profileView.icon_InfoPersoenlicheDaten).toBeVisible();
@@ -505,8 +503,8 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
           idSPs,
           await generateRolleName()
         );
-        roleId.push(userInfo.rolleId);
-        username.push(userInfo.username);
+        rolleIds.push(userInfo.rolleId);
+        usernames.push(userInfo.username);
 
         await header.logout();
         await header.button_login.click();
@@ -531,7 +529,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       });
 
       await test.step(`Status des Benutzernamenfelds prüfen`, async () => {
-        await expect(profileView.label_username).toHaveText(username[0]); // Benutzername ist nicht änderbar weil es nur Text ist
+        await expect(profileView.label_username).toHaveText(usernames[0]); // Benutzername ist nicht änderbar weil es nur Text ist
         await expect(profileView.text_p_LoginPrompt).toHaveText('Bitte geben Sie Ihr aktuelles Passwort ein.');
         await expect(profileView.input_password).toBeEnabled();
         await page.goBack();
@@ -562,8 +560,8 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
           idSPs,
           await generateRolleName()
         );
-        roleId.push(userInfo.rolleId);
-        username.push(userInfo.username);
+        rolleIds.push(userInfo.rolleId);
+        usernames.push(userInfo.username);
 
         await header.logout();
         await header.button_login.click();
