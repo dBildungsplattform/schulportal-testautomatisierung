@@ -31,9 +31,9 @@ const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
 
 // The created test data will be deleted in the afterEach block
-let className: string[] = [];
-let username: string[] = [];
-let rolleId: string[] = [];
+let klasseNames: string[] = [];
+let usernames: string[] = [];
+let rolleIds: string[] = [];
 // This variable must be set to false in the testcase when the logged in user is changed
 let currentUserIsLandesadministrator: boolean = true;
 
