@@ -73,6 +73,7 @@ export class ComboBox {
     }    
     await item.waitFor({ state: 'visible' });
     // This delay is needed for testcases who are using the method searchByTitle several times. It guarantees that the next combobox data is loaded correctly
+    // TODO: we should improve the way we wait for items to be loaded when multiple comboboxes are clicked in sequence. we should maybe wait for another state or locator to ensure the dropdown menu is fully loaded
     await item.click({delay: 1000});
   }
 }
