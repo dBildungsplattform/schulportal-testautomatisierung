@@ -219,14 +219,12 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
 
     await test.step('ungültige Zeichen', async () => {
       const illegalCharacters: string[] = ['!', '"', '§', '$', '%', '&', '/', '<', '>', '{', '}', '[', ']'];
-      illegalCharacters.forEach(async (input: string) => {
-        await rolleDetailsView.rolleForm.rollenname.inputElement.fill(input);
+      for (let index = 0; index < illegalCharacters.length; index++) {
+        await rolleDetailsView.rolleForm.rollenname.inputElement.fill(illegalCharacters[index]);
         await expect(rolleDetailsView.rolleForm.rollenname.messages.getByText('ungültig')).toBeVisible();
-        await expect(rolleDetailsView.rolleForm.rollenname.messages.getByText('ungültig')).toHaveText(
-          'Der Rollenname darf keine ungültigen Zeichen beinhalten.'
-        );
-      });
-    });
+        await expect(rolleDetailsView.rolleForm.rollenname.messages.getByText('ungültig')).toHaveText('Der Rollenname darf keine ungültigen Zeichen beinhalten.');
+      }
+    })
   });
 
   test('Versuch eine zugewiesene Rolle zu löschen', { tag: [LONG] }, async () => {
@@ -340,13 +338,11 @@ test.describe('Testet die Anlage einer neuen Rolle', () => {
 
     await test.step('ungültige Zeichen', async () => {
       const illegalCharacters: string[] = ['!', '"', '§', '$', '%', '&', '/', '<', '>', '{', '}', '[', ']'];
-      illegalCharacters.forEach(async (input: string) => {
-        await rolleCreationView.enterRollenname(input);
+      for (let index = 0; index < illegalCharacters.length; index++) {
+        await rolleCreationView.enterRollenname(illegalCharacters[index]);
         await expect(rolleCreationView.rolleForm.rollenname.messages.getByText('ungültig')).toBeVisible();
-        await expect(rolleCreationView.rolleForm.rollenname.messages.getByText('ungültig')).toHaveText(
-          'Der Rollenname darf keine ungültigen Zeichen beinhalten.'
-        );
-      });
+        await expect(rolleCreationView.rolleForm.rollenname.messages.getByText('ungültig')).toHaveText('Der Rollenname darf keine ungültigen Zeichen beinhalten.');
+      }
     });
   });
 

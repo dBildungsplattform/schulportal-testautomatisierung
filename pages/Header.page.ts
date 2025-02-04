@@ -1,5 +1,6 @@
 import { type Locator, Page, expect } from '@playwright/test';
 import { LandingPage } from "./LandingView.page";
+import FromAnywhere from '../pages/FromAnywhere';
 
 export class HeaderPage{
     readonly page: Page;
@@ -19,10 +20,10 @@ export class HeaderPage{
     }
 
     async logout(): Promise<void> {
-        const landingPage = new LandingPage(this.page);
-        // Wenn man auf den Abmelden-Button klickt, laufen häufig noch diverse requests. Deshalb brauchen wir hier eine kurze Verzögerung
-        await this.page.waitForTimeout(1000);
+        await FromAnywhere(this.page).start();
+        await this.page.waitForResponse(resp => resp.url().includes('/api/provider') && resp.status() === 200);
         await this.button_logout.click();
+        const landingPage: LandingPage = new LandingPage(this.page);
         await expect(landingPage.text_Willkommen).toBeVisible();
     }
 }
