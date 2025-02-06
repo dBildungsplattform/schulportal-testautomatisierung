@@ -46,8 +46,8 @@ export class PersonCreationViewPage{
         this.body = page.locator('body');
         this.text_h2_PersonAnlegen = page.getByTestId('layout-card-headline');
         this.button_Schliessen = page.getByTestId('close-layout-card-button');
-        this.combobox_Rolle = page.getByTestId('rolle-select').locator('.v-field__input');
-        this.combobox_Rolle_Clear = page.getByTestId('rolle-select').getByLabel('leeren');
+        this.combobox_Rolle = page.getByTestId('rollen-select').locator('.v-field__input');
+        this.combobox_Rolle_Clear = page.getByTestId('rollen-select').getByLabel('leeren');
         this.combobox_Schulstrukturknoten_Clear = page.getByTestId('organisation-select').getByLabel('leeren');
         this.organisation = page.getByTestId('organisation-select').locator('.v-field');
         this.organisationInput = page.getByTestId('organisation-select').locator('input');
