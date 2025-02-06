@@ -11,66 +11,80 @@ import { LONG, SHORT, STAGE } from "../base/tags";
 import { deletePersonById, deleteRolleById } from "../base/testHelperDeleteTestdata";
 import { generateNachname, generateRolleName, generateVorname } from "../base/testHelperGenerateTestdataNames";
 import { testschule } from "../base/organisation";
+import FromAnywhere from '../pages/FromAnywhere';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
 
-let personId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
-let rolleId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
+// The created test data will be deleted in the afterEach block
+let personIds: string[] = [];
+let rolleIds: string[] = [];
+// This variable must be set to false in the testcase when the logged in user is changed
+let currentUserIsLandesadministrator: boolean = true;
 
 test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
+    test.beforeEach(async ({ page }) => {
+        await test.step(`Login`, async () => {
+        const startPage = await FromAnywhere(page)
+            .start()
+            .then((landing) => landing.goToLogin())
+            .then((login) => login.login())
+            .then((startseite) => startseite.checkHeadlineIsVisible());
+
+        return startPage;
+        });
+    });
+
     test.afterEach(async ({ page }) => {
-        const header = new HeaderPage(page);
-        const landing: LandingPage = new LandingPage(page);
-        const login: LoginPage = new LoginPage(page);
+        if(!currentUserIsLandesadministrator) {
+            const header: HeaderPage = new HeaderPage(page);
+            const landing: LandingPage = new LandingPage(page);
+            const startseite: StartPage = new StartPage(page);
+            const login: LoginPage = new LoginPage(page);
+            
+            await header.logout();
+            await landing.button_Anmelden.click();
+            await login.login(ADMIN, PW);
+            await startseite.checkHeadlineIsVisible();
+        }
 
         await test.step(`Testdaten löschen via API`, async () => {
-            if (personId) { // nur wenn der Testfall auch mind. einen Benutzer angelegt hat
-                await header.logout();
-                await landing.button_Anmelden.click();
-                await login.login(ADMIN, PW);
-                
-                await deletePersonById(personId, page);
-                personId = [];
+            if (personIds.length > 0) {
+                await deletePersonById(personIds, page);
+                personIds = [];
             }
-    
-            if (rolleId) { // nur wenn der Testfall auch mind. eine Rolle angelegt hat
-                await header.logout();
-                await landing.button_Anmelden.click();
-                await login.login(ADMIN, PW);
-                
-                await deleteRolleById(rolleId, page);
-                rolleId = [];
+
+            if (rolleIds.length > 0) {       
+                await deleteRolleById(rolleIds, page);
+                rolleIds = [];
             }
         });
 
         await test.step(`Abmelden`, async () => {
-          const header = new HeaderPage(page);
-          await header.logout();
+            const header: HeaderPage = new HeaderPage(page);
+            await header.logout();
         });
-      });
+        });
 
     test("Prüfen, dass die Schulportal-Administration Kachel nicht sichtbar ist für Lehrkräfte", {tag: [LONG, STAGE]}, async ({page}) => {
         const landing: LandingPage = new LandingPage(page);
         const login: LoginPage = new LoginPage(page);
         const header = new HeaderPage(page);
+        const startseite: StartPage = new StartPage(page);
 
         // Testdaten erstellen
-        await page.goto('/');
-        await landing.button_Anmelden.click();
-        await login.login(ADMIN, PW);
-
         const idSPs: string[] = [await getSPId(page, 'E-Mail')];
         const userInfo: UserInfo = await createRolleAndPersonWithUserContext(page, testschule, 'LEHR', await generateNachname(), await generateVorname(), idSPs, await generateRolleName());
-        personId.push(userInfo.personId); 
-        rolleId.push(userInfo.rolleId);
+        personIds.push(userInfo.personId); 
+        rolleIds.push(userInfo.rolleId);
         await header.logout();
 
         // Test durchführen
         await landing.button_Anmelden.click();
         await login.login(userInfo.username, userInfo.password);
         await login.UpdatePW();
-        const startseite: StartPage = new StartPage(page);
+        currentUserIsLandesadministrator = false;
+        await startseite.checkHeadlineIsVisible();
         await test.step(`Prüfen, dass die Kachel E-Mail angezeigt wird und die Kachel Schulportal-Administration nicht angezeigt wird`, async () => {
             await expect(startseite.card_item_schulportal_administration).toBeHidden();
             await expect(startseite.card_item_email).toBeVisible();
@@ -81,23 +95,21 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         const landing: LandingPage = new LandingPage(page);
         const login: LoginPage = new LoginPage(page);
         const header = new HeaderPage(page);
+        const startseite: StartPage = new StartPage(page);
 
         // Testdaten erstellen
-        await page.goto('/');
-        await landing.button_Anmelden.click();
-        await login.login(ADMIN, PW);
-
         const idSPs: string[] = [await getSPId(page, 'itslearning')];
         const userInfo: UserInfo = await createRolleAndPersonWithUserContext(page, testschule, 'LERN', await generateNachname(), await generateVorname(), idSPs, await generateRolleName());
-        personId.push(userInfo.personId); 
-        rolleId.push(userInfo.rolleId);
+        personIds.push(userInfo.personId); 
+        rolleIds.push(userInfo.rolleId);
         await header.logout();
 
         // Test durchführen
         await landing.button_Anmelden.click();
         await login.login(userInfo.username, userInfo.password);
         await login.UpdatePW();
-        const startseite: StartPage = new StartPage(page);
+        currentUserIsLandesadministrator = false;
+        await startseite.checkHeadlineIsVisible();
         await test.step(`Prüfen, dass die Kachel E-Mail angezeigt wird und die Kachel Schulportal-Administration nicht angezeigt wird`, async () => {
             await expect(startseite.card_item_schulportal_administration).toBeHidden();
             await expect(startseite.card_item_itslearning).toBeVisible();
@@ -108,16 +120,13 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         const landing: LandingPage = new LandingPage(page);
         const login: LoginPage = new LoginPage(page);
         const header = new HeaderPage(page);
+        const startseite: StartPage = new StartPage(page);
 
         // Testdaten erstellen
-        await page.goto('/');
-        await landing.button_Anmelden.click();
-        await login.login(ADMIN, PW);
-
         const idSPs: string[] = [await getSPId(page, 'Schulportal-Administration')];
         const userInfo: UserInfo = await createRolleAndPersonWithUserContext(page, testschule, 'LEIT', await generateNachname(), await generateVorname(), idSPs, await generateRolleName());
-        personId.push(userInfo.personId); 
-        rolleId.push(userInfo.rolleId);
+        personIds.push(userInfo.personId); 
+        rolleIds.push(userInfo.rolleId);
 
         await addSystemrechtToRolle(page, userInfo.rolleId, 'PERSONEN_VERWALTEN');
         await header.logout();
@@ -126,7 +135,8 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         await landing.button_Anmelden.click();
         await login.login(userInfo.username, userInfo.password);
         await login.UpdatePW();
-        const startseite: StartPage = new StartPage(page);
+        currentUserIsLandesadministrator = false;
+        await startseite.checkHeadlineIsVisible();
         await test.step(`Prüfen, dass die Kachel E-Mail nicht angezeigt wird und die Kachel Schulportal-Administration angezeigt wird`, async () => {
             await expect(startseite.card_item_schulportal_administration).toBeVisible();
             await expect(startseite.card_item_email).toBeHidden();

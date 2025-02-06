@@ -21,7 +21,7 @@ test.afterEach(async ({ page }) => {
 test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test('Erfolgreicher Standard Logoff als Landesadmin', {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
     const landing: LandingPage = new LandingPage(page);
-    const header = new HeaderPage(page);
+    const header: HeaderPage = new HeaderPage(page);
 
     await test.step(`Annmelden mit Benutzer ${ADMIN}`, async () => {
       await page.goto('/');

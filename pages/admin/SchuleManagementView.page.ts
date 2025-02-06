@@ -2,16 +2,16 @@ import { type Locator, Page } from '@playwright/test';
 
 export class SchuleManagementViewPage{
     readonly page: Page;
-    readonly text_h1_Administrationsbereich: Locator;
-    readonly text_h2_Schulverwaltung: Locator;
-    readonly table_header_Dienststellennummer: Locator;
-    readonly table_header_Schulname: Locator;
+    readonly textH1Administrationsbereich: Locator;
+    readonly textH2Schulverwaltung: Locator;
+    readonly tableHeaderDienststellennummer: Locator;
+    readonly tableHeaderSchulname: Locator;
    
     constructor(page){
         this.page = page;  
-        this.text_h1_Administrationsbereich = page.getByTestId('admin-headline');
-        this.text_h2_Schulverwaltung = page.getByTestId('layout-card-headline');
-        this.table_header_Dienststellennummer = page.getByText('Dienststellennummer');
-        this.table_header_Schulname = page.getByText('Schulname');
+        this.textH1Administrationsbereich = page.getByTestId('admin-headline');
+        this.textH2Schulverwaltung = page.getByTestId('layout-card-headline');
+        this.tableHeaderDienststellennummer = page.getByText('Dienststellennummer');
+        this.tableHeaderSchulname = page.getByText('Schulname');
     }
 }

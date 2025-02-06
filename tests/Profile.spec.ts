@@ -15,53 +15,56 @@ import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
 import { ProfilePage } from '../pages/ProfileView.page';
 import { StartPage } from '../pages/StartView.page';
+import FromAnywhere from '../pages/FromAnywhere'
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
 
-let username: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
-let roleId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
+// The created test data will be deleted in the afterEach block
+let usernames: string[] = [];
+let rolleIds: string[] = [];
+// This variable must be set to false in the testcase when the logged in user is changed
+let currentUserIsLandesadministrator: boolean = true;
 
 test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
-  test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
+  test.beforeEach(async ({ page }) => {
     await test.step(`Login`, async () => {
-      const landing: LandingPage = new LandingPage(page);
-      const startseite: StartPage = new StartPage(page);
-      const login: LoginPage = new LoginPage(page);
-
-      await page.goto('/');
-      await landing.button_Anmelden.click();
-      await login.login(ADMIN, PW);
-      await expect(startseite.text_h2_Ueberschrift).toBeVisible();
+      const startPage = await FromAnywhere(page)
+        .start()
+        .then((landing) => landing.goToLogin())
+        .then((login) => login.login())
+        .then((startseite) => startseite.checkHeadlineIsVisible());
+  
+      return startPage;
     });
   });
 
   test.afterEach(async ({ page }: PlaywrightTestArgs) => {
-    const header: HeaderPage = new HeaderPage(page);
-    const landing: LandingPage = new LandingPage(page);
-    const login: LoginPage = new LoginPage(page);
-
     await test.step(`Offene Dialoge schließen`, async () => {
       page.keyboard.press('Escape');
     });
 
-    await test.step(`Testdaten löschen via API`, async () => {
-      if (username) {
-        // nur wenn der Testfall auch mind. einen Benutzer angelegt hat
-        await header.logout();
-        await landing.button_Anmelden.click();
-        await login.login(ADMIN, PW);
-        const startseite: StartPage = new StartPage(page);
-        await expect(startseite.text_h2_Ueberschrift).toBeVisible();
-        await expect(startseite.card_item_schulportal_administration).toBeVisible();
+    if(!currentUserIsLandesadministrator) {
+      const header: HeaderPage = new HeaderPage(page);
+      const landing: LandingPage = new LandingPage(page);
+      const login: LoginPage = new LoginPage(page);
+      const startseite: StartPage = new StartPage(page);
 
-        await deletePersonenBySearchStrings(page, username);
-        username = [];
+      await header.logout();
+      await landing.button_Anmelden.click();
+      await login.login(ADMIN, PW);
+      await startseite.checkHeadlineIsVisible();
+    }
+
+    await test.step(`Testdaten löschen via API`, async () => {
+      if (usernames.length > 0) {
+        await deletePersonenBySearchStrings(page, usernames);
+        usernames = [];
       }
 
-      if (roleId) {
-        deleteRolleById(roleId, page);
-        roleId = [];
+      if (rolleIds.length > 0) {
+        deleteRolleById(rolleIds, page);
+        rolleIds = [];
       }
     });
 
@@ -97,8 +100,8 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
           idSPs,
           rollenname
         );
-        roleId.push(userInfo.rolleId);
-        username.push(userInfo.username);
+        rolleIds.push(userInfo.rolleId);
+        usernames.push(userInfo.username);
 
         await addSystemrechtToRolle(page, userInfo.rolleId, 'ROLLEN_VERWALTEN');
         await addSystemrechtToRolle(page, userInfo.rolleId, 'PERSONEN_SOFORT_LOESCHEN');
@@ -111,6 +114,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await header.logout();
         await header.button_login.click();
         await login.login(userInfo.username, userInfo.password);
+        currentUserIsLandesadministrator = false;
         await login.UpdatePW();
       });
 
@@ -127,7 +131,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await expect(profileView.label_VornameNachname).toHaveText('Vor- und Nachname:');
         await expect(profileView.data_VornameNachname).toHaveText(vorname + ' ' + nachname);
         await expect(profileView.label_Benutzername).toHaveText('Benutzername:');
-        await expect(profileView.data_Benutzername).toHaveText(username[0]);
+        await expect(profileView.data_Benutzername).toHaveText(usernames[0]);
         await expect(profileView.label_KopersNr).toBeHidden();
         await expect(profileView.data_KopersNr).toBeHidden();
         await expect(profileView.icon_InfoPersoenlicheDaten).toBeVisible();
@@ -176,13 +180,14 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
           idSPs,
           rollenname
         );
-        roleId.push(userInfo.rolleId);
-        username.push(userInfo.username);
+        rolleIds.push(userInfo.rolleId);
+        usernames.push(userInfo.username);
 
         await header.logout();
         await header.button_login.click();
         await login.login(userInfo.username, userInfo.password);
         await login.UpdatePW();
+        currentUserIsLandesadministrator = false;
       });
 
       await test.step(`Profil öffnen`, async () => {
@@ -197,7 +202,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await expect(profileView.label_VornameNachname).toHaveText('Vor- und Nachname:');
         await expect(profileView.data_VornameNachname).toHaveText(vorname + ' ' + nachname);
         await expect(profileView.label_Benutzername).toHaveText('Benutzername:');
-        await expect(profileView.data_Benutzername).toHaveText(username[0]);
+        await expect(profileView.data_Benutzername).toHaveText(usernames[0]);
         await expect(profileView.label_KopersNr).toBeHidden();
         await expect(profileView.data_KopersNr).toBeHidden();
         await expect(profileView.icon_InfoPersoenlicheDaten).toBeVisible();
@@ -245,13 +250,14 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
           idSPs,
           rollenname
         );
-        roleId.push(userInfo.rolleId);
-        username.push(userInfo.username);
+        rolleIds.push(userInfo.rolleId);
+        usernames.push(userInfo.username);
 
         await header.logout();
         await header.button_login.click();
         await login.login(userInfo.username, userInfo.password);
         await login.UpdatePW();
+        currentUserIsLandesadministrator = false;
       });
 
       await test.step(`Profil öffnen`, async () => {
@@ -266,7 +272,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await expect(profileView.label_VornameNachname).toHaveText('Vor- und Nachname:');
         await expect(profileView.data_VornameNachname).toHaveText(vorname + ' ' + nachname);
         await expect(profileView.label_Benutzername).toHaveText('Benutzername:');
-        await expect(profileView.data_Benutzername).toHaveText(username[0]);
+        await expect(profileView.data_Benutzername).toHaveText(usernames[0]);
         await expect(profileView.label_KopersNr).toBeHidden();
         await expect(profileView.data_KopersNr).toBeHidden();
         await expect(profileView.icon_InfoPersoenlicheDaten).toBeVisible();
@@ -314,13 +320,14 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
           idSPs,
           rollenname
         );
-        roleId.push(userInfo.rolleId);
-        username.push(userInfo.username);
+        rolleIds.push(userInfo.rolleId);
+        usernames.push(userInfo.username);
 
         await header.logout();
         await header.button_login.click();
         await login.login(userInfo.username, userInfo.password);
         await login.UpdatePW();
+        currentUserIsLandesadministrator = false;
       });
 
       await test.step(`Profil öffnen`, async () => {
@@ -335,7 +342,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await expect(profileView.label_VornameNachname).toHaveText('Vor- und Nachname:');
         await expect(profileView.data_VornameNachname).toHaveText(vorname + ' ' + nachname);
         await expect(profileView.label_Benutzername).toHaveText('Benutzername:');
-        await expect(profileView.data_Benutzername).toHaveText(username[0]);
+        await expect(profileView.data_Benutzername).toHaveText(usernames[0]);
         await expect(profileView.label_KopersNr).toBeHidden();
         await expect(profileView.data_KopersNr).toBeHidden();
         await expect(profileView.icon_InfoPersoenlicheDaten).toBeVisible();
@@ -385,20 +392,21 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
           idSPs,
           rollenname,
         );
-        roleId.push(userInfo.rolleId);
-        username.push(userInfo.username);
+        rolleIds.push(userInfo.rolleId);
+        usernames.push(userInfo.username);
 
         await addSecondOrganisationToPerson(
           page,
           userInfo.personId,
           await getOrganisationId(page, organisation1),
           await getOrganisationId(page, organisation2),
-          roleId[0]
+          rolleIds[0]
         );
         await header.logout();
         await header.button_login.click();
         await login.login(userInfo.username, userInfo.password);
         await login.UpdatePW();
+        currentUserIsLandesadministrator = false;
       });
 
       await test.step(`Profil öffnen`, async () => {
@@ -413,7 +421,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await expect(profileView.label_VornameNachname).toHaveText('Vor- und Nachname:');
         await expect(profileView.data_VornameNachname).toHaveText(vorname + ' ' + nachname);
         await expect(profileView.label_Benutzername).toHaveText('Benutzername:');
-        await expect(profileView.data_Benutzername).toHaveText(username[0]);
+        await expect(profileView.data_Benutzername).toHaveText(usernames[0]);
         await expect(profileView.label_KopersNr).toBeHidden();
         await expect(profileView.data_KopersNr).toBeHidden();
         await expect(profileView.icon_InfoPersoenlicheDaten).toBeVisible();
@@ -495,13 +503,14 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
           idSPs,
           await generateRolleName()
         );
-        roleId.push(userInfo.rolleId);
-        username.push(userInfo.username);
+        rolleIds.push(userInfo.rolleId);
+        usernames.push(userInfo.username);
 
         await header.logout();
         await header.button_login.click();
         await login.login(userInfo.username, userInfo.password);
         await login.UpdatePW();
+        currentUserIsLandesadministrator = false;
       });
 
       await test.step(`Profil öffnen`, async () => {
@@ -515,15 +524,16 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await expect(profileView.cardHeadline_Passwort).toHaveText('Passwort');
         await expect(profileView.button_NeuesPasswortSetzen).toBeEnabled();
 
-        profileView.button_NeuesPasswortSetzen.click();
-        profileView.button_PasswortAendern.click();
+        await profileView.button_NeuesPasswortSetzen.click();
+        await profileView.button_PasswortAendern.click();
       });
 
       await test.step(`Status des Benutzernamenfelds prüfen`, async () => {
-        await expect(profileView.label_username).toHaveText(username[0]); // Benutzername ist nicht änderbar weil es nur Text ist
+        await expect(profileView.label_username).toHaveText(usernames[0]); // Benutzername ist nicht änderbar weil es nur Text ist
         await expect(profileView.text_p_LoginPrompt).toHaveText('Bitte geben Sie Ihr aktuelles Passwort ein.');
         await expect(profileView.input_password).toBeEnabled();
         await page.goBack();
+        await expect(profileView.cardHeadline_Passwort).toBeVisible();
       });
     }
   );
@@ -550,13 +560,14 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
           idSPs,
           await generateRolleName()
         );
-        roleId.push(userInfo.rolleId);
-        username.push(userInfo.username);
+        rolleIds.push(userInfo.rolleId);
+        usernames.push(userInfo.username);
 
         await header.logout();
         await header.button_login.click();
         await login.login(userInfo.username, userInfo.password);
         await login.UpdatePW();
+        currentUserIsLandesadministrator = false;
       });
 
       await test.step(`Profil öffnen`, async () => {
