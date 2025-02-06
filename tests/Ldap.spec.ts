@@ -28,10 +28,12 @@ test.describe(`Testfaelle für LDAP: Umgebung: ${process.env.ENV}: URL: ${proces
     { tag: [LONG, SHORT, STAGE] }, async ({ page }) => {
 
       const testHelperLdap: TestHelperLdap = new TestHelperLdap(LDAP_URL, LDAP_ADMIN_PASSWORD);
-      await testHelperLdap.bind();
+
+      /*await new Promise(f => setTimeout(f, 10000));
+      console.log('Jetzt gehts weiter');*/
 
       await test.step(`Test-step`, async () => {
-        const userExist: boolean = await testHelperLdap.validateUserExists('pmeierus');
+        const userExist: boolean = await testHelperLdap.validateUserExists('rmeierrolf');
         expect(userExist).toBeTruthy();
 
         const ouExist: boolean = await testHelperLdap.validateOuExists('0702948');
@@ -43,7 +45,7 @@ test.describe(`Testfaelle für LDAP: Umgebung: ${process.env.ENV}: URL: ${proces
         const groupOfNamesExist: boolean = await testHelperLdap.validateGroupOfNamesExists('0702948');
         expect(groupOfNamesExist).toBeTruthy();
 
-        const isUserInGroup: boolean = await testHelperLdap.validateUserIsInGroupOfNames('pmeierus','0702948');
+        const isUserInGroup: boolean = await testHelperLdap.validateUserIsInGroupOfNames('rmeierrolf','0702948');
         expect(isUserInGroup).toBeTruthy();
       });
 
