@@ -16,8 +16,8 @@ const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
 
 // The created test data will be deleted in the afterEach block
-let username: string[] = [];
-let rolleId: string[] = [];
+let usernames: string[] = [];
+let rolleIds: string[] = [];
 
 let loggedIn = false;
 
@@ -29,7 +29,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
     const startseite: StartPage = new StartPage(page);
 
     await test.step(`Testdaten(Benutzer) löschen via API`, async () => {
-      if ((username.length > 0 || rolleId.length > 0) && (!loggedIn)) {
+      if ((usernames.length > 0 || rolleIds.length > 0) && (!loggedIn)) {
         await test.step(`Anmelden`, async () => {
           await page.goto('/');
           await landing.button_Anmelden.click();
@@ -38,14 +38,14 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
           loggedIn = true
         });
         
-        if (username.length > 0) { 
-          await deletePersonenBySearchStrings(page, username);
-          username = [];
+        if (usernames.length > 0) { 
+          await deletePersonenBySearchStrings(page, usernames);
+          usernames = [];
         }
   
-        if (rolleId.length > 0) { 
-          await deleteRolleById(rolleId, page);
-          rolleId = [];
+        if (rolleIds.length > 0) { 
+          await deleteRolleById(rolleIds, page);
+          rolleIds = [];
         }
       }
     });
@@ -109,8 +109,8 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
       const lehrerIdSPs: string[] = [await getSPId(page, 'E-Mail')];
       organisationIDLandSh = await getOrganisationId(page, 'Land Schleswig-Holstein');
       userInfoLehrer = await createRolleAndPersonWithUserContext(page, lehrerOrganisation, lehrerRollenart, lehrerVorname, lehrerNachname, lehrerIdSPs, lehrerRolle);
-      username.push(userInfoLehrer.username);
-      rolleId.push(userInfoLehrer.rolleId);
+      usernames.push(userInfoLehrer.username);
+      rolleIds.push(userInfoLehrer.rolleId);
       await lockPerson(page, userInfoLehrer.personId, organisationIDLandSh);
       await header.logout();
     })
