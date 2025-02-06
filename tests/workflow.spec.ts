@@ -12,70 +12,70 @@ import { DirectoryPage } from "../pages/Cards/Directory.page";
 import { createTeacherAndLogin } from "../base/api/testHelperPerson.page";
 import { UserInfo} from "../base/api/testHelper.page.ts";
 import { deletePersonenBySearchStrings, deleteRolleById } from "../base/testHelperDeleteTestdata.ts";
+import FromAnywhere from '../pages/FromAnywhere';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
 const ENV: string | undefined = process.env.ENV;
 
-let usernames: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
+// The created test data will be deleted in the afterEach block
+let usernames: string[] = [];
 let rolleIds: string[] = [];
+// This variable must be set to false in the testcase when the logged in user is changed
+let currentUserIsLandesadministrator: boolean = true;
 
 test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }) => {
     await test.step(`Login`, async () => {
-      const landing: LandingPage = new LandingPage(page);
-      const startseite: StartPage = new StartPage(page);
-      const login: LoginPage = new LoginPage(page);
-
-      await page.goto('/');
-      await landing.button_Anmelden.click();
-      await login.login(ADMIN, PW);
-      await expect(startseite.text_h2_Ueberschrift).toBeVisible();
+      const startPage = await FromAnywhere(page)
+        .start()
+        .then((landing) => landing.goToLogin())
+        .then((login) => login.login())
+        .then((startseite) => startseite.checkHeadlineIsVisible());
+  
+      return startPage;
     });
   });
 
   test.afterEach(async ({page}) => {
-    const header = new HeaderPage(page);
-    const landing = new LandingPage(page);
-    const login = new LoginPage(page);
-    const startseite = new StartPage(page);
+    if(!currentUserIsLandesadministrator) {
+      const header: HeaderPage = new HeaderPage(page);
+      const landing: LandingPage = new LandingPage(page);
+      const login: LoginPage = new LoginPage(page);
+      const startseite: StartPage = new StartPage(page);
+
+      await header.logout();
+      await landing.button_Anmelden.click();
+      await login.login(ADMIN, PW);
+      await startseite.checkHeadlineIsVisible();
+    }
 
     await test.step(`Testdaten(Benutzer) löschen via API`, async () => {
-        if (usernames) { // nur wenn der Testfall auch mind. einen Benutzer angelegt hat
-            await header.logout();
-            await landing.button_Anmelden.click();
-            await login.login(ADMIN, PW);
-            await expect(startseite.text_h2_Ueberschrift).toBeVisible();
-
+        if (usernames.length > 0) { 
             await deletePersonenBySearchStrings(page, usernames);
             usernames = [];
         }
 
-        if (rolleIds) { // nur wenn der Testfall auch mind. eine Rolle angelegt hat
-          await header.logout();
-          await landing.button_Anmelden.click();
-          await login.login(ADMIN, PW);
-          await expect(startseite.text_h2_Ueberschrift).toBeVisible();
-
+        if (rolleIds.length > 0) { 
           await deleteRolleById(rolleIds, page);
           rolleIds = [];
       }
     });
 
     await test.step(`Abmelden`, async () => {
-        const header = new HeaderPage(page);
+      const header = new HeaderPage(page);
         await header.logout();
     });
 });
 
   test("Angebote per Link öffnen als Lehrer", {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
     const startseite: StartPage = new StartPage(page);
-    const header: HeaderPage = new HeaderPage(page);
 
     let userInfoAdmin: UserInfo;
 
     await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => { 
       userInfoAdmin = await createTeacherAndLogin(page);
+      currentUserIsLandesadministrator = false;
       usernames.push(userInfoAdmin.username);
       rolleIds.push(userInfoAdmin.rolleId);
     });
@@ -172,7 +172,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
 
     await test.step(`Neues PW vergeben`, async () => {
       await login.UpdatePW();
-      await expect(startseite.text_h2_Ueberschrift).toBeVisible();
+      await startseite.checkHeadlineIsVisible();
     });
   });
 });

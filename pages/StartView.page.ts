@@ -32,7 +32,8 @@ export class StartPage {
     return new LandingPage(this.page);
   }
 
-  public async checkHeadlineIsVisible() {
+  public async checkHeadlineIsVisible(): Promise<StartPage> {
     await expect(this.text_h2_Ueberschrift).toBeVisible();
+    return new StartPage(this.page);
   }
 }

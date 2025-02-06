@@ -15,55 +15,43 @@ import { testschule } from '../base/organisation.ts';
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
 
+// The created test data will be deleted in the afterEach block
+let usernames: string[] = [];
+let rolleIds: string[] = [];
+
 let loggedIn = false;
-let username: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
-let rolleId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
 
 test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.afterEach(async ({ page }) => {
-    const header = new HeaderPage(page);
+    const header: HeaderPage = new HeaderPage(page);
     const landing: LandingPage = new LandingPage(page);
     const login: LoginPage = new LoginPage(page);
     const startseite: StartPage = new StartPage(page);
 
     await test.step(`Testdaten(Benutzer) löschen via API`, async () => {
-      if (!loggedIn) {
-        await test.step(`Abmelden`, async () => {
-          const landing: LandingPage = new LandingPage(page);
-          const startseite: StartPage = new StartPage(page);
-          const login: LoginPage = new LoginPage(page);
-          
+      if ((usernames.length > 0 || rolleIds.length > 0) && (!loggedIn)) {
+        await test.step(`Anmelden`, async () => {
           await page.goto('/');
           await landing.button_Anmelden.click();
           await login.login(ADMIN, PW);
-          await expect(startseite.text_h2_Ueberschrift).toBeVisible();
+          await startseite.checkHeadlineIsVisible();
           loggedIn = true
         });
-      }
-
-      if (username) { // nur wenn der Testfall auch mind. einen Benutzer angelegt hat
-        await header.logout();
-        await landing.button_Anmelden.click();
-        await login.login(ADMIN, PW);
-        await expect(startseite.text_h2_Ueberschrift).toBeVisible();
         
-        await deletePersonenBySearchStrings(page, username);
-        username = [];
-      }
-
-      if (rolleId) { // nur wenn der Testfall auch mind. eine Rolle angelegt hat
-        await header.logout();
-        await landing.button_Anmelden.click();
-        await login.login(ADMIN, PW);
-        await expect(startseite.text_h2_Ueberschrift).toBeVisible();
-        await deleteRolleById(rolleId, page);
-        rolleId = [];
+        if (usernames.length > 0) { 
+          await deletePersonenBySearchStrings(page, usernames);
+          usernames = [];
+        }
+  
+        if (rolleIds.length > 0) { 
+          await deleteRolleById(rolleIds, page);
+          rolleIds = [];
+        }
       }
     });
 
     if (loggedIn) {
       await test.step(`Abmelden`, async () => {
-        const header: HeaderPage = new HeaderPage(page);
         await header.logout();
         loggedIn = false;
       });
@@ -73,7 +61,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
    test('Erfolgreicher Standard Login Landesadmin', {tag: [LONG, SMOKE, STAGE, BROWSER]}, async ({ page }) => {
     const login: LoginPage = new LoginPage(page);
     const landing: LandingPage = new LandingPage(page);
-    const start: StartPage = new StartPage(page);
+    const startseite: StartPage = new StartPage(page);
 
     await test.step(`Anmelden mit Benutzer ${ADMIN}`, async () => {
       await page.goto('/');
@@ -81,7 +69,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
       await landing.button_Anmelden.click();
       
       await login.login(ADMIN, PW);
-      await expect(start.text_h2_Ueberschrift).toBeVisible();
+      await startseite.checkHeadlineIsVisible();
       loggedIn = true;
     })
   })
@@ -121,8 +109,8 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
       const lehrerIdSPs: string[] = [await getSPId(page, 'E-Mail')];
       organisationIDLandSh = await getOrganisationId(page, 'Land Schleswig-Holstein');
       userInfoLehrer = await createRolleAndPersonWithUserContext(page, lehrerOrganisation, lehrerRollenart, lehrerVorname, lehrerNachname, lehrerIdSPs, lehrerRolle);
-      username.push(userInfoLehrer.username);
-      rolleId.push(userInfoLehrer.rolleId);
+      usernames.push(userInfoLehrer.username);
+      rolleIds.push(userInfoLehrer.rolleId);
       await lockPerson(page, userInfoLehrer.personId, organisationIDLandSh);
       await header.logout();
     })
@@ -153,7 +141,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
 
     await test.step(`Anmelden mit Benutzer ${ADMIN}`, async () => {
       await login.login(ADMIN, PW);
-      await expect(start.text_h2_Ueberschrift).toBeVisible();
+      await start.checkHeadlineIsVisible();
       loggedIn = true;
     })
   })

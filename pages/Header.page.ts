@@ -1,5 +1,6 @@
 import { type Locator, Page, expect } from '@playwright/test';
 import { LandingPage } from "./LandingView.page";
+import FromAnywhere from '../pages/FromAnywhere';
 
 export class HeaderPage{
     readonly page: Page;
@@ -18,12 +19,14 @@ export class HeaderPage{
         this.icon_logout = page.locator('.mdi-logout');
     }
 
-    async logout() {
-        const landingPage = new LandingPage(this.page);
-        // BE requests laufen zeitverzögert zum FE; dieses muss im FE behoben werden; solange dies nicht der Fall ist, brauchen wir diesen workaround
-        // Wenn auf login/logout geklickt wird, sind teilweise noch requests am laufen
-        await this.page.waitForTimeout(1000); // Im ticket SPSH-1738 muss dieser workaroundt durch einen waitForResponse oder Ähnlichem ersetzt werden
+    async logout(): Promise<void> {
+        // Wenn man auf den Abmelden-Button klickt, laufen häufig noch diverse requests. Deshalb brauchen wir hier eine kurze Verzögerung bzw. einen Sprung auf die Startseite
+        // Wird mit SPSH-1809 überarbeitet
+        await FromAnywhere(this.page).start();
+        await this.page.waitForResponse(resp => resp.url().includes('/api/provider') && resp.status() === 200);
+        
         await this.button_logout.click();
+        const landingPage: LandingPage = new LandingPage(this.page);
         await expect(landingPage.text_Willkommen).toBeVisible();
     }
 }

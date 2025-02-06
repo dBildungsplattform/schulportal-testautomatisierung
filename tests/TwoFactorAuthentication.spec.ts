@@ -15,52 +15,34 @@ import { PersonDetailsViewPage } from '../pages/admin/PersonDetailsView.page';
 import { PersonManagementViewPage } from '../pages/admin/PersonManagementView.page';
 import { HeaderPage } from '../pages/Header.page.ts';
 import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata.ts';
+import FromAnywhere from '../pages/FromAnywhere';
 
-const PW: string | undefined = process.env.PW;
-const ADMIN: string | undefined = process.env.USER;
-
-let username: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
-let rolleId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
+// The created test data will be deleted in the afterEach block
+let usernames: string[] = [];
+let rolleIds: string[] = [];
 
 test.describe(`Testfälle für TwoFactorAuthentication": Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
-  test.beforeEach(async ({ page }: { page: Page }) => {
+  test.beforeEach(async ({ page }) => {
     await test.step(`Login`, async () => {
-      const landing: LandingPage = new LandingPage(page);
-      const startseite: StartPage = new StartPage(page);
-      const login: LoginPage = new LoginPage(page);
-      await page.goto('/');
-      await landing.button_Anmelden.click();
-      await login.login(ADMIN, PW);
-      await expect(startseite.text_h2_Ueberschrift).toBeVisible();
+      const startPage = await FromAnywhere(page)
+        .start()
+        .then((landing) => landing.goToLogin())
+        .then((login) => login.login())
+        .then((startseite) => startseite.checkHeadlineIsVisible());
+  
+      return startPage;
     });
   });
 
   test.afterEach(async ({ page }: { page: Page }) => {
-    const header: HeaderPage = new HeaderPage(page);
-    const landing: LandingPage = new LandingPage(page);
-    const startseite: StartPage = new StartPage(page);
-    const login: LoginPage = new LoginPage(page);
-
     await test.step(`Testdaten(Benutzer) löschen via API`, async () => {
-      if (username) {
-        // nur wenn der Testfall auch mind. einen Benutzer angelegt hat
-        await header.logout();
-        await landing.button_Anmelden.click();
-        await login.login(ADMIN, PW);
-        await expect(startseite.text_h2_Ueberschrift).toBeVisible();
-
-        await deletePersonenBySearchStrings(page, username);
-        username = [];
+      if (usernames.length > 0) {
+        await deletePersonenBySearchStrings(page, usernames);
+        usernames = [];
       }
-      if (rolleId) {
-        // nur wenn der Testfall auch mind. eine Rolle angelegt hat
-        await header.logout();
-        await landing.button_Anmelden.click();
-        await login.login(ADMIN, PW);
-        await expect(startseite.text_h2_Ueberschrift).toBeVisible();
-
-        await deleteRolleById(rolleId, page);
-        rolleId = [];
+      if (rolleIds.length > 0) {
+        await deleteRolleById(rolleIds, page);
+        rolleIds = [];
       }
     });
 
@@ -83,8 +65,8 @@ test.describe(`Testfälle für TwoFactorAuthentication": Umgebung: ${process.env
         [await getSPId(page, email)],
         await generateRolleName()
       );
-      username.push(userInfoLehrer.username);
-      rolleId.push(userInfoLehrer.rolleId);
+      usernames.push(userInfoLehrer.username);
+      rolleIds.push(userInfoLehrer.rolleId);
     });
 
     const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
