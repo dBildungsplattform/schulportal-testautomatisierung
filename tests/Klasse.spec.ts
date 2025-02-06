@@ -95,7 +95,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
         const schulname: string = testschule;
         const klassenname: string = await generateKlassenname();
 
-        await test.step(`Dialog Schule anlegen öffnen`, async () => {
+        await test.step(`Dialog Klasse anlegen öffnen`, async () => {
           await startseite.card_item_schulportal_administration.click();
           await menue.menueItem_KlasseAnlegen.click();
           await expect(klasseCreationView.textH2KlasseAnlegen).toHaveText("Neue Klasse hinzufügen");
