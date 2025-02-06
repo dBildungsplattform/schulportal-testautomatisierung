@@ -41,3 +41,19 @@ export async function getKlasseId(page: Page, Klassennname: string): Promise<str
     const json = await response.json(); 
     return json[0].id;
 }
+
+export async function createKlasse(page: Page, idSchule: string, name: string): Promise<string> {
+    const response = await page.request.post(FRONTEND_URL + 'api/organisationen/',  {
+        data: {
+            "administriertVon": idSchule,
+            "zugehoerigZu": idSchule,
+            "name": name,
+            "typ": "KLASSE"
+        },
+        failOnStatusCode: false, 
+        maxRetries: 3
+    });
+    expect(response.status()).toBe(201);
+    const json = await response.json();
+    return json.id;
+}
