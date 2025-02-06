@@ -1,5 +1,6 @@
 import { expect, type Locator, Page } from '@playwright/test';
 import { FooterDataTablePage } from '../FooterDataTable.page';
+import { ComboBox } from '../../elements/ComboBox';
 
 export class KlasseManagementViewPage{
     readonly page: Page;
@@ -14,6 +15,8 @@ export class KlasseManagementViewPage{
     readonly buttonSchliesseKlasseLoeschenDialog: Locator;
     readonly tableRows: Locator;
     readonly footerDataTable: FooterDataTablePage;
+    readonly comboboxOrganisationInput: ComboBox;
+    readonly organisationInput: Locator;
    
     constructor(page: Page){
         this.page = page;  
@@ -28,6 +31,9 @@ export class KlasseManagementViewPage{
         this.buttonSchliesseKlasseLoeschenDialog = page.getByTestId('close-klasse-delete-success-dialog-button');
         this.tableRows = page.locator('table >> tbody >> tr');
         this.footerDataTable = new FooterDataTablePage(page);
+        this.organisationInput = page.getByTestId('schule-select').locator('input');
+        this.comboboxOrganisationInput = new ComboBox(this.page, this.organisationInput);
+
     }
 
     // Loops through the Data in the table and checks if the Dienstellennummer and Klassenname are not empty

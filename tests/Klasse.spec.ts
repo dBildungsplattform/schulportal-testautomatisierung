@@ -352,8 +352,8 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     { tag: [LONG, STAGE]}, 
     async ({ page }: { page: Page }) => {
     const startseite: StartPage = new StartPage(page);
-    const menue: MenuPage = new MenuPage(page);
-    const klasseManagementView: KlasseManagementViewPage = new KlasseManagementViewPage(page);
+    // const menue: MenuPage = new MenuPage(page);
+    // const klasseManagementView: KlasseManagementViewPage = new KlasseManagementViewPage(page);
     const klassenname: string = await generateKlassenname();
     const idSchule: string = await getOrganisationId(page, testschule)
 
@@ -365,28 +365,33 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       );
     });
 
-    await test.step(`In die Ergebnisliste Klasse navigieren und nach der Testschule filtern`, async () => {
-      await startseite.card_item_schulportal_administration.click();
-      await menue.menueItem_AlleKlassenAnzeigen.click();
-      await expect(klasseManagementView.textH2Klassenverwaltung).toHaveText("Klassenverwaltung");
-    });
+    const klasseManagementView: KlasseManagementViewPage =
+      await test.step(`In die Ergebnisliste Klasse navigieren und nach der Testschule filtern`, async () => {
+        const menue: MenuPage = await startseite.goToAdministration();
+        //await startseite.card_item_schulportal_administration.click();
+        //await menue.menueItem_AlleKlassenAnzeigen.click();
+        const klasseManagementView = await menue.alleKlassenAnzeigen();
+        await page.waitForResponse(resp => resp.url().includes('/api/organisationen') && resp.status() === 200);
+        await expect(klasseManagementView.textH2Klassenverwaltung).toHaveText("Klassenverwaltung");
+        return klasseManagementView;
+      });
 
     await test.step(`In Ergebnisliste prüfen, dass die generierte Klasse angezeigt wird`, async () => {
-      await klasseManagementView.comboboxFilterSchule.fill(testschule, {});
-      await page.getByText(testschule, { exact: true }).click({delay:1000});
-      await klasseManagementView.textH2Klassenverwaltung.click(); // dies schließt das Dropdown Klasse
+      await klasseManagementView.comboboxOrganisationInput.searchByTitle(testschule, false);
       await expect(page.getByRole('cell', { name: klassenname })).toBeVisible();
     });
 
     await test.step(`Generierte Klasse via Quickaction löschen`, async () => {
-      await page.getByRole('row', { name: '(Testschule Schulportal) ' + klassenname }).getByTestId('open-klasse-delete-dialog-icon').click();
+      await page.getByRole('row', { name: klassenname }).getByTestId('open-klasse-delete-dialog-icon').click();
       await page.getByTestId('klasse-delete-button').click();
       await page.getByTestId('close-klasse-delete-success-dialog-button').click();
     });
 
     await test.step(`In der Ergebnisliste Klasse prüfen, dass´die Klasse nicht mehr existiert`, async () => {
-      
-      
+      await page.waitForResponse(resp => resp.url().includes('/api/organisationen') && resp.status() === 200);
+      await klasseManagementView.comboboxOrganisationInput.searchByTitle(testschule, false);
+      await expect(page.getByRole('cell', { name: 'Playwright3a' })).toBeVisible();
+      await expect(page.getByRole('cell', { name: klassenname })).toBeHidden();
     });
   });
 
