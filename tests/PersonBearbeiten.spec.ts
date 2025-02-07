@@ -12,14 +12,17 @@ import { addSystemrechtToRolle } from "../base/api/testHelperRolle.page.ts";
 import { LONG, STAGE } from "../base/tags.ts";
 import { deletePersonenBySearchStrings, deleteRolleById } from "../base/testHelperDeleteTestdata.ts";
 import { typeLehrer , typeSchueler, typeSchuladmin } from "../base/rollentypen.ts";
-import { landSH, testschule, testschule665 } from "../base/organisation.ts";
+import { landSH, testschule, testschule665DstNr, testschule665Name } from '../base/organisation.ts';
 import { email , itslearning} from "../base/sp.ts";
 import { generateNachname, generateVorname, generateRolleName, generateKopersNr } from "../base/testHelperGenerateTestdataNames.ts";
 import { generateDateFuture, generateDateToday, gotoTargetURL } from "../base/testHelperUtils.ts";
 import { lehrkraftOeffentlichRolle , lehrkraftInVertretungRolle} from "../base/rollen.ts";
+import { TestHelperLdap } from '../base/testHelperLdap';
 
 const PW = process.env.PW;
 const ADMIN = process.env.USER;
+const LDAP_URL: string = process.env.LDAP_URL;
+const LDAP_ADMIN_PASSWORD: string = process.env.LDAP_ADMIN_PASSWORD;
 
 let username: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
 let rolleId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
@@ -83,7 +86,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     const adminNachname = await generateNachname();
     const adminRolle = await generateRolleName();
     const adminRollenart = typeSchuladmin;
-    const adminOrganisation = testschule665;
+    const adminOrganisation = testschule665Name;
     const adminIdSPs: string[] = [await getSPId(page, 'Schulportal-Administration')];
     let userInfoAdmin: UserInfo;
 
@@ -91,12 +94,13 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     const lehrerNachname = await generateNachname();
     const lehrerRolle = await generateRolleName();
     const lehrerRollenart = typeLehrer;
-    const lehrerOrganisation = testschule665;
-    
+    const lehrerOrganisation = testschule665Name;
+
     let userInfoLehrer: UserInfo;
     let lehrerBenutzername = '';
     const rolle = lehrkraftInVertretungRolle;
     const kopersNr = await generateKopersNr();
+    const testHelperLdap: TestHelperLdap = new TestHelperLdap(LDAP_URL, LDAP_ADMIN_PASSWORD);
 
     await test.step(`Einen Schuladmin und einen zu bearbeitenden Lehrer mit je einer einer Schulzuordnung(Schule ist an einer Position > 25 in der DB) über die api anlegen und mit diesem Schuladmin anmelden`, async () => {
         // Schuladmin
@@ -140,8 +144,18 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     await test.step(`In der Gesamtübersicht die neue Schulzuordnung prüfen`, async () => {
         await expect(page.getByTestId('person-details-card')).toContainText('1111165 (Testschule-PW665): LiV (befristet bis');
         await expect(page.getByTestId('person-details-card')).toContainText('1111165 (Testschule-PW665): ' + lehrerRolle);
-        });
-    })
+
+    });
+
+    await test.step(`Prüfen, dass Lehrkraft im LDAP angelegt wurde`, async () => {
+      expect(await testHelperLdap.validateUserExists(lehrerBenutzername)).toBeTruthy();
+    });
+
+    await test.step(`Prüfen, dass Lehrkraft im LDAP korrekter Gruppe zugeordnet wurde`, async () => {
+      expect(await testHelperLdap.validateUserIsInGroupOfNames(lehrerBenutzername, testschule665DstNr)).toBeTruthy();
+    });
+
+  });
 
     test("Befristung beim hinzufügen von Personenkontexten", { tag: [LONG] }, async ({ page }) => {
         let userInfoLehrer: UserInfo;
@@ -288,7 +302,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         const addminVorname = await generateVorname();
         const adminNachname = await generateNachname();
         const adminRollenart = typeSchuladmin;
-        const adminOrganisation = testschule665;
+        const adminOrganisation = testschule665Name;
         let userInfoAdmin: UserInfo;
 
         await test.step(`Testdaten: Schuladmin mit einer Rolle(LEIT) über die api anlegen ${ADMIN}`, async () => {
@@ -355,7 +369,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
     test("Gesamtübersicht für einen Benutzer als Schuladmin öffnen, 2FA Token einrichten und 2FA Status prüfen dass ein Token eingerichtet ist", {tag: [LONG]}, async ({ page }) => {
         const adminRollenart = typeSchuladmin;
-        const adminOrganisation = testschule665;
+        const adminOrganisation = testschule665Name;
         let userInfoAdmin: UserInfo;
 
         await test.step(`Testdaten: Schuladmin mit einer Rolle(LEIT) über die api anlegen ${ADMIN}`, async () => {

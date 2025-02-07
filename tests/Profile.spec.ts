@@ -4,7 +4,7 @@ import { getOrganisationId } from '../base/api/testHelperOrganisation.page';
 import { addSecondOrganisationToPerson, createRolleAndPersonWithUserContext } from '../base/api/testHelperPerson.page';
 import { addSystemrechtToRolle } from '../base/api/testHelperRolle.page';
 import { getSPId } from '../base/api/testHelperServiceprovider.page';
-import { landSH, testschule, testschule665 } from '../base/organisation.ts';
+import { landSH, testschule, testschule665Name } from '../base/organisation.ts';
 import { typeLandesadmin, typeLehrer, typeSchueler, typeSchuladmin } from '../base/rollentypen.ts';
 import { email, itslearning } from '../base/sp.ts';
 import { BROWSER, LONG, SHORT, STAGE } from '../base/tags';
@@ -368,7 +368,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       const vorname: string = await generateVorname();
       const nachname: string = await generateNachname();
       const organisation1: string = testschule;
-      const organisation2: string = testschule665;
+      const organisation2: string = testschule665Name;
       const dienststellenNr1: string = '1111111';
       const dienststellenNr2: string = '1111165';
       const rollenname: string = await generateRolleName();

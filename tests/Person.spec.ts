@@ -3,7 +3,7 @@ import { UserInfo } from '../base/api/testHelper.page';
 import { createRolleAndPersonWithUserContext } from '../base/api/testHelperPerson.page';
 import { addSystemrechtToRolle } from '../base/api/testHelperRolle.page';
 import { getSPId } from '../base/api/testHelperServiceprovider.page';
-import { landSH, testschule, testschule665, oeffentlichLandSH, ersatzLandSH } from '../base/organisation.ts';
+import { landSH, testschule, testschule665Name, oeffentlichLandSH, ersatzLandSH } from '../base/organisation.ts';
 import { landesadminRolle, schuelerRolle, schuladminOeffentlichRolle } from '../base/rollen.ts';
 import { BROWSER, LONG, SHORT, STAGE } from '../base/tags';
 import { deletePersonenBySearchStrings, deleteRolleById, deleteRolleByName } from '../base/testHelperDeleteTestdata.ts';
@@ -22,9 +22,12 @@ import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
 import { MenuPage } from '../pages/MenuBar.page';
 import { StartPage } from '../pages/StartView.page';
+import { TestHelperLdap } from '../base/testHelperLdap';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
+const LDAP_URL: string = process.env.LDAP_URL;
+const LDAP_ADMIN_PASSWORD: string = process.env.LDAP_ADMIN_PASSWORD;
 
 let username: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
 let roleId: string[] = []; // Im afterEach Block werden alle Testdaten gelöscht
@@ -473,7 +476,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(page.getByRole('cell', { name: 'ssuperadmin', exact: true })).toBeVisible();
       });
 
-      await test.step(`Suche mit leerer Ergebnisliste. Gepüft wird das der Text "Keine Daten gefunden." gefunden wird, danach wird gepüft dass die Tabelle 0 Zeilen hat.`, async () => {
+      await test.step(`Suche mit leerer Ergebnisliste. Gepüft wird, dass der Text "Keine Daten gefunden." gefunden wird, danach wird geprüft, dass die Tabelle 0 Zeilen hat.`, async () => {
         await personManagementView.input_Suchfeld.fill('!§$%aavvccdd44xx@');
         await personManagementView.button_Suchen.click();
         await expect(page.getByRole('cell', { name: 'Keine Daten gefunden.' })).toBeVisible();
@@ -494,10 +497,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await personManagementView.waitForData();
 
         // Fill the input with the name of the Schule and let the autocomplete find it
-        await personManagementView.comboboxMenuIcon_Schule_input.fill(testschule665);
+        await personManagementView.comboboxMenuIcon_Schule_input.fill(testschule665Name);
 
         // Click on the found Schule
-        await page.getByRole('option', { name: testschule665 }).click();
+        await page.getByRole('option', { name: testschule665Name }).click();
 
         // Close the dropdown
         await personManagementView.comboboxMenuIcon_Schule.click();
@@ -523,6 +526,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const kopersnr = await generateKopersNr();
       const schulstrukturknoten = testschule;
       const dienststellenNr = '1111111';
+      const testHelperLdap: TestHelperLdap = new TestHelperLdap(LDAP_URL, LDAP_ADMIN_PASSWORD);
+      let createdBenutzername: string;
 
       await test.step(`Dialog Person anlegen öffnen`, async () => {
         await page.goto('/' + 'admin/personen/new');
@@ -547,6 +552,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         // Benutzer wird im afterEach-Block gelöscht
         // gesteuert wird die Löschung über die Variable username
         username.push(await personCreationView.data_Benutzername.innerText());
+        createdBenutzername = await personCreationView.data_Benutzername.innerText();
         await expect(personCreationView.text_DatenGespeichert).toBeVisible();
         await expect(personCreationView.label_Vorname).toHaveText('Vorname:');
         await expect(personCreationView.data_Vorname).toHaveText(vorname);
@@ -564,6 +570,14 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         );
         await expect(personCreationView.button_WeiterenBenutzerAnlegen).toBeVisible();
         await expect(personCreationView.button_ZurueckErgebnisliste).toBeVisible();
+      });
+
+      await test.step(`Prüfen, dass Lehrkraft im LDAP angelegt wurde`, async () => {
+        expect(await testHelperLdap.validateUserExists(createdBenutzername)).toBeTruthy();
+      });
+
+      await test.step(`Prüfen, dass Lehrkraft im LDAP korrekter Gruppe zugeordnet wurde`, async () => {
+        expect(await testHelperLdap.validateUserIsInGroupOfNames(createdBenutzername, dienststellenNr)).toBeTruthy();
       });
     }
   );
