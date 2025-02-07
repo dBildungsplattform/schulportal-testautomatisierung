@@ -5,7 +5,7 @@ import { StartPage } from "../pages/StartView.page.ts";
 import { PersonManagementViewPage } from "../pages/admin/PersonManagementView.page.ts";
 import { PersonDetailsViewPage } from "../pages/admin/PersonDetailsView.page.ts";
 import { HeaderPage } from "../pages/Header.page.ts";
-import { createRolleAndPersonWithUserContext } from "../base/api/testHelperPerson.page.ts";
+import { createRolleAndPersonWithUserContext, setUEMPassword } from '../base/api/testHelperPerson.page.ts';
 import { getSPId } from "../base/api/testHelperServiceprovider.page.ts";
 import { UserInfo }  from "../base/api/testHelper.page.ts";
 import { addSystemrechtToRolle } from "../base/api/testHelperRolle.page.ts";
@@ -122,7 +122,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await login.UpdatePW();
         await startseite.checkHeadlineIsVisible();
         currentUserIsLandesadministrator = false;
-    })
+    });
 
     await test.step(`Die Gesamtübersicht des Lehrers öffnen`, async () => {
         await gotoTargetURL(page, "admin/personen");
@@ -155,6 +155,14 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
     await test.step(`Prüfen, dass Lehrkraft im LDAP korrekter Gruppe zugeordnet wurde`, async () => {
       expect(await testHelperLdap.validateUserIsInGroupOfNames(lehrerBenutzername, testschule665DstNr)).toBeTruthy();
+    });
+
+    await test.step(`UEM-Password via API setzen und prüfen, ob Password im LDAP der API-Response entspricht`, async () => {
+      const uemPassword: string = await setUEMPassword(page, userInfoLehrer.personId);
+      console.log(userInfoLehrer.username);
+      console.log(userInfoLehrer.personId);
+      console.log(uemPassword);
+      expect(await testHelperLdap.validatePasswordMatchesUEMPassword(userInfoLehrer.username, uemPassword)).toBeTruthy();
     });
 
   });

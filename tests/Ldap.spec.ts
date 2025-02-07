@@ -2,6 +2,7 @@ import { expect, test } from '@playwright/test';
 import { LONG, SHORT, STAGE } from '../base/tags';
 import { TestHelperLdap } from '../base/testHelperLdap';
 import { Entry } from 'ldapts';
+import { setUEMPassword } from '../base/api/testHelperPerson.page';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -9,7 +10,7 @@ const LDAP_URL: string = process.env.LDAP_URL;
 const LDAP_ADMIN_PASSWORD: string = process.env.LDAP_ADMIN_PASSWORD;
 
 
-test.describe(`Testfaelle für LDAP: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
+test.describe(`Testfälle für LDAP: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
 
   test.beforeEach(async ({ page }) => {
     await test.step(`BeforeEach`, async () => {
@@ -23,16 +24,18 @@ test.describe(`Testfaelle für LDAP: Umgebung: ${process.env.ENV}: URL: ${proces
     });
   });
 
+  //** Die für den u.g. Test genutzen Daten müssen bereits existieren, der Test legt diese nicht im Vorfeld an. */
   test(
     'TestHelperLdap testen',
     { tag: [LONG, SHORT, STAGE] }, async ({ page }) => {
 
       const testHelperLdap: TestHelperLdap = new TestHelperLdap(LDAP_URL, LDAP_ADMIN_PASSWORD);
 
-      /*await new Promise(f => setTimeout(f, 10000));
-      console.log('Jetzt gehts weiter');*/
+      // Ein Timeout kann genutzt werden, wenn der Retry-Mechanismus manuell getestet werden soll
+      // await new Promise(f => setTimeout(f, 10000));
+      // console.log('Jetzt gehts weiter');
 
-      await test.step(`Test-step`, async () => {
+      await test.step(`Prüfen, dass die Validierungsmethoden korrekte Ergebnisse liefern`, async () => {
         const userExist: boolean = await testHelperLdap.validateUserExists('rmeierrolf');
         expect(userExist).toBeTruthy();
 
@@ -49,7 +52,6 @@ test.describe(`Testfaelle für LDAP: Umgebung: ${process.env.ENV}: URL: ${proces
         expect(isUserInGroup).toBeTruthy();
       });
 
-    }
-  );
+    });
 
 });

@@ -87,6 +87,18 @@ export class TestHelperLdap {
     return res.ok && res.value;
   }
 
+  /**
+   * Checks whether the (encoded result of) clear password matches the persisted UEM-Password.
+   * Uses retries for enhanced reliability of the LDAP-request and its result.
+   * @param username
+   * @param clearPassword the password non-encoded as clear string (for comparison response from an API-Call)
+   */
+  public async validatePasswordMatchesUEMPassword(username: string, clearPassword: string): Promise<boolean> {
+    const res: Result<boolean> = await this.executeWithRetry(() => this.checkUserPasswordMatchesPassword(username, clearPassword));
+
+    return res.ok && res.value;
+  }
+
 
   //** PRIVATE methods */
 
@@ -193,7 +205,6 @@ export class TestHelperLdap {
 
   private async checkUserIsInGroupOfNames(username: string, orgaKennung: string): Promise<Result<boolean>> {
     await this.bind();
-
     try {
       const groupOfNames: Result<Entry> = await this.getGroupOfNames(orgaKennung);
       if (!groupOfNames.ok) return groupOfNames;
@@ -213,13 +224,45 @@ export class TestHelperLdap {
     }
   }
 
-  private async checkUserAttributes(username: string, surname: string, givenName: string, userPassword): Promise<boolean> {
+  private async checkUserPasswordMatchesPassword(username: string, password: string): Promise<Result<boolean>> {
+    await this.bind();
+
+    try {
+      const searchResultLehrer: SearchResult = await this.client.search(
+        `${TestHelperLdap.OEFFENTLICHE_SCHULEN_OU},${TestHelperLdap.BASE_DN}`,
+        {
+          scope: 'sub',
+          filter: `(uid=${username})`,
+          attributes: ['userPassword'],
+          returnAttributeValues: true,
+        },
+      );
+
+      if (searchResultLehrer.searchEntries.length !== 1) return {
+        ok: true,
+        value: false,
+      };
+
+      return {
+        ok: true,
+        value: searchResultLehrer.searchEntries[0]['userPassword'] === password,
+      };
+    } catch(ex) {
+      await this.unbind();
+      return {
+        ok: false,
+        error: new LdapOperationError('checkUserPasswordMatchesPassword'),
+      };
+    }
+  }
+
+  private async checkUserAttributes(username: string, surname: string, givenName: string): Promise<boolean> {
     const searchResultLehrer: SearchResult = await this.client.search(
       `${TestHelperLdap.OEFFENTLICHE_SCHULEN_OU},${TestHelperLdap.BASE_DN}`,
       {
         scope: 'sub',
         filter: `(uid=${username})`,
-        attributes: ['givenName', 'sn', 'uid', 'dn', 'userPassword'],
+        attributes: ['givenName', 'sn', 'uid', 'cn'],
         returnAttributeValues: true,
       },
     );
@@ -227,7 +270,8 @@ export class TestHelperLdap {
     if (searchResultLehrer.searchEntries.length !== 1) return false;
     if (searchResultLehrer.searchEntries[0]['givenName'] !== givenName) return false;
     if (searchResultLehrer.searchEntries[0]['surname'] !== surname) return false;
-    if (searchResultLehrer.searchEntries[0]['userPassword'] !== encodeBase64(userPassword)) return false;
+    if (searchResultLehrer.searchEntries[0]['uid'] !== username) return false;
+    if (searchResultLehrer.searchEntries[0]['cn'] !== username) return false;
 
     return true;
   }
