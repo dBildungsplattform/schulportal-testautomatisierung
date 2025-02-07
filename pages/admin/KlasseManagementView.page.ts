@@ -17,6 +17,8 @@ export class KlasseManagementViewPage{
     readonly footerDataTable: FooterDataTablePage;
     readonly comboboxOrganisationInput: ComboBox;
     readonly organisationInput: Locator;
+    readonly textAlertDeleteClass: Locator;
+    readonly buttonCloseAlert: Locator;
    
     constructor(page: Page){
         this.page = page;  
@@ -26,14 +28,15 @@ export class KlasseManagementViewPage{
         this.comboboxFilterKlasse = page.getByPlaceholder('Klasse');
         this.tableHeaderDienststellennummer = page.getByText('Dienststellennummer');
         this.tableHeaderKlassenname = page.getByTestId('klasse-table').getByText('Klasse', { exact: true });
-        this.iconKlasseLoeschen = page.getByTestId('open-klasse-delete-dialog-icon');
+        // this.iconKlasseLoeschen = page.getByTestId('open-klasse-delete-dialog-icon');
         this.buttonKlasseLoeschen = page.getByTestId('klasse-delete-button');
         this.buttonSchliesseKlasseLoeschenDialog = page.getByTestId('close-klasse-delete-success-dialog-button');
         this.tableRows = page.locator('table >> tbody >> tr');
         this.footerDataTable = new FooterDataTablePage(page);
         this.organisationInput = page.getByTestId('schule-select').locator('input');
         this.comboboxOrganisationInput = new ComboBox(this.page, this.organisationInput);
-
+        this.textAlertDeleteClass = page.getByTestId('alert-text');
+        this.buttonCloseAlert = page.getByTestId('alert-button');
     }
 
     // Loops through the Data in the table and checks if the Dienstellennummer and Klassenname are not empty
@@ -49,4 +52,41 @@ export class KlasseManagementViewPage{
             await expect(klassennameCell).not.toBeEmpty();
           }
     }
+
+    public async waitErgebnislisteIsLoaded() {
+        await this.page.waitForResponse(resp => resp.url().includes('/api/organisationen') && resp.status() === 200);
+        await expect(this.textH2Klassenverwaltung).toHaveText("Klassenverwaltung");
+    }
+
+    public async filterSchool(school: string) {
+        await this.comboboxOrganisationInput.searchByTitle(school, false);
+    }
+
+    public async checkRowExists(className: string) {
+        await expect(this.page.getByRole('cell', { name: className })).toBeVisible();
+    }
+
+    public async checkRowNotExists(className: string) {
+        await expect(this.page.getByRole('cell', { name: className })).toBeHidden();
+    }
+
+    public async deleteRowViaQuickAction(className: string) {
+        await this.page.getByRole('row', { name: className }).getByTestId('open-klasse-delete-dialog-icon').click();
+        await this.buttonKlasseLoeschen.click();
+        await this.buttonSchliesseKlasseLoeschenDialog.click();
+    }
+
+    public async startDeleteRowViaQuickAction(className: string) {
+        await this.page.getByRole('row', { name: className }).getByTestId('open-klasse-delete-dialog-icon').click();
+        await this.buttonKlasseLoeschen.click();
+    }
+
+    public async checkDeleteClassFailed() {
+        await expect(this.textAlertDeleteClass).toHaveText('Die Klasse kann nicht gelöscht werden, da noch Benutzer zugeordnet sind.');
+    }
+
+    public async clickButtonCloseAltert() {
+        await this.buttonCloseAlert.click();
+    }
+
 }
