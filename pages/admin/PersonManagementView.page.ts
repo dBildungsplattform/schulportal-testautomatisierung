@@ -49,7 +49,9 @@ export class PersonManagementViewPage {
   }
 
   public async searchBySuchfeld(name: string): Promise<void> {
-    await this.page.waitForTimeout(1000);  // Im ticket SPSH-1738 muss dieser workaroundt durch einen waitForResponse oder Ähnlichem ersetzt werden
+    await this.page.waitForResponse(response =>
+      (response.url().includes('/api/person-administration/') && (response.status() === 200) || (response.status() === 304))
+    )
     await this.input_Suchfeld.fill(name);
     await this.button_Suchen.click();
     await expect(this.comboboxMenuIcon_Status).toBeVisible();
