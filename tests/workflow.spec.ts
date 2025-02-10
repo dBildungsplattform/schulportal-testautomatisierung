@@ -85,10 +85,10 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
       // Die Schnittstelle email für Lehrkräfte(ox) gibt es nur auf stage
       // Auf dev wird nur getestet, dass die url für ox aufgerufen wird wenn man die Kachel email anklickt
       // Wenn SPSH-1043 auf stage deployed ist, muss der Test erweitert werden. Hier muss dann das erwartete Verhalten getestet werden, wenn man auf stage auf die Kachel(email, Adressbuch, Kalender)  klickt
-      await expect(startseite.card_item_email).toBeVisible(); // warten bis die Seite geladen ist
+      await expect(startseite.cardItemEmail).toBeVisible(); // warten bis die Seite geladen ist
 
       const page_Email4Teacher_Promise = page.waitForEvent("popup");
-      await startseite.card_item_email.click();
+      await startseite.cardItemEmail.click();
       const page_Email4Teacher = await page_Email4Teacher_Promise;
       const email4Teacher = new Email4TeacherPage(page_Email4Teacher);
       switch (ENV) {
@@ -100,7 +100,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
 
       // Kalender
       const page_Kalender_Promise = page.waitForEvent("popup");
-      await startseite.card_item_kalender.click();
+      await startseite.cardItemKalender.click();
       const page_Kalender = await page_Kalender_Promise;
       const kalender = new CalendarPage(page_Kalender);
       switch (ENV) {
@@ -112,7 +112,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
 
        // Adressbuch
        const page_Adressbuch_Promise = page.waitForEvent("popup");
-       await startseite.card_item_adressbuch.click();
+       await startseite.cardItemAdressbuch.click();
        const page_Adressbuch = await page_Adressbuch_Promise;
        const adressbuch = new DirectoryPage(page_Adressbuch);
        switch (ENV) {
@@ -124,7 +124,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
     });
 
     await test.step(`Prüfen, dass die Startseite noch geöffnet ist`, async () => {
-      await expect(startseite.text_h2_Ueberschrift).toBeVisible();
+      await expect(startseite.textH2Ueberschrift).toBeVisible();
     });
   });
 
@@ -140,7 +140,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
     let new_password = "";
 
     await test.step(`Benutzerverwaltung öffnen`, async () => {
-      await startseite.card_item_schulportal_administration.click();
+      await startseite.cardItemSchulportalAdministration.click();
     });
 
     await test.step(`In der Benutzerverwaltung die Zeile für Benutzer ${lastname} anklicken und User-Details öffnen`, async () => {

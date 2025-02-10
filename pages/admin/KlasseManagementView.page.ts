@@ -1,6 +1,7 @@
 import { expect, type Locator, Page } from '@playwright/test';
 import { FooterDataTablePage } from '../FooterDataTable.page';
 import { ComboBox } from '../../elements/ComboBox';
+import { KlasseDetailsViewPage } from './KlasseDetailsView.page';
 
 export class KlasseManagementViewPage{
     readonly page: Page;
@@ -89,4 +90,8 @@ export class KlasseManagementViewPage{
         await this.buttonCloseAlert.click();
     }
 
+    public async openDetailViewClass(className: string) {
+        await this.page.getByRole('cell', { name: className }).click()
+        return new KlasseDetailsViewPage(this.page);
+    }
 }
