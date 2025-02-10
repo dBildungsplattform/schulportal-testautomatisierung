@@ -1,7 +1,7 @@
 import { expect, test, Page } from '@playwright/test';
 import { UserInfo } from '../base/api/testHelper.page.ts';
 import { createRolleAndPersonWithUserContext } from '../base/api/testHelperPerson.page.ts';
-import {addSystemrechtToRolle } from '../base/api/testHelperRolle.page.ts';
+import { addSystemrechtToRolle } from '../base/api/testHelperRolle.page.ts';
 import { getSPId } from '../base/api/testHelperServiceprovider.page.ts';
 import { landSH, testschule } from '../base/organisation.ts';
 import { BROWSER, LONG, SHORT, STAGE } from '../base/tags';
@@ -216,7 +216,6 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       let userInfoAdmin: UserInfo;
       const startseite = new StartPage(page);
       const menue = new MenuPage(page);
-      const klasseManagementView = new KlasseManagementViewPage(page);
       const klasseCreationView = new KlasseCreationViewPage(page);
       const klasseDetailsView = new KlasseDetailsViewPage(page);
       let klassenname = await generateKlassenname();

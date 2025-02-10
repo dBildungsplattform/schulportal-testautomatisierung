@@ -62,5 +62,5 @@ export class KlasseDetailsViewPage {
   public async startDeleteRowViaQuickAction() {
     await this.buttonKlasseLoeschenDialog.click();
     await this.buttonKlasseLoeschen.click();
-}
+  }
 }

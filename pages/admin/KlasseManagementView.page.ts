@@ -29,7 +29,6 @@ export class KlasseManagementViewPage{
         this.comboboxFilterKlasse = page.getByPlaceholder('Klasse');
         this.tableHeaderDienststellennummer = page.getByText('Dienststellennummer');
         this.tableHeaderKlassenname = page.getByTestId('klasse-table').getByText('Klasse', { exact: true });
-        // this.iconKlasseLoeschen = page.getByTestId('open-klasse-delete-dialog-icon');
         this.buttonKlasseLoeschen = page.getByTestId('klasse-delete-button');
         this.buttonSchliesseKlasseLoeschenDialog = page.getByTestId('close-klasse-delete-success-dialog-button');
         this.tableRows = page.locator('table >> tbody >> tr');
@@ -51,7 +50,7 @@ export class KlasseManagementViewPage{
             await expect(dienststellennummerCell).not.toHaveText('---');
             await expect(klassennameCell).toBeVisible();
             await expect(klassennameCell).not.toBeEmpty();
-          }
+        }
     }
 
     public async waitErgebnislisteIsLoaded() {
