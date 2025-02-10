@@ -30,6 +30,10 @@ export default defineConfig({
     timezoneId: "Europe/Brussels",
     screenshot: "only-on-failure",
     baseURL: FRONTEND_URL,
+    ldapUrl: process.env.LDAP_URL,
+    ldapBindDn: process.env.LDAP_BIND_DN,
+    ldapBaseDn: process.env.LDAP_BIND_DN,
+    ldapAdminPassword: process.env.LDAP_ADMIN_PASSWORD,
   },
 
   projects: [
