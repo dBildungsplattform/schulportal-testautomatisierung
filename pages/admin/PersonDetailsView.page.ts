@@ -73,11 +73,9 @@ export class PersonDetailsViewPage{
      readonly infoIBNPasswortEinrichten: Locator;
      readonly buttonIBNPasswortEinrichtenDialogClose: Locator;
 
-
     constructor(page){
         this.page = page;  
-        this.text_h2_benutzerBearbeiten =  page.getByTestId('person-details-card').getByTestId('layout-card-headline')
-        // this.text_h2_benutzerBearbeiten = page.getByTestId('layout-card-headline');
+        this.text_h2_benutzerBearbeiten = page.getByTestId('person-details-card').getByTestId('layout-card-headline')
        
         // Passwort
         this.text_h3_passwort_headline = page.locator( `//h3[text()='Passwort']`);
