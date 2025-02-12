@@ -3,7 +3,7 @@ import { LandingPage } from '../pages/LandingView.page';
 import { UserInfo } from '../base/api/testHelper.page.ts';
 import { createRolleAndPersonWithUserContext } from '../base/api/testHelperPerson.page';
 import { getSPId } from '../base/api/testHelperServiceprovider.page';
-import { LONG } from '../base/tags';
+import { LONG, STAGE, BROWSER } from '../base/tags';
 import { generateNachname, generateVorname, generateRolleName } from '../base/testHelperGenerateTestdataNames';
 import { LoginPage } from '../pages/LoginView.page';
 import { StartPage } from '../pages/StartView.page';
@@ -52,7 +52,7 @@ test.describe(`Testfälle für TwoFactorAuthentication": Umgebung: ${process.env
     });
   });
 
-  test('Prüfen, ob es möglich ist einen Token zurückzusetzen', { tag: [LONG] }, async ({ page }: { page: Page }) => {
+  test('Prüfen, ob es möglich ist einen Token zurückzusetzen', { tag: [LONG, STAGE, BROWSER] }, async ({ page }: { page: Page }) => {
     let userInfoLehrer: UserInfo;
 
     await test.step(`Testdaten erstellen`, async () => {

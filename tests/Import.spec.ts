@@ -1,6 +1,6 @@
 import { test, expect, Download } from "@playwright/test";
 import { HeaderPage } from "../pages/Header.page";
-import { LONG } from "../base/tags";
+import { LONG, BROWSER } from "../base/tags";
 import { schuelerRolle } from "../base/rollen";
 import FromAnywhere from "../pages/FromAnywhere";
 import { PersonImportViewPage } from "../pages/admin/PersonImportView.page";
@@ -57,7 +57,7 @@ test.describe(`Testfälle für den Benutzerimport": Umgebung: ${process.env.ENV}
     });
   });
 
-  test('Als Landesadmin eine CSV-Datei mit Benutzerdaten hochladen und importieren', {tag: [LONG]}, async ({ page }) => {
+  test('Als Landesadmin eine CSV-Datei mit Benutzerdaten hochladen und importieren', { tag: [LONG, BROWSER] }, async ({ page }) => {
     await test.step('CSV-Datei hochladen, importieren und importierte Daten downloaden', async () => {
       // select schule
       await personImportPage.schuleSelectCombobox.searchByTitle(testschule665, false);

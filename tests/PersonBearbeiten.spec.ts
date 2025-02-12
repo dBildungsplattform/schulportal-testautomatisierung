@@ -9,7 +9,7 @@ import { createRolleAndPersonWithUserContext } from "../base/api/testHelperPerso
 import { getSPId } from "../base/api/testHelperServiceprovider.page.ts";
 import { UserInfo }  from "../base/api/testHelper.page.ts";
 import { addSystemrechtToRolle } from "../base/api/testHelperRolle.page.ts";
-import { LONG, STAGE } from "../base/tags.ts";
+import { LONG, STAGE, BROWSER } from "../base/tags.ts";
 import { deletePersonenBySearchStrings, deleteRolleById } from "../base/testHelperDeleteTestdata.ts";
 import { typeLehrer , typeSchueler, typeSchuladmin } from "../base/rollentypen.ts";
 import { landSH, testschule, testschule665 } from "../base/organisation.ts";
@@ -72,7 +72,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         });
     });
 
-  test("Eine Schulzuordnung bei einem bestehenden Benutzer hinzufügen", {tag: [LONG, STAGE]}, async ({ page }) => {
+  test("Eine Schulzuordnung bei einem bestehenden Benutzer hinzufügen", {tag: [LONG, STAGE, BROWSER]}, async ({ page }) => {
     const personManagementView = new PersonManagementViewPage(page);
     const PersonDetailsView = new PersonDetailsViewPage(page);
     const header = new HeaderPage(page);
@@ -178,7 +178,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         });
     })
 
-    test("Einen Benutzer über das FE unbefristet sperren", {tag: [LONG, STAGE]}, async ({ page }) => {
+    test("Einen Benutzer über das FE unbefristet sperren", {tag: [LONG, STAGE, BROWSER]}, async ({ page }) => {
         let userInfoLehrer: UserInfo;
         const sperrDatumAb = await generateDateToday() // Konkrete Testdaten für diesen Testfall
 
@@ -230,7 +230,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         })
     })
 
-    test("Gesamtübersicht für einen Benutzer als Schueler öffnen und Unsichtbarkeit des 2FA Abschnitts prüfen", {tag: [LONG]}, async ({ page }) => {
+    test("Gesamtübersicht für einen Benutzer als Schueler öffnen und Unsichtbarkeit des 2FA Abschnitts prüfen", {tag: [LONG, STAGE]}, async ({ page }) => {
         let userInfoLehrer: UserInfo;
 
         await test.step(`Testdaten: Schüler mit einer Rolle(LERN) über die api anlegen ${ADMIN}`, async () => {
@@ -263,7 +263,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         })
     })
 
-    test("Gesamtübersicht für einen Benutzer als Lehrkraft öffnen und 2FA Status prüfen dass kein Token eingerichtet ist", {tag: [LONG]}, async ({ page }) => {
+    test("Gesamtübersicht für einen Benutzer als Lehrkraft öffnen und 2FA Status prüfen dass kein Token eingerichtet ist", {tag: [LONG, STAGE]}, async ({ page }) => {
         let userInfoLehrer: UserInfo;
 
         await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) über die api anlegen ${ADMIN}`, async () => {
@@ -286,7 +286,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         })
     })
 
-    test("Gesamtübersicht für einen Benutzer als Schuladmin öffnen und 2FA Status prüfen dass kein Token eingerichtet ist", {tag: [LONG]}, async ({ page }) => {
+    test("Gesamtübersicht für einen Benutzer als Schuladmin öffnen und 2FA Status prüfen dass kein Token eingerichtet ist", {tag: [LONG, STAGE]}, async ({ page }) => {
         const addminVorname = await generateVorname();
         const adminNachname = await generateNachname();
         const adminRollenart = typeSchuladmin;
@@ -314,7 +314,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         })
     })
 
-    test("Gesamtübersicht für einen Benutzer als Landesadmin öffnen, 2FA Token einrichten und 2FA Status prüfen dass ein Token eingerichtet ist", {tag: [LONG]}, async ({ page }) => {
+    test("Gesamtübersicht für einen Benutzer als Landesadmin öffnen, 2FA Token einrichten und 2FA Status prüfen dass ein Token eingerichtet ist", {tag: [LONG, STAGE, BROWSER]}, async ({ page }) => {
         const addminVorname = await generateVorname();
         const adminNachname = await generateNachname();
         const organisation = landSH;
@@ -355,7 +355,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         })
     })
 
-    test("Gesamtübersicht für einen Benutzer als Schuladmin öffnen, 2FA Token einrichten und 2FA Status prüfen dass ein Token eingerichtet ist", {tag: [LONG]}, async ({ page }) => {
+    test("Gesamtübersicht für einen Benutzer als Schuladmin öffnen, 2FA Token einrichten und 2FA Status prüfen dass ein Token eingerichtet ist", {tag: [LONG, STAGE, BROWSER]}, async ({ page }) => {
         const adminRollenart = typeSchuladmin;
         const adminOrganisation = testschule665;
         let userInfoAdmin: UserInfo;
@@ -386,7 +386,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         })
     })
 
-    test("Gesamtübersicht für einen Benutzer als Lehrkraft öffnen, 2FA Token einrichten und 2FA Status prüfen dass ein Token eingerichtet ist", {tag: [LONG]}, async ({ page }) => {
+    test("Gesamtübersicht für einen Benutzer als Lehrkraft öffnen, 2FA Token einrichten und 2FA Status prüfen dass ein Token eingerichtet ist", {tag: [LONG, STAGE]}, async ({ page }) => {
         let userInfoLehrer: UserInfo;
 
         await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) über die api anlegen ${ADMIN}`, async () => {

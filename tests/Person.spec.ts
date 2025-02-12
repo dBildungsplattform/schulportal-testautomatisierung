@@ -281,7 +281,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     'Einen Benutzer mit der Rolle Schueler anlegen als Landesadmin',
-    { tag: [LONG, SHORT, STAGE] },
+    { tag: [LONG, SHORT, STAGE, BROWSER] },
     async ({ page }) => {
       const startseite: StartPage = new StartPage(page);
       const menue = new MenuPage(page);
@@ -518,7 +518,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     'Eine Lehrkraft anlegen in der Rolle Landesadmin und die Bestätigungsseite vollständig prüfen',
-    { tag: [LONG, SHORT, STAGE] },
+    { tag: [LONG, SHORT, STAGE, BROWSER] },
     async ({ page }) => {
       const personCreationView = new PersonCreationViewPage(page);
       const rolle = 'Lehrkraft';
@@ -759,7 +759,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     }
   );
 
-  test('Einen Benutzer über das FE löschen', { tag: [LONG, SHORT, STAGE] }, async ({ page }) => {
+  test('Einen Benutzer über das FE löschen', { tag: [LONG, SHORT, STAGE, BROWSER] }, async ({ page }) => {
     const personManagementView = new PersonManagementViewPage(page);
     const PersonDetailsView = new PersonDetailsViewPage(page);
     const header = new HeaderPage(page);

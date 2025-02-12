@@ -156,7 +156,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
   test(
     'Das eigene Profil öffnen und auf Vollständigkeit prüfen als Lehrer mit einer Schulzuordnung',
-    { tag: [LONG, SHORT, STAGE] },
+    { tag: [LONG, SHORT, STAGE, BROWSER] },
     async ({ page }: PlaywrightTestArgs) => {
       const profileView: ProfilePage = new ProfilePage(page);
       const header: HeaderPage = new HeaderPage(page);
@@ -366,7 +366,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
   test(
     'Das eigene Profil öffnen und auf Vollständigkeit prüfen als Lehrkraft mit 2 Schulzuordnungen',
-    { tag: [LONG, STAGE] },
+    { tag: [LONG, STAGE, BROWSER] },
     async ({ page }: PlaywrightTestArgs) => {
       const profileView: ProfilePage = new ProfilePage(page);
       const header: HeaderPage = new HeaderPage(page);
@@ -540,7 +540,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
   test(
     'Das eigene Profil öffnen, 2FA Einrichten öffnen und Einrichtung soweit möglich',
-    { tag: [LONG] },
+    { tag: [LONG, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
       const profileView: ProfilePage = new ProfilePage(page);
       const header: HeaderPage = new HeaderPage(page);
