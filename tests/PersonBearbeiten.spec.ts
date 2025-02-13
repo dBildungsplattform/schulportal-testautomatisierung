@@ -72,76 +72,76 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         });
     });
 
-  test("Eine Schulzuordnung bei einem bestehenden Benutzer hinzufügen", {tag: [LONG, STAGE]}, async ({ page }) => {
-    const personManagementView = new PersonManagementViewPage(page);
-    const PersonDetailsView = new PersonDetailsViewPage(page);
-    const header = new HeaderPage(page);
-    const landing: LandingPage = new LandingPage(page);
-    const login: LoginPage = new LoginPage(page);
-    const startseite: StartPage = new StartPage(page);
+    test("Eine Schulzuordnung bei einem bestehenden Benutzer hinzufügen", {tag: [LONG, STAGE]}, async ({ page }) => {
+        const personManagementView = new PersonManagementViewPage(page);
+        const PersonDetailsView = new PersonDetailsViewPage(page);
+        const header = new HeaderPage(page);
+        const landing: LandingPage = new LandingPage(page);
+        const login: LoginPage = new LoginPage(page);
+        const startseite: StartPage = new StartPage(page);
 
-    const addminVorname = await generateVorname();
-    const adminNachname = await generateNachname();
-    const adminRolle = await generateRolleName();
-    const adminRollenart = typeSchuladmin;
-    const adminOrganisation = testschule665;
-    const adminIdSPs: string[] = [await getSPId(page, 'Schulportal-Administration')];
-    let userInfoAdmin: UserInfo;
+        const addminVorname = await generateVorname();
+        const adminNachname = await generateNachname();
+        const adminRolle = await generateRolleName();
+        const adminRollenart = typeSchuladmin;
+        const adminOrganisation = testschule665;
+        const adminIdSPs: string[] = [await getSPId(page, 'Schulportal-Administration')];
+        let userInfoAdmin: UserInfo;
 
-    const lehrerVorname = await generateVorname();
-    const lehrerNachname = await generateNachname();
-    const lehrerRolle = await generateRolleName();
-    const lehrerRollenart = typeLehrer;
-    const lehrerOrganisation = testschule665;
-    
-    let userInfoLehrer: UserInfo;
-    let lehrerBenutzername = '';
-    const rolle = lehrkraftInVertretungRolle;
-    const kopersNr = await generateKopersNr();
+        const lehrerVorname = await generateVorname();
+        const lehrerNachname = await generateNachname();
+        const lehrerRolle = await generateRolleName();
+        const lehrerRollenart = typeLehrer;
+        const lehrerOrganisation = testschule665;
+        
+        let userInfoLehrer: UserInfo;
+        let lehrerBenutzername = '';
+        const rolle = lehrkraftInVertretungRolle;
+        const kopersNr = await generateKopersNr();
 
-    await test.step(`Einen Schuladmin und einen zu bearbeitenden Lehrer mit je einer einer Schulzuordnung(Schule ist an einer Position > 25 in der DB) über die api anlegen und mit diesem Schuladmin anmelden`, async () => {
-        // Schuladmin
-        userInfoAdmin = await createRolleAndPersonWithUserContext(page, adminOrganisation, adminRollenart, addminVorname, adminNachname, adminIdSPs, adminRolle);
-        await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'PERSONEN_VERWALTEN');
-        usernames.push(userInfoAdmin.username);
-        rolleIds.push(userInfoAdmin.rolleId);
+        await test.step(`Einen Schuladmin und einen zu bearbeitenden Lehrer mit je einer einer Schulzuordnung(Schule ist an einer Position > 25 in der DB) über die api anlegen und mit diesem Schuladmin anmelden`, async () => {
+            // Schuladmin
+            userInfoAdmin = await createRolleAndPersonWithUserContext(page, adminOrganisation, adminRollenart, addminVorname, adminNachname, adminIdSPs, adminRolle);
+            await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'PERSONEN_VERWALTEN');
+            usernames.push(userInfoAdmin.username);
+            rolleIds.push(userInfoAdmin.rolleId);
 
-        // Lehrer
-        userInfoLehrer = await createRolleAndPersonWithUserContext(page, lehrerOrganisation, lehrerRollenart, lehrerVorname, lehrerNachname, [await getSPId(page, 'E-Mail')], lehrerRolle);
-        usernames.push(userInfoLehrer.username);
-        rolleIds.push(userInfoLehrer.rolleId);
-        lehrerBenutzername = userInfoLehrer.username;
+            // Lehrer
+            userInfoLehrer = await createRolleAndPersonWithUserContext(page, lehrerOrganisation, lehrerRollenart, lehrerVorname, lehrerNachname, [await getSPId(page, 'E-Mail')], lehrerRolle);
+            usernames.push(userInfoLehrer.username);
+            rolleIds.push(userInfoLehrer.rolleId);
+            lehrerBenutzername = userInfoLehrer.username;
 
-        await header.logout();
-        await landing.button_Anmelden.click();
-        await login.login(userInfoAdmin.username, userInfoAdmin.password);
-        await login.UpdatePW();
-        await startseite.checkHeadlineIsVisible();
-        currentUserIsLandesadministrator = false;
-    })
+            await header.logout();
+            await landing.button_Anmelden.click();
+            await login.login(userInfoAdmin.username, userInfoAdmin.password);
+            await login.UpdatePW();
+            await startseite.checkHeadlineIsVisible();
+            currentUserIsLandesadministrator = false;
+        })
 
-    await test.step(`Die Gesamtübersicht des Lehrers öffnen`, async () => {
-        await gotoTargetURL(page, "admin/personen");
-        await personManagementView.searchBySuchfeld(lehrerBenutzername);
-        await page.getByRole("cell", {name: lehrerBenutzername, exact: true}).click();
-    });
+        await test.step(`Die Gesamtübersicht des Lehrers öffnen`, async () => {
+            await gotoTargetURL(page, "admin/personen");
+            await personManagementView.searchBySuchfeld(lehrerBenutzername);
+            await page.getByRole("cell", {name: lehrerBenutzername, exact: true}).click();
+        });
 
-    await test.step(`Eine zweite Schulzuordnung hinzufügen`, async () => {
-        await PersonDetailsView.button_editSchulzuordnung.click();
-        await PersonDetailsView.button_addSchulzuordnung.click();
-        expect(await PersonDetailsView.combobox_organisation.innerText()).toContain(adminOrganisation);
-        await PersonDetailsView.combobox_rolle.click();
-        await page.getByText(rolle, {exact: true}).click();
-        await PersonDetailsView.input_kopersNr.fill(kopersNr);
-        await PersonDetailsView.button_submitAddSchulzuordnung.click();
-        await PersonDetailsView.button_confirmAddSchulzuordnung.click();
-        await PersonDetailsView.button_saveAssignmentChanges.click();
-        await PersonDetailsView.button_closeSaveAssignmentChanges.click();
-    });
+        await test.step(`Eine zweite Schulzuordnung hinzufügen`, async () => {
+            await PersonDetailsView.button_editSchulzuordnung.click();
+            await PersonDetailsView.button_addSchulzuordnung.click();
+            expect(await PersonDetailsView.combobox_organisation.innerText()).toContain(adminOrganisation);
+            await PersonDetailsView.combobox_rolle.click();
+            await page.getByText(rolle, {exact: true}).click();
+            await PersonDetailsView.input_kopersNr.fill(kopersNr);
+            await PersonDetailsView.button_submitAddSchulzuordnung.click();
+            await PersonDetailsView.button_confirmAddSchulzuordnung.click();
+            await PersonDetailsView.button_saveAssignmentChanges.click();
+            await PersonDetailsView.button_closeSaveAssignmentChanges.click();
+        });
 
-    await test.step(`In der Gesamtübersicht die neue Schulzuordnung prüfen`, async () => {
-        await expect(page.getByTestId('person-details-card')).toContainText('1111165 (Testschule-PW665): LiV (befristet bis');
-        await expect(page.getByTestId('person-details-card')).toContainText('1111165 (Testschule-PW665): ' + lehrerRolle);
+        await test.step(`In der Gesamtübersicht die neue Schulzuordnung prüfen`, async () => {
+            await expect(page.getByTestId('person-details-card')).toContainText('1111165 (Testschule-PW665): LiV (befristet bis');
+            await expect(page.getByTestId('person-details-card')).toContainText('1111165 (Testschule-PW665): ' + lehrerRolle);
         });
     })
 
@@ -413,4 +413,39 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
             await expect(personDetailsView.text_neuen_token_einrichten_info).toBeVisible();
         })
     })
+
+    test(
+        'Inbetriebnahme-Passwort über die Gesamtübersicht erzeugen',
+        { tag: [LONG, STAGE] },
+        async ({ page }) => {   
+            let userInfoLehrer: UserInfo;
+
+            await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) über die api anlegen`, async () => {
+                userInfoLehrer = await createRolleAndPersonWithUserContext(
+                    page,
+                    testschule,
+                    typeLehrer,
+                    await generateNachname(),
+                    await generateVorname(),
+                    [await getSPId(page, email)],
+                    await generateRolleName()
+                );
+                usernames.push(userInfoLehrer.username);
+                rolleIds.push(userInfoLehrer.rolleId);
+            })
+
+            const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
+
+            const personDetailsView: PersonDetailsViewPage = await test.step(`Gesamtübersicht öffnen`, async () => {
+                await gotoTargetURL(page, "admin/personen"); 
+                await personManagementView.waitErgebnislisteIsLoaded();
+                await personManagementView.searchBySuchfeld(userInfoLehrer.username);
+                return await personManagementView.openGesamtuebersichtPerson(page, userInfoLehrer.username);
+            })
+
+            await test.step(`Inbetriebnahme-Passwort für LK-Endgerät setzen`, async () => {
+                await personDetailsView.createIbnPassword();
+            })
+        }
+    )
 });
