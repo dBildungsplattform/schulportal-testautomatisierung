@@ -58,7 +58,7 @@ export class KlasseManagementViewPage{
         await expect(this.textH2Klassenverwaltung).toHaveText("Klassenverwaltung");
     }
 
-    public async filterSchool(school: string) {
+    public async filterSchule(schule: string) {
         await this.comboboxOrganisationInput.searchByTitle(school, false);
     }
 
