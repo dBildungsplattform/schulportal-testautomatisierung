@@ -69,4 +69,9 @@ export class PersonManagementViewPage {
   public getRows(): Locator {
     return this.table_wrapper.locator('.v-data-table__tr');
   }
+
+  public async waitErgebnislisteIsLoaded(): Promise<void> {
+    await this.page.waitForResponse(resp => resp.url().includes('/api/dbiam/personenuebersicht') && resp.status() === 201);
+    await expect(this.text_h2_Benutzerverwaltung).toContainText('Benutzerverwaltung');
+  }
 }
