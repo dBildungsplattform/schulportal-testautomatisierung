@@ -18,7 +18,7 @@ export class KlasseManagementViewPage{
     readonly footerDataTable: FooterDataTablePage;
     readonly comboboxOrganisationInput: ComboBox;
     readonly organisationInput: Locator;
-    readonly textAlertDeleteClass: Locator;
+    readonly textAlertDeleteKlasse: Locator;
     readonly buttonCloseAlert: Locator;
    
     constructor(page: Page){
