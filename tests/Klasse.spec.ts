@@ -221,7 +221,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       let klassenname = await generateKlassenname();
 
       await test.step(`Landesadmin anlegen`, async () => {
-        const addminVorname = await generateVorname();
+        const adminVorname = await generateVorname();
         const adminNachname = await generateNachname();
         const adminRolle = await generateRolleName();
         const adminRollenart = typeLandesadmin;
