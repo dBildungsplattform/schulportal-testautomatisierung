@@ -385,7 +385,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
         await klasseManagementView.deleteRowViaQuickAction(klassenname);
       });
 
-      await test.step(`In der Ergebnisliste Klasse prüfen, dass´die Klasse nicht mehr existiert`, async () => {
+      await test.step(`In der Ergebnisliste Klasse prüfen, dass die Klasse nicht mehr existiert`, async () => {
         await klasseManagementView.waitErgebnislisteIsLoaded();
         await klasseManagementView.filterSchool(testschule);
         await klasseManagementView.checkRowExists(klasse1Testschule);
