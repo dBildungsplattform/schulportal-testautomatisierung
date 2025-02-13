@@ -411,7 +411,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       });
 
       await test.step(`Schuladmin anlegen`, async () => {
-        const addminVorname = await generateVorname();
+        const adminVorname = await generateVorname();
         const adminNachname = await generateNachname();
         const adminRolleName = await generateRolleName();
         const adminRollenart = typeSchuladmin;
