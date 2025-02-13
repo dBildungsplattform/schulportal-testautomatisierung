@@ -22,46 +22,35 @@ export async function createPerson(
     klasseId?: string
 ): Promise<UserInfo> {
     let requestData: any;
+    
+    requestData = {
+        data: {
+            familienname,
+            vorname,
+            createPersonenkontexte: [
+                {
+                    "organisationId": organisationId,
+                    "rolleId": rolleId
+                }
+            ]
+        },
+        failOnStatusCode: false, 
+        maxRetries: 3
+    }; 
+
     if(klasseId) {
-        requestData = {
-            data: {
-                familienname,
-                vorname,
-                createPersonenkontexte: [
-                    {
-                        "organisationId": organisationId,
-                        "rolleId": rolleId
-                    },
-                    {
-                        "organisationId": klasseId,
-                        "rolleId": rolleId
-                    }
-                ]
-            },
-            failOnStatusCode: false, 
-            maxRetries: 3
-        }; 
-    } else 
-    {
-        requestData = {
-            data: {
-                familienname,
-                vorname,
-                createPersonenkontexte: [
-                    {
-                        "organisationId": organisationId,
-                        "rolleId": rolleId
-                    }
-                ]
-            },
-            failOnStatusCode: false, 
-            maxRetries: 3
-        };
+        requestData.data.createPersonenkontexte.push(
+            {
+                "organisationId": klasseId,
+                "rolleId": rolleId
+            }
+        )
     }
     
     if(koPersNr) {
         requestData.data['personalnummer'] = koPersNr;
     }
+    
     const response = await page.request.post(FRONTEND_URL + 'api/personenkontext-workflow/', requestData);
     expect(response.status()).toBe(201);
     const json = await response.json();

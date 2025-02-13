@@ -232,7 +232,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
           page,
           adminOrganisation,
           adminRollenart,
-          addminVorname,
+          adminVorname,
           adminNachname,
           adminIdSPs,
           adminRolle
@@ -308,7 +308,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
           page,
           adminOrganisation,
           adminRollenart,
-          addminVorname,
+          adminVorname,
           adminNachname,
           adminIdSPs,
           adminRolle
@@ -377,7 +377,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       });
 
       await test.step(`In Ergebnisliste prüfen, dass die generierte Klasse angezeigt wird`, async () => {
-        await klasseManagementView.filterSchool(testschule);
+        await klasseManagementView.filterSchule(testschule);
         await klasseManagementView.checkRowExists(klassenname);
       });
 
@@ -387,7 +387,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
 
       await test.step(`In der Ergebnisliste Klasse prüfen, dass die Klasse nicht mehr existiert`, async () => {
         await klasseManagementView.waitErgebnislisteIsLoaded();
-        await klasseManagementView.filterSchool(testschule);
+        await klasseManagementView.filterSchule(testschule);
         await klasseManagementView.checkRowExists(klasse1Testschule);
         await klasseManagementView.checkRowNotExists(klassenname);
       });
@@ -422,7 +422,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
           page,
           adminOrganisation,
           adminRollenart,
-          addminVorname,
+          adminVorname,
           adminNachname,
           adminIdSPs,
           adminRolleName
@@ -520,7 +520,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       });
 
       await test.step(`In Ergebnisliste prüfen, dass die generierte Klasse angezeigt wird`, async () => {
-        await klasseManagementView.filterSchool(testschule);
+        await klasseManagementView.filterSchule(testschule);
         await klasseManagementView.checkRowExists(klassenname);
       });
 
@@ -529,7 +529,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
         await klasseManagementView.checkDeleteClassFailed();
         await klasseManagementView.clickButtonCloseAltert();
         await klasseManagementView.waitErgebnislisteIsLoaded();
-        await klasseManagementView.filterSchool(testschule);
+        await klasseManagementView.filterSchule(testschule);
         await klasseManagementView.checkRowExists(klassenname);
       });
     }
@@ -561,7 +561,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       });
 
       await test.step(`In Ergebnisliste prüfen, dass die generierte Klasse angezeigt wird`, async () => {
-        await klasseManagementView.filterSchool(testschule);
+        await klasseManagementView.filterSchule(testschule);
         await klasseManagementView.checkRowExists(klassenname);
       });
 
@@ -605,7 +605,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
           page,
           adminOrganisation,
           adminRollenart,
-          addminVorname,
+          adminVorname,
           adminNachname,
           adminIdSPs,
           adminRolleName
@@ -704,7 +704,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       });
 
       await test.step(`In Ergebnisliste prüfen, dass die generierte Klasse angezeigt wird`, async () => {
-        await klasseManagementView.filterSchool(testschule);
+        await klasseManagementView.filterSchule(testschule);
         await klasseManagementView.checkRowExists(klassenname);
       });
 
@@ -714,7 +714,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
         await klasseManagementView.checkDeleteClassFailed();
         await klasseManagementView.clickButtonCloseAltert();
         await klasseManagementView.waitErgebnislisteIsLoaded();
-        await klasseManagementView.filterSchool(testschule);
+        await klasseManagementView.filterSchule(testschule);
         await klasseManagementView.checkRowExists(klassenname);
       });
     }

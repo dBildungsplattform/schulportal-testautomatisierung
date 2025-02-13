@@ -35,7 +35,7 @@ export class KlasseManagementViewPage{
         this.footerDataTable = new FooterDataTablePage(page);
         this.organisationInput = page.getByTestId('schule-select').locator('input');
         this.comboboxOrganisationInput = new ComboBox(this.page, this.organisationInput);
-        this.textAlertDeleteClass = page.getByTestId('alert-text');
+        this.textAlertDeleteKlasse = page.getByTestId('alert-text');
         this.buttonCloseAlert = page.getByTestId('alert-button');
     }
 
@@ -59,7 +59,7 @@ export class KlasseManagementViewPage{
     }
 
     public async filterSchule(schule: string) {
-        await this.comboboxOrganisationInput.searchByTitle(school, false);
+        await this.comboboxOrganisationInput.searchByTitle(schule, false);
     }
 
     public async checkRowExists(className: string) {
@@ -82,7 +82,7 @@ export class KlasseManagementViewPage{
     }
 
     public async checkDeleteClassFailed() {
-        await expect(this.textAlertDeleteClass).toHaveText('Die Klasse kann nicht gelöscht werden, da noch Benutzer zugeordnet sind.');
+        await expect(this.textAlertDeleteKlasse).toHaveText('Die Klasse kann nicht gelöscht werden, da noch Benutzer zugeordnet sind.');
     }
 
     public async clickButtonCloseAltert() {
