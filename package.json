@@ -14,7 +14,7 @@
     "lint": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
   },
   "devDependencies": {
-    "@playwright/test": "^1.47.2",
+    "@playwright/test": "^1.50.0",
     "@types/node": "^20.16.10",
     "@typescript-eslint/eslint-plugin": "^8.8.0",
     "@typescript-eslint/parser": "^8.8.0",

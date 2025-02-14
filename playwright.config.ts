@@ -30,6 +30,7 @@ export default defineConfig({
     timezoneId: "Europe/Brussels",
     screenshot: "only-on-failure",
     baseURL: FRONTEND_URL,
+    headless: true,
   },
 
   projects: [
@@ -47,7 +48,7 @@ export default defineConfig({
         ...devices["Desktop Firefox"],
         ignoreHTTPSErrors: true
       }
-    }
+    },
     
     // {
     //   name: 'webkit',
@@ -65,10 +66,10 @@ export default defineConfig({
     // },
 
     /* Test against branded browsers. */
-    //    {
-    //      name: 'Microsoft Edge',
-    //      use: { channel: 'msedge' },
-    //    },
+       {
+         name: 'msedge',
+         use: { channel: 'msedge' },
+       },
     // {
     //   name: 'Google Chrome',
     //   use: { channel: 'chrome' },
