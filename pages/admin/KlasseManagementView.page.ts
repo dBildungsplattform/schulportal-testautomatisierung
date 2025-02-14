@@ -85,7 +85,7 @@ export class KlasseManagementViewPage{
         await expect(this.textAlertDeleteKlasse).toHaveText('Die Klasse kann nicht gelöscht werden, da noch Benutzer zugeordnet sind.');
     }
 
-    public async clickButtonCloseAltert() {
+    public async clickButtonCloseAlert() {
         await this.buttonCloseAlert.click();
     }
 
