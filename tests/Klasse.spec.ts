@@ -525,9 +525,9 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       });
 
       await test.step(`Prüfen, dass die generierte Klasse via Quickaction nicht gelöscht werden kann`, async () => {
-        await klasseManagementView.startDeleteRowViaQuickAction(klassenname);
+        await klasseManagementView.deleteRowViaQuickActionWithoutSuccess(klassenname);
         await klasseManagementView.checkDeleteClassFailed();
-        await klasseManagementView.clickButtonCloseAltert();
+        await klasseManagementView.clickButtonCloseAlert();
         await klasseManagementView.waitErgebnislisteIsLoaded();
         await klasseManagementView.filterSchule(testschule);
         await klasseManagementView.checkRowExists(klassenname);
@@ -712,7 +712,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
         const KlasseDetailsViewPage = await klasseManagementView.openDetailViewClass(klassenname);
         await KlasseDetailsViewPage.startDeleteRowViaQuickAction();
         await klasseManagementView.checkDeleteClassFailed();
-        await klasseManagementView.clickButtonCloseAltert();
+        await klasseManagementView.clickButtonCloseAlert();
         await klasseManagementView.waitErgebnislisteIsLoaded();
         await klasseManagementView.filterSchule(testschule);
         await klasseManagementView.checkRowExists(klassenname);

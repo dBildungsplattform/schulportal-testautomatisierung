@@ -76,7 +76,7 @@ export class KlasseManagementViewPage{
         await this.buttonSchliesseKlasseLoeschenDialog.click();
     }
 
-    public async startDeleteRowViaQuickAction(className: string) {
+    public async deleteRowViaQuickActionWithoutSuccess(className: string) {
         await this.page.getByRole('row', { name: className }).getByTestId('open-klasse-delete-dialog-icon').click();
         await this.buttonKlasseLoeschen.click();
     }
