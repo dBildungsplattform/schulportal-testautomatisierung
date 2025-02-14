@@ -37,7 +37,7 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
       const schuleManagementView: SchuleManagementViewPage = new SchuleManagementViewPage(page);
       const footerDataTable: FooterDataTablePage = new FooterDataTablePage(page);
 
-      // Schulen können noch nicht gelöscht werden. Um doppelte Namen zu vermeiden, wird am dem Schulnamen eine Zufallszahl angehängt
+      // Schulen können noch nicht gelöscht werden. Um doppelte Namen zu vermeiden, wird dem Schulnamen eine Zufallszahl angehängt
       const schulname1: string = await generateSchulname();
       const schulname2: string = await generateSchulname();
       const dienststellenNr1: string = await generateDienststellenNr();
