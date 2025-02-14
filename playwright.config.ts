@@ -49,12 +49,24 @@ export default defineConfig({
         ignoreHTTPSErrors: true
       }
     },
-    
-    // {
-    //   name: 'webkit',
-    //   use: { ...devices['Desktop Safari'] },
-    // }
-    
+    {
+      name: 'webkit',
+      use: {
+        ...devices['Desktop Safari'] ,
+        ignoreHTTPSErrors: true
+      },
+    },
+    /* Test against branded browsers. */
+    {
+      name: 'msedge',
+      use: { 
+        channel: 'msedge' },
+    },
+    {
+      name: 'chrome',
+      use: { 
+        channel: 'chrome' },
+    },
     /* Test against mobile viewports. */
     // {
     //   name: 'Mobile Chrome',
@@ -63,16 +75,6 @@ export default defineConfig({
     // {
     //   name: 'Mobile Safari',
     //   use: { ...devices['iPhone 12'] },
-    // },
-
-    /* Test against branded browsers. */
-       {
-         name: 'msedge',
-         use: { channel: 'msedge' },
-       },
-    // {
-    //   name: 'Google Chrome',
-    //   use: { channel: 'chrome' },
     // },
   ],
   outputDir: "test-results/",
