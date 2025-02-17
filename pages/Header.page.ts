@@ -1,6 +1,8 @@
 import { type Locator, Page, expect } from '@playwright/test';
-import { LandingPage } from "./LandingView.page";
+import { LandingPage } from './LandingView.page';
 import FromAnywhere from '../pages/FromAnywhere';
+import { LoginPage } from '../pages/LoginView.page';
+import { ProfilePage } from './ProfileView.page';
 
 export class HeaderPage{
     readonly page: Page;
@@ -28,5 +30,15 @@ export class HeaderPage{
         await this.button_logout.click();
         const landingPage: LandingPage = new LandingPage(this.page);
         await expect(landingPage.text_Willkommen).toBeVisible();
+    }
+
+    public async clickLoginButton(): Promise<LoginPage> {
+        await this.button_login.click();
+        return new LoginPage(this.page);
+    }
+
+    public async clickMeinProfilButton(): Promise<ProfilePage> {
+        await this.button_profil.click();
+        return new ProfilePage(this.page);
     }
 }

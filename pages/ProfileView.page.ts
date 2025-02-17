@@ -1,4 +1,4 @@
-import { type Locator, Page } from '@playwright/test';
+import { type expect, Locator, Page } from '@playwright/test';
 
 export class ProfilePage {
   readonly page: Page;
@@ -36,7 +36,7 @@ export class ProfilePage {
   readonly button_PasswortAendern: Locator;
   readonly label_username: Locator;
   readonly text_p_LoginPrompt: Locator;
-  readonly input_password: Locator;
+  readonly inputPassword: Locator;
   // 2FA
   readonly cardHeadline_2FA: Locator;
   readonly icon_Schild2FA: Locator;
@@ -90,7 +90,7 @@ export class ProfilePage {
     this.button_PasswortAendern = page.getByTestId('change-password-button');
     this.label_username = page.locator('#kc-attempted-username');
     this.text_p_LoginPrompt = page.getByTestId('login-prompt-text');
-    this.input_password = page.getByTestId('password-input');
+    this.inputPassword = page.getByTestId('password-input');
 
     // 2FA
     this.cardHeadline_2FA = page.getByTestId('two-factor-card');

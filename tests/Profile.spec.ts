@@ -16,6 +16,7 @@ import { LoginPage } from '../pages/LoginView.page';
 import { ProfilePage } from '../pages/ProfileView.page';
 import { StartPage } from '../pages/StartView.page';
 import FromAnywhere from '../pages/FromAnywhere'
+import { userInfo } from 'os';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -482,7 +483,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
   );
 
   test(
-    'Das eigene Profil öffnen, Passwort Ändern öffnen, und Status des Benutzernamenfelds prüfen',
+    'Das eigene Profil öffnen als Lehrer, Passwort-Ändern öffnen(Passwortänderung nicht durchführen), und Status des Benutzernamenfelds prüfen',
     { tag: [LONG, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
       const profileView: ProfilePage = new ProfilePage(page);
@@ -531,7 +532,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       await test.step(`Status des Benutzernamenfelds prüfen`, async () => {
         await expect(profileView.label_username).toHaveText(usernames[0]); // Benutzername ist nicht änderbar weil es nur Text ist
         await expect(profileView.text_p_LoginPrompt).toHaveText('Bitte geben Sie Ihr aktuelles Passwort ein.');
-        await expect(profileView.input_password).toBeEnabled();
+        await expect(profileView.inputPassword).toBeEnabled();
         await page.goBack();
         await expect(profileView.cardHeadline_Passwort).toBeVisible();
       });
@@ -633,6 +634,67 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
       await test.step(`Dialog schließen`, async () => {
         await profileView.button_2FAAbbrechen.click();
+      });
+    }
+  );
+
+
+
+
+  //////////////////////////////////////
+
+  test(
+    'Im Profil das eigene Passwort ändern als Lehrer und Schüler (Schüler meldet sich anschließend mit dem neuen PW an)',
+    { tag: [LONG, STAGE] },
+    async ({ page }: PlaywrightTestArgs) => {
+      const header: HeaderPage = new HeaderPage(page);
+      const loginView: LoginPage = new LoginPage(page);
+      let userInfoLehrer: UserInfo;
+      let userInfoSchueler: UserInfo;
+
+      await test.step(`Lehrer und Schüler via api anlegen`, async () => {
+        userInfoLehrer = await createRolleAndPersonWithUserContext(
+          page,
+          testschule,
+          typeLehrer,
+          await generateNachname(),
+          await generateVorname(),
+          [await getSPId(page, email)],
+          await generateRolleName()
+        );
+        rolleIds.push(userInfoLehrer.rolleId);
+        usernames.push(userInfoLehrer.username);
+
+        userInfoSchueler = await createRolleAndPersonWithUserContext(
+          page,
+          testschule,
+          typeSchueler,
+          await generateNachname(),
+          await generateVorname(),
+          [await getSPId(page, email)],
+          await generateRolleName()
+        );
+        rolleIds.push(userInfoSchueler.rolleId);
+        usernames.push(userInfoSchueler.username);
+      });
+
+      await test.step(`Mit dem Lehrer am Portal anmelden`, async () => {
+        await header.logout();
+        await header.clickLoginButton();
+        await loginView.login(userInfoLehrer.username, userInfoLehrer.password);
+        currentUserIsLandesadministrator = false;
+        userInfoLehrer.password = await loginView.UpdatePW();
+        currentUserIsLandesadministrator = false;
+      });
+  
+      const profileView: ProfilePage = await header.clickMeinProfilButton();
+
+      await test.step(`Passwortänderung Lehrer durchführen`, async () => {
+        await profileView.button_NeuesPasswortSetzen.click();
+        await profileView.button_PasswortAendern.click();
+        await loginView.loginCurrentUser(userInfoLehrer.username, userInfoLehrer.password);        
+        await loginView.UpdatePW(true);
+        await expect(profileView.text_h2_Ueberschrift).toHaveText('Mein Profil');
       });
     }
   );
