@@ -20,6 +20,7 @@ export class KlasseManagementViewPage{
     readonly organisationInput: Locator;
     readonly textAlertDeleteKlasse: Locator;
     readonly buttonCloseAlert: Locator;
+    readonly iconTableRowDelete: (className: string) => Locator;
    
     constructor(page: Page){
         this.page = page;  
@@ -37,6 +38,7 @@ export class KlasseManagementViewPage{
         this.comboboxOrganisationInput = new ComboBox(this.page, this.organisationInput);
         this.textAlertDeleteKlasse = page.getByTestId('alert-text');
         this.buttonCloseAlert = page.getByTestId('alert-button');
+        this.iconTableRowDelete = (className: string) => page.getByRole('row', { name: className }).getByTestId('open-klasse-delete-dialog-icon');
     }
 
     // Loops through the Data in the table and checks if the Dienstellennummer and Klassenname are not empty
@@ -71,14 +73,9 @@ export class KlasseManagementViewPage{
     }
 
     public async deleteRowViaQuickAction(className: string) {
-        await this.page.getByRole('row', { name: className }).getByTestId('open-klasse-delete-dialog-icon').click();
-        await this.buttonKlasseLoeschen.click();
+        this.clickIconTableRowLoeschen(className)
+        await this.clickButtonLoeschen();
         await this.buttonSchliesseKlasseLoeschenDialog.click();
-    }
-
-    public async deleteRowViaQuickActionWithoutSuccess(className: string) {
-        await this.page.getByRole('row', { name: className }).getByTestId('open-klasse-delete-dialog-icon').click();
-        await this.buttonKlasseLoeschen.click();
     }
 
     public async checkDeleteClassFailed() {
@@ -89,8 +86,16 @@ export class KlasseManagementViewPage{
         await this.buttonCloseAlert.click();
     }
 
+    public async clickButtonLoeschen() {
+        await this.buttonKlasseLoeschen.click();
+    }
+
     public async openDetailViewClass(className: string) {
         await this.page.getByRole('cell', { name: className }).click()
         return new KlasseDetailsViewPage(this.page);
+    }
+
+    public async clickIconTableRowLoeschen(className: string) {
+        await this.iconTableRowDelete(className).click();
     }
 }

@@ -353,7 +353,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
 
   test(
     'Eine Klasse ohne zugeordnete Personen als Landesadmin via Quickaction löschen',
-    { tag: [LONG, STAGE] }, 
+    { tag: [LONG, STAGE] },
     async ({ page }: { page: Page }) => {
       const klassenname: string = await generateKlassenname();
       const idSchule: string = await getOrganisationId(page, testschule);
@@ -395,7 +395,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
   );
 
   test(
-    "Eine Klasse ohne zugeordnete Personen als Schuladmin via Quickaction löschen",  
+    "Eine Klasse ohne zugeordnete Personen als Schuladmin via Quickaction löschen",
     { tag: [LONG, STAGE] }, 
     async ({ page }: { page: Page }) => {
       const klassenname: string = await generateKlassenname();
@@ -469,7 +469,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
   );
 
   test(
-    "Eine Klasse mit einem zugeordneten Schüler als Landesadmin via Quickaction löschen",  
+    "Eine Klasse mit einem zugeordneten Schüler als Landesadmin via Quickaction löschen",
     { tag: [LONG, STAGE] }, 
     async ({ page }: { page: Page }) => {
       const klassenname: string = await generateKlassenname();
@@ -525,7 +525,8 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       });
 
       await test.step(`Prüfen, dass die generierte Klasse via Quickaction nicht gelöscht werden kann`, async () => {
-        await klasseManagementView.deleteRowViaQuickActionWithoutSuccess(klassenname);
+        await klasseManagementView.clickIconTableRowLoeschen(klassenname);
+        await klasseManagementView.clickButtonLoeschen();
         await klasseManagementView.checkDeleteClassFailed();
         await klasseManagementView.clickButtonCloseAlert();
         await klasseManagementView.waitErgebnislisteIsLoaded();
@@ -578,7 +579,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
   );
   
   test(
-    "Eine Klasse ohne zugeordnete Personen als Schuladmin via Gesamtübersicht löschen",  
+    "Eine Klasse ohne zugeordnete Personen als Schuladmin via Gesamtübersicht löschen",
     { tag: [LONG, STAGE] }, 
     async ({ page }: { page: Page }) => {
       const klassenname: string = await generateKlassenname();
@@ -653,7 +654,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
   );
 
   test(
-    "Eine Klasse mit einem zugeordneten Schüler als Landesadmin via Gesamtübersicht löschen",  
+    "Eine Klasse mit einem zugeordneten Schüler als Landesadmin via Gesamtübersicht löschen",
     { tag: [LONG, STAGE] }, 
     async ({ page }: { page: Page }) => {
       const klassenname: string = await generateKlassenname();
