@@ -103,7 +103,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       let einstiegspasswort = '';
 
       await test.step(`Dialog Person anlegen öffnen`, async () => {
-        await startseite.card_item_schulportal_administration.click();
+        await startseite.cardItemSchulportalAdministration.click();
         await menue.menueItem_BenutzerAnlegen.click();
         await expect(personCreationView.text_h2_PersonAnlegen).toHaveText('Neuen Benutzer hinzufügen');
       });
@@ -153,7 +153,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     const schulstrukturknoten = 'Öffentliche Schulen Land Schleswig-Holstein';
 
     await test.step(`Dialog Person anlegen öffnen`, async () => {
-      await startseite.card_item_schulportal_administration.click();
+      await startseite.cardItemSchulportalAdministration.click();
       await menue.menueItem_BenutzerAnlegen.click();
       await expect(personCreationView.text_h2_PersonAnlegen).toHaveText('Neuen Benutzer hinzufügen');
     });
@@ -188,7 +188,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     const schulstrukturknoten = testschule;
 
     await test.step(`Dialog Person anlegen öffnen`, async () => {
-      await startseite.card_item_schulportal_administration.click();
+      await startseite.cardItemSchulportalAdministration.click();
       await menue.menueItem_BenutzerAnlegen.click();
       await expect(personCreationView.text_h2_PersonAnlegen).toHaveText('Neuen Benutzer hinzufügen');
     });
@@ -261,7 +261,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         const newNachname = await generateNachname();
         const newKopersnr = await generateKopersNr();
 
-        await startseite.card_item_schulportal_administration.click();
+        await startseite.cardItemSchulportalAdministration.click();
         await menue.menueItem_BenutzerAnlegen.click();
         await expect(personCreationView.text_h2_PersonAnlegen).toHaveText('Neuen Benutzer hinzufügen');
 
@@ -293,7 +293,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const klasse = 'Playwright3a';
 
       await test.step(`Dialog Person anlegen öffnen`, async () => {
-        await startseite.card_item_schulportal_administration.click();
+        await startseite.cardItemSchulportalAdministration.click();
         await menue.menueItem_BenutzerAnlegen.click();
         await expect(personCreationView.text_h2_PersonAnlegen).toHaveText('Neuen Benutzer hinzufügen');
       });
@@ -328,7 +328,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const personManagementView = new PersonManagementViewPage(page);
 
       await test.step(`Benutzerverwaltung öffnen und alle Elemente in der Ergebnisliste auf Existenz prüfen`, async () => {
-        await startseite.card_item_schulportal_administration.click();
+        await startseite.cardItemSchulportalAdministration.click();
         await menue.menueItem_AlleBenutzerAnzeigen.click();
         await personManagementView.waitForData();
         await expect(personManagementView.text_h1_Administrationsbereich).toBeVisible();
@@ -364,7 +364,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const rolleLiV = 'LiV';
 
       await test.step(`Dialog Person anlegen öffnen`, async () => {
-        await startseite.card_item_schulportal_administration.click();
+        await startseite.cardItemSchulportalAdministration.click();
         await menue.menueItem_BenutzerAnlegen.click();
         await expect(personCreationView.text_h2_PersonAnlegen).toHaveText('Neuen Benutzer hinzufügen');
       });

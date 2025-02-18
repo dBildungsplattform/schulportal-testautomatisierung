@@ -30,7 +30,7 @@ test.describe(`Testfälle für die Hauptmenue-Leiste: Umgebung: ${process.env.EN
     const menuBar = new MenuPage(page);
 
     await test.step(`Pruefen der Hauptmenueleiste mit Untermenues`, async () => {
-      await startseite.card_item_schulportal_administration.click();
+      await startseite.cardItemSchulportalAdministration.click();
       await expect(menuBar.header_label_Navigation).toBeVisible();
       await expect(menuBar.button_BackStartpage).toBeVisible();
       await expect(menuBar.label_Benutzerverwaltung).toBeVisible();
@@ -50,7 +50,7 @@ test.describe(`Testfälle für die Hauptmenue-Leiste: Umgebung: ${process.env.EN
     const menuBar = new MenuPage(page);
 
     await test.step(`Menue-Eintrag zum Rücksprung auf die Startseite klicken`, async () => {
-      await startseite.card_item_schulportal_administration.click();
+      await startseite.cardItemSchulportalAdministration.click();
       await expect(menuBar.header_label_Navigation).toBeVisible();
       await menuBar.button_BackStartpage.click();
       await startseite.checkHeadlineIsVisible();

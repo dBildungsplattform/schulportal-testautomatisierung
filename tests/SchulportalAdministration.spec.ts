@@ -86,8 +86,8 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         currentUserIsLandesadministrator = false;
         await startseite.checkHeadlineIsVisible();
         await test.step(`Prüfen, dass die Kachel E-Mail angezeigt wird und die Kachel Schulportal-Administration nicht angezeigt wird`, async () => {
-            await expect(startseite.card_item_schulportal_administration).toBeHidden();
-            await expect(startseite.card_item_email).toBeVisible();
+            await expect(startseite.cardItemSchulportalAdministration).toBeHidden();
+            await expect(startseite.cardItemEmail).toBeVisible();
         });
     });
 
@@ -111,8 +111,8 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         currentUserIsLandesadministrator = false;
         await startseite.checkHeadlineIsVisible();
         await test.step(`Prüfen, dass die Kachel E-Mail angezeigt wird und die Kachel Schulportal-Administration nicht angezeigt wird`, async () => {
-            await expect(startseite.card_item_schulportal_administration).toBeHidden();
-            await expect(startseite.card_item_itslearning).toBeVisible();
+            await expect(startseite.cardItemSchulportalAdministration).toBeHidden();
+            await expect(startseite.cardItemItslearning).toBeVisible();
         });
     });
 
@@ -138,8 +138,8 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         currentUserIsLandesadministrator = false;
         await startseite.checkHeadlineIsVisible();
         await test.step(`Prüfen, dass die Kachel E-Mail nicht angezeigt wird und die Kachel Schulportal-Administration angezeigt wird`, async () => {
-            await expect(startseite.card_item_schulportal_administration).toBeVisible();
-            await expect(startseite.card_item_email).toBeHidden();
+            await expect(startseite.cardItemSchulportalAdministration).toBeVisible();
+            await expect(startseite.cardItemEmail).toBeHidden();
         });
     });
 });

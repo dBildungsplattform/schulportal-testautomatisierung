@@ -8,6 +8,7 @@ export class KlasseDetailsViewPage {
   readonly textH3KlassennameEingeben: Locator;
   readonly buttonKlasseLoeschenDialog: Locator;
   readonly buttonKlasseLoeschen: Locator;
+  readonly buttonKlasseLoeschenClose: Locator;
   readonly buttonBearbeiten: Locator;
   readonly buttonSpeichern: Locator;
   readonly buttonAbbrechen: Locator;
@@ -30,6 +31,7 @@ export class KlasseDetailsViewPage {
     this.textH3KlassennameEingeben = page.getByText('2. Klassenname eingeben');
     this.buttonKlasseLoeschenDialog = page.getByTestId('open-klasse-delete-dialog-button');
     this.buttonKlasseLoeschen = page.getByTestId('klasse-delete-button');
+    this.buttonKlasseLoeschenClose = page.getByTestId('close-klasse-delete-success-dialog-button');
     this.buttonBearbeiten = page.getByTestId('klasse-edit-button');
     this.buttonSpeichern = page.getByTestId('klasse-changes-save-button');
     this.buttonAbbrechen = page.getByTestId('klasse-edit-cancel-button');
@@ -49,5 +51,16 @@ export class KlasseDetailsViewPage {
     await this.buttonBearbeiten.click();
     await this.inputKlassenname.fill(klasseName);
     await this.buttonSpeichern.click();
+  }
+
+  public async deleteClass() {
+    await this.buttonKlasseLoeschenDialog.click();
+    await this.buttonKlasseLoeschen.click();
+    await this.buttonKlasseLoeschenClose.click();
+  }
+
+  public async startDeleteRowViaQuickAction() {
+    await this.buttonKlasseLoeschenDialog.click();
+    await this.buttonKlasseLoeschen.click();
   }
 }

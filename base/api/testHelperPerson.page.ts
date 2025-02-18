@@ -12,25 +12,45 @@ import { typeLehrer } from "../rollentypen";
 
 const FRONTEND_URL: string | undefined = process.env.FRONTEND_URL || "";
 
-export async function createPerson(page: Page, familienname: string, vorname: string, organisationId: string, rolleId: string, koPersNr?: string): Promise<UserInfo> {
-    const requestData = {
+export async function createPerson(
+    page: Page,
+    familienname: string,
+    vorname: string,
+    organisationId: string,
+    rolleId: string,
+    koPersNr?: string,
+    klasseId?: string
+): Promise<UserInfo> {
+    let requestData: any;
+    
+    requestData = {
         data: {
             familienname,
             vorname,
             createPersonenkontexte: [
                 {
-                    organisationId,
-                    rolleId
+                    "organisationId": organisationId,
+                    "rolleId": rolleId
                 }
             ]
         },
         failOnStatusCode: false, 
         maxRetries: 3
-    };
+    }; 
 
+    if(klasseId) {
+        requestData.data.createPersonenkontexte.push(
+            {
+                "organisationId": klasseId,
+                "rolleId": rolleId
+            }
+        )
+    }
+    
     if(koPersNr) {
         requestData.data['personalnummer'] = koPersNr;
     }
+    
     const response = await page.request.post(FRONTEND_URL + 'api/personenkontext-workflow/', requestData);
     expect(response.status()).toBe(201);
     const json = await response.json();
@@ -43,7 +63,14 @@ export async function createPerson(page: Page, familienname: string, vorname: st
     }
 }
 
-export async function createPersonWithUserContext(page: Page, organisationName: string, familienname: string, vorname: string, rolleName: string, koPersNr?: string): Promise<UserInfo> {
+export async function createPersonWithUserContext(
+    page: Page,
+    organisationName: string,
+    familienname: string,
+    vorname: string,
+    rolleName: string,
+    koPersNr?: string
+): Promise<UserInfo> {
     // Organisation wird nicht angelegt, da diese zur Zeit nicht gelöscht werden kann
     // API-Calls machen und Benutzer mit Kontext anlegen
     const organisationId: string = await getOrganisationId(page, organisationName);
@@ -52,14 +79,32 @@ export async function createPersonWithUserContext(page: Page, organisationName: 
     return userInfo;
 }
 
-export async function createRolleAndPersonWithUserContext(page: Page, organisationName: string, rollenArt: string, familienname: string, vorname: string, idSPs: string[], rolleName: string, koPersNr?: string): Promise<UserInfo> {
+export async function createRolleAndPersonWithUserContext(
+    page: Page,
+    organisationName: string,
+    rollenArt: string,
+    familienname: string,
+    vorname: string,
+    idSPs: string[],
+    rolleName: string,
+    koPersNr?: string,
+    klasseId?: string,
+): Promise<UserInfo> {
     // Organisation wird nicht angelegt, da diese zur Zeit nicht gelöscht werden kann
     // API-Calls machen und Benutzer mit Kontext anlegen
     const organisationId: string = await getOrganisationId(page, organisationName);
     const rolleId: string = await createRolle(page, rollenArt, organisationId, rolleName);
 
     await addSPToRolle(page, rolleId, idSPs);
-    const userInfo: UserInfo = await createPerson(page, familienname, vorname, organisationId, rolleId, koPersNr);
+    const userInfo: UserInfo = await createPerson(
+        page,
+        familienname,
+        vorname,
+        organisationId,
+        rolleId,
+        koPersNr,
+        klasseId,
+    );
     return userInfo;
 }
 
