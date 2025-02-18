@@ -120,7 +120,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       });
 
       await test.step(`Profil öffnen`, async () => {
-        await expect(startseite.card_item_schulportal_administration).toBeVisible();
+        await expect(startseite.cardItemSchulportalAdministration).toBeVisible();
         await header.button_profil.click();
       });
 

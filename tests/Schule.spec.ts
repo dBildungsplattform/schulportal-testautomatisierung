@@ -1,6 +1,4 @@
 import { test, expect, Page } from '@playwright/test';
-import { LandingPage } from '../pages/LandingView.page';
-import { LoginPage } from '../pages/LoginView.page';
 import { StartPage } from '../pages/StartView.page';
 import { MenuPage } from '../pages/MenuBar.page';
 import { SchuleCreationViewPage } from '../pages/admin/SchuleCreationView.page';
@@ -8,7 +6,6 @@ import { SchuleManagementViewPage } from '../pages/admin/SchuleManagementView.pa
 import { HeaderPage } from '../pages/Header.page';
 import { FooterDataTablePage } from '../pages/FooterDataTable.page';
 import { LONG, SHORT, STAGE, BROWSER } from '../base/tags';
-import { deletePersonById, deleteRolleById } from '../base/testHelperDeleteTestdata';
 import { generateSchulname, generateDienststellenNr } from '../base/testHelperGenerateTestdataNames';
 import FromAnywhere from '../pages/FromAnywhere';
 
@@ -32,18 +29,21 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
     });
   });
 
-  test('2 Schulen nacheinander anlegen als Landesadmin', { tag: [LONG] }, async ({ page }: { page: Page }) => {
-    const startseite: StartPage = new StartPage(page);
-    const schuleManagementView: SchuleManagementViewPage = new SchuleManagementViewPage(page);
-    const footerDataTable: FooterDataTablePage = new FooterDataTablePage(page);
+  test(
+    '2 Schulen nacheinander anlegen als Landesadmin',
+    { tag: [LONG] },
+    async ({ page }: { page: Page }) => {
+      const startseite: StartPage = new StartPage(page);
+      const schuleManagementView: SchuleManagementViewPage = new SchuleManagementViewPage(page);
+      const footerDataTable: FooterDataTablePage = new FooterDataTablePage(page);
 
-    // Schulen können noch nicht gelöscht werden. Um doppelte Namen zu vermeiden, wird am dem Schulnamen eine Zufallszahl angehängt
-    const schulname1: string = await generateSchulname();
-    const schulname2: string = await generateSchulname();
-    const dienststellenNr1: string = await generateDienststellenNr();
-    const dienststellenNr2: string = await generateDienststellenNr();
+      // Schulen können noch nicht gelöscht werden. Um doppelte Namen zu vermeiden, wird dem Schulnamen eine Zufallszahl angehängt
+      const schulname1: string = await generateSchulname();
+      const schulname2: string = await generateSchulname();
+      const dienststellenNr1: string = await generateDienststellenNr();
+      const dienststellenNr2: string = await generateDienststellenNr();
 
-    const { menue, schuleCreationView }: { menue: MenuPage; schuleCreationView: SchuleCreationViewPage } =
+      const { menue, schuleCreationView }: { menue: MenuPage; schuleCreationView: SchuleCreationViewPage } =
       await test.step(`Dialog Schule anlegen öffnen`, async (): Promise<{
         menue: MenuPage;
         schuleCreationView: SchuleCreationViewPage;
@@ -55,36 +55,37 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
         return { menue, schuleCreationView };
       });
 
-    await test.step(`Erste Schule anlegen`, async () => {
-      await schuleCreationView.radioButtonPublicSchule.click();
+      await test.step(`Erste Schule anlegen`, async () => {
+        await schuleCreationView.radioButtonPublicSchule.click();
 
-      await schuleCreationView.inputDienststellennummer.fill(dienststellenNr1);
-      await schuleCreationView.inputSchulname.fill(schulname1);
-      await schuleCreationView.buttonSchuleAnlegen.click();
-      await expect(schuleCreationView.textSuccess).toBeVisible();
-    });
+        await schuleCreationView.inputDienststellennummer.fill(dienststellenNr1);
+        await schuleCreationView.inputSchulname.fill(schulname1);
+        await schuleCreationView.buttonSchuleAnlegen.click();
+        await expect(schuleCreationView.textSuccess).toBeVisible();
+      });
 
-    await test.step(`Zweite Schule anlegen`, async () => {
-      await schuleCreationView.buttonWeitereSchuleAnlegen.click();
-      await schuleCreationView.radioButtonPublicSchule.click();
+      await test.step(`Zweite Schule anlegen`, async () => {
+        await schuleCreationView.buttonWeitereSchuleAnlegen.click();
+        await schuleCreationView.radioButtonPublicSchule.click();
 
-      await schuleCreationView.inputDienststellennummer.click();
-      await schuleCreationView.inputDienststellennummer.fill(dienststellenNr2);
+        await schuleCreationView.inputDienststellennummer.click();
+        await schuleCreationView.inputDienststellennummer.fill(dienststellenNr2);
 
-      await schuleCreationView.inputSchulname.fill(schulname2);
-      await schuleCreationView.buttonSchuleAnlegen.click();
-      await expect(schuleCreationView.textSuccess).toBeVisible();
-    });
+        await schuleCreationView.inputSchulname.fill(schulname2);
+        await schuleCreationView.buttonSchuleAnlegen.click();
+        await expect(schuleCreationView.textSuccess).toBeVisible();
+      });
 
-    await test.step(`In der Ergebnisliste prüfen, dass die beiden neuen Schulen angezeigt werden`, async () => {
-      await menue.menueItem_AlleSchulenAnzeigen.click();
-      await footerDataTable.combobox_AnzahlEintraege.click();
-      await page.getByText('300', { exact: true }).click();
-      await expect(schuleManagementView.textH2Schulverwaltung).toHaveText('Schulverwaltung');
-      await expect(page.getByRole('cell', { name: schulname1 })).toBeVisible();
-      await expect(page.getByRole('cell', { name: schulname2 })).toBeVisible();
-    });
-  });
+      await test.step(`In der Ergebnisliste prüfen, dass die beiden neuen Schulen angezeigt werden`, async () => {
+        await menue.menueItem_AlleSchulenAnzeigen.click();
+        await footerDataTable.combobox_AnzahlEintraege.click();
+        await page.getByText('300', { exact: true }).click();
+        await expect(schuleManagementView.textH2Schulverwaltung).toHaveText('Schulverwaltung');
+        await expect(page.getByRole('cell', { name: schulname1 })).toBeVisible();
+        await expect(page.getByRole('cell', { name: schulname2 })).toBeVisible();
+      });
+    }
+  );
 
   test(
     'Ergebnisliste Schulen auf Vollständigkeit prüfen als Landesadmin',
@@ -115,11 +116,11 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
       const startseite: StartPage = new StartPage(page);
 
       const schuleCreationView: SchuleCreationViewPage =
-        await test.step(`Dialog Schule anlegen öffnen als Schuladmin`, async () => {
-          const menue: MenuPage = await startseite.goToAdministration();
-          const schuleCreationView: SchuleCreationViewPage = await menue.schuleAnlegen();
-          return schuleCreationView;
-        });
+      await test.step(`Dialog Schule anlegen öffnen als Schuladmin`, async () => {
+        const menue: MenuPage = await startseite.goToAdministration();
+        const schuleCreationView: SchuleCreationViewPage = await menue.schuleAnlegen();
+        return schuleCreationView;
+      });
 
       const schultraeger: string = await test.step(`Schule anlegen`, async () => {
         const schultraeger: string = await schuleCreationView.radioButtonPublicSchule.innerText();
