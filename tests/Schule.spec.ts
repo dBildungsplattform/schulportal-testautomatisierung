@@ -1,4 +1,4 @@
-import { test, expect, Page } from '@playwright/test';
+import { test, expect, PlaywrightTestArgs } from '@playwright/test';
 import { StartPage } from '../pages/StartView.page';
 import { MenuPage } from '../pages/MenuBar.page';
 import { SchuleCreationViewPage } from '../pages/admin/SchuleCreationView.page';
@@ -8,21 +8,23 @@ import { FooterDataTablePage } from '../pages/FooterDataTable.page';
 import { LONG, SHORT, STAGE, BROWSER } from '../base/tags';
 import { generateSchulname, generateDienststellenNr } from '../base/testHelperGenerateTestdataNames';
 import FromAnywhere from '../pages/FromAnywhere';
+import { LandingPage } from '../pages/LandingView.page';
+import { LoginPage } from '../pages/LoginView.page';
 
 test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
-  test.beforeEach(async ({ page }: { page: Page }) => {
+  test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
     await test.step(`Login`, async () => {
-      const startPage = await FromAnywhere(page)
+      const startPage: StartPage = await FromAnywhere(page)
         .start()
-        .then((landing) => landing.goToLogin())
-        .then((login) => login.login())
-        .then((startseite) => startseite.checkHeadlineIsVisible());
+        .then((landing: LandingPage) => landing.goToLogin())
+        .then((login: LoginPage) => login.login())
+        .then((startseite: StartPage) => startseite.checkHeadlineIsVisible());
   
       return startPage;
     });
   });
 
-  test.afterEach(async ({ page }: { page: Page }) => {
+  test.afterEach(async ({ page }: PlaywrightTestArgs) => {
     await test.step(`Abmelden`, async () => {
       const header: HeaderPage = new HeaderPage(page);
       await header.logout();
@@ -32,7 +34,7 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
   test(
     '2 Schulen nacheinander anlegen als Landesadmin',
     { tag: [LONG] },
-    async ({ page }: { page: Page }) => {
+    async ({ page }: PlaywrightTestArgs) => {
       const startseite: StartPage = new StartPage(page);
       const schuleManagementView: SchuleManagementViewPage = new SchuleManagementViewPage(page);
       const footerDataTable: FooterDataTablePage = new FooterDataTablePage(page);
@@ -90,7 +92,7 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
   test(
     'Ergebnisliste Schulen auf Vollständigkeit prüfen als Landesadmin',
     { tag: [LONG, SHORT, STAGE, BROWSER] },
-    async ({ page }: { page: Page }) => {
+    async ({ page }: PlaywrightTestArgs) => {
       const startseite: StartPage = new StartPage(page);
 
       await test.step(`Schulverwaltung öffnen und Alle Elemente in der Ergebnisliste auf Existenz prüfen`, async () => {
@@ -108,7 +110,7 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
   test(
     'Eine Schule anlegen als Landesadmin und die Bestätigungsseite vollständig prüfen',
     { tag: [LONG, SHORT] },
-    async ({ page }: { page: Page }) => {
+    async ({ page }: PlaywrightTestArgs) => {
       // Schulen können noch nicht gelöscht werden. Um doppelte Namen zu vermeiden, wird am dem Schulnamen eine Zufallszahl angehängt
       const schulname: string = await generateSchulname();
       const dienststellenNr: string = await generateDienststellenNr();

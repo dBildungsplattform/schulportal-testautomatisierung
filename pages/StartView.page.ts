@@ -36,4 +36,8 @@ export class StartPage {
     await expect(this.textH2Ueberschrift).toBeVisible();
     return new StartPage(this.page);
   }
+
+  public async checkSpItslearningIsVisible() {
+    await expect(this.cardItemItslearning).toBeVisible()
+  }
 }

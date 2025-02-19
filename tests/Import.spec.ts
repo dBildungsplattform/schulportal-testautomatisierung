@@ -1,4 +1,4 @@
-import { test, expect, Download } from "@playwright/test";
+import { test, expect, Download, PlaywrightTestArgs } from "@playwright/test";
 import { HeaderPage } from "../pages/Header.page";
 import { LONG } from "../base/tags";
 import { schuelerRolle } from "../base/rollen";
@@ -24,7 +24,7 @@ test.describe(`Testfälle für den Benutzerimport": Umgebung: ${process.env.ENV}
   const csvPath: string = path.join(dirname, '../fixtures/Benutzerimport_Lernrolle_UTF-8.csv');
   const csvAsArray: string[] = fs.readFileSync(csvPath).toString().split('\n').map(el => el.trim()).filter(e => e !== '');
 
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
     await test.step('Einloggen und zu Benutzerimport navigieren', async () => {
       await page.goto('/');
       personImportPage = (await
@@ -41,7 +41,7 @@ test.describe(`Testfälle für den Benutzerimport": Umgebung: ${process.env.ENV}
     });
   });
 
-  test.afterEach(async ({ page }) => {
+  test.afterEach(async ({ page }: PlaywrightTestArgs) => {
     await test.step('Importierte Daten über die API löschen', async () => {
       for (let index = 1; index < csvAsArray.length; index++) {
         const person = csvAsArray[index];
@@ -52,12 +52,12 @@ test.describe(`Testfälle für den Benutzerimport": Umgebung: ${process.env.ENV}
     });
 
     await test.step(`Abmelden`, async () => {
-      const header = new HeaderPage(page);
+      const header: HeaderPage = new HeaderPage(page);
       await header.logout();
     });
   });
 
-  test('Als Landesadmin eine CSV-Datei mit Benutzerdaten hochladen und importieren', {tag: [LONG]}, async ({ page }) => {
+  test('Als Landesadmin eine CSV-Datei mit Benutzerdaten hochladen und importieren', {tag: [LONG]}, async ({ page }: PlaywrightTestArgs) => {
     await test.step('CSV-Datei hochladen, importieren und importierte Daten downloaden', async () => {
       // select schule
       await personImportPage.schuleSelectCombobox.searchByTitle(testschule665, false);
