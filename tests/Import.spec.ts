@@ -52,7 +52,7 @@ test.describe(`Testfälle für den Benutzerimport": Umgebung: ${process.env.ENV}
     });
 
     await test.step(`Abmelden`, async () => {
-      const header = new HeaderPage(page);
+      const header: HeaderPage = new HeaderPage(page);
       await header.logout();
     });
   });

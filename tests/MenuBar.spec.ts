@@ -8,11 +8,11 @@ import FromAnywhere from '../pages/FromAnywhere';
 test.describe(`Testfälle für die Hauptmenue-Leiste: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
     await test.step(`Login`, async () => {
-      const startPage = await FromAnywhere(page)
+      const startPage: StartPage = await FromAnywhere(page)
         .start()
-        .then((landing) => landing.goToLogin())
-        .then((login) => login.login())
-        .then((startseite) => startseite.checkHeadlineIsVisible());
+        .then((landing: LandingPage) => landing.goToLogin())
+        .then((login: LoginPage) => login.login())
+        .then((startseite: StartPage) => startseite.checkHeadlineIsVisible());
   
       return startPage;
     });

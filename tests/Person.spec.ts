@@ -37,11 +37,11 @@ let currentUserIsLandesadministrator: boolean = true;
 test.describe(`Testfälle für die Administration von Personen": Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
     await test.step(`Login`, async () => {
-      const startPage = await FromAnywhere(page)
+      const startPage: StartPage = await FromAnywhere(page)
         .start()
-        .then((landing) => landing.goToLogin())
-        .then((login) => login.login())
-        .then((startseite) => startseite.checkHeadlineIsVisible());
+        .then((landing: LandingPage) => landing.goToLogin())
+        .then((login: LoginPage) => login.login())
+        .then((startseite: StartPage) => startseite.checkHeadlineIsVisible());
   
       return startPage;
     });
@@ -78,7 +78,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
 
     await test.step(`Abmelden`, async () => {
-      const header = new HeaderPage(page);
+      const header: HeaderPage = new HeaderPage(page);
       await header.logout();
     });
   });
@@ -91,16 +91,16 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const startseite: StartPage = new StartPage(page);
       const login: LoginPage = new LoginPage(page);
       const menue = new MenuPage(page);
-      const personCreationView = new PersonCreationViewPage(page);
-      const personManagementView = new PersonManagementViewPage(page);
-      const header = new HeaderPage(page);
+      const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
+      const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
+      const header: HeaderPage = new HeaderPage(page);
 
-      const rolle = 'Lehrkraft';
-      const vorname = await generateVorname();
-      const nachname = await generateNachname();
-      const kopersnr = await generateKopersNr();
-      const schulstrukturknoten = testschule;
-      let einstiegspasswort = '';
+      const rolle: string = 'Lehrkraft';
+      const vorname: string = await generateVorname();
+      const nachname: string = await generateNachname();
+      const kopersnr: string = await generateKopersNr();
+      const schulstrukturknoten: string = testschule;
+      let einstiegspasswort: string = '';
 
       await test.step(`Dialog Person anlegen öffnen`, async () => {
         await startseite.cardItemSchulportalAdministration.click();
@@ -146,11 +146,11 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
   test('Einen Benutzer mit der Rolle Landesadmin anlegen', { tag: [LONG, SHORT, STAGE] }, async ({ page }: PlaywrightTestArgs) => {
     const startseite: StartPage = new StartPage(page);
     const menue = new MenuPage(page);
-    const personCreationView = new PersonCreationViewPage(page);
+    const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
 
-    const vorname = await generateVorname();
-    const nachname = await generateNachname();
-    const schulstrukturknoten = 'Öffentliche Schulen Land Schleswig-Holstein';
+    const vorname: string = await generateVorname();
+    const nachname: string = await generateNachname();
+    const schulstrukturknoten: string = 'Öffentliche Schulen Land Schleswig-Holstein';
 
     await test.step(`Dialog Person anlegen öffnen`, async () => {
       await startseite.cardItemSchulportalAdministration.click();
@@ -178,14 +178,14 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test('Einen Benutzer mit der Rolle LiV anlegen als Landesadmin', { tag: [LONG, SHORT, STAGE] }, async ({ page }: PlaywrightTestArgs) => {
     const startseite: StartPage = new StartPage(page);
-    const menue = new MenuPage(page);
-    const personCreationView = new PersonCreationViewPage(page);
+    const menue: MenuPage = new MenuPage(page);
+    const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
 
-    const rolle = 'LiV';
-    const vorname = await generateVorname();
-    const nachname = await generateNachname();
-    const kopersnr = await generateKopersNr();
-    const schulstrukturknoten = testschule;
+    const rolle: string = 'LiV';
+    const vorname: string = await generateVorname();
+    const nachname: string = await generateNachname();
+    const kopersnr: string = await generateKopersNr();
+    const schulstrukturknoten: string = testschule;
 
     await test.step(`Dialog Person anlegen öffnen`, async () => {
       await startseite.cardItemSchulportalAdministration.click();
@@ -216,17 +216,17 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     'Einen Benutzer mit der Rolle Schuladmin anlegen als Landesadmin und anschließend mit diesem Benutzer anmelden und einen weiteren Benutzer anlegen',
     { tag: [LONG, SHORT, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
-      const startseite = new StartPage(page);
+      const startseite: StartPage = new StartPage(page);
       const menue = new MenuPage(page);
-      const personCreationView = new PersonCreationViewPage(page);
+      const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
       const login = new LoginPage(page);
-      const header = new HeaderPage(page);
+      const header: HeaderPage = new HeaderPage(page);
       const landing = new LandingPage(page);
 
-      const vorname = await generateVorname();
-      const nachname = await generateNachname();
-      const schulstrukturknoten = testschule;
-      const rolle = 'Lehrkraft';
+      const vorname: string = await generateVorname();
+      const nachname: string = await generateNachname();
+      const schulstrukturknoten: string = testschule;
+      const rolle: string = 'Lehrkraft';
       let userInfo: UserInfo;
 
       // Step 1:  Create a Schuladmin as Landesadmin and login as the newly created Schuladmin user
@@ -257,9 +257,9 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
       // Step 2: Create another user as Schuladmin
       await test.step(`Schuladmin anlegen und mit diesem anmelden`, async () => {
-        const newVorname = await generateVorname();
-        const newNachname = await generateNachname();
-        const newKopersnr = await generateKopersNr();
+        const newVorname: string = await generateVorname();
+        const newNachname: string = await generateNachname();
+        const newKopersnr: string = await generateKopersNr();
 
         await startseite.cardItemSchulportalAdministration.click();
         await menue.menueItem_BenutzerAnlegen.click();
@@ -285,12 +285,12 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     async ({ page }: PlaywrightTestArgs) => {
       const startseite: StartPage = new StartPage(page);
       const menue = new MenuPage(page);
-      const personCreationView = new PersonCreationViewPage(page);
+      const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
 
-      const vorname = await generateVorname();
-      const nachname = await generateNachname();
-      const schulstrukturknoten = testschule;
-      const klasse = 'Playwright3a';
+      const vorname: string = await generateVorname();
+      const nachname: string = await generateNachname();
+      const schulstrukturknoten: string = testschule;
+      const klasse: string = 'Playwright3a';
 
       await test.step(`Dialog Person anlegen öffnen`, async () => {
         await startseite.cardItemSchulportalAdministration.click();
@@ -323,9 +323,9 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     'Ergebnisliste Benutzer auf Vollständigkeit prüfen als Landesadmin',
     { tag: [LONG, SHORT, STAGE, BROWSER] },
     async ({ page }: PlaywrightTestArgs) => {
-      const startseite = new StartPage(page);
+      const startseite: StartPage = new StartPage(page);
       const menue = new MenuPage(page);
-      const personManagementView = new PersonManagementViewPage(page);
+      const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
 
       await test.step(`Benutzerverwaltung öffnen und alle Elemente in der Ergebnisliste auf Existenz prüfen`, async () => {
         await startseite.cardItemSchulportalAdministration.click();
@@ -353,7 +353,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     async ({ page }: PlaywrightTestArgs) => {
       const startseite: StartPage = new StartPage(page);
       const menue = new MenuPage(page);
-      const personCreationView = new PersonCreationViewPage(page);
+      const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
 
       const Organisation_Land = landSH;
       const Organisation_OeffentlicheSchule = oeffentlichLandSH;
@@ -427,14 +427,14 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     'In der Ergebnisliste die Suchfunktion ausführen als Landesadmin',
     { tag: [LONG, SHORT, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
-      const personManagementView = new PersonManagementViewPage(page);
-      const personCreationView = new PersonCreationViewPage(page);
+      const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
+      const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
 
-      const rolle = 'Lehrkraft';
-      const vorname = await generateVorname();
-      const nachname = await generateNachname();
-      const kopersnr = await generateKopersNr();
-      const schulstrukturknoten = testschule;
+      const rolle: string = 'Lehrkraft';
+      const vorname: string = await generateVorname();
+      const nachname: string = await generateNachname();
+      const kopersnr: string = await generateKopersNr();
+      const schulstrukturknoten: string = testschule;
 
       await test.step(`Benutzer Lehrkraft anlegen`, async () => {
         await page.goto('/' + 'admin/personen/new');
@@ -520,12 +520,12 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     'Eine Lehrkraft anlegen in der Rolle Landesadmin und die Bestätigungsseite vollständig prüfen',
     { tag: [LONG, SHORT, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
-      const personCreationView = new PersonCreationViewPage(page);
-      const rolle = 'Lehrkraft';
-      const vorname = await generateVorname();
-      const nachname = await generateNachname();
-      const kopersnr = await generateKopersNr();
-      const schulstrukturknoten = testschule;
+      const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
+      const rolle: string = 'Lehrkraft';
+      const vorname: string = await generateVorname();
+      const nachname: string = await generateNachname();
+      const kopersnr: string = await generateKopersNr();
+      const schulstrukturknoten: string = testschule;
       const dienststellenNr = '1111111';
 
       await test.step(`Dialog Person anlegen öffnen`, async () => {
@@ -579,8 +579,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const landing: LandingPage = new LandingPage(page);
       const startseite: StartPage = new StartPage(page);
       const login: LoginPage = new LoginPage(page);
-      const header = new HeaderPage(page);
-      const personCreationView = new PersonCreationViewPage(page);
+      const header: HeaderPage = new HeaderPage(page);
+      const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
       let userInfo: UserInfo;
 
       await test.step(`Testdaten: Landesadmin anlegen und mit diesem anmelden`, async () => {
@@ -615,7 +615,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       });
 
       // Testdaten
-      const schulstrukturknoten = testschule;
+      const schulstrukturknoten: string = testschule;
       const dienststellenNr = '1111111';
       const vorname1 = await generateVorname();
       const nachname1 = await generateNachname();
@@ -760,12 +760,12 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
   );
 
   test('Einen Benutzer über das FE löschen', { tag: [LONG, SHORT, STAGE] }, async ({ page }: PlaywrightTestArgs) => {
-    const personManagementView = new PersonManagementViewPage(page);
-    const PersonDetailsView = new PersonDetailsViewPage(page);
-    const header = new HeaderPage(page);
+    const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
+    const PersonDetailsView: PersonDetailsViewPage = new PersonDetailsViewPage(page);
+    const header: HeaderPage = new HeaderPage(page);
 
-    const vorname = await generateVorname();
-    const nachname = await generateNachname();
+    const vorname: string = await generateVorname();
+    const nachname: string = await generateNachname();
     const rolle = await generateRolleName();
     const berechtigung = 'SYSADMIN';
     const idSPs: string[] = [await getSPId(page, 'Schulportal-Administration')];

@@ -19,7 +19,7 @@ const ADMIN: string | undefined = process.env.USER;
 let usernames: string[] = [];
 let rolleIds: string[] = [];
 
-let loggedIn = false;
+let loggedIn: boolean = false;
 
 test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.afterEach(async ({ page }: PlaywrightTestArgs) => {
@@ -29,14 +29,13 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
     const startseite: StartPage = new StartPage(page);
 
     await test.step(`Testdaten(Benutzer) löschen via API`, async () => {
+      // login as Landesadmin if neccessary
       if ((usernames.length > 0 || rolleIds.length > 0) && (!loggedIn)) {
-        await test.step(`Anmelden`, async () => {
-          await page.goto('/');
-          await landing.button_Anmelden.click();
-          await login.login(ADMIN, PW);
-          await startseite.checkHeadlineIsVisible();
-          loggedIn = true
-        });
+        await page.goto('/');
+        await landing.button_Anmelden.click();
+        await login.login(ADMIN, PW);
+        await startseite.checkHeadlineIsVisible();
+        loggedIn = true
         
         if (usernames.length > 0) { 
           await deletePersonenBySearchStrings(page, usernames);
@@ -92,7 +91,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
   test('Erfolgloser Login mit einem gesperrten Benutzer Rolle Lehrer', {tag: [LONG, STAGE]}, async ({ page }: PlaywrightTestArgs) => {
     const login: LoginPage = new LoginPage(page);
     const landing: LandingPage = new LandingPage(page);
-    const header = new HeaderPage(page);
+    const header: HeaderPage = new HeaderPage(page);
 
     const lehrerVorname: string = await generateVorname();
     const lehrerNachname: string =await generateNachname();
@@ -124,9 +123,9 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
   })
 
   test('Erfolgloser Login mit falschem Benutzernamen und gültigem Passwort in der Rolle Landesadmin', {tag: [LONG, STAGE]}, async ({ page }: PlaywrightTestArgs) => {
-    const login = new LoginPage(page);
-    const landing = new LandingPage(page);
-    const start = new StartPage(page);
+    const login: LoginPage = new LoginPage(page);
+    const landing: LandingPage = new LandingPage(page);
+    const start: StartPage = new StartPage(page);
 
     await test.step('Anmelden mit falschem Benutzernamen fake-username, Inputfeld für Benutzernamen bleibt änderbar', async () => {
       await page.goto('/');

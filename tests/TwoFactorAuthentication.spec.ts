@@ -13,6 +13,9 @@ import { PersonManagementViewPage } from '../pages/admin/PersonManagementView.pa
 import { HeaderPage } from '../pages/Header.page.ts';
 import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata.ts';
 import FromAnywhere from '../pages/FromAnywhere';
+import { StartPage } from '../pages/StartView.page.ts';
+import { LandingPage } from '../pages/LandingView.page.ts';
+import { LoginPage } from '../pages/LoginView.page.ts';
 
 // The created test data will be deleted in the afterEach block
 let usernames: string[] = [];
@@ -21,11 +24,11 @@ let rolleIds: string[] = [];
 test.describe(`Testfälle für TwoFactorAuthentication": Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
     await test.step(`Login`, async () => {
-      const startPage = await FromAnywhere(page)
+      const startPage: StartPage = await FromAnywhere(page)
         .start()
-        .then((landing) => landing.goToLogin())
-        .then((login) => login.login())
-        .then((startseite) => startseite.checkHeadlineIsVisible());
+        .then((landing: LandingPage) => landing.goToLogin())
+        .then((login: LoginPage) => login.login())
+        .then((startseite: StartPage) => startseite.checkHeadlineIsVisible());
   
       return startPage;
     });

@@ -8,7 +8,7 @@ import { LONG, SHORT, STAGE } from '../base/tags';
 const ADMIN: string | undefined = process.env.USER;
 const PW: string | undefined = process.env.PW;
 
-let loggedIn = false;
+let loggedIn: boolean = false;
 
 test.afterEach(async ({ page }: PlaywrightTestArgs) => {
   if (loggedIn) {

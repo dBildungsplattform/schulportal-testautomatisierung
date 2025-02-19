@@ -25,11 +25,11 @@ let currentUserIsLandesadministrator: boolean = true;
 test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
     test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
         await test.step(`Login`, async () => {
-        const startPage = await FromAnywhere(page)
+        const startPage: StartPage = await FromAnywhere(page)
             .start()
-            .then((landing) => landing.goToLogin())
-            .then((login) => login.login())
-            .then((startseite) => startseite.checkHeadlineIsVisible());
+            .then((landing: LandingPage) => landing.goToLogin())
+            .then((login: LoginPage) => login.login())
+            .then((startseite: StartPage) => startseite.checkHeadlineIsVisible());
 
         return startPage;
         });
@@ -66,10 +66,10 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         });
         });
 
-    test("Prüfen, dass die Schulportal-Administration Kachel nicht sichtbar ist für Lehrkräfte", {tag: [LONG, STAGE]}, async ({page}) => {
+    test("Prüfen, dass die Schulportal-Administration Kachel nicht sichtbar ist für Lehrkräfte", {tag: [LONG, STAGE]}, async ({ page }: PlaywrightTestArgs) => {
         const landing: LandingPage = new LandingPage(page);
         const login: LoginPage = new LoginPage(page);
-        const header = new HeaderPage(page);
+        const header: HeaderPage = new HeaderPage(page);
         const startseite: StartPage = new StartPage(page);
 
         // Testdaten erstellen
@@ -91,10 +91,10 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         });
     });
 
-    test("Prüfen, dass die Schulportal-Administration Kachel nicht sichtbar ist für Schüler", {tag: [LONG, SHORT, STAGE]}, async ({page}) => {
+    test("Prüfen, dass die Schulportal-Administration Kachel nicht sichtbar ist für Schüler", {tag: [LONG, SHORT, STAGE]}, async ({ page }: PlaywrightTestArgs) => {
         const landing: LandingPage = new LandingPage(page);
         const login: LoginPage = new LoginPage(page);
-        const header = new HeaderPage(page);
+        const header: HeaderPage = new HeaderPage(page);
         const startseite: StartPage = new StartPage(page);
 
         // Testdaten erstellen
@@ -116,10 +116,10 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         });
     });
 
-    test("Prüfen, dass die Schulportal-Administration Kachel sichtbar ist für Schuladmins", {tag: [LONG, STAGE]}, async ({page}) => {
+    test("Prüfen, dass die Schulportal-Administration Kachel sichtbar ist für Schuladmins", {tag: [LONG, STAGE]}, async ({ page }: PlaywrightTestArgs) => {
         const landing: LandingPage = new LandingPage(page);
         const login: LoginPage = new LoginPage(page);
-        const header = new HeaderPage(page);
+        const header: HeaderPage = new HeaderPage(page);
         const startseite: StartPage = new StartPage(page);
 
         // Testdaten erstellen

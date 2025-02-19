@@ -27,17 +27,17 @@ let currentUserIsLandesadministrator: boolean = true;
 test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
     await test.step(`Login`, async () => {
-      const startPage = await FromAnywhere(page)
+      const startPage: StartPage = await FromAnywhere(page)
         .start()
-        .then((landing) => landing.goToLogin())
-        .then((login) => login.login())
-        .then((startseite) => startseite.checkHeadlineIsVisible());
+        .then((landing: LandingPage) => landing.goToLogin())
+        .then((login: LoginPage) => login.login())
+        .then((startseite: StartPage) => startseite.checkHeadlineIsVisible());
   
       return startPage;
     });
   });
 
-  test.afterEach(async ({page}) => {
+  test.afterEach(async ({ page }: PlaywrightTestArgs) => {
     if(!currentUserIsLandesadministrator) {
       const header: HeaderPage = new HeaderPage(page);
       const landing: LandingPage = new LandingPage(page);
@@ -63,7 +63,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
     });
 
     await test.step(`Abmelden`, async () => {
-      const header = new HeaderPage(page);
+      const header: HeaderPage = new HeaderPage(page);
         await header.logout();
     });
 });
@@ -90,7 +90,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
       const page_Email4Teacher_Promise = page.waitForEvent("popup");
       await startseite.cardItemEmail.click();
       const page_Email4Teacher = await page_Email4Teacher_Promise;
-      const email4Teacher = new Email4TeacherPage(page_Email4Teacher);
+      const email4Teacher: Email4TeacherPage = new Email4TeacherPage(page_Email4Teacher);
       switch (ENV) {
         case 'dev':
           await expect(email4Teacher.text_h1).toBeVisible(); // dummy Seite email wikipedia
@@ -114,7 +114,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
        const page_Adressbuch_Promise = page.waitForEvent("popup");
        await startseite.cardItemAdressbuch.click();
        const page_Adressbuch = await page_Adressbuch_Promise;
-       const adressbuch = new DirectoryPage(page_Adressbuch);
+       const adressbuch: DirectoryPage = new DirectoryPage(page_Adressbuch);
        switch (ENV) {
          case 'dev':
            await expect(adressbuch.text_h1).toBeVisible(); // dummy Seite Adressbuch wikipedia
@@ -129,15 +129,15 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
   });
 
   test("Passwort Reset für einen Lehrer als Landesadmin", {tag: [LONG, SHORT, STAGE, BROWSER]}, async ({ page }: PlaywrightTestArgs) => {
-    const landing = new LandingPage(page);
-    const login = new LoginPage(page);
-    const startseite = new StartPage(page);
-    const personManagement = new PersonManagementViewPage(page);
-    const personManagementDetail = new PersonDetailsViewPage(page);
-    const header = new HeaderPage(page);
-    const lastname = "AutoTester";
-    const username = "autotester";
-    let new_password = "";
+    const landing: LandingPage = new LandingPage(page);
+    const login: LoginPage = new LoginPage(page);
+    const startseite: StartPage = new StartPage(page);
+    const personManagement: PersonManagementViewPage = new PersonManagementViewPage(page);
+    const personManagementDetail: PersonDetailsViewPage = new PersonDetailsViewPage(page);
+    const header: HeaderPage = new HeaderPage(page);
+    const lastname: string = "AutoTester";
+    const username: string = "autotester";
+    let new_password: string = "";
 
     await test.step(`Benutzerverwaltung öffnen`, async () => {
       await startseite.cardItemSchulportalAdministration.click();

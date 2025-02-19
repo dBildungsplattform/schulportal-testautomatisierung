@@ -146,7 +146,7 @@ export async function getPersonId(page: Page, searchString: string): Promise<str
 }
 
 export async function createTeacherAndLogin(page: Page) {
-    const header = new HeaderPage(page);
+    const header: HeaderPage = new HeaderPage(page);
     const login: LoginPage = new LoginPage(page);
     const userInfo: UserInfo = await createRolleAndPersonWithUserContext(page, testschule, typeLehrer, await generateNachname(), await generateVorname(), [await getSPId(page, email), await getSPId(page, kalender), await getSPId(page, adressbuch)], await generateRolleName(), await generateKopersNr());
    

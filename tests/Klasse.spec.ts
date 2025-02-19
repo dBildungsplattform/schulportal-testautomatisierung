@@ -33,11 +33,11 @@ let currentUserIsLandesadministrator: boolean = true;
 test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
     await test.step(`Login`, async () => {
-      const startPage = await FromAnywhere(page)
+      const startPage: StartPage = await FromAnywhere(page)
         .start()
-        .then((landing) => landing.goToLogin())
-        .then((login) => login.login())
-        .then((startseite) => startseite.checkHeadlineIsVisible());
+        .then((landing: LandingPage) => landing.goToLogin())
+        .then((login: LoginPage) => login.login())
+        .then((startseite: StartPage) => startseite.checkHeadlineIsVisible());
   
       return startPage;
     });
@@ -209,12 +209,12 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     'Klasse bearbeiten als Landesadmin',
     { tag: [LONG] },
     async ({ page }: PlaywrightTestArgs) => {
-      const header = new HeaderPage(page);
+      const header: HeaderPage = new HeaderPage(page);
       const landing: LandingPage = new LandingPage(page);
       const login: LoginPage = new LoginPage(page);
 
       let userInfoAdmin: UserInfo;
-      const startseite = new StartPage(page);
+      const startseite: StartPage = new StartPage(page);
       const menue = new MenuPage(page);
       const klasseCreationView = new KlasseCreationViewPage(page);
       const klasseDetailsView = new KlasseDetailsViewPage(page);
@@ -222,8 +222,8 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
 
       await test.step(`Landesadmin anlegen`, async () => {
         const adminVorname = await generateVorname();
-        const adminNachname = await generateNachname();
-        const adminRolle = await generateRolleName();
+        const adminNachname: string = await generateNachname();
+        const adminRolle: string = await generateRolleName();
         const adminRollenart = typeLandesadmin;
         const adminOrganisation = landSH;
         const adminIdSPs: string[] = [await getSPId(page, 'Schulportal-Administration')];
@@ -284,12 +284,12 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     'Klasse bearbeiten als Schuladmin',
     { tag: [LONG] },
     async ({ page }: PlaywrightTestArgs) => {
-      const header = new HeaderPage(page);
+      const header: HeaderPage = new HeaderPage(page);
       const landing: LandingPage = new LandingPage(page);
       const login: LoginPage = new LoginPage(page);
 
       let userInfoAdmin: UserInfo;
-      const startseite = new StartPage(page);
+      const startseite: StartPage = new StartPage(page);
       const menue = new MenuPage(page);
       const klasseManagementView = new KlasseManagementViewPage(page);
       const klasseCreationView = new KlasseCreationViewPage(page);
@@ -298,9 +298,9 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
 
       await test.step(`Schuladmin anlegen`, async () => {
         const adminVorname = await generateVorname();
-        const adminNachname = await generateNachname();
-        const adminRolle = await generateRolleName();
-        const adminRollenart = typeSchuladmin;
+        const adminNachname: string = await generateNachname();
+        const adminRolle: string = await generateRolleName();
+        const adminRollenart: string = typeSchuladmin;
         const adminOrganisation = testschule;
         const adminIdSPs: string[] = [await getSPId(page, 'Schulportal-Administration')];
 
@@ -412,9 +412,9 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
 
       await test.step(`Schuladmin anlegen`, async () => {
         const adminVorname = await generateVorname();
-        const adminNachname = await generateNachname();
+        const adminNachname: string = await generateNachname();
         const adminRolleName = await generateRolleName();
-        const adminRollenart = typeSchuladmin;
+        const adminRollenart: string = typeSchuladmin;
         const adminOrganisation = testschule;
         const adminIdSPs: string[] = [await getSPId(page, 'Schulportal-Administration')];
 
@@ -434,7 +434,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
         rolleIds.push(userInfoAdmin.rolleId);
 
         // login als Schuladmin
-        const header = new HeaderPage(page); 
+        const header: HeaderPage = new HeaderPage(page); 
         const landingPage = await header.logout();
         const loginPage = await landingPage.goToLogin();
         await loginPage.login(userInfoAdmin.username, userInfoAdmin.password);
@@ -596,9 +596,9 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
 
       await test.step(`Schuladmin anlegen`, async () => {
         const adminVorname = await generateVorname();
-        const adminNachname = await generateNachname();
+        const adminNachname: string = await generateNachname();
         const adminRolleName = await generateRolleName();
-        const adminRollenart = typeSchuladmin;
+        const adminRollenart: string = typeSchuladmin;
         const adminOrganisation = testschule;
         const adminIdSPs: string[] = [await getSPId(page, 'Schulportal-Administration')];
 
@@ -618,7 +618,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
         rolleIds.push(userInfoAdmin.rolleId);
 
         // login als Schuladmin
-        const header = new HeaderPage(page); 
+        const header: HeaderPage = new HeaderPage(page); 
         const landingPage = await header.logout();
         const loginPage = await landingPage.goToLogin();
         await loginPage.login(userInfoAdmin.username, userInfoAdmin.password);

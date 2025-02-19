@@ -5,4 +5,3 @@ export const schulenVerwalten: string = "SCHULEN_VERWALTEN";
 export const KlassenVerwalten: string = "KLASSEN_VERWALTEN";
 export const schultraegerVerwalten: string = "SCHULTRAEGER_VERWALTEN";
 export const personenAnlegen: string = "PERSONEN_ANLEGEN";
-
