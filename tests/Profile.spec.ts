@@ -9,14 +9,22 @@ import { typeLandesadmin, typeLehrer, typeSchueler, typeSchuladmin } from '../ba
 import { email, itslearning } from '../base/sp.ts';
 import { BROWSER, LONG, SHORT, STAGE } from '../base/tags';
 import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata';
-import { generateNachname, generateRolleName, generateVorname } from '../base/testHelperGenerateTestdataNames.ts';
+import { generateNachname, generateRolleName, generateVorname, generateKopersNr } from '../base/testHelperGenerateTestdataNames.ts';
 import { HeaderPage } from '../pages/Header.page';
 import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
 import { ProfilePage } from '../pages/ProfileView.page';
 import { StartPage } from '../pages/StartView.page';
 import FromAnywhere from '../pages/FromAnywhere'
-import { userInfo } from 'os';
+import { 
+  rollenVerwalten, 
+  personenSofortLoeschen,
+  personenVerwalten, 
+  schulenVerwalten,
+  KlassenVerwalten,
+  schultraegerVerwalten,
+  personenAnlegen
+} from '../base/berechtigungen.ts';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -28,13 +36,13 @@ let rolleIds: string[] = [];
 let currentUserIsLandesadministrator: boolean = true;
 
 test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
     await test.step(`Login`, async () => {
       const startPage = await FromAnywhere(page)
         .start()
         .then((landing) => landing.goToLogin())
         .then((login) => login.login())
-        .then((startseite) => startseite.checkHeadlineIsVisible());
+        .then((startseite) => startseite.checkHeadlineIsVisible())
   
       return startPage;
     });
@@ -82,7 +90,6 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       const profileView: ProfilePage = new ProfilePage(page);
       const header: HeaderPage = new HeaderPage(page);
       const login: LoginPage = new LoginPage(page);
-      const startseite: StartPage = new StartPage(page);
 
       const vorname: string = await generateVorname();
       const nachname: string = await generateNachname();
@@ -104,13 +111,13 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         rolleIds.push(userInfo.rolleId);
         usernames.push(userInfo.username);
 
-        await addSystemrechtToRolle(page, userInfo.rolleId, 'ROLLEN_VERWALTEN');
-        await addSystemrechtToRolle(page, userInfo.rolleId, 'PERSONEN_SOFORT_LOESCHEN');
-        await addSystemrechtToRolle(page, userInfo.rolleId, 'PERSONEN_VERWALTEN');
-        await addSystemrechtToRolle(page, userInfo.rolleId, 'SCHULEN_VERWALTEN');
-        await addSystemrechtToRolle(page, userInfo.rolleId, 'KLASSEN_VERWALTEN');
-        await addSystemrechtToRolle(page, userInfo.rolleId, 'SCHULTRAEGER_VERWALTEN');
-        await addSystemrechtToRolle(page, userInfo.rolleId, 'PERSONEN_ANLEGEN');
+        await addSystemrechtToRolle(page, userInfo.rolleId, rollenVerwalten);
+        await addSystemrechtToRolle(page, userInfo.rolleId, personenSofortLoeschen);
+        await addSystemrechtToRolle(page, userInfo.rolleId, personenVerwalten);
+        await addSystemrechtToRolle(page, userInfo.rolleId, schulenVerwalten);
+        await addSystemrechtToRolle(page, userInfo.rolleId, KlassenVerwalten);
+        await addSystemrechtToRolle(page, userInfo.rolleId, schultraegerVerwalten);
+        await addSystemrechtToRolle(page, userInfo.rolleId, personenAnlegen);
 
         await header.logout();
         await header.button_login.click();
@@ -120,37 +127,29 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       });
 
       await test.step(`Profil öffnen`, async () => {
-        await expect(startseite.cardItemSchulportalAdministration).toBeVisible();
-        await header.button_profil.click();
+        await header.goToProfile();
       });
 
       await test.step(`Profil auf Vollständigkeit prüfen`, async () => {
-        await expect(profileView.button_ZurueckVorherigeSeite).toBeVisible();
-        await expect(profileView.text_h2_Ueberschrift).toHaveText('Mein Profil');
+        await expect(profileView.buttonZurueckVorherigeSeite).toBeVisible();
+        await profileView.checkTitleMeinProfile();
         // Persönliche Daten
-        await expect(profileView.cardHeadline_PersoenlicheDaten).toHaveText('Persönliche Daten');
-        await expect(profileView.label_VornameNachname).toHaveText('Vor- und Nachname:');
-        await expect(profileView.data_VornameNachname).toHaveText(vorname + ' ' + nachname);
-        await expect(profileView.label_Benutzername).toHaveText('Benutzername:');
-        await expect(profileView.data_Benutzername).toHaveText(usernames[0]);
-        await expect(profileView.label_KopersNr).toBeHidden();
-        await expect(profileView.data_KopersNr).toBeHidden();
-        await expect(profileView.icon_InfoPersoenlicheDaten).toBeVisible();
+        await profileView.checkSectionPersoenlicheDaten(vorname, nachname, usernames);
         // Schulzuordnung
         await expect(profileView.cardHeadline_Schulzuordnung1).toHaveText('Schulzuordnung');
-        await expect(profileView.label_Schule1).toHaveText('Schule:');
-        await expect(profileView.data_Schule1).toHaveText(organisation);
-        await expect(profileView.label_Rolle1).toHaveText('Rolle:');
-        await expect(profileView.data_Rolle1).toHaveText(rollenname);
-        await expect(profileView.label_Dienststellennummer1).toBeHidden();
-        await expect(profileView.data_Dienststellennummer1).toBeHidden();
+        await expect(profileView.labelSchule1).toHaveText('Schule:');
+        await expect(profileView.dataSchule1).toHaveText(organisation);
+        await expect(profileView.labelRolle1).toHaveText('Rolle:');
+        await expect(profileView.dataRolle1).toHaveText(rollenname);
+        await expect(profileView.labelDienststellennummer1).toBeHidden();
+        await expect(profileView.dataDienststellennummer1).toBeHidden();
         // Passwort
-        await expect(profileView.cardHeadline_Passwort).toHaveText('Passwort');
-        await expect(profileView.button_NeuesPasswortSetzen).toBeEnabled();
+        await expect(profileView.cardHeadlinePasswort).toHaveText('Passwort');
+        await profileView.checkButtonStartPWChangeDialogIsEnabled();
         // 2FA
-        await expect(profileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
-        await expect(profileView.text_no2FA).toHaveText('Es wurde noch kein zweiter Faktor für Sie eingerichtet.');
-        await expect(profileView.button_2FAEinrichten).toBeEnabled();
+        await expect(profileView.cardHeadline2FA).toHaveText('Zwei-Faktor-Authentifizierung');
+        await expect(profileView.textNo2FA).toHaveText('Es wurde noch kein zweiter Faktor für Sie eingerichtet.');
+        await expect(profileView.button2FAEinrichten).toBeEnabled();
       });
     }
   );
@@ -192,35 +191,28 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       });
 
       await test.step(`Profil öffnen`, async () => {
-        await header.button_profil.click();
+        await header.goToProfile();
       });
 
       await test.step(`Profil auf Vollständigkeit prüfen`, async () => {
-        await expect(profileView.button_ZurueckVorherigeSeite).toBeVisible();
-        await expect(profileView.text_h2_Ueberschrift).toHaveText('Mein Profil');
+        await expect(profileView.buttonZurueckVorherigeSeite).toBeVisible();
+        await profileView.checkTitleMeinProfile();
         // Persönliche Daten
-        await expect(profileView.cardHeadline_PersoenlicheDaten).toHaveText('Persönliche Daten');
-        await expect(profileView.label_VornameNachname).toHaveText('Vor- und Nachname:');
-        await expect(profileView.data_VornameNachname).toHaveText(vorname + ' ' + nachname);
-        await expect(profileView.label_Benutzername).toHaveText('Benutzername:');
-        await expect(profileView.data_Benutzername).toHaveText(usernames[0]);
-        await expect(profileView.label_KopersNr).toBeHidden();
-        await expect(profileView.data_KopersNr).toBeHidden();
-        await expect(profileView.icon_InfoPersoenlicheDaten).toBeVisible();
+        await profileView.checkSectionPersoenlicheDaten(vorname, nachname, usernames);
         // Schulzuordnung
         await expect(profileView.cardHeadline_Schulzuordnung1).toHaveText('Schulzuordnung');
-        await expect(profileView.label_Schule1).toHaveText('Schule:');
-        await expect(profileView.data_Schule1).toHaveText(organisation);
-        await expect(profileView.label_Rolle1).toHaveText('Rolle:');
-        await expect(profileView.data_Rolle1).toHaveText(rollenname);
-        await expect(profileView.label_Dienststellennummer1).toHaveText('DStNr.:');
-        await expect(profileView.data_Dienststellennummer1).toHaveText(dienststellenNr);
+        await expect(profileView.labelSchule1).toHaveText('Schule:');
+        await expect(profileView.dataSchule1).toHaveText(organisation);
+        await expect(profileView.labelRolle1).toHaveText('Rolle:');
+        await expect(profileView.dataRolle1).toHaveText(rollenname);
+        await expect(profileView.labelDienststellennummer1).toHaveText('DStNr.:');
+        await expect(profileView.dataDienststellennummer1).toHaveText(dienststellenNr);
         // Passwort
-        await expect(profileView.cardHeadline_Passwort).toHaveText('Passwort');
-        await expect(profileView.button_NeuesPasswortSetzen).toBeEnabled();
+        await expect(profileView.cardHeadlinePasswort).toHaveText('Passwort');
+        await profileView.checkButtonStartPWChangeDialogIsEnabled();
         // 2FA
-        await expect(profileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
-        await expect(profileView.button_2FAEinrichten).toBeEnabled();
+        await expect(profileView.cardHeadline2FA).toHaveText('Zwei-Faktor-Authentifizierung');
+        await expect(profileView.button2FAEinrichten).toBeEnabled();
       });
     }
   );
@@ -262,35 +254,28 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       });
 
       await test.step(`Profil öffnen`, async () => {
-        await header.button_profil.click();
+        await header.goToProfile();
       });
 
       await test.step(`Profil auf Vollständigkeit prüfen`, async () => {
-        await expect(profileView.button_ZurueckVorherigeSeite).toBeVisible();
-        await expect(profileView.text_h2_Ueberschrift).toHaveText('Mein Profil');
+        await expect(profileView.buttonZurueckVorherigeSeite).toBeVisible();
+        await profileView.checkTitleMeinProfile();
         // Persönliche Daten
-        await expect(profileView.cardHeadline_PersoenlicheDaten).toHaveText('Persönliche Daten');
-        await expect(profileView.label_VornameNachname).toHaveText('Vor- und Nachname:');
-        await expect(profileView.data_VornameNachname).toHaveText(vorname + ' ' + nachname);
-        await expect(profileView.label_Benutzername).toHaveText('Benutzername:');
-        await expect(profileView.data_Benutzername).toHaveText(usernames[0]);
-        await expect(profileView.label_KopersNr).toBeHidden();
-        await expect(profileView.data_KopersNr).toBeHidden();
-        await expect(profileView.icon_InfoPersoenlicheDaten).toBeVisible();
+        await profileView.checkSectionPersoenlicheDaten(vorname, nachname, usernames);
         // Schulzuordnung
         await expect(profileView.cardHeadline_Schulzuordnung1).toHaveText('Schulzuordnung');
-        await expect(profileView.label_Schule1).toHaveText('Schule:');
-        await expect(profileView.data_Schule1).toHaveText(organisation);
-        await expect(profileView.label_Rolle1).toHaveText('Rolle:');
-        await expect(profileView.data_Rolle1).toHaveText(rollenname);
-        await expect(profileView.label_Dienststellennummer1).toHaveText('DStNr.:');
-        await expect(profileView.data_Dienststellennummer1).toHaveText(dienststellenNr);
+        await expect(profileView.labelSchule1).toHaveText('Schule:');
+        await expect(profileView.dataSchule1).toHaveText(organisation);
+        await expect(profileView.labelRolle1).toHaveText('Rolle:');
+        await expect(profileView.dataRolle1).toHaveText(rollenname);
+        await expect(profileView.labelDienststellennummer1).toHaveText('DStNr.:');
+        await expect(profileView.dataDienststellennummer1).toHaveText(dienststellenNr);
         // Passwort
-        await expect(profileView.cardHeadline_Passwort).toHaveText('Passwort');
-        await expect(profileView.button_NeuesPasswortSetzen).toBeEnabled();
+        await expect(profileView.cardHeadlinePasswort).toHaveText('Passwort');
+        await profileView.checkButtonStartPWChangeDialogIsEnabled();
         // 2FA
-        await expect(profileView.cardHeadline_2FA).toBeHidden();
-        await expect(profileView.button_2FAEinrichten).toBeHidden();
+        await expect(profileView.cardHeadline2FA).toBeHidden();
+        await expect(profileView.button2FAEinrichten).toBeHidden();
       });
     }
   );
@@ -332,35 +317,28 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       });
 
       await test.step(`Profil öffnen`, async () => {
-        await header.button_profil.click();
+        await header.goToProfile();
       });
 
       await test.step(`Profil auf Vollständigkeit prüfen`, async () => {
-        await expect(profileView.button_ZurueckVorherigeSeite).toBeVisible();
-        await expect(profileView.text_h2_Ueberschrift).toHaveText('Mein Profil');
+        await expect(profileView.buttonZurueckVorherigeSeite).toBeVisible();
+        await profileView.checkTitleMeinProfile();
         // Persönliche Daten
-        await expect(profileView.cardHeadline_PersoenlicheDaten).toHaveText('Persönliche Daten');
-        await expect(profileView.label_VornameNachname).toHaveText('Vor- und Nachname:');
-        await expect(profileView.data_VornameNachname).toHaveText(vorname + ' ' + nachname);
-        await expect(profileView.label_Benutzername).toHaveText('Benutzername:');
-        await expect(profileView.data_Benutzername).toHaveText(usernames[0]);
-        await expect(profileView.label_KopersNr).toBeHidden();
-        await expect(profileView.data_KopersNr).toBeHidden();
-        await expect(profileView.icon_InfoPersoenlicheDaten).toBeVisible();
+        await profileView.checkSectionPersoenlicheDaten(vorname, nachname, usernames);
         // Schulzuordnung
         await expect(profileView.cardHeadline_Schulzuordnung1).toHaveText('Schulzuordnung');
-        await expect(profileView.label_Schule1).toHaveText('Schule:');
-        await expect(profileView.data_Schule1).toHaveText(organisation);
-        await expect(profileView.label_Rolle1).toHaveText('Rolle:');
-        await expect(profileView.data_Rolle1).toHaveText(rollenname);
-        await expect(profileView.label_Dienststellennummer1).toHaveText('DStNr.:');
-        await expect(profileView.data_Dienststellennummer1).toHaveText(dienststellenNr);
+        await expect(profileView.labelSchule1).toHaveText('Schule:');
+        await expect(profileView.dataSchule1).toHaveText(organisation);
+        await expect(profileView.labelRolle1).toHaveText('Rolle:');
+        await expect(profileView.dataRolle1).toHaveText(rollenname);
+        await expect(profileView.labelDienststellennummer1).toHaveText('DStNr.:');
+        await expect(profileView.dataDienststellennummer1).toHaveText(dienststellenNr);
         // Passwort
-        await expect(profileView.cardHeadline_Passwort).toHaveText('Passwort');
-        await expect(profileView.button_NeuesPasswortSetzen).toBeEnabled();
+        await expect(profileView.cardHeadlinePasswort).toHaveText('Passwort');
+        await profileView.checkButtonStartPWChangeDialogIsEnabled();
         // 2FA
-        await expect(profileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
-        await expect(profileView.button_2FAEinrichten).toBeEnabled();
+        await expect(profileView.cardHeadline2FA).toHaveText('Zwei-Faktor-Authentifizierung');
+        await expect(profileView.button2FAEinrichten).toBeEnabled();
       });
     }
   );
@@ -411,72 +389,64 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       });
 
       await test.step(`Profil öffnen`, async () => {
-        await header.button_profil.click();
+        await header.goToProfile();
       });
 
       await test.step(`Profil auf Vollständigkeit prüfen`, async () => {
-        await expect(profileView.button_ZurueckVorherigeSeite).toBeVisible();
-        await expect(profileView.text_h2_Ueberschrift).toHaveText('Mein Profil');
+        await expect(profileView.buttonZurueckVorherigeSeite).toBeVisible();
+        await profileView.checkTitleMeinProfile();
         // Persönliche Daten
-        await expect(profileView.cardHeadline_PersoenlicheDaten).toHaveText('Persönliche Daten');
-        await expect(profileView.label_VornameNachname).toHaveText('Vor- und Nachname:');
-        await expect(profileView.data_VornameNachname).toHaveText(vorname + ' ' + nachname);
-        await expect(profileView.label_Benutzername).toHaveText('Benutzername:');
-        await expect(profileView.data_Benutzername).toHaveText(usernames[0]);
-        await expect(profileView.label_KopersNr).toBeHidden();
-        await expect(profileView.data_KopersNr).toBeHidden();
-        await expect(profileView.icon_InfoPersoenlicheDaten).toBeVisible();
-
+        await profileView.checkSectionPersoenlicheDaten(vorname, nachname, usernames);
         // prüfen, welche von den beiden Schulen zuerst angezeigt wird in der Tabelle
-        if ((await profileView.data_Schule1.innerText()) == organisation1) {
+        if ((await profileView.dataSchule1.innerText()) == organisation1) {
           // Schulzuordnung 1
           await expect(profileView.cardHeadline_Schulzuordnung1).toHaveText('Schulzuordnung 1');
-          await expect(profileView.label_Schule1).toHaveText('Schule:');
-          await expect(profileView.data_Schule1).toHaveText(organisation1);
-          await expect(profileView.label_Rolle1).toHaveText('Rolle:');
-          await expect(profileView.data_Rolle1).toHaveText(rollenname);
-          await expect(profileView.label_Dienststellennummer1).toHaveText('DStNr.:');
-          await expect(profileView.data_Dienststellennummer1).toHaveText(dienststellenNr1);
+          await expect(profileView.labelSchule1).toHaveText('Schule:');
+          await expect(profileView.dataSchule1).toHaveText(organisation1);
+          await expect(profileView.labelRolle1).toHaveText('Rolle:');
+          await expect(profileView.dataRolle1).toHaveText(rollenname);
+          await expect(profileView.labelDienststellennummer1).toHaveText('DStNr.:');
+          await expect(profileView.dataDienststellennummer1).toHaveText(dienststellenNr1);
 
           // Schulzuordnung 2
           await expect(profileView.cardHeadline_Schulzuordnung2).toHaveText('Schulzuordnung 2');
-          await expect(profileView.label_Schule2).toHaveText('Schule:');
-          await expect(profileView.data_Schule2).toHaveText(organisation2);
-          await expect(profileView.label_Rolle2).toHaveText('Rolle:');
-          await expect(profileView.data_Rolle2).toHaveText(rollenname);
-          await expect(profileView.label_Dienststellennummer2).toHaveText('DStNr.:');
-          await expect(profileView.data_Dienststellennummer2).toHaveText(dienststellenNr2);
+          await expect(profileView.labelSchule2).toHaveText('Schule:');
+          await expect(profileView.dataSchule2).toHaveText(organisation2);
+          await expect(profileView.labelRolle2).toHaveText('Rolle:');
+          await expect(profileView.dataRolle2).toHaveText(rollenname);
+          await expect(profileView.labelDienststellennummer2).toHaveText('DStNr.:');
+          await expect(profileView.dataDienststellennummer2).toHaveText(dienststellenNr2);
           // Passwort
-          await expect(profileView.cardHeadline_Passwort).toHaveText('Passwort');
-          await expect(profileView.button_NeuesPasswortSetzen).toBeEnabled();
+          await expect(profileView.cardHeadlinePasswort).toHaveText('Passwort');
+          await profileView.checkButtonStartPWChangeDialogIsEnabled();
           // 2FA
-          await expect(profileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
-          await expect(profileView.button_2FAEinrichten).toBeEnabled();
+          await expect(profileView.cardHeadline2FA).toHaveText('Zwei-Faktor-Authentifizierung');
+          await expect(profileView.button2FAEinrichten).toBeEnabled();
         } else {
           // Schulzuordnung 1
           await expect(profileView.cardHeadline_Schulzuordnung2).toHaveText('Schulzuordnung 2');
-          await expect(profileView.label_Schule2).toHaveText('Schule:');
-          await expect(profileView.data_Schule2).toHaveText(organisation1);
-          await expect(profileView.label_Rolle2).toHaveText('Rolle:');
-          await expect(profileView.data_Rolle2).toHaveText(rollenname);
-          await expect(profileView.label_Dienststellennummer2).toHaveText('DStNr.:');
-          await expect(profileView.data_Dienststellennummer2).toHaveText(dienststellenNr1);
+          await expect(profileView.labelSchule2).toHaveText('Schule:');
+          await expect(profileView.dataSchule2).toHaveText(organisation1);
+          await expect(profileView.labelRolle2).toHaveText('Rolle:');
+          await expect(profileView.dataRolle2).toHaveText(rollenname);
+          await expect(profileView.labelDienststellennummer2).toHaveText('DStNr.:');
+          await expect(profileView.dataDienststellennummer2).toHaveText(dienststellenNr1);
 
           // Schulzuordnung 2
           await expect(profileView.cardHeadline_Schulzuordnung1).toHaveText('Schulzuordnung 1');
-          await expect(profileView.label_Schule1).toHaveText('Schule:');
-          await expect(profileView.data_Schule1).toHaveText(organisation2);
-          await expect(profileView.label_Rolle1).toHaveText('Rolle:');
-          await expect(profileView.data_Rolle1).toHaveText(rollenname);
-          await expect(profileView.label_Dienststellennummer1).toHaveText('DStNr.:');
-          await expect(profileView.data_Dienststellennummer1).toHaveText(dienststellenNr2);
+          await expect(profileView.labelSchule1).toHaveText('Schule:');
+          await expect(profileView.dataSchule1).toHaveText(organisation2);
+          await expect(profileView.labelRolle1).toHaveText('Rolle:');
+          await expect(profileView.dataRolle1).toHaveText(rollenname);
+          await expect(profileView.labelDienststellennummer1).toHaveText('DStNr.:');
+          await expect(profileView.dataDienststellennummer1).toHaveText(dienststellenNr2);
 
           // Passwort
-          await expect(profileView.cardHeadline_Passwort).toHaveText('Passwort');
-          await expect(profileView.button_NeuesPasswortSetzen).toBeEnabled();
+          await expect(profileView.cardHeadlinePasswort).toHaveText('Passwort');
+          await profileView.checkButtonStartPWChangeDialogIsEnabled();
           // 2FA
-          await expect(profileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
-          await expect(profileView.button_2FAEinrichten).toBeEnabled();
+          await expect(profileView.cardHeadline2FA).toHaveText('Zwei-Faktor-Authentifizierung');
+          await expect(profileView.button2FAEinrichten).toBeEnabled();
         }
       });
     }
@@ -515,26 +485,26 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       });
 
       await test.step(`Profil öffnen`, async () => {
-        await header.button_profil.click();
+        await header.goToProfile();
       });
 
       await test.step(`Passwort Ändern öffnen`, async () => {
-        await expect(profileView.button_ZurueckVorherigeSeite).toBeVisible();
-        await expect(profileView.text_h2_Ueberschrift).toHaveText('Mein Profil');
+        await expect(profileView.buttonZurueckVorherigeSeite).toBeVisible();
+        await profileView.checkTitleMeinProfile();
         // Passwort
-        await expect(profileView.cardHeadline_Passwort).toHaveText('Passwort');
-        await expect(profileView.button_NeuesPasswortSetzen).toBeEnabled();
+        await expect(profileView.cardHeadlinePasswort).toHaveText('Passwort');
+        await profileView.checkButtonStartPWChangeDialogIsEnabled();
 
-        await profileView.button_NeuesPasswortSetzen.click();
-        await profileView.button_PasswortAendern.click();
+        await profileView.clickButtonStartPWChangeDialog();
+        await profileView.clickButtonChangePW();
       });
 
       await test.step(`Status des Benutzernamenfelds prüfen`, async () => {
-        await expect(profileView.label_username).toHaveText(usernames[0]); // Benutzername ist nicht änderbar weil es nur Text ist
-        await expect(profileView.text_p_LoginPrompt).toHaveText('Bitte geben Sie Ihr aktuelles Passwort ein.');
+        await expect(profileView.labelUsername).toHaveText(usernames[0]); // Benutzername ist nicht änderbar weil es nur Text ist
+        await expect(profileView.textPLoginPrompt).toHaveText('Bitte geben Sie Ihr aktuelles Passwort ein.');
         await expect(profileView.inputPassword).toBeEnabled();
         await page.goBack();
-        await expect(profileView.cardHeadline_Passwort).toBeVisible();
+        await expect(profileView.cardHeadlinePasswort).toBeVisible();
       });
     }
   );
@@ -572,76 +542,71 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       });
 
       await test.step(`Profil öffnen`, async () => {
-        await header.button_profil.click();
+        await header.goToProfile();
       });
 
       await test.step(`2FA öffnen`, async () => {
-        await expect(profileView.button_ZurueckVorherigeSeite).toBeVisible();
-        await expect(profileView.text_h2_Ueberschrift).toHaveText('Mein Profil');
+        await expect(profileView.buttonZurueckVorherigeSeite).toBeVisible();
+        await profileView.checkTitleMeinProfile();
 
-        await expect(profileView.cardHeadline_2FA).toHaveText('Zwei-Faktor-Authentifizierung');
-        await expect(profileView.text_no2FA).toBeVisible();
-        await expect(profileView.button_2FAEinrichten).toHaveText('2FA einrichten');
-        await expect(profileView.button_2FAEinrichten).toBeEnabled();
+        await expect(profileView.cardHeadline2FA).toHaveText('Zwei-Faktor-Authentifizierung');
+        await expect(profileView.textNo2FA).toBeVisible();
+        await expect(profileView.button2FAEinrichten).toHaveText('2FA einrichten');
+        await expect(profileView.button2FAEinrichten).toBeEnabled();
 
-        profileView.button_2FAEinrichten.click();
+        profileView.button2FAEinrichten.click();
       });
 
       await test.step(`2FA Texte prüfen und QR-Code generieren`, async () => {
-        await expect(profileView.text_LayoutCardHeadline).toHaveText('2FA einrichten');
-        await expect(profileView.text_2FASelfServiceInfo).toHaveText(
+        await expect(profileView.textLayoutCardHeadline).toHaveText('2FA einrichten');
+        await expect(profileView.text2FASelfServiceInfo).toHaveText(
           'Im Folgenden wird ein QR-Code generiert, mit dem Sie auf Ihrem Endgerät eine Zwei-Faktor-Authentifizierung einrichten können.'
         );
-        await expect(profileView.text_2FASelfServiceWarning).toHaveText(
+        await expect(profileView.text2FASelfServiceWarning).toHaveText(
           'Bitte stellen Sie vor dem Fortfahren sicher, dass eine entsprechende App auf Ihrem Endgerät installiert ist. Für Ihr Lehrkräfte-Endgerät finden Sie entsprechend genehmigte Anwendungen im Software-Hub.'
         );
-        await expect(profileView.button_2FAWeiter).toHaveText('Weiter');
-        await expect(profileView.button_2FAAbbrechen).toHaveText('Abbrechen');
-        profileView.button_2FAWeiter.click();
+        await expect(profileView.button2FAWeiter).toHaveText('Weiter');
+        await expect(profileView.button2FAAbbrechen).toHaveText('Abbrechen');
+        profileView.button2FAWeiter.click();
       });
 
       await test.step(`QR-Code-Display prüfen`, async () => {
-        await expect(profileView.text_LayoutCardHeadline).toHaveText('Software-Token einrichten');
-        await expect(profileView.text_2FASelfServiceQRInfo).toHaveText(
+        await expect(profileView.textLayoutCardHeadline).toHaveText('Software-Token einrichten');
+        await expect(profileView.text2FASelfServiceQRInfo).toHaveText(
           'Bitte scannen Sie den QR-Code mit Ihrer 2FA-App (z.B. FreeOTP).'
         );
-        await expect(profileView.data_2FAQRCode).toBeVisible();
-        await expect(profileView.button_2FAWeiter).toHaveText('Weiter');
-        await expect(profileView.button_2FAAbbrechen).toHaveText('Abbrechen');
+        await expect(profileView.data2FAQRCode).toBeVisible();
+        await expect(profileView.button2FAWeiter).toHaveText('Weiter');
+        await expect(profileView.button2FAAbbrechen).toHaveText('Abbrechen');
       });
 
       await test.step(`Einrichtung abschließen`, async () => {
-        await profileView.button_2FAWeiter.click();
+        await profileView.button2FAWeiter.click();
 
-        await expect(profileView.text_LayoutCardHeadline).toHaveText('Zwei-Faktor-Authentifizierung (2FA)');
-        await expect(profileView.text_OTPEntryInfo).toHaveText(
+        await expect(profileView.textLayoutCardHeadline).toHaveText('Zwei-Faktor-Authentifizierung (2FA)');
+        await expect(profileView.textOTPEntryInfo).toHaveText(
           'Bitte geben Sie das angezeigte Einmalpasswort ein, um die Einrichtung abzuschließen.'
         );
-        await expect(profileView.text_2FASelfServiceError).toHaveText('Einmalpasswort');
-        await expect(profileView.text_OTPInput).toBeVisible();
+        await expect(profileView.text2FASelfServiceError).toHaveText('Einmalpasswort');
+        await expect(profileView.textOTPInput).toBeVisible();
 
-        await expect(profileView.button_2FAWeiter).toHaveText('Weiter');
-        await expect(profileView.button_2FAAbbrechen).toHaveText('Abbrechen');
+        await expect(profileView.button2FAWeiter).toHaveText('Weiter');
+        await expect(profileView.button2FAAbbrechen).toHaveText('Abbrechen');
       });
 
       await test.step(`Fehlertext prüfen`, async () => {
-        await profileView.button_2FAWeiter.click();
-        await expect(profileView.text_OTPEntryError).toHaveText('Das Einmalpasswort muss angegeben werden.');
+        await profileView.button2FAWeiter.click();
+        await expect(profileView.textOTPEntryError).toHaveText('Das Einmalpasswort muss angegeben werden.');
 
-        await expect(profileView.button_2FAWeiter).toHaveText('Weiter');
-        await expect(profileView.button_2FAAbbrechen).toHaveText('Abbrechen');
+        await expect(profileView.button2FAWeiter).toHaveText('Weiter');
+        await expect(profileView.button2FAAbbrechen).toHaveText('Abbrechen');
       });
 
       await test.step(`Dialog schließen`, async () => {
-        await profileView.button_2FAAbbrechen.click();
+        await profileView.button2FAAbbrechen.click();
       });
     }
   );
-
-
-
-
-  //////////////////////////////////////
 
   test(
     'Im Profil das eigene Passwort ändern als Lehrer und Schüler (Schüler meldet sich anschließend mit dem neuen PW an)',
@@ -660,7 +625,8 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
           await generateNachname(),
           await generateVorname(),
           [await getSPId(page, email)],
-          await generateRolleName()
+          await generateRolleName(),
+          await generateKopersNr()
         );
         rolleIds.push(userInfoLehrer.rolleId);
         usernames.push(userInfoLehrer.username);
@@ -671,7 +637,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
           typeSchueler,
           await generateNachname(),
           await generateVorname(),
-          [await getSPId(page, email)],
+          [await getSPId(page, itslearning)],
           await generateRolleName()
         );
         rolleIds.push(userInfoSchueler.rolleId);
@@ -684,17 +650,39 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await loginView.login(userInfoLehrer.username, userInfoLehrer.password);
         currentUserIsLandesadministrator = false;
         userInfoLehrer.password = await loginView.UpdatePW();
-        currentUserIsLandesadministrator = false;
       });
   
-      const profileView: ProfilePage = await header.clickMeinProfilButton();
+      const profileView: ProfilePage = await header.goToProfile();
 
       await test.step(`Passwortänderung Lehrer durchführen`, async () => {
-        await profileView.button_NeuesPasswortSetzen.click();
-        await profileView.button_PasswortAendern.click();
+        await profileView.clickButtonStartPWChangeDialog();
+        await profileView.clickButtonChangePW();
         await loginView.loginCurrentUser(userInfoLehrer.username, userInfoLehrer.password);        
         await loginView.UpdatePW(true);
-        await expect(profileView.text_h2_Ueberschrift).toHaveText('Mein Profil');
+        await profileView.checkTitleMeinProfile();
+      });
+
+      await test.step(`Mit dem Schüler am Portal anmelden`, async () => {
+        await header.logout();
+        await header.clickLoginButton();
+        await loginView.login(userInfoSchueler.username, userInfoSchueler.password);
+        userInfoSchueler.password = await loginView.UpdatePW();
+      });
+
+      await test.step(`Passwortänderung Schüler durchführen`, async () => {
+        await header.goToProfile();
+        await profileView.clickButtonStartPWChangeDialog();
+        await profileView.clickButtonChangePW();
+        await loginView.loginCurrentUser(userInfoSchueler.username, userInfoSchueler.password);        
+        userInfoSchueler.password = await loginView.UpdatePW(true);
+        await profileView.checkTitleMeinProfile();
+      });
+
+      await test.step(`Schüler meldet sich mit dem neuen Passwort am Portal an`, async () => {
+        await header.logout();
+        await header.clickLoginButton();
+        const startView = await loginView.login(userInfoSchueler.username, userInfoSchueler.password); 
+        await startView.checkSpItslearningIsVisible()
       });
     }
   );

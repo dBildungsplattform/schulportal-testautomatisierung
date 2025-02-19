@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, PlaywrightTestArgs } from "@playwright/test";
 import { LandingPage } from "../pages/LandingView.page";
 import { StartPage } from "../pages/StartView.page";
 import { LoginPage } from "../pages/LoginView.page";
@@ -23,7 +23,7 @@ let rolleIds: string[] = [];
 let currentUserIsLandesadministrator: boolean = true;
 
 test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
-    test.beforeEach(async ({ page }) => {
+    test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
         await test.step(`Login`, async () => {
         const startPage = await FromAnywhere(page)
             .start()
@@ -35,7 +35,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         });
     });
 
-    test.afterEach(async ({ page }) => {
+    test.afterEach(async ({ page }: PlaywrightTestArgs) => {
         if(!currentUserIsLandesadministrator) {
             const header: HeaderPage = new HeaderPage(page);
             const landing: LandingPage = new LandingPage(page);

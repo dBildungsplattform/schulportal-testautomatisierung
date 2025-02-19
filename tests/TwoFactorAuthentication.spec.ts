@@ -1,12 +1,9 @@
-import test, { expect, Page } from '@playwright/test';
-import { LandingPage } from '../pages/LandingView.page';
+import { test, expect, PlaywrightTestArgs } from '@playwright/test';
 import { UserInfo } from '../base/api/testHelper.page.ts';
 import { createRolleAndPersonWithUserContext } from '../base/api/testHelperPerson.page';
 import { getSPId } from '../base/api/testHelperServiceprovider.page';
 import { LONG } from '../base/tags';
 import { generateNachname, generateVorname, generateRolleName } from '../base/testHelperGenerateTestdataNames';
-import { LoginPage } from '../pages/LoginView.page';
-import { StartPage } from '../pages/StartView.page';
 import { testschule } from '../base/organisation';
 import { typeLehrer } from '../base/rollentypen';
 import { email } from '../base/sp';
@@ -22,7 +19,7 @@ let usernames: string[] = [];
 let rolleIds: string[] = [];
 
 test.describe(`Testfälle für TwoFactorAuthentication": Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
     await test.step(`Login`, async () => {
       const startPage = await FromAnywhere(page)
         .start()
@@ -34,7 +31,7 @@ test.describe(`Testfälle für TwoFactorAuthentication": Umgebung: ${process.env
     });
   });
 
-  test.afterEach(async ({ page }: { page: Page }) => {
+  test.afterEach(async ({ page }: PlaywrightTestArgs) => {
     await test.step(`Testdaten(Benutzer) löschen via API`, async () => {
       if (usernames.length > 0) {
         await deletePersonenBySearchStrings(page, usernames);
@@ -52,7 +49,7 @@ test.describe(`Testfälle für TwoFactorAuthentication": Umgebung: ${process.env
     });
   });
 
-  test('Prüfen, ob es möglich ist einen Token zurückzusetzen', { tag: [LONG] }, async ({ page }: { page: Page }) => {
+  test('Prüfen, ob es möglich ist einen Token zurückzusetzen', { tag: [LONG] }, async ({ page }: PlaywrightTestArgs) => {
     let userInfoLehrer: UserInfo;
 
     await test.step(`Testdaten erstellen`, async () => {

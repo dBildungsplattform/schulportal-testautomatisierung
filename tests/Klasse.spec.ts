@@ -1,4 +1,4 @@
-import { expect, test, Page } from '@playwright/test';
+import { expect, test, PlaywrightTestArgs } from '@playwright/test';
 import { UserInfo } from '../base/api/testHelper.page.ts';
 import { createRolleAndPersonWithUserContext } from '../base/api/testHelperPerson.page.ts';
 import { addSystemrechtToRolle } from '../base/api/testHelperRolle.page.ts';
@@ -31,7 +31,7 @@ let rolleIds: string[] = [];
 let currentUserIsLandesadministrator: boolean = true;
 
 test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
-  test.beforeEach(async ({ page }: { page: Page }) => {
+  test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
     await test.step(`Login`, async () => {
       const startPage = await FromAnywhere(page)
         .start()
@@ -43,7 +43,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     });
   });
 
-  test.afterEach(async ({ page }: { page: Page }) => {
+  test.afterEach(async ({ page }: PlaywrightTestArgs) => {
     if(!currentUserIsLandesadministrator) {
       const header: HeaderPage = new HeaderPage(page);
       const landing: LandingPage = new LandingPage(page);
@@ -80,7 +80,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
   test(
     'Eine Klasse als Landesadmin anlegen und die Klasse anschließend in der Ergebnisliste suchen und dann löschen',
     { tag: [LONG, SHORT, STAGE] },
-    async ({ page }: { page: Page }) => {
+    async ({ page }: PlaywrightTestArgs) => {
       const startseite: StartPage = new StartPage(page);
       const menue: MenuPage = new MenuPage(page);
       const klasseCreationView: KlasseCreationViewPage = new KlasseCreationViewPage(page);
@@ -123,7 +123,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
   test(
     'Ergebnisliste Klassen als Landesadmin auf Vollständigkeit prüfen',
     { tag: [LONG, SHORT, STAGE] },
-    async ({ page }: { page: Page }) => {
+    async ({ page }: PlaywrightTestArgs) => {
       const startseite: StartPage = new StartPage(page);
       const menue = new MenuPage(page);
       const klasseManagementView = new KlasseManagementViewPage(page);
@@ -144,7 +144,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
   test(
     'Eine Klasse als Landesadmin anlegen und die Bestätigungsseite vollständig prüfen',
     { tag: [LONG, STAGE, BROWSER] },
-    async ({ page }: { page: Page }) => {
+    async ({ page }: PlaywrightTestArgs) => {
       const klasseCreationView: KlasseCreationViewPage = new KlasseCreationViewPage(page);
       const dienststellennummer: string = '1111111';
       const nameSchule: string = testschule;
@@ -180,7 +180,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
   test(
     "Jede Klasse hat eine Dienststellennummer neben dem Klassennamen (ersten und letzten 100 Einträge)", 
     { tag: [LONG, SHORT, STAGE] }, 
-    async ({ page }: { page: Page }) => {
+    async ({ page }: PlaywrightTestArgs) => {
       const startseite: StartPage = new StartPage(page);
       const menue:MenuPage = new MenuPage(page);
       const klasseManagementView: KlasseManagementViewPage = new KlasseManagementViewPage(page);
@@ -208,7 +208,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
   test(
     'Klasse bearbeiten als Landesadmin',
     { tag: [LONG] },
-    async ({ page }: { page: Page }) => {
+    async ({ page }: PlaywrightTestArgs) => {
       const header = new HeaderPage(page);
       const landing: LandingPage = new LandingPage(page);
       const login: LoginPage = new LoginPage(page);
@@ -283,7 +283,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
   test(
     'Klasse bearbeiten als Schuladmin',
     { tag: [LONG] },
-    async ({ page }: { page: Page }) => {
+    async ({ page }: PlaywrightTestArgs) => {
       const header = new HeaderPage(page);
       const landing: LandingPage = new LandingPage(page);
       const login: LoginPage = new LoginPage(page);
@@ -354,7 +354,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
   test(
     'Eine Klasse ohne zugeordnete Personen als Landesadmin via Quickaction löschen',
     { tag: [LONG, STAGE] },
-    async ({ page }: { page: Page }) => {
+    async ({ page }: PlaywrightTestArgs) => {
       const klassenname: string = await generateKlassenname();
       const idSchule: string = await getOrganisationId(page, testschule);
 
@@ -397,7 +397,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
   test(
     "Eine Klasse ohne zugeordnete Personen als Schuladmin via Quickaction löschen",
     { tag: [LONG, STAGE] }, 
-    async ({ page }: { page: Page }) => {
+    async ({ page }: PlaywrightTestArgs) => {
       const klassenname: string = await generateKlassenname();
       const idSchule: string = await getOrganisationId(page, testschule);
       let userInfoAdmin: UserInfo;
@@ -471,7 +471,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
   test(
     "Eine Klasse mit einem zugeordneten Schüler als Landesadmin via Quickaction löschen",
     { tag: [LONG, STAGE] }, 
-    async ({ page }: { page: Page }) => {
+    async ({ page }: PlaywrightTestArgs) => {
       const klassenname: string = await generateKlassenname();
       const idSchule: string = await getOrganisationId(page, testschule);
       let klasseId: string;
@@ -539,7 +539,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
   test(
     'Eine Klasse ohne zugeordnete Personen als Landesadmin via Gesamtübersicht löschen',
     { tag: [LONG, STAGE] }, 
-    async ({ page }: { page: Page }) => {
+    async ({ page }: PlaywrightTestArgs) => {
       const klassenname: string = await generateKlassenname();
       const idSchule: string = await getOrganisationId(page, testschule);
 
@@ -581,7 +581,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
   test(
     "Eine Klasse ohne zugeordnete Personen als Schuladmin via Gesamtübersicht löschen",
     { tag: [LONG, STAGE] }, 
-    async ({ page }: { page: Page }) => {
+    async ({ page }: PlaywrightTestArgs) => {
       const klassenname: string = await generateKlassenname();
       const idSchule: string = await getOrganisationId(page, testschule);
       let userInfoAdmin: UserInfo;
@@ -656,7 +656,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
   test(
     "Eine Klasse mit einem zugeordneten Schüler als Landesadmin via Gesamtübersicht löschen",
     { tag: [LONG, STAGE] }, 
-    async ({ page }: { page: Page }) => {
+    async ({ page }: PlaywrightTestArgs) => {
       const klassenname: string = await generateKlassenname();
       const idSchule: string = await getOrganisationId(page, testschule);
       let klasseId: string;

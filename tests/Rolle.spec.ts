@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, PlaywrightTestArgs } from '@playwright/test';
 import { deleteRolle, getRolleId } from '../base/api/testHelperRolle.page';
 import { ersatzLandSH, landSH } from '../base/organisation';
 import { landesadminRolle } from '../base/rollen';
@@ -20,7 +20,7 @@ let loggedIn = false;
 // The created test data will be deleted in the afterEach block
 let rolleNames: string[] = [];
 
-test.beforeEach(async ({ page }) => {
+test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
   startseite = await test.step(`Login`, async () => {
     const startPage = await FromAnywhere(page)
       .start()
@@ -33,7 +33,7 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
-test.afterEach(async ({ page }) => {
+test.afterEach(async ({ page }: PlaywrightTestArgs) => {
   await test.step(`Testdaten löschen via API`, async () => {
     if (rolleNames.length > 0) {
       await deleteRolleByName(rolleNames, page);
@@ -54,7 +54,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
   test(
     '2 Rollen nacheinander anlegen mit Rollenarten LERN und LEHR als Landesadmin',
     { tag: [LONG, SHORT, STAGE] },
-    async ({ page }) => {
+    async ({ page }: PlaywrightTestArgs) => {
       const rollenname1 = await generateRolleName();
       const rollenname2 = await generateRolleName();
       const schulstrukturknoten1 = landSH;
@@ -114,7 +114,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
   test(
     'Ergebnisliste Rollen auf Vollständigkeit prüfen als Landesadmin',
     { tag: [LONG, SHORT, STAGE] },
-    async ({ page }) => {
+    async ({ page }: PlaywrightTestArgs) => {
       await test.step(`Rollenverwaltung öffnen und alle Elemente in der Ergebnisliste auf Existenz prüfen`, async () => {
         const menu: MenuPage = await startseite.goToAdministration();   
         const rolleManagement = await menu.alleRollenAnzeigen();
@@ -346,7 +346,7 @@ test.describe('Testet die Anlage einer neuen Rolle', () => {
     });
   });
 
-  test.afterEach(async ({ page }) => {
+  test.afterEach(async ({ page }: PlaywrightTestArgs) => {
     if (rolleNames) {
       const rolleIds = await getRolleId(page, rolleNames);
       await deleteRolle(page, rolleIds);

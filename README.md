@@ -74,7 +74,7 @@ aus faker oder einem festen Wert. Der Name einer Rolle ist z.B. TAuto-PW-R-xxxxx
 
 ### Während der Entwicklung nur einen Test markieren, der alleine ausgeführt wird(temporär only hinzufügen in dem Test)
 
-test.only('2 Schulen nacheinander anlegen', async ({ page }) => {
+test.only('2 Schulen nacheinander anlegen', async ({ page }: PlaywrightTestArgs) => {
 
 ## Definition Testsuiten
 ### smoke

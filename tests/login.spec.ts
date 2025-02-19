@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, PlaywrightTestArgs } from '@playwright/test';
 import { LoginPage } from '../pages/LoginView.page';
 import { LandingPage } from '../pages/LandingView.page';
 import { StartPage } from '../pages/StartView.page';
@@ -22,7 +22,7 @@ let rolleIds: string[] = [];
 let loggedIn = false;
 
 test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
-  test.afterEach(async ({ page }) => {
+  test.afterEach(async ({ page }: PlaywrightTestArgs) => {
     const header: HeaderPage = new HeaderPage(page);
     const landing: LandingPage = new LandingPage(page);
     const login: LoginPage = new LoginPage(page);
@@ -58,7 +58,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
     }
   });
 
-   test('Erfolgreicher Standard Login Landesadmin', {tag: [LONG, SMOKE, STAGE, BROWSER]}, async ({ page }) => {
+   test('Erfolgreicher Standard Login Landesadmin', {tag: [LONG, SMOKE, STAGE, BROWSER]}, async ({ page }: PlaywrightTestArgs) => {
     const login: LoginPage = new LoginPage(page);
     const landing: LandingPage = new LandingPage(page);
     const startseite: StartPage = new StartPage(page);
@@ -74,7 +74,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
     })
   })
 
-  test('Erfolgloser Login mit falschem Passwort und gültigem Benutzernamen in der Rolle Landesadmin', {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
+  test('Erfolgloser Login mit falschem Passwort und gültigem Benutzernamen in der Rolle Landesadmin', {tag: [LONG, SHORT, STAGE]}, async ({ page }: PlaywrightTestArgs) => {
     const login: LoginPage = new LoginPage(page);
     const landing: LandingPage = new LandingPage(page);
 
@@ -89,7 +89,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
     })
   })
 
-  test('Erfolgloser Login mit einem gesperrten Benutzer Rolle Lehrer', {tag: [LONG, STAGE]}, async ({ page }) => {
+  test('Erfolgloser Login mit einem gesperrten Benutzer Rolle Lehrer', {tag: [LONG, STAGE]}, async ({ page }: PlaywrightTestArgs) => {
     const login: LoginPage = new LoginPage(page);
     const landing: LandingPage = new LandingPage(page);
     const header = new HeaderPage(page);
@@ -123,7 +123,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
     })
   })
 
-  test('Erfolgloser Login mit falschem Benutzernamen und gültigem Passwort in der Rolle Landesadmin', {tag: [LONG, STAGE]}, async ({ page }) => {
+  test('Erfolgloser Login mit falschem Benutzernamen und gültigem Passwort in der Rolle Landesadmin', {tag: [LONG, STAGE]}, async ({ page }: PlaywrightTestArgs) => {
     const login = new LoginPage(page);
     const landing = new LandingPage(page);
     const start = new StartPage(page);

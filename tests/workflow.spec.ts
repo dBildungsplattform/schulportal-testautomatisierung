@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, PlaywrightTestArgs } from "@playwright/test";
 import { LandingPage } from "../pages/LandingView.page";
 import { LoginPage } from "../pages/LoginView.page";
 import { StartPage } from "../pages/StartView.page";
@@ -25,7 +25,7 @@ let rolleIds: string[] = [];
 let currentUserIsLandesadministrator: boolean = true;
 
 test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
     await test.step(`Login`, async () => {
       const startPage = await FromAnywhere(page)
         .start()
@@ -68,7 +68,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
     });
 });
 
-  test("Angebote per Link öffnen als Lehrer", {tag: [LONG, SHORT, STAGE]}, async ({ page }) => {
+  test("Angebote per Link öffnen als Lehrer", {tag: [LONG, SHORT, STAGE]}, async ({ page }: PlaywrightTestArgs) => {
     const startseite: StartPage = new StartPage(page);
 
     let userInfoAdmin: UserInfo;
@@ -128,7 +128,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
     });
   });
 
-  test("Passwort Reset für einen Lehrer als Landesadmin", {tag: [LONG, SHORT, STAGE, BROWSER]}, async ({ page }) => {
+  test("Passwort Reset für einen Lehrer als Landesadmin", {tag: [LONG, SHORT, STAGE, BROWSER]}, async ({ page }: PlaywrightTestArgs) => {
     const landing = new LandingPage(page);
     const login = new LoginPage(page);
     const startseite = new StartPage(page);

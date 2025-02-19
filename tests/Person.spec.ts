@@ -35,7 +35,7 @@ let rolleNames: string[] = [];
 let currentUserIsLandesadministrator: boolean = true;
 
 test.describe(`Testfälle für die Administration von Personen": Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
     await test.step(`Login`, async () => {
       const startPage = await FromAnywhere(page)
         .start()
@@ -47,7 +47,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
   });
 
-  test.afterEach(async ({ page }) => {
+  test.afterEach(async ({ page }: PlaywrightTestArgs) => {
     if(!currentUserIsLandesadministrator) {
       const header: HeaderPage = new HeaderPage(page);
       const landing: LandingPage = new LandingPage(page);
@@ -86,7 +86,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
   test(
     'Einen Benutzer mit der Rolle Lehrkraft anlegen als Landesadmin und anschließend mit diesem Benutzer anmelden',
     { tag: [LONG, SHORT, STAGE] },
-    async ({ page }) => {
+    async ({ page }: PlaywrightTestArgs) => {
       const landing: LandingPage = new LandingPage(page);
       const startseite: StartPage = new StartPage(page);
       const login: LoginPage = new LoginPage(page);
@@ -143,7 +143,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     }
   );
 
-  test('Einen Benutzer mit der Rolle Landesadmin anlegen', { tag: [LONG, SHORT, STAGE] }, async ({ page }) => {
+  test('Einen Benutzer mit der Rolle Landesadmin anlegen', { tag: [LONG, SHORT, STAGE] }, async ({ page }: PlaywrightTestArgs) => {
     const startseite: StartPage = new StartPage(page);
     const menue = new MenuPage(page);
     const personCreationView = new PersonCreationViewPage(page);
@@ -176,7 +176,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
   });
 
-  test('Einen Benutzer mit der Rolle LiV anlegen als Landesadmin', { tag: [LONG, SHORT, STAGE] }, async ({ page }) => {
+  test('Einen Benutzer mit der Rolle LiV anlegen als Landesadmin', { tag: [LONG, SHORT, STAGE] }, async ({ page }: PlaywrightTestArgs) => {
     const startseite: StartPage = new StartPage(page);
     const menue = new MenuPage(page);
     const personCreationView = new PersonCreationViewPage(page);
@@ -215,7 +215,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
   test(
     'Einen Benutzer mit der Rolle Schuladmin anlegen als Landesadmin und anschließend mit diesem Benutzer anmelden und einen weiteren Benutzer anlegen',
     { tag: [LONG, SHORT, STAGE] },
-    async ({ page }) => {
+    async ({ page }: PlaywrightTestArgs) => {
       const startseite = new StartPage(page);
       const menue = new MenuPage(page);
       const personCreationView = new PersonCreationViewPage(page);
@@ -282,7 +282,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
   test(
     'Einen Benutzer mit der Rolle Schueler anlegen als Landesadmin',
     { tag: [LONG, SHORT, STAGE] },
-    async ({ page }) => {
+    async ({ page }: PlaywrightTestArgs) => {
       const startseite: StartPage = new StartPage(page);
       const menue = new MenuPage(page);
       const personCreationView = new PersonCreationViewPage(page);
@@ -322,7 +322,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
   test(
     'Ergebnisliste Benutzer auf Vollständigkeit prüfen als Landesadmin',
     { tag: [LONG, SHORT, STAGE, BROWSER] },
-    async ({ page }) => {
+    async ({ page }: PlaywrightTestArgs) => {
       const startseite = new StartPage(page);
       const menue = new MenuPage(page);
       const personManagementView = new PersonManagementViewPage(page);
@@ -350,7 +350,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
   test(
     "Prüfung auf korrekte Rollen in dem Dropdown 'Rolle' nach Auswahl der Organisation bei Anlage eines Benutzer in der Rolle Landesadmin",
     { tag: [LONG, STAGE] },
-    async ({ page }) => {
+    async ({ page }: PlaywrightTestArgs) => {
       const startseite: StartPage = new StartPage(page);
       const menue = new MenuPage(page);
       const personCreationView = new PersonCreationViewPage(page);
@@ -426,7 +426,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
   test(
     'In der Ergebnisliste die Suchfunktion ausführen als Landesadmin',
     { tag: [LONG, SHORT, STAGE] },
-    async ({ page }) => {
+    async ({ page }: PlaywrightTestArgs) => {
       const personManagementView = new PersonManagementViewPage(page);
       const personCreationView = new PersonCreationViewPage(page);
 
@@ -519,7 +519,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
   test(
     'Eine Lehrkraft anlegen in der Rolle Landesadmin und die Bestätigungsseite vollständig prüfen',
     { tag: [LONG, SHORT, STAGE] },
-    async ({ page }) => {
+    async ({ page }: PlaywrightTestArgs) => {
       const personCreationView = new PersonCreationViewPage(page);
       const rolle = 'Lehrkraft';
       const vorname = await generateVorname();
@@ -575,7 +575,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
   test(
     'Mehrere Benutzer hintereinander anlegen in der Rolle Landesadmin für die Rollenarten LERN und LEHR und die Bestätigungsseiten vollständig prüfen',
     { tag: [LONG, SHORT, STAGE] },
-    async ({ page }) => {
+    async ({ page }: PlaywrightTestArgs) => {
       const landing: LandingPage = new LandingPage(page);
       const startseite: StartPage = new StartPage(page);
       const login: LoginPage = new LoginPage(page);
@@ -759,7 +759,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     }
   );
 
-  test('Einen Benutzer über das FE löschen', { tag: [LONG, SHORT, STAGE] }, async ({ page }) => {
+  test('Einen Benutzer über das FE löschen', { tag: [LONG, SHORT, STAGE] }, async ({ page }: PlaywrightTestArgs) => {
     const personManagementView = new PersonManagementViewPage(page);
     const PersonDetailsView = new PersonDetailsViewPage(page);
     const header = new HeaderPage(page);

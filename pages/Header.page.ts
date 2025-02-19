@@ -37,8 +37,8 @@ export class HeaderPage{
         return new LoginPage(this.page);
     }
 
-    public async clickMeinProfilButton(): Promise<ProfilePage> {
+    public async goToProfile(): Promise<ProfilePage> {
         await this.button_profil.click();
         return new ProfilePage(this.page);
-    }
+      }
 }

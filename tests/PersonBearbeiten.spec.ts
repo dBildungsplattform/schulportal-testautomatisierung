@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, PlaywrightTestArgs } from "@playwright/test";
 import { LandingPage } from "../pages/LandingView.page.ts";
 import { LoginPage } from "../pages/LoginView.page.ts";
 import { StartPage } from "../pages/StartView.page.ts";
@@ -29,7 +29,7 @@ let rolleIds: string[] = [];
 let currentUserIsLandesadministrator: boolean = true;
 
 test.describe(`Testfälle für die Administration von Personen": Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
-    test.beforeEach(async ({ page }) => {
+    test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
         await test.step(`Login`, async () => {
         const startPage = await FromAnywhere(page)
             .start()
@@ -72,7 +72,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         });
     });
 
-    test("Eine Schulzuordnung bei einem bestehenden Benutzer hinzufügen", {tag: [LONG, STAGE]}, async ({ page }) => {
+    test("Eine Schulzuordnung bei einem bestehenden Benutzer hinzufügen", {tag: [LONG, STAGE]}, async ({ page }: PlaywrightTestArgs) => {
         const personManagementView = new PersonManagementViewPage(page);
         const PersonDetailsView = new PersonDetailsViewPage(page);
         const header = new HeaderPage(page);
@@ -145,7 +145,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         });
     })
 
-    test("Befristung beim hinzufügen von Personenkontexten", { tag: [LONG] }, async ({ page }) => {
+    test("Befristung beim hinzufügen von Personenkontexten", { tag: [LONG] }, async ({ page }: PlaywrightTestArgs) => {
         let userInfoLehrer: UserInfo;
         const unbefristeteRolle = lehrkraftOeffentlichRolle;
         const befristeteRolle = lehrkraftInVertretungRolle;
@@ -178,7 +178,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         });
     })
 
-    test("Einen Benutzer über das FE unbefristet sperren", {tag: [LONG, STAGE]}, async ({ page }) => {
+    test("Einen Benutzer über das FE unbefristet sperren", {tag: [LONG, STAGE]}, async ({ page }: PlaywrightTestArgs) => {
         let userInfoLehrer: UserInfo;
         const sperrDatumAb = await generateDateToday() // Konkrete Testdaten für diesen Testfall
 
@@ -203,7 +203,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         })
     })
 
-    test("Einen Benutzer über das FE befristet sperren", {tag: [LONG, STAGE]}, async ({ page }) => {
+    test("Einen Benutzer über das FE befristet sperren", {tag: [LONG, STAGE]}, async ({ page }: PlaywrightTestArgs) => {
         let userInfoLehrer: UserInfo;
         const sperrDatumAb = await generateDateToday() // Konkrete Testdaten für diesen Testfall
         const sperrDatumBis = await generateDateFuture(5, 2); // Konkrete Testdaten für diesen Testfall
@@ -230,7 +230,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         })
     })
 
-    test("Gesamtübersicht für einen Benutzer als Schueler öffnen und Unsichtbarkeit des 2FA Abschnitts prüfen", {tag: [LONG]}, async ({ page }) => {
+    test("Gesamtübersicht für einen Benutzer als Schueler öffnen und Unsichtbarkeit des 2FA Abschnitts prüfen", {tag: [LONG]}, async ({ page }: PlaywrightTestArgs) => {
         let userInfoLehrer: UserInfo;
 
         await test.step(`Testdaten: Schüler mit einer Rolle(LERN) über die api anlegen ${ADMIN}`, async () => {
@@ -263,7 +263,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         })
     })
 
-    test("Gesamtübersicht für einen Benutzer als Lehrkraft öffnen und 2FA Status prüfen dass kein Token eingerichtet ist", {tag: [LONG]}, async ({ page }) => {
+    test("Gesamtübersicht für einen Benutzer als Lehrkraft öffnen und 2FA Status prüfen dass kein Token eingerichtet ist", {tag: [LONG]}, async ({ page }: PlaywrightTestArgs) => {
         let userInfoLehrer: UserInfo;
 
         await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) über die api anlegen ${ADMIN}`, async () => {
@@ -286,7 +286,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         })
     })
 
-    test("Gesamtübersicht für einen Benutzer als Schuladmin öffnen und 2FA Status prüfen dass kein Token eingerichtet ist", {tag: [LONG]}, async ({ page }) => {
+    test("Gesamtübersicht für einen Benutzer als Schuladmin öffnen und 2FA Status prüfen dass kein Token eingerichtet ist", {tag: [LONG]}, async ({ page }: PlaywrightTestArgs) => {
         const addminVorname = await generateVorname();
         const adminNachname = await generateNachname();
         const adminRollenart = typeSchuladmin;
@@ -314,7 +314,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         })
     })
 
-    test("Gesamtübersicht für einen Benutzer als Landesadmin öffnen, 2FA Token einrichten und 2FA Status prüfen dass ein Token eingerichtet ist", {tag: [LONG]}, async ({ page }) => {
+    test("Gesamtübersicht für einen Benutzer als Landesadmin öffnen, 2FA Token einrichten und 2FA Status prüfen dass ein Token eingerichtet ist", {tag: [LONG]}, async ({ page }: PlaywrightTestArgs) => {
         const addminVorname = await generateVorname();
         const adminNachname = await generateNachname();
         const organisation = landSH;
@@ -355,7 +355,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         })
     })
 
-    test("Gesamtübersicht für einen Benutzer als Schuladmin öffnen, 2FA Token einrichten und 2FA Status prüfen dass ein Token eingerichtet ist", {tag: [LONG]}, async ({ page }) => {
+    test("Gesamtübersicht für einen Benutzer als Schuladmin öffnen, 2FA Token einrichten und 2FA Status prüfen dass ein Token eingerichtet ist", {tag: [LONG]}, async ({ page }: PlaywrightTestArgs) => {
         const adminRollenart = typeSchuladmin;
         const adminOrganisation = testschule665;
         let userInfoAdmin: UserInfo;
@@ -386,7 +386,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         })
     })
 
-    test("Gesamtübersicht für einen Benutzer als Lehrkraft öffnen, 2FA Token einrichten und 2FA Status prüfen dass ein Token eingerichtet ist", {tag: [LONG]}, async ({ page }) => {
+    test("Gesamtübersicht für einen Benutzer als Lehrkraft öffnen, 2FA Token einrichten und 2FA Status prüfen dass ein Token eingerichtet ist", {tag: [LONG]}, async ({ page }: PlaywrightTestArgs) => {
         let userInfoLehrer: UserInfo;
 
         await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) über die api anlegen ${ADMIN}`, async () => {
@@ -417,7 +417,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     test(
         'Inbetriebnahme-Passwort über die Gesamtübersicht erzeugen',
         { tag: [LONG, STAGE] },
-        async ({ page }) => {   
+        async ({ page }: PlaywrightTestArgs) => {   
             let userInfoLehrer: UserInfo;
 
             await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) über die api anlegen`, async () => {
