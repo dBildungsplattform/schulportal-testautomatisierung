@@ -67,10 +67,16 @@ export class PersonDetailsViewPage{
      readonly button_close_softwareToken_dialog: Locator;
      readonly button_2FA_Zuruecksetzen_Weiter: Locator;
 
+     // Inbetriebnahme-Passwort für LK-Endgerät
+     readonly buttonIBNPasswortEinrichtenDialog: Locator;
+     readonly buttonIBNPasswortEinrichten: Locator;
+     readonly infoIBNPasswortEinrichten: Locator;
+     readonly buttonIBNPasswortEinrichtenDialogClose: Locator;
+
     constructor(page){
         this.page = page;  
-        this.text_h2_benutzerBearbeiten = page.getByTestId('layout-card-headline');
-
+        this.text_h2_benutzerBearbeiten = page.getByTestId('person-details-card').getByTestId('layout-card-headline')
+       
         // Passwort
         this.text_h3_passwort_headline = page.locator( `//h3[text()='Passwort']`);
         this.button_pwChange = page.getByTestId('open-password-reset-dialog-button');     
@@ -121,7 +127,7 @@ export class PersonDetailsViewPage{
         this.text_sperrdatumAb = page.getByTestId('lock-info-1-attribute');
         this.text_sperrdatumBis = page.getByTestId('lock-info-2-attribute');
 
-        //2FA
+        // 2FA
         this.text_h3_2FA = page.getByText('Zwei-Faktor-Authentifizierung (2FA)');
         this.text_kein_token_ist_Eingerichtet = page.getByText('Für diesen Benutzer ist aktuell keine 2FA eingerichtet.');
         this.text_token_IstEingerichtet_info = page.getByText('Für diesen Benutzer ist aktuell ein Software-Token eingerichtet.');
@@ -134,6 +140,12 @@ export class PersonDetailsViewPage{
         this.button_2FA_Einrichten_Weiter = page.getByTestId('proceed-two-factor-authentication-dialog-button');
         this.button_close_softwareToken_dialog = page.getByTestId('close-software-token-dialog-button');
         this.button_2FA_Zuruecksetzen_Weiter = page.getByTestId('two-way-authentification-set-up-button');
+
+        // Inbetriebnahme-Passwort für LK-Endgerät
+        this.buttonIBNPasswortEinrichtenDialog = page.getByTestId('open-device-password-dialog-button');
+        this.buttonIBNPasswortEinrichten = page.getByTestId('password-reset-button');
+        this.infoIBNPasswortEinrichten = page.getByTestId('password-reset-info-text');
+        this.buttonIBNPasswortEinrichtenDialogClose = page.getByTestId('close-password-reset-dialog-button');
     }
 
     public async lockUserWithoutDate() {
@@ -177,5 +189,13 @@ export class PersonDetailsViewPage{
         await this.button_2FA_Einrichten_Weiter.click();
         await expect(this.text_h2_2FA_cardheadline).toHaveText('Software-Token einrichten');
         await this.button_close_softwareToken_dialog.click();
+    }
+
+    public async createIbnPassword() {
+        await this.buttonIBNPasswortEinrichtenDialog.click();
+        await this.buttonIBNPasswortEinrichten.click();
+        await expect(this.infoIBNPasswortEinrichten).toContainText('Das Passwort wurde erfolgreich erzeugt.');
+        await this.buttonIBNPasswortEinrichtenDialogClose.click();
+        await expect(this.text_h2_benutzerBearbeiten).toHaveText('Benutzer bearbeiten');
     }
 }
