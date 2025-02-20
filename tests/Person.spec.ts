@@ -279,7 +279,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     }
   );
 
-  test.only(
+  test(
     'Einen Benutzer mit der Rolle Schueler anlegen als Landesadmin',
     { tag: [LONG, SHORT, STAGE, BROWSER] },
     async ({ page }) => {
