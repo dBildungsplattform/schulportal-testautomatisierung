@@ -1,4 +1,4 @@
-name: Playwright - DEV Branches or Merge
+name: Playwright - For DEV Branches or Merge
 
 on:
   workflow_call:
