@@ -72,7 +72,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         });
     });
 
-    test("Eine Schulzuordnung bei einem bestehenden Benutzer hinzufügen", {tag: [LONG, STAGE]}, async ({ page }) => {
+    test("Eine Schulzuordnung bei einem bestehenden Benutzer hinzufügen", {tag: [LONG, STAGE, BROWSER]}, async ({ page }) => {
         const personManagementView = new PersonManagementViewPage(page);
         const PersonDetailsView = new PersonDetailsViewPage(page);
         const header = new HeaderPage(page);

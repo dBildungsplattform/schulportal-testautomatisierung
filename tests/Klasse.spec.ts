@@ -79,7 +79,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
 
   test(
     'Eine Klasse als Landesadmin anlegen und die Klasse anschließend in der Ergebnisliste suchen und dann löschen',
-    { tag: [LONG, SHORT, STAGE] },
+    { tag: [LONG, SHORT, STAGE, BROWSER] },
     async ({ page }: { page: Page }) => {
       const startseite: StartPage = new StartPage(page);
       const menue: MenuPage = new MenuPage(page);
@@ -207,7 +207,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
 
   test(
     'Klasse bearbeiten als Landesadmin',
-    { tag: [LONG] },
+    { tag: [LONG, BROWSER] },
     async ({ page }: { page: Page }) => {
       const header = new HeaderPage(page);
       const landing: LandingPage = new LandingPage(page);
