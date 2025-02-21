@@ -13,7 +13,7 @@ export class LoginPage {
   readonly input_ConfirmPW: Locator;
   readonly textInfoLogin: Locator;
   readonly textInfoPWUpdate: Locator;
-  readonly text_span_inputerror: Locator;
+  readonly inputErrorMessage: Locator;
   readonly text_span_alertBox: Locator;
   readonly button_login: Locator;
   readonly button_submitPWChange: Locator;
@@ -31,7 +31,7 @@ export class LoginPage {
     this.input_ConfirmPW = page.getByTestId('new-password-confirm-input');
     this.textInfoLogin = page.getByTestId('login-prompt-text');
     this.textInfoPWUpdate = page.locator('.password-update-prompt'); 
-    this.text_span_inputerror = page.getByText('Ungültiger Benutzername oder Passwort');
+    this.inputErrorMessage = page.locator('#input-error');
     this.text_span_alertBox = page.locator('.pf-c-alert__title');
     this.button_login = page.getByTestId('login-button');
     this.button_submitPWChange = page.getByTestId('set-password-button');

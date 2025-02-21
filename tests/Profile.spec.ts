@@ -21,7 +21,7 @@ import {
   personenSofortLoeschen,
   personenVerwalten, 
   schulenVerwalten,
-  KlassenVerwalten,
+  klassenVerwalten,
   schultraegerVerwalten,
   personenAnlegen
 } from '../base/berechtigungen.ts';
@@ -115,7 +115,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await addSystemrechtToRolle(page, userInfo.rolleId, personenSofortLoeschen);
         await addSystemrechtToRolle(page, userInfo.rolleId, personenVerwalten);
         await addSystemrechtToRolle(page, userInfo.rolleId, schulenVerwalten);
-        await addSystemrechtToRolle(page, userInfo.rolleId, KlassenVerwalten);
+        await addSystemrechtToRolle(page, userInfo.rolleId, klassenVerwalten);
         await addSystemrechtToRolle(page, userInfo.rolleId, schultraegerVerwalten);
         await addSystemrechtToRolle(page, userInfo.rolleId, personenAnlegen);
 
@@ -646,7 +646,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
       await test.step(`Mit dem Lehrer am Portal anmelden`, async () => {
         await header.logout();
-        await header.clickLoginButton();
+        await header.goToLogin();
         await loginView.login(userInfoLehrer.username, userInfoLehrer.password);
         currentUserIsLandesadministrator = false;
         userInfoLehrer.password = await loginView.UpdatePW();
@@ -664,7 +664,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
       await test.step(`Mit dem Schüler am Portal anmelden`, async () => {
         await header.logout();
-        await header.clickLoginButton();
+        await header.goToLogin();
         await loginView.login(userInfoSchueler.username, userInfoSchueler.password);
         userInfoSchueler.password = await loginView.UpdatePW();
       });
@@ -680,7 +680,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
       await test.step(`Schüler meldet sich mit dem neuen Passwort am Portal an`, async () => {
         await header.logout();
-        await header.clickLoginButton();
+        await header.goToLogin();
         const startView = await loginView.login(userInfoSchueler.username, userInfoSchueler.password); 
         await startView.checkSpItslearningIsVisible()
       });

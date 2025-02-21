@@ -82,7 +82,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
       await expect(landing.text_Willkommen).toBeVisible();
       await landing.button_Anmelden.click();
       await login.login(ADMIN, 'Mickeymouse');
-      await expect(login.text_span_inputerror).toBeVisible();
+      await expect(login.inputErrorMessage).toHaveText('Ungültiger Benutzername oder Passwort.');
       await expect(login.titleAnmeldung).toBeVisible();
       loggedIn = false;
     })
@@ -132,7 +132,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
       await expect(landing.text_Willkommen).toBeVisible();
       await landing.button_Anmelden.click();
       await login.login('fake-username', PW);
-      await expect(login.text_span_inputerror).toBeVisible();
+      await expect(login.inputErrorMessage).toBeVisible();
       await expect(login.titleAnmeldung).toBeVisible();
       await expect(login.input_username).toBeEditable();
       loggedIn = false;
