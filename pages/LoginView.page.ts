@@ -64,7 +64,7 @@ export class LoginPage {
     await this.button_login.click();
   }
 
-  async UpdatePW(isEntryFromProfileView?: boolean) {
+  async updatePW(isEntryFromProfileView?: boolean) {
     const newPassword = generator.generate({ length: 8, numbers: true }) + '1Aa!';
     await expect(this.titlePasswortFestlegen).toHaveText('Passwort festlegen');
     await expect(this.textInfoPWUpdate).toHaveText('Bitte legen Sie ein neues, selbstgewähltes Passwort fest.');
