@@ -32,7 +32,7 @@ export class HeaderPage{
         return new LandingPage(this.page);
     }
 
-    public async clickLoginButton(): Promise<LoginPage> {
+    public async goToLogin(): Promise<LoginPage> {
         await this.button_login.click();
         return new LoginPage(this.page);
     }
