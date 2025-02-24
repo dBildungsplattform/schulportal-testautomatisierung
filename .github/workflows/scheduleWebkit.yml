@@ -2,7 +2,7 @@ name: Playwright - Scheduled Main WEBKIT
 on:
   workflow_dispatch:
   schedule:
-    - cron: '40 6 * * *'
+    - cron: '40 6 * * 4'
 jobs:
   test:
     timeout-minutes: 60

@@ -2,7 +2,7 @@ name: Playwright - Scheduled Main Chrom
 on:
   workflow_dispatch:
   schedule:
-    - cron: '20 6 * * *'
+    - cron: '20 6 * * 1'
 jobs:
   test:
     timeout-minutes: 60
