@@ -137,7 +137,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
       await test.step(`Profil auf Vollständigkeit prüfen`, async () => {
         await expect(profileView.buttonZurueckVorherigeSeite).toBeVisible();
-        await profileView.checkTitleMeinProfile();
+        await expect(profileView.titleMeinProfil).toHaveText('Mein Profil');
         // Persönliche Daten
         await profileView.checkSectionPersoenlicheDaten(vorname, nachname, usernames);
         // Schulzuordnung
@@ -150,7 +150,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await expect(profileView.dataDienststellennummer1).toBeHidden();
         // Passwort
         await expect(profileView.cardHeadlinePasswort).toHaveText('Passwort');
-        await profileView.checkButtonStartPWChangeDialogIsEnabled();
+        await expect(profileView.buttonStartPWChangeDialog).toBeEnabled();
         // 2FA
         await expect(profileView.cardHeadline2FA).toHaveText('Zwei-Faktor-Authentifizierung');
         await expect(profileView.textNo2FA).toHaveText('Es wurde noch kein zweiter Faktor für Sie eingerichtet.');
@@ -201,7 +201,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
       await test.step(`Profil auf Vollständigkeit prüfen`, async () => {
         await expect(profileView.buttonZurueckVorherigeSeite).toBeVisible();
-        await profileView.checkTitleMeinProfile();
+        await expect(profileView.titleMeinProfil).toHaveText('Mein Profil');
         // Persönliche Daten
         await profileView.checkSectionPersoenlicheDaten(vorname, nachname, usernames);
         // Schulzuordnung
@@ -214,7 +214,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await expect(profileView.dataDienststellennummer1).toHaveText(dienststellenNr);
         // Passwort
         await expect(profileView.cardHeadlinePasswort).toHaveText('Passwort');
-        await profileView.checkButtonStartPWChangeDialogIsEnabled();
+        await expect(profileView.buttonStartPWChangeDialog).toBeEnabled();
         // 2FA
         await expect(profileView.cardHeadline2FA).toHaveText('Zwei-Faktor-Authentifizierung');
         await expect(profileView.button2FAEinrichten).toBeEnabled();
@@ -264,7 +264,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
       await test.step(`Profil auf Vollständigkeit prüfen`, async () => {
         await expect(profileView.buttonZurueckVorherigeSeite).toBeVisible();
-        await profileView.checkTitleMeinProfile();
+        await expect(profileView.titleMeinProfil).toHaveText('Mein Profil');
         // Persönliche Daten
         await profileView.checkSectionPersoenlicheDaten(vorname, nachname, usernames);
         // Schulzuordnung
@@ -277,7 +277,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await expect(profileView.dataDienststellennummer1).toHaveText(dienststellenNr);
         // Passwort
         await expect(profileView.cardHeadlinePasswort).toHaveText('Passwort');
-        await profileView.checkButtonStartPWChangeDialogIsEnabled();
+        await expect(profileView.buttonStartPWChangeDialog).toBeEnabled();
         // 2FA
         await expect(profileView.cardHeadline2FA).toBeHidden();
         await expect(profileView.button2FAEinrichten).toBeHidden();
@@ -327,7 +327,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
       await test.step(`Profil auf Vollständigkeit prüfen`, async () => {
         await expect(profileView.buttonZurueckVorherigeSeite).toBeVisible();
-        await profileView.checkTitleMeinProfile();
+        await expect(profileView.titleMeinProfil).toHaveText('Mein Profil');
         // Persönliche Daten
         await profileView.checkSectionPersoenlicheDaten(vorname, nachname, usernames);
         // Schulzuordnung
@@ -340,7 +340,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await expect(profileView.dataDienststellennummer1).toHaveText(dienststellenNr);
         // Passwort
         await expect(profileView.cardHeadlinePasswort).toHaveText('Passwort');
-        await profileView.checkButtonStartPWChangeDialogIsEnabled();
+        await expect(profileView.buttonStartPWChangeDialog).toBeEnabled();
         // 2FA
         await expect(profileView.cardHeadline2FA).toHaveText('Zwei-Faktor-Authentifizierung');
         await expect(profileView.button2FAEinrichten).toBeEnabled();
@@ -399,7 +399,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
       await test.step(`Profil auf Vollständigkeit prüfen`, async () => {
         await expect(profileView.buttonZurueckVorherigeSeite).toBeVisible();
-        await profileView.checkTitleMeinProfile();
+        await expect(profileView.titleMeinProfil).toHaveText('Mein Profil');
         // Persönliche Daten
         await profileView.checkSectionPersoenlicheDaten(vorname, nachname, usernames);
         // prüfen, welche von den beiden Schulen zuerst angezeigt wird in der Tabelle
@@ -423,7 +423,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
           await expect(profileView.dataDienststellennummer2).toHaveText(dienststellenNr2);
           // Passwort
           await expect(profileView.cardHeadlinePasswort).toHaveText('Passwort');
-          await profileView.checkButtonStartPWChangeDialogIsEnabled();
+          await expect(profileView.buttonStartPWChangeDialog).toBeEnabled();
           // 2FA
           await expect(profileView.cardHeadline2FA).toHaveText('Zwei-Faktor-Authentifizierung');
           await expect(profileView.button2FAEinrichten).toBeEnabled();
@@ -448,7 +448,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
           // Passwort
           await expect(profileView.cardHeadlinePasswort).toHaveText('Passwort');
-          await profileView.checkButtonStartPWChangeDialogIsEnabled();
+          await expect(profileView.buttonStartPWChangeDialog).toBeEnabled();
           // 2FA
           await expect(profileView.cardHeadline2FA).toHaveText('Zwei-Faktor-Authentifizierung');
           await expect(profileView.button2FAEinrichten).toBeEnabled();
@@ -495,13 +495,13 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
       await test.step(`Passwort Ändern öffnen`, async () => {
         await expect(profileView.buttonZurueckVorherigeSeite).toBeVisible();
-        await profileView.checkTitleMeinProfile();
+        await expect(profileView.titleMeinProfil).toHaveText('Mein Profil');
         // Passwort
         await expect(profileView.cardHeadlinePasswort).toHaveText('Passwort');
-        await profileView.checkButtonStartPWChangeDialogIsEnabled();
+        await expect(profileView.buttonStartPWChangeDialog).toBeEnabled();
 
-        await profileView.clickButtonStartPWChangeDialog();
-        await profileView.clickButtonChangePW();
+        await profileView.buttonStartPWChangeDialog.click();
+        await profileView.buttonChangePW.click();
       });
 
       await test.step(`Status des Benutzernamenfelds prüfen`, async () => {
@@ -552,7 +552,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
       await test.step(`2FA öffnen`, async () => {
         await expect(profileView.buttonZurueckVorherigeSeite).toBeVisible();
-        await profileView.checkTitleMeinProfile();
+        await expect(profileView.titleMeinProfil).toHaveText('Mein Profil');
 
         await expect(profileView.cardHeadline2FA).toHaveText('Zwei-Faktor-Authentifizierung');
         await expect(profileView.textNo2FA).toBeVisible();
@@ -660,11 +660,11 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       const profileView: ProfilePage = await header.goToProfile();
 
       await test.step(`Passwortänderung Lehrer durchführen`, async () => {
-        await profileView.clickButtonStartPWChangeDialog();
-        await profileView.clickButtonChangePW();
+        await profileView.buttonStartPWChangeDialog.click();
+        await profileView.buttonChangePW.click();
         await loginView.loginCurrentUser(userInfoLehrer.username, userInfoLehrer.password);
         await loginView.updatePW(true);
-        await profileView.checkTitleMeinProfile();
+        await expect(profileView.titleMeinProfil).toHaveText('Mein Profil');
       });
 
       await test.step(`Mit dem Schüler am Portal anmelden`, async () => {
@@ -676,11 +676,11 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
       await test.step(`Passwortänderung Schüler durchführen`, async () => {
         await header.goToProfile();
-        await profileView.clickButtonStartPWChangeDialog();
-        await profileView.clickButtonChangePW();
+        await profileView.buttonStartPWChangeDialog.click();
+        await profileView.buttonChangePW.click();
         await loginView.loginCurrentUser(userInfoSchueler.username, userInfoSchueler.password);
         userInfoSchueler.password = await loginView.updatePW(true);
-        await profileView.checkTitleMeinProfile();
+        await expect(profileView.titleMeinProfil).toHaveText('Mein Profil');
       });
 
       await test.step(`Schüler meldet sich mit dem neuen Passwort am Portal an`, async () => {

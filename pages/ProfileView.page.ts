@@ -111,19 +111,19 @@ export class ProfilePage {
     this.textLayoutCardHeadline = page.getByTestId('layout-card-headline');
   }
 
-  public async clickButtonStartPWChangeDialog() {
+  public async alickButtonStartPWChangeDialog() {
     await this.buttonStartPWChangeDialog.click();
   }
 
-  public async clickButtonChangePW() {
+  public async aclickButtonChangePW() {
     await this.buttonChangePW.click();
   }
 
-  public async checkButtonStartPWChangeDialogIsEnabled() {
+  public async acheckButtonStartPWChangeDialogIsEnabled() {
     await expect(this.buttonStartPWChangeDialog).toBeEnabled();
   }
 
-  public async checkTitleMeinProfile() {
+  public async acheckTitleMeinProfile() {
     await expect(this.titleMeinProfil).toHaveText('Mein Profil');
   }
 
