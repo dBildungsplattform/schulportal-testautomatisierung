@@ -42,13 +42,13 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         .then((landing: LandingPage) => landing.goToLogin())
         .then((login: LoginPage) => login.login())
         .then((startseite: StartPage) => startseite.checkHeadlineIsVisible());
-  
+
       return startPage;
     });
   });
 
   test.afterEach(async ({ page }: PlaywrightTestArgs) => {
-    if(!currentUserIsLandesadministrator) {
+    if (!currentUserIsLandesadministrator) {
       const header: HeaderPage = new HeaderPage(page);
       const landing: LandingPage = new LandingPage(page);
       const login: LoginPage = new LoginPage(page);
@@ -136,81 +136,89 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await header.logout();
         await landing.button_Anmelden.click();
         await login.login(usernames[0], einstiegspasswort);
-        await login.UpdatePW();
+        await login.updatePW();
         currentUserIsLandesadministrator = false;
         await startseite.checkHeadlineIsVisible();
       });
     }
   );
 
-  test('Einen Benutzer mit der Rolle Landesadmin anlegen', { tag: [LONG, SHORT, STAGE] }, async ({ page }: PlaywrightTestArgs) => {
-    const startseite: StartPage = new StartPage(page);
-    const menue = new MenuPage(page);
-    const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
+  test(
+    'Einen Benutzer mit der Rolle Landesadmin anlegen',
+    { tag: [LONG, SHORT, STAGE] },
+    async ({ page }: PlaywrightTestArgs) => {
+      const startseite: StartPage = new StartPage(page);
+      const menue = new MenuPage(page);
+      const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
 
-    const vorname: string = await generateVorname();
-    const nachname: string = await generateNachname();
-    const schulstrukturknoten: string = 'Öffentliche Schulen Land Schleswig-Holstein';
+      const vorname: string = await generateVorname();
+      const nachname: string = await generateNachname();
+      const schulstrukturknoten: string = 'Öffentliche Schulen Land Schleswig-Holstein';
 
-    await test.step(`Dialog Person anlegen öffnen`, async () => {
-      await startseite.cardItemSchulportalAdministration.click();
-      await menue.menueItem_BenutzerAnlegen.click();
-      await expect(personCreationView.text_h2_PersonAnlegen).toHaveText('Neuen Benutzer hinzufügen');
-    });
+      await test.step(`Dialog Person anlegen öffnen`, async () => {
+        await startseite.cardItemSchulportalAdministration.click();
+        await menue.menueItem_BenutzerAnlegen.click();
+        await expect(personCreationView.text_h2_PersonAnlegen).toHaveText('Neuen Benutzer hinzufügen');
+      });
 
-    await test.step(`Benutzer anlegen`, async () => {
-      await personCreationView.comboboxOrganisationInput.searchByTitle(schulstrukturknoten, true);
-      await personCreationView.combobox_Rolle.click();
-      await page.getByText(landesadminRolle, { exact: true }).click();
-      await personCreationView.Input_Vorname.fill(vorname);
-      await personCreationView.Input_Nachname.fill(nachname);
-      await personCreationView.button_PersonAnlegen.click();
-    });
+      await test.step(`Benutzer anlegen`, async () => {
+        await personCreationView.comboboxOrganisationInput.searchByTitle(schulstrukturknoten, true);
+        await personCreationView.combobox_Rolle.click();
+        await page.getByText(landesadminRolle, { exact: true }).click();
+        await personCreationView.Input_Vorname.fill(vorname);
+        await personCreationView.Input_Nachname.fill(nachname);
+        await personCreationView.button_PersonAnlegen.click();
+      });
 
-    await test.step(`Prüfen dass der Benutzer mit der Rolle Landesadmin angelegt wurde`, async () => {
-      await expect(personCreationView.text_success).toBeVisible();
-      // Benutzer wird im afterEach-Block gelöscht
-      // gesteuert wird die Löschung über die Variable username
-      usernames.push(await personCreationView.data_Benutzername.innerText());
-      await expect(personCreationView.data_Rolle).toHaveText(landesadminRolle);
-    });
-  });
+      await test.step(`Prüfen dass der Benutzer mit der Rolle Landesadmin angelegt wurde`, async () => {
+        await expect(personCreationView.text_success).toBeVisible();
+        // Benutzer wird im afterEach-Block gelöscht
+        // gesteuert wird die Löschung über die Variable username
+        usernames.push(await personCreationView.data_Benutzername.innerText());
+        await expect(personCreationView.data_Rolle).toHaveText(landesadminRolle);
+      });
+    }
+  );
 
-  test('Einen Benutzer mit der Rolle LiV anlegen als Landesadmin', { tag: [LONG, SHORT, STAGE] }, async ({ page }: PlaywrightTestArgs) => {
-    const startseite: StartPage = new StartPage(page);
-    const menue: MenuPage = new MenuPage(page);
-    const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
+  test(
+    'Einen Benutzer mit der Rolle LiV anlegen als Landesadmin',
+    { tag: [LONG, SHORT, STAGE] },
+    async ({ page }: PlaywrightTestArgs) => {
+      const startseite: StartPage = new StartPage(page);
+      const menue: MenuPage = new MenuPage(page);
+      const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
 
-    const rolle: string = 'LiV';
-    const vorname: string = await generateVorname();
-    const nachname: string = await generateNachname();
-    const kopersnr: string = await generateKopersNr();
-    const schulstrukturknoten: string = testschule;
+      const rolle: string = 'LiV';
+      const vorname: string = await generateVorname();
+      const nachname: string = await generateNachname();
+      const kopersnr: string = await generateKopersNr();
+      const schulstrukturknoten: string = testschule;
 
-    await test.step(`Dialog Person anlegen öffnen`, async () => {
-      await startseite.cardItemSchulportalAdministration.click();
-      await menue.menueItem_BenutzerAnlegen.click();
-      await expect(personCreationView.text_h2_PersonAnlegen).toHaveText('Neuen Benutzer hinzufügen');
-    });
+      await test.step(`Dialog Person anlegen öffnen`, async () => {
+        await startseite.cardItemSchulportalAdministration.click();
+        await menue.menueItem_BenutzerAnlegen.click();
+        await expect(personCreationView.text_h2_PersonAnlegen).toHaveText('Neuen Benutzer hinzufügen');
+      });
 
-    await test.step(`Benutzer anlegen`, async () => {
-      await personCreationView.comboboxOrganisationInput.searchByTitle(schulstrukturknoten, false);
-      await personCreationView.combobox_Rolle.click();
-      await page.getByText(rolle, { exact: true }).click();
-      await personCreationView.Input_Vorname.fill(vorname);
-      await personCreationView.Input_Nachname.fill(nachname);
-      await personCreationView.Input_Kopersnr.fill(kopersnr);
-      await personCreationView.button_PersonAnlegen.click();
-    });
+      await test.step(`Benutzer anlegen`, async () => {
+        await personCreationView.comboboxOrganisationInput.searchByTitle(schulstrukturknoten, false);
+        await personCreationView.combobox_Rolle.click();
+        await page.getByText(rolle, { exact: true }).click();
+        await personCreationView.Input_Vorname.fill(vorname);
+        await personCreationView.Input_Nachname.fill(nachname);
+        await personCreationView.Input_Kopersnr.fill(kopersnr);
+        await personCreationView.button_PersonAnlegen.click();
+      });
 
-    await test.step(`Prüfen dass der Benutzer mit der Rolle Landesadmin angelegt wurde`, async () => {
-      await expect(personCreationView.text_success).toBeVisible();
-      // Benutzer wird im afterEach-Block gelöscht
-      // gesteuert wird die Löschung über die Variable username
-      usernames.push(await personCreationView.data_Benutzername.innerText());
-      await expect(personCreationView.data_Rolle).toHaveText('LiV');
-    });
-  });
+      await test.step(`Prüfen dass der Benutzer mit der Rolle Landesadmin angelegt wurde`, async () => {
+        await expect(personCreationView.text_success).toBeVisible();
+        // Benutzer wird im afterEach-Block gelöscht
+        // gesteuert wird die Löschung über die Variable username
+        usernames.push(await personCreationView.data_Benutzername.innerText());
+        await expect(personCreationView.data_Rolle).toHaveText('LiV');
+      });
+    }
+  );
 
   test(
     'Einen Benutzer mit der Rolle Schuladmin anlegen als Landesadmin und anschließend mit diesem Benutzer anmelden und einen weiteren Benutzer anlegen',
@@ -250,7 +258,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await header.logout();
         await landing.button_Anmelden.click();
         await login.login(userInfo.username, userInfo.password);
-        userInfo.password = await login.UpdatePW();
+        userInfo.password = await login.updatePW();
         await startseite.checkHeadlineIsVisible();
         currentUserIsLandesadministrator = false;
       });
@@ -390,8 +398,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(personCreationView.listbox_Rolle).not.toContainText(rolleLiV);
         await expect(personCreationView.listbox_Rolle).not.toContainText(schuladminOeffentlichRolle);
         await expect(personCreationView.listbox_Rolle).not.toContainText(schuelerRolle);
-         // close opened combobox organisation
-         await personCreationView.text_h2_PersonAnlegen.click();
+        // close opened combobox organisation
+        await personCreationView.text_h2_PersonAnlegen.click();
       });
 
       await test.step(`Organisation 'Ersatzschulen Land Schleswig-Holstein' auswählen und Dropdown 'Rolle' prüfen`, async () => {
@@ -403,8 +411,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(personCreationView.listbox_Rolle).not.toContainText(rolleLiV);
         await expect(personCreationView.listbox_Rolle).not.toContainText(schuladminOeffentlichRolle);
         await expect(personCreationView.listbox_Rolle).not.toContainText(schuelerRolle);
-         // close opened combobox organisation
-         await personCreationView.text_h2_PersonAnlegen.click();
+        // close opened combobox organisation
+        await personCreationView.text_h2_PersonAnlegen.click();
       });
 
       await test.step(`Organisation 'Schule' auswählen und Dropdown 'Rolle' prüfen`, async () => {
@@ -417,8 +425,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(personCreationView.listbox_Rolle).not.toContainText(landesadminRolle);
         await page.keyboard.type(schuladminOeffentlichRolle);
         await expect(personCreationView.listbox_Rolle).toContainText(schuladminOeffentlichRolle);
-         // close opened combobox organisation
-         await personCreationView.text_h2_PersonAnlegen.click();
+        // close opened combobox organisation
+        await personCreationView.text_h2_PersonAnlegen.click();
       });
     }
   );
@@ -609,7 +617,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await header.logout();
         await landing.button_Anmelden.click();
         await login.login(userInfo.username, userInfo.password);
-        userInfo.password = await login.UpdatePW();
+        userInfo.password = await login.updatePW();
         currentUserIsLandesadministrator = false;
         await startseite.checkHeadlineIsVisible();
       });
@@ -771,15 +779,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     const idSPs: string[] = [await getSPId(page, 'Schulportal-Administration')];
 
     await test.step(`Neuen Benutzer über die api anlegen`, async () => {
-      await createRolleAndPersonWithUserContext(
-        page,
-        landSH,
-        berechtigung,
-        vorname,
-        nachname,
-        idSPs,
-        rolle
-      );
+      await createRolleAndPersonWithUserContext(page, landSH, berechtigung, vorname, nachname, idSPs, rolle);
       rolleNames.push(rolle);
     });
 

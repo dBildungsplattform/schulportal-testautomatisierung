@@ -35,7 +35,7 @@ export class ProfilePage {
   readonly buttonStartPWChangeDialog: Locator;
   readonly buttonChangePW: Locator;
   readonly labelUsername: Locator;
-  readonly textPLoginPrompt: Locator;
+  readonly textLoginPrompt: Locator;
   readonly inputPassword: Locator;
   // 2FA
   readonly cardHeadline2FA: Locator;
@@ -89,7 +89,7 @@ export class ProfilePage {
     this.buttonStartPWChangeDialog = page.getByTestId('open-change-password-dialog-button');
     this.buttonChangePW = page.getByTestId('change-password-button');
     this.labelUsername = page.locator('#kc-attempted-username');
-    this.textPLoginPrompt = page.getByTestId('login-prompt-text');
+    this.textLoginPrompt = page.getByTestId('login-prompt-text');
     this.inputPassword = page.getByTestId('password-input');
 
     // 2FA

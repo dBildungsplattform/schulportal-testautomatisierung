@@ -9,21 +9,26 @@ import { typeLandesadmin, typeLehrer, typeSchueler, typeSchuladmin } from '../ba
 import { email, itslearning } from '../base/sp.ts';
 import { BROWSER, LONG, SHORT, STAGE } from '../base/tags';
 import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata';
-import { generateNachname, generateRolleName, generateVorname, generateKopersNr } from '../base/testHelperGenerateTestdataNames.ts';
+import {
+  generateNachname,
+  generateRolleName,
+  generateVorname,
+  generateKopersNr,
+} from '../base/testHelperGenerateTestdataNames.ts';
 import { HeaderPage } from '../pages/Header.page';
 import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
 import { ProfilePage } from '../pages/ProfileView.page';
 import { StartPage } from '../pages/StartView.page';
-import FromAnywhere from '../pages/FromAnywhere'
-import { 
-  rollenVerwalten, 
+import FromAnywhere from '../pages/FromAnywhere';
+import {
+  rollenVerwalten,
   personenSofortLoeschen,
-  personenVerwalten, 
+  personenVerwalten,
   schulenVerwalten,
   klassenVerwalten,
   schultraegerVerwalten,
-  personenAnlegen
+  personenAnlegen,
 } from '../base/berechtigungen.ts';
 
 const PW: string | undefined = process.env.PW;
@@ -42,8 +47,8 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         .start()
         .then((landing: LandingPage) => landing.goToLogin())
         .then((login: LoginPage) => login.login())
-        .then((startseite: StartPage) => startseite.checkHeadlineIsVisible())
-  
+        .then((startseite: StartPage) => startseite.checkHeadlineIsVisible());
+
       return startPage;
     });
   });
@@ -53,7 +58,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       page.keyboard.press('Escape');
     });
 
-    if(!currentUserIsLandesadministrator) {
+    if (!currentUserIsLandesadministrator) {
       const header: HeaderPage = new HeaderPage(page);
       const landing: LandingPage = new LandingPage(page);
       const login: LoginPage = new LoginPage(page);
@@ -123,7 +128,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await header.button_login.click();
         await login.login(userInfo.username, userInfo.password);
         currentUserIsLandesadministrator = false;
-        await login.UpdatePW();
+        await login.updatePW();
       });
 
       await test.step(`Profil öffnen`, async () => {
@@ -186,7 +191,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await header.logout();
         await header.button_login.click();
         await login.login(userInfo.username, userInfo.password);
-        await login.UpdatePW();
+        await login.updatePW();
         currentUserIsLandesadministrator = false;
       });
 
@@ -249,7 +254,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await header.logout();
         await header.button_login.click();
         await login.login(userInfo.username, userInfo.password);
-        await login.UpdatePW();
+        await login.updatePW();
         currentUserIsLandesadministrator = false;
       });
 
@@ -312,7 +317,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await header.logout();
         await header.button_login.click();
         await login.login(userInfo.username, userInfo.password);
-        await login.UpdatePW();
+        await login.updatePW();
         currentUserIsLandesadministrator = false;
       });
 
@@ -369,7 +374,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
           nachname,
           vorname,
           idSPs,
-          rollenname,
+          rollenname
         );
         rolleIds.push(userInfo.rolleId);
         usernames.push(userInfo.username);
@@ -384,7 +389,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await header.logout();
         await header.button_login.click();
         await login.login(userInfo.username, userInfo.password);
-        await login.UpdatePW();
+        await login.updatePW();
         currentUserIsLandesadministrator = false;
       });
 
@@ -480,7 +485,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await header.logout();
         await header.button_login.click();
         await login.login(userInfo.username, userInfo.password);
-        await login.UpdatePW();
+        await login.updatePW();
         currentUserIsLandesadministrator = false;
       });
 
@@ -500,8 +505,8 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       });
 
       await test.step(`Status des Benutzernamenfelds prüfen`, async () => {
-        await expect(profileView.labelUsername).toHaveText(usernames[0]); // Benutzername ist nicht änderbar weil es nur Text ist
-        await expect(profileView.textPLoginPrompt).toHaveText('Bitte geben Sie Ihr aktuelles Passwort ein.');
+        await expect(profileView.labelUsername).toHaveText(usernames[0]);
+        await expect(profileView.textLoginPrompt).toHaveText('Bitte geben Sie Ihr aktuelles Passwort ein.');
         await expect(profileView.inputPassword).toBeEnabled();
         await page.goBack();
         await expect(profileView.cardHeadlinePasswort).toBeVisible();
@@ -537,7 +542,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await header.logout();
         await header.button_login.click();
         await login.login(userInfo.username, userInfo.password);
-        await login.UpdatePW();
+        await login.updatePW();
         currentUserIsLandesadministrator = false;
       });
 
@@ -649,16 +654,16 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await header.goToLogin();
         await loginView.login(userInfoLehrer.username, userInfoLehrer.password);
         currentUserIsLandesadministrator = false;
-        userInfoLehrer.password = await loginView.UpdatePW();
+        userInfoLehrer.password = await loginView.updatePW();
       });
-  
+
       const profileView: ProfilePage = await header.goToProfile();
 
       await test.step(`Passwortänderung Lehrer durchführen`, async () => {
         await profileView.clickButtonStartPWChangeDialog();
         await profileView.clickButtonChangePW();
-        await loginView.loginCurrentUser(userInfoLehrer.username, userInfoLehrer.password);        
-        await loginView.UpdatePW(true);
+        await loginView.loginCurrentUser(userInfoLehrer.username, userInfoLehrer.password);
+        await loginView.updatePW(true);
         await profileView.checkTitleMeinProfile();
       });
 
@@ -666,23 +671,23 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await header.logout();
         await header.goToLogin();
         await loginView.login(userInfoSchueler.username, userInfoSchueler.password);
-        userInfoSchueler.password = await loginView.UpdatePW();
+        userInfoSchueler.password = await loginView.updatePW();
       });
 
       await test.step(`Passwortänderung Schüler durchführen`, async () => {
         await header.goToProfile();
         await profileView.clickButtonStartPWChangeDialog();
         await profileView.clickButtonChangePW();
-        await loginView.loginCurrentUser(userInfoSchueler.username, userInfoSchueler.password);        
-        userInfoSchueler.password = await loginView.UpdatePW(true);
+        await loginView.loginCurrentUser(userInfoSchueler.username, userInfoSchueler.password);
+        userInfoSchueler.password = await loginView.updatePW(true);
         await profileView.checkTitleMeinProfile();
       });
 
       await test.step(`Schüler meldet sich mit dem neuen Passwort am Portal an`, async () => {
         await header.logout();
         await header.goToLogin();
-        const startView = await loginView.login(userInfoSchueler.username, userInfoSchueler.password); 
-        await startView.checkSpItslearningIsVisible()
+        const startView = await loginView.login(userInfoSchueler.username, userInfoSchueler.password);
+        await startView.checkSpIsVisible([itslearning]);
       });
     }
   );

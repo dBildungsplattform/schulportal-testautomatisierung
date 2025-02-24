@@ -3,6 +3,8 @@ import { StartPage } from '../pages/StartView.page';
 import { MenuPage } from '../pages/MenuBar.page';
 import { HeaderPage } from "../pages/Header.page";
 import { LONG, SHORT, STAGE, BROWSER } from '../base/tags';
+import { LandingPage } from '../pages/LandingView.page';
+import { LoginPage } from '../pages/LoginView.page';
 import FromAnywhere from '../pages/FromAnywhere';
 
 test.describe(`Testfälle für die Hauptmenue-Leiste: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
