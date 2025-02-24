@@ -1,4 +1,4 @@
-name: Playwright - Scheduled Main MSEDGE
+name: Playwright - Scheduled Main chrome
 on:
   workflow_dispatch:
   schedule:

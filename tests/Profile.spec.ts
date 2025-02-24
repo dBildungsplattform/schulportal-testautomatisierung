@@ -156,7 +156,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
   test(
     'Das eigene Profil öffnen und auf Vollständigkeit prüfen als Lehrer mit einer Schulzuordnung',
-    { tag: [LONG, SHORT, STAGE, BROWSER] },
+    { tag: [LONG, SHORT, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
       const profileView: ProfilePage = new ProfilePage(page);
       const header: HeaderPage = new HeaderPage(page);
@@ -366,7 +366,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
   test(
     'Das eigene Profil öffnen und auf Vollständigkeit prüfen als Lehrkraft mit 2 Schulzuordnungen',
-    { tag: [LONG, STAGE, BROWSER] },
+    { tag: [LONG, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
       const profileView: ProfilePage = new ProfilePage(page);
       const header: HeaderPage = new HeaderPage(page);
