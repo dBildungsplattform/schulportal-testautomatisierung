@@ -1,4 +1,4 @@
-name: Playwright - Scheduled Main Chrom
+name: Playwright - Scheduled Main CHROME
 on:
   workflow_dispatch:
   schedule:
