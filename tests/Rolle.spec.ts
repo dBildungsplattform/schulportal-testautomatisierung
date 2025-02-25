@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, PlaywrightTestArgs } from '@playwright/test';
 import { deleteRolle, getRolleId } from '../base/api/testHelperRolle.page';
 import { ersatzLandSH, landSH } from '../base/organisation';
 import { landesadminRolle } from '../base/rollen';
@@ -14,26 +14,28 @@ import FromAnywhere from '../pages/FromAnywhere';
 import { HeaderPage } from '../pages/Header.page';
 import { MenuPage } from '../pages/MenuBar.page';
 import { StartPage } from '../pages/StartView.page';
+import { LandingPage } from '../pages/LandingView.page';
+import { LoginPage } from '../pages/LoginView.page';
 
 let startseite: StartPage;
-let loggedIn = false;
+let loggedIn: boolean = false;
 // The created test data will be deleted in the afterEach block
 let rolleNames: string[] = [];
 
-test.beforeEach(async ({ page }) => {
+test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
   startseite = await test.step(`Login`, async () => {
-    const startPage = await FromAnywhere(page)
+    const startPage: StartPage = await FromAnywhere(page)
       .start()
-      .then((landing) => landing.goToLogin())
-      .then((login) => login.login())
-      .then((startseite) => startseite.checkHeadlineIsVisible());
+      .then((landing: LandingPage) => landing.goToLogin())
+      .then((login: LoginPage) => login.login())
+      .then((startseite: StartPage) => startseite.checkHeadlineIsVisible());
 
     loggedIn = true;
     return startPage;
   });
 });
 
-test.afterEach(async ({ page }) => {
+test.afterEach(async ({ page }: PlaywrightTestArgs) => {
   await test.step(`Testdaten löschen via API`, async () => {
     if (rolleNames.length > 0) {
       await deleteRolleByName(rolleNames, page);
@@ -54,20 +56,20 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
   test(
     '2 Rollen nacheinander anlegen mit Rollenarten LERN und LEHR als Landesadmin',
     { tag: [LONG, SHORT, STAGE] },
-    async ({ page }) => {
-      const rollenname1 = await generateRolleName();
-      const rollenname2 = await generateRolleName();
-      const schulstrukturknoten1 = landSH;
-      const schulstrukturknoten2 = ersatzLandSH;
-      const rollenart1 = 'Lern';
-      const rollenart2 = 'Lehr';
-      const merkmal2 = 'KoPers.-Nr. ist Pflichtangabe';
-      const angebot1 = itslearning;
-      const angebotA2 = email;
-      const angebotB2 = kalender;
+    async ({ page }: PlaywrightTestArgs) => {
+      const rollenname1:  string = await generateRolleName();
+      const rollenname2: string = await generateRolleName();
+      const schulstrukturknoten1: string = landSH;
+      const schulstrukturknoten2: string = ersatzLandSH;
+      const rollenart1: string = 'Lern';
+      const rollenart2: string = 'Lehr';
+      const merkmal2: string = 'KoPers.-Nr. ist Pflichtangabe';
+      const angebot1: string = itslearning;
+      const angebotA2: string = email;
+      const angebotB2: string = kalender;
 
-      const rolleCreationView = await test.step(`Dialog Rolle anlegen öffnen`, async () => {
-        const rolleCreationView = await startseite.goToAdministration().then((menu) => menu.rolleAnlegen());
+      const rolleCreationView: RolleCreationViewPage = await test.step(`Dialog Rolle anlegen öffnen`, async () => {
+        const rolleCreationView: RolleCreationViewPage = await startseite.goToAdministration().then((menu) => menu.rolleAnlegen());
         await expect(rolleCreationView.textH2RolleAnlegen).toHaveText('Neue Rolle hinzufügen');
         return rolleCreationView;
       });
@@ -114,10 +116,10 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
   test(
     'Ergebnisliste Rollen auf Vollständigkeit prüfen als Landesadmin',
     { tag: [LONG, SHORT, STAGE] },
-    async ({ page }) => {
+    async ({ page }: PlaywrightTestArgs) => {
       await test.step(`Rollenverwaltung öffnen und alle Elemente in der Ergebnisliste auf Existenz prüfen`, async () => {
         const menu: MenuPage = await startseite.goToAdministration();   
-        const rolleManagement = await menu.alleRollenAnzeigen();
+        const rolleManagement: RolleManagementViewPage = await menu.alleRollenAnzeigen();
         await expect(rolleManagement.textH1Administrationsbereich).toBeVisible();
         await expect(rolleManagement.textH2Rollenverwaltung).toBeVisible();
         await expect(rolleManagement.tableHeaderRollenname).toBeVisible();
@@ -132,18 +134,18 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     'Eine Rolle anlegen und die Bestätigungsseite vollständig prüfen als Landesadmin',
     { tag: [LONG, SHORT, STAGE, BROWSER] },
     async () => {
-      const rollenname = await generateRolleName();
-      const administrationsebene = landSH;
-      const rollenart = 'Leit';
-      const merkmal = 'KoPers.-Nr. ist Pflichtangabe';
-      const angebotA = email;
-      const angebotB = schulportaladmin;
-      const angebotC = kalender;
-      const systemrechtA = 'Darf Benutzer verwalten';
-      const systemrechtB = 'Darf Schulen verwalten';
-      const systemrechtC = 'Darf Klassen verwalten';
+      const rollenname: string = await generateRolleName();
+      const administrationsebene: string = landSH;
+      const rollenart: string = 'Leit';
+      const merkmal: string = 'KoPers.-Nr. ist Pflichtangabe';
+      const angebotA: string = email;
+      const angebotB: string = schulportaladmin;
+      const angebotC: string = kalender;
+      const systemrechtA: string = 'Darf Benutzer verwalten';
+      const systemrechtB: string = 'Darf Schulen verwalten';
+      const systemrechtC: string = 'Darf Klassen verwalten';
 
-      const rolleCreationView = await test.step(`Dialog Rolle anlegen öffnen`, async () => {
+      const rolleCreationView: RolleCreationViewPage = await test.step(`Dialog Rolle anlegen öffnen`, async () => {
         return await startseite.goToAdministration().then((menu) => menu.rolleAnlegen());
       });
 
@@ -346,7 +348,7 @@ test.describe('Testet die Anlage einer neuen Rolle', () => {
     });
   });
 
-  test.afterEach(async ({ page }) => {
+  test.afterEach(async ({ page }: PlaywrightTestArgs) => {
     if (rolleNames) {
       const rolleIds = await getRolleId(page, rolleNames);
       await deleteRolle(page, rolleIds);

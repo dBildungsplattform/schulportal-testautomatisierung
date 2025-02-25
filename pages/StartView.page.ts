@@ -11,6 +11,7 @@ export class StartPage {
   readonly cardItemAdressbuch: Locator;
   readonly cardItemItslearning: Locator;
   readonly cardItemSchulportalAdministration: Locator;
+  readonly cardItem: (spName: string) => Locator;
 
   constructor(page) {
     this.page = page;
@@ -20,6 +21,7 @@ export class StartPage {
     this.cardItemAdressbuch = page.locator('[data-testid^="service-provider-card"]', { hasText: "Adressbuch" });
     this.cardItemItslearning = page.locator('[data-testid^="service-provider-card"]', { hasText: "itslearning" });
     this.cardItemSchulportalAdministration = page.locator('[data-testid^="service-provider-card"]', { hasText: "Schulportal-Administration" });
+    this.cardItem = (spName: string) => page.locator('[data-testid^="service-provider-card"]', { hasText: spName });
   }
 
   public async goToAdministration(): Promise<MenuPage> {
@@ -35,5 +37,11 @@ export class StartPage {
   public async checkHeadlineIsVisible(): Promise<StartPage> {
     await expect(this.textH2Ueberschrift).toBeVisible();
     return new StartPage(this.page);
+  }
+
+  public async checkSpIsVisible(spNames: string[]) {
+    for (let spName of spNames) {
+      await expect(this.cardItem(spName)).toBeVisible()
+    }
   }
 }

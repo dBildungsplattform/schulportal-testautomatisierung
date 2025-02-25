@@ -1,4 +1,4 @@
-import { test } from '@playwright/test';
+import { test, PlaywrightTestArgs } from '@playwright/test';
 import { LandingPage } from '../pages/LandingView.page';
 import { StartPage } from '../pages/StartView.page';
 import { LoginPage } from '../pages/LoginView.page';
@@ -8,9 +8,9 @@ import { LONG, SHORT, STAGE, BROWSER } from '../base/tags';
 const ADMIN: string | undefined = process.env.USER;
 const PW: string | undefined = process.env.PW;
 
-let loggedIn = false;
+let loggedIn: boolean = false;
 
-test.afterEach(async ({ page }) => {
+test.afterEach(async ({ page }: PlaywrightTestArgs) => {
   if (loggedIn) {
     const header: HeaderPage = new HeaderPage(page);
     await header.logout();
@@ -19,7 +19,7 @@ test.afterEach(async ({ page }) => {
 })
 
 test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
-  test('Erfolgreicher Standard Logoff als Landesadmin', {tag: [LONG, SHORT, STAGE, BROWSER]}, async ({ page }) => {
+  test('Erfolgreicher Standard Logoff als Landesadmin', {tag: [LONG, SHORT, STAGE]}, async ({ page }: PlaywrightTestArgs) => {
     const landing: LandingPage = new LandingPage(page);
     const header: HeaderPage = new HeaderPage(page);
 
