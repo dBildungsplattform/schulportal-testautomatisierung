@@ -213,7 +213,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await test.step(`Prüfen dass der Benutzer mit der Rolle Landesadmin angelegt wurde`, async () => {
         await expect(personCreationView.text_success).toBeVisible();
         // Benutzer wird im afterEach-Block gelöscht
-        // gesteuert wird die Löschung über die Variable username
+        // gesteuert wird die Löschung über die Variable usernames
         usernames.push(await personCreationView.data_Benutzername.innerText());
         await expect(personCreationView.data_Rolle).toHaveText('LiV');
       });
