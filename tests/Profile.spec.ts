@@ -9,7 +9,7 @@ import { typeLandesadmin, typeLehrer, typeSchueler, typeSchuladmin } from '../ba
 import { email, itslearning } from '../base/sp.ts';
 import { BROWSER, LONG, SHORT, STAGE } from '../base/tags';
 import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata';
-import { generateNachname, generateRolleName, generateVorname } from '../base/testHelperGenerateTestdataNames.ts';
+import { generateKopersNr, generateNachname, generateRolleName, generateVorname } from '../base/testHelperGenerateTestdataNames.ts';
 import { HeaderPage } from '../pages/Header.page';
 import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
@@ -73,6 +73,71 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       await header.logout();
     });
   });
+
+
+
+
+
+  test.only(
+    'Inbetriebnahme-Passwort als Lehrer über das eigene Profil erzeugen',
+    { tag: [LONG, STAGE] },
+    async ({ page }) => {   
+      const header: HeaderPage = new HeaderPage(page);
+      let userInfoLehrer: UserInfo;
+
+        await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) über die api anlegen und mit diesem anmelden`, async () => {
+            userInfoLehrer = await createRolleAndPersonWithUserContext(
+                page,
+                testschule,
+                typeLehrer,
+                await generateNachname(),
+                await generateVorname(),
+                [await getSPId(page, email)],
+                await generateRolleName(),
+                await generateKopersNr()
+            );
+            usernames.push(userInfoLehrer.username);
+            rolleIds.push(userInfoLehrer.rolleId);
+
+            await header.logout();
+            await header.button_login.click();
+            const login: LoginPage = new LoginPage(page);
+            await login.login(userInfoLehrer.username, userInfoLehrer.password);
+            await login.UpdatePW();
+            currentUserIsLandesadministrator = false;
+        })
+
+        const profileView: ProfilePage = new ProfilePage(page);
+
+        await test.step(`Profil öffnen`, async () => {
+          await header.button_profil.click();
+        });
+
+        await test.step(`Inbetriebnahme-Passwort für LK-Endgerät erzeugen`, async () => {
+          await page.pause()
+          await expect(profileView.text_h2_Ueberschrift).toHaveText('Mein Profil');
+
+          await page.getByText('Sie benötigen dieses Passwort ausschließlich zur einmaligen Eingabe beim ersten Start Ihres neuen LK-Endgerätes oder wenn das Gerät zurückgesetzt wurde!').click();
+          await page.getByTestId('open-device-password-dialog-button').click();
+          await page.getByTestId('layout-card-headline').click();
+          await page.getByTestId('password-reset-info-text').click();
+          await page.getByTestId('password-reset-button').click();
+
+          await page.getByRole('textbox', { name: 'Generiertes Passwort' }).click();
+          await page.getByTestId('show-password-icon').click();
+          await page.getByTestId('copy-password-icon').click();
+          await page.getByTestId('close-password-reset-dialog-button').click();
+          await page.getByTestId('profile-headline').click();
+          
+          //await personDetailsView.createIbnPassword();
+          await page.pause()
+        })
+    }
+)
+
+
+
+
 
   test(
     'Das eigene Profil öffnen und auf Vollständigkeit prüfen als Landesadmin',
