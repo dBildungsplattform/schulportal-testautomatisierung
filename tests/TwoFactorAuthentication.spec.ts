@@ -1,5 +1,5 @@
 import { test, expect, PlaywrightTestArgs } from '@playwright/test';
-import { UserInfo } from '../base/api/testHelper.page.ts';
+import { UserInfo } from '../base/api/testHelper.page.js';
 import { createRolleAndPersonWithUserContext } from '../base/api/testHelperPerson.page';
 import { getSPId } from '../base/api/testHelperServiceprovider.page';
 import { LONG } from '../base/tags';
@@ -10,12 +10,12 @@ import { email } from '../base/sp';
 import { gotoTargetURL } from '../base/testHelperUtils';
 import { PersonDetailsViewPage } from '../pages/admin/PersonDetailsView.page';
 import { PersonManagementViewPage } from '../pages/admin/PersonManagementView.page';
-import { HeaderPage } from '../pages/Header.page.ts';
-import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata.ts';
+import { HeaderPage } from '../pages/Header.page.js';
+import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata.js';
 import FromAnywhere from '../pages/FromAnywhere';
-import { StartPage } from '../pages/StartView.page.ts';
-import { LandingPage } from '../pages/LandingView.page.ts';
-import { LoginPage } from '../pages/LoginView.page.ts';
+import { StartPage } from '../pages/StartView.page.js';
+import { LandingPage } from '../pages/LandingView.page.js';
+import { LoginPage } from '../pages/LoginView.page.js';
 
 // The created test data will be deleted in the afterEach block
 let usernames: string[] = [];

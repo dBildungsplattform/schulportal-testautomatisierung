@@ -1,33 +1,17 @@
 import { expect, test } from '@playwright/test';
 import { LONG, SHORT, STAGE } from '../base/tags';
 import { TestHelperLdap } from '../base/testHelperLdap';
-import { Entry } from 'ldapts';
-import { setUEMPassword } from '../base/api/testHelperPerson.page';
 
-const PW: string | undefined = process.env.PW;
-const ADMIN: string | undefined = process.env.USER;
 const LDAP_URL: string = process.env.LDAP_URL;
 const LDAP_ADMIN_PASSWORD: string = process.env.LDAP_ADMIN_PASSWORD;
 
 
 test.describe(`Testfälle für LDAP: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
 
-  test.beforeEach(async ({ page }) => {
-    await test.step(`BeforeEach`, async () => {
-      //nothing to do here, no data will be created
-    });
-  });
-
-  test.afterEach(async ({ page }) => {
-    await test.step(`AfterEach`, async () => {
-      //nothing to do here, no data will be deleted
-    });
-  });
-
   //** Die für den u.g. Test genutzen Daten müssen bereits existieren, der Test legt diese nicht im Vorfeld an. */
   test(
     'TestHelperLdap testen',
-    { tag: [LONG, SHORT, STAGE] }, async ({ page }) => {
+    { tag: [LONG, SHORT, STAGE] }, async () => {
 
       const testHelperLdap: TestHelperLdap = new TestHelperLdap(LDAP_URL, LDAP_ADMIN_PASSWORD);
 

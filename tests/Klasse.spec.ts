@@ -1,33 +1,33 @@
 import { expect, test, PlaywrightTestArgs } from '@playwright/test';
-import { UserInfo } from '../base/api/testHelper.page.ts';
-import { createRolleAndPersonWithUserContext } from '../base/api/testHelperPerson.page.ts';
-import { addSystemrechtToRolle } from '../base/api/testHelperRolle.page.ts';
-import { getSPId } from '../base/api/testHelperServiceprovider.page.ts';
-import { landSH, testschule } from '../base/organisation.ts';
+import { UserInfo } from '../base/api/testHelper.page.js';
+import { createRolleAndPersonWithUserContext } from '../base/api/testHelperPerson.page.js';
+import { addSystemrechtToRolle } from '../base/api/testHelperRolle.page.js';
+import { getSPId } from '../base/api/testHelperServiceprovider.page.js';
+import { landSH, testschule } from '../base/organisation.js';
 import { BROWSER, LONG, SHORT, STAGE } from '../base/tags';
 import {
   deleteKlasseByName,
   deletePersonenBySearchStrings,
   deleteRolleById,
-} from '../base/testHelperDeleteTestdata.ts';
+} from '../base/testHelperDeleteTestdata.js';
 import {
   generateKlassenname,
   generateNachname,
   generateRolleName,
   generateVorname,
-} from '../base/testHelperGenerateTestdataNames.ts';
+} from '../base/testHelperGenerateTestdataNames.js';
 import { KlasseCreationViewPage } from '../pages/admin/KlasseCreationView.page';
-import { KlasseDetailsViewPage } from '../pages/admin/KlasseDetailsView.page.ts';
+import { KlasseDetailsViewPage } from '../pages/admin/KlasseDetailsView.page.js';
 import { KlasseManagementViewPage } from '../pages/admin/KlasseManagementView.page';
 import { HeaderPage } from '../pages/Header.page';
 import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
 import { MenuPage } from '../pages/MenuBar.page';
 import { StartPage } from '../pages/StartView.page';
-import { typeLandesadmin, typeSchueler, typeSchuladmin } from '../base/rollentypen.ts';
+import { typeLandesadmin, typeSchueler, typeSchuladmin } from '../base/rollentypen.js';
 import FromAnywhere from '../pages/FromAnywhere';
-import { getOrganisationId, createKlasse } from '../base/api/testHelperOrganisation.page.ts';
-import { klasse1Testschule } from '../base/klassen.ts';
+import { getOrganisationId, createKlasse } from '../base/api/testHelperOrganisation.page.js';
+import { klasse1Testschule } from '../base/klassen.js';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;

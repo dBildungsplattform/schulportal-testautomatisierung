@@ -4,9 +4,9 @@ import { getOrganisationId } from '../base/api/testHelperOrganisation.page';
 import { addSecondOrganisationToPerson, createRolleAndPersonWithUserContext } from '../base/api/testHelperPerson.page';
 import { addSystemrechtToRolle } from '../base/api/testHelperRolle.page';
 import { getSPId } from '../base/api/testHelperServiceprovider.page';
-import { landSH, testschule, testschule665Name } from '../base/organisation.ts';
-import { typeLandesadmin, typeLehrer, typeSchueler, typeSchuladmin } from '../base/rollentypen.ts';
-import { email, itslearning } from '../base/sp.ts';
+import { landSH, testschule, testschule665Name } from '../base/organisation.js';
+import { typeLandesadmin, typeLehrer, typeSchueler, typeSchuladmin } from '../base/rollentypen.js';
+import { email, itslearning } from '../base/sp.js';
 import { BROWSER, LONG, SHORT, STAGE } from '../base/tags';
 import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata';
 import {
@@ -14,7 +14,7 @@ import {
   generateRolleName,
   generateVorname,
   generateKopersNr,
-} from '../base/testHelperGenerateTestdataNames.ts';
+} from '../base/testHelperGenerateTestdataNames.js';
 import { HeaderPage } from '../pages/Header.page';
 import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
@@ -29,7 +29,7 @@ import {
   klassenVerwalten,
   schultraegerVerwalten,
   personenAnlegen,
-} from '../base/berechtigungen.ts';
+} from '../base/berechtigungen.js';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;

@@ -3,17 +3,17 @@ import { UserInfo } from '../base/api/testHelper.page';
 import { createRolleAndPersonWithUserContext } from '../base/api/testHelperPerson.page';
 import { addSystemrechtToRolle } from '../base/api/testHelperRolle.page';
 import { getSPId } from '../base/api/testHelperServiceprovider.page';
-import { landSH, testschule, testschule665Name, oeffentlichLandSH, ersatzLandSH } from '../base/organisation.ts';
-import { landesadminRolle, schuelerRolle, schuladminOeffentlichRolle } from '../base/rollen.ts';
+import { landSH, testschule, testschule665Name, oeffentlichLandSH, ersatzLandSH } from '../base/organisation.js';
+import { landesadminRolle, schuelerRolle, schuladminOeffentlichRolle } from '../base/rollen.js';
 import { BROWSER, LONG, SHORT, STAGE } from '../base/tags';
-import { deletePersonenBySearchStrings, deleteRolleById, deleteRolleByName } from '../base/testHelperDeleteTestdata.ts';
+import { deletePersonenBySearchStrings, deleteRolleById, deleteRolleByName } from '../base/testHelperDeleteTestdata.js';
 import {
   generateKopersNr,
   generateNachname,
   generateRolleName,
   generateVorname,
-} from '../base/testHelperGenerateTestdataNames.ts';
-import { gotoTargetURL } from '../base/testHelperUtils.ts';
+} from '../base/testHelperGenerateTestdataNames.js';
+import { gotoTargetURL } from '../base/testHelperUtils.js';
 import { PersonCreationViewPage } from '../pages/admin/PersonCreationView.page';
 import { PersonDetailsViewPage } from '../pages/admin/PersonDetailsView.page';
 import { PersonManagementViewPage } from '../pages/admin/PersonManagementView.page';
