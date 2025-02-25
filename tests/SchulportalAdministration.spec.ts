@@ -12,6 +12,7 @@ import { deletePersonById, deleteRolleById } from '../base/testHelperDeleteTestd
 import { generateNachname, generateRolleName, generateVorname } from '../base/testHelperGenerateTestdataNames';
 import { testschule } from '../base/organisation';
 import FromAnywhere from '../pages/FromAnywhere';
+import { email, itslearning, schulportaladmin } from '../base/sp';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -98,7 +99,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
       await startseite.checkHeadlineIsVisible();
       await test.step(`Prüfen, dass die Kachel E-Mail angezeigt wird und die Kachel Schulportal-Administration nicht angezeigt wird`, async () => {
         await expect(startseite.cardItemSchulportalAdministration).toBeHidden();
-        await expect(startseite.cardItemEmail).toBeVisible();
+        await startseite.checkSpIsVisible([email]);
       });
     }
   );
@@ -135,7 +136,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
       await startseite.checkHeadlineIsVisible();
       await test.step(`Prüfen, dass die Kachel E-Mail angezeigt wird und die Kachel Schulportal-Administration nicht angezeigt wird`, async () => {
         await expect(startseite.cardItemSchulportalAdministration).toBeHidden();
-        await expect(startseite.cardItemItslearning).toBeVisible();
+        await startseite.checkSpIsVisible([itslearning]);
       });
     }
   );
@@ -173,7 +174,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
       currentUserIsLandesadministrator = false;
       await startseite.checkHeadlineIsVisible();
       await test.step(`Prüfen, dass die Kachel E-Mail nicht angezeigt wird und die Kachel Schulportal-Administration angezeigt wird`, async () => {
-        await expect(startseite.cardItemSchulportalAdministration).toBeVisible();
+        await startseite.checkSpIsVisible([schulportaladmin]);
         await expect(startseite.cardItemEmail).toBeHidden();
       });
     }

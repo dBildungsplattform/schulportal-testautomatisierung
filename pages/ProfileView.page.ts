@@ -111,22 +111,6 @@ export class ProfilePage {
     this.textLayoutCardHeadline = page.getByTestId('layout-card-headline');
   }
 
-  public async alickButtonStartPWChangeDialog() {
-    await this.buttonStartPWChangeDialog.click();
-  }
-
-  public async aclickButtonChangePW() {
-    await this.buttonChangePW.click();
-  }
-
-  public async acheckButtonStartPWChangeDialogIsEnabled() {
-    await expect(this.buttonStartPWChangeDialog).toBeEnabled();
-  }
-
-  public async acheckTitleMeinProfile() {
-    await expect(this.titleMeinProfil).toHaveText('Mein Profil');
-  }
-
   public async checkSectionPersoenlicheDaten(vorname: string, nachname:string, usernames: string[]) {
     await expect(this.cardHeadlinePersoenlicheDaten).toHaveText('Persönliche Daten');
     await expect(this.labelVornameNachname).toHaveText('Vor- und Nachname:');
