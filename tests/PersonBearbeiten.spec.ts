@@ -241,7 +241,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
       const personDetailsView: PersonDetailsViewPage =
         await test.step(`Zu sperrenden Lehrer suchen und Gesamtübersicht öffnen`, async () => {
-          await gotoTargetURL(page, 'admin/personen'); // Die Navigation ist nicht Bestandteil des Tests
+          await gotoTargetURL(page, 'admin/personen');
           await personManagementView.searchBySuchfeld(userInfoLehrer.username);
           return await personManagementView.openGesamtuebersichtPerson(page, userInfoLehrer.username); // Klick auf den Benutzernamen
         });
