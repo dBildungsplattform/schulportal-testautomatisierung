@@ -5,25 +5,27 @@ import { expect } from '@playwright/test';
 
 export class StartPage {
   readonly page: Page;
-  readonly text_h2_Ueberschrift: Locator;
-  readonly card_item_email: Locator;
-  readonly card_item_kalender: Locator;
-  readonly card_item_adressbuch: Locator;
-  readonly card_item_itslearning: Locator;
-  readonly card_item_schulportal_administration: Locator;
+  readonly textH2Ueberschrift: Locator;
+  readonly cardItemEmail: Locator;
+  readonly cardItemKalender: Locator;
+  readonly cardItemAdressbuch: Locator;
+  readonly cardItemItslearning: Locator;
+  readonly cardItemSchulportalAdministration: Locator;
+  readonly cardItem: (spName: string) => Locator;
 
   constructor(page) {
     this.page = page;
-    this.text_h2_Ueberschrift = page.getByTestId("all-service-provider-title");
-    this.card_item_email = page.locator('[data-testid^="service-provider-card"]', { hasText: "E-Mail" });
-    this.card_item_kalender = page.locator('[data-testid^="service-provider-card"]', { hasText: "Kalender" });
-    this.card_item_adressbuch = page.locator('[data-testid^="service-provider-card"]', { hasText: "Adressbuch" });
-    this.card_item_itslearning = page.locator('[data-testid^="service-provider-card"]', { hasText: "itslearning" });
-    this.card_item_schulportal_administration = page.locator('[data-testid^="service-provider-card"]', { hasText: "Schulportal-Administration" });
+    this.textH2Ueberschrift = page.getByTestId("all-service-provider-title");
+    this.cardItemEmail = page.locator('[data-testid^="service-provider-card"]', { hasText: "E-Mail" });
+    this.cardItemKalender = page.locator('[data-testid^="service-provider-card"]', { hasText: "Kalender" });
+    this.cardItemAdressbuch = page.locator('[data-testid^="service-provider-card"]', { hasText: "Adressbuch" });
+    this.cardItemItslearning = page.locator('[data-testid^="service-provider-card"]', { hasText: "itslearning" });
+    this.cardItemSchulportalAdministration = page.locator('[data-testid^="service-provider-card"]', { hasText: "Schulportal-Administration" });
+    this.cardItem = (spName: string) => page.locator('[data-testid^="service-provider-card"]', { hasText: spName });
   }
 
   public async goToAdministration(): Promise<MenuPage> {
-    await this.card_item_schulportal_administration.click();
+    await this.cardItemSchulportalAdministration.click();
     return new MenuPage(this.page);
   }
 
@@ -33,7 +35,13 @@ export class StartPage {
   }
 
   public async checkHeadlineIsVisible(): Promise<StartPage> {
-    await expect(this.text_h2_Ueberschrift).toBeVisible();
+    await expect(this.textH2Ueberschrift).toBeVisible();
     return new StartPage(this.page);
+  }
+
+  public async checkSpIsVisible(spNames: string[]) {
+    for (let spName of spNames) {
+      await expect(this.cardItem(spName)).toBeVisible()
+    }
   }
 }

@@ -1,6 +1,8 @@
 import { type Locator, Page, expect } from '@playwright/test';
-import { LandingPage } from "./LandingView.page";
+import { LandingPage } from './LandingView.page';
 import FromAnywhere from '../pages/FromAnywhere';
+import { LoginPage } from '../pages/LoginView.page';
+import { ProfilePage } from './ProfileView.page';
 
 export class HeaderPage{
     readonly page: Page;
@@ -19,14 +21,24 @@ export class HeaderPage{
         this.icon_logout = page.locator('.mdi-logout');
     }
 
-    async logout(): Promise<void> {
+    async logout(): Promise<LandingPage> {
         // Wenn man auf den Abmelden-Button klickt, laufen häufig noch diverse requests. Deshalb brauchen wir hier eine kurze Verzögerung bzw. einen Sprung auf die Startseite
         // Wird mit SPSH-1809 überarbeitet
         await FromAnywhere(this.page).start();
         await this.page.waitForResponse(resp => resp.url().includes('/api/provider') && resp.status() === 200);
-        
         await this.button_logout.click();
         const landingPage: LandingPage = new LandingPage(this.page);
         await expect(landingPage.text_Willkommen).toBeVisible();
+        return new LandingPage(this.page);
     }
+
+    public async goToLogin(): Promise<LoginPage> {
+        await this.button_login.click();
+        return new LoginPage(this.page);
+    }
+
+    public async goToProfile(): Promise<ProfilePage> {
+        await this.button_profil.click();
+        return new ProfilePage(this.page);
+      }
 }

@@ -1,0 +1,1 @@
+export const klasse1Testschule = "Playwright3a";
