@@ -52,7 +52,7 @@ test.describe(`Testfälle für TwoFactorAuthentication": Umgebung: ${process.env
     });
   });
 
-  test('Prüfen, ob es möglich ist einen Token zurückzusetzen', { tag: [LONG] }, async ({ page }: PlaywrightTestArgs) => {
+  test('Prüfen, ob es möglich ist einen Token zurückzusetzen', { tag: [LONG, STAGE, BROWSER] }, async ({ page }: PlaywrightTestArgs) => {
     let userInfoLehrer: UserInfo;
 
     await test.step(`Testdaten erstellen`, async () => {

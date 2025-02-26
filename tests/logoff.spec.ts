@@ -19,7 +19,7 @@ test.afterEach(async ({ page }: PlaywrightTestArgs) => {
 })
 
 test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
-  test('Erfolgreicher Standard Logoff als Landesadmin', {tag: [LONG, SHORT, STAGE]}, async ({ page }: PlaywrightTestArgs) => {
+  test('Erfolgreicher Standard Logoff als Landesadmin', {tag: [LONG, SHORT, STAGE, BROWSER]}, async ({ page }: PlaywrightTestArgs) => {
     const landing: LandingPage = new LandingPage(page);
     const header: HeaderPage = new HeaderPage(page);
 
