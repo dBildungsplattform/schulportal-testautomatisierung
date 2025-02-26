@@ -42,15 +42,15 @@ jobs:
         echo "tag=${tag}" >> "$GITHUB_OUTPUT"
         echo "tag=${tag}"
 
-    - name: Determine Frontend URL
-      run: |
-        BRANCH_NAME="${{ github.head_ref }}"
-        if [[ ]]; then
-          FRONTEND_URL="https://main.dev.spsh.dbildungsplattform.de/"
-        else
-          FRONTEND_URL="https://main.dev.spsh.dbildungsplattform.de/"
-        fi
-        echo "FRONTEND_URL=$FRONTEND_URL" >> $GITHUB_ENV
+    #- name: Determine Frontend URL
+    #  run: |
+    #    BRANCH_NAME="${{ github.head_ref }}"
+    #    if [[ ]]; then
+    #      FRONTEND_URL="https://main.dev.spsh.dbildungsplattform.de/"
+    #    else
+    #      FRONTEND_URL="https://main.dev.spsh.dbildungsplattform.de/"
+    #    fi
+    #    echo "FRONTEND_URL=$FRONTEND_URL" >> $GITHUB_ENV
 
     - name: Run Playwright tests
       run:  ENV='dev' FRONTEND_URL='${{ env.FRONTEND_URL }}' npx playwright test --config=playwright.config.ts --grep "@long" --project "chromium"
