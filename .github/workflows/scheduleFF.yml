@@ -1,4 +1,4 @@
-name: Playwright - Scheduled Main FF
+name: Playwright - Scheduled Main Firefox
 on:
   workflow_dispatch:
   schedule:

@@ -1,4 +1,4 @@
-name: Playwright - Scheduled Stage SMOKE
+name: Playwright - Scheduled Stage Smoketest
 on:
   workflow_dispatch:
   schedule:

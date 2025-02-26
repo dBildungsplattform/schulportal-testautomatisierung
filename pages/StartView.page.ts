@@ -1,6 +1,6 @@
-import { type Locator, Page } from "@playwright/test";
-import { MenuPage } from "./MenuBar.page";
-import { LandingPage } from "./LandingView.page";
+import { type Locator, Page } from '@playwright/test';
+import { MenuPage } from './MenuBar.page';
+import { LandingPage } from './LandingView.page';
 import { expect } from '@playwright/test';
 
 export class StartPage {
