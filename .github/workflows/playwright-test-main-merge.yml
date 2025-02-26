@@ -25,7 +25,7 @@ jobs:
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
 
-    - name: Create Tag
+    - name: Determine Branch Tag
       run: |
         regex_long='^([[:alpha:]]+?-[[:digit:]]+-[[:digit:]]+)'
         regex_short='^([[:alpha:]]+?-[[:digit:]]+)'
@@ -40,8 +40,22 @@ jobs:
           exit 1
         fi
         echo "tag=${tag}" >> "$GITHUB_OUTPUT"
-        echo "tag=${tag}"
+        echo "branch to merge from tag=${tag}"
 
+    - name: Get all branches
+      run: |
+        BRANCHES=$(git branch -r | sed 's/origin\///' | tr '\n' ' ')
+        echo "BRANCHES=$BRANCHES" >> "$GITHUB_ENV"
+
+    - name: Filter branches by string
+      id: filter-branches
+      run: |
+        SEARCH_STRING="${{ github.event.inputs.search_string }}"
+        MATCHING_BRANCHES=$(echo "$BRANCHES" | grep -i "$SEARCH_STRING" || true)
+        echo "MATCHING_BRANCHES<<EOF" >> "$GITHUB_ENV"
+        echo "$MATCHING_BRANCHES" >> "$GITHUB_ENV"
+        echo "EOF" >> "$GITHUB_ENV"
+        
     #- name: Determine Frontend URL
     #  run: |
     #    BRANCH_NAME="${{ github.head_ref }}"
