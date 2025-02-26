@@ -28,6 +28,7 @@ jobs:
       #for PR use  ${{ github.head_ref }}
       
     - name: Determine Branch Tag
+      id: determine-tag
       run: |
         regex_long='^([[:alpha:]]+?-[[:digit:]]+-[[:digit:]]+)'
         regex_short='^([[:alpha:]]+?-[[:digit:]]+)'
@@ -57,6 +58,23 @@ jobs:
         echo "MATCHING_BRANCHES<<EOF" >> "$GITHUB_ENV"
         echo "$MATCHING_BRANCHES" >> "$GITHUB_ENV"
         echo "EOF" >> "$GITHUB_ENV"
+
+    - name: Determine Frontend Url by checking current branches
+      id: check-branch-count
+      run: |
+        NUM_BRANCHES=$(echo "$MATCHING_BRANCHES" | wc -l)
+        echo "Number of matching branches: $NUM_BRANCHES"
+        
+        if [ "$NUM_BRANCHES" -gt 1 ]; then
+          echo "At least one more branch for ticket was found, using branch FE and BE infrastructure"
+          FRONTEND_URL="https://${{ steps.determine-tag.outputs.tag }}.dev.spsh.dbildungsplattform.de/"
+        else
+          echo "No other branch to ticket found, using main FE and BE infrastructure"
+          FRONTEND_URL="https://main.dev.spsh.dbildungsplattform.de/"
+        fi
+      env:
+        MATCHING_BRANCHES: ${{ env.MATCHING_BRANCHES }}
+
 
     #- name: Determine Frontend URL
     #  run: |
