@@ -68,9 +68,11 @@ jobs:
         if [ "$NUM_BRANCHES" -gt 1 ]; then
           echo "At least one more branch for ticket was found, using branch FE and BE infrastructure"
           FRONTEND_URL="https://${{ steps.determine-tag.outputs.tag }}.dev.spsh.dbildungsplattform.de/"
+          echo "Frontend URL=" "$FRONTEND_URL"
         else
           echo "No other branch to ticket found, using main FE and BE infrastructure"
           FRONTEND_URL="https://main.dev.spsh.dbildungsplattform.de/"
+          echo "Frontend URL=" "$FRONTEND_URL"
         fi
       env:
         MATCHING_BRANCHES: ${{ env.MATCHING_BRANCHES }}
