@@ -1,4 +1,4 @@
-name: Playwright - For DEV Branches or Merge
+name: Playwright Tests
 
 on:
   workflow_call:
