@@ -6,7 +6,7 @@ import { addSystemrechtToRolle } from '../base/api/testHelperRolle.page';
 import { getSPId } from '../base/api/testHelperServiceprovider.page';
 import { landSH, testschule, testschule665 } from '../base/organisation.ts';
 import { typeLandesadmin, typeLehrer, typeSchueler, typeSchuladmin } from '../base/rollentypen.ts';
-import { email, itslearning } from '../base/sp.ts';
+import { email, itslearning, schulportaladmin } from '../base/sp.ts';
 import { BROWSER, LONG, SHORT, STAGE } from '../base/tags';
 import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata';
 import {
@@ -132,6 +132,8 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       });
 
       await test.step(`Profil öffnen`, async () => {
+        const startView: StartPage = new StartPage(page);
+        await startView.checkSpIsVisible([schulportaladmin]);
         await header.goToProfile();
       });
 
