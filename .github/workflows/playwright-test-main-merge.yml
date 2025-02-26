@@ -49,6 +49,7 @@ jobs:
       run: |
         BRANCHES=$(git branch -r | sed 's/origin\///' | tr '\n' ' ')
         echo "BRANCHES=$BRANCHES" >> "$GITHUB_ENV"
+        echo "BRANCHES=$BRANCHES"
 
     - name: Filter branches by string
       id: filter-branches
