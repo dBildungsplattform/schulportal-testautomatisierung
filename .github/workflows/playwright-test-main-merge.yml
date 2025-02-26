@@ -53,11 +53,29 @@ jobs:
     - name: Filter branches by string
       id: filter-branches
       run: |
-        SEARCH_STRING="${{ github.event.inputs.search_string }}"
+        SEARCH_STRING="${{ steps.determine-tag.outputs.tag }}"
+      
+        # Ensure BRANCHES is properly loaded (if it was set in an earlier step)
+        if [ -z "$BRANCHES" ]; then
+          BRANCHES=$(git branch -r | sed 's/origin\///')
+        fi
+  
+        # Find all matching branches (ignoring case)
         MATCHING_BRANCHES=$(echo "$BRANCHES" | grep -i "$SEARCH_STRING" || true)
-        echo "MATCHING_BRANCHES<<EOF" >> "$GITHUB_ENV"
-        echo "$MATCHING_BRANCHES" >> "$GITHUB_ENV"
-        echo "EOF" >> "$GITHUB_ENV"
+  
+        if [ -z "$MATCHING_BRANCHES" ]; then
+          echo "::warning::No branches found matching '$SEARCH_STRING'."
+        fi
+  
+        # Convert multiline string to a single-line comma-separated list
+        MATCHING_BRANCHES_CSV=$(echo "$MATCHING_BRANCHES" | paste -sd "," -)
+  
+        # Save to environment variables and GitHub Actions outputs
+        echo "MATCHING_BRANCHES=$MATCHING_BRANCHES_CSV" >> "$GITHUB_ENV"
+        echo "matching_branches=$MATCHING_BRANCHES_CSV" >> "$GITHUB_OUTPUT"
+  
+        # Print output for debugging
+        echo "Matching branches: $MATCHING_BRANCHES_CSV"
 
     - name: Determine Frontend Url by checking current branches
       id: check-branch-count
@@ -78,15 +96,6 @@ jobs:
         MATCHING_BRANCHES: ${{ env.MATCHING_BRANCHES }}
 
 
-    #- name: Determine Frontend URL
-    #  run: |
-    #    BRANCH_NAME="${{ github.head_ref }}"
-    #    if [[ ]]; then
-    #      FRONTEND_URL="https://main.dev.spsh.dbildungsplattform.de/"
-    #    else
-    #      FRONTEND_URL="https://main.dev.spsh.dbildungsplattform.de/"
-    #    fi
-    #    echo "FRONTEND_URL=$FRONTEND_URL" >> $GITHUB_ENV
 
     #- name: Run Playwright tests
     #  run:  ENV='dev' FRONTEND_URL='${{ env.FRONTEND_URL }}' npx playwright test --config=playwright.config.ts --grep "@long" --project "chromium"
