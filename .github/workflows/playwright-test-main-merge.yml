@@ -52,8 +52,8 @@ jobs:
         BRANCHES=$(git branch -r | sed 's/origin\///' | tr '\n' ' ')
         
         echo "BRANCHES=$BRANCHES"
-        #echo "branches=$BRANCHES" >> "$GITHUB_OUTPUT"
-        echo "BRANCH_LIST=$BRANCHES"
+        echo "branches=$BRANCHES" >> "$GITHUB_OUTPUT"
+        
                 
 
     - name: Filter branches by string
