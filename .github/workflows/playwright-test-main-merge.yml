@@ -67,7 +67,7 @@ jobs:
     - name: Search for string in branches
       run: |
         SEARCH_STRING="${{ steps.determine-tag.outputs.tag }}"  
-        COUNT=$(grep -c "$SEARCH_STRING" branches.txt || true)
+        COUNT=$(grep -i -c "$SEARCH_STRING" branches.txt || true)
         echo "Occurrences of '$SEARCH_STRING': $COUNT"
         echo "MATCH_COUNT=$COUNT" >> $GITHUB_ENV
         echo "The string appears $MATCH_COUNT times in branch names"
