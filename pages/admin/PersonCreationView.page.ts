@@ -21,6 +21,7 @@ export class PersonCreationViewPage{
     readonly text_Bestaetigungsseite_Benutzernachname: Locator;
     readonly input_EinstiegsPasswort: Locator;
     readonly label_EinstiegsPasswort: Locator;
+    readonly button_ZurGesamtuebersicht: Locator;
     readonly button_ZurueckErgebnisliste: Locator;
     readonly button_WeiterenBenutzerAnlegen: Locator;
     readonly label_Vorname: Locator;
@@ -77,6 +78,7 @@ export class PersonCreationViewPage{
         this.data_Klasse =  page.getByTestId('created-person-klasse');
         this.label_EinstiegsPasswort =  page.getByText(' Einstiegs-Passwort:', { exact: true });
         this.input_EinstiegsPasswort = page.locator('[data-testid="password-output-field"] input');
+        this.button_ZurGesamtuebersicht = page.getByTestId('to-details-button');
         this.button_ZurueckErgebnisliste = page.getByTestId('back-to-list-button');
         this.button_WeiterenBenutzerAnlegen = page.getByTestId('create-another-person-button');
         this.listbox_Rolle = page.locator('.v-list');

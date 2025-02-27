@@ -3,8 +3,6 @@ import { LdapOperationError } from './ldap/error/ldap-operation.error';
 
 declare type Result<T, E = Error> = { ok: true; value: T } | { ok: false; error: E };
 
-const encodeBase64 = (str: string): string => Buffer.from(str, 'binary').toString('base64');
-
 export class TestHelperLdap {
   // Default-retries of 3 equals the value defined for BE.
   private static readonly DEFAULT_RETRIES: number = 3; // e.g. DEFAULT_RETRIES = 3 will produce retry sequence: 1sek, 8sek, 27sek (1000ms * retrycounter^3)
@@ -99,6 +97,22 @@ export class TestHelperLdap {
     return res.ok && res.value;
   }
 
+  public async getMailPrimaryAddress(username: string): Promise<string> {
+    const res: Result<Entry> = await this.executeWithRetry(() => this.getUser(username));
+
+    if(!res.ok){
+      throw new Error('getUser returned Error');
+    }
+    const mailPrimaryAddress: string | Buffer<ArrayBufferLike> | Buffer<ArrayBufferLike>[] | string[] = res.value['mailPrimaryAddress'];
+
+    if (Array.isArray(mailPrimaryAddress)) {
+        const firstValue: string | Buffer<ArrayBufferLike> = mailPrimaryAddress[0];
+        return Buffer.isBuffer(firstValue) ? firstValue.toString() : firstValue;
+    }
+
+    return Buffer.isBuffer(mailPrimaryAddress) ? mailPrimaryAddress.toString() : mailPrimaryAddress;
+  }
+
 
   //** PRIVATE methods */
 
@@ -126,7 +140,8 @@ export class TestHelperLdap {
         ok: true,
         value: searchResultLehrer.searchEntries[0],
       };
-    } catch(ex) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch(ex: unknown) {
       await this.unbind();
       return {
         ok: false,
@@ -148,7 +163,8 @@ export class TestHelperLdap {
         ok: true,
         value: searchResultOrgUnit.searchEntries[0],
       };
-    } catch(ex) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch(ex: unknown) {
       await this.unbind();
       return {
         ok: false,
@@ -171,7 +187,8 @@ export class TestHelperLdap {
         ok: true,
         value: searchResultOrgRole.searchEntries[0],
       };
-    } catch(ex) {
+       // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch(ex: unknown) {
       await this.unbind();
       return {
         ok: false,
@@ -194,7 +211,8 @@ export class TestHelperLdap {
         ok: true,
         value: searchResultGroupOfNames.searchEntries[0],
       };
-    } catch(ex) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch(ex: unknown) {
       await this.unbind();
       return {
         ok: false,
@@ -215,7 +233,8 @@ export class TestHelperLdap {
         ok: true,
         value: isUserInGroup,
       };
-    } catch(ex) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch(ex: unknown) {
       await this.unbind();
       return {
         ok: false,
@@ -247,7 +266,8 @@ export class TestHelperLdap {
         ok: true,
         value: searchResultLehrer.searchEntries[0]['userPassword'] === password,
       };
-    } catch(ex) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch(ex: unknown) {
       await this.unbind();
       return {
         ok: false,
@@ -326,7 +346,8 @@ export class TestHelperLdap {
         } else {
           throw new Error(`Function returned error: ${result.error.message}`);
         }
-      } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch(error: unknown) {
         const currentDelay: number = delay * Math.pow(currentAttempt, 3);
         console.warn(
           `Attempt ${currentAttempt} failed. Retrying in ${currentDelay}ms... Remaining retries: ${retries - currentAttempt}`,
