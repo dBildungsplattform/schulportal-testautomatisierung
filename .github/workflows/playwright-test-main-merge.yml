@@ -46,10 +46,13 @@ jobs:
         echo "branch to merge from tag=${tag}"
 
     - name: Get all branches
+      id: get-branches
       run: |
+        git fetch --all
         BRANCHES=$(git branch -r | sed 's/origin\///' | tr '\n' ' ')
         echo "BRANCHES=$BRANCHES"
         echo "BRANCHES=$BRANCHES" >> "$GITHUB_ENV"
+        echo "branches=$BRANCHES" >> "$GITHUB_OUTPUT"
 
     - name: Filter branches by string
       id: filter-branches
