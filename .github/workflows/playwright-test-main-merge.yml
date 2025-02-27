@@ -97,8 +97,7 @@ jobs:
   
         # Print output for debugging
         echo "Matching branches: $MATCHING_BRANCHES_CSV"
-      env:
-        BRANCHES: ${{ env.BRANCHES }}
+      
     
     - name: Determine Frontend Url by checking current branches
       id: check-branch-count
