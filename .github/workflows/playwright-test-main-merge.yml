@@ -60,18 +60,7 @@ jobs:
         echo "EOF" >> "$GITHUB_ENV"
   
         echo "BRANCH_LIST=$BRANCHES"
-        
-
-    - name: Get all branches
-      id: get-branches-2
-      run: |
-        git fetch --all
-        SEARCH_STRING="your_search_string"
-        BRANCHES=$(git branch -r | sed 's/origin\///' | grep -i "$SEARCH_STRING" | tr '\n' ' ')
-        echo "BRANCHES=$BRANCHES" >> "$GITHUB_ENV"
-        echo "Branches V2= $BRANCHES"
-        echo "branches=$BRANCHES" >> "$GITHUB_OUTPUT"
-        
+                
 
     - name: Filter branches by string
       id: filter-branches
@@ -79,6 +68,7 @@ jobs:
         SEARCH_STRING="${{ steps.determine-tag.outputs.tag }}"
         echo "searching for string $SEARCH_STRING"
         BRANCHES="${{ steps.get-branches.outputs.branches }}"
+        echo "in BRANCH_LIST=$BRANCHES" 
         
         # Find all matching branches (ignoring case)
         MATCHING_BRANCHES=$(echo "$BRANCHES" | grep -i "$SEARCH_STRING" || true)
