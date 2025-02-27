@@ -57,44 +57,21 @@ jobs:
         echo "BRANCHES_CSV=$BRANCHES_CSV"
         echo "branches=$BRANCHES_CSV" >> "$GITHUB_OUTPUT"
         
-    - name: Format output as list
-      id: format-list
+    - name: Get list of all branches
       run: |
-        output_list=$(echo ${{ steps.get-branches.outputs.branches }} | tr ' ' '\n')
-        echo "::set-output name=formatted_output::$output_list"
+        git fetch --all  # Ensure we have all branches
+        git branch -r | sed 's/origin\///' > branches.txt
+        echo "Branches found:"
+        cat branches.txt
 
-    - name: Use formatted output
+    - name: Search for string in branches
       run: |
-        echo "Formatted Output: ${{ steps.format-list.outputs.formatted_output }}"
-            
+        SEARCH_STRING="feature"  # Change this as needed
+        COUNT=$(grep -c "$SEARCH_STRING" branches.txt || true)
+        echo "Occurrences of '$SEARCH_STRING': $COUNT"
+        echo "MATCH_COUNT=$COUNT" >> $GITHUB_ENV
+        echo "The string appears $MATCH_COUNT times in branch names"
 
-    - name: Filter branches by string
-      id: filter-branches
-      run: |
-        SEARCH_STRING="${{ steps.determine-tag.outputs.tag }}"
-        echo "searching for string $SEARCH_STRING"
-        BRANCHES="${{ steps.get-branches.outputs.branches }}"
-        echo "in BRANCH_LIST=$BRANCHES" 
-
-        # Find all matching branches (ignoring case)
-        MATCHING_BRANCHES=$(echo "${{ steps.get-branches.outputs.branches }}" | grep -i "$SEARCH_STRING" || true)
-  
-        if [ -z "$MATCHING_BRANCHES" ]; then
-          echo "::warning::No branches found matching '$SEARCH_STRING'."
-        fi
-        
-        echo "Branches with tag $SEARCH_STRING: $MATCHING_BRANCHES"
-        # Convert multiline string to a single-line comma-separated list
-        MATCHING_BRANCHES_CSV=$(echo "$MATCHING_BRANCHES" | paste -sd "," -)
-  
-        # Save to environment variables and GitHub Actions outputs
-        echo "MATCHING_BRANCHES=$MATCHING_BRANCHES_CSV" >> "$GITHUB_ENV"
-        echo "matching_branches=$MATCHING_BRANCHES_CSV" >> "$GITHUB_OUTPUT"
-  
-        # Print output for debugging
-        echo "Matching branches: $MATCHING_BRANCHES_CSV"
-      
-      
     
     - name: Determine Frontend Url by checking current branches
       id: check-branch-count
