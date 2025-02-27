@@ -64,22 +64,20 @@ jobs:
         echo "Branches found:"
         cat branches.txt
 
-    - name: Search for string in branches
+    - name: Count branches containing same ticketprefix
+      id: branch-count
       run: |
         SEARCH_STRING="${{ steps.determine-tag.outputs.tag }}"  
         COUNT=$(grep -i -c "$SEARCH_STRING" branches.txt || true)
         echo "Occurrences of '$SEARCH_STRING': $COUNT"
         echo "MATCH_COUNT=$COUNT" >> $GITHUB_ENV
-        echo "The string appears $MATCH_COUNT times in branch names"
-
+        echo "The string appears $COUNT times in branch names"
+        echo "count=${COUNT}" >> "$GITHUB_OUTPUT"
     
     - name: Determine Frontend Url by checking current branches
       id: check-branch-count
       run: |
-        NUM_BRANCHES=$(echo "$MATCHING_BRANCHES" | wc -l)
-        echo "Number of matching branches: $NUM_BRANCHES"
-        
-        if [ "$NUM_BRANCHES" -gt 1 ]; then
+        if [ "${{ steps.branch-count.outputs.count }}" -gt 1 ]; then
           echo "At least one more branch for ticket was found, using branch FE and BE infrastructure"
           FRONTEND_URL="https://${{ steps.determine-tag.outputs.tag }}.dev.spsh.dbildungsplattform.de/"
           echo "Frontend URL=" "$FRONTEND_URL"
@@ -88,8 +86,7 @@ jobs:
           FRONTEND_URL="https://main.dev.spsh.dbildungsplattform.de/"
           echo "Frontend URL=" "$FRONTEND_URL"
         fi
-      env:
-        MATCHING_BRANCHES: ${{ env.MATCHING_BRANCHES }}
+      
 
 
 
