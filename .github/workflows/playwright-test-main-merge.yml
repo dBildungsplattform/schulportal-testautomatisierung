@@ -57,10 +57,16 @@ jobs:
         echo "BRANCHES_CSV=$BRANCHES_CSV"
         echo "branches=$BRANCHES_CSV" >> "$GITHUB_OUTPUT"
         
-    - name: Check variable type
+    - name: Format output as list
+      id: format-list
       run: |
-        VAR="${{ steps.get-branches.outputs.branches }}" 
-        declare -p VAR              
+        output_list=$(echo ${{ steps.get-branches.outputs.branches }} | tr ' ' '\n')
+        echo "::set-output name=formatted_output::$output_list"
+
+    - name: Use formatted output
+      run: |
+        echo "Formatted Output: ${{ steps.format-list.outputs.formatted_output }}"
+            
 
     - name: Filter branches by string
       id: filter-branches
