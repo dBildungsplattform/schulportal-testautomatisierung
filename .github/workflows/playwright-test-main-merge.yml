@@ -58,10 +58,11 @@ jobs:
       id: filter-branches
       run: |
         SEARCH_STRING="${{ steps.determine-tag.outputs.tag }}"
+        echo "searching for string $SEARCH_STRING"
       
         # Ensure BRANCHES is properly loaded (if it was set in an earlier step)
         if [ -z "$BRANCHES" ]; then
-          BRANCHES=$(git branch -r | sed 's/origin\///')
+          BRANCHES=$(git branch -r | sed 's/origin\///' | tr '\n' ' ')
         fi
   
         # Find all matching branches (ignoring case)
