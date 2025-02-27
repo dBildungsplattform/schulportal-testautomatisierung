@@ -51,8 +51,15 @@ jobs:
         git fetch --all
         BRANCHES=$(git branch -r | sed 's/origin\///' | tr '\n' ' ')
         echo "BRANCHES=$BRANCHES"
-        echo "BRANCHES=$BRANCHES" >> "$GITHUB_ENV"
-        echo "branches=$BRANCHES" >> "$GITHUB_OUTPUT"
+
+        #echo "BRANCHES=$BRANCHES" >> "$GITHUB_ENV"
+        #echo "branches=$BRANCHES" >> "$GITHUB_OUTPUT"
+
+        echo "BRANCHES<<EOF" >> "$GITHUB_ENV"
+        echo "$BRANCHES" >> "$GITHUB_ENV"
+        echo "EOF" >> "$GITHUB_ENV"
+
+        echo "BRANCH_LIST=$BRANCHES"
 
     - name: Filter branches by string
       id: filter-branches
@@ -71,7 +78,8 @@ jobs:
         if [ -z "$MATCHING_BRANCHES" ]; then
           echo "::warning::No branches found matching '$SEARCH_STRING'."
         fi
-  
+        
+        echo "Branches with tag $SEARCH_STRING: $MATCHING_BRANCHES"
         # Convert multiline string to a single-line comma-separated list
         MATCHING_BRANCHES_CSV=$(echo "$MATCHING_BRANCHES" | paste -sd "," -)
   
