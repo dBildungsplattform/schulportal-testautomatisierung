@@ -65,7 +65,7 @@ jobs:
         echo "in BRANCH_LIST=$BRANCHES" 
 
         # Find all matching branches (ignoring case)
-        MATCHING_BRANCHES=$(echo "$BRANCHES" | grep -i "$SEARCH_STRING" || true)
+        MATCHING_BRANCHES=$(echo "${{ steps.get-branches.outputs.branches }}" | grep -i "$SEARCH_STRING" || true)
   
         if [ -z "$MATCHING_BRANCHES" ]; then
           echo "::warning::No branches found matching '$SEARCH_STRING'."
