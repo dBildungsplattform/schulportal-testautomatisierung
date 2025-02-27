@@ -53,7 +53,7 @@ jobs:
         
         echo "BRANCHES=$BRANCHES"
         # Convert branches to a comma-separated list
-        BRANCHES_CSV=$(echo "$BRANCHES" | tr '\n' ',' | sed 's/,$//')
+        BRANCHES_CSV=$(echo "$BRANCHES" | paste -sd "," -)
         echo "BRANCHES_CSV=$BRANCHES_CSV"
         echo "branches=$BRANCHES_CSV" >> "$GITHUB_OUTPUT"
         
