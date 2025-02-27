@@ -50,16 +50,8 @@ jobs:
       run: |
         git fetch --all
         BRANCHES=$(git branch -r | sed 's/origin\///' | tr '\n' ' ')
-        echo "BRANCHES=$BRANCHES"
-
-        #echo "BRANCHES=$BRANCHES" >> "$GITHUB_ENV"
-        #echo "branches=$BRANCHES" >> "$GITHUB_OUTPUT"
-
-        echo "BRANCHES<<EOF" >> "$GITHUB_ENV"
-        echo "$BRANCHES" >> "$GITHUB_ENV"
-        echo "EOF" >> "$GITHUB_ENV"
-
-        echo "BRANCH_LIST=$BRANCHES"
+        echo "BRANCHES=$BRANCHES" >> "$GITHUB_ENV"
+        echo "branches=$BRANCHES" >> "$GITHUB_OUTPUT
 
     - name: Filter branches by string
       id: filter-branches
