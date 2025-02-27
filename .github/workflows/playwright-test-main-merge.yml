@@ -52,6 +52,17 @@ jobs:
         BRANCHES=$(git branch -r | sed 's/origin\///' | tr '\n' ' ')
         echo "BRANCHES=$BRANCHES" >> "$GITHUB_ENV"
         echo "branches=$BRANCHES" >> "$GITHUB_OUTPUT
+        echo "Branches V1: $BRANCHES"
+
+    - name: Get all branches
+      id: get-branches-2
+      run: |
+        git fetch --all
+        SEARCH_STRING="your_search_string"
+        BRANCHES=$(git branch -r | sed 's/origin\///' | grep -i "$SEARCH_STRING" | tr '\n' ' ')
+        echo "BRANCHES=$BRANCHES" >> "$GITHUB_ENV"
+        echo "branches=$BRANCHES" >> "$GITHUB_OUTPUT"
+        echo "Branches V2: $BRANCHES"
 
     - name: Filter branches by string
       id: filter-branches
