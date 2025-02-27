@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  test:
+  run_playwright_pre_pr_test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
@@ -66,12 +66,8 @@ jobs:
       run: |
         SEARCH_STRING="${{ steps.determine-tag.outputs.tag }}"
         echo "searching for string $SEARCH_STRING"
-      
-        # Ensure BRANCHES is properly loaded (if it was set in an earlier step)
-        if [ -z "$BRANCHES" ]; then
-          BRANCHES=$(git branch -r | sed 's/origin\///' | tr '\n' ' ')
-        fi
-  
+        BRANCHES="${{ steps.get-branches.outputs.branches }}"
+        
         # Find all matching branches (ignoring case)
         MATCHING_BRANCHES=$(echo "$BRANCHES" | grep -i "$SEARCH_STRING" || true)
   
