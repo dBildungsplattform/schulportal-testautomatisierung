@@ -52,12 +52,15 @@ jobs:
         BRANCHES=$(git branch -r | sed 's/origin\///' | tr '\n' ' ')
         
         echo "BRANCHES=$BRANCHES"
-        echo "branches=$BRANCHES" >> "$GITHUB_OUTPUT"
+        # Convert branches to a comma-separated list
+        BRANCHES_CSV=$(echo "$BRANCHES" | tr '\n' ',' | sed 's/,$//')
+        echo "BRANCHES_CSV=$BRANCHES_CSV"
+        echo "branches=$BRANCHES_CSV" >> "$GITHUB_OUTPUT"
         
     - name: Check variable type
       run: |
-        VAR="${{ steps.determine-tag.outputs.tag }}"  # Replace with your variable
-        declare -p VAR  # Prints type and value              
+        VAR="${{ steps.get-branches.outputs.branches }}" 
+        declare -p VAR              
 
     - name: Filter branches by string
       id: filter-branches
