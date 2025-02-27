@@ -54,7 +54,10 @@ jobs:
         echo "BRANCHES=$BRANCHES"
         echo "branches=$BRANCHES" >> "$GITHUB_OUTPUT"
         
-                
+    - name: Check variable type
+      run: |
+        VAR="${{ steps.determine-tag.outputs.tag }}"  # Replace with your variable
+        declare -p VAR  # Prints type and value              
 
     - name: Filter branches by string
       id: filter-branches
