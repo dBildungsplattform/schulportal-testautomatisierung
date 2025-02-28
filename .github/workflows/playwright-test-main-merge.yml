@@ -4,7 +4,6 @@ on:
   pull_request:
     branches:
       - main
-  workflow_dispatch:
 
 jobs:
   run_playwright_pre_pr_test:
@@ -25,21 +24,20 @@ jobs:
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
 
-      #for PR use  ${{ github.head_ref }}
       
     - name: Determine Branch Tag
       id: determine-tag
       run: |
         regex_long='^([[:alpha:]]+?-[[:digit:]]+-[[:digit:]]+)'
         regex_short='^([[:alpha:]]+?-[[:digit:]]+)'
-        if [[ "${{ github.ref_name  }}" =~ $regex_long ]]; then
+        if [[ "${{ github.head_ref }}" =~ $regex_long ]]; then
           tag="$(echo ${BASH_REMATCH[1]} | tr [A-Z] [a-z])"
-        elif [[ "${{ github.ref_name  }}" =~ $regex_short ]]; then
+        elif [[ "${{ github.head_ref }}" =~ $regex_short ]]; then
           tag="$(echo ${BASH_REMATCH[1]} | tr [A-Z] [a-z])"
-        elif [[ "${{ github.ref_name  }}" == 'main' ]]; then
+        elif [[ "${{ github.head_ref }}" == 'main' ]]; then
           tag=""
         else
-        echo "::error::Couldn't extract ticket from branch" ${{ github.ref_name  }} ". If not main the branch name should begin alpha-digit or alpha-digit-digit blocks (e.g. SPSH-1234-test-name or release-1-1-optional-text)"
+        echo "::error::Couldn't extract ticket from branch" ${{ github.head_ref }} ". If not main the branch name should begin alpha-digit or alpha-digit-digit blocks (e.g. SPSH-1234-test-name or release-1-1-optional-text)"
           exit 1
         fi
         echo "tag=${tag}" >> "$GITHUB_OUTPUT"
