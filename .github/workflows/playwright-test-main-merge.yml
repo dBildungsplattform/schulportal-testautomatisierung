@@ -44,18 +44,6 @@ jobs:
         fi
         echo "tag=${tag}" >> "$GITHUB_OUTPUT"
         echo "branch to merge from tag=${tag}"
-
-    - name: get branches
-      id: get-branches
-      run: |
-        git fetch --all
-        BRANCHES=$(git branch -r | sed 's/origin\///' | tr '\n' ' ')
-        
-        echo "BRANCHES=$BRANCHES"
-        # Convert branches to a comma-separated list
-        BRANCHES_CSV=$(echo "$BRANCHES" | paste -sd "," -)
-        echo "BRANCHES_CSV=$BRANCHES_CSV"
-        echo "branches=$BRANCHES_CSV" >> "$GITHUB_OUTPUT"
         
     - name: Get list of all branches
       run: |
@@ -80,12 +68,12 @@ jobs:
         if [ "${{ steps.branch-count.outputs.count }}" -gt 1 ]; then
           echo "At least one more branch for ticket was found, using branch FE and BE infrastructure"
           FRONTEND_URL="https://${{ steps.determine-tag.outputs.tag }}.dev.spsh.dbildungsplattform.de/"
-          echo "Frontend URL=" "$FRONTEND_URL"
+          echo "FRONTEND_URL=$FRONTEND_URL"
           echo "fe_url=${FRONTEND_URL}" >> "$GITHUB_OUTPUT"
         else
           echo "No other branch to ticket found, using main FE and BE infrastructure"
           FRONTEND_URL="https://main.dev.spsh.dbildungsplattform.de/"
-          echo "Frontend URL=" "$FRONTEND_URL"
+          echo "FRONTEND_URL=$FRONTEND_URL"
           echo "fe_url=${FRONTEND_URL}" >> "$GITHUB_OUTPUT"
         fi
       
