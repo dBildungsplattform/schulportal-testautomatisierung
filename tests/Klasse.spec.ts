@@ -65,7 +65,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       await startseite.checkHeadlineIsVisible();
     }
 
-    await test.step(`Testdaten löschen via API`, async () => {
+    await test.step('Testdaten löschen via API', async () => {
       if (usernames.length > 0) {
         await deletePersonenBySearchStrings(page, usernames);
         usernames = [];

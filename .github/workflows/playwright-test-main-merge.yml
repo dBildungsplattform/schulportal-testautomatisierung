@@ -4,10 +4,9 @@ on:
   pull_request:
     branches:
       - main
-  workflow_dispatch:
 
 jobs:
-  test:
+  run_playwright_pre_pr_test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
@@ -25,7 +24,9 @@ jobs:
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
 
-    - name: Create Tag
+      
+    - name: Determine Branch Tag
+      id: determine-tag
       run: |
         regex_long='^([[:alpha:]]+?-[[:digit:]]+-[[:digit:]]+)'
         regex_short='^([[:alpha:]]+?-[[:digit:]]+)'
@@ -40,35 +41,57 @@ jobs:
           exit 1
         fi
         echo "tag=${tag}" >> "$GITHUB_OUTPUT"
-        echo "tag=${tag}"
+        echo "branch to merge from tag=${tag}"
+        
+    - name: Get list of all branches
+      run: |
+        git fetch --all  # Ensure we have all branches
+        git branch -r | sed 's/origin\///' > branches.txt
+        echo "Branches found:"
+        cat branches.txt
 
-    #- name: Determine Frontend URL
-    #  run: |
-    #    BRANCH_NAME="${{ github.head_ref }}"
-    #    if [[ ]]; then
-    #      FRONTEND_URL="https://main.dev.spsh.dbildungsplattform.de/"
-    #    else
-    #      FRONTEND_URL="https://main.dev.spsh.dbildungsplattform.de/"
-    #    fi
-    #    echo "FRONTEND_URL=$FRONTEND_URL" >> $GITHUB_ENV
-
-    #- name: Run Playwright tests
-    #  run:  ENV='dev' FRONTEND_URL='${{ env.FRONTEND_URL }}' npx playwright test --config=playwright.config.ts --grep "@long" --project "chromium"
+    - name: Count branches containing same ticketprefix
+      id: branch-count
+      run: |
+        SEARCH_STRING="${{ steps.determine-tag.outputs.tag }}"  
+        COUNT=$(grep -i -c "$SEARCH_STRING" branches.txt || true)
+        echo "Occurrences of '$SEARCH_STRING': $COUNT"
+        echo "MATCH_COUNT=$COUNT" >> $GITHUB_ENV
+        echo "The string appears $COUNT times in branch names"
+        echo "count=${COUNT}" >> "$GITHUB_OUTPUT"
+    
+    - name: Determine Frontend Url by checking current branches
+      id: determine-fe-url
+      run: |
+        if [ "${{ steps.branch-count.outputs.count }}" -gt 1 ]; then
+          echo "At least one more branch for ticket was found, using branch FE and BE infrastructure"
+          FRONTEND_URL="https://${{ steps.determine-tag.outputs.tag }}.dev.spsh.dbildungsplattform.de/"
+          echo "FRONTEND_URL=$FRONTEND_URL"
+          echo "fe_url=${FRONTEND_URL}" >> "$GITHUB_OUTPUT"
+        else
+          echo "No other branch to ticket found, using main FE and BE infrastructure"
+          FRONTEND_URL="https://main.dev.spsh.dbildungsplattform.de/"
+          echo "FRONTEND_URL=$FRONTEND_URL"
+          echo "fe_url=${FRONTEND_URL}" >> "$GITHUB_OUTPUT"
+        fi
       
-    #  env:
-    #    USER: '${{ secrets.USER }}'
-    #    PW: '${{ secrets.PW }}'
-    #- uses: actions/upload-artifact@v4
-    #  if: always()
-    #  with:
-    #    name: playwright-report
-    #    path: playwright-report/
-    #    retention-days: 30npm login
-    #- uses: RocketChat/Rocket.Chat.GitHub.Action.Notification@1.1.1
-    #  if: failure()
-    #  with:
-    #    type: ${{ job.status }} 
-    #    job_name: 'Playwright Job Status: '
-    #    url: ${{ secrets.RC_WEBHOOK }}
-    #    channel: '#SPSH-Test-Automation'
-    #    username: Playwright Notificator
+    - name: Run Playwright tests
+      run:  ENV='dev' FRONTEND_URL='${{ steps.determine-fe-url.outputs.fe_url }}' npx playwright test --config=playwright.config.ts --grep "@long" --project "chromium"
+      
+      env:
+        USER: '${{ secrets.USER }}'
+        PW: '${{ secrets.PW }}'
+    - uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: playwright-report
+        path: playwright-report/
+        retention-days: 30npm login
+    - uses: RocketChat/Rocket.Chat.GitHub.Action.Notification@1.1.1
+      if: failure()
+      with:
+        type: ${{ job.status }} 
+        job_name: 'Playwright Job Status: '
+        url: ${{ secrets.RC_WEBHOOK }}
+        channel: '#SPSH-Test-Automation'
+        username: Playwright Notificator
