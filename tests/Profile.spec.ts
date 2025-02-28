@@ -693,4 +693,72 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       });
     }
   );
+
+  test.skip(
+    'Inbetriebnahme-Passwort als Lehrer über das eigene Profil erzeugen',
+    { tag: [LONG, STAGE] },
+    async ({ page }) => {
+      const header: HeaderPage = new HeaderPage(page);
+      let userInfoLehrer: UserInfo;
+
+      await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) über die api anlegen und mit diesem anmelden`, async () => {
+        userInfoLehrer = await createRolleAndPersonWithUserContext(
+          page,
+          testschule,
+          typeLehrer,
+          await generateNachname(),
+          await generateVorname(),
+          [await getSPId(page, email)],
+          await generateRolleName(),
+          await generateKopersNr()
+        );
+        usernames.push(userInfoLehrer.username);
+        rolleIds.push(userInfoLehrer.rolleId);
+
+        await header.logout();
+        await header.button_login.click();
+        const login: LoginPage = new LoginPage(page);
+        await login.login(userInfoLehrer.username, userInfoLehrer.password);
+        await login.updatePW();
+        currentUserIsLandesadministrator = false;
+      });
+
+      const profileView: ProfilePage = new ProfilePage(page);
+
+      await test.step(`Profil öffnen`, async () => {
+        await header.button_profil.click();
+      });
+
+      await test.step(`Inbetriebnahme-Passwort für LK-Endgerät erzeugen`, async () => {
+        await page.pause();
+        // Section Inbetriebnahme-Passwort für LK-Endgerät
+        await expect(profileView.titleMeinProfil).toHaveText('Mein Profil');
+        await expect(profileView.cardHeadlinePasswordLKEndgeraet).toBeVisible();
+        await expect(profileView.infoTextSectionPasswordLKEndgeraet).toBeVisible();
+        await profileView.buttontPasswortErzeugenSectionLKEndgeraet.click();
+
+        // Dialog Inbetriebnahme-Passwort für LK-Endgerä
+        await expect(profileView.textLayoutCardHeadline).toHaveText('Inbetriebnahme-Passwort erzeugen');
+        await expect(profileView.infoTextDialogPasswordLKEndgeraet).toHaveText(
+          'Bitte notieren Sie sich das Passwort oder drucken Sie es aus. Nach dem Schließen des Dialogs wird das Passwort nicht mehr angezeigt. Sie benötigen dieses Passwort ausschließlich zur erstmaligen Anmeldung an Ihrem neuen LK-Endgerät.'
+        );
+        await profileView.buttontPasswortErzeugenDialogLKEndgeraet.click();
+
+        // Dialog xxx
+
+        await expect(page.getByTestId('password-reset-info-text')).toContainText(
+          'Das Passwort wurde erfolgreich zurückgesetzt. Bitte notieren Sie sich das Passwort oder drucken Sie es aus. Nach dem Schließen des Dialogs wird das Passwort nicht mehr angezeigt. Sie benötigen dieses Passwort ausschließlich zur erstmaligen Anmeldung an Ihrem neuen LK-Endgerät.'
+        );
+        await page.getByRole('textbox', { name: 'Generiertes Passwort' }).click();
+        await page.getByTestId('show-password-icon').click();
+        await page.getByTestId('copy-password-icon').click();
+        await page.getByText('Passwort in Zwischenablage').click();
+        await page.getByTestId('close-password-reset-dialog-button').click();
+        await page.getByTestId('profile-headline').click();
+
+        //await personDetailsView.createIbnPassword();
+        await page.pause();
+      });
+    }
+  );
 });

@@ -31,7 +31,6 @@ export class ProfilePage {
   readonly dataDienststellennummer2: Locator;
   // Passwort
   readonly cardHeadlinePasswort: Locator;
-  readonly icon_SchluesselPasswort: Locator;
   readonly buttonStartPWChangeDialog: Locator;
   readonly buttonChangePW: Locator;
   readonly labelUsername: Locator;
@@ -53,6 +52,13 @@ export class ProfilePage {
   readonly textOTPInput: Locator;
   readonly text2FASelfServiceError: Locator;
   readonly textOTPEntryError: Locator;
+
+  // Inbetriebnahme-Passwort für LK-Endgerät
+  readonly cardHeadlinePasswordLKEndgeraet: Locator;
+  readonly infoTextSectionPasswordLKEndgeraet: Locator;
+  readonly buttontPasswortErzeugenSectionLKEndgeraet: Locator;
+  readonly infoTextDialogPasswordLKEndgeraet: Locator;
+  readonly buttontPasswortErzeugenDialogLKEndgeraet: Locator;
 
   constructor(page) {
     this.page = page;
@@ -109,9 +115,20 @@ export class ProfilePage {
 
     // Modal
     this.textLayoutCardHeadline = page.getByTestId('layout-card-headline');
+
+    // Inbetriebnahme-Passwort für LK-Endgerät
+    this.cardHeadlinePasswordLKEndgeraet = page.getByRole('heading', {
+      name: 'Inbetriebnahme-Passwort für LK-Endgerät',
+    });
+    this.infoTextSectionPasswordLKEndgeraet = page.getByText(
+      'Sie benötigen dieses Passwort ausschließlich zur einmaligen Eingabe beim ersten Start Ihres neuen LK-Endgerätes oder wenn das Gerät zurückgesetzt wurde!'
+    );
+    this.buttontPasswortErzeugenSectionLKEndgeraet = page.getByTestId('open-device-password-dialog-button');
+    this.infoTextDialogPasswordLKEndgeraet = page.getByTestId('password-reset-info-text');
+    this.buttontPasswortErzeugenDialogLKEndgeraet = page.getByTestId('password-reset-button');
   }
 
-  public async checkSectionPersoenlicheDaten(vorname: string, nachname:string, usernames: string[]) {
+  public async checkSectionPersoenlicheDaten(vorname: string, nachname: string, usernames: string[]) {
     await expect(this.cardHeadlinePersoenlicheDaten).toHaveText('Persönliche Daten');
     await expect(this.labelVornameNachname).toHaveText('Vor- und Nachname:');
     await expect(this.dataVornameNachname).toHaveText(vorname + ' ' + nachname);
