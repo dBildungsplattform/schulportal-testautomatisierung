@@ -12,7 +12,7 @@ import { addSystemrechtToRolle } from '../base/api/testHelperRolle.page.js';
 import { LONG, STAGE, BROWSER } from '../base/tags.js';
 import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata.js';
 import { typeLehrer, typeSchueler, typeSchuladmin } from '../base/rollentypen.js';
-import { landSH, testschule, testschule665 } from '../base/organisation.js';
+import { landSH, testschule, testschule665Name, testschule665DstNr } from '../base/organisation.js';
 import { email, itslearning } from '../base/sp.js';
 import {
   generateNachname,
