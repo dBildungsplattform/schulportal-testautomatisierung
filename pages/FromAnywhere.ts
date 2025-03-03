@@ -1,5 +1,5 @@
-import { Page } from "@playwright/test";
-import { LandingPage } from "./LandingView.page";
+import { Page } from '@playwright/test';
+import { LandingPage } from './LandingView.page';
 
 function FromAnywhere(page: Page) {
   return {

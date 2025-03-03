@@ -9,7 +9,7 @@ import { createRolleAndPersonWithUserContext } from '../base/api/testHelperPerso
 import { getSPId } from '../base/api/testHelperServiceprovider.page.ts';
 import { UserInfo } from '../base/api/testHelper.page.ts';
 import { addSystemrechtToRolle } from '../base/api/testHelperRolle.page.ts';
-import { LONG, STAGE } from '../base/tags.ts';
+import { LONG, STAGE, BROWSER } from '../base/tags.ts';
 import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata.ts';
 import { typeLehrer, typeSchueler, typeSchuladmin } from '../base/rollentypen.ts';
 import { landSH, testschule, testschule665 } from '../base/organisation.ts';
@@ -79,7 +79,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     'Eine Schulzuordnung bei einem bestehenden Benutzer hinzufügen',
-    { tag: [LONG, STAGE] },
+    { tag: [LONG, STAGE, BROWSER] },
     async ({ page }: PlaywrightTestArgs) => {
       const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
       const PersonDetailsView: PersonDetailsViewPage = new PersonDetailsViewPage(page);
@@ -218,7 +218,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     'Einen Benutzer über das FE unbefristet sperren',
-    { tag: [LONG, STAGE] },
+    { tag: [LONG, STAGE, BROWSER] },
     async ({ page }: PlaywrightTestArgs) => {
       let userInfoLehrer: UserInfo;
       const sperrDatumAbHeute = await generateDateToday();
@@ -292,7 +292,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     'Gesamtübersicht für einen Benutzer als Schueler öffnen und Unsichtbarkeit des 2FA Abschnitts prüfen',
-    { tag: [LONG] },
+    { tag: [LONG, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
       let userInfoLehrer: UserInfo;
 
@@ -337,7 +337,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     'Gesamtübersicht für einen Benutzer als Lehrkraft öffnen und 2FA Status prüfen dass kein Token eingerichtet ist',
-    { tag: [LONG] },
+    { tag: [LONG, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
       let userInfoLehrer: UserInfo;
 
@@ -372,7 +372,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     'Gesamtübersicht für einen Benutzer als Schuladmin öffnen und 2FA Status prüfen dass kein Token eingerichtet ist',
-    { tag: [LONG] },
+    { tag: [LONG, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
       const addminVorname: string = await generateVorname();
       const adminNachname: string = await generateNachname();
@@ -412,7 +412,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     'Gesamtübersicht für einen Benutzer als Landesadmin öffnen, 2FA Token einrichten und 2FA Status prüfen dass ein Token eingerichtet ist',
-    { tag: [LONG] },
+    { tag: [LONG, STAGE, BROWSER] },
     async ({ page }: PlaywrightTestArgs) => {
       const addminVorname: string = await generateVorname();
       const adminNachname: string = await generateNachname();
@@ -465,7 +465,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     'Gesamtübersicht für einen Benutzer als Schuladmin öffnen, 2FA Token einrichten und 2FA Status prüfen dass ein Token eingerichtet ist',
-    { tag: [LONG] },
+    { tag: [LONG, STAGE, BROWSER] },
     async ({ page }: PlaywrightTestArgs) => {
       const adminRollenart: string = typeSchuladmin;
       const adminOrganisation: string = testschule665;
@@ -508,7 +508,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     'Gesamtübersicht für einen Benutzer als Lehrkraft öffnen, 2FA Token einrichten und 2FA Status prüfen dass ein Token eingerichtet ist',
-    { tag: [LONG] },
+    { tag: [LONG, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
       let userInfoLehrer: UserInfo;
 
