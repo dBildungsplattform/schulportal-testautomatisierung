@@ -1,0 +1,97 @@
+name: Pull Request Playwright Test
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  run_playwright_pre_pr_test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 16
+    - name: Remove Microsoft APT and  Update Packages
+      run: |
+        sudo rm /etc/apt/sources.list.d/microsoft-prod.list
+        sudo apt-get update || true
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps
+
+      
+    - name: Determine Branch Tag
+      id: determine-tag
+      run: |
+        regex_long='^([[:alpha:]]+?-[[:digit:]]+-[[:digit:]]+)'
+        regex_short='^([[:alpha:]]+?-[[:digit:]]+)'
+        if [[ "${{ github.head_ref }}" =~ $regex_long ]]; then
+          tag="$(echo ${BASH_REMATCH[1]} | tr [A-Z] [a-z])"
+        elif [[ "${{ github.head_ref }}" =~ $regex_short ]]; then
+          tag="$(echo ${BASH_REMATCH[1]} | tr [A-Z] [a-z])"
+        elif [[ "${{ github.head_ref }}" == 'main' ]]; then
+          tag=""
+        else
+        echo "::error::Couldn't extract ticket from branch" ${{ github.head_ref }} ". If not main the branch name should begin alpha-digit or alpha-digit-digit blocks (e.g. SPSH-1234-test-name or release-1-1-optional-text)"
+          exit 1
+        fi
+        echo "tag=${tag}" >> "$GITHUB_OUTPUT"
+        echo "branch to merge from tag=${tag}"
+        
+    - name: Get list of all branches
+      run: |
+        git fetch --all  # Ensure we have all branches
+        git branch -r | sed 's/origin\///' > branches.txt
+        echo "Branches found:"
+        cat branches.txt
+
+    - name: Count branches containing same ticketprefix
+      id: branch-count
+      run: |
+        SEARCH_STRING="${{ steps.determine-tag.outputs.tag }}"  
+        COUNT=$(grep -i -c "$SEARCH_STRING" branches.txt || true)
+        echo "Occurrences of '$SEARCH_STRING': $COUNT"
+        echo "MATCH_COUNT=$COUNT" >> $GITHUB_ENV
+        echo "The string appears $COUNT times in branch names"
+        echo "count=${COUNT}" >> "$GITHUB_OUTPUT"
+    
+    - name: Determine Frontend Url by checking current branches
+      id: determine-fe-url
+      run: |
+        if [ "${{ steps.branch-count.outputs.count }}" -gt 1 ]; then
+          echo "At least one more branch for ticket was found, using branch FE and BE infrastructure"
+          FRONTEND_URL="https://${{ steps.determine-tag.outputs.tag }}.dev.spsh.dbildungsplattform.de/"
+          echo "FRONTEND_URL=$FRONTEND_URL"
+          echo "fe_url=${FRONTEND_URL}" >> "$GITHUB_OUTPUT"
+        else
+          echo "No other branch to ticket found, using main FE and BE infrastructure"
+          FRONTEND_URL="https://main.dev.spsh.dbildungsplattform.de/"
+          echo "FRONTEND_URL=$FRONTEND_URL"
+          echo "fe_url=${FRONTEND_URL}" >> "$GITHUB_OUTPUT"
+        fi
+      
+    - name: Run Playwright tests
+      run:  ENV='dev' FRONTEND_URL='${{ steps.determine-fe-url.outputs.fe_url }}' npx playwright test --config=playwright.config.ts --grep "@long" --project "chromium"
+      
+      env:
+        USER: '${{ secrets.USER }}'
+        PW: '${{ secrets.PW }}'
+    - uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: playwright-report
+        path: playwright-report/
+        retention-days: 30npm login
+    - uses: RocketChat/Rocket.Chat.GitHub.Action.Notification@1.1.1
+      if: failure()
+      with:
+        type: ${{ job.status }} 
+        job_name: 'Playwright Job Status: '
+        url: ${{ secrets.RC_WEBHOOK }}
+        channel: '#SPSH-Test-Automation'
+        username: Playwright Notificator

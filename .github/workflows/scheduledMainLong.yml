@@ -1,6 +1,8 @@
-name: Manuell stage long 
+name: Playwright - Scheduled Main Long
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '10 5 * * *'
 jobs:
   test:
     timeout-minutes: 60
@@ -12,14 +14,14 @@ jobs:
         node-version: 16
     - name: Remove Microsoft APT and  Update Packages
       run: |
-          sudo rm /etc/apt/sources.list.d/microsoft-prod.list
-          sudo apt-get update || true
+        sudo rm /etc/apt/sources.list.d/microsoft-prod.list
+        sudo apt-get update || true
     - name: Install dependencies
       run: npm ci
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
     - name: Run Playwright tests
-      run: ENV='stage' FRONTEND_URL='https://spsh.staging.spsh.dbildungsplattform.de/' npx playwright test -g "@stage" --project "chromium"
+      run: ENV='dev' FRONTEND_URL='https://main.dev.spsh.dbildungsplattform.de/' npx playwright test -g "@long" --project "chromium"
       env:
         USER: '${{ secrets.USER }}'
         PW: '${{ secrets.PW }}'
@@ -29,3 +31,11 @@ jobs:
         name: playwright-report
         path: playwright-report/
         retention-days: 30npm login
+    - uses: RocketChat/Rocket.Chat.GitHub.Action.Notification@1.1.1
+      if: failure()
+      with:
+        type: ${{ job.status }} 
+        job_name: 'Playwright Job Status: '
+        url: ${{ secrets.RC_WEBHOOK }}
+        channel: '#SPSH-Test-Automation'
+        username: Playwright Notificator

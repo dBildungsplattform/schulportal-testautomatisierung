@@ -4,9 +4,9 @@ import { getOrganisationId } from '../base/api/testHelperOrganisation.page';
 import { addSecondOrganisationToPerson, createRolleAndPersonWithUserContext } from '../base/api/testHelperPerson.page';
 import { addSystemrechtToRolle } from '../base/api/testHelperRolle.page';
 import { getSPId } from '../base/api/testHelperServiceprovider.page';
-import { landSH, testschule, testschule665Name } from '../base/organisation.js';
-import { typeLandesadmin, typeLehrer, typeSchueler, typeSchuladmin } from '../base/rollentypen.js';
-import { email, itslearning } from '../base/sp.js';
+import { landSH, testschule, testschule665 } from '../base/organisation.ts';
+import { typeLandesadmin, typeLehrer, typeSchueler, typeSchuladmin } from '../base/rollentypen.ts';
+import { email, itslearning, schulportaladmin } from '../base/sp.ts';
 import { BROWSER, LONG, SHORT, STAGE } from '../base/tags';
 import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata';
 import {
@@ -132,6 +132,8 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       });
 
       await test.step(`Profil öffnen`, async () => {
+        const startView: StartPage = new StartPage(page);
+        await startView.checkSpIsVisible([schulportaladmin]);
         await header.goToProfile();
       });
 
@@ -516,7 +518,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
   test(
     'Das eigene Profil öffnen, 2FA Einrichten öffnen und Einrichtung soweit möglich',
-    { tag: [LONG] },
+    { tag: [LONG, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
       const profileView: ProfilePage = new ProfilePage(page);
       const header: HeaderPage = new HeaderPage(page);
