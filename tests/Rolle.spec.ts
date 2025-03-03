@@ -3,7 +3,7 @@ import { deleteRolle, getRolleId } from '../base/api/testHelperRolle.page';
 import { ersatzLandSH, landSH } from '../base/organisation';
 import { landesadminRolle } from '../base/rollen';
 import { email, itslearning, kalender, schulportaladmin } from '../base/sp';
-import { LONG, SHORT, STAGE } from '../base/tags';
+import { LONG, SHORT, STAGE, BROWSER } from '../base/tags';
 import { deleteRolleByName } from '../base/testHelperDeleteTestdata';
 import { generateRolleName } from '../base/testHelperGenerateTestdataNames';
 import { RolleCreationConfirmPage } from '../pages/admin/RolleCreationConfirm.page';
@@ -132,7 +132,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
 
   test(
     'Eine Rolle anlegen und die Bestätigungsseite vollständig prüfen als Landesadmin',
-    { tag: [LONG, SHORT, STAGE] },
+    { tag: [LONG, SHORT, STAGE, BROWSER] },
     async () => {
       const rollenname: string = await generateRolleName();
       const administrationsebene: string = landSH;

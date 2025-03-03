@@ -1,8 +1,6 @@
-name: Scheduled stage smoke 
+name: Playwright - Manually STAGE
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '10 5 * * *'
 jobs:
   test:
     timeout-minutes: 60
@@ -21,7 +19,7 @@ jobs:
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
     - name: Run Playwright tests
-      run: ENV='stage' FRONTEND_URL='https://spsh.staging.spsh.dbildungsplattform.de/' npx playwright test -g "@smoke" --project "chromium" 
+      run: ENV='stage' FRONTEND_URL='https://spsh.staging.spsh.dbildungsplattform.de/' npx playwright test -g "@stage" --project "chromium"
       env:
         USER: '${{ secrets.USER }}'
         PW: '${{ secrets.PW }}'
@@ -31,11 +29,3 @@ jobs:
         name: playwright-report
         path: playwright-report/
         retention-days: 30npm login
-    - uses: RocketChat/Rocket.Chat.GitHub.Action.Notification@1.1.1
-      if: failure()
-      with:
-        type: ${{ job.status }} 
-        job_name: 'Playwright Job Status: '
-        url: ${{ secrets.RC_WEBHOOK }}
-        channel: '#SPSH-Test-Automation'
-        username: Playwright Notificator

@@ -1,8 +1,8 @@
-name: Scheduled main crossBrowser Firefox
+name: Playwright - Scheduled Stage Smoketest
 on:
   workflow_dispatch:
   schedule:
-    - cron: '10 6 * * *'
+    - cron: '40 5 * * *'
 jobs:
   test:
     timeout-minutes: 60
@@ -14,14 +14,14 @@ jobs:
         node-version: 16
     - name: Remove Microsoft APT and  Update Packages
       run: |
-        sudo rm /etc/apt/sources.list.d/microsoft-prod.list
-        sudo apt-get update || true
+          sudo rm /etc/apt/sources.list.d/microsoft-prod.list
+          sudo apt-get update || true
     - name: Install dependencies
       run: npm ci
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
     - name: Run Playwright tests
-      run: ENV='dev' FRONTEND_URL='https://main.dev.spsh.dbildungsplattform.de/' npx playwright test -g "@crossBrowser" --project "firefox"
+      run: ENV='stage' FRONTEND_URL='https://spsh.staging.spsh.dbildungsplattform.de/' npx playwright test -g "@smoke" --project "chromium" 
       env:
         USER: '${{ secrets.USER }}'
         PW: '${{ secrets.PW }}'
