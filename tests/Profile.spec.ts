@@ -694,7 +694,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
     }
   );
 
-  test.skip(
+  test.only(
     'Inbetriebnahme-Passwort als Lehrer über das eigene Profil erzeugen',
     { tag: [LONG, STAGE] },
     async ({ page }) => {
@@ -730,26 +730,27 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       });
 
       await test.step(`Inbetriebnahme-Passwort für LK-Endgerät erzeugen`, async () => {
-        await page.pause();
         // Section Inbetriebnahme-Passwort für LK-Endgerät
         await expect(profileView.titleMeinProfil).toHaveText('Mein Profil');
         await expect(profileView.cardHeadlinePasswordLKEndgeraet).toBeVisible();
         await expect(profileView.infoTextSectionPasswordLKEndgeraet).toBeVisible();
         await profileView.buttontPasswortErzeugenSectionLKEndgeraet.click();
 
-        // Dialog Inbetriebnahme-Passwort für LK-Endgerä
+        // Dialog Inbetriebnahme-Passwort für LK-Endgeräte
         await expect(profileView.textLayoutCardHeadline).toHaveText('Inbetriebnahme-Passwort erzeugen');
         await expect(profileView.infoTextDialogPasswordLKEndgeraet).toHaveText(
           'Bitte notieren Sie sich das Passwort oder drucken Sie es aus. Nach dem Schließen des Dialogs wird das Passwort nicht mehr angezeigt. Sie benötigen dieses Passwort ausschließlich zur erstmaligen Anmeldung an Ihrem neuen LK-Endgerät.'
         );
+        await page.pause();
         await profileView.buttontPasswortErzeugenDialogLKEndgeraet.click();
-
-        // Dialog xxx
-
-        await expect(page.getByTestId('password-reset-info-text')).toContainText(
+        await page.pause();
+        // Dialog Inbetriebnahme-Passwort erzeugen
+        await expect(profileView.infoTextDialogPasswordLKEndgeraet).toHaveText(
           'Das Passwort wurde erfolgreich zurückgesetzt. Bitte notieren Sie sich das Passwort oder drucken Sie es aus. Nach dem Schließen des Dialogs wird das Passwort nicht mehr angezeigt. Sie benötigen dieses Passwort ausschließlich zur erstmaligen Anmeldung an Ihrem neuen LK-Endgerät.'
         );
-        await page.getByRole('textbox', { name: 'Generiertes Passwort' }).click();
+        await expect(profileView.inputPasswortErzeugenDialogLKEndgeraet).toBeVisible();
+        await expect(profileView.inputPasswortErzeugenDialogLKEndgeraet).toHaveAttribute('readonly');
+
         await page.getByTestId('show-password-icon').click();
         await page.getByTestId('copy-password-icon').click();
         await page.getByText('Passwort in Zwischenablage').click();

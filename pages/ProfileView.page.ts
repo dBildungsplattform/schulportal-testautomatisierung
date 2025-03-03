@@ -59,6 +59,7 @@ export class ProfilePage {
   readonly buttontPasswortErzeugenSectionLKEndgeraet: Locator;
   readonly infoTextDialogPasswordLKEndgeraet: Locator;
   readonly buttontPasswortErzeugenDialogLKEndgeraet: Locator;
+  readonly inputPasswortErzeugenDialogLKEndgeraet: Locator;
 
   constructor(page) {
     this.page = page;
@@ -126,6 +127,7 @@ export class ProfilePage {
     this.buttontPasswortErzeugenSectionLKEndgeraet = page.getByTestId('open-device-password-dialog-button');
     this.infoTextDialogPasswordLKEndgeraet = page.getByTestId('password-reset-info-text');
     this.buttontPasswortErzeugenDialogLKEndgeraet = page.getByTestId('password-reset-button');
+    this.inputPasswortErzeugenDialogLKEndgeraet = page.locator('[data-testid="password-output-field"] input');
   }
 
   public async checkSectionPersoenlicheDaten(vorname: string, nachname: string, usernames: string[]) {
