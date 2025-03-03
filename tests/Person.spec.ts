@@ -562,7 +562,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         createdBenutzername = await personCreationView.data_Benutzername.innerText();
         await expect(personCreationView.button_ZurueckErgebnisliste).toBeVisible();
       });
-
+      await page.waitForTimeout(5000) //Needed Because Event is Processed Async in Backend and Assertion happens outsite of PW-Webflow
       await test.step(`Prüfen, dass Lehrkraft im LDAP angelegt wurde`, async () => {
         expect(await testHelperLdap.validateUserExists(createdBenutzername)).toBeTruthy();
       });
@@ -570,7 +570,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await test.step(`Prüfen, dass Lehrkraft im LDAP korrekter Gruppe zugeordnet wurde`, async () => {
         expect(await testHelperLdap.validateUserIsInGroupOfNames(createdBenutzername, dienststellenNr)).toBeTruthy();
       });
-
       let generatedMailPrimaryAddress: string | null = null;
       await test.step(`Mail Primary Address Auf Existenz Prüfen`, async () => {
         generatedMailPrimaryAddress = await testHelperLdap.getMailPrimaryAddress(createdBenutzername);
@@ -591,9 +590,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       });
 
       const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
-
       personDetailsView = await test.step(`Kontextlose Person suchen und Gesamtübersicht öffnen`, async () => {
-          await gotoTargetURL(page, 'admin/personen');
           await personManagementView.searchBySuchfeld(createdBenutzername);
           return await personManagementView.openGesamtuebersichtPerson(page, createdBenutzername); // Klick auf den Benutzernamen
         });
@@ -603,6 +600,25 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await personDetailsView.button_addSchulzuordnung.click();
       });
 
+      await personDetailsView.comboboxOrganisationInput.searchByTitle(schulstrukturknoten, false);
+      await personDetailsView.combobox_rolle.click();
+      await page.getByText(rolle, { exact: true }).click();
+      await personDetailsView.button_submitAddSchulzuordnung.click()
+      await personDetailsView.buttonConfirmZuordnungDialogAddition.click()
+      await personDetailsView.button_saveAssignmentChanges.click()
+      await page.waitForTimeout(5000) //Needed Because Event is Processed Async in Backend and Assertion happens outsite of PW-Webflow
+      await test.step(`Prüfen, dass Lehrkraft im LDAP existiert`, async () => {
+        expect(await testHelperLdap.validateUserExists(createdBenutzername)).toBeTruthy();
+      });
+
+      await test.step(`Prüfen, dass Lehrkraft im LDAP korrekter Gruppe zugeordnet ist`, async () => {
+        expect(await testHelperLdap.validateUserIsInGroupOfNames(createdBenutzername, dienststellenNr)).toBeTruthy();
+      });
+
+      await test.step(`Prüfen, dass alte Mail weiterhin existiert und zugeordnet ist`, async () => {
+        const mailPrimaryAddress: string = await testHelperLdap.getMailPrimaryAddress(createdBenutzername);
+        expect(mailPrimaryAddress).toEqual(generatedMailPrimaryAddress);
+      });
     });
 
   test(
