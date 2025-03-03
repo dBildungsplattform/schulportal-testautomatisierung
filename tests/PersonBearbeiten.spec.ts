@@ -5,7 +5,7 @@ import { StartPage } from '../pages/StartView.page.js';
 import { PersonManagementViewPage } from '../pages/admin/PersonManagementView.page.js';
 import { PersonDetailsViewPage } from '../pages/admin/PersonDetailsView.page.js';
 import { HeaderPage } from '../pages/Header.page.js';
-import { createRolleAndPersonWithUserContext } from '../base/api/testHelperPerson.page.js';
+import { createRolleAndPersonWithUserContext, setUEMPassword } from '../base/api/testHelperPerson.page.js';
 import { getSPId } from '../base/api/testHelperServiceprovider.page.js';
 import { UserInfo } from '../base/api/testHelper.page.js';
 import { addSystemrechtToRolle } from '../base/api/testHelperRolle.page.js';
