@@ -1,8 +1,8 @@
-name: Scheduled main long 
+name: Playwright - Scheduled Main WebKit
 on:
   workflow_dispatch:
   schedule:
-    - cron: '10 5 * * *'
+    - cron: '40 6 * * 4'
 jobs:
   test:
     timeout-minutes: 60
@@ -21,7 +21,7 @@ jobs:
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
     - name: Run Playwright tests
-      run: ENV='dev' FRONTEND_URL='https://main.dev.spsh.dbildungsplattform.de/' npx playwright test -g "@long" --project "chromium"
+      run: ENV='dev' FRONTEND_URL='https://main.dev.spsh.dbildungsplattform.de/' npx playwright test -g "@crossBrowser" --project "webkit"
       env:
         USER: '${{ secrets.USER }}'
         PW: '${{ secrets.PW }}'

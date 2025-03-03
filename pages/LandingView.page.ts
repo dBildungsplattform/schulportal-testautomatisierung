@@ -1,5 +1,5 @@
-import { type Locator, Page } from "@playwright/test";
-import { LoginPage } from "./LoginView.page";
+import { type Locator, Page } from '@playwright/test';
+import { LoginPage } from './LoginView.page';
 
 export class LandingPage {
   readonly page: Page;

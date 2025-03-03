@@ -109,7 +109,7 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
 
   test(
     'Eine Schule anlegen als Landesadmin und die Bestätigungsseite vollständig prüfen',
-    { tag: [LONG, SHORT] },
+    { tag: [LONG, SHORT, BROWSER] },
     async ({ page }: PlaywrightTestArgs) => {
       // Schulen können noch nicht gelöscht werden. Um doppelte Namen zu vermeiden, wird am dem Schulnamen eine Zufallszahl angehängt
       const schulname: string = await generateSchulname();

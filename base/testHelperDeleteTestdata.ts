@@ -1,6 +1,6 @@
-import { deleteRolle, getRolleId} from "./api/testHelperRolle.page";
-import { deletePerson, getPersonId } from "./api/testHelperPerson.page";
-import { getKlasseId, deleteKlasse } from "./api/testHelperOrganisation.page";
+import { deleteRolle, getRolleId} from './api/testHelperRolle.page';
+import { deletePerson, getPersonId } from './api/testHelperPerson.page';
+import { getKlasseId, deleteKlasse } from './api/testHelperOrganisation.page';
 
 
 export async function deletePersonById(personId, page){  // personId ist ein array mit allen zu löschenden Benutzern

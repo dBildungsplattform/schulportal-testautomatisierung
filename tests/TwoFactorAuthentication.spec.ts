@@ -2,7 +2,7 @@ import { test, expect, PlaywrightTestArgs } from '@playwright/test';
 import { UserInfo } from '../base/api/testHelper.page.ts';
 import { createRolleAndPersonWithUserContext } from '../base/api/testHelperPerson.page';
 import { getSPId } from '../base/api/testHelperServiceprovider.page';
-import { LONG } from '../base/tags';
+import { LONG, STAGE, BROWSER } from '../base/tags';
 import { generateNachname, generateVorname, generateRolleName } from '../base/testHelperGenerateTestdataNames';
 import { testschule } from '../base/organisation';
 import { typeLehrer } from '../base/rollentypen';
@@ -52,7 +52,7 @@ test.describe(`Testfälle für TwoFactorAuthentication": Umgebung: ${process.env
     });
   });
 
-  test('Prüfen, ob es möglich ist einen Token zurückzusetzen', { tag: [LONG] }, async ({ page }: PlaywrightTestArgs) => {
+  test('Prüfen, ob es möglich ist einen Token zurückzusetzen', { tag: [LONG, STAGE, BROWSER] }, async ({ page }: PlaywrightTestArgs) => {
     let userInfoLehrer: UserInfo;
 
     await test.step(`Testdaten erstellen`, async () => {
