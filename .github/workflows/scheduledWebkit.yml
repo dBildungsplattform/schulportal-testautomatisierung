@@ -1,0 +1,41 @@
+name: Playwright - Scheduled Main WebKit
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '40 6 * * 4'
+jobs:
+  test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 16
+    - name: Remove Microsoft APT and  Update Packages
+      run: |
+        sudo rm /etc/apt/sources.list.d/microsoft-prod.list
+        sudo apt-get update || true
+    - name: Install dependencies
+      run: npm ci
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps
+    - name: Run Playwright tests
+      run: ENV='dev' FRONTEND_URL='https://main.dev.spsh.dbildungsplattform.de/' npx playwright test -g "@crossBrowser" --project "webkit"
+      env:
+        USER: '${{ secrets.USER }}'
+        PW: '${{ secrets.PW }}'
+    - uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: playwright-report
+        path: playwright-report/
+        retention-days: 30npm login
+    - uses: RocketChat/Rocket.Chat.GitHub.Action.Notification@1.1.1
+      if: failure()
+      with:
+        type: ${{ job.status }} 
+        job_name: 'Playwright Job Status: '
+        url: ${{ secrets.RC_WEBHOOK }}
+        channel: '#SPSH-Test-Automation'
+        username: Playwright Notificator
