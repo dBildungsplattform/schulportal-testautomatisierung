@@ -3,17 +3,17 @@ import { UserInfo } from '../base/api/testHelper.page';
 import { createRolleAndPersonWithUserContext } from '../base/api/testHelperPerson.page';
 import { addSystemrechtToRolle } from '../base/api/testHelperRolle.page';
 import { getSPId } from '../base/api/testHelperServiceprovider.page';
-import { landSH, testschule, testschule665, oeffentlichLandSH, ersatzLandSH } from '../base/organisation.ts';
-import { landesadminRolle, schuelerRolle, schuladminOeffentlichRolle } from '../base/rollen.ts';
+import { landSH, testschule, testschule665Name, oeffentlichLandSH, ersatzLandSH } from '../base/organisation.js';
+import { landesadminRolle, schuelerRolle, schuladminOeffentlichRolle } from '../base/rollen.js';
 import { BROWSER, LONG, SHORT, STAGE } from '../base/tags';
-import { deletePersonenBySearchStrings, deleteRolleById, deleteRolleByName } from '../base/testHelperDeleteTestdata.ts';
+import { deletePersonenBySearchStrings, deleteRolleById, deleteRolleByName } from '../base/testHelperDeleteTestdata.js';
 import {
   generateKopersNr,
   generateNachname,
   generateRolleName,
   generateVorname,
-} from '../base/testHelperGenerateTestdataNames.ts';
-import { gotoTargetURL } from '../base/testHelperUtils.ts';
+} from '../base/testHelperGenerateTestdataNames.js';
+import { gotoTargetURL } from '../base/testHelperUtils.js';
 import { PersonCreationViewPage } from '../pages/admin/PersonCreationView.page';
 import { PersonDetailsViewPage } from '../pages/admin/PersonDetailsView.page';
 import { PersonManagementViewPage } from '../pages/admin/PersonManagementView.page';
@@ -22,10 +22,13 @@ import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
 import { MenuPage } from '../pages/MenuBar.page';
 import { StartPage } from '../pages/StartView.page';
+import { TestHelperLdap } from '../base/testHelperLdap';
 import FromAnywhere from '../pages/FromAnywhere';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
+const LDAP_URL: string = process.env.LDAP_URL;
+const LDAP_ADMIN_PASSWORD: string = process.env.LDAP_ADMIN_PASSWORD;
 
 // The created test data will be deleted in the afterEach block
 let usernames: string[] = [];
@@ -90,7 +93,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const landing: LandingPage = new LandingPage(page);
       const startseite: StartPage = new StartPage(page);
       const login: LoginPage = new LoginPage(page);
-      const menue = new MenuPage(page);
+      const menue: MenuPage = new MenuPage(page);
       const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
       const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
       const header: HeaderPage = new HeaderPage(page);
@@ -148,7 +151,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     { tag: [LONG, SHORT, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
       const startseite: StartPage = new StartPage(page);
-      const menue = new MenuPage(page);
+      const menue: MenuPage = new MenuPage(page);
       const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
 
       const vorname: string = await generateVorname();
@@ -225,11 +228,11 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     { tag: [LONG, SHORT, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
       const startseite: StartPage = new StartPage(page);
-      const menue = new MenuPage(page);
+      const menue: MenuPage = new MenuPage(page);
       const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
-      const login = new LoginPage(page);
+      const login: LoginPage = new LoginPage(page);
       const header: HeaderPage = new HeaderPage(page);
-      const landing = new LandingPage(page);
+      const landing: LandingPage = new LandingPage(page);
 
       const vorname: string = await generateVorname();
       const nachname: string = await generateNachname();
@@ -292,7 +295,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     { tag: [LONG, SHORT, STAGE, BROWSER] },
     async ({ page }: PlaywrightTestArgs) => {
       const startseite: StartPage = new StartPage(page);
-      const menue = new MenuPage(page);
+      const menue: MenuPage = new MenuPage(page);
       const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
 
       const vorname: string = await generateVorname();
@@ -332,7 +335,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     { tag: [LONG, SHORT, STAGE, BROWSER] },
     async ({ page }: PlaywrightTestArgs) => {
       const startseite: StartPage = new StartPage(page);
-      const menue = new MenuPage(page);
+      const menue: MenuPage = new MenuPage(page);
       const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
 
       await test.step(`Benutzerverwaltung öffnen und alle Elemente in der Ergebnisliste auf Existenz prüfen`, async () => {
@@ -360,7 +363,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     { tag: [LONG, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
       const startseite: StartPage = new StartPage(page);
-      const menue = new MenuPage(page);
+      const menue: MenuPage = new MenuPage(page);
       const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
 
       const Organisation_Land = landSH;
@@ -485,7 +488,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(page.getByRole('cell', { name: 'ssuperadmin', exact: true })).toBeVisible();
       });
 
-      await test.step(`Suche mit leerer Ergebnisliste. Gepüft wird das der Text "Keine Daten gefunden." gefunden wird, danach wird gepüft dass die Tabelle 0 Zeilen hat.`, async () => {
+      await test.step(`Suche mit leerer Ergebnisliste. Gepüft wird, dass der Text "Keine Daten gefunden." gefunden wird, danach wird geprüft, dass die Tabelle 0 Zeilen hat.`, async () => {
         await personManagementView.input_Suchfeld.fill('!§$%aavvccdd44xx@');
         await personManagementView.button_Suchen.click();
         await expect(page.getByRole('cell', { name: 'Keine Daten gefunden.' })).toBeVisible();
@@ -506,10 +509,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await personManagementView.waitForData();
 
         // Fill the input with the name of the Schule and let the autocomplete find it
-        await personManagementView.comboboxMenuIcon_Schule_input.fill(testschule665);
+        await personManagementView.comboboxMenuIcon_Schule_input.fill(testschule665Name);
 
         // Click on the found Schule
-        await page.getByRole('option', { name: testschule665 }).click();
+        await page.getByRole('option', { name: testschule665Name }).click();
 
         // Close the dropdown
         await personManagementView.comboboxMenuIcon_Schule.click();
@@ -525,7 +528,101 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
   );
 
   test(
-    'Eine Lehrkraft anlegen in der Rolle Landesadmin und die Bestätigungsseite vollständig prüfen',
+    'Eine Lehrkraft anlegen in der Rolle Landesadmin Ihren Kontext entfernen dann wieder hinzufügen und den LDAP Inhalt vollständig prüfen',
+    { tag: [LONG, SHORT, STAGE] },
+    async ({ page }: PlaywrightTestArgs) => {
+      const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
+      let personDetailsView: PersonDetailsViewPage = new PersonDetailsViewPage(page);
+      const rolle: string = 'Lehrkraft';
+      const vorname: string = await generateVorname();
+      const nachname: string = await generateNachname();
+      const kopersnr: string = await generateKopersNr();
+      const schulstrukturknoten: string = testschule;
+      const dienststellenNr: string = '1111111';
+      const testHelperLdap: TestHelperLdap = new TestHelperLdap(LDAP_URL, LDAP_ADMIN_PASSWORD);
+      let createdBenutzername: string;
+
+      await test.step(`Dialog Person anlegen öffnen`, async () => {
+        await page.goto('/' + 'admin/personen/new');
+      });
+
+      await test.step(`Benutzer anlegen`, async () => {
+        await personCreationView.comboboxOrganisationInput.searchByTitle(schulstrukturknoten, false);
+        await personCreationView.combobox_Rolle.click();
+        await page.getByText(rolle, { exact: true }).click();
+        await personCreationView.Input_Vorname.fill(vorname);
+        await personCreationView.Input_Nachname.fill(nachname);
+        await personCreationView.Input_Kopersnr.fill(kopersnr);
+        await personCreationView.button_PersonAnlegen.click();
+      });
+
+      await test.step(`Auf Bestätigungsseite warten`, async () => {
+        await expect(personCreationView.text_h2_PersonAnlegen).toBeVisible();
+        usernames.push(await personCreationView.data_Benutzername.innerText());
+        createdBenutzername = await personCreationView.data_Benutzername.innerText();
+        await expect(personCreationView.button_ZurueckErgebnisliste).toBeVisible();
+      });
+      await page.waitForTimeout(5000) //Needed Because Event is Processed Async in Backend and Assertion happens outsite of PW-Webflow
+      await test.step(`Prüfen, dass Lehrkraft im LDAP angelegt wurde`, async () => {
+        expect(await testHelperLdap.validateUserExists(createdBenutzername)).toBeTruthy();
+      });
+
+      await test.step(`Prüfen, dass Lehrkraft im LDAP korrekter Gruppe zugeordnet wurde`, async () => {
+        expect(await testHelperLdap.validateUserIsInGroupOfNames(createdBenutzername, dienststellenNr)).toBeTruthy();
+      });
+      let generatedMailPrimaryAddress: string | null = null;
+      await test.step(`Mail Primary Address Auf Existenz Prüfen`, async () => {
+        generatedMailPrimaryAddress = await testHelperLdap.getMailPrimaryAddress(createdBenutzername);
+        expect(generatedMailPrimaryAddress).toContain('schule-sh.de');
+        expect(generatedMailPrimaryAddress.length).toBeGreaterThan(5);
+      });
+      await test.step(`Dialog Gesamtübersicht öffnen`, async () => {
+        await personCreationView.button_ZurGesamtuebersicht.click();
+      });
+
+      await test.step(`Schulzuordnung entfernen`, async () => {
+        await personDetailsView.button_editSchulzuordnung.click();
+        await page.locator('div.v-selection-control__input').click() //Ersetzen durch TestId
+        await personDetailsView.button_deleteSchulzuordnung.click()
+        await personDetailsView.button_confirmDeleteSchulzuordnung.click();
+        await personDetailsView.button_saveAssignmentChanges.click();
+        await personDetailsView.button_closeZuordnungSuccess.click();
+      });
+
+      const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
+      personDetailsView = await test.step(`Kontextlose Person suchen und Gesamtübersicht öffnen`, async () => {
+          await personManagementView.searchBySuchfeld(createdBenutzername);
+          return await personManagementView.openGesamtuebersichtPerson(page, createdBenutzername); // Klick auf den Benutzernamen
+        });
+
+      await test.step(`Schulzuordnung wieder hinzufügen`, async () => {
+        await personDetailsView.button_editSchulzuordnung.click();
+        await personDetailsView.button_addSchulzuordnung.click();
+      });
+
+      await personDetailsView.comboboxOrganisationInput.searchByTitle(schulstrukturknoten, false);
+      await personDetailsView.combobox_rolle.click();
+      await page.getByText(rolle, { exact: true }).click();
+      await personDetailsView.button_submitAddSchulzuordnung.click()
+      await personDetailsView.buttonConfirmZuordnungDialogAddition.click()
+      await personDetailsView.button_saveAssignmentChanges.click()
+      await page.waitForTimeout(5000) //Needed Because Event is Processed Async in Backend and Assertion happens outsite of PW-Webflow
+      await test.step(`Prüfen, dass Lehrkraft im LDAP existiert`, async () => {
+        expect(await testHelperLdap.validateUserExists(createdBenutzername)).toBeTruthy();
+      });
+
+      await test.step(`Prüfen, dass Lehrkraft im LDAP korrekter Gruppe zugeordnet ist`, async () => {
+        expect(await testHelperLdap.validateUserIsInGroupOfNames(createdBenutzername, dienststellenNr)).toBeTruthy();
+      });
+
+      await test.step(`Prüfen, dass alte Mail weiterhin existiert und zugeordnet ist`, async () => {
+        const mailPrimaryAddress: string = await testHelperLdap.getMailPrimaryAddress(createdBenutzername);
+        expect(mailPrimaryAddress).toEqual(generatedMailPrimaryAddress);
+      });
+    });
+
+  test(
+    'Eine Lehrkraft anlegen in der Rolle Landesadmin und die Bestätigungsseite sowie den LDAP Inhalt vollständig prüfen',
     { tag: [LONG, SHORT, STAGE, BROWSER] },
     async ({ page }: PlaywrightTestArgs) => {
       const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
@@ -534,7 +631,9 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const nachname: string = await generateNachname();
       const kopersnr: string = await generateKopersNr();
       const schulstrukturknoten: string = testschule;
-      const dienststellenNr = '1111111';
+      const dienststellenNr: string = '1111111';
+      const testHelperLdap: TestHelperLdap = new TestHelperLdap(LDAP_URL, LDAP_ADMIN_PASSWORD);
+      let createdBenutzername: string;
 
       await test.step(`Dialog Person anlegen öffnen`, async () => {
         await page.goto('/' + 'admin/personen/new');
@@ -556,9 +655,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(personCreationView.text_success).toHaveText(
           vorname + ' ' + nachname + ' wurde erfolgreich hinzugefügt.'
         );
-        // Benutzer wird im afterEach-Block gelöscht
-        // gesteuert wird die Löschung über die Variable username
         usernames.push(await personCreationView.data_Benutzername.innerText());
+        createdBenutzername = await personCreationView.data_Benutzername.innerText();
         await expect(personCreationView.text_DatenGespeichert).toBeVisible();
         await expect(personCreationView.label_Vorname).toHaveText('Vorname:');
         await expect(personCreationView.data_Vorname).toHaveText(vorname);
@@ -576,6 +674,20 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         );
         await expect(personCreationView.button_WeiterenBenutzerAnlegen).toBeVisible();
         await expect(personCreationView.button_ZurueckErgebnisliste).toBeVisible();
+      });
+
+      await test.step(`Prüfen, dass Lehrkraft im LDAP angelegt wurde`, async () => {
+        expect(await testHelperLdap.validateUserExists(createdBenutzername)).toBeTruthy();
+      });
+
+      await test.step(`Prüfen, dass Lehrkraft im LDAP korrekter Gruppe zugeordnet wurde`, async () => {
+        expect(await testHelperLdap.validateUserIsInGroupOfNames(createdBenutzername, dienststellenNr)).toBeTruthy();
+      });
+
+      await test.step(`Mail Primary Address Auf Existenz Prüfen`, async () => {
+        const mailPrimaryAddress: string = await testHelperLdap.getMailPrimaryAddress(createdBenutzername);
+        expect(mailPrimaryAddress).toContain('schule-sh.de');
+        expect(mailPrimaryAddress.length).toBeGreaterThan(5);
       });
     }
   );
