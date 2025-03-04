@@ -52,16 +52,19 @@ export class ProfilePage {
   readonly textOTPInput: Locator;
   readonly text2FASelfServiceError: Locator;
   readonly textOTPEntryError: Locator;
-
   // Inbetriebnahme-Passwort für LK-Endgerät
   readonly cardHeadlinePasswordLKEndgeraet: Locator;
   readonly infoTextSectionPasswordLKEndgeraet: Locator;
-  readonly buttontPasswortErzeugenSectionLKEndgeraet: Locator;
+  readonly buttonCreatePasswordSectionLKEndgeraet: Locator;
   readonly infoTextDialogPasswordLKEndgeraet: Locator;
-  readonly buttontPasswortErzeugenDialogLKEndgeraet: Locator;
+  readonly buttontCreatePasswordDialogLKEndgeraet: Locator;
   readonly inputPasswortErzeugenDialogLKEndgeraet: Locator;
+  readonly iconShowPassword: Locator;
+  readonly iconCopyPassword: Locator;
+  readonly infoTextPWCopied: Locator;
+  readonly buttonClosePWReset: Locator;
 
-  constructor(page) {
+  constructor(page: Page) {
     this.page = page;
     this.buttonZurueckVorherigeSeite = page.getByTestId('back-to-previous-page-button');
     this.titleMeinProfil = page.getByTestId('profile-headline');
@@ -98,7 +101,6 @@ export class ProfilePage {
     this.labelUsername = page.locator('#kc-attempted-username');
     this.textLoginPrompt = page.getByTestId('login-prompt-text');
     this.inputPassword = page.getByTestId('password-input');
-
     // 2FA
     this.cardHeadline2FA = page.getByTestId('two-factor-card');
     this.textNo2FA = page.getByText('Es wurde noch kein zweiter Faktor für Sie eingerichtet.');
@@ -113,24 +115,27 @@ export class ProfilePage {
     this.textOTPEntryError = page.getByTestId('self-service-otp-error-text');
     this.textOTPInput = page.getByTestId('self-service-otp-input');
     this.text2FASelfServiceError = page.getByTestId('self-service-token-verify-error-text');
-
     // Modal
     this.textLayoutCardHeadline = page.getByTestId('layout-card-headline');
-
     // Inbetriebnahme-Passwort für LK-Endgerät
     this.cardHeadlinePasswordLKEndgeraet = page.getByRole('heading', {
       name: 'Inbetriebnahme-Passwort für LK-Endgerät',
     });
     this.infoTextSectionPasswordLKEndgeraet = page.getByText(
-      'Sie benötigen dieses Passwort ausschließlich zur einmaligen Eingabe beim ersten Start Ihres neuen LK-Endgerätes oder wenn das Gerät zurückgesetzt wurde!'
+      'Sie benötigen dieses Passwort ausschließlich zur einmaligen Eingabe beim ersten' +
+        ' Start Ihres neuen LK-Endgerätes oder wenn das Gerät zurückgesetzt wurde!'
     );
-    this.buttontPasswortErzeugenSectionLKEndgeraet = page.getByTestId('open-device-password-dialog-button');
+    this.buttonCreatePasswordSectionLKEndgeraet = page.getByTestId('open-device-password-dialog-button');
     this.infoTextDialogPasswordLKEndgeraet = page.getByTestId('password-reset-info-text');
-    this.buttontPasswortErzeugenDialogLKEndgeraet = page.getByTestId('password-reset-button');
+    this.buttontCreatePasswordDialogLKEndgeraet = page.getByTestId('password-reset-button');
     this.inputPasswortErzeugenDialogLKEndgeraet = page.locator('[data-testid="password-output-field"] input');
+    this.iconShowPassword = page.getByTestId('show-password-icon');
+    this.iconCopyPassword = page.getByTestId('copy-password-icon');
+    this.infoTextPWCopied = page.getByText('Passwort in Zwischenablage kopiert');
+    this.buttonClosePWReset = page.getByTestId('close-password-reset-dialog-button');
   }
 
-  public async checkSectionPersoenlicheDaten(vorname: string, nachname: string, usernames: string[]) {
+  public async checkSectionPersoenlicheDaten(vorname: string, nachname: string, usernames: string[]): Promise<void> {
     await expect(this.cardHeadlinePersoenlicheDaten).toHaveText('Persönliche Daten');
     await expect(this.labelVornameNachname).toHaveText('Vor- und Nachname:');
     await expect(this.dataVornameNachname).toHaveText(vorname + ' ' + nachname);
@@ -139,5 +144,18 @@ export class ProfilePage {
     await expect(this.labelKopersNr).toBeHidden();
     await expect(this.dataKopersNr).toBeHidden();
     await expect(this.iconInfoPersoenlicheDaten).toBeVisible();
+  }
+
+  public async createIBNMPassword(): Promise<void> {
+    await expect(this.infoTextDialogPasswordLKEndgeraet).toHaveText(
+      'Das Passwort wurde erfolgreich zurückgesetzt. Bitte notieren Sie sich das Passwort oder drucken Sie es aus. Nach dem Schließen des Dialogs' +
+        ' wird das Passwort nicht mehr angezeigt. Sie benötigen dieses Passwort ausschließlich zur erstmaligen Anmeldung an Ihrem neuen LK-Endgerät.'
+    );
+    await expect(this.inputPasswortErzeugenDialogLKEndgeraet).toBeVisible();
+    await expect(this.inputPasswortErzeugenDialogLKEndgeraet).toHaveAttribute('readonly');
+    await expect(this.iconShowPassword).toBeVisible();
+    await this.iconCopyPassword.click();
+    await expect(this.infoTextPWCopied).toBeVisible();
+    await this.buttonClosePWReset.click();
   }
 }

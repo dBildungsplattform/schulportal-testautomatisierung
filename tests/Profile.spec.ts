@@ -40,7 +40,8 @@ let rolleIds: string[] = [];
 // This variable must be set to false in the testcase when the logged in user is changed
 let currentUserIsLandesadministrator: boolean = true;
 
-test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
+test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: git status+
+  ##: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
     await test.step(`Login`, async () => {
       const startPage: StartPage = await FromAnywhere(page)
@@ -688,16 +689,16 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       await test.step(`Schüler meldet sich mit dem neuen Passwort am Portal an`, async () => {
         await header.logout();
         await header.goToLogin();
-        const startView = await loginView.login(userInfoSchueler.username, userInfoSchueler.password);
+        const startView: StartPage = await loginView.login(userInfoSchueler.username, userInfoSchueler.password);
         await startView.checkSpIsVisible([itslearning]);
       });
     }
   );
 
-  test.only(
+  test(
     'Inbetriebnahme-Passwort als Lehrer über das eigene Profil erzeugen',
     { tag: [LONG, STAGE] },
-    async ({ page }) => {
+    async ({ page }: PlaywrightTestArgs) => {
       const header: HeaderPage = new HeaderPage(page);
       let userInfoLehrer: UserInfo;
 
@@ -727,38 +728,26 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
       await test.step(`Profil öffnen`, async () => {
         await header.button_profil.click();
+        await expect(profileView.titleMeinProfil).toHaveText('Mein Profil');
       });
 
       await test.step(`Inbetriebnahme-Passwort für LK-Endgerät erzeugen`, async () => {
         // Section Inbetriebnahme-Passwort für LK-Endgerät
-        await expect(profileView.titleMeinProfil).toHaveText('Mein Profil');
         await expect(profileView.cardHeadlinePasswordLKEndgeraet).toBeVisible();
         await expect(profileView.infoTextSectionPasswordLKEndgeraet).toBeVisible();
-        await profileView.buttontPasswortErzeugenSectionLKEndgeraet.click();
+        await profileView.buttonCreatePasswordSectionLKEndgeraet.click();
 
         // Dialog Inbetriebnahme-Passwort für LK-Endgeräte
         await expect(profileView.textLayoutCardHeadline).toHaveText('Inbetriebnahme-Passwort erzeugen');
         await expect(profileView.infoTextDialogPasswordLKEndgeraet).toHaveText(
-          'Bitte notieren Sie sich das Passwort oder drucken Sie es aus. Nach dem Schließen des Dialogs wird das Passwort nicht mehr angezeigt. Sie benötigen dieses Passwort ausschließlich zur erstmaligen Anmeldung an Ihrem neuen LK-Endgerät.'
+          'Bitte notieren Sie sich das Passwort oder drucken Sie es aus. Nach dem Schließen des Dialogs wird das Passwort' +
+            ' nicht mehr angezeigt. Sie benötigen dieses Passwort ausschließlich zur erstmaligen Anmeldung an Ihrem neuen LK-Endgerät.'
         );
-        await page.pause();
-        await profileView.buttontPasswortErzeugenDialogLKEndgeraet.click();
-        await page.pause();
+        await profileView.buttontCreatePasswordDialogLKEndgeraet.click();
+
         // Dialog Inbetriebnahme-Passwort erzeugen
-        await expect(profileView.infoTextDialogPasswordLKEndgeraet).toHaveText(
-          'Das Passwort wurde erfolgreich zurückgesetzt. Bitte notieren Sie sich das Passwort oder drucken Sie es aus. Nach dem Schließen des Dialogs wird das Passwort nicht mehr angezeigt. Sie benötigen dieses Passwort ausschließlich zur erstmaligen Anmeldung an Ihrem neuen LK-Endgerät.'
-        );
-        await expect(profileView.inputPasswortErzeugenDialogLKEndgeraet).toBeVisible();
-        await expect(profileView.inputPasswortErzeugenDialogLKEndgeraet).toHaveAttribute('readonly');
-
-        await page.getByTestId('show-password-icon').click();
-        await page.getByTestId('copy-password-icon').click();
-        await page.getByText('Passwort in Zwischenablage').click();
-        await page.getByTestId('close-password-reset-dialog-button').click();
-        await page.getByTestId('profile-headline').click();
-
-        //await personDetailsView.createIbnPassword();
-        await page.pause();
+        await profileView.createIBNMPassword();
+        await expect(profileView.titleMeinProfil).toBeVisible();
       });
     }
   );
