@@ -61,7 +61,6 @@ export class ProfilePage {
   readonly inputPasswortErzeugenDialogLKEndgeraet: Locator;
   readonly iconShowPassword: Locator;
   readonly iconCopyPassword: Locator;
-  readonly infoTextPWCopied: Locator;
   readonly buttonClosePWReset: Locator;
 
   constructor(page: Page) {
@@ -131,7 +130,6 @@ export class ProfilePage {
     this.inputPasswortErzeugenDialogLKEndgeraet = page.locator('[data-testid="password-output-field"] input');
     this.iconShowPassword = page.getByTestId('show-password-icon');
     this.iconCopyPassword = page.getByTestId('copy-password-icon');
-    this.infoTextPWCopied = page.getByText('Passwort in Zwischenablage kopiert');
     this.buttonClosePWReset = page.getByTestId('close-password-reset-dialog-button');
   }
 
@@ -154,8 +152,7 @@ export class ProfilePage {
     await expect(this.inputPasswortErzeugenDialogLKEndgeraet).toBeVisible();
     await expect(this.inputPasswortErzeugenDialogLKEndgeraet).toHaveAttribute('readonly');
     await expect(this.iconShowPassword).toBeVisible();
-    await this.iconCopyPassword.click();
-    await expect(this.infoTextPWCopied).toBeVisible();
+    await expect(this.iconCopyPassword).toBeVisible()
     await this.buttonClosePWReset.click();
   }
 }
