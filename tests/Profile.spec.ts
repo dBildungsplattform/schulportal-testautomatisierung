@@ -40,8 +40,7 @@ let rolleIds: string[] = [];
 // This variable must be set to false in the testcase when the logged in user is changed
 let currentUserIsLandesadministrator: boolean = true;
 
-test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: git status+
-  ##: URL: ${process.env.FRONTEND_URL}:`, () => {
+test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
     await test.step(`Login`, async () => {
       const startPage: StartPage = await FromAnywhere(page)
