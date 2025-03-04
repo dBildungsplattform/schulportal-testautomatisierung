@@ -93,7 +93,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const landing: LandingPage = new LandingPage(page);
       const startseite: StartPage = new StartPage(page);
       const login: LoginPage = new LoginPage(page);
-      const menue = new MenuPage(page);
+      const menue: MenuPage = new MenuPage(page);
       const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
       const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
       const header: HeaderPage = new HeaderPage(page);
@@ -151,7 +151,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     { tag: [LONG, SHORT, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
       const startseite: StartPage = new StartPage(page);
-      const menue = new MenuPage(page);
+      const menue: MenuPage = new MenuPage(page);
       const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
 
       const vorname: string = await generateVorname();
@@ -228,11 +228,11 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     { tag: [LONG, SHORT, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
       const startseite: StartPage = new StartPage(page);
-      const menue = new MenuPage(page);
+      const menue: MenuPage = new MenuPage(page);
       const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
-      const login = new LoginPage(page);
+      const login: LoginPage = new LoginPage(page);
       const header: HeaderPage = new HeaderPage(page);
-      const landing = new LandingPage(page);
+      const landing: LandingPage = new LandingPage(page);
 
       const vorname: string = await generateVorname();
       const nachname: string = await generateNachname();
@@ -295,7 +295,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     { tag: [LONG, SHORT, STAGE, BROWSER] },
     async ({ page }: PlaywrightTestArgs) => {
       const startseite: StartPage = new StartPage(page);
-      const menue = new MenuPage(page);
+      const menue: MenuPage = new MenuPage(page);
       const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
 
       const vorname: string = await generateVorname();
@@ -335,7 +335,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     { tag: [LONG, SHORT, STAGE, BROWSER] },
     async ({ page }: PlaywrightTestArgs) => {
       const startseite: StartPage = new StartPage(page);
-      const menue = new MenuPage(page);
+      const menue: MenuPage = new MenuPage(page);
       const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
 
       await test.step(`Benutzerverwaltung öffnen und alle Elemente in der Ergebnisliste auf Existenz prüfen`, async () => {
@@ -363,7 +363,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     { tag: [LONG, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
       const startseite: StartPage = new StartPage(page);
-      const menue = new MenuPage(page);
+      const menue: MenuPage = new MenuPage(page);
       const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
 
       const Organisation_Land = landSH;
