@@ -92,7 +92,7 @@ export class PersonCreationViewPage {
     role: string,
     officeNo: string,
     organisation: string
-  ) {
+  ): Promise<void> {
     await expect(this.textH2PersonAnlegen).toBeVisible();
     await expect(this.buttonSchliessen).toBeVisible();
     await expect(this.textSuccess).toHaveText(firstName + ' ' + lastName + ' wurde erfolgreich hinzugefügt.');
