@@ -5,6 +5,9 @@ export class PersonDetailsViewPage {
   readonly page: Page;
   readonly text_h2_benutzerBearbeiten: Locator;
 
+  // Persoenliche Daten
+  readonly username: Locator;
+
   // Passwort
   readonly text_h3_passwort_headline: Locator;
   readonly button_pwChange: Locator;
@@ -76,6 +79,9 @@ export class PersonDetailsViewPage {
   constructor(page) {
     this.page = page;
     this.text_h2_benutzerBearbeiten = page.getByTestId('person-details-card').getByTestId('layout-card-headline');
+
+    // Persoenliche Daten
+    this.username = page.getByTestId('person-username');
 
     // Passwort
     this.text_h3_passwort_headline = page.locator(`//h3[text()='Passwort']`);

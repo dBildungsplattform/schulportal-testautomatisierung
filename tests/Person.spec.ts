@@ -524,7 +524,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     }
   );
 
-  test(
+  test.only(
     'Eine Lehrkraft anlegen in der Rolle Landesadmin und die Bestätigungsseite vollständig prüfen',
     { tag: [LONG, SHORT, STAGE, BROWSER] },
     async ({ page }: PlaywrightTestArgs) => {
@@ -556,8 +556,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(personCreationView.text_success).toHaveText(
           vorname + ' ' + nachname + ' wurde erfolgreich hinzugefügt.'
         );
-        // Benutzer wird im afterEach-Block gelöscht
-        // gesteuert wird die Löschung über die Variable username
         usernames.push(await personCreationView.data_Benutzername.innerText());
         await expect(personCreationView.text_DatenGespeichert).toBeVisible();
         await expect(personCreationView.label_Vorname).toHaveText('Vorname:');
@@ -576,7 +574,14 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         );
         await expect(personCreationView.button_WeiterenBenutzerAnlegen).toBeVisible();
         await expect(personCreationView.button_ZurueckErgebnisliste).toBeVisible();
+        await page.pause();
       });
+
+      await test.step(`Auf die Gesamtübersicht des neu angelegten Benutzers direkt navigieren`, async () => {});
+      await personCreationView.buttonOpenGesamtuebersicht.click();
+      const personDeatilsView: PersonDetailsViewPage = new PersonDetailsViewPage(page);
+      await expect(personDeatilsView.text_h2_benutzerBearbeiten).toHaveText('Benutzer bearbeiten');
+      await expect(personDeatilsView.username).toHaveText('ssfsdffsdfsef');
     }
   );
 
@@ -767,40 +772,44 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     }
   );
 
-  test('Einen Benutzer über das FE löschen', { tag: [LONG, SHORT, STAGE, BROWSER] }, async ({ page }: PlaywrightTestArgs) => {
-    const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
-    const PersonDetailsView: PersonDetailsViewPage = new PersonDetailsViewPage(page);
-    const header: HeaderPage = new HeaderPage(page);
+  test(
+    'Einen Benutzer über das FE löschen',
+    { tag: [LONG, SHORT, STAGE, BROWSER] },
+    async ({ page }: PlaywrightTestArgs) => {
+      const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
+      const PersonDetailsView: PersonDetailsViewPage = new PersonDetailsViewPage(page);
+      const header: HeaderPage = new HeaderPage(page);
 
-    const vorname: string = await generateVorname();
-    const nachname: string = await generateNachname();
-    const rolle = await generateRolleName();
-    const berechtigung = 'SYSADMIN';
-    const idSPs: string[] = [await getSPId(page, 'Schulportal-Administration')];
+      const vorname: string = await generateVorname();
+      const nachname: string = await generateNachname();
+      const rolle = await generateRolleName();
+      const berechtigung = 'SYSADMIN';
+      const idSPs: string[] = [await getSPId(page, 'Schulportal-Administration')];
 
-    await test.step(`Neuen Benutzer über die api anlegen`, async () => {
-      await createRolleAndPersonWithUserContext(page, landSH, berechtigung, vorname, nachname, idSPs, rolle);
-      rolleNames.push(rolle);
-    });
+      await test.step(`Neuen Benutzer über die api anlegen`, async () => {
+        await createRolleAndPersonWithUserContext(page, landSH, berechtigung, vorname, nachname, idSPs, rolle);
+        rolleNames.push(rolle);
+      });
 
-    await test.step(`Benutzer wieder löschen über das FE`, async () => {
-      await page.goto('/' + 'admin/personen');
-      await personManagementView.input_Suchfeld.fill(nachname);
-      await personManagementView.button_Suchen.click();
-      await page.getByRole('cell', { name: nachname, exact: true }).click();
-      await PersonDetailsView.button_deletePerson.click();
-      await PersonDetailsView.button_deletePersonConfirm.click();
-      await PersonDetailsView.button_closeDeletePersonConfirm.click();
-      await expect(personManagementView.text_h2_Benutzerverwaltung).toHaveText('Benutzerverwaltung');
-      // warten, dass die Seite mit dem Laden fertig ist, da z.B. icons mit ajax nachgeladen werden
-      // dieses ist nur ein workaround; im FE muss noch eine Lösung für den Status 'Seite ist vollständig geladen' geschaffen werden
-      await expect(header.icon_myProfil).toBeVisible();
-      await expect(header.icon_logout).toBeVisible();
-      await expect(personManagementView.comboboxMenuIcon_Schule).toBeVisible();
-      await expect(personManagementView.comboboxMenuIcon_Rolle).toBeVisible();
-      await expect(personManagementView.comboboxMenuIcon_Klasse).toBeVisible();
-      await expect(personManagementView.comboboxMenuIcon_Status).toBeVisible();
-      await expect(page.getByRole('cell', { name: nachname, exact: true })).toBeHidden();
-    });
-  });
+      await test.step(`Benutzer wieder löschen über das FE`, async () => {
+        await page.goto('/' + 'admin/personen');
+        await personManagementView.input_Suchfeld.fill(nachname);
+        await personManagementView.button_Suchen.click();
+        await page.getByRole('cell', { name: nachname, exact: true }).click();
+        await PersonDetailsView.button_deletePerson.click();
+        await PersonDetailsView.button_deletePersonConfirm.click();
+        await PersonDetailsView.button_closeDeletePersonConfirm.click();
+        await expect(personManagementView.text_h2_Benutzerverwaltung).toHaveText('Benutzerverwaltung');
+        // warten, dass die Seite mit dem Laden fertig ist, da z.B. icons mit ajax nachgeladen werden
+        // dieses ist nur ein workaround; im FE muss noch eine Lösung für den Status 'Seite ist vollständig geladen' geschaffen werden
+        await expect(header.icon_myProfil).toBeVisible();
+        await expect(header.icon_logout).toBeVisible();
+        await expect(personManagementView.comboboxMenuIcon_Schule).toBeVisible();
+        await expect(personManagementView.comboboxMenuIcon_Rolle).toBeVisible();
+        await expect(personManagementView.comboboxMenuIcon_Klasse).toBeVisible();
+        await expect(personManagementView.comboboxMenuIcon_Status).toBeVisible();
+        await expect(page.getByRole('cell', { name: nachname, exact: true })).toBeHidden();
+      });
+    }
+  );
 });
