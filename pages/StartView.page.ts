@@ -42,7 +42,7 @@ export class StartPage {
   }
 
   public async checkSpIsVisible(spNames: string[]) {
-    for (const spName of spNames) {
+    for (let spName of spNames) {
       await expect(this.cardItem(spName)).toBeVisible();
     }
   }
