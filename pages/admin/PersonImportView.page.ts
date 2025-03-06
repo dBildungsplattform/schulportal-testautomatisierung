@@ -22,7 +22,7 @@ export class PersonImportViewPage {
   readonly closeCardButton: Locator;
   readonly confirmUnsavedChangesButton: Locator;
   
-  constructor(page) {
+  constructor(page: Page) {
     // Benutzerimport
     this.page = page;  
     this.body = page.locator('body');
