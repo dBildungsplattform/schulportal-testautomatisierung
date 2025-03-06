@@ -113,13 +113,19 @@ export class PersonCreationViewPage {
     await expect(this.buttonZurueckErgebnisliste).toBeVisible();
   }
 
-  public async createUser(organisation: string, role: string, firstName: string, lastnName: string, koPersNr?: string) {
+  public async createUser(
+    organisation: string,
+    role: string,
+    firstName: string,
+    lastnName: string,
+    koPersNr?: string
+  ): Promise<void> {
     await this.comboboxOrganisationInput.searchByTitle(organisation, false);
     await this.comboboxRolle.click();
     await this.page.getByText(role, { exact: true }).click();
     await this.inputVorname.fill(firstName);
     await this.inputNachname.fill(lastnName);
-    if(koPersNr) {
+    if (koPersNr) {
       await this.inputKopersnr.fill(koPersNr);
     }
     await this.buttonPersonAnlegen.click();

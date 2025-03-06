@@ -162,7 +162,7 @@ export class PersonDetailsViewPage {
     this.buttonIBNPasswortEinrichtenDialogClose = page.getByTestId('close-password-reset-dialog-button');
   }
 
-  public async lockUserWithoutDate() {
+  public async lockUserWithoutDate(): Promise<void> {
     await this.button_lockPerson.click();
     await expect(this.text_h2_dialogBenutzerSperren).toHaveText('Benutzer sperren');
     await expect(this.combobox_organisationDialogBenutzerSperren).toHaveText('Land Schleswig-Holstein');
@@ -173,7 +173,7 @@ export class PersonDetailsViewPage {
     await this.button_lockPersonConfirm.click();
   }
 
-  public async lockUserWithDate(lockDateTo) {
+  public async lockUserWithDate(lockDateTo): Promise<void> {
     await this.button_lockPerson.click();
     await expect(this.text_h2_dialogBenutzerSperren).toHaveText('Benutzer sperren');
     await expect(this.combobox_organisationDialogBenutzerSperren).toHaveText('Land Schleswig-Holstein');
@@ -186,20 +186,20 @@ export class PersonDetailsViewPage {
     await this.button_lockPersonConfirm.click();
   }
 
-  public async checkUserIsLocked() {
+  public async checkUserIsLocked(): Promise<void> {
     await expect(this.icon_lockedUser).toBeVisible();
     await expect(this.text_lockedUser).toBeVisible();
   }
 
-  public async checkLockDateFrom(lockDateFrom: string) {
+  public async checkLockDateFrom(lockDateFrom: string): Promise<void> {
     await expect(this.text_sperrdatumAb).toHaveText(lockDateFrom);
   }
 
-  public async checkLockDateTo(lockDateTo: string) {
+  public async checkLockDateTo(lockDateTo: string): Promise<void> {
     await expect(this.text_sperrdatumBis).toHaveText(lockDateTo);
   }
 
-  public async softwareTokenEinrichten() {
+  public async softwareTokenEinrichten(): Promise<void> {
     await this.button_2FAEinrichten.click();
     await expect(this.text_h2_2FA_cardheadline).toHaveText('Zwei-Faktor-Authentifizierung einrichten');
     await expect(this.selectOption_2FA_softwareToken).toHaveText('Software-Token einrichten');
@@ -209,7 +209,7 @@ export class PersonDetailsViewPage {
     await this.button_close_softwareToken_dialog.click();
   }
 
-  public async createIbnPassword() {
+  public async createIbnPassword(): Promise<void> {
     await this.buttonIBNPasswortEinrichtenDialog.click();
     await this.buttonIBNPasswortEinrichten.click();
     await expect(this.infoIBNPasswortEinrichten).toContainText('Das Passwort wurde erfolgreich erzeugt.');
