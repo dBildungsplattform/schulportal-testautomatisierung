@@ -688,8 +688,65 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       await test.step(`Schüler meldet sich mit dem neuen Passwort am Portal an`, async () => {
         await header.logout();
         await header.goToLogin();
-        const startView = await loginView.login(userInfoSchueler.username, userInfoSchueler.password);
+        const startView: StartPage = await loginView.login(userInfoSchueler.username, userInfoSchueler.password);
         await startView.checkSpIsVisible([itslearning]);
+      });
+    }
+  );
+
+  test(
+    'Inbetriebnahme-Passwort als Lehrer über das eigene Profil erzeugen',
+    { tag: [LONG, STAGE] },
+    async ({ page }: PlaywrightTestArgs) => {
+      const header: HeaderPage = new HeaderPage(page);
+      let userInfoLehrer: UserInfo;
+
+      await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) über die api anlegen und mit diesem anmelden`, async () => {
+        userInfoLehrer = await createRolleAndPersonWithUserContext(
+          page,
+          testschule,
+          typeLehrer,
+          await generateNachname(),
+          await generateVorname(),
+          [await getSPId(page, email)],
+          await generateRolleName(),
+          await generateKopersNr()
+        );
+        usernames.push(userInfoLehrer.username);
+        rolleIds.push(userInfoLehrer.rolleId);
+
+        await header.logout();
+        await header.button_login.click();
+        const login: LoginPage = new LoginPage(page);
+        await login.login(userInfoLehrer.username, userInfoLehrer.password);
+        await login.updatePW();
+        currentUserIsLandesadministrator = false;
+      });
+
+      const profileView: ProfilePage = new ProfilePage(page);
+
+      await test.step(`Profil öffnen`, async () => {
+        await header.button_profil.click();
+        await expect(profileView.titleMeinProfil).toHaveText('Mein Profil');
+      });
+
+      await test.step(`Inbetriebnahme-Passwort für LK-Endgerät erzeugen`, async () => {
+        // Section Inbetriebnahme-Passwort für LK-Endgerät
+        await expect(profileView.cardHeadlinePasswordLKEndgeraet).toBeVisible();
+        await expect(profileView.infoTextSectionPasswordLKEndgeraet).toBeVisible();
+        await profileView.buttonCreatePasswordSectionLKEndgeraet.click();
+
+        // Dialog Inbetriebnahme-Passwort für LK-Endgeräte
+        await expect(profileView.textLayoutCardHeadline).toHaveText('Inbetriebnahme-Passwort erzeugen');
+        await expect(profileView.infoTextDialogPasswordLKEndgeraet).toHaveText(
+          'Bitte notieren Sie sich das Passwort oder drucken Sie es aus. Nach dem Schließen des Dialogs wird das Passwort' +
+            ' nicht mehr angezeigt. Sie benötigen dieses Passwort ausschließlich zur erstmaligen Anmeldung an Ihrem neuen LK-Endgerät.'
+        );
+        await profileView.buttontCreatePasswordDialogLKEndgeraet.click();
+
+        // Dialog Inbetriebnahme-Passwort erzeugen
+        await profileView.validatePasswordResetDialog();
+        await expect(profileView.titleMeinProfil).toBeVisible();
       });
     }
   );
