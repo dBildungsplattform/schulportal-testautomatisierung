@@ -144,7 +144,7 @@ export class ProfilePage {
     await expect(this.iconInfoPersoenlicheDaten).toBeVisible();
   }
 
-  public async createIBNMPassword(): Promise<void> {
+  public async validatePasswordResetDialog(): Promise<void> {
     await expect(this.infoTextDialogPasswordLKEndgeraet).toHaveText(
       'Das Passwort wurde erfolgreich zurückgesetzt. Bitte notieren Sie sich das Passwort oder drucken Sie es aus. Nach dem Schließen des Dialogs' +
         ' wird das Passwort nicht mehr angezeigt. Sie benötigen dieses Passwort ausschließlich zur erstmaligen Anmeldung an Ihrem neuen LK-Endgerät.'

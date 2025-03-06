@@ -745,7 +745,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await profileView.buttontCreatePasswordDialogLKEndgeraet.click();
 
         // Dialog Inbetriebnahme-Passwort erzeugen
-        await profileView.createIBNMPassword();
+        await profileView.validatePasswordResetDialog();
         await expect(profileView.titleMeinProfil).toBeVisible();
       });
     }
