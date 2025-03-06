@@ -541,7 +541,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         usernames.push(await personCreationView.dataBenutzername.innerText());
       });
 
-      await test.step(`Auf die Gesamtübersicht des neu angelegten Benutzers direkt navigieren`, async () => {
+      await test.step(`Auf die Gesamtübersicht des neu angelegten Benutzers mit dem Button "Zur Gesamtuebersicht" navigieren`, async () => {
         await personCreationView.buttonOpenGesamtuebersicht.click();
         const personDeatilsView: PersonDetailsViewPage = new PersonDetailsViewPage(page);
         await expect(personDeatilsView.text_h2_benutzerBearbeiten).toHaveText('Benutzer bearbeiten');
