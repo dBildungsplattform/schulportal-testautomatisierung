@@ -3,6 +3,7 @@ import { LandingPage } from './LandingView.page';
 import FromAnywhere from '../pages/FromAnywhere';
 import { LoginPage } from '../pages/LoginView.page';
 import { ProfilePage } from './ProfileView.page';
+import { StartPage } from './StartView.page';
 
 export class HeaderPage {
   readonly page: Page;
@@ -28,8 +29,8 @@ export class HeaderPage {
     // The other tests must be fixed gradually
     if (logoutViaStartPage) {
       await FromAnywhere(this.page).start();
-      await this.page.waitForResponse((resp) => resp.url().includes('/api/provider') && resp.status() === 200);
-      await this.page.waitForResponse('/api/provider/**/logo');
+      const startPage: StartPage = new StartPage(this.page);
+      await startPage.validateStartPageIsLoaded();
       console.log('Deprecated, logout via start page');
     }
 
