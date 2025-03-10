@@ -22,10 +22,10 @@ export class HeaderPage {
   }
 
   async logout(logoutViaStartPage?: boolean): Promise<LandingPage> {
-    // Wenn man auf den Abmelden-Button klickt, laufen häufig noch diverse requests. Deshalb brauchen wir hier eine kurze Verzögerung bzw. einen Sprung auf die Startseite --> depricated
-    // Dieser Zweig soll nicht mehr durchlaufen werden, da die Tests selber dafür zuständig sind, dass am Testende keine Requests mehr laufen
-    // Es sind noch nicht alle Tests umgestellt
-    // Neue Tests dürfen bei der Abmeldung nicht über die Startseite gehen!!!
+    // During the logout process there are still running requests from the tests.
+    // Therefor we have a workaround. Every logout will go through the start page. --> This is depricated!
+    // New tests are responsible that the last request in the test is finishe before the test ends.
+    // The other tests must be fixed gradually
     if (logoutViaStartPage) {
       await FromAnywhere(this.page).start();
       await this.page.waitForResponse((resp) => resp.url().includes('/api/provider') && resp.status() === 200);
