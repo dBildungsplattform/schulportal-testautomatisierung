@@ -33,6 +33,7 @@ let rolleIds: string[] = [];
 let rolleNames: string[] = [];
 // This variable must be set to false in the testcase when the logged in user is changed
 let currentUserIsLandesadministrator: boolean = true;
+let logoutViaStartPage: boolean = false;
 
 test.describe(`Testfälle für die Administration von Personen": Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
@@ -41,7 +42,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         .start()
         .then((landing: LandingPage) => landing.goToLogin())
         .then((login: LoginPage) => login.login())
-        .then((startseite: StartPage) => startseite.checkHeadlineIsVisible());
+        .then((startseite: StartPage) => startseite.validateStartPageIsLoaded());
 
       return startPage;
     });
@@ -54,10 +55,14 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const login: LoginPage = new LoginPage(page);
       const startseite: StartPage = new StartPage(page);
 
-      await header.logout();
+      if (logoutViaStartPage) {
+        await header.logout(true);
+      } else {
+        await header.logout(false);
+      }
       await landing.button_Anmelden.click();
       await login.login(ADMIN, PW);
-      await startseite.checkHeadlineIsVisible();
+      await startseite.validateStartPageIsLoaded();
     }
 
     await test.step(`Testdaten(Benutzer) löschen via API`, async () => {
@@ -79,7 +84,11 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
     await test.step(`Abmelden`, async () => {
       const header: HeaderPage = new HeaderPage(page);
-      await header.logout();
+      if (logoutViaStartPage) {
+        await header.logout(true);
+      } else {
+        await header.logout(false);
+      }
     });
   });
 
@@ -90,7 +99,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const landing: LandingPage = new LandingPage(page);
       const startseite: StartPage = new StartPage(page);
       const login: LoginPage = new LoginPage(page);
-      const menue = new MenuPage(page);
+      const menue: MenuPage = new MenuPage(page);
       const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
       const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
       const header: HeaderPage = new HeaderPage(page);
@@ -133,13 +142,17 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       });
 
       await test.step(`Der neue Benutzer meldet sich mit dem temporären Passwort am Portal an und vergibt ein neues Passwort`, async () => {
-        await header.logout();
+        await header.logout(true);
         await landing.button_Anmelden.click();
         await login.login(usernames[0], einstiegspasswort);
         await login.updatePW();
         currentUserIsLandesadministrator = false;
-        await startseite.checkHeadlineIsVisible();
+        await startseite.validateStartPageIsLoaded();
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 
@@ -148,7 +161,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     { tag: [LONG, SHORT, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
       const startseite: StartPage = new StartPage(page);
-      const menue = new MenuPage(page);
+      const menue: MenuPage = new MenuPage(page);
       const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
 
       const vorname: string = await generateVorname();
@@ -177,6 +190,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         usernames.push(await personCreationView.data_Benutzername.innerText());
         await expect(personCreationView.data_Rolle).toHaveText(landesadminRolle);
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 
@@ -217,6 +234,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         usernames.push(await personCreationView.data_Benutzername.innerText());
         await expect(personCreationView.data_Rolle).toHaveText('LiV');
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 
@@ -225,11 +246,11 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     { tag: [LONG, SHORT, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
       const startseite: StartPage = new StartPage(page);
-      const menue = new MenuPage(page);
+      const menue: MenuPage = new MenuPage(page);
       const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
-      const login = new LoginPage(page);
+      const login: LoginPage = new LoginPage(page);
       const header: HeaderPage = new HeaderPage(page);
-      const landing = new LandingPage(page);
+      const landing: LandingPage = new LandingPage(page);
 
       const vorname: string = await generateVorname();
       const nachname: string = await generateNachname();
@@ -255,11 +276,11 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         usernames.push(userInfo.username);
         rolleIds.push(userInfo.rolleId);
 
-        await header.logout();
+        await header.logout(true);
         await landing.button_Anmelden.click();
         await login.login(userInfo.username, userInfo.password);
         userInfo.password = await login.updatePW();
-        await startseite.checkHeadlineIsVisible();
+        await startseite.validateStartPageIsLoaded();
         currentUserIsLandesadministrator = false;
       });
 
@@ -284,6 +305,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         // Save the username for cleanup
         usernames.push(await personCreationView.data_Benutzername.innerText());
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 
@@ -292,7 +317,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     { tag: [LONG, SHORT, STAGE, BROWSER] },
     async ({ page }: PlaywrightTestArgs) => {
       const startseite: StartPage = new StartPage(page);
-      const menue = new MenuPage(page);
+      const menue: MenuPage = new MenuPage(page);
       const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
 
       const vorname: string = await generateVorname();
@@ -324,6 +349,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         usernames.push(await personCreationView.data_Benutzername.innerText());
         await expect(personCreationView.data_Rolle).toHaveText(schuelerRolle);
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 
@@ -332,7 +361,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     { tag: [LONG, SHORT, STAGE, BROWSER] },
     async ({ page }: PlaywrightTestArgs) => {
       const startseite: StartPage = new StartPage(page);
-      const menue = new MenuPage(page);
+      const menue: MenuPage = new MenuPage(page);
       const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
 
       await test.step(`Benutzerverwaltung öffnen und alle Elemente in der Ergebnisliste auf Existenz prüfen`, async () => {
@@ -352,6 +381,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(personManagementView.table_header_Zuordnungen).toBeVisible();
         await expect(personManagementView.table_header_Klasse).toBeVisible();
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 
@@ -360,16 +393,16 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     { tag: [LONG, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
       const startseite: StartPage = new StartPage(page);
-      const menue = new MenuPage(page);
+      const menue: MenuPage = new MenuPage(page);
       const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
 
-      const Organisation_Land = landSH;
-      const Organisation_OeffentlicheSchule = oeffentlichLandSH;
-      const Organisation_Ersatzschule = ersatzLandSH;
-      const Organisation_Schule = testschule;
+      const Organisation_Land: string = landSH;
+      const Organisation_OeffentlicheSchule: string = oeffentlichLandSH;
+      const Organisation_Ersatzschule: string = ersatzLandSH;
+      const Organisation_Schule: string = testschule;
 
-      const rolleLehr = 'Lehrkraft';
-      const rolleLiV = 'LiV';
+      const rolleLehr: string = 'Lehrkraft';
+      const rolleLiV: string = 'LiV';
 
       await test.step(`Dialog Person anlegen öffnen`, async () => {
         await startseite.cardItemSchulportalAdministration.click();
@@ -428,6 +461,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         // close opened combobox organisation
         await personCreationView.text_h2_PersonAnlegen.click();
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 
@@ -491,6 +528,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(page.getByRole('cell', { name: 'Keine Daten gefunden.' })).toBeVisible();
         await expect(page.locator('v-data-table__td')).toHaveCount(0);
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 
@@ -521,6 +562,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
         await expect(personManagementView.getRows().first()).toContainText('1111165');
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 
@@ -534,7 +579,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const nachname: string = await generateNachname();
       const kopersnr: string = await generateKopersNr();
       const schulstrukturknoten: string = testschule;
-      const dienststellenNr = '1111111';
+      const dienststellenNr: string = '1111111';
 
       await test.step(`Dialog Person anlegen öffnen`, async () => {
         await page.goto('/' + 'admin/personen/new');
@@ -577,6 +622,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(personCreationView.button_WeiterenBenutzerAnlegen).toBeVisible();
         await expect(personCreationView.button_ZurueckErgebnisliste).toBeVisible();
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 
@@ -614,30 +663,30 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         usernames.push(userInfo.username);
         rolleIds.push(userInfo.rolleId);
 
-        await header.logout();
+        await header.logout(true);
         await landing.button_Anmelden.click();
         await login.login(userInfo.username, userInfo.password);
         userInfo.password = await login.updatePW();
         currentUserIsLandesadministrator = false;
-        await startseite.checkHeadlineIsVisible();
+        await startseite.validateStartPageIsLoaded();
       });
 
       // Testdaten
       const schulstrukturknoten: string = testschule;
-      const dienststellenNr = '1111111';
-      const vorname1 = await generateVorname();
-      const nachname1 = await generateNachname();
-      const klassenname = 'Playwright3a';
+      const dienststellenNr: string = '1111111';
+      const vorname1: string = await generateVorname();
+      const nachname1: string = await generateNachname();
+      const klassenname: string = 'Playwright3a';
 
-      const rolle2 = 'Lehrkraft';
-      const vorname2 = await generateVorname();
-      const nachname2 = await generateNachname();
-      const kopersnr2 = await generateKopersNr();
+      const rolle2: string = 'Lehrkraft';
+      const vorname2: string = await generateVorname();
+      const nachname2: string = await generateNachname();
+      const kopersnr2: string = await generateKopersNr();
 
-      const rolle3 = 'Lehrkraft';
-      const vorname3 = await generateVorname();
-      const nachname3 = await generateNachname();
-      const kopersnr3 = await generateKopersNr();
+      const rolle3: string = 'Lehrkraft';
+      const vorname3: string = await generateVorname();
+      const nachname3: string = await generateNachname();
+      const kopersnr3: string = await generateKopersNr();
 
       await test.step(`Dialog Person anlegen öffnen`, async () => {
         await page.goto('/' + 'admin/personen/new');
@@ -647,6 +696,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await personCreationView.comboboxOrganisationInput.searchByTitle(schulstrukturknoten, false);
         await personCreationView.combobox_Rolle.click();
         await page.getByText(schuelerRolle, { exact: true }).click();
+        // Click somewhere else so that the dropdown role is closed and doesn't cover uo the dropdown Klasse
+        await personCreationView.text_h2_PersonAnlegen.click();
         await personCreationView.combobox_Klasse.click();
         await page.getByText(klassenname).click();
         await personCreationView.Input_Vorname.fill(vorname1);
@@ -764,43 +815,55 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(personCreationView.button_WeiterenBenutzerAnlegen).toBeVisible();
         await expect(personCreationView.button_ZurueckErgebnisliste).toBeVisible();
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 
-  test('Einen Benutzer über das FE löschen', { tag: [LONG, SHORT, STAGE, BROWSER] }, async ({ page }: PlaywrightTestArgs) => {
-    const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
-    const PersonDetailsView: PersonDetailsViewPage = new PersonDetailsViewPage(page);
-    const header: HeaderPage = new HeaderPage(page);
+  test(
+    'Einen Benutzer über das FE löschen',
+    { tag: [LONG, SHORT, STAGE, BROWSER] },
+    async ({ page }: PlaywrightTestArgs) => {
+      const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
+      const PersonDetailsView: PersonDetailsViewPage = new PersonDetailsViewPage(page);
+      const header: HeaderPage = new HeaderPage(page);
 
-    const vorname: string = await generateVorname();
-    const nachname: string = await generateNachname();
-    const rolle = await generateRolleName();
-    const berechtigung = 'SYSADMIN';
-    const idSPs: string[] = [await getSPId(page, 'Schulportal-Administration')];
+      const vorname: string = await generateVorname();
+      const nachname: string = await generateNachname();
+      const rolle: string = await generateRolleName();
+      const berechtigung: string = 'SYSADMIN';
+      const idSPs: string[] = [await getSPId(page, 'Schulportal-Administration')];
 
-    await test.step(`Neuen Benutzer über die api anlegen`, async () => {
-      await createRolleAndPersonWithUserContext(page, landSH, berechtigung, vorname, nachname, idSPs, rolle);
-      rolleNames.push(rolle);
-    });
+      await test.step(`Neuen Benutzer über die api anlegen`, async () => {
+        await createRolleAndPersonWithUserContext(page, landSH, berechtigung, vorname, nachname, idSPs, rolle);
+        rolleNames.push(rolle);
+      });
 
-    await test.step(`Benutzer wieder löschen über das FE`, async () => {
-      await page.goto('/' + 'admin/personen');
-      await personManagementView.input_Suchfeld.fill(nachname);
-      await personManagementView.button_Suchen.click();
-      await page.getByRole('cell', { name: nachname, exact: true }).click();
-      await PersonDetailsView.button_deletePerson.click();
-      await PersonDetailsView.button_deletePersonConfirm.click();
-      await PersonDetailsView.button_closeDeletePersonConfirm.click();
-      await expect(personManagementView.text_h2_Benutzerverwaltung).toHaveText('Benutzerverwaltung');
-      // warten, dass die Seite mit dem Laden fertig ist, da z.B. icons mit ajax nachgeladen werden
-      // dieses ist nur ein workaround; im FE muss noch eine Lösung für den Status 'Seite ist vollständig geladen' geschaffen werden
-      await expect(header.icon_myProfil).toBeVisible();
-      await expect(header.icon_logout).toBeVisible();
-      await expect(personManagementView.comboboxMenuIcon_Schule).toBeVisible();
-      await expect(personManagementView.comboboxMenuIcon_Rolle).toBeVisible();
-      await expect(personManagementView.comboboxMenuIcon_Klasse).toBeVisible();
-      await expect(personManagementView.comboboxMenuIcon_Status).toBeVisible();
-      await expect(page.getByRole('cell', { name: nachname, exact: true })).toBeHidden();
-    });
-  });
+      await test.step(`Benutzer wieder löschen über das FE`, async () => {
+        await page.goto('/' + 'admin/personen');
+        await personManagementView.input_Suchfeld.fill(nachname);
+        await personManagementView.button_Suchen.click();
+        await page.getByRole('cell', { name: nachname, exact: true }).click();
+        await PersonDetailsView.button_deletePerson.click();
+        await PersonDetailsView.button_deletePersonConfirm.click();
+        await PersonDetailsView.button_closeDeletePersonConfirm.click();
+        await expect(personManagementView.text_h2_Benutzerverwaltung).toHaveText('Benutzerverwaltung');
+        // warten, dass die Seite mit dem Laden fertig ist, da z.B. icons mit ajax nachgeladen werden
+        // dieses ist nur ein workaround; im FE muss noch eine Lösung für den Status 'Seite ist vollständig geladen' geschaffen werden
+        await expect(header.icon_myProfil).toBeVisible();
+        await expect(header.icon_logout).toBeVisible();
+        await expect(personManagementView.comboboxMenuIcon_Schule).toBeVisible();
+        await expect(personManagementView.comboboxMenuIcon_Rolle).toBeVisible();
+        await expect(personManagementView.comboboxMenuIcon_Klasse).toBeVisible();
+        await expect(personManagementView.comboboxMenuIcon_Status).toBeVisible();
+        await expect(page.getByRole('cell', { name: nachname, exact: true })).toBeHidden();
+      });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
+    }
+  );
 });

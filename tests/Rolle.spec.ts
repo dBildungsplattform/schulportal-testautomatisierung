@@ -1,4 +1,4 @@
-import { expect, test, PlaywrightTestArgs } from '@playwright/test';
+import { expect, test, PlaywrightTestArgs, Locator } from '@playwright/test';
 import { deleteRolle, getRolleId } from '../base/api/testHelperRolle.page';
 import { ersatzLandSH, landSH } from '../base/organisation';
 import { landesadminRolle } from '../base/rollen';
@@ -9,7 +9,7 @@ import { generateRolleName } from '../base/testHelperGenerateTestdataNames';
 import { RolleCreationConfirmPage } from '../pages/admin/RolleCreationConfirm.page';
 import { RolleCreationViewPage } from '../pages/admin/RolleCreationView.page';
 import { RolleDetailsViewPage } from '../pages/admin/RolleDetailsView.page';
-import { RolleManagementViewPage } from '../pages/admin/RolleManagementView.page';
+import { RoleTableRow, RolleManagementViewPage } from '../pages/admin/RolleManagementView.page';
 import FromAnywhere from '../pages/FromAnywhere';
 import { HeaderPage } from '../pages/Header.page';
 import { MenuPage } from '../pages/MenuBar.page';
@@ -21,6 +21,7 @@ let startseite: StartPage;
 let loggedIn: boolean = false;
 // The created test data will be deleted in the afterEach block
 let rolleNames: string[] = [];
+let logoutViaStartPage: boolean = false;
 
 test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
   startseite = await test.step(`Login`, async () => {
@@ -28,7 +29,7 @@ test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
       .start()
       .then((landing: LandingPage) => landing.goToLogin())
       .then((login: LoginPage) => login.login())
-      .then((startseite: StartPage) => startseite.checkHeadlineIsVisible());
+      .then((startseite: StartPage) => startseite.validateStartPageIsLoaded());
 
     loggedIn = true;
     return startPage;
@@ -46,7 +47,11 @@ test.afterEach(async ({ page }: PlaywrightTestArgs) => {
   if (loggedIn) {
     await test.step(`Abmelden`, async () => {
       const header: HeaderPage = new HeaderPage(page);
-      await header.logout();
+      if (logoutViaStartPage) {
+        await header.logout(true);
+      } else {
+        await header.logout(false);
+      }
       loggedIn = false;
     });
   }
@@ -57,7 +62,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     '2 Rollen nacheinander anlegen mit Rollenarten LERN und LEHR als Landesadmin',
     { tag: [LONG, SHORT, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
-      const rollenname1:  string = await generateRolleName();
+      const rollenname1: string = await generateRolleName();
       const rollenname2: string = await generateRolleName();
       const schulstrukturknoten1: string = landSH;
       const schulstrukturknoten2: string = ersatzLandSH;
@@ -69,7 +74,9 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
       const angebotB2: string = kalender;
 
       const rolleCreationView: RolleCreationViewPage = await test.step(`Dialog Rolle anlegen öffnen`, async () => {
-        const rolleCreationView: RolleCreationViewPage = await startseite.goToAdministration().then((menu) => menu.rolleAnlegen());
+        const rolleCreationView: RolleCreationViewPage = await startseite
+          .goToAdministration()
+          .then((menu: MenuPage) => menu.rolleAnlegen());
         await expect(rolleCreationView.textH2RolleAnlegen).toHaveText('Neue Rolle hinzufügen');
         return rolleCreationView;
       });
@@ -105,11 +112,15 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
       });
 
       await test.step(`In der Ergebnisliste prüfen dass die beiden neuen Rollen angezeigt sind`, async () => {
-        const rolleManagementView = await rolleCreationView.menu().alleRollenAnzeigen();
+        const rolleManagementView: RolleManagementViewPage = await rolleCreationView.menu().alleRollenAnzeigen();
         await expect(rolleManagementView.textH2Rollenverwaltung).toHaveText('Rollenverwaltung');
         await expect(page.getByRole('cell', { name: rollenname1 })).toBeVisible();
         await expect(page.getByRole('cell', { name: rollenname2 })).toBeVisible();
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 
@@ -118,7 +129,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     { tag: [LONG, SHORT, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
       await test.step(`Rollenverwaltung öffnen und alle Elemente in der Ergebnisliste auf Existenz prüfen`, async () => {
-        const menu: MenuPage = await startseite.goToAdministration();   
+        const menu: MenuPage = await startseite.goToAdministration();
         const rolleManagement: RolleManagementViewPage = await menu.alleRollenAnzeigen();
         await expect(rolleManagement.textH1Administrationsbereich).toBeVisible();
         await expect(rolleManagement.textH2Rollenverwaltung).toBeVisible();
@@ -126,9 +137,14 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
         await expect(rolleManagement.tableHeaderRollenart).toBeVisible();
         await expect(rolleManagement.tableHeaderMerkmale).toBeVisible();
         await expect(rolleManagement.tableHeaderAdministrationsebene).toBeVisible();
-        await expect(page.getByRole('cell', { name: 'itslearning-Schüler' })).toBeVisible(); 
-    });
-  });
+        await expect(page.getByRole('cell', { name: 'itslearning-Schüler' })).toBeVisible();
+      });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
+    }
+  );
 
   test(
     'Eine Rolle anlegen und die Bestätigungsseite vollständig prüfen als Landesadmin',
@@ -146,7 +162,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
       const systemrechtC: string = 'Darf Klassen verwalten';
 
       const rolleCreationView: RolleCreationViewPage = await test.step(`Dialog Rolle anlegen öffnen`, async () => {
-        return await startseite.goToAdministration().then((menu) => menu.rolleAnlegen());
+        return await startseite.goToAdministration().then((menu: MenuPage) => menu.rolleAnlegen());
       });
 
       const rolleCreationConfirmPage: RolleCreationConfirmPage = await test.step(`Rolle anlegen`, async () => {
@@ -190,6 +206,10 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
         await expect(rolleCreationConfirmPage.button_WeitereRolleAnlegen).toBeVisible();
         await expect(rolleCreationConfirmPage.button_ZurueckErgebnisliste).toBeVisible();
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 
@@ -208,7 +228,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
       await expect(rolleDetailsView.rolleForm.rollenname.messages).toBeVisible();
       await expect(rolleDetailsView.rolleForm.rollenname.messages).toHaveText('Der Rollenname muss ausgewählt werden.');
       await rolleDetailsView.rolleForm.rollenname.inputElement.fill('a');
-      await expect(rolleDetailsView.rolleForm.rollenname.messages).toHaveText("");
+      await expect(rolleDetailsView.rolleForm.rollenname.messages).toHaveText('');
     });
 
     await test.step('zu lange Eingaben', async () => {
@@ -221,12 +241,18 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
 
     await test.step('ungültige Zeichen', async () => {
       const illegalCharacters: string[] = ['!', '"', '§', '$', '%', '&', '/', '<', '>', '{', '}', '[', ']'];
-      for (let index = 0; index < illegalCharacters.length; index++) {
+      for (let index: number = 0; index < illegalCharacters.length; index++) {
         await rolleDetailsView.rolleForm.rollenname.inputElement.fill(illegalCharacters[index]);
         await expect(rolleDetailsView.rolleForm.rollenname.messages.getByText('ungültig')).toBeVisible();
-        await expect(rolleDetailsView.rolleForm.rollenname.messages.getByText('ungültig')).toHaveText('Der Rollenname darf keine ungültigen Zeichen beinhalten.');
+        await expect(rolleDetailsView.rolleForm.rollenname.messages.getByText('ungültig')).toHaveText(
+          'Der Rollenname darf keine ungültigen Zeichen beinhalten.'
+        );
       }
-    })
+    });
+    // #TODO: wait for the last request in the test
+    // sometimes logout breaks the test because of interrupting requests
+    // logoutViaStartPage = true is a workaround
+    logoutViaStartPage = true;
   });
 
   test('Versuch eine zugewiesene Rolle zu löschen', { tag: [LONG] }, async () => {
@@ -245,6 +271,10 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
       await expect(rolleDetailsView.textSuccess).toBeHidden();
       await rolleDetailsView.alert.button.click();
     });
+    // #TODO: wait for the last request in the test
+    // sometimes logout breaks the test because of interrupting requests
+    // logoutViaStartPage = true is a workaround
+    logoutViaStartPage = true;
   });
 });
 
@@ -256,7 +286,7 @@ test.describe('Testet die Anlage einer neuen Rolle', () => {
     { tag: [LONG] },
     async () => {
       const rolleCreationView: RolleCreationViewPage = await test.step('Rolle anlegen aufrufen', async () => {
-        return await startseite.goToAdministration().then((menu) => menu.rolleAnlegen());
+        return await startseite.goToAdministration().then((menu: MenuPage) => menu.rolleAnlegen());
       });
 
       const rolleCreationConfirm: {
@@ -287,23 +317,27 @@ test.describe('Testet die Anlage einer neuen Rolle', () => {
 
       await test.step('Rollentabelle prüfen', async () => {
         expect(rolleNames).toBeDefined();
-        const row = rolleManagementPage.rowByRoleName(rolleNames!);
+        const row: RoleTableRow = rolleManagementPage.rowByRoleName(rolleNames!);
         await expect(row.locator).toBeVisible();
 
-        const spCell = row.spCell();
+        const spCell: Locator = row.spCell();
         for (const sp of rolleCreationConfirm.selectedSPs) {
           await expect.soft(spCell).toContainText(sp);
         }
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 
   test('Falsche Eingaben überprüfen', { tag: [LONG] }, async () => {
     const rolleNames: string = 'a'.repeat(201);
     const rolleCreationView: RolleCreationViewPage = await test.step('Rolle anlegen aufrufen', async () => {
-      return await startseite.goToAdministration().then((menu) => menu.rolleAnlegen());
+      return await startseite.goToAdministration().then((menu: MenuPage) => menu.rolleAnlegen());
     });
-    
+
     await test.step('leere Pflichtfelder', async () => {
       await expect(rolleCreationView.rolleForm.adminstrationsebene.messages).toBeHidden();
       await expect(rolleCreationView.rolleForm.rollenart.messages).toBeHidden();
@@ -318,16 +352,16 @@ test.describe('Testet die Anlage einer neuen Rolle', () => {
       await expect(rolleCreationView.rolleForm.rollenart.messages).toHaveText('Die Rollenart muss ausgewählt werden.');
 
       await rolleCreationView.rolleForm.adminstrationsebene.inputElement.selectByPosition([0]);
-      await expect(rolleCreationView.rolleForm.adminstrationsebene.messages).toHaveText("");
+      await expect(rolleCreationView.rolleForm.adminstrationsebene.messages).toHaveText('');
       await rolleCreationView.rolleForm.rollenart.inputElement.selectByPosition([0]);
-      await expect(rolleCreationView.rolleForm.rollenart.messages).toHaveText("");
+      await expect(rolleCreationView.rolleForm.rollenart.messages).toHaveText('');
 
       await expect(rolleCreationView.rolleForm.rollenname.messages).toBeVisible();
       await expect(rolleCreationView.rolleForm.rollenname.messages).toHaveText(
         'Der Rollenname muss ausgewählt werden.'
       );
       await rolleCreationView.enterRollenname('a');
-      await expect(rolleCreationView.rolleForm.rollenname.messages).toHaveText("");
+      await expect(rolleCreationView.rolleForm.rollenname.messages).toHaveText('');
     });
 
     await test.step('zu lange Eingaben', async () => {
@@ -340,17 +374,23 @@ test.describe('Testet die Anlage einer neuen Rolle', () => {
 
     await test.step('ungültige Zeichen', async () => {
       const illegalCharacters: string[] = ['!', '"', '§', '$', '%', '&', '/', '<', '>', '{', '}', '[', ']'];
-      for (let index = 0; index < illegalCharacters.length; index++) {
+      for (let index: number = 0; index < illegalCharacters.length; index++) {
         await rolleCreationView.enterRollenname(illegalCharacters[index]);
         await expect(rolleCreationView.rolleForm.rollenname.messages.getByText('ungültig')).toBeVisible();
-        await expect(rolleCreationView.rolleForm.rollenname.messages.getByText('ungültig')).toHaveText('Der Rollenname darf keine ungültigen Zeichen beinhalten.');
+        await expect(rolleCreationView.rolleForm.rollenname.messages.getByText('ungültig')).toHaveText(
+          'Der Rollenname darf keine ungültigen Zeichen beinhalten.'
+        );
       }
     });
+    // #TODO: wait for the last request in the test
+    // sometimes logout breaks the test because of interrupting requests
+    // logoutViaStartPage = true is a workaround
+    logoutViaStartPage = true;
   });
 
   test.afterEach(async ({ page }: PlaywrightTestArgs) => {
     if (rolleNames) {
-      const rolleIds = await getRolleId(page, rolleNames);
+      const rolleIds: string = await getRolleId(page, rolleNames);
       await deleteRolle(page, rolleIds);
     }
   });

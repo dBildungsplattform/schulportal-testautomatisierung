@@ -1,4 +1,4 @@
-import { test, expect, PlaywrightTestArgs } from '@playwright/test';
+import { test, expect, PlaywrightTestArgs, Page } from '@playwright/test';
 import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
 import { StartPage } from '../pages/StartView.page';
@@ -23,6 +23,7 @@ let usernames: string[] = [];
 let rolleIds: string[] = [];
 // This variable must be set to false in the testcase when the logged in user is changed
 let currentUserIsLandesadministrator: boolean = true;
+let logoutViaStartPage: boolean = false;
 
 test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
@@ -31,7 +32,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
         .start()
         .then((landing: LandingPage) => landing.goToLogin())
         .then((login: LoginPage) => login.login())
-        .then((startseite: StartPage) => startseite.checkHeadlineIsVisible());
+        .then((startseite: StartPage) => startseite.validateStartPageIsLoaded());
 
       return startPage;
     });
@@ -44,10 +45,14 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
       const login: LoginPage = new LoginPage(page);
       const startseite: StartPage = new StartPage(page);
 
-      await header.logout();
+      if (logoutViaStartPage) {
+        await header.logout(true);
+      } else {
+        await header.logout(false);
+      }
       await landing.button_Anmelden.click();
       await login.login(ADMIN, PW);
-      await startseite.checkHeadlineIsVisible();
+      await startseite.validateStartPageIsLoaded();
     }
 
     await test.step(`Testdaten(Benutzer) löschen via API`, async () => {
@@ -64,7 +69,11 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
 
     await test.step(`Abmelden`, async () => {
       const header: HeaderPage = new HeaderPage(page);
-      await header.logout();
+      if (logoutViaStartPage) {
+        await header.logout(true);
+      } else {
+        await header.logout(false);
+      }
     });
   });
 
@@ -87,22 +96,22 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
       // Wenn SPSH-1043 auf stage deployed ist, muss der Test erweitert werden. Hier muss dann das erwartete Verhalten getestet werden, wenn man auf stage auf die Kachel(email, Adressbuch, Kalender)  klickt
       await expect(startseite.cardItemEmail).toBeVisible(); // warten bis die Seite geladen ist
 
-      const page_Email4Teacher_Promise = page.waitForEvent('popup');
+      const emailPagePromise: Promise<Page> = page.waitForEvent('popup');
       await startseite.cardItemEmail.click();
-      const page_Email4Teacher = await page_Email4Teacher_Promise;
-      const email4Teacher: Email4TeacherPage = new Email4TeacherPage(page_Email4Teacher);
+      const emailPage: Page = await emailPagePromise;
+      const email4Teacher: Email4TeacherPage = new Email4TeacherPage(emailPage);
       switch (ENV) {
         case 'dev':
           await expect(email4Teacher.text_h1).toBeVisible(); // dummy Seite email wikipedia
           break;
       }
-      await page_Email4Teacher.close();
+      await emailPage.close();
 
       // Kalender
-      const page_Kalender_Promise = page.waitForEvent('popup');
+      const page_Kalender_Promise: Promise<Page> = page.waitForEvent('popup');
       await startseite.cardItemKalender.click();
-      const page_Kalender = await page_Kalender_Promise;
-      const kalender = new CalendarPage(page_Kalender);
+      const page_Kalender: Page = await page_Kalender_Promise;
+      const kalender: CalendarPage = new CalendarPage(page_Kalender);
       switch (ENV) {
         case 'dev':
           await expect(kalender.text_h1).toBeVisible(); // dummy Seite Kalender wikipedia
@@ -111,21 +120,25 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
       await page_Kalender.close();
 
       // Adressbuch
-      const page_Adressbuch_Promise = page.waitForEvent('popup');
+      const directoryPagePromise: Promise<Page> = page.waitForEvent('popup');
       await startseite.cardItemAdressbuch.click();
-      const page_Adressbuch = await page_Adressbuch_Promise;
-      const adressbuch: DirectoryPage = new DirectoryPage(page_Adressbuch);
+      const directoryPage: Page = await directoryPagePromise;
+      const adressbuch: DirectoryPage = new DirectoryPage(directoryPage);
       switch (ENV) {
         case 'dev':
           await expect(adressbuch.text_h1).toBeVisible(); // dummy Seite Adressbuch wikipedia
           break;
       }
-      await page_Adressbuch.close();
+      await directoryPage.close();
     });
 
     await test.step(`Prüfen, dass die Startseite noch geöffnet ist`, async () => {
       await expect(startseite.textH2Ueberschrift).toBeVisible();
     });
+    // #TODO: wait for the last request in the test
+    // sometimes logout breaks the test because of interrupting requests
+    // logoutViaStartPage = true is a workaround
+    logoutViaStartPage = true;
   });
 
   test(
@@ -168,15 +181,19 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
       });
 
       await test.step(`Login für Benutzer ${lastname} mit dem neuen PW`, async () => {
-        await header.logout();
+        await header.logout(true);
         await landing.button_Anmelden.click();
         await login.login(username, new_password);
       });
 
       await test.step(`Neues PW vergeben`, async () => {
         await login.updatePW();
-        await startseite.checkHeadlineIsVisible();
+        await startseite.validateStartPageIsLoaded();
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 });

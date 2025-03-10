@@ -32,6 +32,7 @@ let usernames: string[] = [];
 let rolleIds: string[] = [];
 // This variable must be set to false in the testcase when the logged in user is changed
 let currentUserIsLandesadministrator: boolean = true;
+let logoutViaStartPage: boolean = false;
 
 test.describe(`Testfälle für die Administration von Personen": Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
@@ -40,7 +41,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         .start()
         .then((landing: LandingPage) => landing.goToLogin())
         .then((login: LoginPage) => login.login())
-        .then((startseite: StartPage) => startseite.checkHeadlineIsVisible());
+        .then((startseite: StartPage) => startseite.validateStartPageIsLoaded());
 
       return startPage;
     });
@@ -53,10 +54,14 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const login: LoginPage = new LoginPage(page);
       const startseite: StartPage = new StartPage(page);
 
-      await header.logout();
+      if (logoutViaStartPage) {
+        await header.logout(true);
+      } else {
+        await header.logout(false);
+      }
       await landing.button_Anmelden.click();
       await login.login(ADMIN, PW);
-      await startseite.checkHeadlineIsVisible();
+      await startseite.validateStartPageIsLoaded();
     }
 
     await test.step(`Testdaten(Benutzer) löschen via API`, async () => {
@@ -73,7 +78,11 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
     await test.step(`Abmelden`, async () => {
       const header: HeaderPage = new HeaderPage(page);
-      await header.logout();
+      if (logoutViaStartPage) {
+        await header.logout(true);
+      } else {
+        await header.logout(false);
+      }
     });
   });
 
@@ -104,7 +113,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
       let userInfoLehrer: UserInfo;
       let lehrerBenutzername: string = '';
-      const rolle = lehrkraftInVertretungRolle;
+      const rolle: string = lehrkraftInVertretungRolle;
       const kopersNr: string = await generateKopersNr();
 
       await test.step(`Einen Schuladmin und einen zu bearbeitenden Lehrer mit je einer einer Schulzuordnung(Schule ist an einer Position > 25 in der DB) über die api anlegen und mit diesem Schuladmin anmelden`, async () => {
@@ -136,11 +145,11 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         rolleIds.push(userInfoLehrer.rolleId);
         lehrerBenutzername = userInfoLehrer.username;
 
-        await header.logout();
+        await header.logout(true);
         await landing.button_Anmelden.click();
         await login.login(userInfoAdmin.username, userInfoAdmin.password);
         await login.updatePW();
-        await startseite.checkHeadlineIsVisible();
+        await startseite.validateStartPageIsLoaded();
         currentUserIsLandesadministrator = false;
       });
 
@@ -171,6 +180,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
           '1111165 (Testschule-PW665): ' + lehrerRolle
         );
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 
@@ -214,6 +227,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await personDetailsView.rollen.selectByTitle(unbefristeteRolle);
       await expect(personDetailsView.button_befristungUnbefristet).toBeChecked();
     });
+    // #TODO: wait for the last request in the test
+    // sometimes logout breaks the test because of interrupting requests
+    // logoutViaStartPage = true is a workaround
+    logoutViaStartPage = true;
   });
 
   test(
@@ -221,7 +238,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     { tag: [LONG, STAGE, BROWSER] },
     async ({ page }: PlaywrightTestArgs) => {
       let userInfoLehrer: UserInfo;
-      const sperrDatumAbHeute = await generateDateToday();
+      const sperrDatumAbHeute: string = await generateDateToday();
 
       await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) und SP(email) über die api anlegen ${ADMIN}`, async () => {
         userInfoLehrer = await createRolleAndPersonWithUserContext(
@@ -251,13 +268,17 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await personDetailsView.checkUserIsLocked();
         await personDetailsView.checkLockDateFrom(sperrDatumAbHeute);
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 
   test('Einen Benutzer über das FE befristet sperren', { tag: [LONG, STAGE] }, async ({ page }: PlaywrightTestArgs) => {
     let userInfoLehrer: UserInfo;
-    const sperrDatumAbHeute = await generateDateToday();
-    const sperrDatumBis = await generateDateFuture(5, 2);
+    const sperrDatumAbHeute: string = await generateDateToday();
+    const sperrDatumBis: string = await generateDateFuture(5, 2);
 
     await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) und SP(email) über die api anlegen ${ADMIN}`, async () => {
       userInfoLehrer = await createRolleAndPersonWithUserContext(
@@ -277,7 +298,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
     const personDetailsView: PersonDetailsViewPage =
       await test.step(`Zu sperrenden Lehrer suchen und Gesamtübersicht öffnen`, async () => {
-        await gotoTargetURL(page, 'admin/personen'); 
+        await gotoTargetURL(page, 'admin/personen');
         await personManagementView.searchBySuchfeld(userInfoLehrer.username);
         return await personManagementView.openGesamtuebersichtPerson(page, userInfoLehrer.username);
       });
@@ -288,6 +309,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await personDetailsView.checkLockDateFrom(sperrDatumAbHeute);
       await personDetailsView.checkLockDateTo(sperrDatumBis);
     });
+    // #TODO: wait for the last request in the test
+    // sometimes logout breaks the test because of interrupting requests
+    // logoutViaStartPage = true is a workaround
+    logoutViaStartPage = true;
   });
 
   test(
@@ -332,6 +357,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(personDetailsView.text_kein_token_ist_Eingerichtet).toBeHidden();
         await expect(personDetailsView.button_2FAEinrichten).toBeHidden();
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 
@@ -367,6 +396,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(personDetailsView.text_h3_2FA).toBeVisible();
         await expect(personDetailsView.text_kein_token_ist_Eingerichtet).toBeVisible();
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 
@@ -407,6 +440,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(personDetailsView.text_h3_2FA).toBeVisible();
         await expect(personDetailsView.text_kein_token_ist_Eingerichtet).toBeVisible();
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 
@@ -416,8 +453,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     async ({ page }: PlaywrightTestArgs) => {
       const addminVorname: string = await generateVorname();
       const adminNachname: string = await generateNachname();
-      const organisation = landSH;
-      const rollenart = 'SYSADMIN';
+      const organisation: string = landSH;
+      const rollenart: string = 'SYSADMIN';
 
       let userInfoAdmin: UserInfo;
 
@@ -460,6 +497,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(personDetailsView.text_token_IstEingerichtet_info).toBeVisible();
         await expect(personDetailsView.text_neuen_token_einrichten_info).toBeVisible();
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 
@@ -503,6 +544,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(personDetailsView.text_token_IstEingerichtet_info).toBeVisible();
         await expect(personDetailsView.text_neuen_token_einrichten_info).toBeVisible();
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 
@@ -543,6 +588,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(personDetailsView.text_token_IstEingerichtet_info).toBeVisible();
         await expect(personDetailsView.text_neuen_token_einrichten_info).toBeVisible();
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 
@@ -578,6 +627,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await test.step(`Inbetriebnahme-Passwort für LK-Endgerät setzen`, async () => {
         await personDetailsView.createIbnPassword();
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 });
