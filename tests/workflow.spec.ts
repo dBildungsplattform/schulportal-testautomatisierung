@@ -10,8 +10,8 @@ import { LONG, SHORT, STAGE, BROWSER } from '../base/tags';
 import { CalendarPage } from '../pages/Cards/Calendar.page';
 import { DirectoryPage } from '../pages/Cards/Directory.page';
 import { createTeacherAndLogin } from '../base/api/testHelperPerson.page';
-import { UserInfo } from '../base/api/testHelper.page.ts';
-import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata.ts';
+import { UserInfo } from '../base/api/testHelper.page.js';
+import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata.js';
 import FromAnywhere from '../pages/FromAnywhere';
 
 const PW: string | undefined = process.env.PW;

@@ -1,31 +1,34 @@
 import { expect, test, PlaywrightTestArgs } from '@playwright/test';
-import { LandingPage } from '../pages/LandingView.page.ts';
-import { LoginPage } from '../pages/LoginView.page.ts';
-import { StartPage } from '../pages/StartView.page.ts';
-import { PersonManagementViewPage } from '../pages/admin/PersonManagementView.page.ts';
-import { PersonDetailsViewPage } from '../pages/admin/PersonDetailsView.page.ts';
-import { HeaderPage } from '../pages/Header.page.ts';
-import { createRolleAndPersonWithUserContext } from '../base/api/testHelperPerson.page.ts';
-import { getSPId } from '../base/api/testHelperServiceprovider.page.ts';
-import { UserInfo } from '../base/api/testHelper.page.ts';
-import { addSystemrechtToRolle } from '../base/api/testHelperRolle.page.ts';
-import { LONG, STAGE, BROWSER } from '../base/tags.ts';
-import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata.ts';
-import { typeLehrer, typeSchueler, typeSchuladmin } from '../base/rollentypen.ts';
-import { landSH, testschule, testschule665 } from '../base/organisation.ts';
-import { email, itslearning } from '../base/sp.ts';
+import { LandingPage } from '../pages/LandingView.page.js';
+import { LoginPage } from '../pages/LoginView.page.js';
+import { StartPage } from '../pages/StartView.page.js';
+import { PersonManagementViewPage } from '../pages/admin/PersonManagementView.page.js';
+import { PersonDetailsViewPage } from '../pages/admin/PersonDetailsView.page.js';
+import { HeaderPage } from '../pages/Header.page.js';
+import { createRolleAndPersonWithUserContext, setUEMPassword } from '../base/api/testHelperPerson.page.js';
+import { getSPId } from '../base/api/testHelperServiceprovider.page.js';
+import { UserInfo } from '../base/api/testHelper.page.js';
+import { addSystemrechtToRolle } from '../base/api/testHelperRolle.page.js';
+import { LONG, STAGE, BROWSER } from '../base/tags.js';
+import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata.js';
+import { typeLehrer, typeSchueler, typeSchuladmin } from '../base/rollentypen.js';
+import { landSH, testschule, testschule665Name, testschule665DstNr } from '../base/organisation.js';
+import { email, itslearning } from '../base/sp.js';
 import {
   generateNachname,
   generateVorname,
   generateRolleName,
   generateKopersNr,
-} from '../base/testHelperGenerateTestdataNames.ts';
-import { generateDateFuture, generateDateToday, gotoTargetURL } from '../base/testHelperUtils.ts';
-import { lehrkraftOeffentlichRolle, lehrkraftInVertretungRolle } from '../base/rollen.ts';
+} from '../base/testHelperGenerateTestdataNames.js';
+import { generateDateFuture, generateDateToday, gotoTargetURL } from '../base/testHelperUtils.js';
+import { lehrkraftOeffentlichRolle, lehrkraftInVertretungRolle } from '../base/rollen.js';
 import FromAnywhere from '../pages/FromAnywhere';
+import { TestHelperLdap } from '../base/testHelperLdap.js';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
+const LDAP_URL: string = process.env.LDAP_URL;
+const LDAP_ADMIN_PASSWORD: string = process.env.LDAP_ADMIN_PASSWORD;
 
 // The created test data will be deleted in the afterEach block
 let usernames: string[] = [];
@@ -92,7 +95,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const adminNachname: string = await generateNachname();
       const adminRolle: string = await generateRolleName();
       const adminRollenart: string = typeSchuladmin;
-      const adminOrganisation: string = testschule665;
+      const adminOrganisation: string = testschule665Name;
       const adminIdSPs: string[] = [await getSPId(page, 'Schulportal-Administration')];
       let userInfoAdmin: UserInfo;
 
@@ -100,12 +103,14 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const lehrerNachname: string = await generateNachname();
       const lehrerRolle: string = await generateRolleName();
       const lehrerRollenart: string = typeLehrer;
-      const lehrerOrganisation: string = testschule665;
+      const lehrerOrganisation: string = testschule665Name;
 
       let userInfoLehrer: UserInfo;
       let lehrerBenutzername: string = '';
       const rolle = lehrkraftInVertretungRolle;
       const kopersNr: string = await generateKopersNr();
+
+      const testHelperLdap: TestHelperLdap = new TestHelperLdap(LDAP_URL, LDAP_ADMIN_PASSWORD);
 
       await test.step(`Einen Schuladmin und einen zu bearbeitenden Lehrer mit je einer einer Schulzuordnung(Schule ist an einer Position > 25 in der DB) über die api anlegen und mit diesem Schuladmin anmelden`, async () => {
         // Schuladmin
@@ -171,6 +176,20 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
           '1111165 (Testschule-PW665): ' + lehrerRolle
         );
       });
+
+      await test.step(`Prüfen, dass Lehrkraft im LDAP angelegt wurde`, async () => {
+        expect(await testHelperLdap.validateUserExists(lehrerBenutzername)).toBeTruthy();
+      });
+
+      await test.step(`Prüfen, dass Lehrkraft im LDAP korrekter Gruppe zugeordnet wurde`, async () => {
+        expect(await testHelperLdap.validateUserIsInGroupOfNames(lehrerBenutzername, testschule665DstNr)).toBeTruthy();
+      });
+
+      await test.step(`UEM-Password via API setzen und prüfen, ob Password im LDAP der API-Response entspricht`, async () => {
+        const uemPassword: string = await setUEMPassword(page, userInfoLehrer.personId);
+        expect(await testHelperLdap.validatePasswordMatchesUEMPassword(userInfoLehrer.username, uemPassword)).toBeTruthy();
+      });
+
     }
   );
 
@@ -377,7 +396,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const addminVorname: string = await generateVorname();
       const adminNachname: string = await generateNachname();
       const adminRollenart: string = typeSchuladmin;
-      const adminOrganisation: string = testschule665;
+      const adminOrganisation: string = testschule665Name;
       let userInfoAdmin: UserInfo;
 
       await test.step(`Testdaten: Schuladmin mit einer Rolle(LEIT) über die api anlegen ${ADMIN}`, async () => {
@@ -468,7 +487,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     { tag: [LONG, STAGE, BROWSER] },
     async ({ page }: PlaywrightTestArgs) => {
       const adminRollenart: string = typeSchuladmin;
-      const adminOrganisation: string = testschule665;
+      const adminOrganisation: string = testschule665Name;
       let userInfoAdmin: UserInfo;
 
       await test.step(`Testdaten: Schuladmin mit einer Rolle(LEIT) über die api anlegen ${ADMIN}`, async () => {

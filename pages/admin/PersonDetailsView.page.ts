@@ -21,9 +21,12 @@ export class PersonDetailsViewPage {
   // Schulzuordnungen
   readonly text_h3_schulzuordnung_headline: Locator;
   readonly button_editSchulzuordnung: Locator;
+  readonly button_deleteSchulzuordnung: Locator;
+  readonly button_confirmDeleteSchulzuordnung: Locator;
   readonly button_addSchulzuordnung: Locator;
+  readonly button_closeZuordnungSuccess: Locator;
   readonly combobox_organisation: Locator;
-  readonly comboboxOrganisationInput: Locator;
+  readonly organisationInput: Locator;
   readonly combobox_organisationDialogBenutzerSperren: Locator;
   readonly combobox_rolle: Locator;
   readonly input_kopersNr: Locator;
@@ -34,6 +37,9 @@ export class PersonDetailsViewPage {
   readonly button_befristetSchuljahresende: Locator;
   readonly button_befristungUnbefristet: Locator;
 
+  readonly buttonConfirmZuordnungDialogAddition: Locator;
+
+  readonly comboboxOrganisationInput: ComboBox;
   readonly organisationen: ComboBox;
   readonly organisationenInput: ComboBox;
   readonly rollen: ComboBox;
@@ -97,12 +103,16 @@ export class PersonDetailsViewPage {
       .filter({ hasText: /^Schulzuordnung\(en\)Bearbeiten$/ })
       .getByTestId('zuordnung-edit-button');
     this.button_addSchulzuordnung = page.getByTestId('zuordnung-create-button');
+    this.button_closeZuordnungSuccess = page.getByTestId('close-zuordnung-delete-success-button');
     this.combobox_organisationDialogBenutzerSperren = page.getByTestId('person-lock-card').locator('.v-field__input');
     this.combobox_organisation = page.getByTestId('organisation-select').locator('.v-field__input');
     this.combobox_rolle = page.getByTestId('rolle-select').locator('.v-field__input');
     this.combobox_organisation = page.getByTestId('organisation-select').locator('.v-field');
-    this.comboboxOrganisationInput = page.getByTestId('organisation-select').locator('input');
+    this.organisationInput = page.getByTestId('organisation-select').locator('input');
+    this.comboboxOrganisationInput = new ComboBox(this.page, this.organisationInput);
 
+    this.button_deleteSchulzuordnung = page.getByTestId('open-zuordnung-delete-dialog-button');
+    this.button_confirmDeleteSchulzuordnung = page.getByTestId('zuordnung-delete-button');
     this.combobox_rolle = page.getByTestId('rolle-select').locator('.v-field');
     this.input_kopersNr = page.getByTestId('kopersnr-input').locator('.v-field__input');
     this.button_submitAddSchulzuordnung = page.getByTestId('zuordnung-creation-submit-button');
@@ -111,8 +121,9 @@ export class PersonDetailsViewPage {
     this.button_closeSaveAssignmentChanges = page.getByRole('dialog').getByRole('button', { name: 'Schließen' });
     this.button_befristetSchuljahresende = page.getByLabel('Bis Schuljahresende (31.07.');
     this.button_befristungUnbefristet = page.getByLabel('Unbefristet');
+    this.buttonConfirmZuordnungDialogAddition = page.getByTestId('confirm-zuordnung-dialog-addition');
     this.organisationen = new ComboBox(this.page, this.combobox_organisation);
-    this.organisationenInput = new ComboBox(this.page, this.comboboxOrganisationInput);
+    this.organisationenInput = new ComboBox(this.page, this.organisationInput);
     this.rollen = new ComboBox(this.page, this.combobox_rolle);
 
     // Benutzer sperren
