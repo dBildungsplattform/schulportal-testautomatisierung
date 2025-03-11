@@ -89,7 +89,7 @@ export class PersonCreationViewPage {
   public async validateConfirmationPage(
     firstName: string,
     lastName: string,
-    role: string,
+    rolle: string,
     officeNo: string,
     organisation: string
   ): Promise<void> {
@@ -106,7 +106,7 @@ export class PersonCreationViewPage {
     await expect(this.labelEinstiegsPasswort).toHaveText('Einstiegs-Passwort:');
     await expect(this.inputEinstiegsPasswort).toBeVisible();
     await expect(this.labelRolle).toHaveText('Rolle:');
-    await expect(this.dataRolle).toHaveText(role);
+    await expect(this.dataRolle).toHaveText(rolle);
     await expect(this.labelOrganisationsebene).toHaveText('Organisationsebene:');
     await expect(this.dataOrganisationsebene).toHaveText(officeNo + ' (' + organisation + ')');
     await expect(this.buttonWeiterenBenutzerAnlegen).toBeVisible();
@@ -115,14 +115,14 @@ export class PersonCreationViewPage {
 
   public async createUser(
     organisation: string,
-    role: string,
+    rolle: string,
     firstName: string,
     lastnName: string,
     koPersNr?: string
   ): Promise<void> {
     await this.comboboxOrganisationInput.searchByTitle(organisation, false);
     await this.comboboxRolle.click();
-    await this.page.getByText(role, { exact: true }).click();
+    await this.page.getByText(rolle, { exact: true }).click();
     await this.inputVorname.fill(firstName);
     await this.inputNachname.fill(lastnName);
     if (koPersNr) {

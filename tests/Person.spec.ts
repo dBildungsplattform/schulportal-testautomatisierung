@@ -12,6 +12,7 @@ import {
   generateNachname,
   generateRolleName,
   generateVorname,
+  generateKlassenname,
 } from '../base/testHelperGenerateTestdataNames.ts';
 import { gotoTargetURL } from '../base/testHelperUtils.ts';
 import { PersonCreationViewPage } from '../pages/admin/PersonCreationView.page';
@@ -597,7 +598,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const dienststellenNr: string = '1111111';
       const vorname1: string = await generateVorname();
       const nachname1: string = await generateNachname();
-      const klassenname: string = 'Playwright3a';
+      const klassenname: string = await generateKlassenname();
 
       const rolle2: string = 'Lehrkraft';
       const vorname2: string = await generateVorname();
