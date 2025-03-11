@@ -105,7 +105,6 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       const klasseCreationView: KlasseCreationViewPage = new KlasseCreationViewPage(page);
       const klasseManagementView: KlasseManagementViewPage = new KlasseManagementViewPage(page);
       const schulname: string = testschule;
-      const idTestSchule: string = await getOrganisationId(page, testschule);
       const klassenname: string = await generateKlassenname();
 
       await test.step(`Dialog Klasse anlegen öffnen`, async () => {
@@ -136,11 +135,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
         await page.getByTestId('close-klasse-delete-success-dialog-button').click();
         // wait for the last request in this test
         await page.waitForResponse((resp) =>
-          resp
-            .url()
-            .includes(
-              '/api/organisationen?limit=30&typ=SCHULE&systemrechte=KLASSEN_VERWALTEN&organisationIds=' + idTestSchule
-            )
+          resp.url().includes('/api/organisationen?limit=30&typ=SCHULE&systemrechte=KLASSEN_VERWALTEN&organisationIds=')
         );
         await expect(page.getByRole('cell', { name: 'Playwright4b' })).toBeVisible();
         await expect(page.getByRole('cell', { name: klassenname })).toBeHidden();
