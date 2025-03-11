@@ -44,7 +44,7 @@ export class StartPage {
   }
 
   public async checkSpIsVisible(spNames: string[]) {
-    for (let spName of spNames) {
+    for (const spName of spNames) {
       await expect(this.cardItem(spName)).toBeVisible();
     }
   }

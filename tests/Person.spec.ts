@@ -669,6 +669,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await personCreationView.comboboxOrganisationInput.searchByTitle(schulstrukturknoten, false);
         await personCreationView.comboboxRolle.click();
         await page.getByText(schuelerRolle, { exact: true }).click();
+        // Click somewhere so that the dropdown role is closed and doesn't cover up the dropdown class
+        await personCreationView.textH2PersonAnlegen.click();
         await personCreationView.comboboxKlasse.click();
         await page.getByText(klassenname).click();
         await personCreationView.inputVorname.fill(vorname1);
@@ -803,8 +805,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
     const vorname: string = await generateVorname();
     const nachname: string = await generateNachname();
-    const rolle = await generateRolleName();
-    const berechtigung = 'SYSADMIN';
+    const rolle: string = await generateRolleName();
+    const berechtigung: string = 'SYSADMIN';
     const idSPs: string[] = [await getSPId(page, 'Schulportal-Administration')];
 
     await test.step(`Neuen Benutzer über die api anlegen`, async () => {
