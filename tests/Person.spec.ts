@@ -598,7 +598,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const dienststellenNr: string = '1111111';
       const vorname1: string = await generateVorname();
       const nachname1: string = await generateNachname();
-      const klassenname: string = await generateKlassenname();
+      const klassenname: string = 'Playwright3a';
 
       const rolle2: string = 'Lehrkraft';
       const vorname2: string = await generateVorname();
@@ -618,6 +618,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await personCreationView.comboboxOrganisationInput.searchByTitle(schulstrukturknoten, false);
         await personCreationView.comboboxRolle.click();
         await page.getByText(schuelerRolle, { exact: true }).click();
+        // Click somewhere so that the dropdown role is closed and doesn't cover up the dropdown class
+        await personCreationView.textH2PersonAnlegen.click();
         await personCreationView.comboboxKlasse.click();
         await page.getByText(klassenname).click();
         await personCreationView.inputVorname.fill(vorname1);
