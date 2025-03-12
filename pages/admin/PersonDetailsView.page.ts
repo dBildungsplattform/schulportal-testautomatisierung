@@ -36,6 +36,11 @@ export class PersonDetailsViewPage {
   readonly button_closeSaveAssignmentChanges: Locator;
   readonly button_befristetSchuljahresende: Locator;
   readonly button_befristungUnbefristet: Locator;
+  readonly buttonBefristungAendern: Locator;
+  readonly inputBefristung: Locator;
+  readonly errorTextInputBefristung: Locator;
+  readonly radioButtonBefristungSchuljahresende: Locator;
+  readonly radioButtonUnbefristet: Locator;
 
   readonly organisationen: ComboBox;
   readonly organisationenInput: ComboBox;
@@ -120,6 +125,11 @@ export class PersonDetailsViewPage {
     this.organisationen = new ComboBox(this.page, this.combobox_organisation);
     this.organisationenInput = new ComboBox(this.page, this.comboboxOrganisationInput);
     this.rollen = new ComboBox(this.page, this.combobox_rolle);
+    this.buttonBefristungAendern = page.getByTestId('befristung-change-button');
+    this.inputBefristung = page.locator('[data-testid="befristung-input"] input');
+    this.errorTextInputBefristung = page.getByText('Das eingegebene Datum darf nicht in der Vergangenheit liegen.');
+    this.radioButtonBefristungSchuljahresende = page.getByTestId('schuljahresende-radio-button');
+    this.radioButtonUnbefristet = page.getByTestId('unbefristet-radio-button');
 
     // Benutzer sperren
     this.text_h3_lockPerson_headline = page.getByTestId('person-lock-info').getByText('Status');

@@ -193,3 +193,29 @@ export async function lockPerson(page: Page, personId: string, organisationId: s
   });
   expect(response.status()).toBe(202);
 }
+
+export async function setTimeLimitPersonenkontext(
+  page: Page,
+  personId: string,
+  organisationId1: string,
+  rolleId: string,
+  timeLimit: string,
+) {
+  const response = await page.request.put(FRONTEND_URL + 'api/personenkontext-workflow/' + personId, {
+    data: {
+      lastModified: '2034-09-11T08:28:36.590Z',
+      count: 1,
+      personenkontexte: [
+        {
+          befristung: timeLimit,
+          personId: personId,
+          organisationId: organisationId1,
+          rolleId: rolleId,
+        },
+      ],
+    },
+    failOnStatusCode: false,
+    maxRetries: 3,
+  });
+  expect(response.status()).toBe(200);
+}
