@@ -45,9 +45,9 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
       const login: LoginPage = new LoginPage(page);
 
       if (logoutViaStartPage) {
-        await header.logout(true);
+        await header.logout({ logoutViaStartPage: true });
       } else {
-        await header.logout(false);
+        await header.logout({ logoutViaStartPage: false });
       }
       await landing.button_Anmelden.click();
       await login.login(ADMIN, PW);
@@ -69,9 +69,9 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
     await test.step(`Abmelden`, async () => {
       const header: HeaderPage = new HeaderPage(page);
       if (logoutViaStartPage) {
-        await header.logout(true);
+        await header.logout({ logoutViaStartPage: true });
       } else {
-        await header.logout(false);
+        await header.logout({ logoutViaStartPage: false });
       }
     });
   });
@@ -98,7 +98,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
       );
       personIds.push(userInfo.personId);
       rolleIds.push(userInfo.rolleId);
-      await header.logout(true);
+      await header.logout({ logoutViaStartPage: true });
 
       // Test durchführen
       await landing.button_Anmelden.click();
@@ -139,7 +139,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
       );
       personIds.push(userInfo.personId);
       rolleIds.push(userInfo.rolleId);
-      await header.logout(true);
+      await header.logout({ logoutViaStartPage: true });
 
       // Test durchführen
       await landing.button_Anmelden.click();
@@ -182,7 +182,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
       rolleIds.push(userInfo.rolleId);
 
       await addSystemrechtToRolle(page, userInfo.rolleId, 'PERSONEN_VERWALTEN');
-      await header.logout(true);
+      await header.logout({ logoutViaStartPage: true });
 
       // Test durchführen
       await landing.button_Anmelden.click();

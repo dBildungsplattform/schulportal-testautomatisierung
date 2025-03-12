@@ -66,9 +66,9 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       const startseite: StartPage = new StartPage(page);
 
       if (logoutViaStartPage) {
-        await header.logout(true);
+        await header.logout({ logoutViaStartPage: true });
       } else {
-        await header.logout(false);
+        await header.logout({ logoutViaStartPage: false });
       }
       await landing.button_Anmelden.click();
       await login.login(ADMIN, PW);
@@ -90,9 +90,9 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
     await test.step(`Abmelden`, async () => {
       const header: HeaderPage = new HeaderPage(page);
       if (logoutViaStartPage) {
-        await header.logout(true);
+        await header.logout({ logoutViaStartPage: true });
       } else {
-        await header.logout(false);
+        await header.logout({ logoutViaStartPage: false });
       }
     });
   });
@@ -133,7 +133,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await addSystemrechtToRolle(page, userInfo.rolleId, schultraegerVerwalten);
         await addSystemrechtToRolle(page, userInfo.rolleId, personenAnlegen);
 
-        await header.logout(true);
+        await header.logout({ logoutViaStartPage: true });
         await header.button_login.click();
         await login.login(userInfo.username, userInfo.password);
         currentUserIsLandesadministrator = false;
@@ -203,7 +203,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         rolleIds.push(userInfo.rolleId);
         usernames.push(userInfo.username);
 
-        await header.logout(true);
+        await header.logout({ logoutViaStartPage: true });
         await header.button_login.click();
         await login.login(userInfo.username, userInfo.password);
         await login.updatePW();
@@ -270,7 +270,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         rolleIds.push(userInfo.rolleId);
         usernames.push(userInfo.username);
 
-        await header.logout(true);
+        await header.logout({ logoutViaStartPage: true });
         await header.button_login.click();
         await login.login(userInfo.username, userInfo.password);
         await login.updatePW();
@@ -337,7 +337,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         rolleIds.push(userInfo.rolleId);
         usernames.push(userInfo.username);
 
-        await header.logout(true);
+        await header.logout({ logoutViaStartPage: true });
         await header.button_login.click();
         await login.login(userInfo.username, userInfo.password);
         await login.updatePW();
@@ -413,7 +413,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
           await getOrganisationId(page, organisation2),
           rolleIds[0]
         );
-        await header.logout(true);
+        await header.logout({ logoutViaStartPage: true });
         await header.button_login.click();
         await login.login(userInfo.username, userInfo.password);
         await login.updatePW();
@@ -513,7 +513,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         rolleIds.push(userInfo.rolleId);
         usernames.push(userInfo.username);
 
-        await header.logout(true);
+        await header.logout({ logoutViaStartPage: true });
         await header.button_login.click();
         await login.login(userInfo.username, userInfo.password);
         await login.updatePW();
@@ -574,7 +574,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         rolleIds.push(userInfo.rolleId);
         usernames.push(userInfo.username);
 
-        await header.logout(true);
+        await header.logout({ logoutViaStartPage: true });
         await header.button_login.click();
         await login.login(userInfo.username, userInfo.password);
         await login.updatePW();
@@ -689,7 +689,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       });
 
       await test.step(`Mit dem Lehrer am Portal anmelden`, async () => {
-        await header.logout(true);
+        await header.logout({ logoutViaStartPage: true });
         await header.goToLogin();
         await loginView.login(userInfoLehrer.username, userInfoLehrer.password);
         currentUserIsLandesadministrator = false;
@@ -707,7 +707,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       });
 
       await test.step(`Mit dem Schüler am Portal anmelden`, async () => {
-        await header.logout(true);
+        await header.logout({ logoutViaStartPage: true });
         await header.goToLogin();
         await loginView.login(userInfoSchueler.username, userInfoSchueler.password);
         userInfoSchueler.password = await loginView.updatePW();
@@ -723,7 +723,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       });
 
       await test.step(`Schüler meldet sich mit dem neuen Passwort am Portal an`, async () => {
-        await header.logout(true);
+        await header.logout({ logoutViaStartPage: true });
         await header.goToLogin();
         const startView: StartPage = await loginView.login(userInfoSchueler.username, userInfoSchueler.password);
         await startView.checkSpIsVisible([itslearning]);
@@ -756,7 +756,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         usernames.push(userInfoLehrer.username);
         rolleIds.push(userInfoLehrer.rolleId);
 
-        await header.logout(true);
+        await header.logout({ logoutViaStartPage: true });
         await header.button_login.click();
         const login: LoginPage = new LoginPage(page);
         await login.login(userInfoLehrer.username, userInfoLehrer.password);

@@ -22,7 +22,7 @@ export class HeaderPage {
     this.icon_logout = page.locator('.mdi-logout');
   }
 
-  async logout(logoutViaStartPage?: boolean): Promise<LandingPage> {
+  async logout({ logoutViaStartPage }: { logoutViaStartPage: boolean }): Promise<LandingPage> {
     // During the logout process there are still running requests from the tests.
     // Therefor we have a workaround. Every logout will go through the start page. --> This is depricated!
     // New tests are responsible that the last request in the test is finishe before the test ends.

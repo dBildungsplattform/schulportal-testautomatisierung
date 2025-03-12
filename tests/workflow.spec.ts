@@ -46,9 +46,9 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
       const startseite: StartPage = new StartPage(page);
 
       if (logoutViaStartPage) {
-        await header.logout(true);
+        await header.logout({ logoutViaStartPage: true });
       } else {
-        await header.logout(false);
+        await header.logout({ logoutViaStartPage: false });
       }
       await landing.button_Anmelden.click();
       await login.login(ADMIN, PW);
@@ -70,9 +70,9 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
     await test.step(`Abmelden`, async () => {
       const header: HeaderPage = new HeaderPage(page);
       if (logoutViaStartPage) {
-        await header.logout(true);
+        await header.logout({ logoutViaStartPage: true });
       } else {
-        await header.logout(false);
+        await header.logout({ logoutViaStartPage: false });
       }
     });
   });
@@ -181,7 +181,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
       });
 
       await test.step(`Login für Benutzer ${lastname} mit dem neuen PW`, async () => {
-        await header.logout(true);
+        await header.logout({ logoutViaStartPage: true });
         await landing.button_Anmelden.click();
         await login.login(username, new_password);
       });

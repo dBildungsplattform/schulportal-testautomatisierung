@@ -173,7 +173,7 @@ export async function createTeacherAndLogin(page: Page) {
     await generateKopersNr()
   );
 
-  await header.logout(true);
+  await header.logout({ logoutViaStartPage: true });
   await header.button_login.click();
   await login.login(userInfo.username, userInfo.password);
   await login.updatePW();

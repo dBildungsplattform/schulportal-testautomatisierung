@@ -15,9 +15,9 @@ test.afterEach(async ({ page }: PlaywrightTestArgs) => {
   if (loggedIn) {
     const header: HeaderPage = new HeaderPage(page);
     if (logoutViaStartPage) {
-      await header.logout(true);
+      await header.logout({ logoutViaStartPage: true });
     } else {
-      await header.logout(false);
+      await header.logout({ logoutViaStartPage: false });
     }
     loggedIn = false;
   }
@@ -39,7 +39,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
       });
 
       await test.step(`Benutzer abmelden`, async () => {
-        await header.logout();
+        await header.logout({ logoutViaStartPage: false })
         loggedIn = false;
       });
     }

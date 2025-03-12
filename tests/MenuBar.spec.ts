@@ -26,9 +26,9 @@ test.describe(`Testfälle für die Hauptmenue-Leiste: Umgebung: ${process.env.EN
     await test.step(`Abmelden`, async () => {
       const header: HeaderPage = new HeaderPage(page);
       if (logoutViaStartPage) {
-        await header.logout(true);
+        await header.logout({ logoutViaStartPage: true });
       } else {
-        await header.logout(false);
+        await header.logout({ logoutViaStartPage: false });
       }
     });
   });

@@ -53,9 +53,9 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
     if (loggedIn) {
       await test.step(`Abmelden`, async () => {
         if (logoutViaStartPage) {
-          await header.logout(true);
+          await header.logout({ logoutViaStartPage: true });
         } else {
-          await header.logout(false);
+          await header.logout({ logoutViaStartPage: false });
         }
         loggedIn = false;
       });
@@ -139,7 +139,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
         usernames.push(userInfoLehrer.username);
         rolleIds.push(userInfoLehrer.rolleId);
         await lockPerson(page, userInfoLehrer.personId, organisationIDLandSh);
-        await header.logout(true);
+        await header.logout({ logoutViaStartPage: true });
       });
 
       await test.step(`Gesperrter Lehrer versucht sich am Portal anzumelden`, async () => {

@@ -54,9 +54,9 @@ test.describe(`Testfälle für den Benutzerimport": Umgebung: ${process.env.ENV}
     await test.step(`Abmelden`, async () => {
       const header: HeaderPage = new HeaderPage(page);
       if (logoutViaStartPage) {
-        await header.logout(true);
+        await header.logout({ logoutViaStartPage: true });
       } else {
-        await header.logout(false);
+        await header.logout({ logoutViaStartPage: false });
       }
     });
   });

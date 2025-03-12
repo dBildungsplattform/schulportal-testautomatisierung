@@ -55,9 +55,9 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const startseite: StartPage = new StartPage(page);
 
       if (logoutViaStartPage) {
-        await header.logout(true);
+        await header.logout({ logoutViaStartPage: true });
       } else {
-        await header.logout(false);
+        await header.logout({ logoutViaStartPage: false });
       }
       await landing.button_Anmelden.click();
       await login.login(ADMIN, PW);
@@ -79,9 +79,9 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     await test.step(`Abmelden`, async () => {
       const header: HeaderPage = new HeaderPage(page);
       if (logoutViaStartPage) {
-        await header.logout(true);
+        await header.logout({ logoutViaStartPage: true });
       } else {
-        await header.logout(false);
+        await header.logout({ logoutViaStartPage: false });
       }
     });
   });
@@ -145,7 +145,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         rolleIds.push(userInfoLehrer.rolleId);
         lehrerBenutzername = userInfoLehrer.username;
 
-        await header.logout(true);
+        await header.logout({ logoutViaStartPage: true });
         await landing.button_Anmelden.click();
         await login.login(userInfoAdmin.username, userInfoAdmin.password);
         await login.updatePW();

@@ -61,9 +61,9 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       const startseite: StartPage = new StartPage(page);
 
       if (logoutViaStartPage) {
-        await header.logout(true);
+        await header.logout({ logoutViaStartPage: true });
       } else {
-        await header.logout(false);
+        await header.logout({ logoutViaStartPage: false });
       }
 
       await landing.button_Anmelden.click();
@@ -89,9 +89,9 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     await test.step(`Abmelden`, async () => {
       const header: HeaderPage = new HeaderPage(page);
       if (logoutViaStartPage) {
-        await header.logout(true);
+        await header.logout({ logoutViaStartPage: true });
       } else {
-        await header.logout(false);
+        await header.logout({ logoutViaStartPage: false });
       }
     });
   });
@@ -281,7 +281,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       rolleIds.push(userInfoAdmin.rolleId);
 
       //login als Schuladmin
-      await header.logout(true);
+      await header.logout({ logoutViaStartPage: true });
       await landing.button_Anmelden.click();
       await login.login(userInfoAdmin.username, userInfoAdmin.password);
       await login.updatePW();
@@ -354,7 +354,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       //login als Schuladmin
       currentUserIsLandesadministrator = false;
       logoutViaStartPage = true;
-      await header.logout(true);
+      await header.logout({ logoutViaStartPage: true });
       await landing.button_Anmelden.click();
       await login.login(userInfoAdmin.username, userInfoAdmin.password);
       await login.updatePW();
@@ -468,7 +468,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
         // login als Schuladmin
         const header: HeaderPage = new HeaderPage(page);
         logoutViaStartPage = true;
-        const landingPage: LandingPage = await header.logout(true);
+        const landingPage: LandingPage = await header.logout({ logoutViaStartPage: true });
         const loginPage: LoginPage = await landingPage.goToLogin();
         await loginPage.login(userInfoAdmin.username, userInfoAdmin.password);
         await loginPage.updatePW();
@@ -654,7 +654,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
 
         // login als Schuladmin
         const header: HeaderPage = new HeaderPage(page);
-        const landingPage: LandingPage = await header.logout(true);
+        const landingPage: LandingPage = await header.logout({ logoutViaStartPage: true });
         const loginPage: LoginPage = await landingPage.goToLogin();
         await loginPage.login(userInfoAdmin.username, userInfoAdmin.password);
         await loginPage.updatePW();

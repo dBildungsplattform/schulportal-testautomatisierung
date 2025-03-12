@@ -57,9 +57,9 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const startseite: StartPage = new StartPage(page);
 
       if (logoutViaStartPage) {
-        await header.logout(true);
+        await header.logout({ logoutViaStartPage: true });
       } else {
-        await header.logout(false);
+        await header.logout({ logoutViaStartPage: false });
       }
       await landing.button_Anmelden.click();
       await login.login(ADMIN, PW);
@@ -86,9 +86,9 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     await test.step(`Abmelden`, async () => {
       const header: HeaderPage = new HeaderPage(page);
       if (logoutViaStartPage) {
-        await header.logout(true);
+        await header.logout({ logoutViaStartPage: true });
       } else {
-        await header.logout(false);
+        await header.logout({ logoutViaStartPage: false });
       }
     });
   });
@@ -143,7 +143,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       });
 
       await test.step(`Der neue Benutzer meldet sich mit dem temporären Passwort am Portal an und vergibt ein neues Passwort`, async () => {
-        await header.logout(true);
+        await header.logout({ logoutViaStartPage: true });
         await landing.button_Anmelden.click();
         await login.login(usernames[0], einstiegspasswort);
         await login.updatePW();
@@ -271,7 +271,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         usernames.push(userInfo.username);
         rolleIds.push(userInfo.rolleId);
 
-        await header.logout(true);
+        await header.logout({ logoutViaStartPage: true });
         await landing.button_Anmelden.click();
         await login.login(userInfo.username, userInfo.password);
         userInfo.password = await login.updatePW();
@@ -287,9 +287,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
         await startseite.cardItemSchulportalAdministration.click();
         await menue.menueItem_BenutzerAnlegen.click();
-        await page.waitForResponse((resp) =>
-          resp.url().includes('/api/dbiam/personenuebersicht')
-        );
+        await page.waitForResponse((resp) => resp.url().includes('/api/dbiam/personenuebersicht'));
         await expect(personCreationView.textH2PersonAnlegen).toHaveText('Neuen Benutzer hinzufügen');
         await personCreationView.comboboxRolle.click();
         await page.getByText(rolle, { exact: true }).click();
@@ -636,7 +634,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         usernames.push(userInfo.username);
         rolleIds.push(userInfo.rolleId);
 
-        await header.logout(true);
+        await header.logout({ logoutViaStartPage: true });
         await landing.button_Anmelden.click();
         await login.login(userInfo.username, userInfo.password);
         userInfo.password = await login.updatePW();
@@ -803,16 +801,16 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const PersonDetailsView: PersonDetailsViewPage = new PersonDetailsViewPage(page);
       const header: HeaderPage = new HeaderPage(page);
 
-    const vorname: string = await generateVorname();
-    const nachname: string = await generateNachname();
-    const rolle: string = await generateRolleName();
-    const berechtigung: string = 'SYSADMIN';
-    const idSPs: string[] = [await getSPId(page, 'Schulportal-Administration')];
+      const vorname: string = await generateVorname();
+      const nachname: string = await generateNachname();
+      const rolle: string = await generateRolleName();
+      const berechtigung: string = 'SYSADMIN';
+      const idSPs: string[] = [await getSPId(page, 'Schulportal-Administration')];
 
-    await test.step(`Neuen Benutzer über die api anlegen`, async () => {
-      await createRolleAndPersonWithUserContext(page, landSH, berechtigung, vorname, nachname, idSPs, rolle);
-      rolleNames.push(rolle);
-    });
+      await test.step(`Neuen Benutzer über die api anlegen`, async () => {
+        await createRolleAndPersonWithUserContext(page, landSH, berechtigung, vorname, nachname, idSPs, rolle);
+        rolleNames.push(rolle);
+      });
 
       await test.step(`Benutzer wieder löschen über das FE`, async () => {
         await page.goto('/' + 'admin/personen');
@@ -839,4 +837,4 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       logoutViaStartPage = true;
     }
   );
-})
+});
