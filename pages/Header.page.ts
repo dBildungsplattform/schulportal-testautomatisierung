@@ -24,8 +24,8 @@ export class HeaderPage {
 
   async logout({ logoutViaStartPage }: { logoutViaStartPage: boolean }): Promise<LandingPage> {
     // During the logout process there are still running requests from the tests.
-    // Therefor we have a workaround. Every logout will go through the start page. --> This is depricated!
-    // New tests are responsible that the last request in the test is finishe before the test ends.
+    // Therefor we have a workaround. Every logout will go through the start page. --> This is deprecated!
+    // New tests are responsible that the last request in the test is finished before the test ends.
     // The other tests must be fixed gradually
     if (logoutViaStartPage) {
       await FromAnywhere(this.page).start();
