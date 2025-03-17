@@ -4,7 +4,7 @@ import { getOrganisationId } from '../base/api/testHelperOrganisation.page';
 import { addSecondOrganisationToPerson, createRolleAndPersonWithUserContext } from '../base/api/testHelperPerson.page';
 import { addSystemrechtToRolle } from '../base/api/testHelperRolle.page';
 import { getSPId } from '../base/api/testHelperServiceprovider.page';
-import { landSH, testschule, testschule665 } from '../base/organisation.ts';
+import { landSH, testschuleName, testschule665Name } from '../base/organisation.ts';
 import { typeLandesadmin, typeLehrer, typeSchueler, typeSchuladmin } from '../base/rollentypen.ts';
 import { email, itslearning, schulportaladmin } from '../base/sp.ts';
 import { BROWSER, LONG, SHORT, STAGE } from '../base/tags';
@@ -30,6 +30,7 @@ import {
   schultraegerVerwalten,
   personenAnlegen,
 } from '../base/berechtigungen.ts';
+import { testschuleDstNr } from '../base/organisation.ts';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -171,8 +172,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
       const vorname: string = await generateVorname();
       const nachname: string = await generateNachname();
-      const organisation: string = testschule;
-      const dienststellenNr: string = '1111111';
+      const organisation: string = testschuleName;
       const rollenname: string = await generateRolleName();
       const rollenart: string = typeLehrer;
 
@@ -213,7 +213,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await expect(profileView.labelRolle1).toHaveText('Rolle:');
         await expect(profileView.dataRolle1).toHaveText(rollenname);
         await expect(profileView.labelDienststellennummer1).toHaveText('DStNr.:');
-        await expect(profileView.dataDienststellennummer1).toHaveText(dienststellenNr);
+        await expect(profileView.dataDienststellennummer1).toHaveText(testschuleDstNr);
         // Passwort
         await expect(profileView.cardHeadlinePasswort).toHaveText('Passwort');
         await expect(profileView.buttonStartPWChangeDialog).toBeEnabled();
@@ -234,8 +234,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
       const vorname: string = await generateVorname();
       const nachname: string = await generateNachname();
-      const organisation: string = testschule;
-      const dienststellenNr: string = '1111111';
+      const organisation: string = testschuleName;
       const rollenname: string = await generateRolleName();
       const rollenart: string = typeSchueler;
 
@@ -276,7 +275,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await expect(profileView.labelRolle1).toHaveText('Rolle:');
         await expect(profileView.dataRolle1).toHaveText(rollenname);
         await expect(profileView.labelDienststellennummer1).toHaveText('DStNr.:');
-        await expect(profileView.dataDienststellennummer1).toHaveText(dienststellenNr);
+        await expect(profileView.dataDienststellennummer1).toHaveText(testschuleDstNr);
         // Passwort
         await expect(profileView.cardHeadlinePasswort).toHaveText('Passwort');
         await expect(profileView.buttonStartPWChangeDialog).toBeEnabled();
@@ -297,8 +296,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
       const vorname: string = await generateVorname();
       const nachname: string = await generateNachname();
-      const organisation: string = testschule;
-      const dienststellenNr: string = '1111111';
+      const organisation: string = testschuleName;
       const rollenname: string = await generateRolleName();
       const rollenart: string = typeSchuladmin;
 
@@ -339,7 +337,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await expect(profileView.labelRolle1).toHaveText('Rolle:');
         await expect(profileView.dataRolle1).toHaveText(rollenname);
         await expect(profileView.labelDienststellennummer1).toHaveText('DStNr.:');
-        await expect(profileView.dataDienststellennummer1).toHaveText(dienststellenNr);
+        await expect(profileView.dataDienststellennummer1).toHaveText(testschuleDstNr);
         // Passwort
         await expect(profileView.cardHeadlinePasswort).toHaveText('Passwort');
         await expect(profileView.buttonStartPWChangeDialog).toBeEnabled();
@@ -360,9 +358,8 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
       const vorname: string = await generateVorname();
       const nachname: string = await generateNachname();
-      const organisation1: string = testschule;
-      const organisation2: string = testschule665;
-      const dienststellenNr1: string = '1111111';
+      const organisation1: string = testschuleName;
+      const organisation2: string = testschule665Name;
       const dienststellenNr2: string = '1111165';
       const rollenname: string = await generateRolleName();
       const rollenart: string = typeLehrer;
@@ -413,7 +410,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
           await expect(profileView.labelRolle1).toHaveText('Rolle:');
           await expect(profileView.dataRolle1).toHaveText(rollenname);
           await expect(profileView.labelDienststellennummer1).toHaveText('DStNr.:');
-          await expect(profileView.dataDienststellennummer1).toHaveText(dienststellenNr1);
+          await expect(profileView.dataDienststellennummer1).toHaveText(testschuleDstNr);
 
           // Schulzuordnung 2
           await expect(profileView.cardHeadline_Schulzuordnung2).toHaveText('Schulzuordnung 2');
@@ -437,7 +434,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
           await expect(profileView.labelRolle2).toHaveText('Rolle:');
           await expect(profileView.dataRolle2).toHaveText(rollenname);
           await expect(profileView.labelDienststellennummer2).toHaveText('DStNr.:');
-          await expect(profileView.dataDienststellennummer2).toHaveText(dienststellenNr1);
+          await expect(profileView.dataDienststellennummer2).toHaveText(testschuleDstNr);
 
           // Schulzuordnung 2
           await expect(profileView.cardHeadline_Schulzuordnung1).toHaveText('Schulzuordnung 1');
@@ -467,7 +464,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       const header: HeaderPage = new HeaderPage(page);
       const login: LoginPage = new LoginPage(page);
 
-      const organisation: string = testschule;
+      const organisation: string = testschuleName;
       const rollenart: string = typeSchueler;
 
       await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
@@ -524,7 +521,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       const header: HeaderPage = new HeaderPage(page);
       const login: LoginPage = new LoginPage(page);
 
-      const organisation: string = testschule;
+      const organisation: string = testschuleName;
       const rollenart: string = typeLehrer;
 
       await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
@@ -627,7 +624,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       await test.step(`Lehrer und Schüler via api anlegen`, async () => {
         userInfoLehrer = await createRolleAndPersonWithUserContext(
           page,
-          testschule,
+          testschuleName,
           typeLehrer,
           await generateNachname(),
           await generateVorname(),
@@ -640,7 +637,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
         userInfoSchueler = await createRolleAndPersonWithUserContext(
           page,
-          testschule,
+          testschuleName,
           typeSchueler,
           await generateNachname(),
           await generateVorname(),
@@ -704,7 +701,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) über die api anlegen und mit diesem anmelden`, async () => {
         userInfoLehrer = await createRolleAndPersonWithUserContext(
           page,
-          testschule,
+          testschuleName,
           typeLehrer,
           await generateNachname(),
           await generateVorname(),

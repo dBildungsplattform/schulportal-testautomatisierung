@@ -11,7 +11,7 @@ import { fileURLToPath } from 'url';
 import { deletePersonBySearchString } from '../base/testHelperDeleteTestdata.ts';
 
 // schulen cannot be deleted yet, so we use this testschule, which should already exist
-import { testschule665 } from '../base/organisation.ts';
+import { testschule665Name } from '../base/organisation.ts';
 
 const PW: string = process.env.PW as string;
 const ADMIN: string = process.env.USER as string;
@@ -62,7 +62,7 @@ test.describe(`Testfälle für den Benutzerimport": Umgebung: ${process.env.ENV}
     async ({ page }: PlaywrightTestArgs) => {
       await test.step('CSV-Datei hochladen, importieren und importierte Daten downloaden', async () => {
         // select schule
-        await personImportPage.schuleSelectCombobox.searchByTitle(testschule665, false);
+        await personImportPage.schuleSelectCombobox.searchByTitle(testschule665Name, false);
 
         // select rolle
         await personImportPage.rolleSelectInput.click();

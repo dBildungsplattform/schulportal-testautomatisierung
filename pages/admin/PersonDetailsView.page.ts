@@ -1,5 +1,6 @@
 import { type Locator, Page, expect } from '@playwright/test';
 import { ComboBox } from '../../elements/ComboBox';
+import { ur } from '@faker-js/faker';
 
 export class PersonDetailsViewPage {
   readonly page: Page;
@@ -37,10 +38,15 @@ export class PersonDetailsViewPage {
   readonly button_befristetSchuljahresende: Locator;
   readonly button_befristungUnbefristet: Locator;
   readonly buttonBefristungAendern: Locator;
+  readonly buttonBefristungAendernSubmit: Locator;
+  readonly buttonBefristungAendernConfirm: Locator;
+  readonly buttonBefristungAendernSave: Locator;
+  readonly buttonBefristungAendernSuccessClose: Locator;
   readonly inputBefristung: Locator;
   readonly errorTextInputBefristung: Locator;
   readonly radioButtonBefristungSchuljahresende: Locator;
   readonly radioButtonUnbefristet: Locator;
+  readonly radioButtonUnbefristetDisabled: Locator;
 
   readonly organisationen: ComboBox;
   readonly organisationenInput: ComboBox;
@@ -126,10 +132,15 @@ export class PersonDetailsViewPage {
     this.organisationenInput = new ComboBox(this.page, this.comboboxOrganisationInput);
     this.rollen = new ComboBox(this.page, this.combobox_rolle);
     this.buttonBefristungAendern = page.getByTestId('befristung-change-button');
+    this.buttonBefristungAendernSubmit = page.getByTestId('change-befristung-submit-button');
+    this.buttonBefristungAendernConfirm = page.getByTestId('confirm-change-befristung-button');
+    this.buttonBefristungAendernSave = page.getByTestId('zuordnung-changes-save');
+    this.buttonBefristungAendernSuccessClose = page.getByTestId('change-befristung-success-close');
     this.inputBefristung = page.locator('[data-testid="befristung-input"] input');
     this.errorTextInputBefristung = page.getByText('Das eingegebene Datum darf nicht in der Vergangenheit liegen.');
     this.radioButtonBefristungSchuljahresende = page.getByTestId('schuljahresende-radio-button');
     this.radioButtonUnbefristet = page.getByTestId('unbefristet-radio-button');
+    this.radioButtonUnbefristetDisabled = page.getByTestId('unbefristet-radio-button').getByLabel('Unbefristet');
 
     // Benutzer sperren
     this.text_h3_lockPerson_headline = page.getByTestId('person-lock-info').getByText('Status');
@@ -215,6 +226,7 @@ export class PersonDetailsViewPage {
     await expect(this.selectOption_2FA_softwareToken).toHaveText('Software-Token einrichten');
     await expect(this.text_2FA_softwareToken_info).toBeVisible();
     await this.button_2FA_Einrichten_Weiter.click();
+    await this.teardownAPI({ lastEndpoint: '2fa-token/**/' });
     await expect(this.text_h2_2FA_cardheadline).toHaveText('Software-Token einrichten');
     await this.button_close_softwareToken_dialog.click();
   }
@@ -222,8 +234,27 @@ export class PersonDetailsViewPage {
   public async createIbnPassword(): Promise<void> {
     await this.buttonIBNPasswortEinrichtenDialog.click();
     await this.buttonIBNPasswortEinrichten.click();
+    await this.teardownAPI({ lastEndpoint: 'personen/**/uem-password' });
     await expect(this.infoIBNPasswortEinrichten).toContainText('Das Passwort wurde erfolgreich erzeugt.');
     await this.buttonIBNPasswortEinrichtenDialogClose.click();
     await expect(this.text_h2_benutzerBearbeiten).toHaveText('Benutzer bearbeiten');
+  }
+
+  public async validateEntireNameSchulzuordnung(
+    dstNr: string,
+    testschuleName: string,
+    nameRolle: string,
+    textColor: string,
+    befristungLehrerRolle: string
+  ): Promise<void> {
+    await expect(
+      this.page
+        .getByTestId('person-details-card')
+        .getByText(dstNr + ' (' + testschuleName + '): ' + nameRolle + ' (befristet bis ' + befristungLehrerRolle + ')')
+    ).toHaveCSS('color', textColor);
+  }
+
+  public async teardownAPI({ lastEndpoint }: { lastEndpoint: string }): Promise<void> {
+    await this.page.waitForResponse('/api/' + lastEndpoint);
   }
 }

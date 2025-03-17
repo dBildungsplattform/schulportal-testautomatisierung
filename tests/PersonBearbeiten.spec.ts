@@ -12,7 +12,7 @@ import { addSystemrechtToRolle } from '../base/api/testHelperRolle.page.ts';
 import { LONG, STAGE, BROWSER } from '../base/tags.ts';
 import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata.ts';
 import { typeLehrer, typeSchueler, typeSchuladmin } from '../base/rollentypen.ts';
-import { landSH, testschule, testschule665 } from '../base/organisation.ts';
+import { landSH, testschuleName, testschule665Name, testschuleDstNr } from '../base/organisation.ts';
 import { email, itslearning } from '../base/sp.ts';
 import {
   generateNachname,
@@ -20,10 +20,10 @@ import {
   generateRolleName,
   generateKopersNr,
 } from '../base/testHelperGenerateTestdataNames.ts';
-import { generateDate, generateDateToday, gotoTargetURL } from '../base/testHelperUtils.ts';
+import { generateCurrentDate, gotoTargetURL } from '../base/testHelperUtils.ts';
 import { lehrkraftOeffentlichRolle, lehrkraftInVertretungRolle } from '../base/rollen.ts';
 import FromAnywhere from '../pages/FromAnywhere';
-import { before } from 'node:test';
+import { befristungPflicht, kopersNrPflicht } from '../base/merkmale.ts';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -93,7 +93,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const adminNachname: string = await generateNachname();
       const adminRolle: string = await generateRolleName();
       const adminRollenart: string = typeSchuladmin;
-      const adminOrganisation: string = testschule665;
+      const adminOrganisation: string = testschule665Name;
       const adminIdSPs: string[] = [await getSPId(page, 'Schulportal-Administration')];
       let userInfoAdmin: UserInfo;
 
@@ -101,7 +101,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const lehrerNachname: string = await generateNachname();
       const lehrerRolle: string = await generateRolleName();
       const lehrerRollenart: string = typeLehrer;
-      const lehrerOrganisation: string = testschule665;
+      const lehrerOrganisation: string = testschule665Name;
 
       let userInfoLehrer: UserInfo;
       let lehrerBenutzername: string = '';
@@ -183,7 +183,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) und SP(email) über die api anlegen ${ADMIN}`, async () => {
       userInfoLehrer = await createRolleAndPersonWithUserContext(
         page,
-        testschule,
+        testschuleName,
         typeLehrer,
         await generateNachname(),
         await generateVorname(),
@@ -206,7 +206,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     await test.step(`Ansicht für neuen Personenkontext öffnen`, async () => {
       await personDetailsView.button_editSchulzuordnung.click();
       await personDetailsView.button_addSchulzuordnung.click();
-      await personDetailsView.organisationenInput.searchByTitle(testschule, false);
+      await personDetailsView.organisationenInput.searchByTitle(testschuleName, false);
     });
 
     await test.step(`Befristung bei ${unbefristeteRolle} und ${befristeteRolle} überprüfen`, async () => {
@@ -222,12 +222,12 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     { tag: [LONG, STAGE, BROWSER] },
     async ({ page }: PlaywrightTestArgs) => {
       let userInfoLehrer: UserInfo;
-      const sperrDatumAbHeute = await generateDateToday();
+      const sperrDatumAbHeute = await generateCurrentDate({ days: 0, months: 0, formatDMY: true });
 
       await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) und SP(email) über die api anlegen ${ADMIN}`, async () => {
         userInfoLehrer = await createRolleAndPersonWithUserContext(
           page,
-          testschule,
+          testschuleName,
           typeLehrer,
           await generateNachname(),
           await generateVorname(),
@@ -257,13 +257,13 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test('Einen Benutzer über das FE befristet sperren', { tag: [LONG, STAGE] }, async ({ page }: PlaywrightTestArgs) => {
     let userInfoLehrer: UserInfo;
-    const sperrDatumAbHeute = await generateDateToday();
-    const sperrDatumBis = await generateDate(5, 2);
+    const sperrDatumAbHeute = await generateCurrentDate({ days: 0, months: 0, formatDMY: true });
+    const sperrDatumBis = await generateCurrentDate({ days: 5, months: 2, formatDMY: true });
 
     await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) und SP(email) über die api anlegen ${ADMIN}`, async () => {
       userInfoLehrer = await createRolleAndPersonWithUserContext(
         page,
-        testschule,
+        testschuleName,
         typeLehrer,
         await generateNachname(),
         await generateVorname(),
@@ -300,7 +300,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await test.step(`Testdaten: Schüler mit einer Rolle(LERN) über die api anlegen ${ADMIN}`, async () => {
         userInfoLehrer = await createRolleAndPersonWithUserContext(
           page,
-          testschule,
+          testschuleName,
           typeSchueler,
           await generateNachname(),
           await generateVorname(),
@@ -345,7 +345,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) über die api anlegen ${ADMIN}`, async () => {
         userInfoLehrer = await createRolleAndPersonWithUserContext(
           page,
-          testschule,
+          testschuleName,
           typeLehrer,
           await generateNachname(),
           await generateVorname(),
@@ -378,7 +378,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const addminVorname: string = await generateVorname();
       const adminNachname: string = await generateNachname();
       const adminRollenart: string = typeSchuladmin;
-      const adminOrganisation: string = testschule665;
+      const adminOrganisation: string = testschule665Name;
       let userInfoAdmin: UserInfo;
 
       await test.step(`Testdaten: Schuladmin mit einer Rolle(LEIT) über die api anlegen ${ADMIN}`, async () => {
@@ -469,7 +469,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     { tag: [LONG, STAGE, BROWSER] },
     async ({ page }: PlaywrightTestArgs) => {
       const adminRollenart: string = typeSchuladmin;
-      const adminOrganisation: string = testschule665;
+      const adminOrganisation: string = testschule665Name;
       let userInfoAdmin: UserInfo;
 
       await test.step(`Testdaten: Schuladmin mit einer Rolle(LEIT) über die api anlegen ${ADMIN}`, async () => {
@@ -512,11 +512,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     { tag: [LONG, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
       let userInfoLehrer: UserInfo;
-
       await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) über die api anlegen ${ADMIN}`, async () => {
         userInfoLehrer = await createRolleAndPersonWithUserContext(
           page,
-          testschule,
+          testschuleName,
           typeLehrer,
           await generateNachname(),
           await generateVorname(),
@@ -556,7 +555,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) über die api anlegen`, async () => {
         userInfoLehrer = await createRolleAndPersonWithUserContext(
           page,
-          testschule,
+          testschuleName,
           typeLehrer,
           await generateNachname(),
           await generateVorname(),
@@ -582,18 +581,20 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     }
   );
 
-  test.only(
-    'Befristung einer Schulzoordnung bearbeiten',
+  test(
+    'Befristung einer Schulzuordnung von einem Lehrer durch einen Landesadmin bearbeiten',
     { tag: [LONG, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
       let userInfoLehrer: UserInfo;
-      const befristungLehrerRolle = await generateDate(3, 5, false);
-      const nameRolle = await generateRolleName();
+      const timeLimitTeacherRolle: string = await generateCurrentDate({ days: 3, months: 5, formatDMY: true });
+      let timeLimitTeacherRolleNew: string;
+      const nameRolle: string = await generateRolleName();
+      let colorTextEntireNameSchulzuordnung: string = '';
 
-      await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) über die api anlegen`, async () => {
+      await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) und einer Schulzuordnung über die api anlegen`, async () => {
         userInfoLehrer = await createRolleAndPersonWithUserContext(
           page,
-          testschule,
+          testschuleName,
           typeLehrer,
           await generateNachname(),
           await generateVorname(),
@@ -608,46 +609,164 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
           userInfoLehrer.personId,
           userInfoLehrer.organisationId,
           userInfoLehrer.rolleId,
-          await generateDate(3, 5, true)
+          await generateCurrentDate({ days: 3, months: 5, formatDMY: false })
         );
       });
 
-      const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
-
       const personDetailsView: PersonDetailsViewPage = await test.step(`Gesamtübersicht öffnen`, async () => {
+        const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
         await gotoTargetURL(page, 'admin/personen');
         await personManagementView.waitErgebnislisteIsLoaded();
         await personManagementView.searchBySuchfeld(userInfoLehrer.username);
         return await personManagementView.openGesamtuebersichtPerson(page, userInfoLehrer.username);
       });
 
-      await test.step(`Befristung ändern`, async () => {
+      await test.step(`Schulzuordnung im Bearbeitungsmodus öffen`, async () => {
         await personDetailsView.button_editSchulzuordnung.click();
-        // open the showed school assignment
         await page
           .getByTestId('person-details-card')
           .getByText(
-            '1111111 ' + '(' + testschule + '): ' + nameRolle + ' (befristet bis ' + befristungLehrerRolle + ')'
+            testschuleDstNr +
+              ' (' +
+              testschuleName +
+              '): ' +
+              nameRolle +
+              ' (befristet bis ' +
+              timeLimitTeacherRolle +
+              ')'
           )
           .click();
+      });
 
+      await test.step(`Befristung im Bearbeitungsmodus öffnen`, async () => {
         await personDetailsView.buttonBefristungAendern.click();
-        await expect(personDetailsView.radioButtonBefristungSchuljahresende).toBeEnabled();
-        await expect(personDetailsView.radioButtonUnbefristet).toBeEnabled();
-        // enter invalid date
-        await personDetailsView.inputBefristung.fill(await generateDate(0, 0, false)); // today
-        await personDetailsView.errorTextInputBefristung.isEnabled();
-        await personDetailsView.inputBefristung.fill(await generateDate(0, -3, false)); // past
-        await personDetailsView.errorTextInputBefristung.isEnabled();
-        // enter valid date
-        await personDetailsView.inputBefristung.fill(await generateDate(22, 6, false)); // future
-        await personDetailsView.errorTextInputBefristung.isDisabled();
-        await personDetailsView.inputBefristung.fill(await generateDate(0, 8, false)); // future
-        await personDetailsView.errorTextInputBefristung.isDisabled();
-        // save new date
-        await page.getByTestId('change-befristung-submit-button').click();
+        await expect(personDetailsView.radioButtonBefristungSchuljahresende).toBeVisible();
+        await expect(personDetailsView.radioButtonUnbefristet).toBeVisible();
+      });
 
-        await page.pause();
+      await test.step(`Ungültige und gültige Befristungen eingeben`, async () => {
+        // enter invalid date
+        await personDetailsView.inputBefristung.fill(
+          await generateCurrentDate({ days: 0, months: 0, formatDMY: true })
+        );
+        await personDetailsView.errorTextInputBefristung.isEnabled();
+
+        await personDetailsView.inputBefristung.fill(
+          await generateCurrentDate({ days: 0, months: -3, formatDMY: true })
+        );
+        await personDetailsView.errorTextInputBefristung.isEnabled();
+
+        // enter valid date
+        await personDetailsView.inputBefristung.fill(
+          await generateCurrentDate({ days: 22, months: 6, formatDMY: true })
+        );
+        await personDetailsView.errorTextInputBefristung.isDisabled();
+
+        timeLimitTeacherRolleNew = await generateCurrentDate({ days: 0, months: 8, formatDMY: true });
+        await personDetailsView.inputBefristung.fill(timeLimitTeacherRolleNew);
+        await personDetailsView.errorTextInputBefristung.isDisabled();
+      });
+
+      await test.step(`Gültige Befristung speichern`, async () => {
+        await personDetailsView.buttonBefristungAendernSubmit.click();
+        await expect(
+          page.getByText(
+            'Möchten Sie die Befristung wirklich von ' +
+              timeLimitTeacherRolle +
+              ' in ' +
+              timeLimitTeacherRolleNew +
+              ' ändern?'
+          )
+        ).toBeVisible();
+        await personDetailsView.buttonBefristungAendernConfirm.click();
+      });
+
+      await test.step(`In der Änderungsübersicht die Befristung der Rolle überprüfen und das Speichern final bestätigen`, async () => {
+        await expect(
+          page.getByRole('heading', { name: 'Bitte prüfen und abschließend speichern, um die Aktion auszuführen:' })
+        ).toBeVisible();
+
+        colorTextEntireNameSchulzuordnung = 'rgb(244, 67, 54)';
+        await personDetailsView.validateEntireNameSchulzuordnung(
+          testschuleDstNr,
+          testschuleName,
+          nameRolle,
+          colorTextEntireNameSchulzuordnung,
+          timeLimitTeacherRolle
+        );
+
+        colorTextEntireNameSchulzuordnung = 'rgb(76, 175, 80)';
+        await personDetailsView.validateEntireNameSchulzuordnung(
+          testschuleDstNr,
+          testschuleName,
+          nameRolle,
+          colorTextEntireNameSchulzuordnung,
+          timeLimitTeacherRolleNew
+        );
+        await personDetailsView.buttonBefristungAendernSave.click();
+        await personDetailsView.buttonBefristungAendernSuccessClose.click();
+        await personDetailsView.teardownAPI({ lastEndpoint: 'organisationen/parents-by-ids' });
+      });
+
+      await test.step(`In der Gesamtübersicht überprüfen, dass die Schulzuordnung mit dem korrekten Datum angezeigt wird`, async () => {
+        colorTextEntireNameSchulzuordnung = 'rgb(0, 30, 73)';
+        await personDetailsView.validateEntireNameSchulzuordnung(
+          testschuleDstNr,
+          testschuleName,
+          nameRolle,
+          colorTextEntireNameSchulzuordnung,
+          timeLimitTeacherRolleNew
+        );
+      });
+    }
+  );
+
+  test(
+    `Prüfen, dass eine Person mit einer befristeten Rolle wie z.B. LiV, nicht die Option 'Unbefristet' bekommen kann wenn man eine Befristung bearbeitet`,
+    { tag: [LONG, STAGE] },
+    async ({ page }: PlaywrightTestArgs) => {
+      let userInfoLehrer: UserInfo;
+      const nameRolle: string = await generateRolleName();
+
+      await test.step(`Testdaten: Lehrer mit einer Rolle(LiV) mit den Merkmalen 'BefristungsPflicht', 'KopersPflicht' und einer Schulzuordnung über die api anlegen`, async () => {
+        userInfoLehrer = await createRolleAndPersonWithUserContext(
+          page,
+          testschuleName,
+          typeLehrer,
+          await generateNachname(),
+          await generateVorname(),
+          [await getSPId(page, email)],
+          nameRolle,
+          await generateKopersNr(),
+          undefined,
+          [befristungPflicht, kopersNrPflicht]
+        );
+        usernames.push(userInfoLehrer.username);
+        rolleIds.push(userInfoLehrer.rolleId);
+      });
+
+      const personDetailsView: PersonDetailsViewPage = await test.step(`Gesamtübersicht öffnen`, async () => {
+        const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
+        await gotoTargetURL(page, 'admin/personen');
+        await personManagementView.waitErgebnislisteIsLoaded();
+        await personManagementView.searchBySuchfeld(userInfoLehrer.username);
+        return await personManagementView.openGesamtuebersichtPerson(page, userInfoLehrer.username);
+      });
+
+      await test.step(`Schulzuordnung im Bearbeitungsmodus öffen`, async () => {
+        await personDetailsView.button_editSchulzuordnung.click();
+        await page
+          .getByTestId('person-details-card')
+          .getByText(testschuleDstNr + ' (' + testschuleName + '): ' + nameRolle + ' (befristet bis ')
+          .click();
+        await personDetailsView.teardownAPI({ lastEndpoint: 'personenkontext-workflow/**' });
+      });
+
+      await test.step(`Befristung im Bearbeitungsmodus öffnen`, async () => {
+        await personDetailsView.buttonBefristungAendern.click();
+        await expect(personDetailsView.radioButtonBefristungSchuljahresende).toBeVisible();
+        await expect(personDetailsView.radioButtonUnbefristet).toBeVisible();
+        await expect(personDetailsView.radioButtonUnbefristetDisabled).toBeDisabled();
       });
     }
   );
