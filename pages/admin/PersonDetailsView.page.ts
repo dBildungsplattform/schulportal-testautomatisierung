@@ -1,6 +1,5 @@
 import { type Locator, Page, expect } from '@playwright/test';
 import { ComboBox } from '../../elements/ComboBox';
-import { ur } from '@faker-js/faker';
 
 export class PersonDetailsViewPage {
   readonly page: Page;

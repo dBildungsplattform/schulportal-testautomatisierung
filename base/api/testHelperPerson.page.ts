@@ -209,7 +209,7 @@ export async function lockPerson(page: Page, personId: string, organisationId: s
 export async function setTimeLimitPersonenkontext(
   page: Page,
   personId: string,
-  organisationId1: string,
+  organisationId: string,
   rolleId: string,
   timeLimit: string
 ) {
@@ -221,7 +221,7 @@ export async function setTimeLimitPersonenkontext(
         {
           befristung: timeLimit,
           personId: personId,
-          organisationId: organisationId1,
+          organisationId: organisationId,
           rolleId: rolleId,
         },
       ],
