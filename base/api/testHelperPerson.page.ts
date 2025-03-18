@@ -16,7 +16,6 @@ import { testschuleName } from '../organisation';
 import { email, kalender, adressbuch } from '../sp';
 import { typeLehrer } from '../rollentypen';
 import { generateCurrentDate } from '../../base/testHelperUtils';
-import { da } from '@faker-js/faker';
 
 const FRONTEND_URL: string | undefined = process.env.FRONTEND_URL || '';
 
@@ -104,11 +103,11 @@ export async function createRolleAndPersonWithUserContext(
   rolleName: string,
   koPersNr?: string,
   klasseId?: string,
-  merkmalName?: string[]
+  merkmaleName?: string[]
 ): Promise<UserInfo> {
   // Organisation wird nicht angelegt, da diese zur Zeit nicht gelöscht werden kann
   const organisationId: string = await getOrganisationId(page, organisationName);
-  const rolleId: string = await createRolle(page, rollenArt, organisationId, rolleName, merkmalName);
+  const rolleId: string = await createRolle(page, rollenArt, organisationId, rolleName, merkmaleName);
 
   await addSPToRolle(page, rolleId, idSPs);
   const userInfo: UserInfo = await createPerson(
@@ -119,7 +118,7 @@ export async function createRolleAndPersonWithUserContext(
     rolleId,
     koPersNr,
     klasseId,
-    merkmalName
+    merkmaleName
   );
   return userInfo;
 }
