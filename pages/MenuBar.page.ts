@@ -5,6 +5,7 @@ import { RolleManagementViewPage } from './admin/RolleManagementView.page';
 import { SchuleCreationViewPage } from './admin/SchuleCreationView.page';
 import { SchuleManagementViewPage } from './admin/SchuleManagementView.page';
 import { KlasseManagementViewPage } from './admin/KlasseManagementView.page';
+import { PersonCreationViewPage } from './admin/PersonCreationView.page';
 
 export class MenuPage {
   readonly page: Page;
@@ -76,5 +77,10 @@ export class MenuPage {
   public async alleKlassenAnzeigen(): Promise<KlasseManagementViewPage> {
     await this.menueItem_AlleKlassenAnzeigen.click();
     return new KlasseManagementViewPage(this.page);
+  }
+
+  public async personAnlegen(): Promise<PersonCreationViewPage> {
+    await this.menueItem_BenutzerAnlegen.click();
+    return new PersonCreationViewPage(this.page);
   }
 }

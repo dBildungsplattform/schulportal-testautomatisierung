@@ -1,7 +1,7 @@
 import { expect, PlaywrightTestArgs, test } from '@playwright/test';
 import { UserInfo } from '../base/api/testHelper.page';
 import { createRolleAndPersonWithUserContext } from '../base/api/testHelperPerson.page';
-import { addSystemrechtToRolle } from '../base/api/testHelperRolle.page';
+import { addSystemrechtToRolle, createRolle } from '../base/api/testHelperRolle.page';
 import { getSPId } from '../base/api/testHelperServiceprovider.page';
 import { landSH, testschule, testschule665, oeffentlichLandSH, ersatzLandSH } from '../base/organisation.ts';
 import { landesadminRolle, schuelerRolle, schuladminOeffentlichRolle } from '../base/rollen.ts';
@@ -24,6 +24,7 @@ import { LoginPage } from '../pages/LoginView.page';
 import { MenuPage } from '../pages/MenuBar.page';
 import { StartPage } from '../pages/StartView.page';
 import FromAnywhere from '../pages/FromAnywhere';
+import { typeLehrer, typeSchueler } from '../base/rollentypen.ts';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -777,6 +778,54 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(personManagementView.comboboxMenuIcon_Klasse).toBeVisible();
         await expect(personManagementView.comboboxMenuIcon_Status).toBeVisible();
         await expect(page.getByRole('cell', { name: nachname, exact: true })).toBeHidden();
+      });
+    }
+  );
+
+  test.skip(
+    'Bei Nutzerneuanlage mehrere Rollen zuordnen',
+    { tag: [LONG, STAGE] },
+    async ({ page }: PlaywrightTestArgs) => {
+      const startseite: StartPage = new StartPage(page);
+      let rolle1Lehr;
+      let rolle2Lehr;
+      let rolle1Lehrn;
+      let rolle2Lehrn;
+
+      await test.step(`Testdaten: Je 2 Rollen mit Rollenarten LEHR und LERN  über die api anlegen`, async () => {
+        rolle1Lehr = await createRolle(page, typeLehrer, testschule, await generateRolleName());
+        rolle2Lehr = await createRolle(page, typeLehrer, testschule, await generateRolleName());
+        rolle1Lehrn = await createRolle(page, typeSchueler, testschule, await generateRolleName());
+        rolle2Lehrn = await createRolle(page, typeSchueler, testschule, await generateRolleName());
+        rolleNames.push(rolle1Lehr, rolle2Lehr, rolle1Lehrn, rolle2Lehrn);
+      });
+
+      await test.step(`Dialog "Person anlegen" öffnen`, async () => {
+        const menue: MenuPage = await startseite.goToAdministration();
+        const personCreationView : PersonCreationViewPage= await menue.personAnlegen();
+        
+        await personCreationView.comboboxOrganisationInput.searchByTitle(testschule, false);
+        await page.pause()
+
+        
+      });
+
+      await test.step(`Bestätigungsseite prüfen`, async () => {
+        // await personCreationView.validateConfirmationPage(vorname, nachname, rolle, dienststellenNr, schulstrukturknoten);
+        // usernames.push(await personCreationView.dataBenutzername.innerText());
+      });
+      //////////////////
+      //const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
+
+      // const personDetailsView: PersonDetailsViewPage = await test.step(`Gesamtübersicht öffnen`, async () => {
+      //   // await gotoTargetURL(page, 'admin/personen');
+      //   // await personManagementView.waitErgebnislisteIsLoaded();
+      //   // await personManagementView.searchBySuchfeld(userInfoLehrer.username);
+      //   // return await personManagementView.openGesamtuebersichtPerson(page, userInfoLehrer.username);
+      // });
+
+      await test.step(`Inbetriebnahme-Passwort für LK-Endgerät setzen`, async () => {
+        // await personDetailsView.createIbnPassword();
       });
     }
   );
