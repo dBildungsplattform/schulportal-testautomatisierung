@@ -15,12 +15,14 @@ export class StartPage {
 
   constructor(page) {
     this.page = page;
-    this.textH2Ueberschrift = page.getByTestId("all-service-provider-title");
-    this.cardItemEmail = page.locator('[data-testid^="service-provider-card"]', { hasText: "E-Mail" });
-    this.cardItemKalender = page.locator('[data-testid^="service-provider-card"]', { hasText: "Kalender" });
-    this.cardItemAdressbuch = page.locator('[data-testid^="service-provider-card"]', { hasText: "Adressbuch" });
-    this.cardItemItslearning = page.locator('[data-testid^="service-provider-card"]', { hasText: "itslearning" });
-    this.cardItemSchulportalAdministration = page.locator('[data-testid^="service-provider-card"]', { hasText: "Schulportal-Administration" });
+    this.textH2Ueberschrift = page.getByTestId('all-service-provider-title');
+    this.cardItemEmail = page.locator('[data-testid^="service-provider-card"]', { hasText: 'E-Mail' });
+    this.cardItemKalender = page.locator('[data-testid^="service-provider-card"]', { hasText: 'Kalender' });
+    this.cardItemAdressbuch = page.locator('[data-testid^="service-provider-card"]', { hasText: 'Adressbuch' });
+    this.cardItemItslearning = page.locator('[data-testid^="service-provider-card"]', { hasText: 'itslearning' });
+    this.cardItemSchulportalAdministration = page.locator('[data-testid^="service-provider-card"]', {
+      hasText: 'Schulportal-Administration',
+    });
     this.cardItem = (spName: string) => page.locator('[data-testid^="service-provider-card"]', { hasText: spName });
   }
 
@@ -30,7 +32,7 @@ export class StartPage {
   }
 
   public async start(): Promise<LandingPage> {
-    await this.page.goto(process.env.FRONTEND_URL || "/");
+    await this.page.goto(process.env.FRONTEND_URL || '/');
     return new LandingPage(this.page);
   }
 
@@ -41,7 +43,7 @@ export class StartPage {
 
   public async checkSpIsVisible(spNames: string[]) {
     for (let spName of spNames) {
-      await expect(this.cardItem(spName)).toBeVisible()
+      await expect(this.cardItem(spName)).toBeVisible();
     }
   }
 }
