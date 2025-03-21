@@ -581,7 +581,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     }
   );
 
-  test.only(
+  test(
     'Befristung einer Schulzuordnung von einem Lehrer durch einen Landesadmin bearbeiten',
     { tag: [LONG, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
