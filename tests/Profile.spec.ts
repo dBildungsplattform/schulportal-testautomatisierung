@@ -40,6 +40,7 @@ let usernames: string[] = [];
 let rolleIds: string[] = [];
 // This variable must be set to false in the testcase when the logged in user is changed
 let currentUserIsLandesadministrator: boolean = true;
+let logoutViaStartPage: boolean = false;
 
 test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
@@ -48,7 +49,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         .start()
         .then((landing: LandingPage) => landing.goToLogin())
         .then((login: LoginPage) => login.login())
-        .then((startseite: StartPage) => startseite.checkHeadlineIsVisible());
+        .then((startseite: StartPage) => startseite.validateStartPageIsLoaded());
 
       return startPage;
     });
@@ -65,10 +66,14 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       const login: LoginPage = new LoginPage(page);
       const startseite: StartPage = new StartPage(page);
 
-      await header.logout();
+      if (logoutViaStartPage) {
+        await header.logout({ logoutViaStartPage: true });
+      } else {
+        await header.logout({ logoutViaStartPage: false });
+      }
       await landing.button_Anmelden.click();
       await login.login(ADMIN, PW);
-      await startseite.checkHeadlineIsVisible();
+      await startseite.validateStartPageIsLoaded();
     }
 
     await test.step(`Testdaten löschen via API`, async () => {
@@ -85,7 +90,11 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
     await test.step(`Abmelden`, async () => {
       const header: HeaderPage = new HeaderPage(page);
-      await header.logout();
+      if (logoutViaStartPage) {
+        await header.logout({ logoutViaStartPage: true });
+      } else {
+        await header.logout({ logoutViaStartPage: false });
+      }
     });
   });
 
@@ -125,7 +134,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await addSystemrechtToRolle(page, userInfo.rolleId, schultraegerVerwalten);
         await addSystemrechtToRolle(page, userInfo.rolleId, personenAnlegen);
 
-        await header.logout();
+        await header.logout({ logoutViaStartPage: true });
         await header.button_login.click();
         await login.login(userInfo.username, userInfo.password);
         currentUserIsLandesadministrator = false;
@@ -159,6 +168,10 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await expect(profileView.textNo2FA).toHaveText('Es wurde noch kein zweiter Faktor für Sie eingerichtet.');
         await expect(profileView.button2FAEinrichten).toBeEnabled();
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 
@@ -190,7 +203,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         rolleIds.push(userInfo.rolleId);
         usernames.push(userInfo.username);
 
-        await header.logout();
+        await header.logout({ logoutViaStartPage: true });
         await header.button_login.click();
         await login.login(userInfo.username, userInfo.password);
         await login.updatePW();
@@ -221,6 +234,10 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await expect(profileView.cardHeadline2FA).toHaveText('Zwei-Faktor-Authentifizierung');
         await expect(profileView.button2FAEinrichten).toBeEnabled();
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 
@@ -252,7 +269,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         rolleIds.push(userInfo.rolleId);
         usernames.push(userInfo.username);
 
-        await header.logout();
+        await header.logout({ logoutViaStartPage: true });
         await header.button_login.click();
         await login.login(userInfo.username, userInfo.password);
         await login.updatePW();
@@ -283,6 +300,10 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await expect(profileView.cardHeadline2FA).toBeHidden();
         await expect(profileView.button2FAEinrichten).toBeHidden();
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 
@@ -314,7 +335,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         rolleIds.push(userInfo.rolleId);
         usernames.push(userInfo.username);
 
-        await header.logout();
+        await header.logout({ logoutViaStartPage: true });
         await header.button_login.click();
         await login.login(userInfo.username, userInfo.password);
         await login.updatePW();
@@ -345,6 +366,10 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await expect(profileView.cardHeadline2FA).toHaveText('Zwei-Faktor-Authentifizierung');
         await expect(profileView.button2FAEinrichten).toBeEnabled();
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 
@@ -385,7 +410,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
           await getOrganisationId(page, organisation2),
           rolleIds[0]
         );
-        await header.logout();
+        await header.logout({ logoutViaStartPage: true });
         await header.button_login.click();
         await login.login(userInfo.username, userInfo.password);
         await login.updatePW();
@@ -452,6 +477,10 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
           await expect(profileView.cardHeadline2FA).toHaveText('Zwei-Faktor-Authentifizierung');
           await expect(profileView.button2FAEinrichten).toBeEnabled();
         }
+        // #TODO: wait for the last request in the test
+        // sometimes logout breaks the test because of interrupting requests
+        // logoutViaStartPage = true is a workaround
+        logoutViaStartPage = true;
       });
     }
   );
@@ -481,7 +510,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         rolleIds.push(userInfo.rolleId);
         usernames.push(userInfo.username);
 
-        await header.logout();
+        await header.logout({ logoutViaStartPage: true });
         await header.button_login.click();
         await login.login(userInfo.username, userInfo.password);
         await login.updatePW();
@@ -510,6 +539,10 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await page.goBack();
         await expect(profileView.cardHeadlinePasswort).toBeVisible();
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 
@@ -538,7 +571,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         rolleIds.push(userInfo.rolleId);
         usernames.push(userInfo.username);
 
-        await header.logout();
+        await header.logout({ logoutViaStartPage: true });
         await header.button_login.click();
         await login.login(userInfo.username, userInfo.password);
         await login.updatePW();
@@ -609,6 +642,10 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       await test.step(`Dialog schließen`, async () => {
         await profileView.button2FAAbbrechen.click();
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 
@@ -649,7 +686,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       });
 
       await test.step(`Mit dem Lehrer am Portal anmelden`, async () => {
-        await header.logout();
+        await header.logout({ logoutViaStartPage: true });
         await header.goToLogin();
         await loginView.login(userInfoLehrer.username, userInfoLehrer.password);
         currentUserIsLandesadministrator = false;
@@ -667,7 +704,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       });
 
       await test.step(`Mit dem Schüler am Portal anmelden`, async () => {
-        await header.logout();
+        await header.logout({ logoutViaStartPage: true });
         await header.goToLogin();
         await loginView.login(userInfoSchueler.username, userInfoSchueler.password);
         userInfoSchueler.password = await loginView.updatePW();
@@ -683,11 +720,15 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       });
 
       await test.step(`Schüler meldet sich mit dem neuen Passwort am Portal an`, async () => {
-        await header.logout();
+        await header.logout({ logoutViaStartPage: true });
         await header.goToLogin();
         const startView: StartPage = await loginView.login(userInfoSchueler.username, userInfoSchueler.password);
         await startView.checkSpIsVisible([itslearning]);
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 
@@ -712,7 +753,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         usernames.push(userInfoLehrer.username);
         rolleIds.push(userInfoLehrer.rolleId);
 
-        await header.logout();
+        await header.logout({ logoutViaStartPage: true });
         await header.button_login.click();
         const login: LoginPage = new LoginPage(page);
         await login.login(userInfoLehrer.username, userInfoLehrer.password);
@@ -745,6 +786,10 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await profileView.validatePasswordResetDialog();
         await expect(profileView.titleMeinProfil).toBeVisible();
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 });

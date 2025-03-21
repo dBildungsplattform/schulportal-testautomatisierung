@@ -34,6 +34,7 @@ let rolleIds: string[] = [];
 let rolleNames: string[] = [];
 // This variable must be set to false in the testcase when the logged in user is changed
 let currentUserIsLandesadministrator: boolean = true;
+let logoutViaStartPage: boolean = false;
 
 test.describe(`Testfälle für die Administration von Personen": Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
@@ -42,7 +43,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         .start()
         .then((landing: LandingPage) => landing.goToLogin())
         .then((login: LoginPage) => login.login())
-        .then((startseite: StartPage) => startseite.checkHeadlineIsVisible());
+        .then((startseite: StartPage) => startseite.validateStartPageIsLoaded());
 
       return startPage;
     });
@@ -55,10 +56,14 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const login: LoginPage = new LoginPage(page);
       const startseite: StartPage = new StartPage(page);
 
-      await header.logout();
+      if (logoutViaStartPage) {
+        await header.logout({ logoutViaStartPage: true });
+      } else {
+        await header.logout({ logoutViaStartPage: false });
+      }
       await landing.button_Anmelden.click();
       await login.login(ADMIN, PW);
-      await startseite.checkHeadlineIsVisible();
+      await startseite.validateStartPageIsLoaded();
     }
 
     await test.step(`Testdaten(Benutzer) löschen via API`, async () => {
@@ -80,7 +85,11 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
     await test.step(`Abmelden`, async () => {
       const header: HeaderPage = new HeaderPage(page);
-      await header.logout();
+      if (logoutViaStartPage) {
+        await header.logout({ logoutViaStartPage: true });
+      } else {
+        await header.logout({ logoutViaStartPage: false });
+      }
     });
   });
 
@@ -134,13 +143,17 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       });
 
       await test.step(`Der neue Benutzer meldet sich mit dem temporären Passwort am Portal an und vergibt ein neues Passwort`, async () => {
-        await header.logout();
+        await header.logout({ logoutViaStartPage: true });
         await landing.button_Anmelden.click();
         await login.login(usernames[0], einstiegspasswort);
         await login.updatePW();
         currentUserIsLandesadministrator = false;
-        await startseite.checkHeadlineIsVisible();
+        await startseite.validateStartPageIsLoaded();
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 
@@ -178,6 +191,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         usernames.push(await personCreationView.dataBenutzername.innerText());
         await expect(personCreationView.dataRolle).toHaveText(landesadminRolle);
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 
@@ -212,6 +229,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         usernames.push(await personCreationView.dataBenutzername.innerText());
         await expect(personCreationView.dataRolle).toHaveText('LiV');
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 
@@ -250,11 +271,11 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         usernames.push(userInfo.username);
         rolleIds.push(userInfo.rolleId);
 
-        await header.logout();
+        await header.logout({ logoutViaStartPage: true });
         await landing.button_Anmelden.click();
         await login.login(userInfo.username, userInfo.password);
         userInfo.password = await login.updatePW();
-        await startseite.checkHeadlineIsVisible();
+        await startseite.validateStartPageIsLoaded();
         currentUserIsLandesadministrator = false;
       });
 
@@ -266,8 +287,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
         await startseite.cardItemSchulportalAdministration.click();
         await menue.menueItem_BenutzerAnlegen.click();
+        await page.waitForResponse((resp) => resp.url().includes('/api/dbiam/personenuebersicht'));
         await expect(personCreationView.textH2PersonAnlegen).toHaveText('Neuen Benutzer hinzufügen');
-
         await personCreationView.comboboxRolle.click();
         await page.getByText(rolle, { exact: true }).click();
         await personCreationView.inputVorname.fill(newVorname);
@@ -279,6 +300,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         // Save the username for cleanup
         usernames.push(await personCreationView.dataBenutzername.innerText());
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 
@@ -319,6 +344,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         usernames.push(await personCreationView.dataBenutzername.innerText());
         await expect(personCreationView.dataRolle).toHaveText(schuelerRolle);
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 
@@ -347,6 +376,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(personManagementView.table_header_Zuordnungen).toBeVisible();
         await expect(personManagementView.table_header_Klasse).toBeVisible();
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 
@@ -423,6 +456,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         // close opened combobox organisation
         await personCreationView.textH2PersonAnlegen.click();
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 
@@ -478,6 +515,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(page.getByRole('cell', { name: 'Keine Daten gefunden.' })).toBeVisible();
         await expect(page.locator('v-data-table__td')).toHaveCount(0);
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 
@@ -508,6 +549,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
         await expect(personManagementView.getRows().first()).toContainText('1111165');
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 
@@ -547,6 +592,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(personDeatilsView.text_h2_benutzerBearbeiten).toHaveText('Benutzer bearbeiten');
         await expect(personDeatilsView.username).toHaveText(usernames[0]);
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 
@@ -584,12 +633,12 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         usernames.push(userInfo.username);
         rolleIds.push(userInfo.rolleId);
 
-        await header.logout();
+        await header.logout({ logoutViaStartPage: true });
         await landing.button_Anmelden.click();
         await login.login(userInfo.username, userInfo.password);
         userInfo.password = await login.updatePW();
         currentUserIsLandesadministrator = false;
-        await startseite.checkHeadlineIsVisible();
+        await startseite.validateStartPageIsLoaded();
       });
 
       // Testdaten
@@ -735,6 +784,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(personCreationView.buttonWeiterenBenutzerAnlegen).toBeVisible();
         await expect(personCreationView.buttonZurueckErgebnisliste).toBeVisible();
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 
@@ -776,6 +829,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(personManagementView.comboboxMenuIcon_Status).toBeVisible();
         await expect(page.getByRole('cell', { name: nachname, exact: true })).toBeHidden();
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 });
