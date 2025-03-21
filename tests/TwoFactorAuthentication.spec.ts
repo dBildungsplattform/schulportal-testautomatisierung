@@ -20,6 +20,7 @@ import { LoginPage } from '../pages/LoginView.page.ts';
 // The created test data will be deleted in the afterEach block
 let usernames: string[] = [];
 let rolleIds: string[] = [];
+let logoutViaStartPage: boolean = false;
 
 test.describe(`Testfälle für TwoFactorAuthentication": Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
@@ -28,8 +29,8 @@ test.describe(`Testfälle für TwoFactorAuthentication": Umgebung: ${process.env
         .start()
         .then((landing: LandingPage) => landing.goToLogin())
         .then((login: LoginPage) => login.login())
-        .then((startseite: StartPage) => startseite.checkHeadlineIsVisible());
-  
+        .then((startseite: StartPage) => startseite.validateStartPageIsLoaded());
+
       return startPage;
     });
   });
@@ -48,55 +49,67 @@ test.describe(`Testfälle für TwoFactorAuthentication": Umgebung: ${process.env
 
     await test.step(`Abmelden`, async () => {
       const header: HeaderPage = new HeaderPage(page);
-      await header.logout();
+      if (logoutViaStartPage) {
+        await header.logout({ logoutViaStartPage: true });
+      } else {
+        await header.logout({ logoutViaStartPage: false });
+      }
     });
   });
 
-  test('Prüfen, ob es möglich ist einen Token zurückzusetzen', { tag: [LONG, STAGE, BROWSER] }, async ({ page }: PlaywrightTestArgs) => {
-    let userInfoLehrer: UserInfo;
+  test(
+    'Prüfen, ob es möglich ist einen Token zurückzusetzen',
+    { tag: [LONG, STAGE, BROWSER] },
+    async ({ page }: PlaywrightTestArgs) => {
+      let userInfoLehrer: UserInfo;
 
-    await test.step(`Testdaten erstellen`, async () => {
-      userInfoLehrer = await createRolleAndPersonWithUserContext(
-        page,
-        testschule,
-        typeLehrer,
-        await generateNachname(),
-        await generateVorname(),
-        [await getSPId(page, email)],
-        await generateRolleName()
-      );
-      usernames.push(userInfoLehrer.username);
-      rolleIds.push(userInfoLehrer.rolleId);
-    });
+      await test.step(`Testdaten erstellen`, async () => {
+        userInfoLehrer = await createRolleAndPersonWithUserContext(
+          page,
+          testschule,
+          typeLehrer,
+          await generateNachname(),
+          await generateVorname(),
+          [await getSPId(page, email)],
+          await generateRolleName()
+        );
+        usernames.push(userInfoLehrer.username);
+        rolleIds.push(userInfoLehrer.rolleId);
+      });
 
-    const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
+      const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
 
-    const personDetailsView: PersonDetailsViewPage = await test.step(`Gesamtübersicht öffnen`, async () => {
-      await gotoTargetURL(page, 'admin/personen');
-      await personManagementView.searchBySuchfeld(userInfoLehrer.username);
-      return await personManagementView.openGesamtuebersichtPerson(page, userInfoLehrer.username);
-    });
+      const personDetailsView: PersonDetailsViewPage = await test.step(`Gesamtübersicht öffnen`, async () => {
+        await gotoTargetURL(page, 'admin/personen');
+        await personManagementView.searchBySuchfeld(userInfoLehrer.username);
+        return await personManagementView.openGesamtuebersichtPerson(page, userInfoLehrer.username);
+      });
 
-    await test.step(`Token einrichten`, async () => {
-      await personDetailsView.softwareTokenEinrichten();
-    });
+      await test.step(`Token einrichten`, async () => {
+        await personDetailsView.softwareTokenEinrichten();
+      });
 
-    await test.step(`2FA Status prüfen dass ein Token eingerichtet ist`, async () => {
-      await expect(personDetailsView.text_token_IstEingerichtet_info).toBeVisible();
-      await expect(personDetailsView.text_neuen_token_einrichten_info).toBeVisible();
-    });
+      await test.step(`2FA Status prüfen dass ein Token eingerichtet ist`, async () => {
+        await expect(personDetailsView.text_token_IstEingerichtet_info).toBeVisible();
+        await expect(personDetailsView.text_neuen_token_einrichten_info).toBeVisible();
+      });
 
-    await test.step(`Token zurücksetzen`, async () => {
-      await expect(personDetailsView.button_2FAEinrichten).toHaveText('Token zurücksetzen');
-      await personDetailsView.button_2FAEinrichten.click();
+      await test.step(`Token zurücksetzen`, async () => {
+        await expect(personDetailsView.button_2FAEinrichten).toHaveText('Token zurücksetzen');
+        await personDetailsView.button_2FAEinrichten.click();
 
-      await expect(personDetailsView.button_2FA_Zuruecksetzen_Weiter).toHaveText('Zurücksetzen');
-      await personDetailsView.button_2FA_Zuruecksetzen_Weiter.click();
+        await expect(personDetailsView.button_2FA_Zuruecksetzen_Weiter).toHaveText('Zurücksetzen');
+        await personDetailsView.button_2FA_Zuruecksetzen_Weiter.click();
 
-      await expect(personDetailsView.button_2FA_Zuruecksetzen_Weiter).toHaveText('Schließen');
-      await personDetailsView.button_2FA_Zuruecksetzen_Weiter.click();
+        await expect(personDetailsView.button_2FA_Zuruecksetzen_Weiter).toHaveText('Schließen');
+        await personDetailsView.button_2FA_Zuruecksetzen_Weiter.click();
 
-      await expect(personDetailsView.text_kein_token_ist_Eingerichtet).toBeVisible();
-    });
-  });
+        await expect(personDetailsView.text_kein_token_ist_Eingerichtet).toBeVisible();
+      });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
+    }
+  );
 });
