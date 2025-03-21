@@ -9,7 +9,20 @@ export async function createRolle(
   rolleName: string,
   merkmalelName?: string[]
 ): Promise<string> {
-  let requestData: any;
+  let requestData: RolleRequestData;
+
+  type RolleRequestData = {
+    data: {
+      name: string;
+      administeredBySchulstrukturknoten: string;
+      rollenart: string;
+      systemrechte: string[];
+      version: number;
+      merkmale?: string[];
+    };
+    failOnStatusCode: boolean;
+    maxRetries: number;
+  }
 
   requestData = {
     data: {

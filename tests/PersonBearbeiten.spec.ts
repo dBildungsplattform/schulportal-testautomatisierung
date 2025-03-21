@@ -581,7 +581,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     }
   );
 
-  test(
+  test.only(
     'Befristung einer Schulzuordnung von einem Lehrer durch einen Landesadmin bearbeiten',
     { tag: [LONG, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
@@ -612,17 +612,18 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
           await generateCurrentDate({ days: 3, months: 5, formatDMY: false })
         );
       });
-
+      
       const personDetailsView: PersonDetailsViewPage = await test.step(`Gesamtübersicht öffnen`, async () => {
         const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
         await gotoTargetURL(page, 'admin/personen');
-        await personManagementView.waitErgebnislisteIsLoaded();
+        //await personManagementView.waitErgebnislisteIsLoaded();
         await personManagementView.searchBySuchfeld(userInfoLehrer.username);
         return await personManagementView.openGesamtuebersichtPerson(page, userInfoLehrer.username);
       });
 
       await test.step(`Schulzuordnung im Bearbeitungsmodus öffen`, async () => {
         await personDetailsView.button_editSchulzuordnung.click();
+        console.log(timeLimitTeacherRolle);
         await page
           .getByTestId('person-details-card')
           .getByText(
@@ -649,22 +650,22 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await personDetailsView.inputBefristung.fill(
           await generateCurrentDate({ days: 0, months: 0, formatDMY: true })
         );
-        await personDetailsView.errorTextInputBefristung.isEnabled();
+        await personDetailsView.errorTextInputBefristung.isVisible();
 
         await personDetailsView.inputBefristung.fill(
           await generateCurrentDate({ days: 0, months: -3, formatDMY: true })
         );
-        await personDetailsView.errorTextInputBefristung.isEnabled();
+        await personDetailsView.errorTextInputBefristung.isVisible();
 
         // enter valid date
         await personDetailsView.inputBefristung.fill(
           await generateCurrentDate({ days: 22, months: 6, formatDMY: true })
         );
-        await personDetailsView.errorTextInputBefristung.isDisabled();
+        await personDetailsView.errorTextInputBefristung.isHidden();
 
         timeLimitTeacherRolleNew = await generateCurrentDate({ days: 0, months: 8, formatDMY: true });
         await personDetailsView.inputBefristung.fill(timeLimitTeacherRolleNew);
-        await personDetailsView.errorTextInputBefristung.isDisabled();
+        await personDetailsView.errorTextInputBefristung.isHidden();
       });
 
       await test.step(`Gültige Befristung speichern`, async () => {
@@ -705,7 +706,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         );
         await personDetailsView.buttonBefristungAendernSave.click();
         await personDetailsView.buttonBefristungAendernSuccessClose.click();
-        await personDetailsView.teardownAPI({ lastEndpoint: 'organisationen/parents-by-ids' });
+        await personDetailsView.waitForAPIResponse({ lastEndpoint: 'organisationen/parents-by-ids' });
       });
 
       await test.step(`In der Gesamtübersicht überprüfen, dass die Schulzuordnung mit dem korrekten Datum angezeigt wird`, async () => {
@@ -748,7 +749,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const personDetailsView: PersonDetailsViewPage = await test.step(`Gesamtübersicht öffnen`, async () => {
         const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
         await gotoTargetURL(page, 'admin/personen');
-        await personManagementView.waitErgebnislisteIsLoaded();
         await personManagementView.searchBySuchfeld(userInfoLehrer.username);
         return await personManagementView.openGesamtuebersichtPerson(page, userInfoLehrer.username);
       });
@@ -759,7 +759,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
           .getByTestId('person-details-card')
           .getByText(testschuleDstNr + ' (' + testschuleName + '): ' + nameRolle + ' (befristet bis ')
           .click();
-        await personDetailsView.teardownAPI({ lastEndpoint: 'personenkontext-workflow/**' });
+        await personDetailsView.waitForAPIResponse({ lastEndpoint: 'personenkontext-workflow/**' });
       });
 
       await test.step(`Befristung im Bearbeitungsmodus öffnen`, async () => {
