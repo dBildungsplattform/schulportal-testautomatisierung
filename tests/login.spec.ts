@@ -10,7 +10,7 @@ import { UserInfo } from '../base/api/testHelper.page.ts';
 import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata.ts';
 import { getOrganisationId } from '../base/api/testHelperOrganisation.page.ts';
 import { generateRolleName, generateNachname, generateVorname } from '../base/testHelperGenerateTestdataNames.ts';
-import { testschule } from '../base/organisation.ts';
+import { testschuleName } from '../base/organisation.ts';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -117,7 +117,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
       const lehrerNachname: string = await generateNachname();
       const lehrerRolle: string = await generateRolleName();
       const lehrerRollenart: string = 'LEHR';
-      const lehrerOrganisation: string = testschule;
+      const lehrerOrganisation: string = testschuleName;
       let userInfoLehrer: UserInfo;
       let organisationIDLandSh: string = '';
 

@@ -10,7 +10,7 @@ import { UserInfo } from '../base/api/testHelper.page';
 import { LONG, SHORT, STAGE } from '../base/tags';
 import { deletePersonById, deleteRolleById } from '../base/testHelperDeleteTestdata';
 import { generateNachname, generateRolleName, generateVorname } from '../base/testHelperGenerateTestdataNames';
-import { testschule } from '../base/organisation';
+import { testschuleName } from '../base/organisation';
 import FromAnywhere from '../pages/FromAnywhere';
 import { email, itslearning, schulportaladmin } from '../base/sp';
 
@@ -89,7 +89,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
       const idSPs: string[] = [await getSPId(page, 'E-Mail')];
       const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
         page,
-        testschule,
+        testschuleName,
         'LEHR',
         await generateNachname(),
         await generateVorname(),
@@ -130,7 +130,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
       const idSPs: string[] = [await getSPId(page, 'itslearning')];
       const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
         page,
-        testschule,
+        testschuleName,
         'LERN',
         await generateNachname(),
         await generateVorname(),
@@ -171,7 +171,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
       const idSPs: string[] = [await getSPId(page, 'Schulportal-Administration')];
       const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
         page,
-        testschule,
+        testschuleName,
         'LEIT',
         await generateNachname(),
         await generateVorname(),

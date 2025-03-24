@@ -4,7 +4,7 @@ import { createRolleAndPersonWithUserContext } from '../base/api/testHelperPerso
 import { getSPId } from '../base/api/testHelperServiceprovider.page';
 import { LONG, STAGE, BROWSER } from '../base/tags';
 import { generateNachname, generateVorname, generateRolleName } from '../base/testHelperGenerateTestdataNames';
-import { testschule } from '../base/organisation';
+import { testschuleName } from '../base/organisation';
 import { typeLehrer } from '../base/rollentypen';
 import { email } from '../base/sp';
 import { gotoTargetURL } from '../base/testHelperUtils';
@@ -66,7 +66,7 @@ test.describe(`Testfälle für TwoFactorAuthentication": Umgebung: ${process.env
       await test.step(`Testdaten erstellen`, async () => {
         userInfoLehrer = await createRolleAndPersonWithUserContext(
           page,
-          testschule,
+          testschuleName,
           typeLehrer,
           await generateNachname(),
           await generateVorname(),
