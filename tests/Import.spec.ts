@@ -11,11 +11,12 @@ import { fileURLToPath } from 'url';
 import { deletePersonBySearchString } from '../base/testHelperDeleteTestdata.ts';
 
 // schulen cannot be deleted yet, so we use this testschule, which should already exist
-import { testschule665 } from '../base/organisation.ts';
+import { testschule665Name } from '../base/organisation.ts';
 
 const PW: string = process.env.PW as string;
 const ADMIN: string = process.env.USER as string;
 let personImportPage: PersonImportViewPage = undefined as unknown as PersonImportViewPage;
+let logoutViaStartPage: boolean = false;
 
 test.describe(`Testfälle für den Benutzerimport": Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   // convert csv to array to make person data accessible, also trim data and filter empty lines
@@ -26,8 +27,8 @@ test.describe(`Testfälle für den Benutzerimport": Umgebung: ${process.env.ENV}
     .readFileSync(csvPath)
     .toString()
     .split('\n')
-    .map((el) => el.trim())
-    .filter((e) => e !== '');
+    .map((el: string) => el.trim())
+    .filter((e: string) => e !== '');
 
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
     await test.step('Einloggen und zu Benutzerimport navigieren', async () => {
@@ -42,8 +43,8 @@ test.describe(`Testfälle für den Benutzerimport": Umgebung: ${process.env.ENV}
 
   test.afterEach(async ({ page }: PlaywrightTestArgs) => {
     await test.step('Importierte Daten über die API löschen', async () => {
-      for (let index = 1; index < csvAsArray.length; index++) {
-        const person = csvAsArray[index];
+      for (let index: number = 1; index < csvAsArray.length; index++) {
+        const person: string = csvAsArray[index];
         const nachname: string = person.split(';')[0];
 
         await deletePersonBySearchString(page, nachname);
@@ -52,7 +53,11 @@ test.describe(`Testfälle für den Benutzerimport": Umgebung: ${process.env.ENV}
 
     await test.step(`Abmelden`, async () => {
       const header: HeaderPage = new HeaderPage(page);
-      await header.logout();
+      if (logoutViaStartPage) {
+        await header.logout({ logoutViaStartPage: true });
+      } else {
+        await header.logout({ logoutViaStartPage: false });
+      }
     });
   });
 
@@ -62,7 +67,7 @@ test.describe(`Testfälle für den Benutzerimport": Umgebung: ${process.env.ENV}
     async ({ page }: PlaywrightTestArgs) => {
       await test.step('CSV-Datei hochladen, importieren und importierte Daten downloaden', async () => {
         // select schule
-        await personImportPage.schuleSelectCombobox.searchByTitle(testschule665, false);
+        await personImportPage.schuleSelectCombobox.searchByTitle(testschule665Name, false);
 
         // select rolle
         await personImportPage.rolleSelectInput.click();
@@ -73,7 +78,7 @@ test.describe(`Testfälle für den Benutzerimport": Umgebung: ${process.env.ENV}
 
         // submit and assert text
         // calculate number of personen in csv
-        const personenTotal = csvAsArray.length - 1;
+        const personenTotal: number = csvAsArray.length - 1;
         await personImportPage.submitFileUploadButton.click();
         await expect(personImportPage.uploadSuccessText).toHaveText(
           `Die Datei wurde erfolgreich hochgeladen. ${personenTotal} Datensätze stehen zum Import bereit.`
@@ -90,7 +95,7 @@ test.describe(`Testfälle für den Benutzerimport": Umgebung: ${process.env.ENV}
         );
 
         // download file
-        const downloadPromise = page.waitForEvent('download');
+        const downloadPromise: Promise<Download> = page.waitForEvent('download');
         await personImportPage.downloadFileButton.click();
         const download: Download = await downloadPromise;
         expect(download.suggestedFilename()).toBe('Benutzerdaten.txt');
@@ -106,6 +111,10 @@ test.describe(`Testfälle für den Benutzerimport": Umgebung: ${process.env.ENV}
         await personManagementPage.input_Suchfeld.fill(firstPersonLastName);
         await personManagementPage.button_Suchen.click();
         await expect(page.getByRole('cell', { name: firstPersonLastName, exact: true })).toBeVisible();
+        // #TODO: wait for the last request in the test
+        // sometimes logout breaks the test because of interrupting requests
+        // logoutViaStartPage = true is a workaround
+        logoutViaStartPage = true;
       });
     }
   );

@@ -3,7 +3,7 @@ import { UserInfo } from '../base/api/testHelper.page';
 import { createRolleAndPersonWithUserContext } from '../base/api/testHelperPerson.page';
 import { addSystemrechtToRolle, createRolle } from '../base/api/testHelperRolle.page';
 import { getSPId } from '../base/api/testHelperServiceprovider.page';
-import { landSH, testschule, testschule665, oeffentlichLandSH, ersatzLandSH } from '../base/organisation.ts';
+import { landSH, testschuleName, testschule665Name, oeffentlichLandSH, ersatzLandSH, testschuleDstNr } from '../base/organisation.ts';
 import { landesadminRolle, schuelerRolle, schuladminOeffentlichRolle } from '../base/rollen.ts';
 import { BROWSER, LONG, SHORT, STAGE } from '../base/tags';
 import { deletePersonenBySearchStrings, deleteRolleById, deleteRolleByName } from '../base/testHelperDeleteTestdata.ts';
@@ -35,6 +35,7 @@ let rolleIds: string[] = [];
 let rolleNames: string[] = [];
 // This variable must be set to false in the testcase when the logged in user is changed
 let currentUserIsLandesadministrator: boolean = true;
+let logoutViaStartPage: boolean = false;
 
 test.describe(`Testfälle für die Administration von Personen": Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
@@ -43,7 +44,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         .start()
         .then((landing: LandingPage) => landing.goToLogin())
         .then((login: LoginPage) => login.login())
-        .then((startseite: StartPage) => startseite.checkHeadlineIsVisible());
+        .then((startseite: StartPage) => startseite.validateStartPageIsLoaded());
 
       return startPage;
     });
@@ -56,10 +57,14 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const login: LoginPage = new LoginPage(page);
       const startseite: StartPage = new StartPage(page);
 
-      await header.logout();
+      if (logoutViaStartPage) {
+        await header.logout({ logoutViaStartPage: true });
+      } else {
+        await header.logout({ logoutViaStartPage: false });
+      }
       await landing.button_Anmelden.click();
       await login.login(ADMIN, PW);
-      await startseite.checkHeadlineIsVisible();
+      await startseite.validateStartPageIsLoaded();
     }
 
     await test.step(`Testdaten(Benutzer) löschen via API`, async () => {
@@ -81,7 +86,11 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
     await test.step(`Abmelden`, async () => {
       const header: HeaderPage = new HeaderPage(page);
-      await header.logout();
+      if (logoutViaStartPage) {
+        await header.logout({ logoutViaStartPage: true });
+      } else {
+        await header.logout({ logoutViaStartPage: false });
+      }
     });
   });
 
@@ -101,7 +110,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const vorname: string = await generateVorname();
       const nachname: string = await generateNachname();
       const kopersnr: string = await generateKopersNr();
-      const schulstrukturknoten: string = testschule;
+      const schulstrukturknoten: string = testschuleName;
       let einstiegspasswort: string = '';
 
       await test.step(`Dialog Person anlegen öffnen`, async () => {
@@ -135,13 +144,17 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       });
 
       await test.step(`Der neue Benutzer meldet sich mit dem temporären Passwort am Portal an und vergibt ein neues Passwort`, async () => {
-        await header.logout();
+        await header.logout({ logoutViaStartPage: true });
         await landing.button_Anmelden.click();
         await login.login(usernames[0], einstiegspasswort);
         await login.updatePW();
         currentUserIsLandesadministrator = false;
-        await startseite.checkHeadlineIsVisible();
+        await startseite.validateStartPageIsLoaded();
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 
@@ -179,6 +192,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         usernames.push(await personCreationView.dataBenutzername.innerText());
         await expect(personCreationView.dataRolle).toHaveText(landesadminRolle);
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 
@@ -194,7 +211,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const vorname: string = await generateVorname();
       const nachname: string = await generateNachname();
       const kopersnr: string = await generateKopersNr();
-      const schulstrukturknoten: string = testschule;
+      const schulstrukturknoten: string = testschuleName;
 
       await test.step(`Dialog Person anlegen öffnen`, async () => {
         await startseite.cardItemSchulportalAdministration.click();
@@ -213,6 +230,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         usernames.push(await personCreationView.dataBenutzername.innerText());
         await expect(personCreationView.dataRolle).toHaveText('LiV');
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 
@@ -229,7 +250,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
       const vorname: string = await generateVorname();
       const nachname: string = await generateNachname();
-      const schulstrukturknoten: string = testschule;
+      const schulstrukturknoten: string = testschuleName;
       const rolle: string = 'Lehrkraft';
       let userInfo: UserInfo;
 
@@ -251,11 +272,11 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         usernames.push(userInfo.username);
         rolleIds.push(userInfo.rolleId);
 
-        await header.logout();
+        await header.logout({ logoutViaStartPage: true });
         await landing.button_Anmelden.click();
         await login.login(userInfo.username, userInfo.password);
         userInfo.password = await login.updatePW();
-        await startseite.checkHeadlineIsVisible();
+        await startseite.validateStartPageIsLoaded();
         currentUserIsLandesadministrator = false;
       });
 
@@ -267,8 +288,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
         await startseite.cardItemSchulportalAdministration.click();
         await menue.menueItem_BenutzerAnlegen.click();
+        await page.waitForResponse((resp) => resp.url().includes('/api/dbiam/personenuebersicht'));
         await expect(personCreationView.textH2PersonAnlegen).toHaveText('Neuen Benutzer hinzufügen');
-
         await personCreationView.comboboxRolle.click();
         await page.getByText(rolle, { exact: true }).click();
         await personCreationView.inputVorname.fill(newVorname);
@@ -280,6 +301,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         // Save the username for cleanup
         usernames.push(await personCreationView.dataBenutzername.innerText());
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 
@@ -293,7 +318,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
       const vorname: string = await generateVorname();
       const nachname: string = await generateNachname();
-      const schulstrukturknoten: string = testschule;
+      const schulstrukturknoten: string = testschuleName;
       const klasse: string = 'Playwright3a';
 
       await test.step(`Dialog Person anlegen öffnen`, async () => {
@@ -320,6 +345,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         usernames.push(await personCreationView.dataBenutzername.innerText());
         await expect(personCreationView.dataRolle).toHaveText(schuelerRolle);
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 
@@ -348,6 +377,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(personManagementView.table_header_Zuordnungen).toBeVisible();
         await expect(personManagementView.table_header_Klasse).toBeVisible();
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 
@@ -362,7 +395,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const Organisation_Land: string = landSH;
       const Organisation_OeffentlicheSchule: string = oeffentlichLandSH;
       const Organisation_Ersatzschule: string = ersatzLandSH;
-      const Organisation_Schule: string = testschule;
+      const Organisation_Schule: string = testschuleName;
 
       const rolleLehr: string = 'Lehrkraft';
       const rolleLiV: string = 'LiV';
@@ -424,6 +457,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         // close opened combobox organisation
         await personCreationView.textH2PersonAnlegen.click();
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 
@@ -438,7 +475,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const vorname: string = await generateVorname();
       const nachname: string = await generateNachname();
       const kopersnr: string = await generateKopersNr();
-      const schulstrukturknoten: string = testschule;
+      const schulstrukturknoten: string = testschuleName;
 
       await test.step(`Benutzer Lehrkraft anlegen`, async () => {
         await page.goto('/' + 'admin/personen/new');
@@ -479,6 +516,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(page.getByRole('cell', { name: 'Keine Daten gefunden.' })).toBeVisible();
         await expect(page.locator('v-data-table__td')).toHaveCount(0);
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 
@@ -494,10 +535,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await personManagementView.waitForData();
 
         // Fill the input with the name of the Schule and let the autocomplete find it
-        await personManagementView.comboboxMenuIcon_Schule_input.fill(testschule665);
+        await personManagementView.comboboxMenuIcon_Schule_input.fill(testschule665Name);
 
         // Click on the found Schule
-        await page.getByRole('option', { name: testschule665 }).click();
+        await page.getByRole('option', { name: testschule665Name }).click();
 
         // Close the dropdown
         await personManagementView.comboboxMenuIcon_Schule.click();
@@ -509,6 +550,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
         await expect(personManagementView.getRows().first()).toContainText('1111165');
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 
@@ -521,8 +566,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const vorname: string = await generateVorname();
       const nachname: string = await generateNachname();
       const kopersnr: string = await generateKopersNr();
-      const schulstrukturknoten: string = testschule;
-      const dienststellenNr: string = '1111111';
+      const schulstrukturknoten: string = testschuleName;
 
       await test.step(`Dialog Person anlegen öffnen`, async () => {
         await page.goto('/' + 'admin/personen/new');
@@ -537,7 +581,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
           vorname,
           nachname,
           rolle,
-          dienststellenNr,
+          testschuleDstNr,
           schulstrukturknoten
         );
         usernames.push(await personCreationView.dataBenutzername.innerText());
@@ -549,6 +593,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(personDeatilsView.text_h2_benutzerBearbeiten).toHaveText('Benutzer bearbeiten');
         await expect(personDeatilsView.username).toHaveText(usernames[0]);
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 
@@ -586,17 +634,16 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         usernames.push(userInfo.username);
         rolleIds.push(userInfo.rolleId);
 
-        await header.logout();
+        await header.logout({ logoutViaStartPage: true });
         await landing.button_Anmelden.click();
         await login.login(userInfo.username, userInfo.password);
         userInfo.password = await login.updatePW();
         currentUserIsLandesadministrator = false;
-        await startseite.checkHeadlineIsVisible();
+        await startseite.validateStartPageIsLoaded();
       });
 
       // Testdaten
-      const schulstrukturknoten: string = testschule;
-      const dienststellenNr: string = '1111111';
+      const schulstrukturknoten: string = testschuleName;
       const vorname1: string = await generateVorname();
       const nachname1: string = await generateNachname();
       const klassenname: string = 'Playwright3a';
@@ -651,7 +698,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(personCreationView.dataRolle).toHaveText(schuelerRolle);
         await expect(personCreationView.labelOrganisationsebene).toHaveText('Organisationsebene:');
         await expect(personCreationView.dataOrganisationsebene).toHaveText(
-          dienststellenNr + ' (' + schulstrukturknoten + ')'
+          testschuleDstNr + ' (' + schulstrukturknoten + ')'
         );
         await expect(personCreationView.labelKlasse).toHaveText('Klasse:');
         await expect(personCreationView.dataKlasse).toHaveText(klassenname);
@@ -693,7 +740,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(personCreationView.dataRolle).toHaveText(rolle2);
         await expect(personCreationView.labelOrganisationsebene).toHaveText('Organisationsebene:');
         await expect(personCreationView.dataOrganisationsebene).toHaveText(
-          dienststellenNr + ' (' + schulstrukturknoten + ')'
+          testschuleDstNr + ' (' + schulstrukturknoten + ')'
         );
         await expect(personCreationView.buttonWeiterenBenutzerAnlegen).toBeVisible();
         await expect(personCreationView.buttonZurueckErgebnisliste).toBeVisible();
@@ -733,11 +780,15 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(personCreationView.dataRolle).toHaveText(rolle3);
         await expect(personCreationView.labelOrganisationsebene).toHaveText('Organisationsebene:');
         await expect(personCreationView.dataOrganisationsebene).toHaveText(
-          dienststellenNr + ' (' + schulstrukturknoten + ')'
+          testschuleDstNr + ' (' + schulstrukturknoten + ')'
         );
         await expect(personCreationView.buttonWeiterenBenutzerAnlegen).toBeVisible();
         await expect(personCreationView.buttonZurueckErgebnisliste).toBeVisible();
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 
@@ -779,6 +830,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(personManagementView.comboboxMenuIcon_Status).toBeVisible();
         await expect(page.getByRole('cell', { name: nachname, exact: true })).toBeHidden();
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 
