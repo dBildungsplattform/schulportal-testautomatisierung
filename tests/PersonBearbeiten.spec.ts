@@ -620,7 +620,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
       const personDetailsView: PersonDetailsViewPage = await test.step(`Gesamtübersicht öffnen`, async () => {
         await gotoTargetURL(page, 'admin/personen');
-        await personManagementView.waitErgebnislisteIsLoaded();
         await personManagementView.searchBySuchfeld(userInfoLehrer.username);
         return await personManagementView.openGesamtuebersichtPerson(page, userInfoLehrer.username);
       });
@@ -670,14 +669,12 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const personDetailsView: PersonDetailsViewPage = await test.step(`Gesamtübersicht öffnen`, async () => {
         const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
         await gotoTargetURL(page, 'admin/personen');
-        //await personManagementView.waitErgebnislisteIsLoaded();
         await personManagementView.searchBySuchfeld(userInfoLehrer.username);
         return await personManagementView.openGesamtuebersichtPerson(page, userInfoLehrer.username);
       });
 
       await test.step(`Schulzuordnung im Bearbeitungsmodus öffen`, async () => {
         await personDetailsView.button_editSchulzuordnung.click();
-        console.log(timeLimitTeacherRolle);
         await page
           .getByTestId('person-details-card')
           .getByText(
