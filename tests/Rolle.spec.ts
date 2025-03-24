@@ -63,7 +63,6 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     { tag: [LONG, SHORT, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
       const rollenname1: string = await generateRolleName();
-      const rollenname1: string = await generateRolleName();
       const rollenname2: string = await generateRolleName();
       const schulstrukturknoten1: string = landSH;
       const schulstrukturknoten2: string = ersatzLandSH;

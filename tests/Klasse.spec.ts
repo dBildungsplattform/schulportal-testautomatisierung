@@ -3,7 +3,7 @@ import { UserInfo } from '../base/api/testHelper.page.ts';
 import { createRolleAndPersonWithUserContext } from '../base/api/testHelperPerson.page.ts';
 import { addSystemrechtToRolle } from '../base/api/testHelperRolle.page.ts';
 import { getSPId } from '../base/api/testHelperServiceprovider.page.ts';
-import { landSH, testschuleName, testschuleDstNr, testschule665 } from '../base/organisation.ts';
+import { landSH, testschuleName, testschuleDstNr } from '../base/organisation.ts';
 import { BROWSER, LONG, SHORT, STAGE } from '../base/tags';
 import {
   deleteKlasseByName,
