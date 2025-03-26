@@ -1,5 +1,6 @@
 import { type Locator, Page, expect } from '@playwright/test';
 import { ComboBox } from '../../elements/ComboBox';
+import { waitForAPIResponse } from '../../base/api/testHelper.page';
 
 export class PersonDetailsViewPage {
   readonly page: Page;
@@ -225,7 +226,7 @@ export class PersonDetailsViewPage {
     await expect(this.selectOption_2FA_softwareToken).toHaveText('Software-Token einrichten');
     await expect(this.text_2FA_softwareToken_info).toBeVisible();
     await this.button_2FA_Einrichten_Weiter.click();
-    await this.waitForAPIResponse({ lastEndpoint: '2fa-token/**/' });
+    await waitForAPIResponse(this.page, '2fa-token/**/');
     await expect(this.text_h2_2FA_cardheadline).toHaveText('Software-Token einrichten');
     await this.button_close_softwareToken_dialog.click();
   }
@@ -233,7 +234,7 @@ export class PersonDetailsViewPage {
   public async createIbnPassword(): Promise<void> {
     await this.buttonIBNPasswortEinrichtenDialog.click();
     await this.buttonIBNPasswortEinrichten.click();
-    await this.waitForAPIResponse({ lastEndpoint: 'personen/**/uem-password' });
+    await waitForAPIResponse(this.page, 'personen/**/uem-password');
     await expect(this.infoIBNPasswortEinrichten).toContainText('Das Passwort wurde erfolgreich erzeugt.');
     await this.buttonIBNPasswortEinrichtenDialogClose.click();
     await expect(this.text_h2_benutzerBearbeiten).toHaveText('Benutzer bearbeiten');
@@ -251,9 +252,5 @@ export class PersonDetailsViewPage {
         .getByTestId('person-details-card')
         .getByText(dstNr + ' (' + testschuleName + '): ' + nameRolle + ' (befristet bis ' + befristungLehrerRolle + ')')
     ).toHaveCSS('color', textColor);
-  }
-
-  public async waitForAPIResponse({ lastEndpoint }: { lastEndpoint: string }): Promise<void> {
-    await this.page.waitForResponse('/api/' + lastEndpoint);
   }
 }

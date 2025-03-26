@@ -1,9 +1,16 @@
 import { expect, PlaywrightTestArgs, test } from '@playwright/test';
-import { UserInfo } from '../base/api/testHelper.page';
+import { UserInfo, waitForAPIResponse } from '../base/api/testHelper.page';
 import { createRolleAndPersonWithUserContext } from '../base/api/testHelperPerson.page';
 import { addSystemrechtToRolle, createRolle } from '../base/api/testHelperRolle.page';
 import { getSPId } from '../base/api/testHelperServiceprovider.page';
-import { landSH, testschuleName, testschule665Name, oeffentlichLandSH, ersatzLandSH, testschuleDstNr } from '../base/organisation.ts';
+import {
+  landSH,
+  testschuleName,
+  testschule665Name,
+  oeffentlichLandSH,
+  ersatzLandSH,
+  testschuleDstNr,
+} from '../base/organisation.ts';
 import { landesadminRolle, schuelerRolle, schuladminOeffentlichRolle } from '../base/rollen.ts';
 import { BROWSER, LONG, SHORT, STAGE } from '../base/tags';
 import { deletePersonenBySearchStrings, deleteRolleById, deleteRolleByName } from '../base/testHelperDeleteTestdata.ts';
@@ -12,7 +19,6 @@ import {
   generateNachname,
   generateRolleName,
   generateVorname,
-  generateKlassenname,
 } from '../base/testHelperGenerateTestdataNames.ts';
 import { gotoTargetURL } from '../base/testHelperUtils.ts';
 import { PersonCreationViewPage } from '../pages/admin/PersonCreationView.page';
@@ -25,6 +31,7 @@ import { MenuPage } from '../pages/MenuBar.page';
 import { StartPage } from '../pages/StartView.page';
 import FromAnywhere from '../pages/FromAnywhere';
 import { typeLehrer, typeSchueler } from '../base/rollentypen.ts';
+import { getOrganisationId } from '../base/api/testHelperOrganisation.page.ts';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -837,50 +844,41 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     }
   );
 
-  test.skip(
-    'Bei Nutzerneuanlage mehrere Rollen zuordnen',
+  test(
+    `Bei Nutzerneuanlage prüfen, dass die combobox 'Rolle' nach Auswahl einer Rolle, nur noch Rollen der gleichen Rollenart angeboten werden`,
     { tag: [LONG, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
-      const startseite: StartPage = new StartPage(page);
-      let rolle1Lehr;
-      let rolle2Lehr;
-      let rolle1Lehrn;
-      let rolle2Lehrn;
+      const rolleNames: string[] = [];
 
-      await test.step(`Testdaten: Je 2 Rollen mit Rollenarten LEHR und LERN  über die api anlegen`, async () => {
-        rolle1Lehr = await createRolle(page, typeLehrer, testschule, await generateRolleName());
-        rolle2Lehr = await createRolle(page, typeLehrer, testschule, await generateRolleName());
-        rolle1Lehrn = await createRolle(page, typeSchueler, testschule, await generateRolleName());
-        rolle2Lehrn = await createRolle(page, typeSchueler, testschule, await generateRolleName());
-        rolleNames.push(rolle1Lehr, rolle2Lehr, rolle1Lehrn, rolle2Lehrn);
+      await test.step(`Testdaten: Je 2 Rollen mit Rollenarten LEHR und LERN über die api anlegen`, async () => {
+        const idLandSH: string = await getOrganisationId(page, landSH);
+
+        for (let i: number = 0; i <= 4; i++) {
+          rolleNames.push(await generateRolleName());
+        }
+
+        rolleIds.push(await createRolle(page, typeLehrer, idLandSH, rolleNames[0]));
+        rolleIds.push(await createRolle(page, typeLehrer, idLandSH, rolleNames[1]));
+        rolleIds.push(await createRolle(page, typeSchueler, idLandSH, rolleNames[2]));
+        rolleIds.push(await createRolle(page, typeSchueler, idLandSH, rolleNames[3]));
       });
 
-      await test.step(`Dialog "Person anlegen" öffnen`, async () => {
+      const personCreationView: PersonCreationViewPage = await test.step(`Dialog "Person anlegen" öffnen`, async () => {
+        const startseite: StartPage = new StartPage(page);
         const menue: MenuPage = await startseite.goToAdministration();
-        const personCreationView : PersonCreationViewPage= await menue.personAnlegen();
-        
-        await personCreationView.comboboxOrganisationInput.searchByTitle(testschule, false);
-        await page.pause()
-
-        
+        return await menue.personAnlegen();
       });
 
-      await test.step(`Bestätigungsseite prüfen`, async () => {
-        // await personCreationView.validateConfirmationPage(vorname, nachname, rolle, dienststellenNr, schulstrukturknoten);
-        // usernames.push(await personCreationView.dataBenutzername.innerText());
+      await test.step(`In der Combobox 'Organisation' eine Schule auswählen`, async () => {
+        await personCreationView.comboboxOrganisationInput.searchByTitle(testschuleName, false);
       });
-      //////////////////
-      //const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
 
-      // const personDetailsView: PersonDetailsViewPage = await test.step(`Gesamtübersicht öffnen`, async () => {
-      //   // await gotoTargetURL(page, 'admin/personen');
-      //   // await personManagementView.waitErgebnislisteIsLoaded();
-      //   // await personManagementView.searchBySuchfeld(userInfoLehrer.username);
-      //   // return await personManagementView.openGesamtuebersichtPerson(page, userInfoLehrer.username);
-      // });
-
-      await test.step(`Inbetriebnahme-Passwort für LK-Endgerät setzen`, async () => {
-        // await personDetailsView.createIbnPassword();
+      await test.step(`In der Combobox 'Rolle' 2 Rollen vom Typ LEHR selektieren und prüfen, dass danach keine Rollen mehr vom Type LERN angezeigt werden in der Combobox`, async () => {
+        await personCreationView.comboboxRolleInput.searchByTitle(rolleNames[0], true);
+        await personCreationView.comboboxRolleInput.searchByTitle(rolleNames[1], true);
+        await waitForAPIResponse(page, 'personenkontext-workflow/**');
+        await personCreationView.comboboxRolleInput.validateItemNotExists(rolleNames[2], true);
+        await personCreationView.comboboxRolleInput.validateItemNotExists(rolleNames[3], true);
       });
     }
   );

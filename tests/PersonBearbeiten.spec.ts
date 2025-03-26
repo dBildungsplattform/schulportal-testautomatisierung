@@ -7,7 +7,7 @@ import { PersonDetailsViewPage } from '../pages/admin/PersonDetailsView.page.ts'
 import { HeaderPage } from '../pages/Header.page.ts';
 import { createRolleAndPersonWithUserContext, setTimeLimitPersonenkontext } from '../base/api/testHelperPerson.page.ts';
 import { getSPId } from '../base/api/testHelperServiceprovider.page.ts';
-import { UserInfo } from '../base/api/testHelper.page.ts';
+import { UserInfo, waitForAPIResponse } from '../base/api/testHelper.page.ts';
 import { addSystemrechtToRolle } from '../base/api/testHelperRolle.page.ts';
 import { LONG, STAGE, BROWSER } from '../base/tags.ts';
 import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata.ts';
@@ -757,7 +757,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         );
         await personDetailsView.buttonBefristungAendernSave.click();
         await personDetailsView.buttonBefristungAendernSuccessClose.click();
-        await personDetailsView.waitForAPIResponse({ lastEndpoint: 'organisationen/parents-by-ids' });
+        await waitForAPIResponse(page, 'organisationen/parents-by-ids');
       });
 
       await test.step(`In der Gesamtübersicht überprüfen, dass die Schulzuordnung mit dem korrekten Datum angezeigt wird`, async () => {
@@ -810,7 +810,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
           .getByTestId('person-details-card')
           .getByText(testschuleDstNr + ' (' + testschuleName + '): ' + nameRolle + ' (befristet bis ')
           .click();
-        await personDetailsView.waitForAPIResponse({ lastEndpoint: 'personenkontext-workflow/**' });
+        await waitForAPIResponse(page, 'personenkontext-workflow/**');
       });
 
       await test.step(`Befristung im Bearbeitungsmodus öffnen`, async () => {
