@@ -49,9 +49,7 @@ export class PersonManagementViewPage {
   }
 
   public async searchBySuchfeld(name: string): Promise<void> {
-    await this.page.waitForResponse(response =>
-      (response.url().includes('/api/person-administration/') && (response.status() === 200) || (response.status() === 304))
-    )
+    await this.page.waitForResponse('/api/dbiam/personenuebersicht');
     await this.input_Suchfeld.fill(name);
     await this.button_Suchen.click();
     await expect(this.comboboxMenuIcon_Status).toBeVisible();
@@ -71,7 +69,7 @@ export class PersonManagementViewPage {
   }
 
   public async waitErgebnislisteIsLoaded(): Promise<void> {
-    await this.page.waitForResponse(resp => resp.url().includes('/api/dbiam/personenuebersicht') && resp.status() === 201);
+    await this.page.waitForResponse('/api/dbiam/personenuebersicht');
     await expect(this.text_h2_Benutzerverwaltung).toContainText('Benutzerverwaltung');
   }
 }

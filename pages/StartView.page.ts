@@ -36,13 +36,15 @@ export class StartPage {
     return new LandingPage(this.page);
   }
 
-  public async checkHeadlineIsVisible(): Promise<StartPage> {
+  public async validateStartPageIsLoaded(): Promise<StartPage> {
+    await this.page.waitForResponse((resp) => resp.url().includes('/api/provider') && resp.status() === 200);
+    await this.page.waitForResponse('/api/provider/**/logo');
     await expect(this.textH2Ueberschrift).toBeVisible();
     return new StartPage(this.page);
   }
 
   public async checkSpIsVisible(spNames: string[]) {
-    for (let spName of spNames) {
+    for (const spName of spNames) {
       await expect(this.cardItem(spName)).toBeVisible();
     }
   }

@@ -5,15 +5,17 @@ import { getSPId } from './testHelperServiceprovider.page';
 import { UserInfo } from './testHelper.page';
 import { HeaderPage } from '../../pages/Header.page';
 import { LoginPage } from '../../pages/LoginView.page';
+import { befristungPflicht } from '../merkmale';
 import {
   generateNachname,
   generateVorname,
   generateKopersNr,
   generateRolleName,
 } from '../testHelperGenerateTestdataNames';
-import { testschule } from '../organisation';
+import { testschuleName } from '../organisation';
 import { email, kalender, adressbuch } from '../sp';
 import { typeLehrer } from '../rollentypen';
+import { generateCurrentDate } from '../../base/testHelperUtils';
 
 const FRONTEND_URL: string | undefined = process.env.FRONTEND_URL || '';
 
@@ -24,7 +26,8 @@ export async function createPerson(
   organisationId: string,
   rolleId: string,
   koPersNr?: string,
-  klasseId?: string
+  klasseId?: string,
+  merkmalelName?: string[]
 ): Promise<UserInfo> {
   let requestData: any;
 
@@ -54,9 +57,18 @@ export async function createPerson(
     requestData.data['personalnummer'] = koPersNr;
   }
 
+  if (merkmalelName) {
+    for (const index in merkmalelName) {
+      if (merkmalelName[index] == befristungPflicht) {
+        requestData.data['befristung'] = await generateCurrentDate({ days: 0, months: 6, formatDMY: false });
+      }
+    }
+  }
+
   const response = await page.request.post(FRONTEND_URL + 'api/personenkontext-workflow/', requestData);
   expect(response.status()).toBe(201);
   const json = await response.json();
+
   return {
     username: json.person.referrer,
     password: json.person.startpasswort,
@@ -75,7 +87,6 @@ export async function createPersonWithUserContext(
   koPersNr?: string
 ): Promise<UserInfo> {
   // Organisation wird nicht angelegt, da diese zur Zeit nicht gelöscht werden kann
-  // API-Calls machen und Benutzer mit Kontext anlegen
   const organisationId: string = await getOrganisationId(page, organisationName);
   const rolleId: string = await getRolleId(page, rolleName);
   const userInfo: UserInfo = await createPerson(page, familienname, vorname, organisationId, rolleId, koPersNr);
@@ -91,12 +102,12 @@ export async function createRolleAndPersonWithUserContext(
   idSPs: string[],
   rolleName: string,
   koPersNr?: string,
-  klasseId?: string
+  klasseId?: string,
+  merkmaleName?: string[]
 ): Promise<UserInfo> {
   // Organisation wird nicht angelegt, da diese zur Zeit nicht gelöscht werden kann
-  // API-Calls machen und Benutzer mit Kontext anlegen
   const organisationId: string = await getOrganisationId(page, organisationName);
-  const rolleId: string = await createRolle(page, rollenArt, organisationId, rolleName);
+  const rolleId: string = await createRolle(page, rollenArt, organisationId, rolleName, merkmaleName);
 
   await addSPToRolle(page, rolleId, idSPs);
   const userInfo: UserInfo = await createPerson(
@@ -106,7 +117,8 @@ export async function createRolleAndPersonWithUserContext(
     organisationId,
     rolleId,
     koPersNr,
-    klasseId
+    klasseId,
+    merkmaleName
   );
   return userInfo;
 }
@@ -164,7 +176,7 @@ export async function createTeacherAndLogin(page: Page) {
   const login: LoginPage = new LoginPage(page);
   const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
     page,
-    testschule,
+    testschuleName,
     typeLehrer,
     await generateNachname(),
     await generateVorname(),
@@ -173,7 +185,7 @@ export async function createTeacherAndLogin(page: Page) {
     await generateKopersNr()
   );
 
-  await header.logout();
+  await header.logout({ logoutViaStartPage: true });
   await header.button_login.click();
   await login.login(userInfo.username, userInfo.password);
   await login.updatePW();
@@ -192,4 +204,30 @@ export async function lockPerson(page: Page, personId: string, organisationId: s
     maxRetries: 3,
   });
   expect(response.status()).toBe(202);
+}
+
+export async function setTimeLimitPersonenkontext(
+  page: Page,
+  personId: string,
+  organisationId: string,
+  rolleId: string,
+  timeLimit: string
+) {
+  const response = await page.request.put(FRONTEND_URL + 'api/personenkontext-workflow/' + personId, {
+    data: {
+      lastModified: '2034-09-11T08:28:36.590Z',
+      count: 1,
+      personenkontexte: [
+        {
+          befristung: timeLimit,
+          personId: personId,
+          organisationId: organisationId,
+          rolleId: rolleId,
+        },
+      ],
+    },
+    failOnStatusCode: false,
+    maxRetries: 3,
+  });
+  expect(response.status()).toBe(200);
 }
