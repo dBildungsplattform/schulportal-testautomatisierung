@@ -1,9 +1,12 @@
-import { expect, test, PlaywrightTestArgs } from '@playwright/test';
+import { expect, PlaywrightTestArgs, Response, test } from '@playwright/test';
 import { UserInfo } from '../base/api/testHelper.page.ts';
+import { createKlasse, getOrganisationId } from '../base/api/testHelperOrganisation.page.ts';
 import { createRolleAndPersonWithUserContext } from '../base/api/testHelperPerson.page.ts';
 import { addSystemrechtToRolle } from '../base/api/testHelperRolle.page.ts';
 import { getSPId } from '../base/api/testHelperServiceprovider.page.ts';
-import { landSH, testschuleName, testschuleDstNr } from '../base/organisation.ts';
+import { klasse1Testschule } from '../base/klassen.ts';
+import { landSH, testschuleDstNr, testschuleName } from '../base/organisation.ts';
+import { typeLandesadmin, typeSchueler, typeSchuladmin } from '../base/rollentypen.ts';
 import { BROWSER, LONG, SHORT, STAGE } from '../base/tags';
 import {
   deleteKlasseByName,
@@ -19,15 +22,12 @@ import {
 import { KlasseCreationViewPage } from '../pages/admin/KlasseCreationView.page';
 import { KlasseDetailsViewPage } from '../pages/admin/KlasseDetailsView.page.ts';
 import { KlasseManagementViewPage } from '../pages/admin/KlasseManagementView.page';
+import FromAnywhere from '../pages/FromAnywhere';
 import { HeaderPage } from '../pages/Header.page';
 import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
 import { MenuPage } from '../pages/MenuBar.page';
 import { StartPage } from '../pages/StartView.page';
-import { typeLandesadmin, typeSchueler, typeSchuladmin } from '../base/rollentypen.ts';
-import FromAnywhere from '../pages/FromAnywhere';
-import { getOrganisationId, createKlasse } from '../base/api/testHelperOrganisation.page.ts';
-import { klasse1Testschule } from '../base/klassen.ts';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -134,8 +134,10 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
         await page.getByTestId('klasse-delete-button').click();
         await page.getByTestId('close-klasse-delete-success-dialog-button').click();
         // wait for the last request in this test
-        await page.waitForResponse((resp) =>
-          resp.url().includes('/api/organisationen?limit=30&typ=SCHULE&systemrechte=KLASSEN_VERWALTEN&organisationIds=')
+        await page.waitForResponse((resp: Response) =>
+          ['organisationen', 'typ=SCHULE', 'systemrechte=KLASSEN_VERWALTEN'].every((segment: string) =>
+            resp.url().includes(segment)
+          )
         );
         await expect(page.getByRole('cell', { name: 'Playwright4b' })).toBeVisible();
         await expect(page.getByRole('cell', { name: klassenname })).toBeHidden();
@@ -155,9 +157,11 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
         await startseite.cardItemSchulportalAdministration.click();
         await menue.menueItem_AlleKlassenAnzeigen.click();
         // wait for the last request in this test
-        await page.waitForResponse((resp) =>
-          resp.url().includes('api/organisationen?offset=0&limit=25&typ=SCHULE&systemrechte=KLASSEN_VERWALTEN')
-        );
+        await page.waitForResponse((resp: Response): boolean => {
+          return ['organisationen', 'typ=SCHULE', 'systemrechte=KLASSEN_VERWALTEN'].every((segment: string) =>
+            resp.url().includes(segment)
+          );
+        });
         await expect(klasseManagementView.textH1Administrationsbereich).toBeVisible();
         await expect(klasseManagementView.textH2Klassenverwaltung).toHaveText('Klassenverwaltung');
         await expect(klasseManagementView.comboboxFilterSchule).toBeVisible();
