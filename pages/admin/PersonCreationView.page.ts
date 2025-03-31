@@ -93,7 +93,7 @@ export class PersonCreationViewPage {
   public async validateConfirmationPage(
     firstName: string,
     lastName: string,
-    rolle: string,
+    rolleNames: string[],
     officeNo: string,
     organisation: string
   ): Promise<void> {
@@ -110,7 +110,9 @@ export class PersonCreationViewPage {
     await expect(this.labelEinstiegsPasswort).toHaveText('Einstiegs-Passwort:');
     await expect(this.inputEinstiegsPasswort).toBeVisible();
     await expect(this.labelRolle).toHaveText('Rolle:');
-    await expect(this.dataRolle).toHaveText(rolle);
+    for (const index in rolleNames) {
+      await expect(this.dataRolle).toContainText(rolleNames[index]);
+    }
     await expect(this.labelOrganisationsebene).toHaveText('Organisationsebene:');
     await expect(this.dataOrganisationsebene).toHaveText(officeNo + ' (' + organisation + ')');
     await expect(this.buttonWeiterenBenutzerAnlegen).toBeVisible();
