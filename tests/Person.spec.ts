@@ -564,7 +564,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     }
   );
 
-  test.only(
+  test(
     'Eine Lehrkraft anlegen in der Rolle Landesadmin und die Bestätigungsseite vollständig prüfen',
     { tag: [LONG, SHORT, STAGE, BROWSER] },
     async ({ page }: PlaywrightTestArgs) => {
@@ -883,59 +883,49 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     }
   );
 
-  test(
-    `Neuen Benutzer mit mehreren Rollen anlegen`,
-    { tag: [LONG, STAGE] },
-    async ({ page }: PlaywrightTestArgs) => {
-      const rolleNames: string[] = [];
-      const vorname = await generateVorname();
-      const nachname = await generateNachname();
+  test(`Neuen Benutzer mit mehreren Rollen anlegen`, { tag: [LONG, STAGE] }, async ({ page }: PlaywrightTestArgs) => {
+    const rolleNames: string[] = [];
+    const vorname = await generateVorname();
+    const nachname = await generateNachname();
 
-      await test.step(`Testdaten: 3 Rollen mit Rollenarten LEHR über die api anlegen`, async () => {
-        const idLandSH: string = await getOrganisationId(page, landSH);
+    await test.step(`Testdaten: 3 Rollen mit Rollenarten LEHR über die api anlegen`, async () => {
+      const idLandSH: string = await getOrganisationId(page, landSH);
 
-        for (let i: number = 0; i <= 2; i++) {
-          rolleNames.push(await generateRolleName());
-        }
+      for (let i: number = 0; i <= 2; i++) {
+        rolleNames.push(await generateRolleName());
+      }
 
-        rolleIds.push(await createRolle(page, typeLehrer, idLandSH, rolleNames[0]));
-        rolleIds.push(await createRolle(page, typeLehrer, idLandSH, rolleNames[1]));
-        rolleIds.push(await createRolle(page, typeLehrer, idLandSH, rolleNames[2]));
-      });
+      rolleIds.push(await createRolle(page, typeLehrer, idLandSH, rolleNames[0]));
+      rolleIds.push(await createRolle(page, typeLehrer, idLandSH, rolleNames[1]));
+      rolleIds.push(await createRolle(page, typeLehrer, idLandSH, rolleNames[2]));
+    });
 
-      const personCreationView: PersonCreationViewPage = await test.step(`Dialog "Person anlegen" öffnen`, async () => {
-        const startseite: StartPage = new StartPage(page);
-        const menue: MenuPage = await startseite.goToAdministration();
-        return await menue.personAnlegen();
-      });
+    const personCreationView: PersonCreationViewPage = await test.step(`Dialog "Person anlegen" öffnen`, async () => {
+      const startseite: StartPage = new StartPage(page);
+      const menue: MenuPage = await startseite.goToAdministration();
+      return await menue.personAnlegen();
+    });
 
-      await test.step(`In der Combobox 'Organisation' eine Schule auswählen`, async () => {
-        await personCreationView.comboboxOrganisationInput.searchByTitle(testschuleName, false);
-      });
+    await test.step(`In der Combobox 'Organisation' eine Schule auswählen`, async () => {
+      await personCreationView.comboboxOrganisationInput.searchByTitle(testschuleName, false);
+    });
 
-      await test.step(`In der Combobox 'Rolle' 3 Rollen vom Typ LEHR selektieren`, async () => {
-        await personCreationView.comboboxRolleInput.searchByTitle(rolleNames[0], true);
-        await personCreationView.comboboxRolleInput.searchByTitle(rolleNames[1], true);
-        await personCreationView.comboboxRolleInput.searchByTitle(rolleNames[2], true);
-      });
+    await test.step(`In der Combobox 'Rolle' 3 Rollen vom Typ LEHR selektieren`, async () => {
+      await personCreationView.comboboxRolleInput.searchByTitle(rolleNames[0], true);
+      await personCreationView.comboboxRolleInput.searchByTitle(rolleNames[1], true);
+      await personCreationView.comboboxRolleInput.searchByTitle(rolleNames[2], true);
+    });
 
-      await test.step(`Die restlichen Pflichfelder in dem Benutzer-Anlegen Dialog eingeben und speichern`, async () => {
-        await personCreationView.inputVorname.fill(vorname);
-        await personCreationView.inputNachname.fill(nachname);
-        await personCreationView.buttonPersonAnlegen.click();
-      });
+    await test.step(`Die restlichen Pflichfelder in dem Benutzer-Anlegen Dialog eingeben und speichern`, async () => {
+      await personCreationView.inputVorname.fill(vorname);
+      await personCreationView.inputNachname.fill(nachname);
+      await personCreationView.buttonPersonAnlegen.click();
+    });
 
-      await test.step(`Auf der Bestätigungsseite prüfen, dass die 3 Rollen dem neuen Benutzer korrekt zugeordnet wurden`, async () => {
-        await personCreationView.validateConfirmationPage(
-          vorname,
-          nachname,
-          rolleNames,
-          testschuleDstNr,
-          testschuleName
-        );
-        usernames.push(await personCreationView.dataBenutzername.innerText());
-      });
-      logoutViaStartPage = true;
-    }
-  );
+    await test.step(`Auf der Bestätigungsseite prüfen, dass die 3 Rollen dem neuen Benutzer korrekt zugeordnet wurden`, async () => {
+      await personCreationView.validateConfirmationPage(vorname, nachname, rolleNames, testschuleDstNr, testschuleName);
+      usernames.push(await personCreationView.dataBenutzername.innerText());
+    });
+    logoutViaStartPage = true;
+  });
 });
