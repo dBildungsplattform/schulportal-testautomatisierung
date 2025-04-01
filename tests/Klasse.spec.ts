@@ -97,7 +97,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
   });
 
   // Some flaky/red tests are temporarry disabeld and will be fixed/enabled with SPSH-2034
-  test.skip(
+  test(
     'Eine Klasse als Landesadmin anlegen und die Klasse anschließend in der Ergebnisliste suchen und dann löschen',
     { tag: [LONG, SHORT, STAGE, BROWSER] },
     async ({ page }: PlaywrightTestArgs) => {
@@ -146,7 +146,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     }
   );
 
-  test.skip(
+  test(
     'Ergebnisliste Klassen als Landesadmin auf Vollständigkeit prüfen',
     { tag: [LONG, SHORT, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
@@ -244,7 +244,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     }
   );
 
-  test.skip('Klasse bearbeiten als Landesadmin', { tag: [LONG, STAGE, BROWSER] }, async ({ page }: PlaywrightTestArgs) => {
+  test('Klasse bearbeiten als Landesadmin', { tag: [LONG, STAGE, BROWSER] }, async ({ page }: PlaywrightTestArgs) => {
     const header: HeaderPage = new HeaderPage(page);
     const landing: LandingPage = new LandingPage(page);
     const login: LoginPage = new LoginPage(page);
@@ -319,7 +319,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     logoutViaStartPage = true;
   });
 
-  test.skip('Klasse bearbeiten als Schuladmin', { tag: [LONG] }, async ({ page }: PlaywrightTestArgs) => {
+  test('Klasse bearbeiten als Schuladmin', { tag: [LONG] }, async ({ page }: PlaywrightTestArgs) => {
     const header: HeaderPage = new HeaderPage(page);
     const landing: LandingPage = new LandingPage(page);
     const login: LoginPage = new LoginPage(page);
@@ -391,7 +391,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     logoutViaStartPage = true;
   });
 
-  test.skip(
+  test(
     'Eine Klasse ohne zugeordnete Personen als Landesadmin via Quickaction löschen',
     { tag: [LONG, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
@@ -434,7 +434,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     }
   );
 
-  test.skip(
+  test(
     'Eine Klasse ohne zugeordnete Personen als Schuladmin via Quickaction löschen',
     { tag: [LONG, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
@@ -509,7 +509,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     }
   );
 
-  test.skip(
+  test(
     'Eine Klasse mit einem zugeordneten Schüler als Landesadmin via Quickaction löschen',
     { tag: [LONG, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
@@ -577,7 +577,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     }
   );
 
-  test.skip(
+  test(
     'Eine Klasse ohne zugeordnete Personen als Landesadmin via Gesamtübersicht löschen',
     { tag: [LONG, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
@@ -621,7 +621,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     }
   );
 
-  test.skip(
+  test(
     'Eine Klasse ohne zugeordnete Personen als Schuladmin via Gesamtübersicht löschen',
     { tag: [LONG, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
@@ -697,7 +697,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     }
   );
 
-  test.skip(
+  test(
     'Eine Klasse mit einem zugeordneten Schüler als Landesadmin via Gesamtübersicht löschen',
     { tag: [LONG, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
