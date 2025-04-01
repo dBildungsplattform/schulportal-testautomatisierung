@@ -6,6 +6,7 @@ import { SchuleCreationViewPage } from './admin/SchuleCreationView.page';
 import { SchuleManagementViewPage } from './admin/SchuleManagementView.page';
 import { KlasseManagementViewPage } from './admin/KlasseManagementView.page';
 import { PersonCreationViewPage } from './admin/PersonCreationView.page';
+import { waitForAPIResponse } from '../base/api/testHelper.page.ts';
 
 export class MenuPage {
   readonly page: Page;
@@ -50,12 +51,13 @@ export class MenuPage {
 
   public async rolleAnlegen(): Promise<RolleCreationViewPage> {
     await this.menueItem_RolleAnlegen.click();
+    await waitForAPIResponse(this.page, 'dbiam/personenuebersicht');
     return new RolleCreationViewPage(this.page);
   }
 
   public async alleRollenAnzeigen(): Promise<RolleManagementViewPage> {
     await this.menueItem_AlleRollenAnzeigen.click();
-    await this.page.waitForURL("**/admin/rollen");
+    await this.page.waitForURL('**/admin/rollen');
     return new RolleManagementViewPage(this.page);
   }
 

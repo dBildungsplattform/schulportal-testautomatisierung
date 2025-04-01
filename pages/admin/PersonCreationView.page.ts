@@ -127,8 +127,11 @@ export class PersonCreationViewPage {
     koPersNr?: string
   ): Promise<void> {
     await this.comboboxOrganisationInput.searchByTitle(organisation, false);
-    await this.comboboxRolle.click();
-    await this.page.getByText(rolle, { exact: true }).click();
+
+    await this.comboboxRolleInput.searchByTitle(rolle, true);
+    // await this.comboboxRolle.click();
+    // await this.page.getByText(rolle, { exact: true }).click();
+
     await this.inputVorname.fill(firstName);
     await this.inputNachname.fill(lastnName);
     if (koPersNr) {

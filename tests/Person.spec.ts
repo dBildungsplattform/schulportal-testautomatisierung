@@ -295,7 +295,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
         await startseite.cardItemSchulportalAdministration.click();
         await menue.menueItem_BenutzerAnlegen.click();
-        await page.waitForResponse((resp) => resp.url().includes('/api/dbiam/personenuebersicht'));
+        await waitForAPIResponse(page, 'dbiam/personenuebersicht')
         await expect(personCreationView.textH2PersonAnlegen).toHaveText('Neuen Benutzer hinzufügen');
         await personCreationView.comboboxRolle.click();
         await page.getByText(rolle, { exact: true }).click();

@@ -78,6 +78,7 @@ export class PersonDetailsViewPage {
   readonly selectOption_2FA_softwareToken: Locator;
   readonly text_2FA_softwareToken_info: Locator;
   readonly button_2FA_Einrichten_Weiter: Locator;
+  readonly textSoftwareToken: Locator;
   readonly button_close_softwareToken_dialog: Locator;
   readonly button_2FA_Zuruecksetzen_Weiter: Locator;
 
@@ -173,6 +174,7 @@ export class PersonDetailsViewPage {
     );
     this.selectOption_2FA_softwareToken = page.getByTestId('software-token-radio-button');
     this.button_2FA_Einrichten_Weiter = page.getByTestId('proceed-two-factor-authentication-dialog-button');
+    this.textSoftwareToken = page.getByTestId('software-token-dialog-text');
     this.button_close_softwareToken_dialog = page.getByTestId('close-software-token-dialog-button');
     this.button_2FA_Zuruecksetzen_Weiter = page.getByTestId('two-way-authentification-set-up-button');
 
@@ -221,6 +223,7 @@ export class PersonDetailsViewPage {
   }
 
   public async softwareTokenEinrichten(): Promise<void> {
+    await this.page.pause()
     await this.button_2FAEinrichten.click();
     await expect(this.text_h2_2FA_cardheadline).toHaveText('Zwei-Faktor-Authentifizierung einrichten');
     await expect(this.selectOption_2FA_softwareToken).toHaveText('Software-Token einrichten');
@@ -228,6 +231,7 @@ export class PersonDetailsViewPage {
     await this.button_2FA_Einrichten_Weiter.click();
     await waitForAPIResponse(this.page, '2fa-token/**/');
     await expect(this.text_h2_2FA_cardheadline).toHaveText('Software-Token einrichten');
+    await expect(this.textSoftwareToken).toHaveText('QR-Code scannen oder ausdrucken.');
     await this.button_close_softwareToken_dialog.click();
   }
 

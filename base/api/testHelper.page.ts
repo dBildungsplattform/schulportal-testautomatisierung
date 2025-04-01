@@ -8,6 +8,6 @@ export interface UserInfo {
   personId: string;
 }
 
-export async function waitForAPIResponse(page: Page, lastEndpoint: string): Promise<void> {
-  await page.waitForResponse('/api/' + lastEndpoint);
+export async function waitForAPIResponse(page: Page, endpoint: string): Promise<void> {
+  await page.waitForResponse('/api/' + endpoint);
 }

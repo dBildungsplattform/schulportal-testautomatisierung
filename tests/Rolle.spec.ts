@@ -332,7 +332,7 @@ test.describe('Testet die Anlage einer neuen Rolle', () => {
     }
   );
 
-  test('Falsche Eingaben überprüfen', { tag: [LONG] }, async ({}: PlaywrightTestArgs) => {
+  test('Falsche Eingaben überprüfen', { tag: [LONG] }, async ({ page }: PlaywrightTestArgs) => {
     const rolleNames: string = 'a'.repeat(201);
     const rolleCreationView: RolleCreationViewPage = await test.step('Rolle anlegen aufrufen', async () => {
       return await startseite.goToAdministration().then((menu: MenuPage) => menu.rolleAnlegen());
