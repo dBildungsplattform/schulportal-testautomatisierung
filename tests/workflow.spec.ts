@@ -50,7 +50,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
       } else {
         await header.logout({ logoutViaStartPage: false });
       }
-      await landing.button_Anmelden.click();
+      await landing.buttonAnmelden.click();
       await login.login(ADMIN, PW);
       await startseite.validateStartPageIsLoaded();
     }
@@ -102,22 +102,22 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
       const email4Teacher: Email4TeacherPage = new Email4TeacherPage(emailPage);
       switch (ENV) {
         case 'dev':
-          await expect(email4Teacher.text_h1).toBeVisible(); // dummy Seite email wikipedia
+          await expect(email4Teacher.textH1).toBeVisible(); // dummy Seite email wikipedia
           break;
       }
       await emailPage.close();
 
       // Kalender
-      const page_Kalender_Promise: Promise<Page> = page.waitForEvent('popup');
+      const pageKalenderPromise: Promise<Page> = page.waitForEvent('popup');
       await startseite.cardItemKalender.click();
-      const page_Kalender: Page = await page_Kalender_Promise;
-      const kalender: CalendarPage = new CalendarPage(page_Kalender);
+      const pageKalender: Page = await pageKalenderPromise;
+      const kalender: CalendarPage = new CalendarPage(pageKalender);
       switch (ENV) {
         case 'dev':
-          await expect(kalender.text_h1).toBeVisible(); // dummy Seite Kalender wikipedia
+          await expect(kalender.textH1).toBeVisible(); // dummy Seite Kalender wikipedia
           break;
       }
-      await page_Kalender.close();
+      await pageKalender.close();
 
       // Adressbuch
       const directoryPagePromise: Promise<Page> = page.waitForEvent('popup');
@@ -126,7 +126,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
       const adressbuch: DirectoryPage = new DirectoryPage(directoryPage);
       switch (ENV) {
         case 'dev':
-          await expect(adressbuch.text_h1).toBeVisible(); // dummy Seite Adressbuch wikipedia
+          await expect(adressbuch.textH1).toBeVisible(); // dummy Seite Adressbuch wikipedia
           break;
       }
       await directoryPage.close();
@@ -153,37 +153,37 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
       const header: HeaderPage = new HeaderPage(page);
       const lastname: string = 'AutoTester';
       const username: string = 'autotester';
-      let new_password: string = '';
+      let newPassword: string = '';
 
       await test.step(`Benutzerverwaltung öffnen`, async () => {
         await startseite.cardItemSchulportalAdministration.click();
       });
 
       await test.step(`In der Benutzerverwaltung die Zeile für Benutzer ${lastname} anklicken und User-Details öffnen`, async () => {
-        await expect(personManagement.text_h2_Benutzerverwaltung).toBeVisible();
-        await personManagement.input_Suchfeld.fill(username);
-        await personManagement.button_Suchen.click();
+        await expect(personManagement.textH2Benutzerverwaltung).toBeVisible();
+        await personManagement.inputSuchfeld.fill(username);
+        await personManagement.buttonSuchen.click();
         await expect(page.getByRole('cell', { name: lastname, exact: true })).toBeEnabled();
         await page.getByRole('cell', { name: lastname, exact: true }).click();
       });
 
       await test.step(`In den User-Details PW-Reset Dialog starten`, async () => {
-        await expect(personManagementDetail.text_h2_benutzerBearbeiten).toBeVisible();
-        await personManagementDetail.button_pwChange.click();
-        await expect(personManagementDetail.text_pwResetInfo).toBeVisible();
+        await expect(personManagementDetail.textH2BenutzerBearbeiten).toBeVisible();
+        await personManagementDetail.buttonPwChange.click();
+        await expect(personManagementDetail.textPwResetInfo).toBeVisible();
       });
 
       await test.step(`In dem overlay den PW-Reset bestätigen, das PW kopieren und Dialog schließen`, async () => {
-        await personManagementDetail.button_pwReset.click();
-        await expect(personManagementDetail.text_pwResetInfo).toBeVisible();
-        new_password = await personManagementDetail.input_pw.inputValue();
-        await personManagementDetail.button_close_pwreset.click();
+        await personManagementDetail.buttonPwReset.click();
+        await expect(personManagementDetail.textPwResetInfo).toBeVisible();
+        newPassword = await personManagementDetail.inputPw.inputValue();
+        await personManagementDetail.buttonClosePwreset.click();
       });
 
       await test.step(`Login für Benutzer ${lastname} mit dem neuen PW`, async () => {
         await header.logout({ logoutViaStartPage: true });
-        await landing.button_Anmelden.click();
-        await login.login(username, new_password);
+        await landing.buttonAnmelden.click();
+        await login.login(username, newPassword);
       });
 
       await test.step(`Neues PW vergeben`, async () => {

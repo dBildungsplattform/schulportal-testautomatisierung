@@ -23,7 +23,7 @@ export class KlasseDetailsViewPage {
   readonly dataKlasse: Locator;
   readonly buttonZurueckErgebnisliste: Locator;
 
-  constructor(page) {
+  constructor(page: Page) {
     this.page = page;
     this.buttonSchliessen = page.getByTestId('close-layout-card-button');
     this.textH2KlasseBearbeiten = page.getByTestId('klasse-details-card');

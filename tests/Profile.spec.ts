@@ -71,7 +71,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       } else {
         await header.logout({ logoutViaStartPage: false });
       }
-      await landing.button_Anmelden.click();
+      await landing.buttonAnmelden.click();
       await login.login(ADMIN, PW);
       await startseite.validateStartPageIsLoaded();
     }
@@ -135,7 +135,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await addSystemrechtToRolle(page, userInfo.rolleId, personenAnlegen);
 
         await header.logout({ logoutViaStartPage: true });
-        await header.button_login.click();
+        await header.buttonLogin.click();
         await login.login(userInfo.username, userInfo.password);
         currentUserIsLandesadministrator = false;
         await login.updatePW();
@@ -153,7 +153,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         // Persönliche Daten
         await profileView.checkSectionPersoenlicheDaten(vorname, nachname, usernames);
         // Schulzuordnung
-        await expect(profileView.cardHeadline_Schulzuordnung1).toHaveText('Schulzuordnung');
+        await expect(profileView.cardHeadlineSchulzuordnung1).toHaveText('Schulzuordnung');
         await expect(profileView.labelSchule1).toHaveText('Schule:');
         await expect(profileView.dataSchule1).toHaveText(organisation);
         await expect(profileView.labelRolle1).toHaveText('Rolle:');
@@ -204,7 +204,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         usernames.push(userInfo.username);
 
         await header.logout({ logoutViaStartPage: true });
-        await header.button_login.click();
+        await header.buttonLogin.click();
         await login.login(userInfo.username, userInfo.password);
         await login.updatePW();
         currentUserIsLandesadministrator = false;
@@ -220,7 +220,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         // Persönliche Daten
         await profileView.checkSectionPersoenlicheDaten(vorname, nachname, usernames);
         // Schulzuordnung
-        await expect(profileView.cardHeadline_Schulzuordnung1).toHaveText('Schulzuordnung');
+        await expect(profileView.cardHeadlineSchulzuordnung1).toHaveText('Schulzuordnung');
         await expect(profileView.labelSchule1).toHaveText('Schule:');
         await expect(profileView.dataSchule1).toHaveText(organisation);
         await expect(profileView.labelRolle1).toHaveText('Rolle:');
@@ -270,7 +270,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         usernames.push(userInfo.username);
 
         await header.logout({ logoutViaStartPage: true });
-        await header.button_login.click();
+        await header.buttonLogin.click();
         await login.login(userInfo.username, userInfo.password);
         await login.updatePW();
         currentUserIsLandesadministrator = false;
@@ -286,7 +286,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         // Persönliche Daten
         await profileView.checkSectionPersoenlicheDaten(vorname, nachname, usernames);
         // Schulzuordnung
-        await expect(profileView.cardHeadline_Schulzuordnung1).toHaveText('Schulzuordnung');
+        await expect(profileView.cardHeadlineSchulzuordnung1).toHaveText('Schulzuordnung');
         await expect(profileView.labelSchule1).toHaveText('Schule:');
         await expect(profileView.dataSchule1).toHaveText(organisation);
         await expect(profileView.labelRolle1).toHaveText('Rolle:');
@@ -336,7 +336,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         usernames.push(userInfo.username);
 
         await header.logout({ logoutViaStartPage: true });
-        await header.button_login.click();
+        await header.buttonLogin.click();
         await login.login(userInfo.username, userInfo.password);
         await login.updatePW();
         currentUserIsLandesadministrator = false;
@@ -352,7 +352,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         // Persönliche Daten
         await profileView.checkSectionPersoenlicheDaten(vorname, nachname, usernames);
         // Schulzuordnung
-        await expect(profileView.cardHeadline_Schulzuordnung1).toHaveText('Schulzuordnung');
+        await expect(profileView.cardHeadlineSchulzuordnung1).toHaveText('Schulzuordnung');
         await expect(profileView.labelSchule1).toHaveText('Schule:');
         await expect(profileView.dataSchule1).toHaveText(organisation);
         await expect(profileView.labelRolle1).toHaveText('Rolle:');
@@ -411,7 +411,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
           rolleIds[0]
         );
         await header.logout({ logoutViaStartPage: true });
-        await header.button_login.click();
+        await header.buttonLogin.click();
         await login.login(userInfo.username, userInfo.password);
         await login.updatePW();
         currentUserIsLandesadministrator = false;
@@ -429,7 +429,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         // prüfen, welche von den beiden Schulen zuerst angezeigt wird in der Tabelle
         if ((await profileView.dataSchule1.innerText()) == organisation1) {
           // Schulzuordnung 1
-          await expect(profileView.cardHeadline_Schulzuordnung1).toHaveText('Schulzuordnung 1');
+          await expect(profileView.cardHeadlineSchulzuordnung1).toHaveText('Schulzuordnung 1');
           await expect(profileView.labelSchule1).toHaveText('Schule:');
           await expect(profileView.dataSchule1).toHaveText(organisation1);
           await expect(profileView.labelRolle1).toHaveText('Rolle:');
@@ -438,7 +438,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
           await expect(profileView.dataDienststellennummer1).toHaveText(testschuleDstNr);
 
           // Schulzuordnung 2
-          await expect(profileView.cardHeadline_Schulzuordnung2).toHaveText('Schulzuordnung 2');
+          await expect(profileView.cardHeadlineSchulzuordnung2).toHaveText('Schulzuordnung 2');
           await expect(profileView.labelSchule2).toHaveText('Schule:');
           await expect(profileView.dataSchule2).toHaveText(organisation2);
           await expect(profileView.labelRolle2).toHaveText('Rolle:');
@@ -453,7 +453,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
           await expect(profileView.button2FAEinrichten).toBeEnabled();
         } else {
           // Schulzuordnung 1
-          await expect(profileView.cardHeadline_Schulzuordnung2).toHaveText('Schulzuordnung 2');
+          await expect(profileView.cardHeadlineSchulzuordnung2).toHaveText('Schulzuordnung 2');
           await expect(profileView.labelSchule2).toHaveText('Schule:');
           await expect(profileView.dataSchule2).toHaveText(organisation1);
           await expect(profileView.labelRolle2).toHaveText('Rolle:');
@@ -462,7 +462,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
           await expect(profileView.dataDienststellennummer2).toHaveText(testschuleDstNr);
 
           // Schulzuordnung 2
-          await expect(profileView.cardHeadline_Schulzuordnung1).toHaveText('Schulzuordnung 1');
+          await expect(profileView.cardHeadlineSchulzuordnung1).toHaveText('Schulzuordnung 1');
           await expect(profileView.labelSchule1).toHaveText('Schule:');
           await expect(profileView.dataSchule1).toHaveText(organisation2);
           await expect(profileView.labelRolle1).toHaveText('Rolle:');
@@ -511,7 +511,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         usernames.push(userInfo.username);
 
         await header.logout({ logoutViaStartPage: true });
-        await header.button_login.click();
+        await header.buttonLogin.click();
         await login.login(userInfo.username, userInfo.password);
         await login.updatePW();
         currentUserIsLandesadministrator = false;
@@ -572,7 +572,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         usernames.push(userInfo.username);
 
         await header.logout({ logoutViaStartPage: true });
-        await header.button_login.click();
+        await header.buttonLogin.click();
         await login.login(userInfo.username, userInfo.password);
         await login.updatePW();
         currentUserIsLandesadministrator = false;
@@ -754,7 +754,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         rolleIds.push(userInfoLehrer.rolleId);
 
         await header.logout({ logoutViaStartPage: true });
-        await header.button_login.click();
+        await header.buttonLogin.click();
         const login: LoginPage = new LoginPage(page);
         await login.login(userInfoLehrer.username, userInfoLehrer.password);
         await login.updatePW();
@@ -764,7 +764,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       const profileView: ProfilePage = new ProfilePage(page);
 
       await test.step(`Profil öffnen`, async () => {
-        await header.button_profil.click();
+        await header.buttonProfil.click();
         await expect(profileView.titleMeinProfil).toHaveText('Mein Profil');
       });
 

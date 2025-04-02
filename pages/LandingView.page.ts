@@ -3,17 +3,17 @@ import { LoginPage } from './LoginView.page';
 
 export class LandingPage {
   readonly page: Page;
-  readonly text_Willkommen: Locator;
-  readonly button_Anmelden: Locator;
+  readonly textWillkommen: Locator;
+  readonly buttonAnmelden: Locator;
 
-  constructor(page) {
+  constructor(page: Page) {
     this.page = page;
-    this.text_Willkommen = page.getByTestId("landing-headline");
-    this.button_Anmelden = page.getByTestId("login-button");
+    this.textWillkommen = page.getByTestId("landing-headline");
+    this.buttonAnmelden = page.getByTestId("login-button");
   }
 
   public async goToLogin(): Promise<LoginPage> {
-    await this.button_Anmelden.click();
+    await this.buttonAnmelden.click();
     return new LoginPage(this.page);
   }
 }

@@ -7,19 +7,19 @@ import { StartPage } from './StartView.page';
 
 export class HeaderPage {
   readonly page: Page;
-  readonly button_login: Locator;
-  readonly button_logout: Locator;
-  readonly button_profil: Locator;
-  readonly icon_myProfil: Locator;
-  readonly icon_logout: Locator;
+  readonly buttonLogin: Locator;
+  readonly buttonLogout: Locator;
+  readonly buttonProfil: Locator;
+  readonly iconMyProfil: Locator;
+  readonly iconLogout: Locator;
 
-  constructor(page) {
+  constructor(page: Page) {
     this.page = page;
-    this.button_login = page.getByTestId('nav-login-button');
-    this.button_logout = page.getByTestId('nav-logout-button');
-    this.button_profil = page.getByTestId('nav-profile-button');
-    this.icon_myProfil = page.locator('.mdi-account-outline');
-    this.icon_logout = page.locator('.mdi-logout');
+    this.buttonLogin = page.getByTestId('nav-login-button');
+    this.buttonLogout = page.getByTestId('nav-logout-button');
+    this.buttonProfil = page.getByTestId('nav-profile-button');
+    this.iconMyProfil = page.locator('.mdi-account-outline');
+    this.iconLogout = page.locator('.mdi-logout');
   }
 
   async logout({ logoutViaStartPage }: { logoutViaStartPage: boolean }): Promise<LandingPage> {
@@ -34,19 +34,19 @@ export class HeaderPage {
       console.log('Deprecated, logout via start page');
     }
 
-    await this.button_logout.click();
+    await this.buttonLogout.click();
     const landingPage: LandingPage = new LandingPage(this.page);
-    await expect(landingPage.text_Willkommen).toBeVisible();
+    await expect(landingPage.textWillkommen).toBeVisible();
     return new LandingPage(this.page);
   }
 
   public async goToLogin(): Promise<LoginPage> {
-    await this.button_login.click();
+    await this.buttonLogin.click();
     return new LoginPage(this.page);
   }
 
   public async goToProfile(): Promise<ProfilePage> {
-    await this.button_profil.click();
+    await this.buttonProfil.click();
     return new ProfilePage(this.page);
   }
 }

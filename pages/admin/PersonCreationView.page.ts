@@ -44,7 +44,7 @@ export class PersonCreationViewPage {
   readonly comboboxRolleInput: ComboBox;
   readonly rolleInput: Locator;
 
-  constructor(page) {
+  constructor(page: Page) {
     // Anlage Person
     this.page = page;
     this.body = page.locator('body');
