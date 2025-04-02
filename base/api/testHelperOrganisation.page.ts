@@ -33,6 +33,6 @@ export async function createKlasse(page: Page, idSchule: string, name: string): 
         maxRetries: 3
     });
     expect(response.status()).toBe(201);
-    const json: any = await response.json();
+    const json = await response.json();
     return json.id;
 }
