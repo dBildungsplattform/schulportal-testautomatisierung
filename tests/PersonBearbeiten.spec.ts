@@ -92,7 +92,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     { tag: [LONG, STAGE, BROWSER] },
     async ({ page }: PlaywrightTestArgs) => {
       const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
-      const PersonDetailsView: PersonDetailsViewPage = new PersonDetailsViewPage(page);
+      const personDetailsView: PersonDetailsViewPage = new PersonDetailsViewPage(page);
       const header: HeaderPage = new HeaderPage(page);
       const landing: LandingPage = new LandingPage(page);
       const login: LoginPage = new LoginPage(page);
@@ -158,19 +158,20 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await gotoTargetURL(page, 'admin/personen');
         await personManagementView.searchBySuchfeld(lehrerBenutzername);
         await page.getByRole('cell', { name: lehrerBenutzername, exact: true }).click();
+        await personDetailsView.waitForPageToBeLoaded();
       });
 
       await test.step(`Eine zweite Schulzuordnung hinzufügen`, async () => {
-        await PersonDetailsView.button_editSchulzuordnung.click();
-        await PersonDetailsView.button_addSchulzuordnung.click();
-        expect(await PersonDetailsView.combobox_organisation.innerText()).toContain(adminOrganisation);
-        await PersonDetailsView.combobox_rolle.click();
+        await personDetailsView.button_editSchulzuordnung.click();
+        await personDetailsView.button_addSchulzuordnung.click();
+        expect(await personDetailsView.combobox_organisation.innerText()).toContain(adminOrganisation);
+        await personDetailsView.combobox_rolle.click();
         await page.getByText(rolle, { exact: true }).click();
-        await PersonDetailsView.input_kopersNr.fill(kopersNr);
-        await PersonDetailsView.button_submitAddSchulzuordnung.click();
-        await PersonDetailsView.button_confirmAddSchulzuordnung.click();
-        await PersonDetailsView.button_saveAssignmentChanges.click();
-        await PersonDetailsView.button_closeSaveAssignmentChanges.click();
+        await personDetailsView.input_kopersNr.fill(kopersNr);
+        await personDetailsView.button_submitAddSchulzuordnung.click();
+        await personDetailsView.button_confirmAddSchulzuordnung.click();
+        await personDetailsView.button_saveAssignmentChanges.click();
+        await personDetailsView.button_closeSaveAssignmentChanges.click();
       });
 
       await test.step(`In der Gesamtübersicht die neue Schulzuordnung prüfen`, async () => {
@@ -217,9 +218,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       });
 
     await test.step(`Ansicht für neuen Personenkontext öffnen`, async () => {
+      await personDetailsView.waitForPageToBeLoaded();
       await personDetailsView.button_editSchulzuordnung.click();
       await personDetailsView.button_addSchulzuordnung.click();
-      await personDetailsView.organisationenInput.searchByTitle(testschuleName, false);
+      await personDetailsView.organisationen.searchByTitle(testschuleName, false);
     });
 
     await test.step(`Befristung bei ${unbefristeteRolle} und ${befristeteRolle} überprüfen`, async () => {
@@ -677,16 +679,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await personDetailsView.button_editSchulzuordnung.click();
         await page
           .getByTestId('person-details-card')
-          .getByText(
-            testschuleDstNr +
-              ' (' +
-              testschuleName +
-              '): ' +
-              nameRolle +
-              ' (befristet bis ' +
-              timeLimitTeacherRolle +
-              ')'
-          )
+          .getByTitle(testschuleName)
+          .getByRole('checkbox')
           .click();
       });
 

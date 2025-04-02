@@ -2,6 +2,7 @@ import { type Locator, Page } from '@playwright/test';
 import { MenuPage } from './MenuBar.page';
 import { LandingPage } from './LandingView.page';
 import { expect } from '@playwright/test';
+import { PersonManagementViewPage } from './admin/PersonManagementView.page';
 
 export class StartPage {
   readonly page: Page;
@@ -28,6 +29,8 @@ export class StartPage {
 
   public async goToAdministration(): Promise<MenuPage> {
     await this.cardItemSchulportalAdministration.click();
+    const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(this.page);
+    await personManagementView.waitForData();
     return new MenuPage(this.page);
   }
 
@@ -43,7 +46,7 @@ export class StartPage {
     return new StartPage(this.page);
   }
 
-  public async checkSpIsVisible(spNames: string[]) {
+  public async checkSpIsVisible(spNames: string[]): Promise<void> {
     for (const spName of spNames) {
       await expect(this.cardItem(spName)).toBeVisible();
     }

@@ -48,7 +48,6 @@ export class PersonDetailsViewPage {
   readonly radioButtonUnbefristetDisabled: Locator;
 
   readonly organisationen: ComboBox;
-  readonly organisationenInput: ComboBox;
   readonly rollen: ComboBox;
 
   // Benutzer sperren
@@ -115,11 +114,10 @@ export class PersonDetailsViewPage {
     this.button_addSchulzuordnung = page.getByTestId('zuordnung-create-button');
     this.combobox_organisationDialogBenutzerSperren = page.getByTestId('person-lock-card').locator('.v-field__input');
     this.combobox_organisation = page.getByTestId('organisation-select').locator('.v-field__input');
-    this.combobox_rolle = page.getByTestId('rolle-select').locator('.v-field__input');
+    this.combobox_rolle = page.getByTestId('rolle-select');
     this.combobox_organisation = page.getByTestId('organisation-select').locator('.v-field');
     this.comboboxOrganisationInput = page.getByTestId('organisation-select').locator('input');
 
-    this.combobox_rolle = page.getByTestId('rolle-select').locator('.v-field');
     this.input_kopersNr = page.getByTestId('kopersnr-input').locator('.v-field__input');
     this.button_submitAddSchulzuordnung = page.getByTestId('zuordnung-creation-submit-button');
     this.button_confirmAddSchulzuordnung = page.getByRole('button', { name: 'Ja' });
@@ -127,8 +125,7 @@ export class PersonDetailsViewPage {
     this.button_closeSaveAssignmentChanges = page.getByRole('dialog').getByRole('button', { name: 'Schließen' });
     this.button_befristetSchuljahresende = page.getByLabel('Bis Schuljahresende (31.07.');
     this.button_befristungUnbefristet = page.getByLabel('Unbefristet');
-    this.organisationen = new ComboBox(this.page, this.combobox_organisation);
-    this.organisationenInput = new ComboBox(this.page, this.comboboxOrganisationInput);
+    this.organisationen = new ComboBox(this.page, page.getByTestId('organisation-select'));
     this.rollen = new ComboBox(this.page, this.combobox_rolle);
     this.buttonBefristungAendern = page.getByTestId('befristung-change-button');
     this.buttonBefristungAendernSubmit = page.getByTestId('change-befristung-submit-button');
@@ -180,6 +177,13 @@ export class PersonDetailsViewPage {
     this.buttonIBNPasswortEinrichten = page.getByTestId('password-reset-button');
     this.infoIBNPasswortEinrichten = page.getByTestId('password-reset-info-text');
     this.buttonIBNPasswortEinrichtenDialogClose = page.getByTestId('close-password-reset-dialog-button');
+  }
+
+  public async waitForPageToBeLoaded(): Promise<void> {
+    await this.page.waitForURL('admin/personen/*');
+    for (const locator of await this.page.getByRole('progressbar').all()) {
+      await expect(locator).toBeHidden();
+    }
   }
 
   public async lockUserWithoutDate(): Promise<void> {

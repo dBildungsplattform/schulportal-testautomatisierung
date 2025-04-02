@@ -59,7 +59,7 @@ export class PersonCreationViewPage {
     this.comboboxSchulstrukturknoten = page.getByTestId('organisation-select').locator('.v-field__input');
     this.comboboxKlasse = page.getByTestId('klasse-select').locator('.v-field__input');
     this.buttonPersonAnlegen = page.getByTestId('person-creation-form-submit-button');
-    this.comboboxOrganisationInput = new ComboBox(this.page, this.organisationInput);
+    this.comboboxOrganisationInput = new ComboBox(this.page, page.getByTestId('organisation-select'));
 
     // Bestätigungsseite Klasse
     this.textSuccess = page.getByTestId('person-success-text');
