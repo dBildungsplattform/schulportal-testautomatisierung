@@ -42,17 +42,17 @@ test.describe(`Testfälle für die Hauptmenue-Leiste: Umgebung: ${process.env.EN
 
       await test.step(`Pruefen der Hauptmenueleiste mit Untermenues`, async () => {
         await startseite.cardItemSchulportalAdministration.click();
-        await expect(menuBar.header_label_Navigation).toBeVisible();
-        await expect(menuBar.button_BackStartpage).toBeVisible();
-        await expect(menuBar.label_Benutzerverwaltung).toBeVisible();
-        await expect(menuBar.menueItem_AlleBenutzerAnzeigen).toBeVisible();
-        await expect(menuBar.menueItem_BenutzerAnlegen).toBeVisible();
-        await expect(menuBar.label_Klassenverwaltung).toBeVisible();
-        await expect(menuBar.label_Rollenverwaltung).toBeVisible();
-        await expect(menuBar.menueItem_AlleRollenAnzeigen).toBeVisible();
-        await expect(menuBar.menueItem_RolleAnlegen).toBeVisible();
-        await expect(menuBar.label_Schulverwaltung).toBeVisible();
-        await expect(menuBar.label_Schultraegerverwaltung).toBeVisible();
+        await expect(menuBar.headerLabelNavigation).toBeVisible();
+        await expect(menuBar.buttonBackStartpage).toBeVisible();
+        await expect(menuBar.labelBenutzerverwaltung).toBeVisible();
+        await expect(menuBar.menueItemAlleBenutzerAnzeigen).toBeVisible();
+        await expect(menuBar.menueItemBenutzerAnlegen).toBeVisible();
+        await expect(menuBar.labelKlassenverwaltung).toBeVisible();
+        await expect(menuBar.labelRollenverwaltung).toBeVisible();
+        await expect(menuBar.menueItemAlleRollenAnzeigen).toBeVisible();
+        await expect(menuBar.menueItemRolleAnlegen).toBeVisible();
+        await expect(menuBar.labelSchulverwaltung).toBeVisible();
+        await expect(menuBar.labelSchultraegerverwaltung).toBeVisible();
       });
       // #TODO: wait for the last request in the test
       // sometimes logout breaks the test because of interrupting requests
@@ -70,8 +70,8 @@ test.describe(`Testfälle für die Hauptmenue-Leiste: Umgebung: ${process.env.EN
 
       await test.step(`Menue-Eintrag zum Rücksprung auf die Startseite klicken`, async () => {
         await startseite.cardItemSchulportalAdministration.click();
-        await expect(menuBar.header_label_Navigation).toBeVisible();
-        await menuBar.button_BackStartpage.click();
+        await expect(menuBar.headerLabelNavigation).toBeVisible();
+        await menuBar.buttonBackStartpage.click();
         await startseite.validateStartPageIsLoaded();
       });
       // #TODO: wait for the last request in the test

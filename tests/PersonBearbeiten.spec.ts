@@ -7,7 +7,7 @@ import { PersonDetailsViewPage } from '../pages/admin/PersonDetailsView.page.ts'
 import { HeaderPage } from '../pages/Header.page.ts';
 import { createRolleAndPersonWithUserContext, setTimeLimitPersonenkontext } from '../base/api/testHelperPerson.page.ts';
 import { getSPId } from '../base/api/testHelperServiceprovider.page.ts';
-import { UserInfo } from '../base/api/testHelper.page.ts';
+import { UserInfo, waitForAPIResponse } from '../base/api/testHelper.page.ts';
 import { addSystemrechtToRolle } from '../base/api/testHelperRolle.page.ts';
 import { LONG, STAGE, BROWSER } from '../base/tags.ts';
 import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata.ts';
@@ -60,7 +60,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       } else {
         await header.logout({ logoutViaStartPage: false });
       }
-      await landing.button_Anmelden.click();
+      await landing.buttonAnmelden.click();
       await login.login(ADMIN, PW);
       await startseite.validateStartPageIsLoaded();
     }
@@ -147,7 +147,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         lehrerBenutzername = userInfoLehrer.username;
 
         await header.logout({ logoutViaStartPage: true });
-        await landing.button_Anmelden.click();
+        await landing.buttonAnmelden.click();
         await login.login(userInfoAdmin.username, userInfoAdmin.password);
         await login.updatePW();
         await startseite.validateStartPageIsLoaded();
@@ -161,16 +161,16 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       });
 
       await test.step(`Eine zweite Schulzuordnung hinzufügen`, async () => {
-        await PersonDetailsView.button_editSchulzuordnung.click();
-        await PersonDetailsView.button_addSchulzuordnung.click();
-        expect(await PersonDetailsView.combobox_organisation.innerText()).toContain(adminOrganisation);
-        await PersonDetailsView.combobox_rolle.click();
+        await PersonDetailsView.buttonEditSchulzuordnung.click();
+        await PersonDetailsView.buttonAddSchulzuordnung.click();
+        expect(await PersonDetailsView.comboboxOrganisation.innerText()).toContain(adminOrganisation);
+        await PersonDetailsView.comboboxRolle.click();
         await page.getByText(rolle, { exact: true }).click();
-        await PersonDetailsView.input_kopersNr.fill(kopersNr);
-        await PersonDetailsView.button_submitAddSchulzuordnung.click();
-        await PersonDetailsView.button_confirmAddSchulzuordnung.click();
-        await PersonDetailsView.button_saveAssignmentChanges.click();
-        await PersonDetailsView.button_closeSaveAssignmentChanges.click();
+        await PersonDetailsView.inputKopersNr.fill(kopersNr);
+        await PersonDetailsView.buttonSubmitAddSchulzuordnung.click();
+        await PersonDetailsView.buttonConfirmAddSchulzuordnung.click();
+        await PersonDetailsView.buttonSaveAssignmentChanges.click();
+        await PersonDetailsView.buttonCloseSaveAssignmentChanges.click();
       });
 
       await test.step(`In der Gesamtübersicht die neue Schulzuordnung prüfen`, async () => {
@@ -217,16 +217,16 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       });
 
     await test.step(`Ansicht für neuen Personenkontext öffnen`, async () => {
-      await personDetailsView.button_editSchulzuordnung.click();
-      await personDetailsView.button_addSchulzuordnung.click();
+      await personDetailsView.buttonEditSchulzuordnung.click();
+      await personDetailsView.buttonAddSchulzuordnung.click();
       await personDetailsView.organisationenInput.searchByTitle(testschuleName, false);
     });
 
     await test.step(`Befristung bei ${unbefristeteRolle} und ${befristeteRolle} überprüfen`, async () => {
       await personDetailsView.rollen.selectByTitle(befristeteRolle);
-      await expect(personDetailsView.button_befristetSchuljahresende).toBeChecked();
+      await expect(personDetailsView.buttonBefristetSchuljahresende).toBeChecked();
       await personDetailsView.rollen.selectByTitle(unbefristeteRolle);
-      await expect(personDetailsView.button_befristungUnbefristet).toBeChecked();
+      await expect(personDetailsView.buttonBefristungUnbefristet).toBeChecked();
     });
     // #TODO: wait for the last request in the test
     // sometimes logout breaks the test because of interrupting requests
@@ -346,18 +346,18 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       });
 
       await test.step(`Gesamtübersicht Abschnitte prüfen`, async () => {
-        await expect(personDetailsView.text_h2_benutzerBearbeiten).toHaveText('Benutzer bearbeiten');
-        await expect(personDetailsView.text_h3_passwort_headline).toBeVisible();
-        await expect(personDetailsView.text_h3_schulzuordnung_headline).toBeVisible();
-        await expect(personDetailsView.text_h3_lockPerson_headline).toBeVisible();
+        await expect(personDetailsView.textH2BenutzerBearbeiten).toHaveText('Benutzer bearbeiten');
+        await expect(personDetailsView.textH3PasswortHeadline).toBeVisible();
+        await expect(personDetailsView.textH3SchulzuordnungHeadline).toBeVisible();
+        await expect(personDetailsView.textH3LockPersonHeadline).toBeVisible();
       });
 
       await test.step(`Unsichtbarkeit des 2FA Abschnitts prüfen`, async () => {
-        await expect(personDetailsView.text_h3_2FA).toBeHidden();
-        await expect(personDetailsView.text_token_IstEingerichtet_info).toBeHidden();
-        await expect(personDetailsView.text_neuen_token_einrichten_info).toBeHidden();
-        await expect(personDetailsView.text_kein_token_ist_Eingerichtet).toBeHidden();
-        await expect(personDetailsView.button_2FAEinrichten).toBeHidden();
+        await expect(personDetailsView.textH3TwoFA).toBeHidden();
+        await expect(personDetailsView.textTokenIstEingerichtetInfo).toBeHidden();
+        await expect(personDetailsView.textNeuenTokenEinrichtenInfo).toBeHidden();
+        await expect(personDetailsView.textKeinTokenIstEingerichtet).toBeHidden();
+        await expect(personDetailsView.button2FAEinrichten).toBeHidden();
       });
       // #TODO: wait for the last request in the test
       // sometimes logout breaks the test because of interrupting requests
@@ -395,8 +395,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       });
 
       await test.step(`2FA Status prüfen dass kein Token eingerichtet ist`, async () => {
-        await expect(personDetailsView.text_h3_2FA).toBeVisible();
-        await expect(personDetailsView.text_kein_token_ist_Eingerichtet).toBeVisible();
+        await expect(personDetailsView.textH3TwoFA).toBeVisible();
+        await expect(personDetailsView.textKeinTokenIstEingerichtet).toBeVisible();
       });
       // #TODO: wait for the last request in the test
       // sometimes logout breaks the test because of interrupting requests
@@ -439,8 +439,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       });
 
       await test.step(`2FA Status prüfen dass kein Token eingerichtet ist`, async () => {
-        await expect(personDetailsView.text_h3_2FA).toBeVisible();
-        await expect(personDetailsView.text_kein_token_ist_Eingerichtet).toBeVisible();
+        await expect(personDetailsView.textH3TwoFA).toBeVisible();
+        await expect(personDetailsView.textKeinTokenIstEingerichtet).toBeVisible();
       });
       // #TODO: wait for the last request in the test
       // sometimes logout breaks the test because of interrupting requests
@@ -491,13 +491,13 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       });
 
       await test.step(`2FA Token einrichten`, async () => {
-        await expect(personDetailsView.text_h3_2FA).toBeVisible();
+        await expect(personDetailsView.textH3TwoFA).toBeVisible();
         await personDetailsView.softwareTokenEinrichten();
       });
 
       await test.step(`2FA Status prüfen dass ein Token eingerichtet ist`, async () => {
-        await expect(personDetailsView.text_token_IstEingerichtet_info).toBeVisible();
-        await expect(personDetailsView.text_neuen_token_einrichten_info).toBeVisible();
+        await expect(personDetailsView.textTokenIstEingerichtetInfo).toBeVisible();
+        await expect(personDetailsView.textNeuenTokenEinrichtenInfo).toBeVisible();
       });
       // #TODO: wait for the last request in the test
       // sometimes logout breaks the test because of interrupting requests
@@ -538,13 +538,13 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       });
 
       await test.step(`2FA Token einrichten`, async () => {
-        await expect(personDetailsView.text_h3_2FA).toBeVisible();
+        await expect(personDetailsView.textH3TwoFA).toBeVisible();
         await personDetailsView.softwareTokenEinrichten();
       });
 
       await test.step(`2FA Status prüfen dass ein Token eingerichtet ist`, async () => {
-        await expect(personDetailsView.text_token_IstEingerichtet_info).toBeVisible();
-        await expect(personDetailsView.text_neuen_token_einrichten_info).toBeVisible();
+        await expect(personDetailsView.textTokenIstEingerichtetInfo).toBeVisible();
+        await expect(personDetailsView.textNeuenTokenEinrichtenInfo).toBeVisible();
       });
       // #TODO: wait for the last request in the test
       // sometimes logout breaks the test because of interrupting requests
@@ -581,13 +581,13 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       });
 
       await test.step(`2FA Token einrichten`, async () => {
-        await expect(personDetailsView.text_h3_2FA).toBeVisible();
+        await expect(personDetailsView.textH3TwoFA).toBeVisible();
         await personDetailsView.softwareTokenEinrichten();
       });
 
       await test.step(`2FA Status prüfen dass ein Token eingerichtet ist`, async () => {
-        await expect(personDetailsView.text_token_IstEingerichtet_info).toBeVisible();
-        await expect(personDetailsView.text_neuen_token_einrichten_info).toBeVisible();
+        await expect(personDetailsView.textTokenIstEingerichtetInfo).toBeVisible();
+        await expect(personDetailsView.textNeuenTokenEinrichtenInfo).toBeVisible();
       });
       // #TODO: wait for the last request in the test
       // sometimes logout breaks the test because of interrupting requests
@@ -674,7 +674,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       });
 
       await test.step(`Schulzuordnung im Bearbeitungsmodus öffen`, async () => {
-        await personDetailsView.button_editSchulzuordnung.click();
+        await personDetailsView.buttonEditSchulzuordnung.click();
         await page
           .getByTestId('person-details-card')
           .getByText(
@@ -757,7 +757,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         );
         await personDetailsView.buttonBefristungAendernSave.click();
         await personDetailsView.buttonBefristungAendernSuccessClose.click();
-        await personDetailsView.waitForAPIResponse({ lastEndpoint: 'organisationen/parents-by-ids' });
+        await waitForAPIResponse(page, 'organisationen/parents-by-ids');
       });
 
       await test.step(`In der Gesamtübersicht überprüfen, dass die Schulzuordnung mit dem korrekten Datum angezeigt wird`, async () => {
@@ -805,12 +805,12 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       });
 
       await test.step(`Schulzuordnung im Bearbeitungsmodus öffen`, async () => {
-        await personDetailsView.button_editSchulzuordnung.click();
+        await personDetailsView.buttonEditSchulzuordnung.click();
         await page
           .getByTestId('person-details-card')
           .getByText(testschuleDstNr + ' (' + testschuleName + '): ' + nameRolle + ' (befristet bis ')
           .click();
-        await personDetailsView.waitForAPIResponse({ lastEndpoint: 'personenkontext-workflow/**' });
+        await waitForAPIResponse(page, 'personenkontext-workflow/**');
       });
 
       await test.step(`Befristung im Bearbeitungsmodus öffnen`, async () => {

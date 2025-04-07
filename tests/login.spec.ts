@@ -33,7 +33,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
       // login as Landesadmin if neccessary
       if ((usernames.length > 0 || rolleIds.length > 0) && !loggedIn) {
         await page.goto('/');
-        await landing.button_Anmelden.click();
+        await landing.buttonAnmelden.click();
         await login.login(ADMIN, PW);
         await startseite.validateStartPageIsLoaded();
         loggedIn = true;
@@ -72,8 +72,8 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
 
       await test.step(`Anmelden mit Benutzer ${ADMIN}`, async () => {
         await page.goto('/');
-        await expect(landing.text_Willkommen).toBeVisible();
-        await landing.button_Anmelden.click();
+        await expect(landing.textWillkommen).toBeVisible();
+        await landing.buttonAnmelden.click();
 
         await login.login(ADMIN, PW);
         await startseite.validateStartPageIsLoaded();
@@ -95,8 +95,8 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
 
       await test.step(`Anmelden mit Benutzer ${ADMIN}`, async () => {
         await page.goto('/');
-        await expect(landing.text_Willkommen).toBeVisible();
-        await landing.button_Anmelden.click();
+        await expect(landing.textWillkommen).toBeVisible();
+        await landing.buttonAnmelden.click();
         await login.login(ADMIN, 'Mickeymouse');
         await expect(login.inputErrorMessage).toHaveText('Ungültiger Benutzername oder Passwort.');
         await expect(login.titleAnmeldung).toBeVisible();
@@ -123,7 +123,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
 
       await test.step(`Testdaten: Gesperrten Lehrer über die api anlegen ${ADMIN}`, async () => {
         await page.goto('/');
-        await landing.button_Anmelden.click();
+        await landing.buttonAnmelden.click();
         await login.login(ADMIN, PW);
         const lehrerIdSPs: string[] = [await getSPId(page, 'E-Mail')];
         organisationIDLandSh = await getOrganisationId(page, 'Land Schleswig-Holstein');
@@ -143,9 +143,9 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
       });
 
       await test.step(`Gesperrter Lehrer versucht sich am Portal anzumelden`, async () => {
-        await landing.button_Anmelden.click();
+        await landing.buttonAnmelden.click();
         await login.login(userInfoLehrer.username, userInfoLehrer.password);
-        await expect(login.text_span_alertBox).toHaveText(
+        await expect(login.textSpanAlertBox).toHaveText(
           'Ihr Benutzerkonto ist gesperrt. Bitte wenden Sie sich an Ihre schulischen Administratorinnen und Administratoren.'
         );
         loggedIn = false;
@@ -167,12 +167,12 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
 
       await test.step('Anmelden mit falschem Benutzernamen fake-username, Inputfeld für Benutzernamen bleibt änderbar', async () => {
         await page.goto('/');
-        await expect(landing.text_Willkommen).toBeVisible();
-        await landing.button_Anmelden.click();
+        await expect(landing.textWillkommen).toBeVisible();
+        await landing.buttonAnmelden.click();
         await login.login('fake-username', PW);
         await expect(login.inputErrorMessage).toBeVisible();
         await expect(login.titleAnmeldung).toBeVisible();
-        await expect(login.input_username).toBeEditable();
+        await expect(login.inputUsername).toBeEditable();
         loggedIn = false;
       });
 

@@ -21,7 +21,7 @@ export class KlasseCreationViewPage{
     readonly organisation: Locator;
     readonly organisationInput: Locator;
    
-    constructor(page){
+    constructor(page: Page){
         // Anlage Klasse
         this.page = page;
         this.textH2KlasseAnlegen = page.getByTestId('layout-card-headline');

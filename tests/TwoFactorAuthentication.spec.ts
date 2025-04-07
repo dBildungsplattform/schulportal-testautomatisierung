@@ -90,21 +90,21 @@ test.describe(`Testfälle für TwoFactorAuthentication": Umgebung: ${process.env
       });
 
       await test.step(`2FA Status prüfen dass ein Token eingerichtet ist`, async () => {
-        await expect(personDetailsView.text_token_IstEingerichtet_info).toBeVisible();
-        await expect(personDetailsView.text_neuen_token_einrichten_info).toBeVisible();
+        await expect(personDetailsView.textTokenIstEingerichtetInfo).toBeVisible();
+        await expect(personDetailsView.textNeuenTokenEinrichtenInfo).toBeVisible();
       });
 
       await test.step(`Token zurücksetzen`, async () => {
-        await expect(personDetailsView.button_2FAEinrichten).toHaveText('Token zurücksetzen');
-        await personDetailsView.button_2FAEinrichten.click();
+        await expect(personDetailsView.button2FAEinrichten).toHaveText('Token zurücksetzen');
+        await personDetailsView.button2FAEinrichten.click();
 
-        await expect(personDetailsView.button_2FA_Zuruecksetzen_Weiter).toHaveText('Zurücksetzen');
-        await personDetailsView.button_2FA_Zuruecksetzen_Weiter.click();
+        await expect(personDetailsView.button2FAZuruecksetzenWeiter).toHaveText('Zurücksetzen');
+        await personDetailsView.button2FAZuruecksetzenWeiter.click();
 
-        await expect(personDetailsView.button_2FA_Zuruecksetzen_Weiter).toHaveText('Schließen');
-        await personDetailsView.button_2FA_Zuruecksetzen_Weiter.click();
+        await expect(personDetailsView.button2FAZuruecksetzenWeiter).toHaveText('Schließen');
+        await personDetailsView.button2FAZuruecksetzenWeiter.click();
 
-        await expect(personDetailsView.text_kein_token_ist_Eingerichtet).toBeVisible();
+        await expect(personDetailsView.textKeinTokenIstEingerichtet).toBeVisible();
       });
       // #TODO: wait for the last request in the test
       // sometimes logout breaks the test because of interrupting requests

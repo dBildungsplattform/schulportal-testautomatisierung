@@ -2,10 +2,10 @@ import { type Locator, Page } from '@playwright/test';
 
 export class DirectoryPage{
     readonly page: Page;
-    readonly text_h1: Locator;
+    readonly textH1: Locator;
 
-    constructor(page){
+    constructor(page: Page){
         this.page = page;  
-        this.text_h1 = page.getByRole('heading', { name: 'Adressbuch', exact: true }).locator('span');
+        this.textH1 = page.getByRole('heading', { name: 'Adressbuch', exact: true }).locator('span');
     }
 }
