@@ -38,7 +38,7 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
     });
   });
 
-  test.skip('2 Schulen nacheinander anlegen als Landesadmin', { tag: [LONG] }, async ({ page }: PlaywrightTestArgs) => {
+  test('2 Schulen nacheinander anlegen als Landesadmin', { tag: [LONG] }, async ({ page }: PlaywrightTestArgs) => {
     const startseite: StartPage = new StartPage(page);
     const schuleManagementView: SchuleManagementViewPage = new SchuleManagementViewPage(page);
     const footerDataTable: FooterDataTablePage = new FooterDataTablePage(page);
