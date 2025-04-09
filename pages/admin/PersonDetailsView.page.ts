@@ -129,7 +129,6 @@ export class PersonDetailsViewPage {
     this.buttonBefristetSchuljahresende = page.getByLabel('Bis Schuljahresende (31.07.');
     this.buttonBefristungUnbefristet = page.getByLabel('Unbefristet');
     this.organisationen = new ComboBox(this.page, this.comboboxOrganisation);
-    this.organisationenInput = new ComboBox(this.page, this.comboboxOrganisationInput);
     this.rollen = new ComboBox(this.page, this.comboboxRolle);
     this.buttonBefristungAendern = page.getByTestId('befristung-change-button');
     this.buttonBefristungAendernSubmit = page.getByTestId('change-befristung-submit-button');

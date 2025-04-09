@@ -11,7 +11,7 @@ export async function createRolle(
 ): Promise<string> {
   let requestData: RolleRequestData;
 
-  type RolleRequestData = {
+  interface RolleRequestData {
     data: {
       name: string;
       administeredBySchulstrukturknoten: string;
@@ -22,7 +22,7 @@ export async function createRolle(
     };
     failOnStatusCode: boolean;
     maxRetries: number;
-  };
+  }
 
   requestData = {
     data: {
