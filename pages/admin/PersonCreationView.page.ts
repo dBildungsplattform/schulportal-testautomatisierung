@@ -41,8 +41,10 @@ export class PersonCreationViewPage {
   readonly comboboxOrganisationInput: ComboBox;
   readonly organisation: Locator;
   readonly organisationInput: Locator;
+  readonly comboboxRolleInput: ComboBox;
+  readonly rolleInput: Locator;
 
-  constructor(page) {
+  constructor(page: Page) {
     // Anlage Person
     this.page = page;
     this.body = page.locator('body');
@@ -59,7 +61,9 @@ export class PersonCreationViewPage {
     this.comboboxSchulstrukturknoten = page.getByTestId('organisation-select').locator('.v-field__input');
     this.comboboxKlasse = page.getByTestId('klasse-select').locator('.v-field__input');
     this.buttonPersonAnlegen = page.getByTestId('person-creation-form-submit-button');
-    this.comboboxOrganisationInput = new ComboBox(this.page, page.getByTestId('organisation-select'));
+    this.comboboxOrganisationInput = new ComboBox(this.page, this.organisationInput);
+    this.rolleInput = page.getByTestId('rollen-select').locator('input');
+    this.comboboxRolleInput = new ComboBox(this.page, this.rolleInput);
 
     // Bestätigungsseite Klasse
     this.textSuccess = page.getByTestId('person-success-text');
@@ -89,7 +93,7 @@ export class PersonCreationViewPage {
   public async validateConfirmationPage(
     firstName: string,
     lastName: string,
-    rolle: string,
+    rolleNames: string[],
     officeNo: string,
     organisation: string
   ): Promise<void> {
@@ -106,7 +110,9 @@ export class PersonCreationViewPage {
     await expect(this.labelEinstiegsPasswort).toHaveText('Einstiegs-Passwort:');
     await expect(this.inputEinstiegsPasswort).toBeVisible();
     await expect(this.labelRolle).toHaveText('Rolle:');
-    await expect(this.dataRolle).toHaveText(rolle);
+    for (const index in rolleNames) {
+      await expect(this.dataRolle).toContainText(rolleNames[index]);
+    }
     await expect(this.labelOrganisationsebene).toHaveText('Organisationsebene:');
     await expect(this.dataOrganisationsebene).toHaveText(officeNo + ' (' + organisation + ')');
     await expect(this.buttonWeiterenBenutzerAnlegen).toBeVisible();
@@ -121,8 +127,8 @@ export class PersonCreationViewPage {
     koPersNr?: string
   ): Promise<void> {
     await this.comboboxOrganisationInput.searchByTitle(organisation, false);
-    await this.comboboxRolle.click();
-    await this.page.getByText(rolle, { exact: true }).click();
+
+    await this.comboboxRolleInput.searchByTitle(rolle, true);
     await this.inputVorname.fill(firstName);
     await this.inputNachname.fill(lastnName);
     if (koPersNr) {

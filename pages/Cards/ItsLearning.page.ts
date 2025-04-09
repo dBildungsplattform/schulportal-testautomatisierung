@@ -2,10 +2,10 @@ import { type Locator, Page } from '@playwright/test';
 
 export class ItsLearningPage{
     readonly page: Page;
-    readonly text_h1: Locator;
+    readonly textH1: Locator;
 
-    constructor(page){
+    constructor(page: Page){
         this.page = page;  
-        this.text_h1 = page.getByRole('heading', { name: 'Staging Umgebung Schleswig-Holstein' });
+        this.textH1 = page.getByRole('heading', { name: 'Staging Umgebung Schleswig-Holstein' });
     }
 }

@@ -68,25 +68,45 @@ export class ComboBox {
   }
 
   public async searchByTitle(searchString: string, exactMatch: boolean): Promise<void> {
-    if (await this.inputLocator.textContent() == searchString) return;
+    if ((await this.inputLocator.textContent()) == searchString) return;
     await this.inputLocator.click();
     await this.inputLocator.fill(searchString);
-    let item: Locator
-    
+    let item: Locator;
+
     if (exactMatch) {
       item = this.itemsLocator.filter({
         // use regex to search for an exact match
-        hasText: new RegExp(`^${searchString}$`), 
-      })
+        hasText: new RegExp(`^${searchString}$`),
+      });
     } else {
       // search for a string inside the item title
       item = this.itemsLocator.filter({
-        has: this.page.getByText(searchString), 
-      })
-    }    
+        has: this.page.getByText(searchString),
+      });
+    }
     await item.waitFor({ state: 'visible' });
     // This delay is needed for testcases who are using the method searchByTitle several times. It guarantees that the next combobox data is loaded correctly
     // TODO: we should improve the way we wait for items to be loaded when multiple comboboxes are clicked in sequence. we should maybe wait for another state or locator to ensure the dropdown menu is fully loaded
-    await item.click({delay: 1000});
+    await item.click({ delay: 1000 });
+  }
+
+  public async validateItemNotExists(searchString: string, exactMatch: boolean): Promise<void> {
+    await this.locator.click();
+    await this.locator.fill(searchString);
+    let item: Locator;
+
+    if (exactMatch) {
+      item = this.itemsLocator.filter({
+        // use regex to search for an exact match
+        hasText: new RegExp(`^${searchString}$`),
+      });
+    } else {
+      // search for a string inside the item title
+      item = this.itemsLocator.filter({
+        has: this.page.getByText(searchString),
+      });
+    }
+
+    await expect(item).toBeHidden();
   }
 }

@@ -182,29 +182,29 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
       });
 
       await test.step(`Bestätigungsseite prüfen`, async () => {
-        await expect(rolleCreationConfirmPage.text_h2_RolleAnlegen).toHaveText('Neue Rolle hinzufügen');
-        await expect(rolleCreationConfirmPage.button_Schliessen).toBeVisible();
-        await expect(rolleCreationConfirmPage.text_success).toBeVisible();
+        await expect(rolleCreationConfirmPage.textH2RolleAnlegen).toHaveText('Neue Rolle hinzufügen');
+        await expect(rolleCreationConfirmPage.buttonSchliessen).toBeVisible();
+        await expect(rolleCreationConfirmPage.textSuccess).toBeVisible();
         rolleNames.push(rollenname);
-        await expect(rolleCreationConfirmPage.text_DatenGespeichert).toHaveText('Folgende Daten wurden gespeichert:');
-        await expect(rolleCreationConfirmPage.label_Administrationsebene).toHaveText('Administrationsebene:');
-        await expect(rolleCreationConfirmPage.data_Administrationsebene).toHaveText(administrationsebene);
-        await expect(rolleCreationConfirmPage.label_Rollenart).toHaveText('Rollenart:');
-        await expect(rolleCreationConfirmPage.data_Rollenart).toHaveText(rollenart);
-        await expect(rolleCreationConfirmPage.label_Rollenname).toHaveText('Rollenname:');
-        await expect(rolleCreationConfirmPage.data_Rollenname).toHaveText(rollenname);
-        await expect(rolleCreationConfirmPage.label_Merkmale).toHaveText('Merkmale:');
-        await expect(rolleCreationConfirmPage.data_Merkmale).toHaveText(merkmal);
-        await expect(rolleCreationConfirmPage.label_Angebote).toHaveText('Zugeordnete Angebote:');
-        await expect(rolleCreationConfirmPage.data_Angebote).toContainText(angebotA);
-        await expect(rolleCreationConfirmPage.data_Angebote).toContainText(angebotB);
-        await expect(rolleCreationConfirmPage.data_Angebote).toContainText(angebotC);
-        await expect(rolleCreationConfirmPage.label_Systemrechte).toHaveText('Systemrechte:');
-        await expect(rolleCreationConfirmPage.data_Systemrechte).toContainText(
+        await expect(rolleCreationConfirmPage.textDatenGespeichert).toHaveText('Folgende Daten wurden gespeichert:');
+        await expect(rolleCreationConfirmPage.labelAdministrationsebene).toHaveText('Administrationsebene:');
+        await expect(rolleCreationConfirmPage.dataAdministrationsebene).toHaveText(administrationsebene);
+        await expect(rolleCreationConfirmPage.labelRollenart).toHaveText('Rollenart:');
+        await expect(rolleCreationConfirmPage.dataRollenart).toHaveText(rollenart);
+        await expect(rolleCreationConfirmPage.labelRollenname).toHaveText('Rollenname:');
+        await expect(rolleCreationConfirmPage.dataRollenname).toHaveText(rollenname);
+        await expect(rolleCreationConfirmPage.labelMerkmale).toHaveText('Merkmale:');
+        await expect(rolleCreationConfirmPage.dataMerkmale).toHaveText(merkmal);
+        await expect(rolleCreationConfirmPage.labelAngebote).toHaveText('Zugeordnete Angebote:');
+        await expect(rolleCreationConfirmPage.dataAngebote).toContainText(angebotA);
+        await expect(rolleCreationConfirmPage.dataAngebote).toContainText(angebotB);
+        await expect(rolleCreationConfirmPage.dataAngebote).toContainText(angebotC);
+        await expect(rolleCreationConfirmPage.labelSystemrechte).toHaveText('Systemrechte:');
+        await expect(rolleCreationConfirmPage.dataSystemrechte).toContainText(
           systemrechtA + ', ' + systemrechtB + ', ' + systemrechtC
         );
-        await expect(rolleCreationConfirmPage.button_WeitereRolleAnlegen).toBeVisible();
-        await expect(rolleCreationConfirmPage.button_ZurueckErgebnisliste).toBeVisible();
+        await expect(rolleCreationConfirmPage.buttonWeitereRolleAnlegen).toBeVisible();
+        await expect(rolleCreationConfirmPage.buttonZurueckErgebnisliste).toBeVisible();
       });
       // #TODO: wait for the last request in the test
       // sometimes logout breaks the test because of interrupting requests

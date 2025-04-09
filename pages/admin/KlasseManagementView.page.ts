@@ -56,7 +56,10 @@ export class KlasseManagementViewPage {
     }
   }
 
-  private async checkTableRow(i: number, hasDienststellenNummerColumn: boolean = this.currentUserIsLandesadministrator): Promise<void> {
+  private async checkTableRow(
+    i: number,
+    hasDienststellenNummerColumn: boolean = this.currentUserIsLandesadministrator
+  ): Promise<void> {
     const klassennameCell: Locator = this.tableRows
       .nth(i)
       .locator('td')

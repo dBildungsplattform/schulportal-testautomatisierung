@@ -1,4 +1,4 @@
-import { type Locator, Page } from '@playwright/test';
+import { type Locator, Page, Response } from '@playwright/test';
 import { MenuPage } from './MenuBar.page';
 import { LandingPage } from './LandingView.page';
 import { expect } from '@playwright/test';
@@ -14,7 +14,7 @@ export class StartPage {
   readonly cardItemSchulportalAdministration: Locator;
   readonly cardItem: (spName: string) => Locator;
 
-  constructor(page) {
+  constructor(page: Page) {
     this.page = page;
     this.textH2Ueberschrift = page.getByTestId('all-service-provider-title');
     this.cardItemEmail = page.locator('[data-testid^="service-provider-card"]', { hasText: 'E-Mail' });
@@ -40,7 +40,7 @@ export class StartPage {
   }
 
   public async validateStartPageIsLoaded(): Promise<StartPage> {
-    await this.page.waitForResponse((resp) => resp.url().includes('/api/provider') && resp.status() === 200);
+    await this.page.waitForResponse((resp: Response) => resp.url().includes('/api/provider') && resp.status() === 200);
     await this.page.waitForResponse('/api/provider/**/logo');
     await expect(this.textH2Ueberschrift).toBeVisible();
     return new StartPage(this.page);

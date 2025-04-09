@@ -10,6 +10,7 @@ import { generateSchulname, generateDienststellenNr } from '../base/testHelperGe
 import FromAnywhere from '../pages/FromAnywhere';
 import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
+import { waitForAPIResponse } from '../base/api/testHelper.page';
 
 let logoutViaStartPage: boolean = false;
 
@@ -55,7 +56,7 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
       }> => {
         const menue: MenuPage = await startseite.goToAdministration();
         const schuleCreationView: SchuleCreationViewPage = await menue.schuleAnlegen();
-        await menue.menueItem_SchuleAnlegen.click();
+        await menue.menueItemSchuleAnlegen.click();
         await expect(schuleCreationView.textH2SchuleAnlegen).toHaveText('Neue Schule hinzufügen');
         return { menue, schuleCreationView };
       });
@@ -82,8 +83,8 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
     });
 
     await test.step(`In der Ergebnisliste prüfen, dass die beiden neuen Schulen angezeigt werden`, async () => {
-      await menue.menueItem_AlleSchulenAnzeigen.click();
-      await footerDataTable.combobox_AnzahlEintraege.click();
+      await menue.menueItemAlleSchulenAnzeigen.click();
+      await footerDataTable.comboboxAnzahlEintraege.click();
       await page.getByText('300', { exact: true }).click();
       await expect(schuleManagementView.textH2Schulverwaltung).toHaveText('Schulverwaltung');
       await expect(page.getByRole('cell', { name: schulname1 })).toBeVisible();
