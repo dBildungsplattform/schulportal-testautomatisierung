@@ -41,6 +41,6 @@ export async function deleteKlasseByName(klassenName: string[], page: Page): Pro
   // klassenName ist ein array mit allen zu löschenden Klassen
   for (const item in klassenName) {
     const klassenId: string = await getKlasseId(page, klassenName[item]);
-    await deleteKlasse(page, klassenId);
+    if (klassenId) await deleteKlasse(page, klassenId);
   }
 }

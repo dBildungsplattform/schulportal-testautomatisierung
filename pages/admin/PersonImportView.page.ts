@@ -29,7 +29,7 @@ export class PersonImportViewPage {
     this.personImportCard = page.getByTestId('person-import-card');
     this.headlineBenutzerImport = page.getByTestId('layout-card-headline');
     this.schuleSelectInput = page.getByTestId('schule-select').locator('input');
-    this.schuleSelectCombobox = new ComboBox(this.page, this.schuleSelectInput,);
+    this.schuleSelectCombobox = new ComboBox(this.page, page.getByTestId('schule-select'));
     this.rolleSelectInput = page.getByTestId('rolle-select').locator('input');
     this.fileInput = page.getByTestId('file-input').locator('input');
     this.discardFileUploadButton = page.getByTestId('person-import-form-discard-button');
