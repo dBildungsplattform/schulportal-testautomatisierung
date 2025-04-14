@@ -14,7 +14,7 @@ import { testschuleName } from '../base/organisation';
 import FromAnywhere from '../pages/FromAnywhere';
 import { email, itslearning, schulportaladmin } from '../base/sp';
 import { typeLehrer } from '../base/rollentypen.ts';
-import { generateCurrentDate, gotoTargetURL } from '../base/testHelperUtils.ts';
+import { generateCurrentDate } from '../base/testHelperUtils.ts';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -204,16 +204,19 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
     }
   );
 
-  test.only(
-    'Hinweisbanner bei befristeten Schulzuordnungen testen',
+  test(
+    'News-Box bei befristeten Schulzuordnungen testen',
     { tag: [LONG, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
       let userInfoLehrer1: UserInfo;
       let userInfoLehrer2: UserInfo;
-      const timeLimitTeacherRolle1: string = await generateCurrentDate({ days: -50, months: 0, formatDMY: true });
-      const timeLimitTeacherRolle2: string = await generateCurrentDate({ days: -12, months: 0, formatDMY: true });
-      let timeLimitTeacherRolleNew: string;
-      let colorTextEntireNameSchulzuordnung: string = '';
+      const nameRollLehrer1: string = await generateRolleName();
+      const nameRollLehrer2: string = await generateRolleName();
+      const colorNewsBoxLehrer1: string = 'rgb(255, 152, 37)';
+      const colorNewsBoxLehrer2: string = 'rgb(255, 85, 85)';
+
+      const headerPgae: HeaderPage = new HeaderPage(page);
+      const loginPage: LoginPage = new LoginPage(page);
 
       await test.step(`Testdaten: Lehrer1 mit einer befristeten Schulzuordnung(noch 50 Tage gültig) und Lehrer2 mit einer befristeten Schulzuordnung(noch 12 Tage gültig) über die api anlegen`, async () => {
         // Lehrer1: Schulzuordnung noch 50 Tage gültig
@@ -224,7 +227,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
           await generateNachname(),
           await generateVorname(),
           [await getSPId(page, email)],
-          await generateRolleName()
+          nameRollLehrer1
         );
         personIds.push(userInfoLehrer1.personId);
         rolleIds.push(userInfoLehrer1.rolleId);
@@ -245,7 +248,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
           await generateNachname(),
           await generateVorname(),
           [await getSPId(page, email)],
-          await generateRolleName()
+          nameRollLehrer2
         );
         personIds.push(userInfoLehrer2.personId);
         rolleIds.push(userInfoLehrer2.rolleId);
@@ -259,19 +262,38 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         );
       });
 
-      await test.step(`xxxxxx`, async () => {
-        const header: HeaderPage = new HeaderPage(page);
-        const landing: LandingPage = new LandingPage(page);
-        const login: LoginPage = new LoginPage(page);
-        const startseite: StartPage = new StartPage(page);
+      await test.step(`Lehrer1 meldet sich an und der orangene News-Box wird geprüft`, async () => {
+        const timeLimitTeacherRolle1: string = await generateCurrentDate({ days: 50, months: 0, formatDMY: true });
+        const alertText: string =
+          `Hinweis: Die Zuordnung dieses Benutzerkontos zu der Schule "${testschuleName}" mit der Rolle "${nameRollLehrer1}" ist bis zum ${timeLimitTeacherRolle1} befristet. ` +
+          `Sollte dies nicht zutreffen, wenden Sie sich bitte an Ihre Schulleitung. Nach Ende der Zuordnung sind Funktionalitäten, die im Bezug zu dieser Schule und Rolle stehen, nicht mehr verfügbar.`;
 
-        await header.logout({ logoutViaStartPage: true });
-        await landing.button_Anmelden.click();
-        await login.login(userInfoLehrer1.username, userInfoLehrer1.password);
-        await login.updatePW();
-        await startseite.validateStartPageIsLoaded();
+        const landingPage: LandingPage = await headerPgae.logout({ logoutViaStartPage: true });
+        await landingPage.button_Anmelden.click();
+        const startView: StartPage = await loginPage.login(userInfoLehrer1.username, userInfoLehrer1.password);
+        await loginPage.updatePW();
+        await startView.validateStartPageIsLoaded();
         currentUserIsLandesadministrator = false;
-        await page.pause();
+
+        await expect(page.getByText(alertText)).toBeVisible();
+        await expect(page.getByRole('alert')).toHaveCSS('background-color', colorNewsBoxLehrer1);
+      });
+
+      await test.step(`Lehrer2 meldet sich an und der rote News-Box wird geprüft`, async () => {
+        const timeLimitTeacherRolle2: string = await generateCurrentDate({ days: 12, months: 0, formatDMY: true });
+        const alertText: string =
+          `Hinweis: Die Zuordnung dieses Benutzerkontos zu der Schule "${testschuleName}" mit der Rolle "${nameRollLehrer2}" ist bis zum ${timeLimitTeacherRolle2} befristet. ` +
+          `Sollte dies nicht zutreffen, wenden Sie sich bitte an Ihre Schulleitung. Nach Ende der Zuordnung sind Funktionalitäten, die im Bezug zu dieser Schule und Rolle stehen, nicht mehr verfügbar.`;
+
+        const landingPage: LandingPage = await headerPgae.logout({ logoutViaStartPage: true });
+        await landingPage.button_Anmelden.click();
+        const startView: StartPage = await loginPage.login(userInfoLehrer2.username, userInfoLehrer2.password);
+        await loginPage.updatePW();
+        await startView.validateStartPageIsLoaded();
+        currentUserIsLandesadministrator = false;
+
+        await expect(page.getByText(alertText)).toBeVisible();
+        await expect(page.getByRole('alert')).toHaveCSS('background-color', colorNewsBoxLehrer2);
       });
     }
   );
