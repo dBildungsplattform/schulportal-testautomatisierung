@@ -78,7 +78,6 @@ export async function deleteRolle(page: Page, RolleId: string): Promise<void> {
     failOnStatusCode: false,
     maxRetries: 3,
   });
-  console.log(await response.text())
   expect(response.status()).toBe(204);
 }
 
