@@ -20,7 +20,7 @@ export class SchuleCreationViewPage{
     readonly labelSchulname: Locator;
     readonly dataSchulname: Locator;
 
-    constructor(page){
+    constructor(page: Page){
         // Anlage Schule
         this.page = page;
         this.textH2SchuleAnlegen = page.getByTestId('layout-card-headline');

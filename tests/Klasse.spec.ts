@@ -66,7 +66,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
         await header.logout({ logoutViaStartPage: false });
       }
 
-      await landing.button_Anmelden.click();
+      await landing.buttonAnmelden.click();
       await login.login(ADMIN, PW);
       await startseite.validateStartPageIsLoaded();
     }
@@ -110,7 +110,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
 
       await test.step(`Dialog Klasse anlegen öffnen`, async () => {
         await startseite.cardItemSchulportalAdministration.click();
-        await menue.menueItem_KlasseAnlegen.click();
+        await menue.menueItemKlasseAnlegen.click();
         await expect(klasseCreationView.textH2KlasseAnlegen).toHaveText('Neue Klasse hinzufügen');
       });
 
@@ -122,7 +122,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       });
 
       await test.step(`In der Ergebnisliste prüfen, dass die neue Klasse angezeigt wird`, async () => {
-        await menue.menueItem_AlleKlassenAnzeigen.click();
+        await menue.menueItemAlleKlassenAnzeigen.click();
         await klasseManagementView.comboboxFilterSchule.fill(schulname);
         await page.getByText(`${schulname}`, { exact: true }).click({ delay: 1000 });
         await klasseManagementView.textH2Klassenverwaltung.click(); // dies schließt das Dropdown Klasse
@@ -156,7 +156,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
 
       await test.step(`Klassenverwaltung öffnen und Alle Elemente in der Ergebnisliste auf Existenz prüfen`, async () => {
         await startseite.cardItemSchulportalAdministration.click();
-        await menue.menueItem_AlleKlassenAnzeigen.click();
+        await menue.menueItemAlleKlassenAnzeigen.click();
         // wait for the last request in this test
         await page.waitForResponse((resp: Response): boolean => {
           return ['organisationen', 'typ=SCHULE', 'systemrechte=KLASSEN_VERWALTEN'].every((segment: string) =>
@@ -223,18 +223,18 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       await test.step(`Klassenverwaltung öffnen und prüfen, dass jede Klasse eine Dienststellennummer hat`, async () => {
         // Navigate to Klassenverwaltung
         await startseite.cardItemSchulportalAdministration.click();
-        await menue.menueItem_AlleKlassenAnzeigen.click();
+        await menue.menueItemAlleKlassenAnzeigen.click();
 
         // Wait until the table is visible
         await expect(klasseManagementView.textH2Klassenverwaltung).toHaveText('Klassenverwaltung');
 
         // Show first 100 entries
-        await klasseManagementView.footerDataTable.combobox_AnzahlEintraege.click();
+        await klasseManagementView.footerDataTable.comboboxAnzahlEintraege.click();
         await page.getByRole('option', { name: '100' }).click();
 
         await klasseManagementView.checkTableData();
         // Go to the last page
-        await klasseManagementView.footerDataTable.text_LetzteSeite.click();
+        await klasseManagementView.footerDataTable.textLetzteSeite.click();
         await klasseManagementView.checkTableData();
       });
       // #TODO: wait for the last request in the test
@@ -286,7 +286,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
 
       //login als Schuladmin
       await header.logout({ logoutViaStartPage: true });
-      await landing.button_Anmelden.click();
+      await landing.buttonAnmelden.click();
       await login.login(userInfoAdmin.username, userInfoAdmin.password);
       await login.updatePW();
       currentUserIsLandesadministrator = false;
@@ -295,7 +295,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
 
     await test.step(`Klasse anlegen`, async () => {
       await startseite.cardItemSchulportalAdministration.click();
-      await menue.menueItem_KlasseAnlegen.click();
+      await menue.menueItemKlasseAnlegen.click();
       await expect(klasseCreationView.textH2KlasseAnlegen).toHaveText('Neue Klasse hinzufügen');
 
       await klasseCreationView.comboboxOrganisationInput.searchByTitle(testschuleName, false);
@@ -305,7 +305,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     });
 
     await test.step(`Klasse bearbeiten als Landesadmin`, async () => {
-      await menue.menueItem_AlleKlassenAnzeigen.click();
+      await menue.menueItemAlleKlassenAnzeigen.click();
       await klasseCreationView.comboboxOrganisationInput.searchByTitle(testschuleName, false);
       await page.getByRole('cell', { name: klassenname, exact: true }).click();
       klassenname = await generateKlassenname();
@@ -359,7 +359,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       currentUserIsLandesadministrator = false;
       logoutViaStartPage = true;
       await header.logout({ logoutViaStartPage: true });
-      await landing.button_Anmelden.click();
+      await landing.buttonAnmelden.click();
       await login.login(userInfoAdmin.username, userInfoAdmin.password);
       await login.updatePW();
       await startseite.validateStartPageIsLoaded();
@@ -367,7 +367,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
 
     await test.step(`Klasse anlegen`, async () => {
       await startseite.cardItemSchulportalAdministration.click();
-      await menue.menueItem_KlasseAnlegen.click();
+      await menue.menueItemKlasseAnlegen.click();
       await expect(klasseCreationView.textH2KlasseAnlegen).toHaveText('Neue Klasse hinzufügen');
 
       await expect(klasseCreationView.comboboxSchulstrukturknoten).toContainText(testschuleName);

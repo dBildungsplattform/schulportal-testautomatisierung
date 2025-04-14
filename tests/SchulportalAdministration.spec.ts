@@ -52,7 +52,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
       } else {
         await header.logout({ logoutViaStartPage: false });
       }
-      await landing.button_Anmelden.click();
+      await landing.buttonAnmelden.click();
       await login.login(ADMIN, PW);
       await startseite.validateStartPageIsLoaded();
     }
@@ -104,7 +104,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
       await header.logout({ logoutViaStartPage: true });
 
       // Test durchführen
-      await landing.button_Anmelden.click();
+      await landing.buttonAnmelden.click();
       await login.login(userInfo.username, userInfo.password);
       await login.updatePW();
       currentUserIsLandesadministrator = false;
@@ -145,7 +145,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
       await header.logout({ logoutViaStartPage: true });
 
       // Test durchführen
-      await landing.button_Anmelden.click();
+      await landing.buttonAnmelden.click();
       await login.login(userInfo.username, userInfo.password);
       await login.updatePW();
       currentUserIsLandesadministrator = false;
@@ -188,7 +188,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
       await header.logout({ logoutViaStartPage: true });
 
       // Test durchführen
-      await landing.button_Anmelden.click();
+      await landing.buttonAnmelden.click();
       await login.login(userInfo.username, userInfo.password);
       await login.updatePW();
       currentUserIsLandesadministrator = false;

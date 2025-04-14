@@ -1,4 +1,4 @@
-import { Page, expect } from '@playwright/test';
+import { Page, expect, APIResponse } from '@playwright/test';
 import { getOrganisationId } from './testHelperOrganisation.page';
 import { createRolle, addSPToRolle, getRolleId } from './testHelperRolle.page';
 import { getSPId } from './testHelperServiceprovider.page';
@@ -65,7 +65,7 @@ export async function createPerson(
     }
   }
 
-  const response = await page.request.post(FRONTEND_URL + 'api/personenkontext-workflow/', requestData);
+  const response: APIResponse = await page.request.post(FRONTEND_URL + 'api/personenkontext-workflow/', requestData);
   expect(response.status()).toBe(201);
   const json = await response.json();
 
@@ -129,8 +129,8 @@ export async function addSecondOrganisationToPerson(
   organisationId1: string,
   organisationId2: string,
   rolleId: string
-) {
-  const response = await page.request.put(FRONTEND_URL + 'api/personenkontext-workflow/' + personId, {
+): Promise<void> {
+  const response: APIResponse = await page.request.put(FRONTEND_URL + 'api/personenkontext-workflow/' + personId, {
     data: {
       lastModified: '2034-09-11T08:28:36.590Z',
       count: 1,
@@ -154,7 +154,7 @@ export async function addSecondOrganisationToPerson(
 }
 
 export async function deletePerson(page: Page, personId: string): Promise<void> {
-  const response = await page.request.delete(FRONTEND_URL + `api/personen/${personId}`, {
+  const response: APIResponse = await page.request.delete(FRONTEND_URL + `api/personen/${personId}`, {
     failOnStatusCode: false,
     maxRetries: 3,
   });
@@ -162,7 +162,7 @@ export async function deletePerson(page: Page, personId: string): Promise<void> 
 }
 
 export async function getPersonId(page: Page, searchString: string): Promise<string> {
-  const response = await page.request.get(FRONTEND_URL + `api/personen-frontend?suchFilter=${searchString}`, {
+  const response: APIResponse = await page.request.get(FRONTEND_URL + `api/personen-frontend?suchFilter=${searchString}`, {
     failOnStatusCode: false,
     maxRetries: 3,
   });
@@ -171,7 +171,7 @@ export async function getPersonId(page: Page, searchString: string): Promise<str
   return json.items[0].person.id;
 }
 
-export async function createTeacherAndLogin(page: Page) {
+export async function createTeacherAndLogin(page: Page): Promise<UserInfo> {
   const header: HeaderPage = new HeaderPage(page);
   const login: LoginPage = new LoginPage(page);
   const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
@@ -186,16 +186,16 @@ export async function createTeacherAndLogin(page: Page) {
   );
 
   await header.logout({ logoutViaStartPage: true });
-  await header.button_login.click();
+  await header.buttonLogin.click();
   await login.login(userInfo.username, userInfo.password);
   await login.updatePW();
-  await expect(header.icon_myProfil).toBeVisible();
-  await expect(header.icon_logout).toBeVisible();
+  await expect(header.iconMyProfil).toBeVisible();
+  await expect(header.iconLogout).toBeVisible();
   return userInfo;
 }
 
 export async function lockPerson(page: Page, personId: string, organisationId: string): Promise<void> {
-  const response = await page.request.put(FRONTEND_URL + `api/personen/${personId}/lock-user`, {
+  const response: APIResponse = await page.request.put(FRONTEND_URL + `api/personen/${personId}/lock-user`, {
     data: {
       lock: true,
       locked_by: organisationId,
@@ -212,8 +212,8 @@ export async function setTimeLimitPersonenkontext(
   organisationId: string,
   rolleId: string,
   timeLimit: string
-) {
-  const response = await page.request.put(FRONTEND_URL + 'api/personenkontext-workflow/' + personId, {
+): Promise<void> {
+  const response: APIResponse = await page.request.put(FRONTEND_URL + 'api/personenkontext-workflow/' + personId, {
     data: {
       lastModified: '2034-09-11T08:28:36.590Z',
       count: 1,

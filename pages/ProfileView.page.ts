@@ -14,7 +14,7 @@ export class ProfilePage {
   readonly dataKopersNr: Locator;
   readonly iconInfoPersoenlicheDaten: Locator;
   // Schulzuordnung 1
-  readonly cardHeadline_Schulzuordnung1: Locator;
+  readonly cardHeadlineSchulzuordnung1: Locator;
   readonly labelSchule1: Locator;
   readonly dataSchule1: Locator;
   readonly labelRolle1: Locator;
@@ -22,7 +22,7 @@ export class ProfilePage {
   readonly labelDienststellennummer1: Locator;
   readonly dataDienststellennummer1: Locator;
   // Schulzuordnung 2
-  readonly cardHeadline_Schulzuordnung2: Locator;
+  readonly cardHeadlineSchulzuordnung2: Locator;
   readonly labelSchule2: Locator;
   readonly dataSchule2: Locator;
   readonly labelRolle2: Locator;
@@ -78,7 +78,7 @@ export class ProfilePage {
     this.iconInfoPersoenlicheDaten = page.getByTestId('info-icon');
     // Die Schulzuordnungen sind als Tabelle dargestellt, darum sind Indizes in den Ids
     // Schulzuordnung 1
-    this.cardHeadline_Schulzuordnung1 = page.getByTestId('zuordung-card-1');
+    this.cardHeadlineSchulzuordnung1 = page.getByTestId('zuordung-card-1');
     this.labelSchule1 = page.getByTestId('schule-label-1');
     this.dataSchule1 = page.getByTestId('schule-value-1');
     this.labelRolle1 = page.getByTestId('rolle-label-1');
@@ -86,7 +86,7 @@ export class ProfilePage {
     this.labelDienststellennummer1 = page.getByTestId('dienststellennummer-label-1');
     this.dataDienststellennummer1 = page.getByTestId('dienststellennummer-value-1');
     // Schulzuordnung 2
-    this.cardHeadline_Schulzuordnung2 = page.getByTestId('zuordung-card-2');
+    this.cardHeadlineSchulzuordnung2 = page.getByTestId('zuordung-card-2');
     this.labelSchule2 = page.getByTestId('schule-label-2');
     this.dataSchule2 = page.getByTestId('schule-value-2');
     this.labelRolle2 = page.getByTestId('rolle-label-2');

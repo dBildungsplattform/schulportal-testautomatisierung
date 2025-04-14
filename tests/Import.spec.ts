@@ -108,8 +108,8 @@ test.describe(`Testfälle für den Benutzerimport": Umgebung: ${process.env.ENV}
 
         const personManagementPage: PersonManagementViewPage = await personImportPage.navigateToPersonManagementView();
         await page.waitForURL('**/admin/personen');
-        await personManagementPage.input_Suchfeld.fill(firstPersonLastName);
-        await personManagementPage.button_Suchen.click();
+        await personManagementPage.inputSuchfeld.fill(firstPersonLastName);
+        await personManagementPage.buttonSuchen.click();
         await expect(page.getByRole('cell', { name: firstPersonLastName, exact: true })).toBeVisible();
         // #TODO: wait for the last request in the test
         // sometimes logout breaks the test because of interrupting requests

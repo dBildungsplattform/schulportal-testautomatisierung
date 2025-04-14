@@ -1,6 +1,7 @@
+import { type Page } from '@playwright/test';
 import { format, addDays, addMonths } from 'date-fns';
 
-export async function gotoTargetURL(page, target: string) {
+export async function gotoTargetURL(page: Page, target: string): Promise<void> {
   await page.goto(target);
 }
 
