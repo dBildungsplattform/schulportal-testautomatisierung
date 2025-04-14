@@ -269,7 +269,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
           `Sollte dies nicht zutreffen, wenden Sie sich bitte an Ihre Schulleitung. Nach Ende der Zuordnung sind Funktionalitäten, die im Bezug zu dieser Schule und Rolle stehen, nicht mehr verfügbar.`;
 
         const landingPage: LandingPage = await headerPgae.logout({ logoutViaStartPage: true });
-        await landingPage.button_Anmelden.click();
+        await landingPage.buttonAnmelden.click();
         const startView: StartPage = await loginPage.login(userInfoLehrer1.username, userInfoLehrer1.password);
         await loginPage.updatePW();
         await startView.validateStartPageIsLoaded();
@@ -286,7 +286,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
           `Sollte dies nicht zutreffen, wenden Sie sich bitte an Ihre Schulleitung. Nach Ende der Zuordnung sind Funktionalitäten, die im Bezug zu dieser Schule und Rolle stehen, nicht mehr verfügbar.`;
 
         const landingPage: LandingPage = await headerPgae.logout({ logoutViaStartPage: true });
-        await landingPage.button_Anmelden.click();
+        await landingPage.buttonAnmelden.click();
         const startView: StartPage = await loginPage.login(userInfoLehrer2.username, userInfoLehrer2.password);
         await loginPage.updatePW();
         await startView.validateStartPageIsLoaded();

@@ -22,7 +22,7 @@ export async function createRolle(
     };
     failOnStatusCode: boolean;
     maxRetries: number;
-  };
+  }
 
   requestData = {
     data: {
