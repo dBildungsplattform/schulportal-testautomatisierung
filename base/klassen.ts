@@ -1,1 +1,1 @@
-export const klasse1Testschule = "Playwright3a";
+export const klasse1Testschule: string = "Playwright3a";

@@ -3,10 +3,10 @@ import dotenv from 'dotenv';
 import * as path from 'node:path';
 import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __filename: string = fileURLToPath(import.meta.url);
+const __dirname: string = path.dirname(__filename);
 
-const FRONTEND_URL = process.env.FRONTEND_URL || '';
+const FRONTEND_URL: string = process.env.FRONTEND_URL || '';
 
 dotenv.config({
   path: './.env.dev',
