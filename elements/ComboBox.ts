@@ -91,8 +91,8 @@ export class ComboBox {
   }
 
   public async validateItemNotExists(searchString: string, exactMatch: boolean): Promise<void> {
-    await this.locator.click();
-    await this.locator.fill(searchString);
+    await this.inputLocator.click();
+    await this.inputLocator.fill(searchString);
     let item: Locator;
 
     if (exactMatch) {
