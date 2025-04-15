@@ -115,12 +115,9 @@ export class PersonDetailsViewPage {
       .getByTestId('zuordnung-edit-button');
     this.buttonAddSchulzuordnung = page.getByTestId('zuordnung-create-button');
     this.comboboxOrganisationDialogBenutzerSperren = page.getByTestId('person-lock-card').locator('.v-field__input');
-    this.comboboxOrganisation = page.getByTestId('organisation-select').locator('.v-field__input');
-    this.comboboxRolle = page.getByTestId('rolle-select').locator('.v-field__input');
-    this.comboboxOrganisation = page.getByTestId('organisation-select').locator('.v-field');
-    this.comboboxOrganisationInput = page.getByTestId('organisation-select').locator('input');
+    this.comboboxRolle = page.getByTestId('rolle-select');
+    this.comboboxOrganisation = page.getByTestId('organisation-select');
 
-    this.comboboxRolle = page.getByTestId('rolle-select').locator('.v-field');
     this.inputKopersNr = page.getByTestId('kopersnr-input').locator('.v-field__input');
     this.buttonSubmitAddSchulzuordnung = page.getByTestId('zuordnung-creation-submit-button');
     this.buttonConfirmAddSchulzuordnung = page.getByRole('button', { name: 'Ja' });

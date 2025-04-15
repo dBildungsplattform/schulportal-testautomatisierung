@@ -1,4 +1,4 @@
-import { expect, type Locator, Page, Response } from '@playwright/test';
+import { expect, type Locator, Page } from '@playwright/test';
 import { FooterDataTablePage } from '../FooterDataTable.page';
 import { ComboBox } from '../../elements/ComboBox';
 import { KlasseDetailsViewPage } from './KlasseDetailsView.page';
@@ -39,8 +39,8 @@ export class KlasseManagementViewPage {
     this.buttonSchliesseKlasseLoeschenDialog = page.getByTestId('close-klasse-delete-success-dialog-button');
     this.tableRows = page.locator('table >> tbody >> tr');
     this.footerDataTable = new FooterDataTablePage(page);
-    this.organisationInput = page.getByTestId('schule-select').locator('input');
-    this.comboboxOrganisationInput = new ComboBox(this.page, page.getByTestId('schule-select'));
+    this.organisationInput = page.getByTestId('schule-select');
+    this.comboboxOrganisationInput = new ComboBox(this.page, this.organisationInput);
     this.textAlertDeleteKlasse = page.getByTestId('alert-text');
     this.buttonCloseAlert = page.getByTestId('alert-button');
     this.iconTableRowDelete = (className: string): Locator =>
