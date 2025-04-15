@@ -20,7 +20,7 @@ export async function deleteKlasse(page: Page, KlasseId: string): Promise<void> 
   expect(response.status()).toBe(204);
 }
 
-export async function getKlasseId(page: Page, Klassennname: string): Promise<string> {
+export async function getKlasseId(page: Page, Klassennname: string): Promise<string | undefined> {
   const response: APIResponse = await page.request.get(
     FRONTEND_URL +
       `api/organisationen?name=${Klassennname}&excludeTyp=ROOT&excludeTyp=LAND&excludeTyp=TRAEGER&excludeTyp=SCHULE&excludeTyp=ANBIETER&excludeTyp=SONSTIGE%20ORGANISATION%20%2F%20EINRICHTUNG&excludeTyp=UNBESTAETIGT`,
@@ -28,7 +28,8 @@ export async function getKlasseId(page: Page, Klassennname: string): Promise<str
   );
   expect(response.status()).toBe(200);
   const json: APIResponse = await response.json();
-  return json[0].id;
+
+  return json[0]?.id;
 }
 
 export async function createKlasse(page: Page, idSchule: string, name: string): Promise<string> {
