@@ -31,6 +31,7 @@ export class HeaderPage {
       await FromAnywhere(this.page).start();
       const startPage: StartPage = new StartPage(this.page);
       await startPage.validateStartPageIsLoaded();
+      console.log('Deprecated, logout via start page');
     }
 
     await this.buttonLogout.click();
