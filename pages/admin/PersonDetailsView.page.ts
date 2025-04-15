@@ -49,7 +49,6 @@ export class PersonDetailsViewPage {
   readonly radioButtonUnbefristetDisabled: Locator;
 
   readonly organisationen: ComboBox;
-  readonly organisationenInput: ComboBox;
   readonly rollen: ComboBox;
 
   // Benutzer sperren
@@ -116,12 +115,9 @@ export class PersonDetailsViewPage {
       .getByTestId('zuordnung-edit-button');
     this.buttonAddSchulzuordnung = page.getByTestId('zuordnung-create-button');
     this.comboboxOrganisationDialogBenutzerSperren = page.getByTestId('person-lock-card').locator('.v-field__input');
-    this.comboboxOrganisation = page.getByTestId('organisation-select').locator('.v-field__input');
-    this.comboboxRolle = page.getByTestId('rolle-select').locator('.v-field__input');
-    this.comboboxOrganisation = page.getByTestId('organisation-select').locator('.v-field');
-    this.comboboxOrganisationInput = page.getByTestId('organisation-select').locator('input');
+    this.comboboxRolle = page.getByTestId('rolle-select');
+    this.comboboxOrganisation = page.getByTestId('organisation-select');
 
-    this.comboboxRolle = page.getByTestId('rolle-select').locator('.v-field');
     this.inputKopersNr = page.getByTestId('kopersnr-input').locator('.v-field__input');
     this.buttonSubmitAddSchulzuordnung = page.getByTestId('zuordnung-creation-submit-button');
     this.buttonConfirmAddSchulzuordnung = page.getByRole('button', { name: 'Ja' });
@@ -130,7 +126,6 @@ export class PersonDetailsViewPage {
     this.buttonBefristetSchuljahresende = page.getByLabel('Bis Schuljahresende (31.07.');
     this.buttonBefristungUnbefristet = page.getByLabel('Unbefristet');
     this.organisationen = new ComboBox(this.page, this.comboboxOrganisation);
-    this.organisationenInput = new ComboBox(this.page, this.comboboxOrganisationInput);
     this.rollen = new ComboBox(this.page, this.comboboxRolle);
     this.buttonBefristungAendern = page.getByTestId('befristung-change-button');
     this.buttonBefristungAendernSubmit = page.getByTestId('change-befristung-submit-button');
@@ -183,6 +178,13 @@ export class PersonDetailsViewPage {
     this.buttonIBNPasswortEinrichten = page.getByTestId('password-reset-button');
     this.infoIBNPasswortEinrichten = page.getByTestId('password-reset-info-text');
     this.buttonIBNPasswortEinrichtenDialogClose = page.getByTestId('close-password-reset-dialog-button');
+  }
+
+  public async waitForPageToBeLoaded(): Promise<void> {
+    await this.page.waitForURL('admin/personen/*');
+    for (const locator of await this.page.getByRole('progressbar').all()) {
+      await expect(locator).toBeHidden();
+    }
   }
 
   public async lockUserWithoutDate(): Promise<void> {

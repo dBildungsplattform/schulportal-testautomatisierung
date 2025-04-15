@@ -96,8 +96,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     });
   });
 
-  // Some flaky/red tests are temporarry disabeld and will be fixed/enabled with SPSH-2034
-  test.skip(
+  test(
     'Eine Klasse als Landesadmin anlegen und die Klasse anschließend in der Ergebnisliste suchen und dann löschen',
     { tag: [LONG, SHORT, STAGE, BROWSER] },
     async ({ page }: PlaywrightTestArgs) => {
@@ -107,10 +106,12 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       const klasseManagementView: KlasseManagementViewPage = new KlasseManagementViewPage(page);
       const schulname: string = testschuleName;
       const klassenname: string = await generateKlassenname();
+      klasseNames.push(klassenname);
 
       await test.step(`Dialog Klasse anlegen öffnen`, async () => {
         await startseite.cardItemSchulportalAdministration.click();
         await menue.menueItemKlasseAnlegen.click();
+        await klasseCreationView.waitForFilterToLoad();
         await expect(klasseCreationView.textH2KlasseAnlegen).toHaveText('Neue Klasse hinzufügen');
       });
 
@@ -123,6 +124,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
 
       await test.step(`In der Ergebnisliste prüfen, dass die neue Klasse angezeigt wird`, async () => {
         await menue.menueItemAlleKlassenAnzeigen.click();
+        await klasseManagementView.waitErgebnislisteIsLoaded();
         await klasseManagementView.comboboxFilterSchule.fill(schulname);
         await page.getByText(`${schulname}`, { exact: true }).click({ delay: 1000 });
         await klasseManagementView.textH2Klassenverwaltung.click(); // dies schließt das Dropdown Klasse
@@ -140,29 +142,24 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
             resp.url().includes(segment)
           )
         );
+        await klasseManagementView.waitErgebnislisteIsLoaded();
         await expect(page.getByRole('cell', { name: 'Playwright4b' })).toBeVisible();
         await expect(page.getByRole('cell', { name: klassenname })).toBeHidden();
       });
     }
   );
 
-  test.skip(
+  test(
     'Ergebnisliste Klassen als Landesadmin auf Vollständigkeit prüfen',
     { tag: [LONG, SHORT, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
       const startseite: StartPage = new StartPage(page);
-      const menue: MenuPage = new MenuPage(page);
       const klasseManagementView: KlasseManagementViewPage = new KlasseManagementViewPage(page);
 
       await test.step(`Klassenverwaltung öffnen und Alle Elemente in der Ergebnisliste auf Existenz prüfen`, async () => {
-        await startseite.cardItemSchulportalAdministration.click();
-        await menue.menueItemAlleKlassenAnzeigen.click();
-        // wait for the last request in this test
-        await page.waitForResponse((resp: Response): boolean => {
-          return ['organisationen', 'typ=SCHULE', 'systemrechte=KLASSEN_VERWALTEN'].every((segment: string) =>
-            resp.url().includes(segment)
-          );
-        });
+        const menu: MenuPage = await startseite.goToAdministration();
+        await menu.alleKlassenAnzeigen();
+        await klasseManagementView.waitErgebnislisteIsLoaded();
         await expect(klasseManagementView.textH1Administrationsbereich).toBeVisible();
         await expect(klasseManagementView.textH2Klassenverwaltung).toHaveText('Klassenverwaltung');
         await expect(klasseManagementView.comboboxFilterSchule).toBeVisible();
@@ -244,7 +241,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     }
   );
 
-  test.skip('Klasse bearbeiten als Landesadmin', { tag: [LONG, STAGE, BROWSER] }, async ({ page }: PlaywrightTestArgs) => {
+  test('Klasse bearbeiten als Landesadmin', { tag: [LONG, STAGE, BROWSER] }, async ({ page }: PlaywrightTestArgs) => {
     const header: HeaderPage = new HeaderPage(page);
     const landing: LandingPage = new LandingPage(page);
     const login: LoginPage = new LoginPage(page);
@@ -319,7 +316,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     logoutViaStartPage = true;
   });
 
-  test.skip('Klasse bearbeiten als Schuladmin', { tag: [LONG] }, async ({ page }: PlaywrightTestArgs) => {
+  test('Klasse bearbeiten als Schuladmin', { tag: [LONG] }, async ({ page }: PlaywrightTestArgs) => {
     const header: HeaderPage = new HeaderPage(page);
     const landing: LandingPage = new LandingPage(page);
     const login: LoginPage = new LoginPage(page);
@@ -391,7 +388,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     logoutViaStartPage = true;
   });
 
-  test.skip(
+  test(
     'Eine Klasse ohne zugeordnete Personen als Landesadmin via Quickaction löschen',
     { tag: [LONG, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
@@ -400,6 +397,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
 
       await test.step('Klasse zum Löschen via Quickaction generieren', async () => {
         await createKlasse(page, idSchule, klassenname);
+        klasseNames.push(klassenname);
       });
 
       const klasseManagementView: KlasseManagementViewPage =
@@ -434,7 +432,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     }
   );
 
-  test.skip(
+  test(
     'Eine Klasse ohne zugeordnete Personen als Schuladmin via Quickaction löschen',
     { tag: [LONG, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
@@ -444,6 +442,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
 
       await test.step('Klasse zum Löschen via Quickaction generieren', async () => {
         await createKlasse(page, idSchule, klassenname);
+        klasseNames.push(klassenname);
       });
 
       await test.step(`Schuladmin anlegen`, async () => {
@@ -484,6 +483,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
           const startseite: StartPage = new StartPage(page);
           const menue: MenuPage = await startseite.goToAdministration();
           const klasseManagementView: KlasseManagementViewPage = await menue.alleKlassenAnzeigen();
+          klasseManagementView.setCurrentUserIsLandesadministrator(currentUserIsLandesadministrator);
 
           await klasseManagementView.waitErgebnislisteIsLoaded();
           return klasseManagementView;
@@ -509,7 +509,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     }
   );
 
-  test.skip(
+  test(
     'Eine Klasse mit einem zugeordneten Schüler als Landesadmin via Quickaction löschen',
     { tag: [LONG, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
@@ -577,7 +577,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     }
   );
 
-  test.skip(
+  test(
     'Eine Klasse ohne zugeordnete Personen als Landesadmin via Gesamtübersicht löschen',
     { tag: [LONG, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
@@ -586,6 +586,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
 
       await test.step('Klasse zum Löschen via Quickaction generieren', async () => {
         await createKlasse(page, idSchule, klassenname);
+        klasseNames.push(klassenname);
       });
 
       const klasseManagementView: KlasseManagementViewPage =
@@ -621,7 +622,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     }
   );
 
-  test.skip(
+  test(
     'Eine Klasse ohne zugeordnete Personen als Schuladmin via Gesamtübersicht löschen',
     { tag: [LONG, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
@@ -631,6 +632,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
 
       await test.step('Klasse zum Löschen via Quickaction generieren', async () => {
         await createKlasse(page, idSchule, klassenname);
+        klasseNames.push(klassenname);
       });
 
       await test.step(`Schuladmin anlegen`, async () => {
@@ -670,6 +672,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
           const startseite: StartPage = new StartPage(page);
           const menue: MenuPage = await startseite.goToAdministration();
           const klasseManagementView: KlasseManagementViewPage = await menue.alleKlassenAnzeigen();
+          klasseManagementView.setCurrentUserIsLandesadministrator(currentUserIsLandesadministrator);
 
           await klasseManagementView.waitErgebnislisteIsLoaded();
           return klasseManagementView;
@@ -697,7 +700,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     }
   );
 
-  test.skip(
+  test(
     'Eine Klasse mit einem zugeordneten Schüler als Landesadmin via Gesamtübersicht löschen',
     { tag: [LONG, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
@@ -747,6 +750,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       await test.step(`In Ergebnisliste prüfen, dass die generierte Klasse angezeigt wird`, async () => {
         await klasseManagementView.filterSchule(testschuleName);
         await klasseManagementView.checkRowExists(klassenname);
+        await klasseManagementView.waitErgebnislisteIsLoaded();
       });
 
       await test.step(`Gesamtübersicht öffnen und prüfen, dass die Klasse nicht gelöscht werden kann`, async () => {

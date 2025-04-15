@@ -3,6 +3,10 @@ import { FooterDataTablePage } from '../FooterDataTable.page';
 import { ComboBox } from '../../elements/ComboBox';
 import { KlasseDetailsViewPage } from './KlasseDetailsView.page';
 
+interface KlasseManagementViewPageOptions {
+  currentUserIsLandesadministrator: boolean;
+}
+
 export class KlasseManagementViewPage {
   readonly page: Page;
   readonly textH1Administrationsbereich: Locator;
@@ -21,8 +25,9 @@ export class KlasseManagementViewPage {
   readonly textAlertDeleteKlasse: Locator;
   readonly buttonCloseAlert: Locator;
   readonly iconTableRowDelete: (className: string) => Locator;
+  currentUserIsLandesadministrator: boolean;
 
-  constructor(page: Page) {
+  constructor(page: Page, options?: KlasseManagementViewPageOptions) {
     this.page = page;
     this.textH1Administrationsbereich = page.getByTestId('admin-headline');
     this.textH2Klassenverwaltung = page.getByTestId('layout-card-headline');
@@ -34,31 +39,45 @@ export class KlasseManagementViewPage {
     this.buttonSchliesseKlasseLoeschenDialog = page.getByTestId('close-klasse-delete-success-dialog-button');
     this.tableRows = page.locator('table >> tbody >> tr');
     this.footerDataTable = new FooterDataTablePage(page);
-    this.organisationInput = page.getByTestId('schule-select').locator('input');
+    this.organisationInput = page.getByTestId('schule-select');
     this.comboboxOrganisationInput = new ComboBox(this.page, this.organisationInput);
     this.textAlertDeleteKlasse = page.getByTestId('alert-text');
     this.buttonCloseAlert = page.getByTestId('alert-button');
-    this.iconTableRowDelete = (className: string) =>
+    this.iconTableRowDelete = (className: string): Locator =>
       page.getByRole('row', { name: className }).getByTestId('open-klasse-delete-dialog-icon');
+    this.currentUserIsLandesadministrator = options?.currentUserIsLandesadministrator || true;
   }
 
   // Loops through the Data in the table and checks if the Dienstellennummer and Klassenname are not empty
   public async checkTableData(): Promise<void> {
     const tableRowsCount: number = await this.tableRows.count();
-    for (let i = 0; i < tableRowsCount; i++) {
-      const dienststellennummerCell: Locator = this.tableRows.nth(i).locator('td').nth(0);
-      const klassennameCell: Locator = this.tableRows.nth(i).locator('td').nth(1);
-
-      await expect(dienststellennummerCell).toBeVisible();
-      await expect(dienststellennummerCell).not.toHaveText('---');
-      await expect(klassennameCell).toBeVisible();
-      await expect(klassennameCell).not.toBeEmpty();
+    for (let i: number = 0; i < tableRowsCount; i++) {
+      await this.checkTableRow(i);
     }
   }
 
+  private async checkTableRow(
+    i: number,
+    hasDienststellenNummerColumn: boolean = this.currentUserIsLandesadministrator
+  ): Promise<void> {
+    const klassennameCell: Locator = this.tableRows
+      .nth(i)
+      .locator('td')
+      .nth(hasDienststellenNummerColumn ? 2 : 1);
+    await expect(klassennameCell).toBeVisible();
+    await expect(klassennameCell).not.toBeEmpty();
+
+    if (!hasDienststellenNummerColumn) return;
+    const dienststellennummerCell: Locator = this.tableRows.nth(i).locator('td').nth(1);
+    await expect(dienststellennummerCell).toBeVisible();
+    await expect(dienststellennummerCell).not.toHaveText('---');
+    await expect(dienststellennummerCell).toHaveText(new RegExp(/\W+/));
+  }
+
   public async waitErgebnislisteIsLoaded(): Promise<void> {
-    await this.page.waitForResponse((resp) => resp.url().includes('/api/organisationen') && resp.status() === 200);
     await expect(this.textH2Klassenverwaltung).toHaveText('Klassenverwaltung');
+    await this.comboboxOrganisationInput.waitUntilLoadingIsDone();
+    await this.checkTableRow(0);
   }
 
   public async filterSchule(schule: string): Promise<void> {
@@ -76,6 +95,7 @@ export class KlasseManagementViewPage {
   public async deleteRowViaQuickAction(className: string): Promise<void> {
     this.clickIconTableRowLoeschen(className);
     await this.clickButtonLoeschen();
+    await this.page.waitForResponse(/api\/organisationen\/.*\/klasse/);
     await this.buttonSchliesseKlasseLoeschenDialog.click();
   }
 
@@ -100,5 +120,9 @@ export class KlasseManagementViewPage {
 
   public async clickIconTableRowLoeschen(className: string): Promise<void> {
     await this.iconTableRowDelete(className).click();
+  }
+
+  public setCurrentUserIsLandesadministrator(v: boolean): void {
+    this.currentUserIsLandesadministrator = v;
   }
 }
