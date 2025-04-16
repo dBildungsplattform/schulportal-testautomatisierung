@@ -215,7 +215,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
       const colorOrange: string = 'rgb(255, 152, 37)';
       const colorRed: string = 'rgb(255, 85, 85)';
 
-      const headerPgae: HeaderPage = new HeaderPage(page);
+      const headerPage: HeaderPage = new HeaderPage(page);
       const loginPage: LoginPage = new LoginPage(page);
 
       await test.step(`Testdaten: Lehrer1 mit einer befristeten Schulzuordnung(noch 50 Tage gültig) und Lehrer2 mit einer befristeten Schulzuordnung(noch 12 Tage gültig) über die api anlegen`, async () => {
@@ -268,7 +268,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
           `Hinweis: Die Zuordnung dieses Benutzerkontos zu der Schule "${testschuleName}" mit der Rolle "${rollenNameLehrer1}" ist bis zum ${timeLimitTeacherRolle1} befristet. ` +
           `Sollte dies nicht zutreffen, wenden Sie sich bitte an Ihre Schulleitung. Nach Ende der Zuordnung sind Funktionalitäten, die im Bezug zu dieser Schule und Rolle stehen, nicht mehr verfügbar.`;
 
-        const landingPage: LandingPage = await headerPgae.logout({ logoutViaStartPage: true });
+        const landingPage: LandingPage = await headerPage.logout({ logoutViaStartPage: true });
         await landingPage.buttonAnmelden.click();
         const startView: StartPage = await loginPage.login(userInfoLehrer1.username, userInfoLehrer1.password);
         await loginPage.updatePW();
@@ -285,7 +285,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
           `Hinweis: Die Zuordnung dieses Benutzerkontos zu der Schule "${testschuleName}" mit der Rolle "${rollenNameLehrer2}" ist bis zum ${timeLimitTeacherRolle2} befristet. ` +
           `Sollte dies nicht zutreffen, wenden Sie sich bitte an Ihre Schulleitung. Nach Ende der Zuordnung sind Funktionalitäten, die im Bezug zu dieser Schule und Rolle stehen, nicht mehr verfügbar.`;
 
-        const landingPage: LandingPage = await headerPgae.logout({ logoutViaStartPage: true });
+        const landingPage: LandingPage = await headerPage.logout({ logoutViaStartPage: true });
         await landingPage.buttonAnmelden.click();
         const startView: StartPage = await loginPage.login(userInfoLehrer2.username, userInfoLehrer2.password);
         await loginPage.updatePW();
