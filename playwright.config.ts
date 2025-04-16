@@ -3,10 +3,10 @@ import dotenv from 'dotenv';
 import * as path from 'node:path';
 import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __filename: string = fileURLToPath(import.meta.url);
+const __dirname: string = path.dirname(__filename);
 
-const FRONTEND_URL = process.env.FRONTEND_URL || '';
+const FRONTEND_URL: string = process.env.FRONTEND_URL || '';
 
 dotenv.config({
   path: './.env.dev',
@@ -38,7 +38,7 @@ export default defineConfig({
       name: 'chromium',
       use: {
         ...devices['Desktop Chrome'],
-        viewport: { width: 1280, height: 720 },
+        viewport: { width: 1920, height: 1080 },
         ignoreHTTPSErrors: true,
       },
     },
@@ -46,6 +46,7 @@ export default defineConfig({
       name: 'firefox',
       use: {
         ...devices['Desktop Firefox'],
+        viewport: { width: 1920, height: 1080 },
         ignoreHTTPSErrors: true,
       },
     },
@@ -53,6 +54,7 @@ export default defineConfig({
       name: 'webkit',
       use: {
         ...devices['Desktop Safari'],
+        viewport: { width: 1920, height: 1080 },
         ignoreHTTPSErrors: true,
       },
     },
@@ -61,12 +63,14 @@ export default defineConfig({
       name: 'msedge',
       use: {
         channel: 'msedge',
+        viewport: { width: 1920, height: 1080 },
       },
     },
     {
       name: 'chrome',
       use: {
         channel: 'chrome',
+        viewport: { width: 1920, height: 1080 },
       },
     },
     /* Test against mobile viewports. */
@@ -76,7 +80,7 @@ export default defineConfig({
     //      ...devices['iPhone 12 Pro'],
     //      viewport: { width: 390, height: 844 },
     //     ignoreHTTPSErrors: true
-    //   },   
+    //   },
     // },
     // {
     //   name: 'Mobile Safari',

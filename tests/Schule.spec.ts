@@ -10,7 +10,6 @@ import { generateSchulname, generateDienststellenNr } from '../base/testHelperGe
 import FromAnywhere from '../pages/FromAnywhere';
 import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
-import { waitForAPIResponse } from '../base/api/testHelper.page';
 
 let logoutViaStartPage: boolean = false;
 
