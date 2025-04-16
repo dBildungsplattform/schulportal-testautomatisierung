@@ -210,10 +210,10 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
     async ({ page }: PlaywrightTestArgs) => {
       let userInfoLehrer1: UserInfo;
       let userInfoLehrer2: UserInfo;
-      const nameRollLehrer1: string = await generateRolleName();
-      const nameRollLehrer2: string = await generateRolleName();
-      const colorNewsBoxLehrer1: string = 'rgb(255, 152, 37)';
-      const colorNewsBoxLehrer2: string = 'rgb(255, 85, 85)';
+      const rollenNameLehrer1: string = await generateRolleName();
+      const rollenNameLehrer2: string = await generateRolleName();
+      const colorOrange: string = 'rgb(255, 152, 37)';
+      const colorRed: string = 'rgb(255, 85, 85)';
 
       const headerPgae: HeaderPage = new HeaderPage(page);
       const loginPage: LoginPage = new LoginPage(page);
@@ -227,7 +227,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
           await generateNachname(),
           await generateVorname(),
           [await getSPId(page, email)],
-          nameRollLehrer1
+          rollenNameLehrer1
         );
         personIds.push(userInfoLehrer1.personId);
         rolleIds.push(userInfoLehrer1.rolleId);
@@ -248,7 +248,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
           await generateNachname(),
           await generateVorname(),
           [await getSPId(page, email)],
-          nameRollLehrer2
+          rollenNameLehrer2
         );
         personIds.push(userInfoLehrer2.personId);
         rolleIds.push(userInfoLehrer2.rolleId);
@@ -262,10 +262,10 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         );
       });
 
-      await test.step(`Lehrer1 meldet sich an und der orangene News-Box wird geprüft`, async () => {
+      await test.step(`Lehrer1 meldet sich an und die orangene News-Box wird geprüft`, async () => {
         const timeLimitTeacherRolle1: string = await generateCurrentDate({ days: 50, months: 0, formatDMY: true });
         const alertText: string =
-          `Hinweis: Die Zuordnung dieses Benutzerkontos zu der Schule "${testschuleName}" mit der Rolle "${nameRollLehrer1}" ist bis zum ${timeLimitTeacherRolle1} befristet. ` +
+          `Hinweis: Die Zuordnung dieses Benutzerkontos zu der Schule "${testschuleName}" mit der Rolle "${rollenNameLehrer1}" ist bis zum ${timeLimitTeacherRolle1} befristet. ` +
           `Sollte dies nicht zutreffen, wenden Sie sich bitte an Ihre Schulleitung. Nach Ende der Zuordnung sind Funktionalitäten, die im Bezug zu dieser Schule und Rolle stehen, nicht mehr verfügbar.`;
 
         const landingPage: LandingPage = await headerPgae.logout({ logoutViaStartPage: true });
@@ -276,13 +276,13 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         currentUserIsLandesadministrator = false;
 
         await expect(page.getByText(alertText)).toBeVisible();
-        await expect(page.getByRole('alert')).toHaveCSS('background-color', colorNewsBoxLehrer1);
+        await expect(page.getByRole('alert')).toHaveCSS('background-color', colorOrange);
       });
 
-      await test.step(`Lehrer2 meldet sich an und der rote News-Box wird geprüft`, async () => {
+      await test.step(`Lehrer2 meldet sich an und die rote News-Box wird geprüft`, async () => {
         const timeLimitTeacherRolle2: string = await generateCurrentDate({ days: 12, months: 0, formatDMY: true });
         const alertText: string =
-          `Hinweis: Die Zuordnung dieses Benutzerkontos zu der Schule "${testschuleName}" mit der Rolle "${nameRollLehrer2}" ist bis zum ${timeLimitTeacherRolle2} befristet. ` +
+          `Hinweis: Die Zuordnung dieses Benutzerkontos zu der Schule "${testschuleName}" mit der Rolle "${rollenNameLehrer2}" ist bis zum ${timeLimitTeacherRolle2} befristet. ` +
           `Sollte dies nicht zutreffen, wenden Sie sich bitte an Ihre Schulleitung. Nach Ende der Zuordnung sind Funktionalitäten, die im Bezug zu dieser Schule und Rolle stehen, nicht mehr verfügbar.`;
 
         const landingPage: LandingPage = await headerPgae.logout({ logoutViaStartPage: true });
@@ -293,7 +293,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         currentUserIsLandesadministrator = false;
 
         await expect(page.getByText(alertText)).toBeVisible();
-        await expect(page.getByRole('alert')).toHaveCSS('background-color', colorNewsBoxLehrer2);
+        await expect(page.getByRole('alert')).toHaveCSS('background-color', colorRed);
       });
     }
   );
