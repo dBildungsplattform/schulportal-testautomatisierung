@@ -47,19 +47,19 @@ export class KlasseDetailsViewPage {
     this.buttonZurueckErgebnisliste = page.getByTestId('back-to-list-button');
   }
 
-  public async klasseBearbeiten(klasseName: string) {
+  public async klasseBearbeiten(klasseName: string): Promise<void> {
     await this.buttonBearbeiten.click();
     await this.inputKlassenname.fill(klasseName);
     await this.buttonSpeichern.click();
   }
 
-  public async deleteClass() {
+  public async deleteClass(): Promise<void> {
     await this.buttonKlasseLoeschenDialog.click();
     await this.buttonKlasseLoeschen.click();
     await this.buttonKlasseLoeschenClose.click();
   }
 
-  public async startDeleteRowViaQuickAction() {
+  public async startDeleteRowViaQuickAction(): Promise<void> {
     await this.buttonKlasseLoeschenDialog.click();
     await this.buttonKlasseLoeschen.click();
   }
