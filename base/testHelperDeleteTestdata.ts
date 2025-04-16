@@ -40,7 +40,7 @@ export async function deletePersonBySearchString(page: Page, searchString: strin
 export async function deleteKlasseByName(klassenName: string[], page: Page): Promise<void> {
   // klassenName ist ein array mit allen zu löschenden Klassen
   for (const item in klassenName) {
-    const klassenId: string = await getKlasseId(page, klassenName[item]);
-    await deleteKlasse(page, klassenId);
+    const klassenId: string | undefined = await getKlasseId(page, klassenName[item]);
+    if (klassenId) await deleteKlasse(page, klassenId);
   }
 }

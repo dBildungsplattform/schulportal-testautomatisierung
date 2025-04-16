@@ -5,11 +5,15 @@ export class ComboBox {
   private readonly overlayLocator: Locator;
   private readonly itemsLocator: Locator;
   private readonly modalToggle: Locator;
+  private readonly inputLocator: Locator;
+  private readonly loadingLocator: Locator;
 
   constructor(private readonly page: Page, private readonly locator: Locator) {
     this.overlayLocator = this.page.locator('div.v-overlay.v-menu');
     this.itemsLocator = this.page.locator('div.v-overlay.v-menu div.v-list-item');
     this.modalToggle = this.locator.locator('.v-field__append-inner');
+    this.inputLocator = this.locator.locator('input');
+    this.loadingLocator = this.locator.locator('.v-field__loader');
   }
 
   private async waitForData(): Promise<void> {
@@ -54,9 +58,19 @@ export class ComboBox {
     await this.modalToggle.click();
   }
 
+  public async clear(): Promise<void> {
+    await this.inputLocator.clear();
+  }
+
+  // only works on comboboxes, where loading is set properly
+  public async waitUntilLoadingIsDone(): Promise<void> {
+    return expect(this.loadingLocator.getByRole('progressbar')).toBeHidden();
+  }
+
   public async searchByTitle(searchString: string, exactMatch: boolean): Promise<void> {
-    await this.locator.click();
-    await this.locator.fill(searchString);
+    if ((await this.inputLocator.textContent()) == searchString) return;
+    await this.inputLocator.click();
+    await this.inputLocator.fill(searchString);
     let item: Locator;
 
     if (exactMatch) {
@@ -77,8 +91,8 @@ export class ComboBox {
   }
 
   public async validateItemNotExists(searchString: string, exactMatch: boolean): Promise<void> {
-    await this.locator.click();
-    await this.locator.fill(searchString);
+    await this.inputLocator.click();
+    await this.inputLocator.fill(searchString);
     let item: Locator;
 
     if (exactMatch) {

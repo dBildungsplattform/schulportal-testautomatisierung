@@ -54,7 +54,7 @@ export class PersonCreationViewPage {
     this.comboboxRolleClear = page.getByTestId('rollen-select').getByLabel('leeren');
     this.comboboxSchulstrukturknotenClear = page.getByTestId('organisation-select').getByLabel('leeren');
     this.organisation = page.getByTestId('organisation-select').locator('.v-field');
-    this.organisationInput = page.getByTestId('organisation-select').locator('input');
+    this.organisationInput = page.getByTestId('organisation-select');
     this.inputVorname = page.getByTestId('vorname-input').locator('.v-field__input');
     this.inputNachname = page.getByTestId('familienname-input').locator('.v-field__input');
     this.inputKopersnr = page.getByTestId('kopersnr-input').locator('.v-field__input');
@@ -62,7 +62,7 @@ export class PersonCreationViewPage {
     this.comboboxKlasse = page.getByTestId('klasse-select').locator('.v-field__input');
     this.buttonPersonAnlegen = page.getByTestId('person-creation-form-submit-button');
     this.comboboxOrganisationInput = new ComboBox(this.page, this.organisationInput);
-    this.rolleInput = page.getByTestId('rollen-select').locator('input');
+    this.rolleInput = page.getByTestId('rollen-select');
     this.comboboxRolleInput = new ComboBox(this.page, this.rolleInput);
 
     // Bestätigungsseite Klasse
