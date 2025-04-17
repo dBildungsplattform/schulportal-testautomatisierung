@@ -51,4 +51,10 @@ export class StartPage {
       await expect(this.cardItem(spName)).toBeVisible();
     }
   }
+
+  public async checkSpIsHidden(spNames: string[]): Promise<void> {
+    for (const spName of spNames) {
+      await expect(this.cardItem(spName)).toBeHidden();
+    }
+  }
 }

@@ -4,7 +4,11 @@ import { StartPage } from '../pages/StartView.page';
 import { LoginPage } from '../pages/LoginView.page';
 import { HeaderPage } from '../pages/Header.page';
 import { getSPId } from '../base/api/testHelperServiceprovider.page';
-import { createRolleAndPersonWithUserContext, setTimeLimitPersonenkontext, createPersonWithUserContext } from '../base/api/testHelperPerson.page';
+import {
+  createRolleAndPersonWithUserContext,
+  setTimeLimitPersonenkontext,
+  createPersonWithUserContext,
+} from '../base/api/testHelperPerson.page';
 import { addSystemrechtToRolle } from '../base/api/testHelperRolle.page';
 import { UserInfo } from '../base/api/testHelper.page';
 import { LONG, SHORT, STAGE } from '../base/tags';
@@ -17,9 +21,23 @@ import {
 } from '../base/testHelperGenerateTestdataNames';
 import { testschuleName } from '../base/organisation';
 import FromAnywhere from '../pages/FromAnywhere';
-import { email, itslearning, schulportaladmin } from '../base/sp';
+import {
+  email,
+  itslearning,
+  schulportaladmin,
+  kalender,
+  adressbuch,
+  opSH,
+  schoolSH,
+  webUntis,
+  anleitungen,
+  helpdeskKontaktieren,
+  psychosozialesBeratungsangebot,
+  schulrechtAZ,
+} from '../base/sp';
 import { typeLehrer } from '../base/rollentypen.ts';
 import { generateCurrentDate } from '../base/testHelperUtils.ts';
+import { religionslehrkraft, itslearningLehrkraft, ersatzschullehrkraft } from '../base/rollen.ts';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -144,85 +162,6 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         await generateVorname(),
         idSPs,
         await generateRolleName()
-      );
-      personIds.push(userInfo.personId);
-      rolleIds.push(userInfo.rolleId);
-      await header.logout({ logoutViaStartPage: true });
-
-      // Test durchführen
-      await landing.buttonAnmelden.click();
-      await login.login(userInfo.username, userInfo.password);
-      await login.updatePW();
-      currentUserIsLandesadministrator = false;
-      await startseite.validateStartPageIsLoaded();
-      await test.step(`Prüfen, dass die Kachel E-Mail angezeigt wird und die Kachel Schulportal-Administration nicht angezeigt wird`, async () => {
-        await expect(startseite.cardItemSchulportalAdministration).toBeHidden();
-        await startseite.checkSpIsVisible([itslearning]);
-      });
-      // #TODO: wait for the last request in the test
-      // sometimes logout breaks the test because of interrupting requests
-      // logoutViaStartPage = true is a workaround
-      logoutViaStartPage = true;
-    }
-  );
-
-  test(
-    'Mit allen bestehenden Rollen der Rollenart LEHR prüfen, dass die korrekten Service Provider auf der Startseite angezeigt werden ',
-    { tag: [LONG, SHORT, STAGE] },
-    async ({ page }: PlaywrightTestArgs) => {
-      const landing: LandingPage = new LandingPage(page);
-      const login: LoginPage = new LoginPage(page);
-      const header: HeaderPage = new HeaderPage(page);
-      const startseite: StartPage = new StartPage(page);
-
-      const NameRollenOhneMerkmale: string[] = [
-        'Ev./Kat. Religionslehrkraft',
-        'itslearning-Lehrkraft',
-        'Ersatzschullehrkraft'
-      ];
-      const NameRollenKopersPflicht: string[] = [
-        'Student im Praxissemester', //befristungPflicht
-        'LiV', //befristungPflicht, kopersNrPflicht
-        'Lehrkraft', //kopersNrPflicht
-        'Vertretungslehrkraft', //befristungPflicht, kopersNrPflicht
-        'Ev./Kat. Religionslehrkraft',
-        'Pilotprojekt-Schulverwaltungskraft', //kopersNrPflicht
-        'itslearning-Lehrkraft',
-        'Ersatzschullehrkraft',
-        'IQSH Mitarbeiter' //kopersNrPflicht
-      ];
-      const NameRollenBefristungPflicht: string[] = [
-        'Student im Praxissemester', //befristungPflicht
-        'LiV', //befristungPflicht, kopersNrPflicht
-        'Lehrkraft', //kopersNrPflicht
-        'Vertretungslehrkraft', //befristungPflicht, kopersNrPflicht
-        'Ev./Kat. Religionslehrkraft',
-        'Pilotprojekt-Schulverwaltungskraft', //kopersNrPflicht
-        'itslearning-Lehrkraft',
-        'Ersatzschullehrkraft',
-        'IQSH Mitarbeiter' //kopersNrPflicht
-      ];
-      const NameRollenKopersUndBefristungPflicht: string[] = [
-        'Student im Praxissemester', //befristungPflicht
-        'LiV', //befristungPflicht, kopersNrPflicht
-        'Lehrkraft', //kopersNrPflicht
-        'Vertretungslehrkraft', //befristungPflicht, kopersNrPflicht
-        'Ev./Kat. Religionslehrkraft',
-        'Pilotprojekt-Schulverwaltungskraft', //kopersNrPflicht
-        'itslearning-Lehrkraft',
-        'Ersatzschullehrkraft',
-        'IQSH Mitarbeiter' //kopersNrPflicht
-      ];
-
-      // Testdaten: Für jede Rolle einen Benutzer anlegen
-      const idSPs: string[] = [await getSPId(page, 'itslearning')];
-      const userInfo: UserInfo = await createPersonWithUserContext(
-        page,
-        testschuleName,
-        await generateNachname(),
-        await generateVorname(),
-        nameRolle,
-        await generateKopersNr()
       );
       personIds.push(userInfo.personId);
       rolleIds.push(userInfo.rolleId);
@@ -379,6 +318,78 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         await expect(page.getByText(alertText)).toBeVisible();
         await expect(page.getByRole('alert')).toHaveCSS('background-color', colorRed);
       });
+    }
+  );
+
+  test(
+    'Für alle bestehenden Rollen der Rollenart LEHR prüfen, dass die korrekten Service Provider auf der Startseite angezeigt werden ',
+    { tag: [LONG, SHORT, STAGE] },
+    async ({ page }: PlaywrightTestArgs) => {
+      const landing: LandingPage = new LandingPage(page);
+      const login: LoginPage = new LoginPage(page);
+      const header: HeaderPage = new HeaderPage(page);
+      const startseite: StartPage = new StartPage(page);
+
+      /* 
+      Rollen ohne Merkmale
+      Lehrer1: religionslehrkraft
+      Lehrer2: itslearningLehrkraft
+      Lehrer3: ersatzschullehrkraft
+
+      Rollen mit KopersPflicht
+      Lehrer4: 'Lehrkraft'
+      Lehrer5: 'Pilotprojekt-Schulverwaltungskraft'
+      Lehrer6:'IQSH Mitarbeiter'
+
+      Rollen mit Befristungspflicht
+      Lehrer7: 'Student im Praxissemester'
+
+      Rollen mit Kopers- und Befristungspflicht
+      Lehrer8: 'LiV'
+      Lehrer9: 'Vertretungslehrkraft'
+      */
+
+      // Rollen ohne Merkmale
+      await test.step(`Lehrer1 mit der Rolle ${religionslehrkraft} meldet sich an`, async () => {
+        // Testdaten: Lehrer anlegen mit der bestehenden Rolle anlegen
+        const userInfoLehrer1: UserInfo = await createPersonWithUserContext(
+          page,
+          testschuleName,
+          await generateNachname(),
+          await generateVorname(),
+          religionslehrkraft,
+          undefined
+        );
+
+        personIds.push(userInfoLehrer1.personId);
+        await header.logout({ logoutViaStartPage: true });
+
+        // Lehrer1 meldet sich
+        await landing.buttonAnmelden.click();
+        await login.login(userInfoLehrer1.username, userInfoLehrer1.password);
+        await login.updatePW();
+        currentUserIsLandesadministrator = false;
+
+        // Prüfen, dass dem Lehrer auf der Startseite die erwarteten Angebote angezeigt werden
+        const expectedSPsRolleReligionslehrkraft: string[] = [
+          adressbuch,
+          email,
+          kalender,
+          opSH,
+          schoolSH,
+          webUntis,
+          anleitungen,
+          helpdeskKontaktieren,
+          psychosozialesBeratungsangebot,
+          schulrechtAZ,
+        ];
+        await startseite.validateStartPageIsLoaded();
+        await startseite.checkSpIsVisible(expectedSPsRolleReligionslehrkraft);
+        await startseite.checkSpIsHidden([schulportaladmin]);
+      });
+
+      logoutViaStartPage = true;
+      await page.pause();
     }
   );
 });
