@@ -37,7 +37,13 @@ import {
 } from '../base/sp';
 import { typeLehrer } from '../base/rollentypen.ts';
 import { generateCurrentDate } from '../base/testHelperUtils.ts';
-import { religionslehrkraft, itslearningLehrkraft, ersatzschullehrkraft } from '../base/rollen.ts';
+import {
+  religionslehrkraftRolle,
+  itslearningLehrkraftRolle,
+  lehrkraftOeffentlichRolle,
+  pilotProjektSchulverwaltungskraftRolle,
+  iQshMitarbeiterRolle,
+} from '../base/rollen.ts';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -322,8 +328,8 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
   );
 
   test(
-    'Für alle bestehenden Rollen der Rollenart LEHR prüfen, dass die korrekten Service Provider auf der Startseite angezeigt werden ',
-    { tag: [LONG, SHORT, STAGE] },
+    'Für alle bestehenden Rollen der Rollenart LEHR prüfen, dass die korrekten Service Provider auf der Startseite angezeigt werden',
+    { tag: [LONG, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
       const landing: LandingPage = new LandingPage(page);
       const login: LoginPage = new LoginPage(page);
@@ -331,16 +337,6 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
       const startseite: StartPage = new StartPage(page);
 
       /* 
-      Rollen ohne Merkmale
-      Lehrer1: religionslehrkraft
-      Lehrer2: itslearningLehrkraft
-      Lehrer3: ersatzschullehrkraft
-
-      Rollen mit KopersPflicht
-      Lehrer4: 'Lehrkraft'
-      Lehrer5: 'Pilotprojekt-Schulverwaltungskraft'
-      Lehrer6:'IQSH Mitarbeiter'
-
       Rollen mit Befristungspflicht
       Lehrer7: 'Student im Praxissemester'
 
@@ -349,26 +345,80 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
       Lehrer9: 'Vertretungslehrkraft'
       */
 
-      // Rollen ohne Merkmale
-      await test.step(`Lehrer1 mit der Rolle ${religionslehrkraft} meldet sich an`, async () => {
-        // Testdaten: Lehrer anlegen mit der bestehenden Rolle anlegen
-        const userInfoLehrer1: UserInfo = await createPersonWithUserContext(
+      let userInfoLehrerReligionsLehrkraft: UserInfo;
+      let userInfoLehrerItslearningLehrkraft: UserInfo;
+      let userInfoLehrerLehrkraft: UserInfo;
+      let userInfoLehrerPilotProjektSchulverwaltungskraft: UserInfo;
+      let userInfoLehrerIqshMitarbeiter: UserInfo;
+
+      let userInfoLehrer5: UserInfo;
+      let userInfoLehrer6: UserInfo;
+      let userInfoLehrer7: UserInfo;
+      let userInfoLehrer8: UserInfo;
+      let userInfoLehrer9: UserInfo;
+
+      await test.step(`Testdaten: Lehrer anlegen mit einer bestehenden Rolle`, async () => {
+        // Rollen ohne Merkmale
+        userInfoLehrerReligionsLehrkraft = await createPersonWithUserContext(
           page,
           testschuleName,
           await generateNachname(),
           await generateVorname(),
-          religionslehrkraft,
-          undefined
+          religionslehrkraftRolle,
         );
+        personIds.push(userInfoLehrerReligionsLehrkraft.personId);
 
-        personIds.push(userInfoLehrer1.personId);
-        await header.logout({ logoutViaStartPage: true });
+        userInfoLehrerItslearningLehrkraft = await createPersonWithUserContext(
+          page,
+          testschuleName,
+          await generateNachname(),
+          await generateVorname(),
+          itslearningLehrkraftRolle,
+        );
+        personIds.push(userInfoLehrerItslearningLehrkraft.personId);
 
-        // Lehrer1 meldet sich
-        await landing.buttonAnmelden.click();
-        await login.login(userInfoLehrer1.username, userInfoLehrer1.password);
-        await login.updatePW();
+        // Rollen mit KopersPflicht
+        userInfoLehrerLehrkraft = await createPersonWithUserContext(
+          page,
+          testschuleName,
+          await generateNachname(),
+          await generateVorname(),
+          lehrkraftOeffentlichRolle,
+          await generateKopersNr()
+        );
+        personIds.push(userInfoLehrerLehrkraft.personId);
+
+        userInfoLehrerPilotProjektSchulverwaltungskraft = await createPersonWithUserContext(
+          page,
+          testschuleName,
+          await generateNachname(),
+          await generateVorname(),
+          pilotProjektSchulverwaltungskraftRolle,
+          await generateKopersNr()
+        );
+        personIds.push(userInfoLehrerPilotProjektSchulverwaltungskraft.personId);
+
+        userInfoLehrerIqshMitarbeiter = await createPersonWithUserContext(
+          page,
+          testschuleName,
+          await generateNachname(),
+          await generateVorname(),
+          iQshMitarbeiterRolle,
+          await generateKopersNr()
+        );
+        personIds.push(userInfoLehrerIqshMitarbeiter.personId);
+
+        // Rollen mit Befristungspflicht
+      });
+
+      
+      await test.step(`Lehrer mit der Rolle ${religionslehrkraftRolle} meldet sich an`, async () => {
+        // Lehrer meldet sich
         currentUserIsLandesadministrator = false;
+        await header.logout({ logoutViaStartPage: true });
+        await landing.buttonAnmelden.click();
+        await login.login(userInfoLehrerReligionsLehrkraft.username, userInfoLehrerReligionsLehrkraft.password);
+        await login.updatePW();
 
         // Prüfen, dass dem Lehrer auf der Startseite die erwarteten Angebote angezeigt werden
         const expectedSPsRolleReligionslehrkraft: string[] = [
@@ -385,6 +435,102 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         ];
         await startseite.validateStartPageIsLoaded();
         await startseite.checkSpIsVisible(expectedSPsRolleReligionslehrkraft);
+        await startseite.checkSpIsHidden([schulportaladmin]);
+      });
+
+      
+      await test.step(`Lehrer mit der Rolle ${itslearningLehrkraftRolle} meldet sich an`, async () => {
+        // Lehrer meldet sich
+        await header.logout({ logoutViaStartPage: true });
+        await landing.buttonAnmelden.click();
+        await login.login(userInfoLehrerItslearningLehrkraft.username, userInfoLehrerItslearningLehrkraft.password);
+        await login.updatePW();
+
+        // Prüfen, dass dem Lehrer auf der Startseite die erwarteten Angebote angezeigt werden
+        const expectedSPsRolleReligionslehrkraft: string[] = [itslearning];
+        await startseite.validateStartPageIsLoaded();
+        await startseite.checkSpIsVisible(expectedSPsRolleReligionslehrkraft);
+        await startseite.checkSpIsHidden([schulportaladmin, email]);
+      });
+
+      await test.step(`Lehrer mit der Rolle ${lehrkraftOeffentlichRolle} meldet sich an`, async () => {
+        // Lehrer meldet sich
+        await header.logout({ logoutViaStartPage: true });
+        await landing.buttonAnmelden.click();
+        await login.login(userInfoLehrerLehrkraft.username, userInfoLehrerLehrkraft.password);
+        await login.updatePW();
+
+        // Prüfen, dass dem Lehrer auf der Startseite die erwarteten Angebote angezeigt werden
+        const expectedSPsRollelehrkraftOeffentlich: string[] = [
+          email,
+          kalender,
+          adressbuch,
+          opSH,
+          schoolSH,
+          webUntis,
+          anleitungen,
+          schulrechtAZ,
+          helpdeskKontaktieren,
+          psychosozialesBeratungsangebot,
+        ];
+        await startseite.validateStartPageIsLoaded();
+        await startseite.checkSpIsVisible(expectedSPsRollelehrkraftOeffentlich);
+        await startseite.checkSpIsHidden([schulportaladmin]);
+      });
+
+      await test.step(`Lehrer mit der Rolle ${pilotProjektSchulverwaltungskraftRolle} meldet sich an`, async () => {
+        // Lehrer meldet sich
+        await header.logout({ logoutViaStartPage: true });
+        await landing.buttonAnmelden.click();
+        await login.login(
+          userInfoLehrerPilotProjektSchulverwaltungskraft.username,
+          userInfoLehrerPilotProjektSchulverwaltungskraft.password
+        );
+        await login.updatePW();
+
+        // Prüfen, dass dem Lehrer auf der Startseite die erwarteten Angebote angezeigt werden
+        const expectedSPsRollePilotProjektSchulverwaltungskraft: string[] = [
+          email,
+          kalender,
+          adressbuch,
+          schoolSH,
+          webUntis,
+          anleitungen,
+          schulrechtAZ,
+          helpdeskKontaktieren,
+          psychosozialesBeratungsangebot,
+        ];
+        await startseite.validateStartPageIsLoaded();
+        await startseite.checkSpIsVisible(expectedSPsRollePilotProjektSchulverwaltungskraft);
+        await startseite.checkSpIsHidden([schulportaladmin, opSH]);
+      });
+
+      await test.step(`Lehrer mit der Rolle ${iQshMitarbeiterRolle} meldet sich an`, async () => {
+        // Lehrer meldet sich
+        await header.logout({ logoutViaStartPage: true });
+        await landing.buttonAnmelden.click();
+        await login.login(
+          userInfoLehrerIqshMitarbeiter.username,
+          userInfoLehrerIqshMitarbeiter.password
+        );
+        await login.updatePW();
+
+        // Prüfen, dass dem Lehrer auf der Startseite die erwarteten Angebote angezeigt werden
+        const expectedSPsRolleIqshMitarbeiter: string[] = [
+          email,
+          kalender,
+          adressbuch,
+          itslearning,
+          opSH,
+          schoolSH,
+          webUntis,
+          anleitungen,
+          schulrechtAZ,
+          helpdeskKontaktieren,
+          psychosozialesBeratungsangebot,
+        ];
+        await startseite.validateStartPageIsLoaded();
+        await startseite.checkSpIsVisible(expectedSPsRolleIqshMitarbeiter);
         await startseite.checkSpIsHidden([schulportaladmin]);
       });
 

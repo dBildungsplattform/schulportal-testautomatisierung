@@ -27,7 +27,8 @@ export async function createPerson(
   rolleId: string,
   koPersNr?: string,
   klasseId?: string,
-  merkmalelName?: string[]
+  merkmalelName?: string[],
+  dateBefristung?: string
 ): Promise<UserInfo> {
   let requestData: any;
 
@@ -84,12 +85,13 @@ export async function createPersonWithUserContext(
   familienname: string,
   vorname: string,
   rolleName: string,
-  koPersNr?: string
+  koPersNr?: string,
+  dateBefristung?: string
 ): Promise<UserInfo> {
   // Organisation wird nicht angelegt, da diese zur Zeit nicht gelöscht werden kann
   const organisationId: string = await getOrganisationId(page, organisationName);
   const rolleId: string = await getRolleId(page, rolleName);
-  const userInfo: UserInfo = await createPerson(page, familienname, vorname, organisationId, rolleId, koPersNr);
+  const userInfo: UserInfo = await createPerson(page, familienname, vorname, organisationId, rolleId, koPersNr, dateBefristung);
   return userInfo;
 }
 
@@ -162,10 +164,13 @@ export async function deletePerson(page: Page, personId: string): Promise<void> 
 }
 
 export async function getPersonId(page: Page, searchString: string): Promise<string> {
-  const response: APIResponse = await page.request.get(FRONTEND_URL + `api/personen-frontend?suchFilter=${searchString}`, {
-    failOnStatusCode: false,
-    maxRetries: 3,
-  });
+  const response: APIResponse = await page.request.get(
+    FRONTEND_URL + `api/personen-frontend?suchFilter=${searchString}`,
+    {
+      failOnStatusCode: false,
+      maxRetries: 3,
+    }
+  );
   expect(response.status()).toBe(200);
   const json = await response.json();
   return json.items[0].person.id;
