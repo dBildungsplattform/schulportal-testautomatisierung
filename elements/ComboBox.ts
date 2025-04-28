@@ -86,7 +86,7 @@ export class ComboBox {
       });
     }
     await item.waitFor({ state: 'visible' });
-    await item.click();
+    await item.click({ delay: 1000 });
   }
 
   public async validateItemNotExists(searchString: string, exactMatch: boolean): Promise<void> {
