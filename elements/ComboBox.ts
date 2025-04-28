@@ -73,6 +73,7 @@ export class ComboBox {
       return;
     }
     await this.inputLocator.click();
+    await this.inputLocator.clear();
     await this.inputLocator.pressSequentially(searchString);
     let item: Locator;
 
