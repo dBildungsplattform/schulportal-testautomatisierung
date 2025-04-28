@@ -732,6 +732,8 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         await startseite.checkSpIsVisible(expectedSPsRolleIqshMitarbeiter);
         await startseite.checkSpIsHidden([schulportaladmin, itslearning]);
       });
+
+      logoutViaStartPage = true;
     }
   );
 });
