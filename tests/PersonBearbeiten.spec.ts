@@ -24,6 +24,7 @@ import { generateCurrentDate, gotoTargetURL } from '../base/testHelperUtils.ts';
 import { lehrkraftOeffentlichRolle, lehrkraftInVertretungRolle } from '../base/rollen.ts';
 import FromAnywhere from '../pages/FromAnywhere';
 import { befristungPflicht, kopersNrPflicht } from '../base/merkmale.ts';
+import { createKlasse } from '../base/api/testHelperOrganisation.page.ts';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -809,6 +810,65 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(personDetailsView.radioButtonUnbefristet).toBeVisible();
         await expect(personDetailsView.radioButtonUnbefristetDisabled).toBeDisabled();
       });
+    }
+  );
+
+
+
+
+
+  test.only(
+    'Einen Schüler von einer Klasse in eine Andere versetzen',
+    { tag: [LONG, STAGE] },
+    async ({ page }: PlaywrightTestArgs) => {
+      let userInfoSchueler: UserInfo;
+      const klasse = await createKlasse(page, )
+
+      await test.step('Testdaten: Schüler mit einer Rolle(LERN) über die api anlegen', async () => {
+
+
+        userInfoLehrer = await createRolleAndPersonWithUserContext(
+          page,
+          testschule665Name,
+          typeSchueler,
+          await generateNachname(),
+          await generateVorname(),
+          [await getSPId(page, itslearning)],
+          (await generateRolleName()),
+          undefined,
+          await getKlasseId()
+          3K
+        );
+        usernames.push(userInfoLehrer.username);
+        rolleIds.push(userInfoLehrer.rolleId);
+      });
+
+      const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
+
+      const personDetailsView: PersonDetailsViewPage = await test.step(`Gesamtübersicht öffnen`, async () => {
+        await gotoTargetURL(page, 'admin/personen');
+        await personManagementView.searchBySuchfeld(userInfoLehrer.username);
+        return await personManagementView.openGesamtuebersichtPerson(page, userInfoLehrer.username);
+      });
+
+      await test.step(`Gesamtübersicht Abschnitte prüfen`, async () => {
+        await expect(personDetailsView.textH2BenutzerBearbeiten).toHaveText('Benutzer bearbeiten');
+        await expect(personDetailsView.textH3PasswortHeadline).toBeVisible();
+        await expect(personDetailsView.textH3SchulzuordnungHeadline).toBeVisible();
+        await expect(personDetailsView.textH3LockPersonHeadline).toBeVisible();
+      });
+
+      await test.step(`Unsichtbarkeit des 2FA Abschnitts prüfen`, async () => {
+        await expect(personDetailsView.textH3TwoFA).toBeHidden();
+        await expect(personDetailsView.textTokenIstEingerichtetInfo).toBeHidden();
+        await expect(personDetailsView.textNeuenTokenEinrichtenInfo).toBeHidden();
+        await expect(personDetailsView.textKeinTokenIstEingerichtet).toBeHidden();
+        await expect(personDetailsView.button2FAEinrichten).toBeHidden();
+      });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 });

@@ -15,6 +15,7 @@ import FromAnywhere from '../pages/FromAnywhere';
 import { email, itslearning, schulportaladmin } from '../base/sp';
 import { typeLehrer } from '../base/rollentypen.ts';
 import { generateCurrentDate } from '../base/testHelperUtils.ts';
+import { getKlasseId } from '../base/api/testHelperOrganisation.page.ts';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
