@@ -338,7 +338,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
       let userInfoLehrerVertretungslehrkraft: UserInfo;
 
       await test.step(`Testdaten: Lehrer mit Rollen anlegen`, async () => {
-        // Rollen ohne Merkmale
+        // Lehrer mit Rollen ohne Merkmale
         userInfoLehrerReligionsLehrkraft = await createRolleAndPersonWithUserContext(
           page,
           testschuleName,
@@ -374,7 +374,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         personIds.push(userInfoLehrerItslearningLehrkraft.personId);
         rolleIds.push(userInfoLehrerItslearningLehrkraft.rolleId);
 
-        // Rollen mit KopersPflicht
+        // Lehrer mit Rollen mit KopersPflicht
         userInfoLehrerLehrkraft = await createRolleAndPersonWithUserContext(
           page,
           testschuleName,
@@ -453,7 +453,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         personIds.push(userInfoLehrerIqshMitarbeiter.personId);
         rolleIds.push(userInfoLehrerIqshMitarbeiter.rolleId);
 
-        // Rollen mit Befristungspflicht
+        // Lehrer mit Rollen mit Befristungspflicht
         userInfoLehrerStudentImPraxissemester = await createRolleAndPersonWithUserContext(
           page,
           testschuleName,
@@ -481,7 +481,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         personIds.push(userInfoLehrerStudentImPraxissemester.personId);
         rolleIds.push(userInfoLehrerStudentImPraxissemester.rolleId);
 
-        // Rollen mit Kopers- und Befristungspflicht
+        // Lehrer mit Rollen mit Kopers- und Befristungspflicht
         userInfoLehrerLiV = await createRolleAndPersonWithUserContext(
           page,
           testschuleName,
