@@ -319,7 +319,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
   );
 
   test(
-    'Für alle bestehenden Rollen der Rollenart LEHR prüfen, dass die korrekten Service Provider auf der Startseite angezeigt werden',
+    'Für alle Rollen der Rollenart LEHR prüfen, dass die korrekten Service Provider auf der Startseite angezeigt werden',
     { tag: [LONG, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
       const landing: LandingPage = new LandingPage(page);
@@ -327,17 +327,17 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
       const header: HeaderPage = new HeaderPage(page);
       const startseite: StartPage = new StartPage(page);
 
+      // Zu testende Lehrkräfte
       let userInfoLehrerReligionsLehrkraft: UserInfo;
       let userInfoLehrerItslearningLehrkraft: UserInfo;
       let userInfoLehrerLehrkraft: UserInfo;
       let userInfoLehrerPilotProjektSchulverwaltungskraft: UserInfo;
       let userInfoLehrerIqshMitarbeiter: UserInfo;
       let userInfoLehrerStudentImPraxissemester: UserInfo;
-
       let userInfoLehrerLiV: UserInfo;
       let userInfoLehrerVertretungslehrkraft: UserInfo;
 
-      await test.step(`Testdaten: Lehrer mit Rolle anlegen`, async () => {
+      await test.step(`Testdaten: Lehrer mit Rollen anlegen`, async () => {
         // Rollen ohne Merkmale
         userInfoLehrerReligionsLehrkraft = await createRolleAndPersonWithUserContext(
           page,
@@ -535,7 +535,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         rolleIds.push(userInfoLehrerVertretungslehrkraft.rolleId);
       });
 
-      await test.step(`Lehrer mit einer Rolle wie bei Religionslehrkraft meldet sich an`, async () => {
+      await test.step(`Lehrer mit einer Rolle wie bei einer Religionslehrkraft meldet sich an`, async () => {
         // Lehrer meldet sich
         currentUserIsLandesadministrator = false;
         await header.logout({ logoutViaStartPage: true });
@@ -558,10 +558,10 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         ];
         await startseite.validateStartPageIsLoaded();
         await startseite.checkSpIsVisible(expectedSPsRolleReligionslehrkraft);
-        await startseite.checkSpIsHidden([schulportaladmin]);
+        await startseite.checkSpIsHidden([schulportaladmin, itslearning]);
       });
 
-      await test.step(`Lehrer mit einer Rolle wie bei Itslearninglehrkraft meldet sich an`, async () => {
+      await test.step(`Lehrer mit einer Rolle wie bei einer Itslearninglehrkraft meldet sich an`, async () => {
         // Lehrer meldet sich
         await header.logout({ logoutViaStartPage: true });
         await landing.buttonAnmelden.click();
@@ -575,7 +575,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         await startseite.checkSpIsHidden([schulportaladmin, email]);
       });
 
-      await test.step(`Lehrer mit einer Rolle wie bei Lehrkraft meldet sich an`, async () => {
+      await test.step(`Lehrer mit einer Rolle wie bei einer Lehrkraft meldet sich an`, async () => {
         // Lehrer meldet sich
         await header.logout({ logoutViaStartPage: true });
         await landing.buttonAnmelden.click();
@@ -598,10 +598,10 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
 
         await startseite.validateStartPageIsLoaded();
         await startseite.checkSpIsVisible(expectedSPsRollelehrkraftOeffentlich);
-        await startseite.checkSpIsHidden([schulportaladmin]);
+        await startseite.checkSpIsHidden([schulportaladmin, itslearning]);
       });
 
-      await test.step(`Lehrer mit einer Rolle wie bei PilotProjektSchulverwaltungskraft meldet sich an`, async () => {
+      await test.step(`Lehrer mit einer Rolle wie bei einer PilotProjektSchulverwaltungskraft meldet sich an`, async () => {
         // Lehrer meldet sich
         await header.logout({ logoutViaStartPage: true });
         await landing.buttonAnmelden.click();
@@ -625,10 +625,10 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         ];
         await startseite.validateStartPageIsLoaded();
         await startseite.checkSpIsVisible(expectedSPsRollePilotProjektSchulverwaltungskraft);
-        await startseite.checkSpIsHidden([schulportaladmin, opSH]);
+        await startseite.checkSpIsHidden([schulportaladmin, opSH, itslearning]);
       });
 
-      await test.step(`Lehrer mit einer Rolle wie bei iQSHMitarbeiter meldet sich an`, async () => {
+      await test.step(`Lehrer mit einer Rolle wie bei einer iQSHMitarbeiter meldet sich an`, async () => {
         // Lehrer meldet sich
         await header.logout({ logoutViaStartPage: true });
         await landing.buttonAnmelden.click();
@@ -654,7 +654,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         await startseite.checkSpIsHidden([schulportaladmin]);
       });
 
-      await test.step(`Lehrer mit einer Rolle wie bei LehrerStudentImPraxissemester meldet sich an`, async () => {
+      await test.step(`Lehrer mit einer Rolle wie bei einer LehrerStudentImPraxissemester meldet sich an`, async () => {
         // Lehrer meldet sich
         await header.logout({ logoutViaStartPage: true });
         await landing.buttonAnmelden.click();
@@ -683,7 +683,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         await startseite.checkSpIsHidden([schulportaladmin]);
       });
 
-      await test.step(`Lehrer mit einer Rolle wie bei LehrerLiV meldet sich an`, async () => {
+      await test.step(`Lehrer mit einer Rolle wie bei einer LehrerLiV meldet sich an`, async () => {
         // Lehrer meldet sich
         await header.logout({ logoutViaStartPage: true });
         await landing.buttonAnmelden.click();
@@ -705,10 +705,10 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         ];
         await startseite.validateStartPageIsLoaded();
         await startseite.checkSpIsVisible(expectedSPsRolleIqshMitarbeiter);
-        await startseite.checkSpIsHidden([schulportaladmin]);
+        await startseite.checkSpIsHidden([schulportaladmin, itslearning]);
       });
 
-      await test.step(`Lehrer mit einer Rolle wie bei LehrerVertretungslehrkraft meldet sich an`, async () => {
+      await test.step(`Lehrer mit einer Rolle wie bei einer LehrerVertretungslehrkraft meldet sich an`, async () => {
         // Lehrer meldet sich
         await header.logout({ logoutViaStartPage: true });
         await landing.buttonAnmelden.click();
@@ -730,7 +730,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         ];
         await startseite.validateStartPageIsLoaded();
         await startseite.checkSpIsVisible(expectedSPsRolleIqshMitarbeiter);
-        await startseite.checkSpIsHidden([schulportaladmin]);
+        await startseite.checkSpIsHidden([schulportaladmin, itslearning]);
       });
     }
   );
