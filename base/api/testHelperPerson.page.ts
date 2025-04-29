@@ -162,10 +162,13 @@ export async function deletePerson(page: Page, personId: string): Promise<void> 
 }
 
 export async function getPersonId(page: Page, searchString: string): Promise<string> {
-  const response: APIResponse = await page.request.get(FRONTEND_URL + `api/personen-frontend?suchFilter=${searchString}`, {
-    failOnStatusCode: false,
-    maxRetries: 3,
-  });
+  const response: APIResponse = await page.request.get(
+    FRONTEND_URL + `api/personen-frontend?suchFilter=${searchString}`,
+    {
+      failOnStatusCode: false,
+      maxRetries: 3,
+    }
+  );
   expect(response.status()).toBe(200);
   const json = await response.json();
   return json.items[0].person.id;

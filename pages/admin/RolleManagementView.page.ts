@@ -27,7 +27,7 @@ export class RolleManagementViewPage {
   }
 
   public async rolleBearbeiten(roleName: string): Promise<RolleDetailsViewPage> {
-    await expect(this.page.getByText("Keine Daten")).not.toBeAttached();
+    await expect(this.page.getByText('Keine Daten')).not.toBeAttached();
     this.rowByRoleName(roleName).locator.click();
     return new RolleDetailsViewPage(this.page);
   }

@@ -22,7 +22,7 @@ export class LoginPage {
 
   constructor(page: Page) {
     this.page = page;
-    this.titleAnmeldung = page.getByTestId('login-page-title'); 
+    this.titleAnmeldung = page.getByTestId('login-page-title');
     this.titlePasswortFestlegen = page.getByTestId('update-password-title');
     this.titleUsername = page.locator('#kc-attempted-username');
     this.inputUsername = page.getByTestId('username-input');
@@ -30,7 +30,7 @@ export class LoginPage {
     this.inputNewPassword = page.getByTestId('new-password-input');
     this.inputConfirmPW = page.getByTestId('new-password-confirm-input');
     this.textInfoLogin = page.getByTestId('login-prompt-text');
-    this.textInfoPWUpdate = page.locator('.password-update-prompt'); 
+    this.textInfoPWUpdate = page.locator('.password-update-prompt');
     this.inputErrorMessage = page.locator('#input-error');
     this.textSpanAlertBox = page.locator('.pf-c-alert__title');
     this.buttonLogin = page.getByTestId('login-button');
@@ -41,7 +41,7 @@ export class LoginPage {
 
   async login(
     username: string = process.env.USER as string,
-    password: string = process.env.PW as string,
+    password: string = process.env.PW as string
   ): Promise<StartPage> {
     await expect(this.titleAnmeldung).toHaveText('Anmeldung');
     await expect(this.textInfoLogin).toHaveText('Bitte geben Sie Ihre persönlichen Zugangsdaten ein.');
@@ -53,10 +53,7 @@ export class LoginPage {
     return new StartPage(this.page);
   }
 
-  async loginCurrentUser(
-    username: string,
-    password: string,
-  ) {
+  async loginCurrentUser(username: string, password: string): Promise<void> {
     await expect(this.titleUsername).toHaveText(username);
     await expect(this.textInfoLogin).toHaveText('Bitte geben Sie Ihr aktuelles Passwort ein.');
     await this.inputPassword.click();
@@ -64,7 +61,7 @@ export class LoginPage {
     await this.buttonLogin.click();
   }
 
-  async updatePW(isEntryFromProfileView?: boolean) {
+  async updatePW(isEntryFromProfileView?: boolean): Promise<string> {
     const newPassword = generator.generate({ length: 8, numbers: true }) + '1Aa!';
     await expect(this.titlePasswortFestlegen).toHaveText('Passwort festlegen');
     await expect(this.textInfoPWUpdate).toHaveText('Bitte legen Sie ein neues, selbstgewähltes Passwort fest.');
@@ -73,7 +70,7 @@ export class LoginPage {
     await this.inputConfirmPW.click();
     await this.inputConfirmPW.fill(newPassword);
 
-    if(!isEntryFromProfileView) {
+    if (!isEntryFromProfileView) {
       await this.buttonSubmitPWChange.click();
     } else {
       await this.buttonSubmitPWChangeFromProfilView.click();
