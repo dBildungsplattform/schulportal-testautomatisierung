@@ -734,6 +734,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
       });
 
       logoutViaStartPage = true;
+      currentUserIsLandesadministrator = false;
     }
   );
 });
