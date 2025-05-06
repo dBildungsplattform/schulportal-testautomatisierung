@@ -68,7 +68,7 @@ export class ComboBox {
     return expect(this.loadingLocator.getByRole('progressbar')).toBeHidden();
   }
 
-  public async searchByTitle(searchString: string, exactMatch: boolean, waitForAPIResponseOrganisation?: boolean): Promise<void> {
+  public async searchByTitle(searchString: string, exactMatch: boolean, endpoint?: string): Promise<void> {
     const currentValue: string | null = await this.inputLocator.textContent();
     if (currentValue === searchString) {
       return;
@@ -89,8 +89,8 @@ export class ComboBox {
     }
     await item.waitFor({ state: 'visible' });
 
-    if(waitForAPIResponseOrganisation) {
-      await waitForAPIResponse(this.page, 'personenkontext-workflow/**');
+    if(endpoint) {
+      await waitForAPIResponse(this.page, endpoint);
     }
     await item.click();
   }
