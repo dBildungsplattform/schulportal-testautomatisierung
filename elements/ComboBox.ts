@@ -1,4 +1,5 @@
 import { expect, type Locator, Page } from '@playwright/test';
+import { waitForAPIResponse } from '../base/api/testHelper.page';
 
 const noDataMessage: string = 'Keine Daten gefunden.';
 export class ComboBox {
@@ -87,6 +88,7 @@ export class ComboBox {
       });
     }
     await item.waitFor({ state: 'visible' });
+    await waitForAPIResponse(this.page, 'personenkontext-workflow/**');
     await item.click();
   }
 
