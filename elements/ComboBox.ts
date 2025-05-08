@@ -89,9 +89,10 @@ export class ComboBox {
     }
     await item.waitFor({ state: 'visible' });
 
-    // When a Landesadministrator creates a new Landesadministrator and selects an organisation, we must wait for the api response which fills der combobox Rolle.
-    // This occurs in the test case 'Einen Benutzer mit der Rolle Landesadmin anlegen' (Person.spec.ts)
-    // In all other test cases we don't need the parameter 'endpoint'
+    // When creating a Landesadministrator, after selecting a Land as an organisation, we must wait for the personenkontext workflow endpoint to return rollen,
+    // because in that case the API call takes longer than in other cases.
+    // This only occurs in the test case 'Einen Benutzer mit der Rolle Landesadmin anlegen' (Person.spec.ts),
+    // in all other test cases we don't need the parameter 'endpoint'
     if (endpoint) {
       await waitForAPIResponse(this.page, endpoint);
     }
