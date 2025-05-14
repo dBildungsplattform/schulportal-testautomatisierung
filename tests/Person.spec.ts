@@ -183,7 +183,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       });
 
       await test.step(`Benutzer anlegen`, async () => {
-        await personCreationView.comboboxOrganisationInput.searchByTitle(schulstrukturknoten, true);
+        await personCreationView.comboboxOrganisationInput.searchByTitle(schulstrukturknoten, true, 'personenkontext-workflow/**');
         await personCreationView.comboboxRolle.click();
         await page.getByText(landesadminRolle, { exact: true }).click();
         await personCreationView.inputVorname.fill(vorname);
