@@ -6,6 +6,7 @@ import { SchuleCreationViewPage } from './admin/SchuleCreationView.page';
 import { SchuleManagementViewPage } from './admin/SchuleManagementView.page';
 import { KlasseManagementViewPage } from './admin/KlasseManagementView.page';
 import { PersonCreationViewPage } from './admin/PersonCreationView.page';
+import { PersonManagementViewPage } from './admin/PersonManagementView.page';
 
 export class MenuPage {
   readonly page: Page;
@@ -46,6 +47,11 @@ export class MenuPage {
     this.menueItemRolleAnlegen = page.getByTestId('rolle-creation-menu-item');
     this.menueItemSchuleAnlegen = page.getByTestId('schule-creation-menu-item');
     this.menuItemBenutzerImportieren = page.getByTestId('person-import-menu-item');
+  }
+
+  public async alleBenutzerAnzeigen(): Promise<PersonManagementViewPage> {
+    await this.menueItemAlleBenutzerAnzeigen.click();
+    return new PersonManagementViewPage(this.page);
   }
 
   public async rolleAnlegen(): Promise<RolleCreationViewPage> {
