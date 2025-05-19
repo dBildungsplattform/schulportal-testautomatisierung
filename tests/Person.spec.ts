@@ -414,7 +414,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       });
 
       await test.step(`Organisation 'Land Schleswig-Holstein' auswählen und Dropdown 'Rolle' prüfen`, async () => {
-        await personCreationView.comboboxOrganisationInput.searchByTitle(OrganisationLand, true);
+        await personCreationView.comboboxOrganisationInput.searchByTitle(OrganisationLand, true, 'personenkontext-workflow/**');
         await personCreationView.comboboxRolle.click();
         await expect(personCreationView.listboxRolle).toContainText(landesadminRolle);
         await expect(personCreationView.listboxRolle).not.toContainText(rolleLehr);
