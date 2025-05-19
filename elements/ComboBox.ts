@@ -1,4 +1,5 @@
 import { expect, type Locator, Page } from '@playwright/test';
+import { waitForAPIResponse } from '../base/api/testHelper.page';
 
 const noDataMessage: string = 'Keine Daten gefunden.';
 export class ComboBox {
@@ -67,7 +68,7 @@ export class ComboBox {
     return expect(this.loadingLocator.getByRole('progressbar')).toBeHidden();
   }
 
-  public async searchByTitle(searchString: string, exactMatch: boolean): Promise<void> {
+  public async searchByTitle(searchString: string, exactMatch: boolean, endpoint?: string): Promise<void> {
     const currentValue: string | null = await this.inputLocator.textContent();
     if (currentValue === searchString) {
       return;
@@ -87,6 +88,14 @@ export class ComboBox {
       });
     }
     await item.waitFor({ state: 'visible' });
+
+    // When creating a Landesadministrator, after selecting a Land as an organisation, we must wait for the personenkontext workflow endpoint to return rollen,
+    // because in that case the API call takes longer than in other cases.
+    // This only occurs in the test case 'Einen Benutzer mit der Rolle Landesadmin anlegen' (Person.spec.ts),
+    // in all other test cases we don't need the parameter 'endpoint'
+    if (endpoint) {
+      await waitForAPIResponse(this.page, endpoint);
+    }
     await item.click();
   }
 

@@ -226,7 +226,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
 
   test(
     'News-Box bei befristeten Schulzuordnungen testen',
-    { tag: [LONG, STAGE] },
+    { tag: [LONG] },
     async ({ page }: PlaywrightTestArgs) => {
       let userInfoLehrer1: UserInfo;
       let userInfoLehrer2: UserInfo;
