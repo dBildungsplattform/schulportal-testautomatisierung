@@ -1,5 +1,5 @@
-export const LONG = '@long';
-export const SHORT = '@short';
-export const STAGE = '@stage';
-export const SMOKE = '@smoke';
-export const BROWSER = '@crossBrowser';
+export const LONG: string = '@long';
+export const SHORT: string = '@short';
+export const STAGE: string = '@stage';
+export const SMOKE: string = '@smoke';
+export const BROWSER: string = '@crossBrowser';
