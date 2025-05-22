@@ -6,6 +6,7 @@ export class PersonManagementViewPage {
   readonly textH1Administrationsbereich: Locator;
   readonly textH2Benutzerverwaltung: Locator;
   readonly inputSuchfeld: Locator;
+  readonly filterResetButton: Locator;
   readonly buttonSuchen: Locator;
   readonly tableHeaderNachname: Locator;
   readonly tableHeaderVorname: Locator;
@@ -26,6 +27,7 @@ export class PersonManagementViewPage {
     this.textH1Administrationsbereich = page.getByTestId('admin-headline');
     this.textH2Benutzerverwaltung = page.getByTestId('layout-card-headline');
     this.inputSuchfeld = page.locator('[data-testid="search-filter-input"] input');
+    this.filterResetButton = page.locator('[data-testid="reset-filter-button"]');
     this.buttonSuchen = page.getByTestId('apply-search-filter-button');
     this.tableHeaderNachname = page.getByTestId('person-table').getByText('Nachname', { exact: true });
     this.tableHeaderVorname = page.getByTestId('person-table').getByText('Vorname', { exact: true });
@@ -73,5 +75,12 @@ export class PersonManagementViewPage {
   public async waitErgebnislisteIsLoaded(): Promise<void> {
     await this.page.waitForResponse('/api/dbiam/personenuebersicht');
     await expect(this.textH2Benutzerverwaltung).toContainText('Benutzerverwaltung');
+  }
+
+  public async resetFilter(): Promise<void> {
+    await this.filterResetButton.click();
+    await expect(this.inputSuchfeld).toHaveValue('');
+    await expect(this.comboboxMenuIconSchuleInput).toHaveValue('');
+    await this.waitErgebnislisteIsLoaded();
   }
 }
