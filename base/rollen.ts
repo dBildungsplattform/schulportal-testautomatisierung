@@ -1,5 +1,5 @@
-export const schuelerRolle = "itslearning-Schüler";
-export const landesadminRolle = "Landesadministrator";
-export const schuladminOeffentlichRolle = "Schuladministrator öffentlich";
-export const lehrkraftOeffentlichRolle = "Lehrkraft";
-export const lehrkraftInVertretungRolle = "LiV";
+export const schuelerRolle: string = 'itslearning-Schüler';
+export const landesadminRolle: string = 'Landesadministrator';
+export const schuladminOeffentlichRolle: string = 'Schuladministrator öffentlich';
+export const lehrkraftOeffentlichRolle: string = 'Lehrkraft';
+export const lehrkraftInVertretungRolle: string = 'LiV';

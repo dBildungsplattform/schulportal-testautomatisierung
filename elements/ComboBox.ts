@@ -1,4 +1,5 @@
 import { expect, type Locator, Page } from '@playwright/test';
+import { waitForAPIResponse } from '../base/api/testHelper.page';
 
 const noDataMessage: string = 'Keine Daten gefunden.';
 export class ComboBox {
@@ -67,27 +68,35 @@ export class ComboBox {
     return expect(this.loadingLocator.getByRole('progressbar')).toBeHidden();
   }
 
-  public async searchByTitle(searchString: string, exactMatch: boolean): Promise<void> {
-    if ((await this.inputLocator.textContent()) == searchString) return;
+  public async searchByTitle(searchString: string, exactMatch: boolean, endpoint?: string): Promise<void> {
+    const currentValue: string | null = await this.inputLocator.textContent();
+    if (currentValue === searchString) {
+      return;
+    }
     await this.inputLocator.click();
-    await this.inputLocator.fill(searchString);
+    await this.inputLocator.clear();
+    await this.inputLocator.pressSequentially(searchString);
     let item: Locator;
 
     if (exactMatch) {
       item = this.itemsLocator.filter({
-        // use regex to search for an exact match
         hasText: new RegExp(`^${searchString}$`),
       });
     } else {
-      // search for a string inside the item title
       item = this.itemsLocator.filter({
         has: this.page.getByText(searchString),
       });
     }
     await item.waitFor({ state: 'visible' });
-    // This delay is needed for testcases who are using the method searchByTitle several times. It guarantees that the next combobox data is loaded correctly
-    // TODO: we should improve the way we wait for items to be loaded when multiple comboboxes are clicked in sequence. we should maybe wait for another state or locator to ensure the dropdown menu is fully loaded
-    await item.click({ delay: 1000 });
+
+    // When creating a Landesadministrator, after selecting a Land as an organisation, we must wait for the personenkontext workflow endpoint to return rollen,
+    // because in that case the API call takes longer than in other cases.
+    // This only occurs in the test case 'Einen Benutzer mit der Rolle Landesadmin anlegen' (Person.spec.ts),
+    // in all other test cases we don't need the parameter 'endpoint'
+    if (endpoint) {
+      await waitForAPIResponse(this.page, endpoint);
+    }
+    await item.click();
   }
 
   public async validateItemNotExists(searchString: string, exactMatch: boolean): Promise<void> {
