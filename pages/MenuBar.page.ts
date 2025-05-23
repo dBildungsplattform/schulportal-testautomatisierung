@@ -49,6 +49,11 @@ export class MenuPage {
     this.menuItemBenutzerImportieren = page.getByTestId('person-import-menu-item');
   }
 
+  public async alleBenutzerAnzeigen(): Promise<PersonManagementViewPage> {
+    await this.menueItemAlleBenutzerAnzeigen.click();
+    return new PersonManagementViewPage(this.page);
+  }
+
   public async rolleAnlegen(): Promise<RolleCreationViewPage> {
     await this.menueItemRolleAnlegen.click();
     return new RolleCreationViewPage(this.page);

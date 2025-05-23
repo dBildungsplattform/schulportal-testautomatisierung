@@ -1,17 +1,19 @@
 import { expect, PlaywrightTestArgs, test } from '@playwright/test';
 import { UserInfo, waitForAPIResponse } from '../base/api/testHelper.page';
+import { getOrganisationId } from '../base/api/testHelperOrganisation.page.ts';
 import { createRolleAndPersonWithUserContext } from '../base/api/testHelperPerson.page';
 import { addSystemrechtToRolle, createRolle } from '../base/api/testHelperRolle.page';
 import { getSPId } from '../base/api/testHelperServiceprovider.page';
 import {
-  landSH,
-  testschuleName,
-  testschule665Name,
-  oeffentlichLandSH,
   ersatzLandSH,
+  landSH,
+  oeffentlichLandSH,
+  testschule665Name,
   testschuleDstNr,
+  testschuleName,
 } from '../base/organisation.ts';
 import { landesadminRolle, schuelerRolle, schuladminOeffentlichRolle } from '../base/rollen.ts';
+import { typeLehrer, typeSchueler } from '../base/rollentypen.ts';
 import { BROWSER, LONG, SHORT, STAGE } from '../base/tags';
 import { deletePersonenBySearchStrings, deleteRolleById, deleteRolleByName } from '../base/testHelperDeleteTestdata.ts';
 import {
@@ -20,18 +22,15 @@ import {
   generateRolleName,
   generateVorname,
 } from '../base/testHelperGenerateTestdataNames.ts';
-import { gotoTargetURL } from '../base/testHelperUtils.ts';
 import { PersonCreationViewPage } from '../pages/admin/PersonCreationView.page';
 import { PersonDetailsViewPage } from '../pages/admin/PersonDetailsView.page';
 import { PersonManagementViewPage } from '../pages/admin/PersonManagementView.page';
+import FromAnywhere from '../pages/FromAnywhere';
 import { HeaderPage } from '../pages/Header.page';
 import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
 import { MenuPage } from '../pages/MenuBar.page';
 import { StartPage } from '../pages/StartView.page';
-import FromAnywhere from '../pages/FromAnywhere';
-import { typeLehrer, typeSchueler } from '../base/rollentypen.ts';
-import { getOrganisationId } from '../base/api/testHelperOrganisation.page.ts';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -295,7 +294,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
         await startseite.cardItemSchulportalAdministration.click();
         await menue.menueItemBenutzerAnlegen.click();
-        await waitForAPIResponse(page, 'dbiam/personenuebersicht')
+        await waitForAPIResponse(page, 'dbiam/personenuebersicht');
         await expect(personCreationView.textH2PersonAnlegen).toHaveText('Neuen Benutzer hinzufügen');
         await personCreationView.comboboxRolle.click();
         await page.getByText(rolle, { exact: true }).click();
@@ -475,8 +474,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     'In der Ergebnisliste die Suchfunktion ausführen als Landesadmin',
     { tag: [LONG, SHORT, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
-      const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
-      const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
+      const startseite: StartPage = new StartPage(page);
+      const menu: MenuPage = await startseite.goToAdministration();
 
       const rolle: string = 'Lehrkraft';
       const vorname: string = await generateVorname();
@@ -485,15 +484,19 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const schulstrukturknoten: string = testschuleName;
 
       await test.step(`Benutzer Lehrkraft anlegen`, async () => {
-        await page.goto('/' + 'admin/personen/new');
+        const personCreationView: PersonCreationViewPage = await menu.personAnlegen();
         await personCreationView.createUser(schulstrukturknoten, rolle, vorname, nachname, kopersnr);
         await expect(personCreationView.textSuccess).toBeVisible();
         usernames.push(await personCreationView.dataBenutzername.innerText());
       });
 
-      await test.step(`Benutzerverwaltung öffnen und Suche nach Vornamen `, async () => {
-        await page.goto('/' + 'admin/personen');
+      const personManagementView: PersonManagementViewPage = await test.step('Benutzerverwaltung öffnen', async () => {
+        const personManagementView: PersonManagementViewPage = await menu.alleBenutzerAnzeigen();
         await expect(personManagementView.textH2Benutzerverwaltung).toHaveText('Benutzerverwaltung');
+        return personManagementView;
+      });
+
+      await test.step(`Suche nach Vornamen `, async () => {
         await personManagementView.inputSuchfeld.fill(vorname);
         await personManagementView.buttonSuchen.click();
         await expect(page.getByRole('cell', { name: vorname })).toBeVisible();
@@ -534,13 +537,16 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     'In der Ergebnisliste die Filterfunktion der Schulen benutzen als Landesadmin',
     { tag: [LONG, SHORT, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
-      const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
+      const startseite: StartPage = new StartPage(page);
+      const menu: MenuPage = await startseite.goToAdministration();
+      const personManagementView: PersonManagementViewPage = await menu.alleBenutzerAnzeigen();
 
-      await test.step(`Filter öffnen und Schule selektieren`, async () => {
-        await gotoTargetURL(page, 'admin/personen');
+      await test.step(`Benutzerverwaltung öffnen`, async () => {
         await expect(personManagementView.textH2Benutzerverwaltung).toHaveText('Benutzerverwaltung');
         await personManagementView.waitForData();
+      });
 
+      await test.step(`Filter öffnen und Schule selektieren`, async () => {
         // Fill the input with the name of the Schule and let the autocomplete find it
         await personManagementView.comboboxMenuIconSchuleInput.fill(testschule665Name);
 
@@ -803,8 +809,9 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     'Einen Benutzer über das FE löschen',
     { tag: [LONG, SHORT, STAGE, BROWSER] },
     async ({ page }: PlaywrightTestArgs) => {
+      const startseite: StartPage = new StartPage(page);
+      await startseite.goToAdministration();
       const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
-      const PersonDetailsView: PersonDetailsViewPage = new PersonDetailsViewPage(page);
       const header: HeaderPage = new HeaderPage(page);
 
       const vorname: string = await generateVorname();
@@ -819,14 +826,17 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       });
 
       await test.step(`Benutzer wieder löschen über das FE`, async () => {
-        await page.goto('/' + 'admin/personen');
         await personManagementView.inputSuchfeld.fill(nachname);
         await personManagementView.buttonSuchen.click();
-        await page.getByRole('cell', { name: nachname, exact: true }).click();
-        await PersonDetailsView.buttonDeletePerson.click();
-        await PersonDetailsView.buttonDeletePersonConfirm.click();
-        await PersonDetailsView.buttonCloseDeletePersonConfirm.click();
+        const personDetailsView: PersonDetailsViewPage = await personManagementView.openGesamtuebersichtPerson(
+          page,
+          nachname
+        );
+        await personDetailsView.buttonDeletePerson.click();
+        await personDetailsView.buttonDeletePersonConfirm.click();
+        await personDetailsView.buttonCloseDeletePersonConfirm.click();
         await expect(personManagementView.textH2Benutzerverwaltung).toHaveText('Benutzerverwaltung');
+        await personManagementView.resetFilter();
         // warten, dass die Seite mit dem Laden fertig ist, da z.B. icons mit ajax nachgeladen werden
         // dieses ist nur ein workaround; im FE muss noch eine Lösung für den Status 'Seite ist vollständig geladen' geschaffen werden
         await expect(header.iconMyProfil).toBeVisible();
