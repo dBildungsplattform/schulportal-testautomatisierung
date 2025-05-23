@@ -181,9 +181,9 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await menue.menueItemBenutzerAnlegen.click();
         await expect(personCreationView.textH2PersonAnlegen).toHaveText('Neuen Benutzer hinzufügen');
       });
-
+      await page.pause();
       await test.step(`Benutzer anlegen`, async () => {
-        await personCreationView.comboboxOrganisationInput.searchByTitle(schulstrukturknoten, true, 'personenkontext-workflow/**');
+        await personCreationView.comboboxOrganisationInput.searchByTitle(schulstrukturknoten, true);
         await personCreationView.comboboxRolle.click();
         await page.getByText(landesadminRolle, { exact: true }).click();
         await personCreationView.inputVorname.fill(vorname);
@@ -413,7 +413,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       });
 
       await test.step(`Organisation 'Land Schleswig-Holstein' auswählen und Dropdown 'Rolle' prüfen`, async () => {
-        await personCreationView.comboboxOrganisationInput.searchByTitle(OrganisationLand, true, 'personenkontext-workflow/**');
+        await personCreationView.comboboxOrganisationInput.searchByTitle(
+          OrganisationLand,
+          true
+        );
         await personCreationView.comboboxRolle.click();
         await expect(personCreationView.listboxRolle).toContainText(landesadminRolle);
         await expect(personCreationView.listboxRolle).not.toContainText(rolleLehr);
@@ -883,6 +886,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       });
 
       await test.step(`In der Combobox 'Organisation' eine Schule auswählen`, async () => {
+        await personCreationView.comboboxOrganisationInput.searchByTitle(testschuleName, false);
       });
 
       await test.step(`In der Combobox 'Rolle' 2 Rollen vom Typ LEHR selektieren und prüfen, dass danach keine Rollen mehr vom Type LERN angezeigt werden in der Combobox`, async () => {
