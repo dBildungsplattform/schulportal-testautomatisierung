@@ -181,7 +181,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await menue.menueItemBenutzerAnlegen.click();
         await expect(personCreationView.textH2PersonAnlegen).toHaveText('Neuen Benutzer hinzufügen');
       });
-      await page.pause();
+      
       await test.step(`Benutzer anlegen`, async () => {
         await personCreationView.comboboxOrganisationInput.searchByTitle(schulstrukturknoten, true);
         await personCreationView.comboboxRolle.click();
