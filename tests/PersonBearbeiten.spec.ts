@@ -10,7 +10,11 @@ import { getSPId } from '../base/api/testHelperServiceprovider.page.ts';
 import { UserInfo, waitForAPIResponse } from '../base/api/testHelper.page.ts';
 import { addSystemrechtToRolle } from '../base/api/testHelperRolle.page.ts';
 import { LONG, STAGE, BROWSER } from '../base/tags.ts';
-import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata.ts';
+import {
+  deletePersonenBySearchStrings,
+  deleteRolleById,
+  deleteKlasseByName,
+} from '../base/testHelperDeleteTestdata.ts';
 import { typeLehrer, typeSchueler, typeSchuladmin } from '../base/rollentypen.ts';
 import { landSH, testschuleName, testschule665Name, testschuleDstNr } from '../base/organisation.ts';
 import { email, itslearning } from '../base/sp.ts';
@@ -19,11 +23,14 @@ import {
   generateVorname,
   generateRolleName,
   generateKopersNr,
+  generateKlassenname,
 } from '../base/testHelperGenerateTestdataNames.ts';
 import { generateCurrentDate, gotoTargetURL } from '../base/testHelperUtils.ts';
 import { lehrkraftOeffentlichRolle, lehrkraftInVertretungRolle } from '../base/rollen.ts';
 import FromAnywhere from '../pages/FromAnywhere';
 import { befristungPflicht, kopersNrPflicht } from '../base/merkmale.ts';
+import { createKlasse, getKlasseId, getOrganisationId } from '../base/api/testHelperOrganisation.page.ts';
+import { MenuPage } from '../pages/MenuBar.page.ts';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -31,6 +38,7 @@ const ADMIN: string | undefined = process.env.USER;
 // The created test data will be deleted in the afterEach block
 let usernames: string[] = [];
 let rolleIds: string[] = [];
+let klasseNames: string[] = [];
 // This variable must be set to false in the testcase when the logged in user is changed
 let currentUserIsLandesadministrator: boolean = true;
 let logoutViaStartPage: boolean = false;
@@ -74,6 +82,11 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       if (rolleIds.length > 0) {
         await deleteRolleById(rolleIds, page);
         rolleIds = [];
+      }
+
+      if (klasseNames.length > 0) {
+        await deleteKlasseByName(klasseNames, page);
+        klasseNames = [];
       }
     });
 
@@ -221,6 +234,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await personDetailsView.waitForPageToBeLoaded();
       await personDetailsView.buttonEditSchulzuordnung.click();
       await personDetailsView.buttonAddSchulzuordnung.click();
+      await page.pause();
       await personDetailsView.organisationen.searchByTitle(testschuleName, false);
     });
 
@@ -809,6 +823,70 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(personDetailsView.radioButtonUnbefristet).toBeVisible();
         await expect(personDetailsView.radioButtonUnbefristetDisabled).toBeDisabled();
       });
+    }
+  );
+
+  test(
+    'Einen Schüler von einer Klasse in eine Andere versetzen',
+    { tag: [LONG, STAGE] },
+    async ({ page }: PlaywrightTestArgs) => {
+      // Testdaten anlegen: Schüler mit Rolle und 2 Klassen
+      const idSchule: string = await getOrganisationId(page, testschuleName);
+      const rolleName = await generateRolleName();
+      const klasseNameCurrent = await generateKlassenname();
+      const klasseIdCurrent = await createKlasse(page, idSchule, klasseNameCurrent);
+      const klasseNameNew = await generateKlassenname();
+      await createKlasse(page, idSchule, klasseNameNew);
+      const userInfoSchueler: UserInfo = await createRolleAndPersonWithUserContext(
+        page,
+        testschuleName,
+        typeSchueler,
+        await generateNachname(),
+        await generateVorname(),
+        [await getSPId(page, itslearning)],
+        rolleName,
+        undefined,
+        klasseIdCurrent
+      );
+      usernames.push(userInfoSchueler.username);
+      rolleIds.push(userInfoSchueler.rolleId);
+      klasseNames.push(klasseNameCurrent, klasseNameNew);
+
+      const personDetailsView: PersonDetailsViewPage = await test.step(`Gesamtübersicht Schüler öffnen `, async () => {
+        const startPage: StartPage = new StartPage(page);
+        const personManagementView = await startPage
+          .goToAdministration()
+          .then((menu: MenuPage) => menu.goToBenutzerAnzeigen());
+        await personManagementView.searchBySuchfeld(userInfoSchueler.username);
+        return await personManagementView.openGesamtuebersichtPerson(page, userInfoSchueler.username);
+      });
+
+      await test.step('Schüler versetzen', async () => {
+        await personDetailsView.buttonEditSchulzuordnung.click();
+        await page
+          .getByTestId('person-details-card')
+          .getByText(testschuleDstNr + ' (' + testschuleName + '): ' + rolleName + ' ' + klasseNameCurrent)
+          .click();
+        await personDetailsView.buttonVersetzen.click();
+        await personDetailsView.klassen.searchByTitle(klasseNameNew, false);
+        await page.getByTestId('klasse-change-submit-button').click();
+        await expect(page.getByRole('dialog')).toContainText(
+          `Wollen Sie den Schüler/die Schülerin aus Klasse ${klasseNameCurrent} in Klasse ${klasseNameNew} versetzen?`
+        );
+        await page.getByTestId('confirm-change-klasse-button').click();
+        await page.getByTestId('zuordnung-changes-save').click();
+        await page.getByTestId('change-klasse-success-close').click();
+      });
+
+      await test.step('In der Gesamtübersicht prüfen, dass der Schüler in die neue Klasse versetzt worden ist', async () => {
+        await expect(
+          page
+            .getByTestId('person-details-card')
+            .getByText(testschuleDstNr + ' (' + testschuleName + '): ' + rolleName + ' ' + klasseNameNew)
+        ).toBeVisible();
+      });
+
+      logoutViaStartPage = true;
     }
   );
 });
