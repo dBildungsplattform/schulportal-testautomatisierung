@@ -26,10 +26,12 @@ export class PersonDetailsViewPage {
   readonly textH3SchulzuordnungHeadline: Locator;
   readonly buttonEditSchulzuordnung: Locator;
   readonly buttonAddSchulzuordnung: Locator;
+  readonly buttonVersetzen: Locator;
   readonly comboboxOrganisation: Locator;
   readonly comboboxOrganisationInput: Locator;
   readonly comboboxOrganisationDialogBenutzerSperren: Locator;
   readonly comboboxRolle: Locator;
+  readonly comboboxKlasse: Locator;
   readonly inputKopersNr: Locator;
   readonly buttonSubmitAddSchulzuordnung: Locator;
   readonly buttonConfirmAddSchulzuordnung: Locator;
@@ -50,6 +52,7 @@ export class PersonDetailsViewPage {
 
   readonly organisationen: ComboBox;
   readonly rollen: ComboBox;
+  readonly klassen: ComboBox;
 
   // Benutzer sperren
   readonly textH3LockPersonHeadline: Locator;
@@ -98,6 +101,7 @@ export class PersonDetailsViewPage {
     this.textH3PasswortHeadline = page.locator(`//h3[text()='Passwort']`);
     this.buttonPwChange = page.getByTestId('open-password-reset-dialog-button');
     this.buttonPwReset = page.getByTestId('password-reset-button');
+    this.buttonVersetzen = page.getByTestId('klasse-change-button');
     this.textPwResetInfo = page.getByTestId('password-reset-info-text');
     this.inputPw = page.locator('[data-testid="password-output-field"] input');
     this.buttonClosePwreset = page.getByTestId('close-password-reset-dialog-button');
@@ -117,6 +121,7 @@ export class PersonDetailsViewPage {
     this.comboboxOrganisationDialogBenutzerSperren = page.getByTestId('person-lock-card').locator('.v-field__input');
     this.comboboxRolle = page.getByTestId('rolle-select');
     this.comboboxOrganisation = page.getByTestId('organisation-select');
+    this.comboboxKlasse = page.getByTestId('klassenname-input').getByRole('combobox');
 
     this.inputKopersNr = page.getByTestId('kopersnr-input').locator('.v-field__input');
     this.buttonSubmitAddSchulzuordnung = page.getByTestId('zuordnung-creation-submit-button');
@@ -127,6 +132,7 @@ export class PersonDetailsViewPage {
     this.buttonBefristungUnbefristet = page.getByLabel('Unbefristet');
     this.organisationen = new ComboBox(this.page, this.comboboxOrganisation);
     this.rollen = new ComboBox(this.page, this.comboboxRolle);
+    this.klassen = new ComboBox(this.page, this.comboboxKlasse);
     this.buttonBefristungAendern = page.getByTestId('befristung-change-button');
     this.buttonBefristungAendernSubmit = page.getByTestId('change-befristung-submit-button');
     this.buttonBefristungAendernConfirm = page.getByTestId('confirm-change-befristung-button');

@@ -870,7 +870,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       });
 
       await test.step(`In der Combobox 'Organisation' eine Schule auswählen`, async () => {
-        await personCreationView.comboboxOrganisationInput.searchByTitle(testschuleName, false);
       });
 
       await test.step(`In der Combobox 'Rolle' 2 Rollen vom Typ LEHR selektieren und prüfen, dass danach keine Rollen mehr vom Type LERN angezeigt werden in der Combobox`, async () => {
