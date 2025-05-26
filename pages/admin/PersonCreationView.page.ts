@@ -59,7 +59,7 @@ export class PersonCreationViewPage {
     this.inputNachname = page.getByTestId('familienname-input').locator('.v-field__input');
     this.inputKopersnr = page.getByTestId('kopersnr-input').locator('.v-field__input');
     this.comboboxSchulstrukturknoten = page.getByTestId('organisation-select').locator('.v-field__input');
-    this.comboboxKlasse = page.getByTestId('klasse-select').locator('.v-field__input');
+    this.comboboxKlasse = page.getByTestId('personenkontext-create-klasse-select').locator('.v-field__input');
     this.buttonPersonAnlegen = page.getByTestId('person-creation-form-submit-button');
     this.comboboxOrganisationInput = new ComboBox(this.page, this.organisationInput);
     this.rolleInput = page.getByTestId('rollen-select');
