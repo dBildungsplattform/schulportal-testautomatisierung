@@ -89,4 +89,9 @@ export class MenuPage {
     await this.menueItemBenutzerAnlegen.click();
     return new PersonCreationViewPage(this.page);
   }
+
+  public async goToBenutzerAnzeigen(): Promise<PersonManagementViewPage> {
+    await this.menueItemAlleBenutzerAnzeigen.click();
+    return new PersonManagementViewPage(this.page);
+  }
 }

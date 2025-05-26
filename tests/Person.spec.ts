@@ -181,9 +181,9 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await menue.menueItemBenutzerAnlegen.click();
         await expect(personCreationView.textH2PersonAnlegen).toHaveText('Neuen Benutzer hinzufügen');
       });
-
+      
       await test.step(`Benutzer anlegen`, async () => {
-        await personCreationView.comboboxOrganisationInput.searchByTitle(schulstrukturknoten, true, 'personenkontext-workflow/**');
+        await personCreationView.comboboxOrganisationInput.searchByTitle(schulstrukturknoten, true);
         await personCreationView.comboboxRolle.click();
         await page.getByText(landesadminRolle, { exact: true }).click();
         await personCreationView.inputVorname.fill(vorname);
@@ -413,7 +413,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       });
 
       await test.step(`Organisation 'Land Schleswig-Holstein' auswählen und Dropdown 'Rolle' prüfen`, async () => {
-        await personCreationView.comboboxOrganisationInput.searchByTitle(OrganisationLand, true, 'personenkontext-workflow/**');
+        await personCreationView.comboboxOrganisationInput.searchByTitle(
+          OrganisationLand,
+          true
+        );
         await personCreationView.comboboxRolle.click();
         await expect(personCreationView.listboxRolle).toContainText(landesadminRolle);
         await expect(personCreationView.listboxRolle).not.toContainText(rolleLehr);
