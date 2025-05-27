@@ -29,9 +29,7 @@ export async function createPerson(
   klasseId?: string,
   merkmalelName?: string[]
 ): Promise<UserInfo> {
-  let requestData: any;
-
-  requestData = {
+  const requestData = {
     data: {
       familienname,
       vorname,

@@ -7,7 +7,7 @@ export async function createRolle(
   rollenArt: string,
   organisationId: string,
   rolleName: string,
-  merkmalelName?: string[]
+  merkmaleName?: string[]
 ): Promise<string> {
   let requestData: RolleRequestData;
 
@@ -36,8 +36,8 @@ export async function createRolle(
     maxRetries: 3,
   };
 
-  if (merkmalelName) {
-    requestData.data['merkmale'] = merkmalelName;
+  if (merkmaleName) {
+    requestData.data['merkmale'] = merkmaleName;
   } else {
     requestData.data['merkmale'] = [];
   }
