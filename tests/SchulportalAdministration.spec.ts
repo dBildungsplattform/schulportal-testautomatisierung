@@ -106,6 +106,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
       const login: LoginPage = new LoginPage(page);
       const header: HeaderPage = new HeaderPage(page);
       const startseite: StartPage = new StartPage(page);
+      logoutViaStartPage = true;
 
       // Testdaten erstellen
       const idSPs: string[] = [await getSPId(page, 'E-Mail')];
@@ -133,10 +134,6 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         await expect(startseite.cardItemSchulportalAdministration).toBeHidden();
         await startseite.checkSpIsVisible([email]);
       });
-      // #TODO: wait for the last request in the test
-      // sometimes logout breaks the test because of interrupting requests
-      // logoutViaStartPage = true is a workaround
-      logoutViaStartPage = true;
     }
   );
 
@@ -224,99 +221,95 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
     }
   );
 
-  test(
-    'News-Box bei befristeten Schulzuordnungen testen',
-    { tag: [LONG] },
-    async ({ page }: PlaywrightTestArgs) => {
-      let userInfoLehrer1: UserInfo;
-      let userInfoLehrer2: UserInfo;
-      const rollenNameLehrer1: string = await generateRolleName();
-      const rollenNameLehrer2: string = await generateRolleName();
-      const colorOrange: string = 'rgb(255, 152, 37)';
-      const colorRed: string = 'rgb(255, 85, 85)';
+  test('News-Box bei befristeten Schulzuordnungen testen', { tag: [LONG] }, async ({ page }: PlaywrightTestArgs) => {
+    let userInfoLehrer1: UserInfo;
+    let userInfoLehrer2: UserInfo;
+    const rollenNameLehrer1: string = await generateRolleName();
+    const rollenNameLehrer2: string = await generateRolleName();
+    const colorOrange: string = 'rgb(255, 152, 37)';
+    const colorRed: string = 'rgb(255, 85, 85)';
 
-      const headerPage: HeaderPage = new HeaderPage(page);
-      const loginPage: LoginPage = new LoginPage(page);
+    const headerPage: HeaderPage = new HeaderPage(page);
+    const loginPage: LoginPage = new LoginPage(page);
 
-      await test.step(`Testdaten: Lehrer1 mit einer befristeten Schulzuordnung(noch 50 Tage gültig) und Lehrer2 mit einer befristeten Schulzuordnung(noch 12 Tage gültig) über die api anlegen`, async () => {
-        // Lehrer1: Schulzuordnung noch 50 Tage gültig
-        userInfoLehrer1 = await createRolleAndPersonWithUserContext(
-          page,
-          testschuleName,
-          typeLehrer,
-          await generateNachname(),
-          await generateVorname(),
-          [await getSPId(page, email)],
-          rollenNameLehrer1
-        );
-        personIds.push(userInfoLehrer1.personId);
-        rolleIds.push(userInfoLehrer1.rolleId);
+    await test.step(`Testdaten: Lehrer1 mit einer befristeten Schulzuordnung(noch 50 Tage gültig) und Lehrer2 mit einer befristeten Schulzuordnung(noch 12 Tage gültig) über die api anlegen`, async () => {
+      // Lehrer1: Schulzuordnung noch 50 Tage gültig
+      userInfoLehrer1 = await createRolleAndPersonWithUserContext(
+        page,
+        testschuleName,
+        typeLehrer,
+        await generateNachname(),
+        await generateVorname(),
+        [await getSPId(page, email)],
+        rollenNameLehrer1
+      );
+      personIds.push(userInfoLehrer1.personId);
+      rolleIds.push(userInfoLehrer1.rolleId);
 
-        await setTimeLimitPersonenkontext(
-          page,
-          userInfoLehrer1.personId,
-          userInfoLehrer1.organisationId,
-          userInfoLehrer1.rolleId,
-          await generateCurrentDate({ days: 50, months: 0, formatDMY: false })
-        );
+      await setTimeLimitPersonenkontext(
+        page,
+        userInfoLehrer1.personId,
+        userInfoLehrer1.organisationId,
+        userInfoLehrer1.rolleId,
+        await generateCurrentDate({ days: 50, months: 0, formatDMY: false })
+      );
 
-        // Lehrer2: Schulzuordnung noch 12 Tage gültig
-        userInfoLehrer2 = await createRolleAndPersonWithUserContext(
-          page,
-          testschuleName,
-          typeLehrer,
-          await generateNachname(),
-          await generateVorname(),
-          [await getSPId(page, email)],
-          rollenNameLehrer2
-        );
-        personIds.push(userInfoLehrer2.personId);
-        rolleIds.push(userInfoLehrer2.rolleId);
+      // Lehrer2: Schulzuordnung noch 12 Tage gültig
+      userInfoLehrer2 = await createRolleAndPersonWithUserContext(
+        page,
+        testschuleName,
+        typeLehrer,
+        await generateNachname(),
+        await generateVorname(),
+        [await getSPId(page, email)],
+        rollenNameLehrer2
+      );
+      personIds.push(userInfoLehrer2.personId);
+      rolleIds.push(userInfoLehrer2.rolleId);
 
-        await setTimeLimitPersonenkontext(
-          page,
-          userInfoLehrer2.personId,
-          userInfoLehrer2.organisationId,
-          userInfoLehrer2.rolleId,
-          await generateCurrentDate({ days: 12, months: 0, formatDMY: false })
-        );
-      });
+      await setTimeLimitPersonenkontext(
+        page,
+        userInfoLehrer2.personId,
+        userInfoLehrer2.organisationId,
+        userInfoLehrer2.rolleId,
+        await generateCurrentDate({ days: 12, months: 0, formatDMY: false })
+      );
+    });
 
-      await test.step(`Lehrer1 meldet sich an und die orangene News-Box wird geprüft`, async () => {
-        const timeLimitTeacherRolle1: string = await generateCurrentDate({ days: 50, months: 0, formatDMY: true });
-        const alertText: string =
-          `Hinweis: Die Zuordnung dieses Benutzerkontos zu der Schule "${testschuleName}" mit der Rolle "${rollenNameLehrer1}" ist bis zum ${timeLimitTeacherRolle1} befristet. ` +
-          `Sollte dies nicht zutreffen, wenden Sie sich bitte an Ihre Schulleitung. Nach Ende der Zuordnung sind Funktionalitäten, die im Bezug zu dieser Schule und Rolle stehen, nicht mehr verfügbar.`;
+    await test.step(`Lehrer1 meldet sich an und die orangene News-Box wird geprüft`, async () => {
+      const timeLimitTeacherRolle1: string = await generateCurrentDate({ days: 50, months: 0, formatDMY: true });
+      const alertText: string =
+        `Hinweis: Die Zuordnung dieses Benutzerkontos zu der Schule "${testschuleName}" mit der Rolle "${rollenNameLehrer1}" ist bis zum ${timeLimitTeacherRolle1} befristet. ` +
+        `Sollte dies nicht zutreffen, wenden Sie sich bitte an Ihre Schulleitung. Nach Ende der Zuordnung sind Funktionalitäten, die im Bezug zu dieser Schule und Rolle stehen, nicht mehr verfügbar.`;
 
-        const landingPage: LandingPage = await headerPage.logout({ logoutViaStartPage: true });
-        await landingPage.buttonAnmelden.click();
-        const startView: StartPage = await loginPage.login(userInfoLehrer1.username, userInfoLehrer1.password);
-        await loginPage.updatePW();
-        await startView.validateStartPageIsLoaded();
-        currentUserIsLandesadministrator = false;
+      const landingPage: LandingPage = await headerPage.logout({ logoutViaStartPage: true });
+      await landingPage.buttonAnmelden.click();
+      const startView: StartPage = await loginPage.login(userInfoLehrer1.username, userInfoLehrer1.password);
+      await loginPage.updatePW();
+      await startView.validateStartPageIsLoaded();
+      currentUserIsLandesadministrator = false;
 
-        await expect(page.getByText(alertText)).toBeVisible();
-        await expect(page.getByRole('alert')).toHaveCSS('background-color', colorOrange);
-      });
+      await expect(page.getByText(alertText)).toBeVisible();
+      await expect(page.getByRole('alert')).toHaveCSS('background-color', colorOrange);
+    });
 
-      await test.step(`Lehrer2 meldet sich an und die rote News-Box wird geprüft`, async () => {
-        const timeLimitTeacherRolle2: string = await generateCurrentDate({ days: 12, months: 0, formatDMY: true });
-        const alertText: string =
-          `Hinweis: Die Zuordnung dieses Benutzerkontos zu der Schule "${testschuleName}" mit der Rolle "${rollenNameLehrer2}" ist bis zum ${timeLimitTeacherRolle2} befristet. ` +
-          `Sollte dies nicht zutreffen, wenden Sie sich bitte an Ihre Schulleitung. Nach Ende der Zuordnung sind Funktionalitäten, die im Bezug zu dieser Schule und Rolle stehen, nicht mehr verfügbar.`;
+    await test.step(`Lehrer2 meldet sich an und die rote News-Box wird geprüft`, async () => {
+      const timeLimitTeacherRolle2: string = await generateCurrentDate({ days: 12, months: 0, formatDMY: true });
+      const alertText: string =
+        `Hinweis: Die Zuordnung dieses Benutzerkontos zu der Schule "${testschuleName}" mit der Rolle "${rollenNameLehrer2}" ist bis zum ${timeLimitTeacherRolle2} befristet. ` +
+        `Sollte dies nicht zutreffen, wenden Sie sich bitte an Ihre Schulleitung. Nach Ende der Zuordnung sind Funktionalitäten, die im Bezug zu dieser Schule und Rolle stehen, nicht mehr verfügbar.`;
 
-        const landingPage: LandingPage = await headerPage.logout({ logoutViaStartPage: true });
-        await landingPage.buttonAnmelden.click();
-        const startView: StartPage = await loginPage.login(userInfoLehrer2.username, userInfoLehrer2.password);
-        await loginPage.updatePW();
-        await startView.validateStartPageIsLoaded();
-        currentUserIsLandesadministrator = false;
+      const landingPage: LandingPage = await headerPage.logout({ logoutViaStartPage: true });
+      await landingPage.buttonAnmelden.click();
+      const startView: StartPage = await loginPage.login(userInfoLehrer2.username, userInfoLehrer2.password);
+      await loginPage.updatePW();
+      await startView.validateStartPageIsLoaded();
+      currentUserIsLandesadministrator = false;
 
-        await expect(page.getByText(alertText)).toBeVisible();
-        await expect(page.getByRole('alert')).toHaveCSS('background-color', colorRed);
-      });
-    }
-  );
+      await expect(page.getByText(alertText)).toBeVisible();
+      await expect(page.getByRole('alert')).toHaveCSS('background-color', colorRed);
+    });
+  });
 
   test(
     'Für alle Rollen der Rollenart LEHR prüfen, dass die korrekten Service Provider auf der Startseite angezeigt werden',
@@ -538,6 +531,8 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
       await test.step(`Lehrer mit einer Rolle wie bei einer Religionslehrkraft meldet sich an`, async () => {
         // Lehrer meldet sich
         currentUserIsLandesadministrator = false;
+        logoutViaStartPage = true;
+
         await header.logout({ logoutViaStartPage: true });
         await landing.buttonAnmelden.click();
         await login.login(userInfoLehrerReligionsLehrkraft.username, userInfoLehrerReligionsLehrkraft.password);
@@ -732,9 +727,6 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         await startseite.checkSpIsVisible(expectedSPsRolleIqshMitarbeiter);
         await startseite.checkSpIsHidden([schulportaladmin, itslearning]);
       });
-
-      logoutViaStartPage = true;
-      currentUserIsLandesadministrator = false;
     }
   );
 });
