@@ -47,4 +47,10 @@ export class KlasseCreationViewPage{
     public async waitForFilterToLoad(): Promise<void> {
         return this.comboboxOrganisationInput.waitUntilLoadingIsDone()
     }
+
+    public async createKlasse(schulName: string, klassenName: string): Promise<void> {
+      await this.comboboxOrganisationInput.searchByTitle(schulName, false);
+      await this.inputKlassenname.fill(klassenName);
+      await this.buttonKlasseAnlegen.click();
+    }
 }

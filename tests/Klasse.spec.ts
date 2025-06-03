@@ -153,13 +153,15 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     'Ergebnisliste Klassen als Landesadmin auf Vollständigkeit prüfen',
     { tag: [LONG, SHORT, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
-      const startseite: StartPage = new StartPage(page);
-      const klasseManagementView: KlasseManagementViewPage = new KlasseManagementViewPage(page);
-
-      await test.step(`Klassenverwaltung öffnen und Alle Elemente in der Ergebnisliste auf Existenz prüfen`, async () => {
+      const klasseManagementView: KlasseManagementViewPage = await test.step('Klassenverwaltung öffnen', async () => {
+        const startseite: StartPage = new StartPage(page);
         const menu: MenuPage = await startseite.goToAdministration();
-        await menu.alleKlassenAnzeigen();
+        const klasseManagementView: KlasseManagementViewPage = await menu.alleKlassenAnzeigen();
         await klasseManagementView.waitErgebnislisteIsLoaded();
+        return klasseManagementView;
+      });
+
+      await test.step(`Alle Elemente in der Ergebnisliste auf Existenz prüfen`, async () => {
         await expect(klasseManagementView.textH1Administrationsbereich).toBeVisible();
         await expect(klasseManagementView.textH2Klassenverwaltung).toHaveText('Klassenverwaltung');
         await expect(klasseManagementView.comboboxFilterSchule).toBeVisible();
@@ -248,9 +250,6 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
 
     let userInfoAdmin: UserInfo;
     const startseite: StartPage = new StartPage(page);
-    const menue: MenuPage = new MenuPage(page);
-    const klasseCreationView: KlasseCreationViewPage = new KlasseCreationViewPage(page);
-    const klasseDetailsView: KlasseDetailsViewPage = new KlasseDetailsViewPage(page);
     let klassenname: string = await generateKlassenname();
 
     await test.step(`Landesadmin anlegen`, async () => {
@@ -281,7 +280,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       usernames.push(userInfoAdmin.username);
       rolleIds.push(userInfoAdmin.rolleId);
 
-      //login als Schuladmin
+      //login als Landesadmin
       await header.logout({ logoutViaStartPage: true });
       await landing.buttonAnmelden.click();
       await login.login(userInfoAdmin.username, userInfoAdmin.password);
@@ -290,21 +289,19 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       await startseite.validateStartPageIsLoaded();
     });
 
-    await test.step(`Klasse anlegen`, async () => {
-      await startseite.cardItemSchulportalAdministration.click();
-      await menue.menueItemKlasseAnlegen.click();
-      await expect(klasseCreationView.textH2KlasseAnlegen).toHaveText('Neue Klasse hinzufügen');
+    const menu: MenuPage = await startseite.goToAdministration();
 
-      await klasseCreationView.comboboxOrganisationInput.searchByTitle(testschuleName, false);
-      await klasseCreationView.inputKlassenname.fill(klassenname);
-      await klasseCreationView.buttonKlasseAnlegen.click();
+    await test.step(`Klasse anlegen`, async () => {
+      const klasseCreationView: KlasseCreationViewPage = await menu.klasseAnlegen();
+      await expect(klasseCreationView.textH2KlasseAnlegen).toHaveText('Neue Klasse hinzufügen');
+      await klasseCreationView.createKlasse(testschuleName, klassenname);
       await expect(klasseCreationView.textSuccess).toBeVisible();
     });
 
     await test.step(`Klasse bearbeiten als Landesadmin`, async () => {
-      await menue.menueItemAlleKlassenAnzeigen.click();
-      await klasseCreationView.comboboxOrganisationInput.searchByTitle(testschuleName, false);
-      await page.getByRole('cell', { name: klassenname, exact: true }).click();
+      const klasseManagementView: KlasseManagementViewPage = await menu.alleKlassenAnzeigen();
+      await klasseManagementView.filterSchule(testschuleName);
+      const klasseDetailsView: KlasseDetailsViewPage = await klasseManagementView.openDetailViewClass(klassenname);
       klassenname = await generateKlassenname();
       await klasseDetailsView.klasseBearbeiten(klassenname);
       await expect(klasseDetailsView.textSuccess).toBeVisible();

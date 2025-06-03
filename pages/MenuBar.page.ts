@@ -1,12 +1,13 @@
 import { type Locator, Page } from '@playwright/test';
+import { KlasseCreationViewPage } from './admin/KlasseCreationView.page';
+import { KlasseManagementViewPage } from './admin/KlasseManagementView.page';
+import { PersonCreationViewPage } from './admin/PersonCreationView.page';
 import { PersonImportViewPage } from './admin/PersonImportView.page';
+import { PersonManagementViewPage } from './admin/PersonManagementView.page';
 import { RolleCreationViewPage } from './admin/RolleCreationView.page';
 import { RolleManagementViewPage } from './admin/RolleManagementView.page';
 import { SchuleCreationViewPage } from './admin/SchuleCreationView.page';
 import { SchuleManagementViewPage } from './admin/SchuleManagementView.page';
-import { KlasseManagementViewPage } from './admin/KlasseManagementView.page';
-import { PersonCreationViewPage } from './admin/PersonCreationView.page';
-import { PersonManagementViewPage } from './admin/PersonManagementView.page';
 
 export class MenuPage {
   readonly page: Page;
@@ -83,6 +84,11 @@ export class MenuPage {
   public async alleKlassenAnzeigen(): Promise<KlasseManagementViewPage> {
     await this.menueItemAlleKlassenAnzeigen.click();
     return new KlasseManagementViewPage(this.page);
+  }
+
+  public async klasseAnlegen(): Promise<KlasseCreationViewPage> {
+    await this.menueItemKlasseAnlegen.click();
+    return new KlasseCreationViewPage(this.page);
   }
 
   public async personAnlegen(): Promise<PersonCreationViewPage> {
