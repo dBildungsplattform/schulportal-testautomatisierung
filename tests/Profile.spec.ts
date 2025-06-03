@@ -1,8 +1,12 @@
 import { expect, PlaywrightTestArgs, test } from '@playwright/test';
 import { UserInfo } from '../base/api/testHelper.page';
 import { getOrganisationId } from '../base/api/testHelperOrganisation.page';
-import { addSecondOrganisationToPerson, createRolleAndPersonWithUserContext } from '../base/api/testHelperPerson.page';
-import { addSystemrechtToRolle } from '../base/api/testHelperRolle.page';
+import {
+  addSecondOrganisationToPerson,
+  createPerson,
+  createRolleAndPersonWithUserContext,
+} from '../base/api/testHelperPerson.page';
+import { addSPToRolle, addSystemrechtToRolle, createRolle } from '../base/api/testHelperRolle.page';
 import { getSPId } from '../base/api/testHelperServiceprovider.page';
 import { landSH, testschuleName, testschule665Name } from '../base/organisation.ts';
 import { typeLandesadmin, typeLehrer, typeSchueler, typeSchuladmin } from '../base/rollentypen.ts';
@@ -31,6 +35,7 @@ import {
   personenAnlegen,
 } from '../base/berechtigungen.ts';
 import { testschuleDstNr } from '../base/organisation.ts';
+import { klasse1Testschule } from '../base/klassen.ts';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -253,19 +258,14 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       const nachname: string = await generateNachname();
       const organisation: string = testschuleName;
       const rollenname: string = await generateRolleName();
-      const rollenart: string = typeSchueler;
 
-      await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
+      await test.step(`Schüler via api anlegen und mit diesem anmelden`, async () => {
+        const schuleId: string = await getOrganisationId(page, testschuleName);
+        const klasseId: string = await getOrganisationId(page, klasse1Testschule);
         const idSPs: string[] = [await getSPId(page, 'itslearning')];
-        const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
-          page,
-          organisation,
-          rollenart,
-          nachname,
-          vorname,
-          idSPs,
-          rollenname
-        );
+        const rolleId: string = await createRolle(page, 'LERN', schuleId, rollenname);
+        await addSPToRolle(page, rolleId, idSPs);
+        const userInfo: UserInfo = await createPerson(page, nachname, vorname, schuleId, rolleId, '', klasseId);
         rolleIds.push(userInfo.rolleId);
         usernames.push(userInfo.username);
 
@@ -494,7 +494,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       const login: LoginPage = new LoginPage(page);
 
       const organisation: string = testschuleName;
-      const rollenart: string = typeSchueler;
+      const rollenart: string = typeLehrer;
 
       await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
         const idSPs: string[] = [await getSPId(page, itslearning)];
@@ -672,14 +672,19 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         rolleIds.push(userInfoLehrer.rolleId);
         usernames.push(userInfoLehrer.username);
 
-        userInfoSchueler = await createRolleAndPersonWithUserContext(
+        const schuleId: string = await getOrganisationId(page, testschuleName);
+        const klasseId: string = await getOrganisationId(page, klasse1Testschule);
+        const idSPs: string[] = [await getSPId(page, 'itslearning')];
+        const rolleId: string = await createRolle(page, 'LERN', schuleId, await generateRolleName());
+        await addSPToRolle(page, rolleId, idSPs);
+        userInfoSchueler = await createPerson(
           page,
-          testschuleName,
-          typeSchueler,
           await generateNachname(),
           await generateVorname(),
-          [await getSPId(page, itslearning)],
-          await generateRolleName()
+          schuleId,
+          rolleId,
+          '',
+          klasseId
         );
         rolleIds.push(userInfoSchueler.rolleId);
         usernames.push(userInfoSchueler.username);

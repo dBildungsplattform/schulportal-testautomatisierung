@@ -1,36 +1,37 @@
-import { expect, test, PlaywrightTestArgs } from '@playwright/test';
-import { LandingPage } from '../pages/LandingView.page.ts';
-import { LoginPage } from '../pages/LoginView.page.ts';
-import { StartPage } from '../pages/StartView.page.ts';
-import { PersonManagementViewPage } from '../pages/admin/PersonManagementView.page.ts';
-import { PersonDetailsViewPage } from '../pages/admin/PersonDetailsView.page.ts';
-import { HeaderPage } from '../pages/Header.page.ts';
-import { createRolleAndPersonWithUserContext, setTimeLimitPersonenkontext } from '../base/api/testHelperPerson.page.ts';
-import { getSPId } from '../base/api/testHelperServiceprovider.page.ts';
+import { expect, PlaywrightTestArgs, test } from '@playwright/test';
 import { UserInfo, waitForAPIResponse } from '../base/api/testHelper.page.ts';
-import { addSystemrechtToRolle } from '../base/api/testHelperRolle.page.ts';
-import { LONG, STAGE, BROWSER } from '../base/tags.ts';
+import { createKlasse, getOrganisationId } from '../base/api/testHelperOrganisation.page.ts';
+import { createPerson, createRolleAndPersonWithUserContext, setTimeLimitPersonenkontext } from '../base/api/testHelperPerson.page.ts';
+import { addSPToRolle, addSystemrechtToRolle, createRolle } from '../base/api/testHelperRolle.page.ts';
+import { getSPId } from '../base/api/testHelperServiceprovider.page.ts';
+import { klasse1Testschule } from '../base/klassen.ts';
+import { befristungPflicht, kopersNrPflicht } from '../base/merkmale.ts';
+import { landSH, testschule665Name, testschuleDstNr, testschuleName } from '../base/organisation.ts';
+import { lehrkraftInVertretungRolle, lehrkraftOeffentlichRolle } from '../base/rollen.ts';
+import { typeLehrer, typeSchueler, typeSchuladmin } from '../base/rollentypen.ts';
+import { email, itslearning } from '../base/sp.ts';
+import { BROWSER, LONG, STAGE } from '../base/tags.ts';
 import {
+  deleteKlasseByName,
   deletePersonenBySearchStrings,
   deleteRolleById,
-  deleteKlasseByName,
 } from '../base/testHelperDeleteTestdata.ts';
-import { typeLehrer, typeSchueler, typeSchuladmin } from '../base/rollentypen.ts';
-import { landSH, testschuleName, testschule665Name, testschuleDstNr } from '../base/organisation.ts';
-import { email, itslearning } from '../base/sp.ts';
 import {
-  generateNachname,
-  generateVorname,
-  generateRolleName,
-  generateKopersNr,
   generateKlassenname,
+  generateKopersNr,
+  generateNachname,
+  generateRolleName,
+  generateVorname,
 } from '../base/testHelperGenerateTestdataNames.ts';
 import { generateCurrentDate, gotoTargetURL } from '../base/testHelperUtils.ts';
-import { lehrkraftOeffentlichRolle, lehrkraftInVertretungRolle } from '../base/rollen.ts';
+import { PersonDetailsViewPage } from '../pages/admin/PersonDetailsView.page.ts';
+import { PersonManagementViewPage } from '../pages/admin/PersonManagementView.page.ts';
 import FromAnywhere from '../pages/FromAnywhere';
-import { befristungPflicht, kopersNrPflicht } from '../base/merkmale.ts';
-import { createKlasse, getKlasseId, getOrganisationId } from '../base/api/testHelperOrganisation.page.ts';
+import { HeaderPage } from '../pages/Header.page.ts';
+import { LandingPage } from '../pages/LandingView.page.ts';
+import { LoginPage } from '../pages/LoginView.page.ts';
 import { MenuPage } from '../pages/MenuBar.page.ts';
+import { StartPage } from '../pages/StartView.page.ts';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -337,28 +338,25 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     'Gesamtübersicht für einen Benutzer als Schueler öffnen und Unsichtbarkeit des 2FA Abschnitts prüfen',
     { tag: [LONG, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
-      let userInfoLehrer: UserInfo;
+      let userInfoSchueler: UserInfo;
 
       await test.step(`Testdaten: Schüler mit einer Rolle(LERN) über die api anlegen ${ADMIN}`, async () => {
-        userInfoLehrer = await createRolleAndPersonWithUserContext(
-          page,
-          testschuleName,
-          typeSchueler,
-          await generateNachname(),
-          await generateVorname(),
-          [await getSPId(page, itslearning)],
-          await generateRolleName()
-        );
-        usernames.push(userInfoLehrer.username);
-        rolleIds.push(userInfoLehrer.rolleId);
+        const schuleId: string = await getOrganisationId(page, testschuleName);
+        const klasseId: string = await getOrganisationId(page, klasse1Testschule);
+      const rollenname: string = await generateRolleName();
+        const rolleId: string = await createRolle(page, 'LERN', schuleId, rollenname);
+        await addSPToRolle(page, rolleId, [await getSPId(page, 'itslearning')]);
+        userInfoSchueler = await createPerson(page, await generateNachname(), await generateVorname(), schuleId, rolleId, '', klasseId);
+        usernames.push(userInfoSchueler.username);
+        rolleIds.push(userInfoSchueler.rolleId);
       });
 
       const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
 
       const personDetailsView: PersonDetailsViewPage = await test.step(`Gesamtübersicht öffnen`, async () => {
         await gotoTargetURL(page, 'admin/personen');
-        await personManagementView.searchBySuchfeld(userInfoLehrer.username);
-        return await personManagementView.openGesamtuebersichtPerson(page, userInfoLehrer.username);
+        await personManagementView.searchBySuchfeld(userInfoSchueler.username);
+        return await personManagementView.openGesamtuebersichtPerson(page, userInfoSchueler.username);
       });
 
       await test.step(`Gesamtübersicht Abschnitte prüfen`, async () => {
