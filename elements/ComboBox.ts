@@ -88,7 +88,6 @@ export class ComboBox {
         has: this.page.getByText(searchString),
       });
     }
-    await item.waitFor({ state: 'visible' });
 
     // When creating a Landesadministrator, after selecting a Land as an organisation, we must wait for the personenkontext workflow endpoint to return rollen,
     // because in that case the API call takes longer than in other cases.

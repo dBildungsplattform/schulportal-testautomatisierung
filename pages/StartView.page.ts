@@ -1,8 +1,7 @@
-import { type Locator, Page, Response } from '@playwright/test';
-import { MenuPage } from './MenuBar.page';
-import { LandingPage } from './LandingView.page';
-import { expect } from '@playwright/test';
+import { expect, type Locator, Page, Response } from '@playwright/test';
 import { PersonManagementViewPage } from './admin/PersonManagementView.page';
+import { LandingPage } from './LandingView.page';
+import { MenuPage } from './MenuBar.page';
 
 export class StartPage {
   readonly page: Page;
@@ -24,7 +23,7 @@ export class StartPage {
     this.cardItemSchulportalAdministration = page.locator('[data-testid^="service-provider-card"]', {
       hasText: 'Schulportal-Administration',
     });
-    this.cardItem = (spName: string) => page.locator('[data-testid^="service-provider-card"]', { hasText: spName });
+    this.cardItem = (spName: string): Locator => page.locator('[data-testid^="service-provider-card"]', { hasText: spName });
   }
 
   public async goToAdministration(): Promise<MenuPage> {

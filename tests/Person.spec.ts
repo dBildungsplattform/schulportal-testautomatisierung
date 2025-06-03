@@ -181,7 +181,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await menue.menueItemBenutzerAnlegen.click();
         await expect(personCreationView.textH2PersonAnlegen).toHaveText('Neuen Benutzer hinzufügen');
       });
-      
+
       await test.step(`Benutzer anlegen`, async () => {
         await personCreationView.comboboxOrganisationInput.searchByTitle(schulstrukturknoten, true);
         await personCreationView.comboboxRolle.click();
@@ -410,64 +410,42 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await startseite.cardItemSchulportalAdministration.click();
         await menue.menueItemBenutzerAnlegen.click();
         await expect(personCreationView.textH2PersonAnlegen).toHaveText('Neuen Benutzer hinzufügen');
+        await waitForAPIResponse(page, 'personenkontext-workflow/**');
       });
 
       await test.step(`Organisation 'Land Schleswig-Holstein' auswählen und Dropdown 'Rolle' prüfen`, async () => {
-        await personCreationView.comboboxOrganisationInput.searchByTitle(
-          OrganisationLand,
-          true
+        await personCreationView.searchAndSelectOrganisation(OrganisationLand, true);
+        await personCreationView.checkRolleModal(
+          [landesadminRolle],
+          [rolleLehr, rolleLiV, schuladminOeffentlichRolle, schuelerRolle]
         );
-        await personCreationView.comboboxRolle.click();
-        await expect(personCreationView.listboxRolle).toContainText(landesadminRolle);
-        await expect(personCreationView.listboxRolle).not.toContainText(rolleLehr);
-        await expect(personCreationView.listboxRolle).not.toContainText(rolleLiV);
-        await expect(personCreationView.listboxRolle).not.toContainText(schuladminOeffentlichRolle);
-        await expect(personCreationView.listboxRolle).not.toContainText(schuelerRolle);
-        // close opened combobox organisation
-        await personCreationView.textH2PersonAnlegen.click();
+        await personCreationView.clearOrganisationSelection();
       });
 
       await test.step(`Organisation 'Öffentliche Schulen Land Schleswig-Holstein' auswählen und Dropdown 'Rolle' prüfen`, async () => {
-        await personCreationView.comboboxSchulstrukturknotenClear.click();
-        await waitForAPIResponse(page, 'personenkontext-workflow/**');
-        await personCreationView.comboboxOrganisationInput.searchByTitle(OrganisationOeffentlicheSchule, true);
-        await personCreationView.comboboxRolle.click();
-        await expect(personCreationView.listboxRolle).toContainText(landesadminRolle);
-        await expect(personCreationView.listboxRolle).not.toContainText(rolleLehr);
-        await expect(personCreationView.listboxRolle).not.toContainText(rolleLiV);
-        await expect(personCreationView.listboxRolle).not.toContainText(schuladminOeffentlichRolle);
-        await expect(personCreationView.listboxRolle).not.toContainText(schuelerRolle);
-        // close opened combobox organisation
-        await personCreationView.textH2PersonAnlegen.click();
+        await personCreationView.searchAndSelectOrganisation(OrganisationOeffentlicheSchule, true);
+        await personCreationView.checkRolleModal(
+          [landesadminRolle],
+          [rolleLehr, rolleLiV, schuladminOeffentlichRolle, schuelerRolle]
+        );
+        await personCreationView.clearOrganisationSelection();
       });
 
       await test.step(`Organisation 'Ersatzschulen Land Schleswig-Holstein' auswählen und Dropdown 'Rolle' prüfen`, async () => {
-        await personCreationView.comboboxSchulstrukturknotenClear.click();
-        await waitForAPIResponse(page, 'personenkontext-workflow/**');
-        await personCreationView.comboboxOrganisationInput.searchByTitle(OrganisationErsatzschule, true);
-        await personCreationView.comboboxRolle.click();
-        await expect(personCreationView.listboxRolle).toContainText(landesadminRolle);
-        await expect(personCreationView.listboxRolle).not.toContainText(rolleLehr);
-        await expect(personCreationView.listboxRolle).not.toContainText(rolleLiV);
-        await expect(personCreationView.listboxRolle).not.toContainText(schuladminOeffentlichRolle);
-        await expect(personCreationView.listboxRolle).not.toContainText(schuelerRolle);
-        // close opened combobox organisation
-        await personCreationView.textH2PersonAnlegen.click();
+        await personCreationView.searchAndSelectOrganisation(OrganisationErsatzschule, true);
+        await personCreationView.checkRolleModal(
+          [landesadminRolle],
+          [rolleLehr, rolleLiV, schuladminOeffentlichRolle, schuelerRolle]
+        );
+        await personCreationView.clearOrganisationSelection();
       });
 
       await test.step(`Organisation 'Schule' auswählen und Dropdown 'Rolle' prüfen`, async () => {
-        await personCreationView.comboboxSchulstrukturknotenClear.click();
-        await waitForAPIResponse(page, 'personenkontext-workflow/**');
-        await personCreationView.comboboxOrganisationInput.searchByTitle(OrganisationSchule, false);
-        await personCreationView.comboboxRolle.click();
-        await expect(personCreationView.listboxRolle).toContainText(rolleLehr);
-        await expect(personCreationView.listboxRolle).toContainText(rolleLiV);
-        await expect(personCreationView.listboxRolle).toContainText(schuelerRolle);
-        await expect(personCreationView.listboxRolle).not.toContainText(landesadminRolle);
-        await page.keyboard.type(schuladminOeffentlichRolle);
-        await expect(personCreationView.listboxRolle).toContainText(schuladminOeffentlichRolle);
-        // close opened combobox organisation
-        await personCreationView.textH2PersonAnlegen.click();
+        await personCreationView.searchAndSelectOrganisation(OrganisationSchule, false);
+        await personCreationView.checkRolleModal(
+          [rolleLehr, rolleLiV, schuladminOeffentlichRolle, schuelerRolle],
+          [landesadminRolle],
+        );
       });
       // #TODO: wait for the last request in the test
       // sometimes logout breaks the test because of interrupting requests
