@@ -248,8 +248,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     { tag: [LONG, SHORT, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
       const startseite: StartPage = new StartPage(page);
-      const menue: MenuPage = new MenuPage(page);
-      const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
       const login: LoginPage = new LoginPage(page);
       const header: HeaderPage = new HeaderPage(page);
       const landing: LandingPage = new LandingPage(page);
@@ -260,7 +258,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const rolle: string = 'Lehrkraft';
       let userInfo: UserInfo;
 
-      // Step 1:  Create a Schuladmin as Landesadmin and login as the newly created Schuladmin user
       await test.step(`Schuladmin anlegen und mit diesem anmelden`, async () => {
         const idSPs: string[] = [await getSPId(page, 'Schulportal-Administration')];
         userInfo = await createRolleAndPersonWithUserContext(
@@ -286,15 +283,12 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         currentUserIsLandesadministrator = false;
       });
 
-      // Step 2: Create another user as Schuladmin
-      await test.step(`Schuladmin anlegen und mit diesem anmelden`, async () => {
+      await test.step(`Weiteren Nutzer anlegen`, async () => {
         const newVorname: string = await generateVorname();
         const newNachname: string = await generateNachname();
         const newKopersnr: string = await generateKopersNr();
-
-        await startseite.cardItemSchulportalAdministration.click();
-        await menue.menueItemBenutzerAnlegen.click();
-        await waitForAPIResponse(page, 'dbiam/personenuebersicht');
+        const menu: MenuPage = await startseite.goToAdministration();
+        const personCreationView: PersonCreationViewPage = await menu.personAnlegen();
         await expect(personCreationView.textH2PersonAnlegen).toHaveText('Neuen Benutzer hinzufügen');
         await personCreationView.comboboxRolle.click();
         await page.getByText(rolle, { exact: true }).click();
@@ -444,7 +438,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await personCreationView.searchAndSelectOrganisation(OrganisationSchule, false);
         await personCreationView.checkRolleModal(
           [rolleLehr, rolleLiV, schuladminOeffentlichRolle, schuelerRolle],
-          [landesadminRolle],
+          [landesadminRolle]
         );
       });
       // #TODO: wait for the last request in the test
@@ -864,7 +858,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       });
 
       await test.step(`In der Combobox 'Organisation' eine Schule auswählen`, async () => {
-        await personCreationView.comboboxOrganisationInput.searchByTitle(testschuleName, false);
+        await personCreationView.searchAndSelectOrganisation(testschuleName, false);
       });
 
       await test.step(`In der Combobox 'Rolle' 2 Rollen vom Typ LEHR selektieren und prüfen, dass danach keine Rollen mehr vom Type LERN angezeigt werden in der Combobox`, async () => {

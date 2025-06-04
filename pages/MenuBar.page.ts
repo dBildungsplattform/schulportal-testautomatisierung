@@ -1,6 +1,6 @@
 import { type Locator, Page } from '@playwright/test';
 import { KlasseCreationViewPage } from './admin/KlasseCreationView.page';
-import { KlasseManagementViewPage } from './admin/KlasseManagementView.page';
+import { KlasseManagementViewPage, KlasseManagementViewPageOptions } from './admin/KlasseManagementView.page';
 import { PersonCreationViewPage } from './admin/PersonCreationView.page';
 import { PersonImportViewPage } from './admin/PersonImportView.page';
 import { PersonManagementViewPage } from './admin/PersonManagementView.page';
@@ -35,9 +35,7 @@ export class MenuPage {
     this.labelBenutzerverwaltung = page.locator('[data-testid="person-management-title"] .v-list-item-title');
     this.labelKlassenverwaltung = page.locator('[data-testid="klasse-management-title"] .v-list-item-title');
     this.labelRollenverwaltung = page.locator('[data-testid="rolle-management-title"] .v-list-item-title');
-    this.labelSchultraegerverwaltung = page.locator(
-      '[data-testid="schultraeger-management-title"] .v-list-item-title'
-    );
+    this.labelSchultraegerverwaltung = page.locator('[data-testid="schultraeger-management-title"] .v-list-item-title');
     this.labelSchulverwaltung = page.locator('[data-testid="schule-management-title"] .v-list-item-title');
     this.menueItemAlleBenutzerAnzeigen = page.getByTestId('person-management-menu-item');
     this.menueItemAlleKlassenAnzeigen = page.getByTestId('klassen-management-menu-item');
@@ -81,9 +79,9 @@ export class MenuPage {
     return new PersonImportViewPage(this.page);
   }
 
-  public async alleKlassenAnzeigen(): Promise<KlasseManagementViewPage> {
+  public async alleKlassenAnzeigen(options?: KlasseManagementViewPageOptions): Promise<KlasseManagementViewPage> {
     await this.menueItemAlleKlassenAnzeigen.click();
-    return new KlasseManagementViewPage(this.page);
+    return new KlasseManagementViewPage(this.page, options);
   }
 
   public async klasseAnlegen(): Promise<KlasseCreationViewPage> {

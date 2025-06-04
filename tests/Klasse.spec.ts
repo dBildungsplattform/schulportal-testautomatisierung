@@ -1,4 +1,4 @@
-import { expect, PlaywrightTestArgs, Response, test } from '@playwright/test';
+import { expect, PlaywrightTestArgs, test } from '@playwright/test';
 import { UserInfo } from '../base/api/testHelper.page.ts';
 import { createKlasse, getOrganisationId } from '../base/api/testHelperOrganisation.page.ts';
 import { createRolleAndPersonWithUserContext } from '../base/api/testHelperPerson.page.ts';
@@ -7,6 +7,7 @@ import { getSPId } from '../base/api/testHelperServiceprovider.page.ts';
 import { klasse1Testschule } from '../base/klassen.ts';
 import { landSH, testschuleDstNr, testschuleName } from '../base/organisation.ts';
 import { typeLandesadmin, typeSchueler, typeSchuladmin } from '../base/rollentypen.ts';
+import { schulportaladmin } from '../base/sp.ts';
 import { BROWSER, LONG, SHORT, STAGE } from '../base/tags';
 import {
   deleteKlasseByName,
@@ -47,8 +48,10 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
         .start()
         .then((landing: LandingPage) => landing.goToLogin())
         .then((login: LoginPage) => login.login())
-        .then((startseite: StartPage) => startseite.validateStartPageIsLoaded());
-
+        .then((startseite: StartPage) => {
+          return startseite;
+        });
+      await startPage.checkSpIsVisible([schulportaladmin]);
       return startPage;
     });
   });
@@ -136,12 +139,6 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
         await page.getByTestId('open-klasse-delete-dialog-button').click();
         await page.getByTestId('klasse-delete-button').click();
         await page.getByTestId('close-klasse-delete-success-dialog-button').click();
-        // wait for the last request in this test
-        await page.waitForResponse((resp: Response) =>
-          ['organisationen', 'typ=SCHULE', 'systemrechte=KLASSEN_VERWALTEN'].every((segment: string) =>
-            resp.url().includes(segment)
-          )
-        );
         await klasseManagementView.waitErgebnislisteIsLoaded();
         await expect(page.getByRole('cell', { name: 'Playwright4b' })).toBeVisible();
         await expect(page.getByRole('cell', { name: klassenname })).toBeHidden();
@@ -165,7 +162,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
         await expect(klasseManagementView.textH1Administrationsbereich).toBeVisible();
         await expect(klasseManagementView.textH2Klassenverwaltung).toHaveText('Klassenverwaltung');
         await expect(klasseManagementView.comboboxFilterSchule).toBeVisible();
-        await expect(klasseManagementView.comboboxFilterKlasse).toBeVisible();
+        await expect(klasseManagementView.klasseInput).toBeVisible();
         await expect(klasseManagementView.tableHeaderDienststellennummer).toBeVisible();
         await expect(klasseManagementView.tableHeaderKlassenname).toBeVisible();
       });
@@ -176,16 +173,18 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     'Eine Klasse als Landesadmin anlegen und die Bestätigungsseite vollständig prüfen',
     { tag: [LONG, STAGE, BROWSER] },
     async ({ page }: PlaywrightTestArgs) => {
-      const klasseCreationView: KlasseCreationViewPage = new KlasseCreationViewPage(page);
-      const nameSchule: string = testschuleName;
       const klasseName: string = await generateKlassenname();
 
-      await test.step(`Dialog Schule anlegen öffnen`, async () => {
-        await page.goto('/' + 'admin/klassen/new');
+      const klasseCreationView: KlasseCreationViewPage = await test.step(`Dialog Schule anlegen öffnen`, async () => {
+        const startseite: StartPage = new StartPage(page);
+        const menu: MenuPage = await startseite.goToAdministration();
+        const klasseCreationView: KlasseCreationViewPage = await menu.klasseAnlegen();
+        return klasseCreationView;
       });
 
       await test.step(`Klasse anlegen`, async () => {
-        await klasseCreationView.comboboxOrganisationInput.searchByTitle(nameSchule, false);
+        await klasseCreationView.filterSchule(testschuleName);
+        await klasseCreationView.comboboxOrganisationInput.searchByTitle(testschuleName, false);
         await klasseCreationView.inputKlassenname.fill(klasseName);
         await klasseCreationView.buttonKlasseAnlegen.click();
       });
@@ -198,7 +197,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
         await expect(klasseCreationView.iconSuccess).toBeVisible();
         await expect(klasseCreationView.textDatenGespeichert).toBeVisible();
         await expect(klasseCreationView.labelSchule).toBeVisible();
-        await expect(klasseCreationView.dataSchule).toHaveText(testschuleDstNr + ' (' + nameSchule + ')');
+        await expect(klasseCreationView.dataSchule).toHaveText(testschuleDstNr + ' (' + testschuleName + ')');
         await expect(klasseCreationView.labelKlasse).toBeVisible();
         await expect(klasseCreationView.dataKlasse).toHaveText(klasseName);
         await expect(klasseCreationView.buttonWeitereKlasseAnlegen).toBeVisible();
@@ -279,9 +278,10 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
 
       usernames.push(userInfoAdmin.username);
       rolleIds.push(userInfoAdmin.rolleId);
+      await header.logout({ logoutViaStartPage: false });
+    });
 
-      //login als Landesadmin
-      await header.logout({ logoutViaStartPage: true });
+    await test.step(`Login als Landesadmin`, async () => {
       await landing.buttonAnmelden.click();
       await login.login(userInfoAdmin.username, userInfoAdmin.password);
       await login.updatePW();
@@ -320,10 +320,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
 
     let userInfoAdmin: UserInfo;
     const startseite: StartPage = new StartPage(page);
-    const menue: MenuPage = new MenuPage(page);
-    const klasseManagementView: KlasseManagementViewPage = new KlasseManagementViewPage(page);
-    const klasseCreationView: KlasseCreationViewPage = new KlasseCreationViewPage(page);
-    const klasseDetailsView: KlasseDetailsViewPage = new KlasseDetailsViewPage(page);
+    const menu: MenuPage = new MenuPage(page);
     let klassenname: string = await generateKlassenname();
 
     await test.step(`Schuladmin anlegen`, async () => {
@@ -348,11 +345,12 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
 
       usernames.push(userInfoAdmin.username);
       rolleIds.push(userInfoAdmin.rolleId);
-
-      //login als Schuladmin
-      currentUserIsLandesadministrator = false;
       logoutViaStartPage = true;
-      await header.logout({ logoutViaStartPage: true });
+      await header.logout({ logoutViaStartPage: false });
+    });
+
+    await test.step(`Als Schuladmin anmelden`, async () => {
+      currentUserIsLandesadministrator = false;
       await landing.buttonAnmelden.click();
       await login.login(userInfoAdmin.username, userInfoAdmin.password);
       await login.updatePW();
@@ -360,8 +358,8 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     });
 
     await test.step(`Klasse anlegen`, async () => {
-      await startseite.cardItemSchulportalAdministration.click();
-      await menue.menueItemKlasseAnlegen.click();
+      await startseite.goToAdministration();
+      const klasseCreationView: KlasseCreationViewPage = await menu.klasseAnlegen();
       await expect(klasseCreationView.textH2KlasseAnlegen).toHaveText('Neue Klasse hinzufügen');
 
       await expect(klasseCreationView.comboboxSchulstrukturknoten).toContainText(testschuleName);
@@ -371,9 +369,11 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     });
 
     await test.step(`Klasse bearbeiten als Schuladmin`, async () => {
-      await page.goto('/admin/klassen');
-      await klasseManagementView.comboboxFilterKlasse.fill(klassenname);
-      await page.getByRole('cell', { name: klassenname, exact: true }).click();
+      const klasseManagementView: KlasseManagementViewPage = await menu.alleKlassenAnzeigen();
+      klasseManagementView.setCurrentUserIsLandesadministrator(false);
+      await klasseManagementView.waitErgebnislisteIsLoaded();
+      await klasseManagementView.filterKlasse(klassenname);
+      const klasseDetailsView: KlasseDetailsViewPage = await klasseManagementView.openDetailViewClass(klassenname);
       klassenname = await generateKlassenname();
       await klasseDetailsView.klasseBearbeiten(klassenname);
       await expect(klasseDetailsView.textSuccess).toBeVisible();
@@ -442,7 +442,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
         klasseNames.push(klassenname);
       });
 
-      await test.step(`Schuladmin anlegen`, async () => {
+      const landingPage: LandingPage = await test.step(`Schuladmin anlegen`, async () => {
         const adminVorname: string = await generateVorname();
         const adminNachname: string = await generateNachname();
         const adminRolleName: string = await generateRolleName();
@@ -465,10 +465,12 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
         usernames.push(userInfoAdmin.username);
         rolleIds.push(userInfoAdmin.rolleId);
 
-        // login als Schuladmin
         const header: HeaderPage = new HeaderPage(page);
         logoutViaStartPage = true;
-        const landingPage: LandingPage = await header.logout({ logoutViaStartPage: true });
+        return await header.logout({ logoutViaStartPage: false });
+      });
+
+      await test.step(`Login als Schuladmin`, async () => {
         const loginPage: LoginPage = await landingPage.goToLogin();
         await loginPage.login(userInfoAdmin.username, userInfoAdmin.password);
         await loginPage.updatePW();
@@ -632,7 +634,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
         klasseNames.push(klassenname);
       });
 
-      await test.step(`Schuladmin anlegen`, async () => {
+      const landingPage: LandingPage = await test.step(`Schuladmin anlegen`, async () => {
         const adminVorname: string = await generateVorname();
         const adminNachname: string = await generateNachname();
         const adminRolleName: string = await generateRolleName();
@@ -654,10 +656,11 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
 
         usernames.push(userInfoAdmin.username);
         rolleIds.push(userInfoAdmin.rolleId);
-
-        // login als Schuladmin
         const header: HeaderPage = new HeaderPage(page);
-        const landingPage: LandingPage = await header.logout({ logoutViaStartPage: true });
+        return await header.logout({ logoutViaStartPage: false });
+      });
+
+      await test.step(`Login als Schuladmin`, async () => {
         const loginPage: LoginPage = await landingPage.goToLogin();
         await loginPage.login(userInfoAdmin.username, userInfoAdmin.password);
         await loginPage.updatePW();
