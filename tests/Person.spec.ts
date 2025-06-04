@@ -525,17 +525,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       });
 
       await test.step(`Filter öffnen und Schule selektieren`, async () => {
-        // Fill the input with the name of the Schule and let the autocomplete find it
-        await personManagementView.comboboxMenuIconSchuleInput.fill(testschule665Name);
-
-        // Click on the found Schule
-        await page.getByRole('option', { name: testschule665Name }).click();
-
-        // Close the dropdown
-        await personManagementView.comboboxMenuIconSchule.click();
-
-        // Click elsewhere on the page to fully confirm the selected Schule
-        await personManagementView.buttonSuchen.click();
+        await personManagementView.filterSchule(testschule665Name);
 
         await expect(page.getByTestId('schule-select')).toHaveText('1111165 (Testschule-PW665)');
 
