@@ -31,6 +31,7 @@ import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
 import { MenuPage } from '../pages/MenuBar.page';
 import { StartPage } from '../pages/StartView.page';
+import { schulportaladmin } from '../base/sp.ts';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -174,7 +175,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
       const personCreationView: PersonCreationViewPage = await test.step(`Dialog Person anlegen öffnen`, async () => {
         const startseite: StartPage = new StartPage(page);
-        await startseite.validateStartPageIsLoaded();
+        await startseite.checkSpIsVisible([schulportaladmin]);
         const menu: MenuPage = await startseite.goToAdministration();
         const personCreationView: PersonCreationViewPage = await menu.personAnlegen();
         await expect(personCreationView.textH2PersonAnlegen).toHaveText('Neuen Benutzer hinzufügen');
@@ -387,9 +388,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     "Prüfung auf korrekte Rollen in dem Dropdown 'Rolle' nach Auswahl der Organisation bei Anlage eines Benutzer in der Rolle Landesadmin",
     { tag: [LONG, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
-      const startseite: StartPage = new StartPage(page);
-      const menue: MenuPage = new MenuPage(page);
-      const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
 
       const OrganisationLand: string = landSH;
       const OrganisationOeffentlicheSchule: string = oeffentlichLandSH;
@@ -399,11 +397,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const rolleLehr: string = 'Lehrkraft';
       const rolleLiV: string = 'LiV';
 
-      await test.step(`Dialog Person anlegen öffnen`, async () => {
-        await startseite.cardItemSchulportalAdministration.click();
-        await menue.menueItemBenutzerAnlegen.click();
-        await expect(personCreationView.textH2PersonAnlegen).toHaveText('Neuen Benutzer hinzufügen');
-        await waitForAPIResponse(page, 'personenkontext-workflow/**');
+      const personCreationView: PersonCreationViewPage = await test.step(`Dialog Person anlegen öffnen`, async () => {
+      const startseite: StartPage = new StartPage(page);
+      const menue: MenuPage = await startseite.goToAdministration();
+      return await menue.personAnlegen();
       });
 
       await test.step(`Organisation 'Land Schleswig-Holstein' auswählen und Dropdown 'Rolle' prüfen`, async () => {
