@@ -29,7 +29,7 @@ import { generateCurrentDate, gotoTargetURL } from '../base/testHelperUtils.ts';
 import { lehrkraftOeffentlichRolle, lehrkraftInVertretungRolle } from '../base/rollen.ts';
 import FromAnywhere from '../pages/FromAnywhere';
 import { befristungPflicht, kopersNrPflicht } from '../base/merkmale.ts';
-import { createKlasse, getKlasseId, getOrganisationId } from '../base/api/testHelperOrganisation.page.ts';
+import { createKlasse, getOrganisationId } from '../base/api/testHelperOrganisation.page.ts';
 import { MenuPage } from '../pages/MenuBar.page.ts';
 
 const PW: string | undefined = process.env.PW;
@@ -110,6 +110,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const landing: LandingPage = new LandingPage(page);
       const login: LoginPage = new LoginPage(page);
       const startseite: StartPage = new StartPage(page);
+      logoutViaStartPage = true;
 
       const addminVorname: string = await generateVorname();
       const adminNachname: string = await generateNachname();
@@ -195,10 +196,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
           '1111165 (Testschule-PW665): ' + lehrerRolle
         );
       });
-      // #TODO: wait for the last request in the test
-      // sometimes logout breaks the test because of interrupting requests
-      // logoutViaStartPage = true is a workaround
-      logoutViaStartPage = true;
     }
   );
 
@@ -206,6 +203,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     let userInfoLehrer: UserInfo;
     const unbefristeteRolle: string = lehrkraftOeffentlichRolle;
     const befristeteRolle: string = lehrkraftInVertretungRolle;
+    logoutViaStartPage = true;
 
     await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) und SP(email) über die api anlegen ${ADMIN}`, async () => {
       userInfoLehrer = await createRolleAndPersonWithUserContext(
@@ -234,7 +232,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await personDetailsView.waitForPageToBeLoaded();
       await personDetailsView.buttonEditSchulzuordnung.click();
       await personDetailsView.buttonAddSchulzuordnung.click();
-      await page.pause();
       await personDetailsView.organisationen.searchByTitle(testschuleName, false);
     });
 
@@ -244,10 +241,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await personDetailsView.rollen.selectByTitle(unbefristeteRolle);
       await expect(personDetailsView.buttonBefristungUnbefristet).toBeChecked();
     });
-    // #TODO: wait for the last request in the test
-    // sometimes logout breaks the test because of interrupting requests
-    // logoutViaStartPage = true is a workaround
-    logoutViaStartPage = true;
   });
 
   test(
@@ -256,6 +249,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     async ({ page }: PlaywrightTestArgs) => {
       let userInfoLehrer: UserInfo;
       const sperrDatumAbHeute: string = await generateCurrentDate({ days: 0, months: 0, formatDMY: true });
+      logoutViaStartPage = true;
 
       await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) und SP(email) über die api anlegen ${ADMIN}`, async () => {
         userInfoLehrer = await createRolleAndPersonWithUserContext(
@@ -285,10 +279,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await personDetailsView.checkUserIsLocked();
         await personDetailsView.checkLockDateFrom(sperrDatumAbHeute);
       });
-      // #TODO: wait for the last request in the test
-      // sometimes logout breaks the test because of interrupting requests
-      // logoutViaStartPage = true is a workaround
-      logoutViaStartPage = true;
     }
   );
 
@@ -296,6 +286,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     let userInfoLehrer: UserInfo;
     const sperrDatumAbHeute: string = await generateCurrentDate({ days: 0, months: 0, formatDMY: true });
     const sperrDatumBis: string = await generateCurrentDate({ days: 5, months: 2, formatDMY: true });
+    logoutViaStartPage = true;
 
     await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) und SP(email) über die api anlegen ${ADMIN}`, async () => {
       userInfoLehrer = await createRolleAndPersonWithUserContext(
@@ -327,10 +318,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await personDetailsView.checkLockDateFrom(sperrDatumAbHeute);
       await personDetailsView.checkLockDateTo(sperrDatumBis);
     });
-    // #TODO: wait for the last request in the test
-    // sometimes logout breaks the test because of interrupting requests
-    // logoutViaStartPage = true is a workaround
-    logoutViaStartPage = true;
   });
 
   test(
@@ -338,6 +325,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     { tag: [LONG, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
       let userInfoLehrer: UserInfo;
+      logoutViaStartPage = true;
 
       await test.step(`Testdaten: Schüler mit einer Rolle(LERN) über die api anlegen ${ADMIN}`, async () => {
         userInfoLehrer = await createRolleAndPersonWithUserContext(
@@ -375,10 +363,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(personDetailsView.textKeinTokenIstEingerichtet).toBeHidden();
         await expect(personDetailsView.button2FAEinrichten).toBeHidden();
       });
-      // #TODO: wait for the last request in the test
-      // sometimes logout breaks the test because of interrupting requests
-      // logoutViaStartPage = true is a workaround
-      logoutViaStartPage = true;
     }
   );
 
@@ -387,6 +371,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     { tag: [LONG, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
       let userInfoLehrer: UserInfo;
+      logoutViaStartPage = true;
 
       await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) über die api anlegen ${ADMIN}`, async () => {
         userInfoLehrer = await createRolleAndPersonWithUserContext(
@@ -414,10 +399,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(personDetailsView.textH3TwoFA).toBeVisible();
         await expect(personDetailsView.textKeinTokenIstEingerichtet).toBeVisible();
       });
-      // #TODO: wait for the last request in the test
-      // sometimes logout breaks the test because of interrupting requests
-      // logoutViaStartPage = true is a workaround
-      logoutViaStartPage = true;
     }
   );
 
@@ -430,6 +411,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const adminRollenart: string = typeSchuladmin;
       const adminOrganisation: string = testschule665Name;
       let userInfoAdmin: UserInfo;
+      logoutViaStartPage = true;
 
       await test.step(`Testdaten: Schuladmin mit einer Rolle(LEIT) über die api anlegen ${ADMIN}`, async () => {
         userInfoAdmin = await createRolleAndPersonWithUserContext(
@@ -458,10 +440,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(personDetailsView.textH3TwoFA).toBeVisible();
         await expect(personDetailsView.textKeinTokenIstEingerichtet).toBeVisible();
       });
-      // #TODO: wait for the last request in the test
-      // sometimes logout breaks the test because of interrupting requests
-      // logoutViaStartPage = true is a workaround
-      logoutViaStartPage = true;
     }
   );
 
@@ -475,6 +453,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const rollenart: string = 'SYSADMIN';
 
       let userInfoAdmin: UserInfo;
+      logoutViaStartPage = true;
 
       await test.step(`Testdaten: Landesadmin mit einer Rolle(SYSADMIN) über die api anlegen ${ADMIN}`, async () => {
         userInfoAdmin = await createRolleAndPersonWithUserContext(
@@ -515,10 +494,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(personDetailsView.textTokenIstEingerichtetInfo).toBeVisible();
         await expect(personDetailsView.textNeuenTokenEinrichtenInfo).toBeVisible();
       });
-      // #TODO: wait for the last request in the test
-      // sometimes logout breaks the test because of interrupting requests
-      // logoutViaStartPage = true is a workaround
-      logoutViaStartPage = true;
     }
   );
 
@@ -529,6 +504,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const adminRollenart: string = typeSchuladmin;
       const adminOrganisation: string = testschule665Name;
       let userInfoAdmin: UserInfo;
+      logoutViaStartPage = true;
 
       await test.step(`Testdaten: Schuladmin mit einer Rolle(LEIT) über die api anlegen ${ADMIN}`, async () => {
         userInfoAdmin = await createRolleAndPersonWithUserContext(
@@ -562,10 +538,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(personDetailsView.textTokenIstEingerichtetInfo).toBeVisible();
         await expect(personDetailsView.textNeuenTokenEinrichtenInfo).toBeVisible();
       });
-      // #TODO: wait for the last request in the test
-      // sometimes logout breaks the test because of interrupting requests
-      // logoutViaStartPage = true is a workaround
-      logoutViaStartPage = true;
     }
   );
 
@@ -832,10 +804,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     async ({ page }: PlaywrightTestArgs) => {
       // Testdaten anlegen: Schüler mit Rolle und 2 Klassen
       const idSchule: string = await getOrganisationId(page, testschuleName);
-      const rolleName = await generateRolleName();
-      const klasseNameCurrent = await generateKlassenname();
-      const klasseIdCurrent = await createKlasse(page, idSchule, klasseNameCurrent);
-      const klasseNameNew = await generateKlassenname();
+      const rolleName: string = await generateRolleName();
+      const klasseNameCurrent: string = await generateKlassenname();
+      const klasseIdCurrent: string = await createKlasse(page, idSchule, klasseNameCurrent);
+      const klasseNameNew: string = await generateKlassenname();
       await createKlasse(page, idSchule, klasseNameNew);
       const userInfoSchueler: UserInfo = await createRolleAndPersonWithUserContext(
         page,
@@ -854,7 +826,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
       const personDetailsView: PersonDetailsViewPage = await test.step(`Gesamtübersicht Schüler öffnen `, async () => {
         const startPage: StartPage = new StartPage(page);
-        const personManagementView = await startPage
+        const personManagementView: PersonManagementViewPage = await startPage
           .goToAdministration()
           .then((menu: MenuPage) => menu.goToBenutzerAnzeigen());
         await personManagementView.searchBySuchfeld(userInfoSchueler.username);
