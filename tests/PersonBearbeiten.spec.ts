@@ -1,7 +1,11 @@
 import { expect, PlaywrightTestArgs, test } from '@playwright/test';
 import { UserInfo, waitForAPIResponse } from '../base/api/testHelper.page.ts';
 import { createKlasse, getOrganisationId } from '../base/api/testHelperOrganisation.page.ts';
-import { createPerson, createRolleAndPersonWithUserContext, setTimeLimitPersonenkontext } from '../base/api/testHelperPerson.page.ts';
+import {
+  createPerson,
+  createRolleAndPersonWithUserContext,
+  setTimeLimitPersonenkontext,
+} from '../base/api/testHelperPerson.page.ts';
 import { addSPToRolle, addSystemrechtToRolle, createRolle } from '../base/api/testHelperRolle.page.ts';
 import { getSPId } from '../base/api/testHelperServiceprovider.page.ts';
 import { klasse1Testschule } from '../base/klassen.ts';
@@ -105,7 +109,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     'Eine Schulzuordnung bei einem bestehenden Benutzer hinzufügen',
     { tag: [LONG, STAGE, BROWSER] },
     async ({ page }: PlaywrightTestArgs) => {
-      const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
       const personDetailsView: PersonDetailsViewPage = new PersonDetailsViewPage(page);
       const header: HeaderPage = new HeaderPage(page);
       const landing: LandingPage = new LandingPage(page);
@@ -118,7 +121,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const adminRollenart: string = typeSchuladmin;
       const adminOrganisation: string = testschule665Name;
       const adminIdSPs: string[] = [await getSPId(page, 'Schulportal-Administration')];
-      let userInfoAdmin: UserInfo;
 
       const lehrerVorname: string = await generateVorname();
       const lehrerNachname: string = await generateNachname();
@@ -126,14 +128,11 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const lehrerRollenart: string = typeLehrer;
       const lehrerOrganisation: string = testschule665Name;
 
-      let userInfoLehrer: UserInfo;
-      let lehrerBenutzername: string = '';
       const rolle: string = lehrkraftInVertretungRolle;
       const kopersNr: string = await generateKopersNr();
 
-      await test.step(`Einen Schuladmin und einen zu bearbeitenden Lehrer mit je einer einer Schulzuordnung(Schule ist an einer Position > 25 in der DB) über die api anlegen und mit diesem Schuladmin anmelden`, async () => {
-        // Schuladmin
-        userInfoAdmin = await createRolleAndPersonWithUserContext(
+      const userInfoAdmin: UserInfo = await test.step('Schuladmin anlegen', async () => {
+        const userInfoAdmin: UserInfo = await createRolleAndPersonWithUserContext(
           page,
           adminOrganisation,
           adminRollenart,
@@ -145,9 +144,11 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'PERSONEN_VERWALTEN');
         usernames.push(userInfoAdmin.username);
         rolleIds.push(userInfoAdmin.rolleId);
+        return userInfoAdmin;
+      });
 
-        // Lehrer
-        userInfoLehrer = await createRolleAndPersonWithUserContext(
+      const userInfoLehrer: UserInfo = await test.step('Lehrer anlegen', async () => {
+        const userInfoLehrer: UserInfo = await createRolleAndPersonWithUserContext(
           page,
           lehrerOrganisation,
           lehrerRollenart,
@@ -158,9 +159,11 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         );
         usernames.push(userInfoLehrer.username);
         rolleIds.push(userInfoLehrer.rolleId);
-        lehrerBenutzername = userInfoLehrer.username;
+        return userInfoLehrer;
+      });
 
-        await header.logout({ logoutViaStartPage: true });
+      await test.step(`Als Schuladmin anmelden`, async () => {
+        await header.logout({ logoutViaStartPage: false });
         await landing.buttonAnmelden.click();
         await login.login(userInfoAdmin.username, userInfoAdmin.password);
         await login.updatePW();
@@ -169,9 +172,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       });
 
       await test.step(`Die Gesamtübersicht des Lehrers öffnen`, async () => {
-        await gotoTargetURL(page, 'admin/personen');
-        await personManagementView.searchBySuchfeld(lehrerBenutzername);
-        await page.getByRole('cell', { name: lehrerBenutzername, exact: true }).click();
+        const menu: MenuPage = await startseite.goToAdministration();
+        const personManagementView: PersonManagementViewPage = await menu.alleBenutzerAnzeigen();
+        await personManagementView.searchBySuchfeld(userInfoLehrer.username);
+        await personManagementView.openGesamtuebersichtPerson(page, userInfoLehrer.username);
         await personDetailsView.waitForPageToBeLoaded();
       });
 
@@ -179,9 +183,9 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await personDetailsView.buttonEditSchulzuordnung.click();
         await personDetailsView.buttonAddSchulzuordnung.click();
         expect(await personDetailsView.comboboxOrganisation.innerText()).toContain(adminOrganisation);
-        await personDetailsView.comboboxRolle.click();
-        await page.getByText(rolle, { exact: true }).click();
+        await personDetailsView.rollen.searchByTitle(rolle, true, 'personenkontext-workflow/**');
         await personDetailsView.inputKopersNr.fill(kopersNr);
+        await expect(personDetailsView.buttonSubmitAddSchulzuordnung).toBeEnabled();
         await personDetailsView.buttonSubmitAddSchulzuordnung.click();
         await personDetailsView.buttonConfirmAddSchulzuordnung.click();
         await personDetailsView.buttonSaveAssignmentChanges.click();
@@ -343,10 +347,18 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await test.step(`Testdaten: Schüler mit einer Rolle(LERN) über die api anlegen ${ADMIN}`, async () => {
         const schuleId: string = await getOrganisationId(page, testschuleName);
         const klasseId: string = await getOrganisationId(page, klasse1Testschule);
-      const rollenname: string = await generateRolleName();
+        const rollenname: string = await generateRolleName();
         const rolleId: string = await createRolle(page, 'LERN', schuleId, rollenname);
         await addSPToRolle(page, rolleId, [await getSPId(page, 'itslearning')]);
-        userInfoSchueler = await createPerson(page, await generateNachname(), await generateVorname(), schuleId, rolleId, '', klasseId);
+        userInfoSchueler = await createPerson(
+          page,
+          await generateNachname(),
+          await generateVorname(),
+          schuleId,
+          rolleId,
+          '',
+          klasseId
+        );
         usernames.push(userInfoSchueler.username);
         rolleIds.push(userInfoSchueler.rolleId);
       });
@@ -828,31 +840,34 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     'Einen Schüler von einer Klasse in eine Andere versetzen',
     { tag: [LONG, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
-      // Testdaten anlegen: Schüler mit Rolle und 2 Klassen
-      const idSchule: string = await getOrganisationId(page, testschuleName);
-      const rolleName = await generateRolleName();
-      const klasseNameCurrent = await generateKlassenname();
-      const klasseIdCurrent = await createKlasse(page, idSchule, klasseNameCurrent);
-      const klasseNameNew = await generateKlassenname();
-      await createKlasse(page, idSchule, klasseNameNew);
-      const userInfoSchueler: UserInfo = await createRolleAndPersonWithUserContext(
-        page,
-        testschuleName,
-        typeSchueler,
-        await generateNachname(),
-        await generateVorname(),
-        [await getSPId(page, itslearning)],
-        rolleName,
-        undefined,
-        klasseIdCurrent
-      );
-      usernames.push(userInfoSchueler.username);
-      rolleIds.push(userInfoSchueler.rolleId);
-      klasseNames.push(klasseNameCurrent, klasseNameNew);
+      const rolleName: string = await generateRolleName();
+      const klasseNameCurrent: string = await generateKlassenname();
+      const klasseNameNew: string = await generateKlassenname();
+
+      const userInfoSchueler: UserInfo = await test.step('Schüler mit Rolle und 2 Klassen anlegen', async () => {
+        const idSchule: string = await getOrganisationId(page, testschuleName);
+        const klasseIdCurrent: string = await createKlasse(page, idSchule, klasseNameCurrent);
+        await createKlasse(page, idSchule, klasseNameNew);
+        const userInfoSchueler: UserInfo = await createRolleAndPersonWithUserContext(
+          page,
+          testschuleName,
+          typeSchueler,
+          await generateNachname(),
+          await generateVorname(),
+          [await getSPId(page, itslearning)],
+          rolleName,
+          undefined,
+          klasseIdCurrent
+        );
+        usernames.push(userInfoSchueler.username);
+        rolleIds.push(userInfoSchueler.rolleId);
+        klasseNames.push(klasseNameCurrent, klasseNameNew);
+        return userInfoSchueler;
+      });
 
       const personDetailsView: PersonDetailsViewPage = await test.step(`Gesamtübersicht Schüler öffnen `, async () => {
         const startPage: StartPage = new StartPage(page);
-        const personManagementView = await startPage
+        const personManagementView: PersonManagementViewPage = await startPage
           .goToAdministration()
           .then((menu: MenuPage) => menu.goToBenutzerAnzeigen());
         await personManagementView.searchBySuchfeld(userInfoSchueler.username);
@@ -866,7 +881,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
           .getByText(testschuleDstNr + ' (' + testschuleName + '): ' + rolleName + ' ' + klasseNameCurrent)
           .click();
         await personDetailsView.buttonVersetzen.click();
-        await personDetailsView.klassen.searchByTitle(klasseNameNew, false);
+        await personDetailsView.klassenVersetzen.searchByTitle(klasseNameNew, false);
         await page.getByTestId('klasse-change-submit-button').click();
         await expect(page.getByRole('dialog')).toContainText(
           `Wollen Sie den Schüler/die Schülerin aus Klasse ${klasseNameCurrent} in Klasse ${klasseNameNew} versetzen?`

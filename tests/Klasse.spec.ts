@@ -546,7 +546,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       });
 
       const klasseManagementView: KlasseManagementViewPage =
-        await test.step(`In die Ergebnisliste Klasse navigieren und nach der Testschule filtern`, async () => {
+        await test.step(`In die Ergebnisliste Klasse navigieren`, async () => {
           const startseite: StartPage = new StartPage(page);
           const menue: MenuPage = await startseite.goToAdministration();
           const klasseManagementView: KlasseManagementViewPage = await menue.alleKlassenAnzeigen();
@@ -555,8 +555,11 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
           return klasseManagementView;
         });
 
-      await test.step(`In Ergebnisliste prüfen, dass die generierte Klasse angezeigt wird`, async () => {
+      await test.step(`Nach der Testschule filtern`, async () => {
         await klasseManagementView.filterSchule(testschuleName);
+      });
+
+      await test.step(`In Ergebnisliste prüfen, dass die generierte Klasse angezeigt wird`, async () => {
         await klasseManagementView.checkRowExists(klassenname);
       });
 

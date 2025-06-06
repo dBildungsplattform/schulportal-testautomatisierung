@@ -1,4 +1,4 @@
-import { type Locator, Page } from '@playwright/test';
+import { expect, type Locator, Page } from '@playwright/test';
 import { KlasseCreationViewPage } from './admin/KlasseCreationView.page';
 import { KlasseManagementViewPage, KlasseManagementViewPageOptions } from './admin/KlasseManagementView.page';
 import { PersonCreationViewPage } from './admin/PersonCreationView.page';
@@ -86,7 +86,9 @@ export class MenuPage {
 
   public async klasseAnlegen(): Promise<KlasseCreationViewPage> {
     await this.menueItemKlasseAnlegen.click();
-    return new KlasseCreationViewPage(this.page);
+    const klasseCreationView: KlasseCreationViewPage = new KlasseCreationViewPage(this.page);
+    await expect(klasseCreationView.textH2KlasseAnlegen).toContainText('Neue Klasse hinzufügen');
+    return klasseCreationView;
   }
 
   public async personAnlegen(): Promise<PersonCreationViewPage> {
