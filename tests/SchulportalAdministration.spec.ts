@@ -1,39 +1,41 @@
-import { expect, test, PlaywrightTestArgs } from '@playwright/test';
-import { LandingPage } from '../pages/LandingView.page';
-import { StartPage } from '../pages/StartView.page';
-import { LoginPage } from '../pages/LoginView.page';
-import { HeaderPage } from '../pages/Header.page';
-import { getSPId } from '../base/api/testHelperServiceprovider.page';
-import { createRolleAndPersonWithUserContext, setTimeLimitPersonenkontext } from '../base/api/testHelperPerson.page';
-import { addSystemrechtToRolle } from '../base/api/testHelperRolle.page';
+import { expect, PlaywrightTestArgs, test } from '@playwright/test';
 import { UserInfo } from '../base/api/testHelper.page';
+import { getOrganisationId } from '../base/api/testHelperOrganisation.page.ts';
+import { createPerson, createRolleAndPersonWithUserContext, setTimeLimitPersonenkontext } from '../base/api/testHelperPerson.page';
+import { addSPToRolle, addSystemrechtToRolle, createRolle } from '../base/api/testHelperRolle.page';
+import { getSPId } from '../base/api/testHelperServiceprovider.page';
+import { klasse1Testschule } from '../base/klassen.ts';
+import { befristungPflicht, kopersNrPflicht } from '../base/merkmale.ts';
+import { testschuleName } from '../base/organisation';
+import { typeLehrer } from '../base/rollentypen.ts';
+import {
+  adressbuch,
+  anleitungen,
+  email,
+  helpdeskKontaktieren,
+  itslearning,
+  kalender,
+  opSH,
+  psychosozialesBeratungsangebot,
+  schoolSH,
+  schulportaladmin,
+  schulrechtAZ,
+  webUntis,
+} from '../base/sp';
 import { LONG, SHORT, STAGE } from '../base/tags';
 import { deletePersonById, deleteRolleById } from '../base/testHelperDeleteTestdata';
 import {
+  generateKopersNr,
   generateNachname,
   generateRolleName,
-  generateVorname,
-  generateKopersNr,
+  generateVorname
 } from '../base/testHelperGenerateTestdataNames';
-import { testschuleName } from '../base/organisation';
-import FromAnywhere from '../pages/FromAnywhere';
-import {
-  email,
-  itslearning,
-  schulportaladmin,
-  kalender,
-  adressbuch,
-  opSH,
-  schoolSH,
-  webUntis,
-  anleitungen,
-  helpdeskKontaktieren,
-  psychosozialesBeratungsangebot,
-  schulrechtAZ,
-} from '../base/sp';
-import { typeLehrer } from '../base/rollentypen.ts';
 import { generateCurrentDate } from '../base/testHelperUtils.ts';
-import { befristungPflicht, kopersNrPflicht } from '../base/merkmale.ts';
+import FromAnywhere from '../pages/FromAnywhere';
+import { HeaderPage } from '../pages/Header.page';
+import { LandingPage } from '../pages/LandingView.page';
+import { LoginPage } from '../pages/LoginView.page';
+import { StartPage } from '../pages/StartView.page';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -147,18 +149,23 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
       const startseite: StartPage = new StartPage(page);
 
       // Testdaten erstellen
+      const schuleId: string = await getOrganisationId(page, testschuleName);
+      const klasseId: string = await getOrganisationId(page, klasse1Testschule);
       const idSPs: string[] = [await getSPId(page, 'itslearning')];
-      const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
-        page,
-        testschuleName,
-        'LERN',
+      const rolleId: string = await createRolle(page, 'LERN', schuleId, await generateRolleName());
+      await addSPToRolle(page, rolleId, idSPs);
+      const userInfo: UserInfo = await createPerson(page, 
         await generateNachname(),
         await generateVorname(),
-        idSPs,
-        await generateRolleName()
-      );
+        schuleId,
+        rolleId,
+        '', 
+        klasseId,
+      )
       personIds.push(userInfo.personId);
       rolleIds.push(userInfo.rolleId);
+
+
       await header.logout({ logoutViaStartPage: true });
 
       // Test durchführen
