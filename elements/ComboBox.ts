@@ -53,6 +53,7 @@ export class ComboBox {
 
   public async closeModal(): Promise<void> {
     await this.page.keyboard.press('Escape');
+    await this.page.getByTestId('admin-headline').click();
   }
 
   public async toggleModal(): Promise<void> {
@@ -73,8 +74,8 @@ export class ComboBox {
     if (currentValue === searchString) {
       return;
     }
-    await this.inputLocator.click();
-    await this.inputLocator.clear();
+    await this.openModal();
+    await this.clear();
     await this.inputLocator.pressSequentially(searchString);
     let item: Locator;
 
@@ -87,7 +88,6 @@ export class ComboBox {
         has: this.page.getByText(searchString),
       });
     }
-    await item.waitFor({ state: 'visible' });
 
     // When creating a Landesadministrator, after selecting a Land as an organisation, we must wait for the personenkontext workflow endpoint to return rollen,
     // because in that case the API call takes longer than in other cases.
@@ -97,6 +97,7 @@ export class ComboBox {
       await waitForAPIResponse(this.page, endpoint);
     }
     await item.click();
+    await this.closeModal();
   }
 
   public async validateItemNotExists(searchString: string, exactMatch: boolean): Promise<void> {
