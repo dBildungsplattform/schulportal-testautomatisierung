@@ -166,6 +166,8 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
         await expect(klasseManagementView.tableHeaderDienststellennummer).toBeVisible();
         await expect(klasseManagementView.tableHeaderKlassenname).toBeVisible();
       });
+
+      logoutViaStartPage = true;
     }
   );
 
