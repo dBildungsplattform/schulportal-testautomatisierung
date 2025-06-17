@@ -836,7 +836,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     }
   );
 
-  test.only(
+  test(
     'Einen Schüler von einer Klasse in eine Andere versetzen',
     { tag: [LONG, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
