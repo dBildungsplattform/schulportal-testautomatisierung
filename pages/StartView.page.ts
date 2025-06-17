@@ -1,8 +1,8 @@
-import { type Locator, Page, Response } from '@playwright/test';
-import { MenuPage } from './MenuBar.page';
-import { LandingPage } from './LandingView.page';
-import { expect } from '@playwright/test';
+import { expect, type Locator, Page, Response } from '@playwright/test';
 import { PersonManagementViewPage } from './admin/PersonManagementView.page';
+import { LandingPage } from './LandingView.page';
+import { MenuPage } from './MenuBar.page';
+import { schulportaladmin } from '../base/sp';
 
 export class StartPage {
   readonly page: Page;
@@ -24,10 +24,11 @@ export class StartPage {
     this.cardItemSchulportalAdministration = page.locator('[data-testid^="service-provider-card"]', {
       hasText: 'Schulportal-Administration',
     });
-    this.cardItem = (spName: string) => page.locator('[data-testid^="service-provider-card"]', { hasText: spName });
+    this.cardItem = (spName: string): Locator => page.locator('[data-testid^="service-provider-card"]', { hasText: spName });
   }
 
   public async goToAdministration(): Promise<MenuPage> {
+    await this.checkSpIsVisible([schulportaladmin]);
     await this.cardItemSchulportalAdministration.click();
     const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(this.page);
     await personManagementView.waitForData();
@@ -49,6 +50,7 @@ export class StartPage {
   public async checkSpIsVisible(spNames: string[]): Promise<void> {
     for (const spName of spNames) {
       await expect(this.cardItem(spName)).toBeVisible();
+      await expect(this.cardItem(spName).locator('img')).toBeVisible();
     }
   }
 
