@@ -1,9 +1,9 @@
 import { expect, type Locator, Page } from '@playwright/test';
-import { FooterDataTablePage } from '../../components/FooterDataTable.page';
 import { ComboBox } from '../../../elements/ComboBox';
+import { FooterDataTablePage } from '../../components/FooterDataTable.page';
 import { KlasseDetailsViewPage } from './KlasseDetailsView.page';
 
-interface KlasseManagementViewPageOptions {
+export interface KlasseManagementViewPageOptions {
   currentUserIsLandesadministrator: boolean;
 }
 
@@ -12,7 +12,7 @@ export class KlasseManagementViewPage {
   readonly textH1Administrationsbereich: Locator;
   readonly textH2Klassenverwaltung: Locator;
   readonly comboboxFilterSchule: Locator;
-  readonly comboboxFilterKlasse: Locator;
+  readonly comboboxFilterKlasse: ComboBox;
   readonly tableHeaderDienststellennummer: Locator;
   readonly tableHeaderKlassenname: Locator;
   readonly iconKlasseLoeschen: Locator;
@@ -22,6 +22,7 @@ export class KlasseManagementViewPage {
   readonly footerDataTable: FooterDataTablePage;
   readonly comboboxOrganisationInput: ComboBox;
   readonly organisationInput: Locator;
+  readonly klasseInput: Locator;
   readonly textAlertDeleteKlasse: Locator;
   readonly buttonCloseAlert: Locator;
   readonly iconTableRowDelete: (className: string) => Locator;
@@ -32,7 +33,8 @@ export class KlasseManagementViewPage {
     this.textH1Administrationsbereich = page.getByTestId('admin-headline');
     this.textH2Klassenverwaltung = page.getByTestId('layout-card-headline');
     this.comboboxFilterSchule = page.getByPlaceholder('Schule');
-    this.comboboxFilterKlasse = page.getByPlaceholder('Klasse');
+    this.klasseInput = page.getByTestId('klasse-select');
+    this.comboboxFilterKlasse = new ComboBox(this.page, this.klasseInput);
     this.tableHeaderDienststellennummer = page.getByText('Dienststellennummer');
     this.tableHeaderKlassenname = page.getByTestId('klasse-table').getByText('Klasse', { exact: true });
     this.buttonKlasseLoeschen = page.getByTestId('klasse-delete-button');
@@ -84,6 +86,10 @@ export class KlasseManagementViewPage {
     await this.comboboxOrganisationInput.searchByTitle(schule, false);
   }
 
+  public async filterKlasse(klasse: string): Promise<void> {
+    await this.comboboxFilterKlasse.searchByTitle(klasse, false);
+  }
+
   public async checkRowExists(className: string): Promise<void> {
     await expect(this.page.getByRole('cell', { name: className })).toBeVisible();
   }
@@ -95,7 +101,6 @@ export class KlasseManagementViewPage {
   public async deleteRowViaQuickAction(className: string): Promise<void> {
     this.clickIconTableRowLoeschen(className);
     await this.clickButtonLoeschen();
-    await this.page.waitForResponse(/api\/organisationen\/.*\/klasse/);
     await this.buttonSchliesseKlasseLoeschenDialog.click();
   }
 

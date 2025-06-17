@@ -1,4 +1,5 @@
 import { expect, type Locator, Page } from '@playwright/test';
+import { waitForAPIResponse } from '../../../base/api/testHelper.page';
 import { ComboBox } from '../../../elements/ComboBox';
 
 export class PersonCreationViewPage {
@@ -59,7 +60,7 @@ export class PersonCreationViewPage {
     this.inputNachname = page.getByTestId('familienname-input').locator('.v-field__input');
     this.inputKopersnr = page.getByTestId('kopersnr-input').locator('.v-field__input');
     this.comboboxSchulstrukturknoten = page.getByTestId('organisation-select').locator('.v-field__input');
-    this.comboboxKlasse = page.getByTestId('klasse-select').locator('.v-field__input');
+    this.comboboxKlasse = page.getByTestId('personenkontext-create-klasse-select').locator('.v-field__input');
     this.buttonPersonAnlegen = page.getByTestId('person-creation-form-submit-button');
     this.comboboxOrganisationInput = new ComboBox(this.page, this.organisationInput);
     this.rolleInput = page.getByTestId('rollen-select');
@@ -135,5 +136,25 @@ export class PersonCreationViewPage {
       await this.inputKopersnr.fill(koPersNr);
     }
     await this.buttonPersonAnlegen.click();
+  }
+
+  public async clearOrganisationSelection(): Promise<void> {
+    await this.comboboxOrganisationInput.clear();
+    await waitForAPIResponse(this.page, 'personenkontext-workflow/**');
+  }
+
+  public async searchAndSelectOrganisation(organisation: string, exact: boolean): Promise<void> {
+    await this.comboboxOrganisationInput.searchByTitle(organisation, exact, 'personenkontext-workflow/**');
+  }
+  
+  public async checkRolleModal(includes: string[], excludes: string[]): Promise<void> {
+    await this.comboboxRolleInput.openModal();
+    for (const role of includes) {
+      await expect(this.listboxRolle).toContainText(role);
+    }
+    for (const role of excludes) {
+      await expect(this.listboxRolle).not.toContainText(role);
+    }
+    await this.comboboxRolleInput.closeModal();
   }
 }

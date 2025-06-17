@@ -1,12 +1,13 @@
-import { type Locator, Page } from '@playwright/test';
+import { expect, type Locator, Page } from '@playwright/test';
+import { KlasseCreationViewPage } from '../admin/organisationen/KlasseCreationView.page';
+import { KlasseManagementViewPage, KlasseManagementViewPageOptions } from '../admin/organisationen/KlasseManagementView.page';
+import { PersonCreationViewPage } from '../admin/personen/PersonCreationView.page';
 import { PersonImportViewPage } from '../admin/personen/PersonImportView.page';
+import { PersonManagementViewPage } from '../admin/personen/PersonManagementView.page';
 import { RolleCreationViewPage } from '../admin/rollen/RolleCreationView.page';
 import { RolleManagementViewPage } from '../admin/rollen/RolleManagementView.page';
 import { SchuleCreationViewPage } from '../admin/organisationen/SchuleCreationView.page';
 import { SchuleManagementViewPage } from '../admin/organisationen/SchuleManagementView.page';
-import { KlasseManagementViewPage } from '../admin/organisationen/KlasseManagementView.page';
-import { PersonCreationViewPage } from '../admin/personen/PersonCreationView.page';
-import { PersonManagementViewPage } from '../admin/personen/PersonManagementView.page';
 
 export class MenuPage {
   readonly page: Page;
@@ -34,9 +35,7 @@ export class MenuPage {
     this.labelBenutzerverwaltung = page.locator('[data-testid="person-management-title"] .v-list-item-title');
     this.labelKlassenverwaltung = page.locator('[data-testid="klasse-management-title"] .v-list-item-title');
     this.labelRollenverwaltung = page.locator('[data-testid="rolle-management-title"] .v-list-item-title');
-    this.labelSchultraegerverwaltung = page.locator(
-      '[data-testid="schultraeger-management-title"] .v-list-item-title'
-    );
+    this.labelSchultraegerverwaltung = page.locator('[data-testid="schultraeger-management-title"] .v-list-item-title');
     this.labelSchulverwaltung = page.locator('[data-testid="schule-management-title"] .v-list-item-title');
     this.menueItemAlleBenutzerAnzeigen = page.getByTestId('person-management-menu-item');
     this.menueItemAlleKlassenAnzeigen = page.getByTestId('klassen-management-menu-item');
@@ -80,9 +79,16 @@ export class MenuPage {
     return new PersonImportViewPage(this.page);
   }
 
-  public async alleKlassenAnzeigen(): Promise<KlasseManagementViewPage> {
+  public async alleKlassenAnzeigen(options?: KlasseManagementViewPageOptions): Promise<KlasseManagementViewPage> {
     await this.menueItemAlleKlassenAnzeigen.click();
-    return new KlasseManagementViewPage(this.page);
+    return new KlasseManagementViewPage(this.page, options);
+  }
+
+  public async klasseAnlegen(): Promise<KlasseCreationViewPage> {
+    await this.menueItemKlasseAnlegen.click();
+    const klasseCreationView: KlasseCreationViewPage = new KlasseCreationViewPage(this.page);
+    await expect(klasseCreationView.textH2KlasseAnlegen).toContainText('Neue Klasse hinzufügen');
+    return klasseCreationView;
   }
 
   public async personAnlegen(): Promise<PersonCreationViewPage> {

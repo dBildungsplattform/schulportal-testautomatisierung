@@ -1,36 +1,40 @@
 import { expect, PlaywrightTestArgs, test } from '@playwright/test';
 import { UserInfo } from '../base/api/testHelper.page';
 import { getOrganisationId } from '../base/api/testHelperOrganisation.page';
-import { addSecondOrganisationToPerson, createRolleAndPersonWithUserContext } from '../base/api/testHelperPerson.page';
-import { addSystemrechtToRolle } from '../base/api/testHelperRolle.page';
+import {
+  addSecondOrganisationToPerson,
+  createPerson,
+  createRolleAndPersonWithUserContext,
+} from '../base/api/testHelperPerson.page';
+import { addSPToRolle, addSystemrechtToRolle, createRolle } from '../base/api/testHelperRolle.page';
 import { getSPId } from '../base/api/testHelperServiceprovider.page';
-import { landSH, testschuleName, testschule665Name } from '../base/organisation.ts';
-import { typeLandesadmin, typeLehrer, typeSchueler, typeSchuladmin } from '../base/rollentypen.ts';
+import {
+  klassenVerwalten,
+  personenAnlegen,
+  personenSofortLoeschen,
+  personenVerwalten,
+  rollenVerwalten,
+  schulenVerwalten,
+  schultraegerVerwalten,
+} from '../base/berechtigungen.ts';
+import { klasse1Testschule } from '../base/klassen.ts';
+import { landSH, testschule665Name, testschuleDstNr, testschuleName } from '../base/organisation.ts';
+import { typeLandesadmin, typeLehrer, typeSchuladmin } from '../base/rollentypen.ts';
 import { email, itslearning, schulportaladmin } from '../base/sp.ts';
 import { BROWSER, LONG, SHORT, STAGE } from '../base/tags';
 import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata';
 import {
+  generateKopersNr,
   generateNachname,
   generateRolleName,
   generateVorname,
-  generateKopersNr,
 } from '../base/testHelperGenerateTestdataNames.ts';
+import FromAnywhere from '../pages/FromAnywhere';
 import { HeaderPage } from '../pages/components/Header.page';
 import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
 import { ProfilePage } from '../pages/ProfileView.page';
 import { StartPage } from '../pages/StartView.page';
-import FromAnywhere from '../pages/FromAnywhere';
-import {
-  rollenVerwalten,
-  personenSofortLoeschen,
-  personenVerwalten,
-  schulenVerwalten,
-  klassenVerwalten,
-  schultraegerVerwalten,
-  personenAnlegen,
-} from '../base/berechtigungen.ts';
-import { testschuleDstNr } from '../base/organisation.ts';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -179,7 +183,6 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
     'Das eigene Profil öffnen und auf Vollständigkeit prüfen als Lehrer mit einer Schulzuordnung',
     { tag: [LONG, SHORT, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
-      const profileView: ProfilePage = new ProfilePage(page);
       const header: HeaderPage = new HeaderPage(page);
       const login: LoginPage = new LoginPage(page);
 
@@ -190,7 +193,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       const rollenart: string = typeLehrer;
 
       await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
-        const idSPs: string[] = [await getSPId(page, 'E-Mail')];
+        const idSPs: string[] = [await getSPId(page, email)];
         const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
           page,
           organisation,
@@ -205,13 +208,14 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
         await header.logout({ logoutViaStartPage: true });
         await header.buttonLogin.click();
-        await login.login(userInfo.username, userInfo.password);
+        const startPage: StartPage = await login.login(userInfo.username, userInfo.password);
         await login.updatePW();
+        await startPage.checkSpIsVisible([email]);
         currentUserIsLandesadministrator = false;
       });
 
-      await test.step(`Profil öffnen`, async () => {
-        await header.goToProfile();
+      const profileView: ProfilePage = await test.step(`Profil öffnen`, async () => {
+        return await header.goToProfile();
       });
 
       await test.step(`Profil auf Vollständigkeit prüfen`, async () => {
@@ -253,19 +257,14 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       const nachname: string = await generateNachname();
       const organisation: string = testschuleName;
       const rollenname: string = await generateRolleName();
-      const rollenart: string = typeSchueler;
 
-      await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
+      await test.step(`Schüler via api anlegen und mit diesem anmelden`, async () => {
+        const schuleId: string = await getOrganisationId(page, testschuleName);
+        const klasseId: string = await getOrganisationId(page, klasse1Testschule);
         const idSPs: string[] = [await getSPId(page, 'itslearning')];
-        const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
-          page,
-          organisation,
-          rollenart,
-          nachname,
-          vorname,
-          idSPs,
-          rollenname
-        );
+        const rolleId: string = await createRolle(page, 'LERN', schuleId, rollenname);
+        await addSPToRolle(page, rolleId, idSPs);
+        const userInfo: UserInfo = await createPerson(page, nachname, vorname, schuleId, rolleId, '', klasseId);
         rolleIds.push(userInfo.rolleId);
         usernames.push(userInfo.username);
 
@@ -335,7 +334,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         rolleIds.push(userInfo.rolleId);
         usernames.push(userInfo.username);
 
-        await header.logout({ logoutViaStartPage: true });
+        await header.logout({ logoutViaStartPage: false });
         await header.buttonLogin.click();
         await login.login(userInfo.username, userInfo.password);
         await login.updatePW();
@@ -494,7 +493,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       const login: LoginPage = new LoginPage(page);
 
       const organisation: string = testschuleName;
-      const rollenart: string = typeSchueler;
+      const rollenart: string = typeLehrer;
 
       await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
         const idSPs: string[] = [await getSPId(page, itslearning)];
@@ -672,14 +671,19 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         rolleIds.push(userInfoLehrer.rolleId);
         usernames.push(userInfoLehrer.username);
 
-        userInfoSchueler = await createRolleAndPersonWithUserContext(
+        const schuleId: string = await getOrganisationId(page, testschuleName);
+        const klasseId: string = await getOrganisationId(page, klasse1Testschule);
+        const idSPs: string[] = [await getSPId(page, 'itslearning')];
+        const rolleId: string = await createRolle(page, 'LERN', schuleId, await generateRolleName());
+        await addSPToRolle(page, rolleId, idSPs);
+        userInfoSchueler = await createPerson(
           page,
-          testschuleName,
-          typeSchueler,
           await generateNachname(),
           await generateVorname(),
-          [await getSPId(page, itslearning)],
-          await generateRolleName()
+          schuleId,
+          rolleId,
+          '',
+          klasseId
         );
         rolleIds.push(userInfoSchueler.rolleId);
         usernames.push(userInfoSchueler.username);

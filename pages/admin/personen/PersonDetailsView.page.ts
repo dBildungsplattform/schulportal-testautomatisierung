@@ -53,6 +53,7 @@ export class PersonDetailsViewPage {
   readonly organisationen: ComboBox;
   readonly rollen: ComboBox;
   readonly klassen: ComboBox;
+  readonly klassenVersetzen: ComboBox;
 
   // Benutzer sperren
   readonly textH3LockPersonHeadline: Locator;
@@ -133,6 +134,7 @@ export class PersonDetailsViewPage {
     this.organisationen = new ComboBox(this.page, this.comboboxOrganisation);
     this.rollen = new ComboBox(this.page, this.comboboxRolle);
     this.klassen = new ComboBox(this.page, this.comboboxKlasse);
+    this.klassenVersetzen = new ComboBox(this.page, page.getByTestId('klasse-change-klasse-select'));
     this.buttonBefristungAendern = page.getByTestId('befristung-change-button');
     this.buttonBefristungAendernSubmit = page.getByTestId('change-befristung-submit-button');
     this.buttonBefristungAendernConfirm = page.getByTestId('confirm-change-befristung-button');

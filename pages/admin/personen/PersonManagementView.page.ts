@@ -1,5 +1,6 @@
 import { type Locator, Page, expect } from '@playwright/test';
 import { PersonDetailsViewPage } from './PersonDetailsView.page';
+import { ComboBox } from '../../../elements/ComboBox';
 
 export class PersonManagementViewPage {
   readonly page: Page;
@@ -21,6 +22,7 @@ export class PersonManagementViewPage {
   readonly comboboxMenuIconKlasse: Locator;
   readonly comboboxMenuIconStatus: Locator;
   readonly comboboxMenuIconSchuleInput: Locator;
+  readonly comboboxSchule: ComboBox;
 
   constructor(page: Page) {
     this.page = page;
@@ -42,6 +44,7 @@ export class PersonManagementViewPage {
     this.comboboxMenuIconRolle = page.locator('[data-testid="rolle-select"] .mdi-menu-down');
     this.comboboxMenuIconKlasse = page.locator('[data-testid="klasse-select"] .mdi-menu-down');
     this.comboboxMenuIconStatus = page.locator('[data-testid="status-select"] .mdi-menu-down');
+    this.comboboxSchule = new ComboBox(this.page, page.getByTestId('schule-select'));
   }
 
   public async navigateToPersonDetailsViewByNachname(nachname: string): Promise<PersonDetailsViewPage> {
@@ -75,6 +78,10 @@ export class PersonManagementViewPage {
   public async waitErgebnislisteIsLoaded(): Promise<void> {
     await this.page.waitForResponse('/api/dbiam/personenuebersicht');
     await expect(this.textH2Benutzerverwaltung).toContainText('Benutzerverwaltung');
+  }
+
+  public async filterSchule(schule: string): Promise<void> {
+    await this.comboboxSchule.searchByTitle(schule, false, 'organisationen**');
   }
 
   public async resetFilter(): Promise<void> {

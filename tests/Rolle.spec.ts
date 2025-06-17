@@ -1,9 +1,9 @@
-import { expect, test, PlaywrightTestArgs, Locator } from '@playwright/test';
+import { expect, Locator, PlaywrightTestArgs, test } from '@playwright/test';
 import { deleteRolle, getRolleId } from '../base/api/testHelperRolle.page';
 import { ersatzLandSH, landSH } from '../base/organisation';
 import { landesadminRolle } from '../base/rollen';
 import { email, itslearning, kalender, schulportaladmin } from '../base/sp';
-import { LONG, SHORT, STAGE, BROWSER } from '../base/tags';
+import { BROWSER, LONG, SHORT, STAGE } from '../base/tags';
 import { deleteRolleByName } from '../base/testHelperDeleteTestdata';
 import { generateRolleName } from '../base/testHelperGenerateTestdataNames';
 import { RolleCreationConfirmPage } from '../pages/admin/rollen/RolleCreationConfirm.page';
@@ -12,10 +12,10 @@ import { RolleDetailsViewPage } from '../pages/admin/rollen/RolleDetailsView.pag
 import { RoleTableRow, RolleManagementViewPage } from '../pages/admin/rollen/RolleManagementView.page';
 import FromAnywhere from '../pages/FromAnywhere';
 import { HeaderPage } from '../pages/components/Header.page';
-import { MenuPage } from '../pages/components/MenuBar.page';
-import { StartPage } from '../pages/StartView.page';
 import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
+import { MenuPage } from '../pages/components/MenuBar.page';
+import { StartPage } from '../pages/StartView.page';
 
 let startseite: StartPage;
 let loggedIn: boolean = false;
@@ -241,8 +241,8 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
 
     await test.step('ungültige Zeichen', async () => {
       const illegalCharacters: string[] = ['!', '"', '§', '$', '%', '&', '/', '<', '>', '{', '}', '[', ']'];
-      for (let index: number = 0; index < illegalCharacters.length; index++) {
-        await rolleDetailsView.rolleForm.rollenname.inputElement.fill(illegalCharacters[index]);
+      for (const char of illegalCharacters) {
+        await rolleDetailsView.rolleForm.rollenname.inputElement.fill(char);
         await expect(rolleDetailsView.rolleForm.rollenname.messages.getByText('ungültig')).toBeVisible();
         await expect(rolleDetailsView.rolleForm.rollenname.messages.getByText('ungültig')).toHaveText(
           'Der Rollenname darf keine ungültigen Zeichen beinhalten.'
@@ -339,8 +339,8 @@ test.describe('Testet die Anlage einer neuen Rolle', () => {
     });
 
     await test.step('leere Pflichtfelder', async () => {
-      await expect(rolleCreationView.rolleForm.adminstrationsebene.messages).toBeHidden();
-      await expect(rolleCreationView.rolleForm.rollenart.messages).toBeHidden();
+      await expect(rolleCreationView.rolleForm.adminstrationsebene.messages).toHaveText('');
+      await expect(rolleCreationView.rolleForm.rollenart.messages).toHaveText('');
 
       await rolleCreationView.buttonRolleAnlegen.click();
 
@@ -374,8 +374,8 @@ test.describe('Testet die Anlage einer neuen Rolle', () => {
 
     await test.step('ungültige Zeichen', async () => {
       const illegalCharacters: string[] = ['!', '"', '§', '$', '%', '&', '/', '<', '>', '{', '}', '[', ']'];
-      for (let index: number = 0; index < illegalCharacters.length; index++) {
-        await rolleCreationView.enterRollenname(illegalCharacters[index]);
+      for (const char of illegalCharacters) {
+        await rolleCreationView.enterRollenname(char);
         await expect(rolleCreationView.rolleForm.rollenname.messages.getByText('ungültig')).toBeVisible();
         await expect(rolleCreationView.rolleForm.rollenname.messages.getByText('ungültig')).toHaveText(
           'Der Rollenname darf keine ungültigen Zeichen beinhalten.'
