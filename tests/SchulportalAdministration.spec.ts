@@ -32,7 +32,7 @@ import {
 } from '../base/testHelperGenerateTestdataNames';
 import { generateCurrentDate } from '../base/testHelperUtils.ts';
 import FromAnywhere from '../pages/FromAnywhere';
-import { HeaderPage } from '../pages/Header.page';
+import { HeaderPage } from '../pages/components/Header.page';
 import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
 import { StartPage } from '../pages/StartView.page';

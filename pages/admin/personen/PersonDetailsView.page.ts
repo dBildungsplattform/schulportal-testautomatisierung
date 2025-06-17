@@ -1,6 +1,6 @@
 import { type Locator, Page, expect } from '@playwright/test';
-import { ComboBox } from '../../elements/ComboBox';
-import { waitForAPIResponse } from '../../base/api/testHelper.page';
+import { ComboBox } from '../../../elements/ComboBox';
+import { waitForAPIResponse } from '../../../base/api/testHelper.page';
 
 export class PersonDetailsViewPage {
   readonly page: Page;

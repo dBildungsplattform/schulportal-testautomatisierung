@@ -1,12 +1,12 @@
 import { type Locator, Page } from '@playwright/test';
-import { PersonImportViewPage } from './admin/PersonImportView.page';
-import { RolleCreationViewPage } from './admin/RolleCreationView.page';
-import { RolleManagementViewPage } from './admin/RolleManagementView.page';
-import { SchuleCreationViewPage } from './admin/SchuleCreationView.page';
-import { SchuleManagementViewPage } from './admin/SchuleManagementView.page';
-import { KlasseManagementViewPage } from './admin/KlasseManagementView.page';
-import { PersonCreationViewPage } from './admin/PersonCreationView.page';
-import { PersonManagementViewPage } from './admin/PersonManagementView.page';
+import { PersonImportViewPage } from '../admin/personen/PersonImportView.page';
+import { RolleCreationViewPage } from '../admin/rollen/RolleCreationView.page';
+import { RolleManagementViewPage } from '../admin/rollen/RolleManagementView.page';
+import { SchuleCreationViewPage } from '../admin/organisationen/SchuleCreationView.page';
+import { SchuleManagementViewPage } from '../admin/organisationen/SchuleManagementView.page';
+import { KlasseManagementViewPage } from '../admin/organisationen/KlasseManagementView.page';
+import { PersonCreationViewPage } from '../admin/personen/PersonCreationView.page';
+import { PersonManagementViewPage } from '../admin/personen/PersonManagementView.page';
 
 export class MenuPage {
   readonly page: Page;

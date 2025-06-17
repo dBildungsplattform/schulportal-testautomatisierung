@@ -1,6 +1,6 @@
 import { expect, type Locator, Page } from '@playwright/test';
-import { FooterDataTablePage } from '../FooterDataTable.page';
-import { ComboBox } from '../../elements/ComboBox';
+import { FooterDataTablePage } from '../../components/FooterDataTable.page';
+import { ComboBox } from '../../../elements/ComboBox';
 import { KlasseDetailsViewPage } from './KlasseDetailsView.page';
 
 interface KlasseManagementViewPageOptions {

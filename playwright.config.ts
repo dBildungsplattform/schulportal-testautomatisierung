@@ -3,8 +3,8 @@ import dotenv from 'dotenv';
 import * as path from 'node:path';
 import { fileURLToPath } from 'url';
 
-const __filename: string = fileURLToPath(import.meta.url);
-const __dirname: string = path.dirname(__filename);
+const filename: string = fileURLToPath(import.meta.url);
+const dirname: string = path.dirname(filename);
 
 const FRONTEND_URL: string = process.env.FRONTEND_URL || '';
 
@@ -12,7 +12,7 @@ dotenv.config({
   path: './.env.dev',
 });
 
-dotenv.config({ path: path.resolve(__dirname, '.env'), override: true });
+dotenv.config({ path: path.resolve(dirname, '.env'), override: true });
 
 export default defineConfig({
   testDir: './tests',

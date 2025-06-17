@@ -1,5 +1,5 @@
 import { type Locator, Page } from '@playwright/test';
-import { ComboBox } from '../../elements/ComboBox';
+import { ComboBox } from '../../../elements/ComboBox';
 
 export class KlasseCreationViewPage{
     readonly page: Page;

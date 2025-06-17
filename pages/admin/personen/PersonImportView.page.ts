@@ -1,6 +1,6 @@
 import { type Locator, Page } from '@playwright/test';
 import { PersonManagementViewPage } from './PersonManagementView.page';
-import { ComboBox } from '../../elements/ComboBox';
+import { ComboBox } from '../../../elements/ComboBox';
 
 export class PersonImportViewPage {
   readonly page: Page;

@@ -2,7 +2,7 @@ import { test, expect, PlaywrightTestArgs } from '@playwright/test';
 import { LoginPage } from '../pages/LoginView.page';
 import { LandingPage } from '../pages/LandingView.page';
 import { StartPage } from '../pages/StartView.page';
-import { HeaderPage } from '../pages/Header.page';
+import { HeaderPage } from '../pages/components/Header.page';
 import { LONG, SHORT, SMOKE, STAGE, BROWSER } from '../base/tags';
 import { createRolleAndPersonWithUserContext, lockPerson } from '../base/api/testHelperPerson.page.ts';
 import { getSPId } from '../base/api/testHelperServiceprovider.page.ts';
