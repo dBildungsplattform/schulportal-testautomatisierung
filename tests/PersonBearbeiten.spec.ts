@@ -29,7 +29,7 @@ import { generateCurrentDate, gotoTargetURL } from '../base/testHelperUtils.ts';
 import { lehrkraftOeffentlichRolle, lehrkraftInVertretungRolle } from '../base/rollen.ts';
 import FromAnywhere from '../pages/FromAnywhere';
 import { befristungPflicht, kopersNrPflicht } from '../base/merkmale.ts';
-import { createKlasse, getKlasseId, getOrganisationId } from '../base/api/testHelperOrganisation.page.ts';
+import { createKlasse, getOrganisationId } from '../base/api/testHelperOrganisation.page.ts';
 import { MenuPage } from '../pages/MenuBar.page.ts';
 
 const PW: string | undefined = process.env.PW;
@@ -832,10 +832,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     async ({ page }: PlaywrightTestArgs) => {
       // Testdaten anlegen: Schüler mit Rolle und 2 Klassen
       const idSchule: string = await getOrganisationId(page, testschuleName);
-      const rolleName = await generateRolleName();
-      const klasseNameCurrent = await generateKlassenname();
-      const klasseIdCurrent = await createKlasse(page, idSchule, klasseNameCurrent);
-      const klasseNameNew = await generateKlassenname();
+      const rolleName: string = await generateRolleName();
+      const klasseNameCurrent: string = await generateKlassenname();
+      const klasseIdCurrent: string = await createKlasse(page, idSchule, klasseNameCurrent);
+      const klasseNameNew: string = await generateKlassenname();
       await createKlasse(page, idSchule, klasseNameNew);
       const userInfoSchueler: UserInfo = await createRolleAndPersonWithUserContext(
         page,
