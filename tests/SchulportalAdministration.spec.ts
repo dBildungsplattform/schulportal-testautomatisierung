@@ -1,7 +1,11 @@
 import { expect, PlaywrightTestArgs, test } from '@playwright/test';
 import { UserInfo } from '../base/api/testHelper.page';
 import { getOrganisationId } from '../base/api/testHelperOrganisation.page.ts';
-import { createPerson, createRolleAndPersonWithUserContext, setTimeLimitPersonenkontext } from '../base/api/testHelperPerson.page';
+import {
+  createPerson,
+  createRolleAndPersonWithUserContext,
+  setTimeLimitPersonenkontext,
+} from '../base/api/testHelperPerson.page';
 import { addSPToRolle, addSystemrechtToRolle, createRolle } from '../base/api/testHelperRolle.page';
 import { getSPId } from '../base/api/testHelperServiceprovider.page';
 import { klasse1Testschule } from '../base/klassen.ts';
@@ -28,7 +32,7 @@ import {
   generateKopersNr,
   generateNachname,
   generateRolleName,
-  generateVorname
+  generateVorname,
 } from '../base/testHelperGenerateTestdataNames';
 import { generateCurrentDate } from '../base/testHelperUtils.ts';
 import FromAnywhere from '../pages/FromAnywhere';
@@ -157,17 +161,17 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
       const idSPs: string[] = [await getSPId(page, 'itslearning')];
       const rolleId: string = await createRolle(page, 'LERN', schuleId, await generateRolleName());
       await addSPToRolle(page, rolleId, idSPs);
-      const userInfo: UserInfo = await createPerson(page, 
+      const userInfo: UserInfo = await createPerson(
+        page,
         await generateNachname(),
         await generateVorname(),
         schuleId,
         rolleId,
-        '', 
-        klasseId,
-      )
+        '',
+        klasseId
+      );
       personIds.push(userInfo.personId);
       rolleIds.push(userInfo.rolleId);
-
 
       await header.logout({ logoutViaStartPage: true });
 
@@ -231,145 +235,149 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
     }
   );
 
+  test('News-Box bei befristeten Schulzuordnungen testen', { tag: [LONG] }, async ({ page }: PlaywrightTestArgs) => {
+    let userInfoLehrer1: UserInfo;
+    let userInfoLehrer2: UserInfo;
+    const rollenNameLehrer1: string = await generateRolleName();
+    const rollenNameLehrer2: string = await generateRolleName();
+    const colorOrange: string = 'rgb(255, 152, 37)';
+    const colorRed: string = 'rgb(255, 85, 85)';
+
+    const headerPage: HeaderPage = new HeaderPage(page);
+    const loginPage: LoginPage = new LoginPage(page);
+
+    await test.step(`Testdaten: Lehrer1 mit einer befristeten Schulzuordnung(noch 50 Tage gültig) und Lehrer2 mit einer befristeten Schulzuordnung(noch 12 Tage gültig) über die api anlegen`, async () => {
+      // Lehrer1: Schulzuordnung noch 50 Tage gültig
+      userInfoLehrer1 = await createRolleAndPersonWithUserContext(
+        page,
+        testschuleName,
+        typeLehrer,
+        await generateNachname(),
+        await generateVorname(),
+        [await getSPId(page, email)],
+        rollenNameLehrer1
+      );
+      personIds.push(userInfoLehrer1.personId);
+      rolleIds.push(userInfoLehrer1.rolleId);
+
+      await setTimeLimitPersonenkontext(
+        page,
+        userInfoLehrer1.personId,
+        userInfoLehrer1.organisationId,
+        userInfoLehrer1.rolleId,
+        await generateCurrentDate({ days: 50, months: 0, formatDMY: false })
+      );
+
+      // Lehrer2: Schulzuordnung noch 12 Tage gültig
+      userInfoLehrer2 = await createRolleAndPersonWithUserContext(
+        page,
+        testschuleName,
+        typeLehrer,
+        await generateNachname(),
+        await generateVorname(),
+        [await getSPId(page, email)],
+        rollenNameLehrer2
+      );
+      personIds.push(userInfoLehrer2.personId);
+      rolleIds.push(userInfoLehrer2.rolleId);
+
+      await setTimeLimitPersonenkontext(
+        page,
+        userInfoLehrer2.personId,
+        userInfoLehrer2.organisationId,
+        userInfoLehrer2.rolleId,
+        await generateCurrentDate({ days: 12, months: 0, formatDMY: false })
+      );
+    });
+
+    await test.step(`Lehrer1 meldet sich an und die orangene News-Box wird geprüft`, async () => {
+      const timeLimitTeacherRolle1: string = await generateCurrentDate({ days: 50, months: 0, formatDMY: true });
+      const alertText: string =
+        `Hinweis: Die Zuordnung dieses Benutzerkontos zu der Schule "${testschuleName}" mit der Rolle "${rollenNameLehrer1}" ist bis zum ${timeLimitTeacherRolle1} befristet. ` +
+        `Sollte dies nicht zutreffen, wenden Sie sich bitte an Ihre Schulleitung. Nach Ende der Zuordnung sind Funktionalitäten, die im Bezug zu dieser Schule und Rolle stehen, nicht mehr verfügbar.`;
+
+      const landingPage: LandingPage = await headerPage.logout({ logoutViaStartPage: true });
+      await landingPage.buttonAnmelden.click();
+      const startView: StartPage = await loginPage.login(userInfoLehrer1.username, userInfoLehrer1.password);
+      await loginPage.updatePW();
+      await startView.validateStartPageIsLoaded();
+      currentUserIsLandesadministrator = false;
+
+      await expect(page.getByText(alertText)).toBeVisible();
+      await expect(page.getByRole('alert')).toHaveCSS('background-color', colorOrange);
+    });
+
+    await test.step(`Lehrer2 meldet sich an und die rote News-Box wird geprüft`, async () => {
+      const timeLimitTeacherRolle2: string = await generateCurrentDate({ days: 12, months: 0, formatDMY: true });
+      const alertText: string =
+        `Hinweis: Die Zuordnung dieses Benutzerkontos zu der Schule "${testschuleName}" mit der Rolle "${rollenNameLehrer2}" ist bis zum ${timeLimitTeacherRolle2} befristet. ` +
+        `Sollte dies nicht zutreffen, wenden Sie sich bitte an Ihre Schulleitung. Nach Ende der Zuordnung sind Funktionalitäten, die im Bezug zu dieser Schule und Rolle stehen, nicht mehr verfügbar.`;
+
+      const landingPage: LandingPage = await headerPage.logout({ logoutViaStartPage: true });
+      await landingPage.buttonAnmelden.click();
+      const startView: StartPage = await loginPage.login(userInfoLehrer2.username, userInfoLehrer2.password);
+      await loginPage.updatePW();
+      await startView.validateStartPageIsLoaded();
+      currentUserIsLandesadministrator = false;
+
+      await expect(page.getByText(alertText)).toBeVisible();
+      await expect(page.getByRole('alert')).toHaveCSS('background-color', colorRed);
+    });
+  });
+
   test(
-    'News-Box bei befristeten Schulzuordnungen testen',
-    { tag: [LONG] },
+    'Für ReligionsLehrkraft prüfen, dass die korrekten Service Provider auf der Startseite angezeigt werden',
+    { tag: [LONG, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
-      let userInfoLehrer1: UserInfo;
-      let userInfoLehrer2: UserInfo;
-      const rollenNameLehrer1: string = await generateRolleName();
-      const rollenNameLehrer2: string = await generateRolleName();
-      const colorOrange: string = 'rgb(255, 152, 37)';
-      const colorRed: string = 'rgb(255, 85, 85)';
+      const expectedSps: string[] = [
+        adressbuch,
+        email,
+        kalender,
+        opSH,
+        schoolSH,
+        webUntis,
+        anleitungen,
+        helpdeskKontaktieren,
+        psychosozialesBeratungsangebot,
+        schulrechtAZ,
+      ];
+      const unexpectedSps: string[] = [schulportaladmin, itslearning];
 
-      const headerPage: HeaderPage = new HeaderPage(page);
-      const loginPage: LoginPage = new LoginPage(page);
-
-      await test.step(`Testdaten: Lehrer1 mit einer befristeten Schulzuordnung(noch 50 Tage gültig) und Lehrer2 mit einer befristeten Schulzuordnung(noch 12 Tage gültig) über die api anlegen`, async () => {
-        // Lehrer1: Schulzuordnung noch 50 Tage gültig
-        userInfoLehrer1 = await createRolleAndPersonWithUserContext(
+      const userInfo: UserInfo = await test.step('Testdaten anlegen', async () => {
+        const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
           page,
           testschuleName,
           typeLehrer,
           await generateNachname(),
           await generateVorname(),
-          [await getSPId(page, email)],
-          rollenNameLehrer1
+          await Promise.all(expectedSps.map((sp: string) => getSPId(page, sp))),
+          await generateRolleName()
         );
-        personIds.push(userInfoLehrer1.personId);
-        rolleIds.push(userInfoLehrer1.rolleId);
-
-        await setTimeLimitPersonenkontext(
-          page,
-          userInfoLehrer1.personId,
-          userInfoLehrer1.organisationId,
-          userInfoLehrer1.rolleId,
-          await generateCurrentDate({ days: 50, months: 0, formatDMY: false })
-        );
-
-        // Lehrer2: Schulzuordnung noch 12 Tage gültig
-        userInfoLehrer2 = await createRolleAndPersonWithUserContext(
-          page,
-          testschuleName,
-          typeLehrer,
-          await generateNachname(),
-          await generateVorname(),
-          [await getSPId(page, email)],
-          rollenNameLehrer2
-        );
-        personIds.push(userInfoLehrer2.personId);
-        rolleIds.push(userInfoLehrer2.rolleId);
-
-        await setTimeLimitPersonenkontext(
-          page,
-          userInfoLehrer2.personId,
-          userInfoLehrer2.organisationId,
-          userInfoLehrer2.rolleId,
-          await generateCurrentDate({ days: 12, months: 0, formatDMY: false })
-        );
+        personIds.push(userInfo.personId);
+        rolleIds.push(userInfo.rolleId);
+        return userInfo;
       });
 
-      await test.step(`Lehrer1 meldet sich an und die orangene News-Box wird geprüft`, async () => {
-        const timeLimitTeacherRolle1: string = await generateCurrentDate({ days: 50, months: 0, formatDMY: true });
-        const alertText: string =
-          `Hinweis: Die Zuordnung dieses Benutzerkontos zu der Schule "${testschuleName}" mit der Rolle "${rollenNameLehrer1}" ist bis zum ${timeLimitTeacherRolle1} befristet. ` +
-          `Sollte dies nicht zutreffen, wenden Sie sich bitte an Ihre Schulleitung. Nach Ende der Zuordnung sind Funktionalitäten, die im Bezug zu dieser Schule und Rolle stehen, nicht mehr verfügbar.`;
-
-        const landingPage: LandingPage = await headerPage.logout({ logoutViaStartPage: true });
-        await landingPage.buttonAnmelden.click();
-        const startView: StartPage = await loginPage.login(userInfoLehrer1.username, userInfoLehrer1.password);
-        await loginPage.updatePW();
-        await startView.validateStartPageIsLoaded();
+      await test.step('Anmelden und Startseite prüfen', async () => {
+        const header: HeaderPage = new HeaderPage(page);
         currentUserIsLandesadministrator = false;
-
-        await expect(page.getByText(alertText)).toBeVisible();
-        await expect(page.getByRole('alert')).toHaveCSS('background-color', colorOrange);
-      });
-
-      await test.step(`Lehrer2 meldet sich an und die rote News-Box wird geprüft`, async () => {
-        const timeLimitTeacherRolle2: string = await generateCurrentDate({ days: 12, months: 0, formatDMY: true });
-        const alertText: string =
-          `Hinweis: Die Zuordnung dieses Benutzerkontos zu der Schule "${testschuleName}" mit der Rolle "${rollenNameLehrer2}" ist bis zum ${timeLimitTeacherRolle2} befristet. ` +
-          `Sollte dies nicht zutreffen, wenden Sie sich bitte an Ihre Schulleitung. Nach Ende der Zuordnung sind Funktionalitäten, die im Bezug zu dieser Schule und Rolle stehen, nicht mehr verfügbar.`;
-
-        const landingPage: LandingPage = await headerPage.logout({ logoutViaStartPage: true });
-        await landingPage.buttonAnmelden.click();
-        const startView: StartPage = await loginPage.login(userInfoLehrer2.username, userInfoLehrer2.password);
+        const landingPage: LandingPage = await header.logout({ logoutViaStartPage: false });
+        const loginPage: LoginPage = await landingPage.goToLogin();
+        const startPage: StartPage = await loginPage.login(userInfo.username, userInfo.password);
         await loginPage.updatePW();
-        await startView.validateStartPageIsLoaded();
-        currentUserIsLandesadministrator = false;
 
-        await expect(page.getByText(alertText)).toBeVisible();
-        await expect(page.getByRole('alert')).toHaveCSS('background-color', colorRed);
+        await startPage.checkSpIsVisible(expectedSps);
+        await startPage.checkSpIsHidden(unexpectedSps);
       });
     }
   );
 
   test(
-    'Für alle Rollen der Rollenart LEHR prüfen, dass die korrekten Service Provider auf der Startseite angezeigt werden',
+    'Für Itslearning-Lehrkraft prüfen, dass die korrekten Service Provider auf der Startseite angezeigt werden',
     { tag: [LONG, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
-      const landing: LandingPage = new LandingPage(page);
-      const login: LoginPage = new LoginPage(page);
-      const header: HeaderPage = new HeaderPage(page);
-      const startseite: StartPage = new StartPage(page);
-
-      // Zu testende Lehrkräfte
-      let userInfoLehrerReligionsLehrkraft: UserInfo;
-      let userInfoLehrerItslearningLehrkraft: UserInfo;
-      let userInfoLehrerLehrkraft: UserInfo;
-      let userInfoLehrerPilotProjektSchulverwaltungskraft: UserInfo;
-      let userInfoLehrerIqshMitarbeiter: UserInfo;
-      let userInfoLehrerStudentImPraxissemester: UserInfo;
-      let userInfoLehrerLiV: UserInfo;
-      let userInfoLehrerVertretungslehrkraft: UserInfo;
-
-      await test.step(`Testdaten: Lehrer mit Rollen anlegen`, async () => {
-        // Lehrer mit Rollen ohne Merkmale
-        userInfoLehrerReligionsLehrkraft = await createRolleAndPersonWithUserContext(
-          page,
-          testschuleName,
-          typeLehrer,
-          await generateNachname(),
-          await generateVorname(),
-          [
-            await getSPId(page, adressbuch),
-            await getSPId(page, email),
-            await getSPId(page, kalender),
-            await getSPId(page, opSH),
-            await getSPId(page, schoolSH),
-            await getSPId(page, webUntis),
-            await getSPId(page, anleitungen),
-            await getSPId(page, helpdeskKontaktieren),
-            await getSPId(page, psychosozialesBeratungsangebot),
-            await getSPId(page, schulrechtAZ),
-          ],
-          await generateRolleName()
-        );
-        personIds.push(userInfoLehrerReligionsLehrkraft.personId);
-        rolleIds.push(userInfoLehrerReligionsLehrkraft.rolleId);
-
-        userInfoLehrerItslearningLehrkraft = await createRolleAndPersonWithUserContext(
+      const userInfo: UserInfo = await test.step('Testdaten anlegen', async () => {
+        const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
           page,
           testschuleName,
           typeLehrer,
@@ -378,370 +386,310 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
           [await getSPId(page, itslearning)],
           await generateRolleName()
         );
-        personIds.push(userInfoLehrerItslearningLehrkraft.personId);
-        rolleIds.push(userInfoLehrerItslearningLehrkraft.rolleId);
+        personIds.push(userInfo.personId);
+        rolleIds.push(userInfo.rolleId);
+        return userInfo;
+      });
 
-        // Lehrer mit Rollen mit KopersPflicht
-        userInfoLehrerLehrkraft = await createRolleAndPersonWithUserContext(
+      await test.step('Anmelden und Startseite prüfen', async () => {
+        const header: HeaderPage = new HeaderPage(page);
+        currentUserIsLandesadministrator = false;
+        const landingPage: LandingPage = await header.logout({ logoutViaStartPage: false });
+        const loginPage: LoginPage = await landingPage.goToLogin();
+        const startPage: StartPage = await loginPage.login(userInfo.username, userInfo.password);
+        await loginPage.updatePW();
+
+        await startPage.checkSpIsVisible([itslearning]);
+        await startPage.checkSpIsHidden([schulportaladmin, email]);
+      });
+    }
+  );
+
+  test(
+    'Für Lehrkraft prüfen, dass die korrekten Service Provider auf der Startseite angezeigt werden',
+    { tag: [LONG, STAGE] },
+    async ({ page }: PlaywrightTestArgs) => {
+      const expected: string[] = [
+        email,
+        kalender,
+        adressbuch,
+        opSH,
+        schoolSH,
+        webUntis,
+        anleitungen,
+        schulrechtAZ,
+        helpdeskKontaktieren,
+        psychosozialesBeratungsangebot,
+      ];
+      const userInfo: UserInfo = await test.step('Testdaten anlegen', async () => {
+        const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
           page,
           testschuleName,
           typeLehrer,
           await generateNachname(),
           await generateVorname(),
-          [
-            await getSPId(page, email),
-            await getSPId(page, kalender),
-            await getSPId(page, adressbuch),
-            await getSPId(page, opSH),
-            await getSPId(page, schoolSH),
-            await getSPId(page, webUntis),
-            await getSPId(page, anleitungen),
-            await getSPId(page, schulrechtAZ),
-            await getSPId(page, helpdeskKontaktieren),
-            await getSPId(page, psychosozialesBeratungsangebot),
-          ],
+          await Promise.all(expected.map((sp: string) => getSPId(page, sp))),
           await generateRolleName(),
           await generateKopersNr(),
           undefined,
           [kopersNrPflicht]
         );
-        personIds.push(userInfoLehrerLehrkraft.personId);
-        rolleIds.push(userInfoLehrerLehrkraft.rolleId);
+        personIds.push(userInfo.personId);
+        rolleIds.push(userInfo.rolleId);
+        return userInfo;
+      });
 
-        userInfoLehrerPilotProjektSchulverwaltungskraft = await createRolleAndPersonWithUserContext(
+      await test.step('Anmelden und Startseite prüfen', async () => {
+        const header: HeaderPage = new HeaderPage(page);
+        currentUserIsLandesadministrator = false;
+        const landingPage: LandingPage = await header.logout({ logoutViaStartPage: false });
+        const loginPage: LoginPage = await landingPage.goToLogin();
+        const startPage: StartPage = await loginPage.login(userInfo.username, userInfo.password);
+        await loginPage.updatePW();
+        await startPage.checkSpIsVisible(expected);
+        await startPage.checkSpIsHidden([schulportaladmin, itslearning]);
+      });
+    }
+  );
+
+  test(
+    'Für PilotProjektSchulverwaltungskraft prüfen, dass die korrekten Service Provider auf der Startseite angezeigt werden',
+    { tag: [LONG, STAGE] },
+    async ({ page }: PlaywrightTestArgs) => {
+      const expected: string[] = [
+        email,
+        kalender,
+        adressbuch,
+        schoolSH,
+        webUntis,
+        anleitungen,
+        schulrechtAZ,
+        helpdeskKontaktieren,
+        psychosozialesBeratungsangebot,
+      ];
+      const userInfo: UserInfo = await test.step('Testdaten anlegen', async () => {
+        const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
           page,
           testschuleName,
           typeLehrer,
           await generateNachname(),
           await generateVorname(),
-          [
-            await getSPId(page, email),
-            await getSPId(page, kalender),
-            await getSPId(page, adressbuch),
-            await getSPId(page, schoolSH),
-            await getSPId(page, webUntis),
-            await getSPId(page, anleitungen),
-            await getSPId(page, schulrechtAZ),
-            await getSPId(page, helpdeskKontaktieren),
-            await getSPId(page, psychosozialesBeratungsangebot),
-          ],
+          await Promise.all(expected.map((sp: string) => getSPId(page, sp))),
           await generateRolleName(),
           await generateKopersNr(),
           undefined,
           [kopersNrPflicht]
         );
-        personIds.push(userInfoLehrerPilotProjektSchulverwaltungskraft.personId);
-        rolleIds.push(userInfoLehrerPilotProjektSchulverwaltungskraft.rolleId);
+        personIds.push(userInfo.personId);
+        rolleIds.push(userInfo.rolleId);
+        return userInfo;
+      });
 
-        userInfoLehrerIqshMitarbeiter = await createRolleAndPersonWithUserContext(
+      await test.step('Anmelden und Startseite prüfen', async () => {
+        const header: HeaderPage = new HeaderPage(page);
+        currentUserIsLandesadministrator = false;
+        const landingPage: LandingPage = await header.logout({ logoutViaStartPage: false });
+        const loginPage: LoginPage = await landingPage.goToLogin();
+        const startPage: StartPage = await loginPage.login(userInfo.username, userInfo.password);
+        await loginPage.updatePW();
+
+        await startPage.checkSpIsVisible(expected);
+        await startPage.checkSpIsHidden([schulportaladmin, opSH, itslearning]);
+      });
+    }
+  );
+
+  test(
+    'Für iQSH-Mitarbeiter prüfen, dass die korrekten Service Provider auf der Startseite angezeigt werden',
+    { tag: [LONG, STAGE] },
+    async ({ page }: PlaywrightTestArgs) => {
+      const expected: string[] = [
+        email,
+        kalender,
+        adressbuch,
+        itslearning,
+        opSH,
+        schoolSH,
+        webUntis,
+        anleitungen,
+        schulrechtAZ,
+        helpdeskKontaktieren,
+        psychosozialesBeratungsangebot,
+      ];
+      const userInfo: UserInfo = await test.step('Testdaten anlegen', async () => {
+        const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
           page,
           testschuleName,
           typeLehrer,
           await generateNachname(),
           await generateVorname(),
-          [
-            await getSPId(page, email),
-            await getSPId(page, kalender),
-            await getSPId(page, adressbuch),
-            await getSPId(page, itslearning),
-            await getSPId(page, opSH),
-            await getSPId(page, schoolSH),
-            await getSPId(page, webUntis),
-            await getSPId(page, anleitungen),
-            await getSPId(page, schulrechtAZ),
-            await getSPId(page, helpdeskKontaktieren),
-            await getSPId(page, psychosozialesBeratungsangebot),
-          ],
+          await Promise.all(expected.map((sp: string) => getSPId(page, sp))),
           await generateRolleName(),
           await generateKopersNr(),
           undefined,
           [kopersNrPflicht]
         );
-        personIds.push(userInfoLehrerIqshMitarbeiter.personId);
-        rolleIds.push(userInfoLehrerIqshMitarbeiter.rolleId);
+        personIds.push(userInfo.personId);
+        rolleIds.push(userInfo.rolleId);
+        return userInfo;
+      });
 
-        // Lehrer mit Rollen mit Befristungspflicht
-        userInfoLehrerStudentImPraxissemester = await createRolleAndPersonWithUserContext(
+      await test.step('Anmelden und Startseite prüfen', async () => {
+        const header: HeaderPage = new HeaderPage(page);
+        currentUserIsLandesadministrator = false;
+        const landingPage: LandingPage = await header.logout({ logoutViaStartPage: false });
+        const loginPage: LoginPage = await landingPage.goToLogin();
+        const startPage: StartPage = await loginPage.login(userInfo.username, userInfo.password);
+        await loginPage.updatePW();
+
+        await startPage.checkSpIsVisible(expected);
+        await startPage.checkSpIsHidden([schulportaladmin]);
+      });
+    }
+  );
+
+  test(
+    'Für Student im Praxissemester prüfen, dass die korrekten Service Provider auf der Startseite angezeigt werden',
+    { tag: [LONG, STAGE] },
+    async ({ page }: PlaywrightTestArgs) => {
+      const expected: string[] = [
+        email,
+        kalender,
+        adressbuch,
+        itslearning,
+        opSH,
+        schoolSH,
+        webUntis,
+        anleitungen,
+        schulrechtAZ,
+        helpdeskKontaktieren,
+        psychosozialesBeratungsangebot,
+      ];
+      const userInfo: UserInfo = await test.step('Testdaten anlegen', async () => {
+        const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
           page,
           testschuleName,
           typeLehrer,
           await generateNachname(),
           await generateVorname(),
-          [
-            await getSPId(page, email),
-            await getSPId(page, kalender),
-            await getSPId(page, adressbuch),
-            await getSPId(page, itslearning),
-            await getSPId(page, opSH),
-            await getSPId(page, schoolSH),
-            await getSPId(page, webUntis),
-            await getSPId(page, anleitungen),
-            await getSPId(page, schulrechtAZ),
-            await getSPId(page, helpdeskKontaktieren),
-            await getSPId(page, psychosozialesBeratungsangebot),
-          ],
+          await Promise.all(expected.map((sp: string) => getSPId(page, sp))),
           await generateRolleName(),
           undefined,
           undefined,
           [befristungPflicht]
         );
-        personIds.push(userInfoLehrerStudentImPraxissemester.personId);
-        rolleIds.push(userInfoLehrerStudentImPraxissemester.rolleId);
-
-        // Lehrer mit Rollen mit Kopers- und Befristungspflicht
-        userInfoLehrerLiV = await createRolleAndPersonWithUserContext(
-          page,
-          testschuleName,
-          typeLehrer,
-          await generateNachname(),
-          await generateVorname(),
-          [
-            await getSPId(page, email),
-            await getSPId(page, kalender),
-            await getSPId(page, adressbuch),
-            await getSPId(page, opSH),
-            await getSPId(page, schoolSH),
-            await getSPId(page, webUntis),
-            await getSPId(page, anleitungen),
-            await getSPId(page, schulrechtAZ),
-            await getSPId(page, helpdeskKontaktieren),
-            await getSPId(page, psychosozialesBeratungsangebot),
-          ],
-          await generateRolleName(),
-          await generateKopersNr(),
-          undefined,
-          [befristungPflicht, kopersNrPflicht]
-        );
-        personIds.push(userInfoLehrerLiV.personId);
-        rolleIds.push(userInfoLehrerLiV.rolleId);
-
-        userInfoLehrerVertretungslehrkraft = await createRolleAndPersonWithUserContext(
-          page,
-          testschuleName,
-          typeLehrer,
-          await generateNachname(),
-          await generateVorname(),
-          [
-            await getSPId(page, email),
-            await getSPId(page, kalender),
-            await getSPId(page, adressbuch),
-            await getSPId(page, opSH),
-            await getSPId(page, schoolSH),
-            await getSPId(page, webUntis),
-            await getSPId(page, anleitungen),
-            await getSPId(page, schulrechtAZ),
-            await getSPId(page, helpdeskKontaktieren),
-            await getSPId(page, psychosozialesBeratungsangebot),
-          ],
-          await generateRolleName(),
-          await generateKopersNr(),
-          undefined,
-          [befristungPflicht, kopersNrPflicht]
-        );
-        personIds.push(userInfoLehrerVertretungslehrkraft.personId);
-        rolleIds.push(userInfoLehrerVertretungslehrkraft.rolleId);
+        personIds.push(userInfo.personId);
+        rolleIds.push(userInfo.rolleId);
+        return userInfo;
       });
 
-      await test.step(`Lehrer mit einer Rolle wie bei einer Religionslehrkraft meldet sich an`, async () => {
-        // Lehrer meldet sich
+      await test.step('Anmelden und Startseite prüfen', async () => {
+        const header: HeaderPage = new HeaderPage(page);
         currentUserIsLandesadministrator = false;
-        await header.logout({ logoutViaStartPage: true });
-        await landing.buttonAnmelden.click();
-        await login.login(userInfoLehrerReligionsLehrkraft.username, userInfoLehrerReligionsLehrkraft.password);
-        await login.updatePW();
+        const landingPage: LandingPage = await header.logout({ logoutViaStartPage: false });
+        const loginPage: LoginPage = await landingPage.goToLogin();
+        const startPage: StartPage = await loginPage.login(userInfo.username, userInfo.password);
+        await loginPage.updatePW();
 
-        // Prüfen, dass dem Lehrer auf der Startseite die erwarteten Angebote angezeigt werden
-        const expectedSPsRolleReligionslehrkraft: string[] = [
-          adressbuch,
-          email,
-          kalender,
-          opSH,
-          schoolSH,
-          webUntis,
-          anleitungen,
-          helpdeskKontaktieren,
-          psychosozialesBeratungsangebot,
-          schulrechtAZ,
-        ];
-        await startseite.validateStartPageIsLoaded();
-        await startseite.checkSpIsVisible(expectedSPsRolleReligionslehrkraft);
-        await startseite.checkSpIsHidden([schulportaladmin, itslearning]);
+        await startPage.checkSpIsVisible(expected);
+        await startPage.checkSpIsHidden([schulportaladmin]);
       });
+    }
+  );
 
-      await test.step(`Lehrer mit einer Rolle wie bei einer Itslearninglehrkraft meldet sich an`, async () => {
-        // Lehrer meldet sich
-        await header.logout({ logoutViaStartPage: true });
-        await landing.buttonAnmelden.click();
-        await login.login(userInfoLehrerItslearningLehrkraft.username, userInfoLehrerItslearningLehrkraft.password);
-        await login.updatePW();
-
-        // Prüfen, dass dem Lehrer auf der Startseite die erwarteten Angebote angezeigt werden
-        const expectedSPsRolleReligionslehrkraft: string[] = [itslearning];
-        await startseite.validateStartPageIsLoaded();
-        await startseite.checkSpIsVisible(expectedSPsRolleReligionslehrkraft);
-        await startseite.checkSpIsHidden([schulportaladmin, email]);
-      });
-
-      await test.step(`Lehrer mit einer Rolle wie bei einer Lehrkraft meldet sich an`, async () => {
-        // Lehrer meldet sich
-        await header.logout({ logoutViaStartPage: true });
-        await landing.buttonAnmelden.click();
-        await login.login(userInfoLehrerLehrkraft.username, userInfoLehrerLehrkraft.password);
-        await login.updatePW();
-
-        // Prüfen, dass dem Lehrer auf der Startseite die erwarteten Angebote angezeigt werden
-        const expectedSPsRollelehrkraftOeffentlich: string[] = [
-          email,
-          kalender,
-          adressbuch,
-          opSH,
-          schoolSH,
-          webUntis,
-          anleitungen,
-          schulrechtAZ,
-          helpdeskKontaktieren,
-          psychosozialesBeratungsangebot,
-        ];
-
-        await startseite.validateStartPageIsLoaded();
-        await startseite.checkSpIsVisible(expectedSPsRollelehrkraftOeffentlich);
-        await startseite.checkSpIsHidden([schulportaladmin, itslearning]);
-      });
-
-      await test.step(`Lehrer mit einer Rolle wie bei einer PilotProjektSchulverwaltungskraft meldet sich an`, async () => {
-        // Lehrer meldet sich
-        await header.logout({ logoutViaStartPage: true });
-        await landing.buttonAnmelden.click();
-        await login.login(
-          userInfoLehrerPilotProjektSchulverwaltungskraft.username,
-          userInfoLehrerPilotProjektSchulverwaltungskraft.password
+  test(
+    'Für LehrerLiV prüfen, dass die korrekten Service Provider auf der Startseite angezeigt werden',
+    { tag: [LONG, STAGE] },
+    async ({ page }: PlaywrightTestArgs) => {
+      const expected: string[] = [
+        email,
+        kalender,
+        adressbuch,
+        opSH,
+        schoolSH,
+        webUntis,
+        anleitungen,
+        schulrechtAZ,
+        helpdeskKontaktieren,
+        psychosozialesBeratungsangebot,
+      ];
+      const userInfo: UserInfo = await test.step('Testdaten anlegen', async () => {
+        const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
+          page,
+          testschuleName,
+          typeLehrer,
+          await generateNachname(),
+          await generateVorname(),
+          await Promise.all(expected.map((sp: string) => getSPId(page, sp))),
+          await generateRolleName(),
+          await generateKopersNr(),
+          undefined,
+          [befristungPflicht, kopersNrPflicht]
         );
-        await login.updatePW();
-
-        // Prüfen, dass dem Lehrer auf der Startseite die erwarteten Angebote angezeigt werden
-        const expectedSPsRollePilotProjektSchulverwaltungskraft: string[] = [
-          email,
-          kalender,
-          adressbuch,
-          schoolSH,
-          webUntis,
-          anleitungen,
-          schulrechtAZ,
-          helpdeskKontaktieren,
-          psychosozialesBeratungsangebot,
-        ];
-        await startseite.validateStartPageIsLoaded();
-        await startseite.checkSpIsVisible(expectedSPsRollePilotProjektSchulverwaltungskraft);
-        await startseite.checkSpIsHidden([schulportaladmin, opSH, itslearning]);
+        personIds.push(userInfo.personId);
+        rolleIds.push(userInfo.rolleId);
+        return userInfo;
       });
 
-      await test.step(`Lehrer mit einer Rolle wie bei einer iQSHMitarbeiter meldet sich an`, async () => {
-        // Lehrer meldet sich
-        await header.logout({ logoutViaStartPage: true });
-        await landing.buttonAnmelden.click();
-        await login.login(userInfoLehrerIqshMitarbeiter.username, userInfoLehrerIqshMitarbeiter.password);
-        await login.updatePW();
+      await test.step('Anmelden und Startseite prüfen', async () => {
+        const header: HeaderPage = new HeaderPage(page);
+        currentUserIsLandesadministrator = false;
+        const landingPage: LandingPage = await header.logout({ logoutViaStartPage: false });
+        const loginPage: LoginPage = await landingPage.goToLogin();
+        const startPage: StartPage = await loginPage.login(userInfo.username, userInfo.password);
+        await loginPage.updatePW();
 
-        // Prüfen, dass dem Lehrer auf der Startseite die erwarteten Angebote angezeigt werden
-        const expectedSPsRolleIqshMitarbeiter: string[] = [
-          email,
-          kalender,
-          adressbuch,
-          itslearning,
-          opSH,
-          schoolSH,
-          webUntis,
-          anleitungen,
-          schulrechtAZ,
-          helpdeskKontaktieren,
-          psychosozialesBeratungsangebot,
-        ];
-        await startseite.validateStartPageIsLoaded();
-        await startseite.checkSpIsVisible(expectedSPsRolleIqshMitarbeiter);
-        await startseite.checkSpIsHidden([schulportaladmin]);
+        await startPage.checkSpIsVisible(expected);
+        await startPage.checkSpIsHidden([schulportaladmin, itslearning]);
       });
+    }
+  );
 
-      await test.step(`Lehrer mit einer Rolle wie bei einer LehrerStudentImPraxissemester meldet sich an`, async () => {
-        // Lehrer meldet sich
-        await header.logout({ logoutViaStartPage: true });
-        await landing.buttonAnmelden.click();
-        await login.login(
-          userInfoLehrerStudentImPraxissemester.username,
-          userInfoLehrerStudentImPraxissemester.password
+  test(
+    'Für Vertretungslehrkraft prüfen, dass die korrekten Service Provider auf der Startseite angezeigt werden',
+    { tag: [LONG, STAGE] },
+    async ({ page }: PlaywrightTestArgs) => {
+      const expected: string[] = [
+        email,
+        kalender,
+        adressbuch,
+        opSH,
+        schoolSH,
+        webUntis,
+        anleitungen,
+        schulrechtAZ,
+        helpdeskKontaktieren,
+        psychosozialesBeratungsangebot,
+      ];
+      const userInfo: UserInfo = await test.step('Testdaten anlegen', async () => {
+        const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
+          page,
+          testschuleName,
+          typeLehrer,
+          await generateNachname(),
+          await generateVorname(),
+          await Promise.all(expected.map((sp: string) => getSPId(page, sp))),
+          await generateRolleName(),
+          await generateKopersNr(),
+          undefined,
+          [befristungPflicht, kopersNrPflicht]
         );
-        await login.updatePW();
-
-        // Prüfen, dass dem Lehrer auf der Startseite die erwarteten Angebote angezeigt werden
-        const expectedSPsRolleIqshMitarbeiter: string[] = [
-          email,
-          kalender,
-          adressbuch,
-          itslearning,
-          opSH,
-          schoolSH,
-          webUntis,
-          anleitungen,
-          schulrechtAZ,
-          helpdeskKontaktieren,
-          psychosozialesBeratungsangebot,
-        ];
-        await startseite.validateStartPageIsLoaded();
-        await startseite.checkSpIsVisible(expectedSPsRolleIqshMitarbeiter);
-        await startseite.checkSpIsHidden([schulportaladmin]);
+        personIds.push(userInfo.personId);
+        rolleIds.push(userInfo.rolleId);
+        return userInfo;
       });
 
-      await test.step(`Lehrer mit einer Rolle wie bei einer LehrerLiV meldet sich an`, async () => {
-        // Lehrer meldet sich
-        await header.logout({ logoutViaStartPage: true });
-        await landing.buttonAnmelden.click();
-        await login.login(userInfoLehrerLiV.username, userInfoLehrerLiV.password);
-        await login.updatePW();
+      await test.step('Anmelden und Startseite prüfen', async () => {
+        const header: HeaderPage = new HeaderPage(page);
+        currentUserIsLandesadministrator = false;
+        const landingPage: LandingPage = await header.logout({ logoutViaStartPage: false });
+        const loginPage: LoginPage = await landingPage.goToLogin();
+        const startPage: StartPage = await loginPage.login(userInfo.username, userInfo.password);
+        await loginPage.updatePW();
 
-        // Prüfen, dass dem Lehrer auf der Startseite die erwarteten Angebote angezeigt werden
-        const expectedSPsRolleIqshMitarbeiter: string[] = [
-          email,
-          kalender,
-          adressbuch,
-          opSH,
-          schoolSH,
-          webUntis,
-          anleitungen,
-          schulrechtAZ,
-          helpdeskKontaktieren,
-          psychosozialesBeratungsangebot,
-        ];
-        await startseite.validateStartPageIsLoaded();
-        await startseite.checkSpIsVisible(expectedSPsRolleIqshMitarbeiter);
-        await startseite.checkSpIsHidden([schulportaladmin, itslearning]);
+        await startPage.checkSpIsVisible(expected);
+        await startPage.checkSpIsHidden([schulportaladmin, itslearning]);
       });
-
-      await test.step(`Lehrer mit einer Rolle wie bei einer LehrerVertretungslehrkraft meldet sich an`, async () => {
-        // Lehrer meldet sich
-        await header.logout({ logoutViaStartPage: true });
-        await landing.buttonAnmelden.click();
-        await login.login(userInfoLehrerVertretungslehrkraft.username, userInfoLehrerVertretungslehrkraft.password);
-        await login.updatePW();
-
-        // Prüfen, dass dem Lehrer auf der Startseite die erwarteten Angebote angezeigt werden
-        const expectedSPsRolleIqshMitarbeiter: string[] = [
-          email,
-          kalender,
-          adressbuch,
-          opSH,
-          schoolSH,
-          webUntis,
-          anleitungen,
-          schulrechtAZ,
-          helpdeskKontaktieren,
-          psychosozialesBeratungsangebot,
-        ];
-        await startseite.validateStartPageIsLoaded();
-        await startseite.checkSpIsVisible(expectedSPsRolleIqshMitarbeiter);
-        await startseite.checkSpIsHidden([schulportaladmin, itslearning]);
-      });
-
-      logoutViaStartPage = true;
-      currentUserIsLandesadministrator = false;
     }
   );
 });
