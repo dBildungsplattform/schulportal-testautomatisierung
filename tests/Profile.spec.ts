@@ -30,7 +30,7 @@ import {
   generateVorname,
 } from '../base/testHelperGenerateTestdataNames.ts';
 import FromAnywhere from '../pages/FromAnywhere';
-import { HeaderPage } from '../pages/Header.page';
+import { HeaderPage } from '../pages/components/Header.page';
 import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
 import { ProfilePage } from '../pages/ProfileView.page';

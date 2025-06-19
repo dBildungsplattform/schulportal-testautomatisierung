@@ -1,7 +1,7 @@
 import { test, expect, PlaywrightTestArgs } from '@playwright/test';
 import { StartPage } from '../pages/StartView.page';
-import { MenuPage } from '../pages/MenuBar.page';
-import { HeaderPage } from '../pages/Header.page';
+import { MenuPage } from '../pages/components/MenuBar.page';
+import { HeaderPage } from '../pages/components/Header.page';
 import { LONG, SHORT, STAGE, BROWSER } from '../base/tags';
 import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';

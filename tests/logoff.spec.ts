@@ -2,7 +2,7 @@ import { test, PlaywrightTestArgs } from '@playwright/test';
 import { LandingPage } from '../pages/LandingView.page';
 import { StartPage } from '../pages/StartView.page';
 import { LoginPage } from '../pages/LoginView.page';
-import { HeaderPage } from '../pages/Header.page';
+import { HeaderPage } from '../pages/components/Header.page';
 import { LONG, SHORT, STAGE, BROWSER } from '../base/tags';
 
 const ADMIN: string | undefined = process.env.USER;

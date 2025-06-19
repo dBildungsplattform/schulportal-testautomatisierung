@@ -1,6 +1,6 @@
 import { type Locator, Page, expect } from '@playwright/test';
-import { waitForAPIResponse } from '../../base/api/testHelper.page';
-import { ComboBox } from '../../elements/ComboBox';
+import { Autocomplete } from '../../../elements/Autocomplete';
+import { waitForAPIResponse } from '../../../base/api/testHelper.page';
 
 export class PersonDetailsViewPage {
   readonly page: Page;
@@ -50,10 +50,10 @@ export class PersonDetailsViewPage {
   readonly radioButtonUnbefristet: Locator;
   readonly radioButtonUnbefristetDisabled: Locator;
 
-  readonly organisationen: ComboBox;
-  readonly rollen: ComboBox;
-  readonly klassen: ComboBox;
-  readonly klassenVersetzen: ComboBox;
+  readonly organisationen: Autocomplete;
+  readonly rollen: Autocomplete;
+  readonly klassen: Autocomplete;
+  readonly klassenVersetzen: Autocomplete;
 
   // Benutzer sperren
   readonly textH3LockPersonHeadline: Locator;
@@ -131,10 +131,10 @@ export class PersonDetailsViewPage {
     this.buttonCloseSaveAssignmentChanges = page.getByRole('dialog').getByRole('button', { name: 'Schließen' });
     this.buttonBefristetSchuljahresende = page.getByLabel('Bis Schuljahresende (31.07.');
     this.buttonBefristungUnbefristet = page.getByLabel('Unbefristet');
-    this.organisationen = new ComboBox(this.page, this.comboboxOrganisation);
-    this.rollen = new ComboBox(this.page, this.comboboxRolle);
-    this.klassen = new ComboBox(this.page, this.comboboxKlasse);
-    this.klassenVersetzen = new ComboBox(this.page, page.getByTestId('klasse-change-klasse-select'));
+    this.organisationen = new Autocomplete(this.page, this.comboboxOrganisation);
+    this.rollen = new Autocomplete(this.page, this.comboboxRolle);
+    this.klassen = new Autocomplete(this.page, this.comboboxKlasse);
+    this.klassenVersetzen = new Autocomplete(this.page, page.getByTestId('klasse-change-klasse-select'));
     this.buttonBefristungAendern = page.getByTestId('befristung-change-button');
     this.buttonBefristungAendernSubmit = page.getByTestId('change-befristung-submit-button');
     this.buttonBefristungAendernConfirm = page.getByTestId('confirm-change-befristung-button');

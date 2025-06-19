@@ -1,5 +1,5 @@
 import { expect, PlaywrightTestArgs, test } from '@playwright/test';
-import { UserInfo, waitForAPIResponse } from '../base/api/testHelper.page';
+import { UserInfo } from '../base/api/testHelper.page';
 import { getOrganisationId } from '../base/api/testHelperOrganisation.page.ts';
 import { createRolleAndPersonWithUserContext } from '../base/api/testHelperPerson.page';
 import { addSystemrechtToRolle, createRolle } from '../base/api/testHelperRolle.page';
@@ -22,14 +22,14 @@ import {
   generateRolleName,
   generateVorname,
 } from '../base/testHelperGenerateTestdataNames.ts';
-import { PersonCreationViewPage } from '../pages/admin/PersonCreationView.page';
-import { PersonDetailsViewPage } from '../pages/admin/PersonDetailsView.page';
-import { PersonManagementViewPage } from '../pages/admin/PersonManagementView.page';
+import { PersonCreationViewPage } from '../pages/admin/personen/PersonCreationView.page';
+import { PersonDetailsViewPage } from '../pages/admin/personen/PersonDetailsView.page';
+import { PersonManagementViewPage } from '../pages/admin/personen/PersonManagementView.page';
 import FromAnywhere from '../pages/FromAnywhere';
-import { HeaderPage } from '../pages/Header.page';
+import { HeaderPage } from '../pages/components/Header.page';
 import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
-import { MenuPage } from '../pages/MenuBar.page';
+import { MenuPage } from '../pages/components/MenuBar.page';
 import { StartPage } from '../pages/StartView.page';
 import { schulportaladmin } from '../base/sp.ts';
 
