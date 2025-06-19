@@ -2,7 +2,7 @@ import { expect, type Locator, Page } from '@playwright/test';
 import { waitForAPIResponse } from '../base/api/testHelper.page';
 
 const noDataMessage: string = 'Keine Daten gefunden.';
-export class ComboBox {
+export class Autocomplete {
   private readonly overlayLocator: Locator;
   private readonly itemsLocator: Locator;
   private readonly modalToggle: Locator;

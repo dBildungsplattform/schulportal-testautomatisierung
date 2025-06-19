@@ -1,6 +1,6 @@
 import { type Locator, Page, expect } from '@playwright/test';
 import { PersonDetailsViewPage } from './PersonDetailsView.page';
-import { ComboBox } from '../../../elements/ComboBox';
+import { Autocomplete } from '../../../elements/Autocomplete';
 
 export class PersonManagementViewPage {
   readonly page: Page;
@@ -22,7 +22,7 @@ export class PersonManagementViewPage {
   readonly comboboxMenuIconKlasse: Locator;
   readonly comboboxMenuIconStatus: Locator;
   readonly comboboxMenuIconSchuleInput: Locator;
-  readonly comboboxSchule: ComboBox;
+  readonly comboboxSchule: Autocomplete;
 
   constructor(page: Page) {
     this.page = page;
@@ -44,7 +44,7 @@ export class PersonManagementViewPage {
     this.comboboxMenuIconRolle = page.locator('[data-testid="rolle-select"] .mdi-menu-down');
     this.comboboxMenuIconKlasse = page.locator('[data-testid="klasse-select"] .mdi-menu-down');
     this.comboboxMenuIconStatus = page.locator('[data-testid="status-select"] .mdi-menu-down');
-    this.comboboxSchule = new ComboBox(this.page, page.getByTestId('schule-select'));
+    this.comboboxSchule = new Autocomplete(this.page, page.getByTestId('schule-select'));
   }
 
   public async navigateToPersonDetailsViewByNachname(nachname: string): Promise<PersonDetailsViewPage> {
