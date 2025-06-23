@@ -90,6 +90,9 @@ test.describe(`Testfälle für den Benutzerimport": Umgebung: ${process.env.ENV}
           'Achtung, diese Aktion kann nicht rückgängig gemacht werden. Möchten Sie den Import wirklich durchführen?'
         );
         await personImportPage.executeImportButton.click();
+        await expect(personImportPage.importProgressBar).toBeVisible();
+        await expect(personImportPage.importProgressBar).toHaveText('100%');
+        await expect(personImportPage.importSuccessText).toBeVisible();
         await expect(personImportPage.importSuccessText).toHaveText(
           'Die Daten wurden erfolgreich importiert. Die importierten Daten stehen zum Download bereit.'
         );
