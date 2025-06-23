@@ -59,7 +59,7 @@ test.afterEach(async ({ page }: PlaywrightTestArgs) => {
 });
 
 test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
-  test.only(
+  test(
     '2 Rollen nacheinander anlegen mit Rollenarten LERN und LEHR als Landesadmin',
     { tag: [LONG, SHORT, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
