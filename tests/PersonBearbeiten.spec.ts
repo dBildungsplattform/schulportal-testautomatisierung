@@ -28,13 +28,13 @@ import {
   generateVorname,
 } from '../base/testHelperGenerateTestdataNames.ts';
 import { generateCurrentDate, gotoTargetURL } from '../base/testHelperUtils.ts';
-import { PersonDetailsViewPage } from '../pages/admin/PersonDetailsView.page.ts';
-import { PersonManagementViewPage } from '../pages/admin/PersonManagementView.page.ts';
+import { PersonDetailsViewPage } from '../pages/admin/personen/PersonDetailsView.page.ts';
+import { PersonManagementViewPage } from '../pages/admin/personen/PersonManagementView.page.ts';
 import FromAnywhere from '../pages/FromAnywhere';
-import { HeaderPage } from '../pages/Header.page.ts';
+import { HeaderPage } from '../pages/components/Header.page.ts';
 import { LandingPage } from '../pages/LandingView.page.ts';
 import { LoginPage } from '../pages/LoginView.page.ts';
-import { MenuPage } from '../pages/MenuBar.page.ts';
+import { MenuPage } from '../pages/components/MenuBar.page.ts';
 import { StartPage } from '../pages/StartView.page.ts';
 
 const PW: string | undefined = process.env.PW;
