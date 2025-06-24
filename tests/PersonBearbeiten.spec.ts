@@ -622,7 +622,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     }
   );
 
-  test(
+  // ldap is currently unreachable
+  test.skip(
     'Inbetriebnahme-Passwort über die Gesamtübersicht erzeugen',
     { tag: [LONG, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
