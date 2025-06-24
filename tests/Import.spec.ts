@@ -9,6 +9,7 @@ import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { deletePersonBySearchString } from '../base/testHelperDeleteTestdata.ts';
+import { waitForAPIResponse } from '../base/api/testHelper.page';
 
 // schulen cannot be deleted yet, so we use this testschule, which should already exist
 import { testschule665Name } from '../base/organisation.ts';
@@ -91,6 +92,7 @@ test.describe(`Testfälle für den Benutzerimport": Umgebung: ${process.env.ENV}
         );
         await personImportPage.executeImportButton.click();
         await expect(personImportPage.importProgressBar).toBeVisible();
+        await waitForAPIResponse(page, 'import/importedUsers');
         await expect(personImportPage.importProgressBar).toHaveText('100%');
         await expect(personImportPage.importSuccessText).toBeVisible();
         await expect(personImportPage.importSuccessText).toHaveText(
