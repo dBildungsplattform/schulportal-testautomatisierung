@@ -593,7 +593,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     }
   );
 
-  // TODO: we skip this test because it fails in the CI
+  // TODO: we skip this test because it fails, as ldap is currently unreachable in CI
   test.skip(
     'Inbetriebnahme-Passwort über die Gesamtübersicht erzeugen',
     { tag: [LONG, STAGE] },
