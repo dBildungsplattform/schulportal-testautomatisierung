@@ -92,7 +92,7 @@ test.describe(`Testfälle für den Benutzerimport": Umgebung: ${process.env.ENV}
         );
         await personImportPage.executeImportButton.click();
         await expect(personImportPage.importProgressBar).toBeVisible();
-        await waitForAPIResponse(page, 'import/importedUsers');
+        await page.waitForResponse((response) => response.url().includes('import/importedUsers') && response.status() === 200);
         await expect(personImportPage.importProgressBar).toHaveText('100%');
         await expect(personImportPage.importSuccessText).toBeVisible();
         await expect(personImportPage.importSuccessText).toHaveText(
