@@ -736,7 +736,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
     }
   );
 
-  // ldap is currently unreachable
+  // TODO: we skip this test because it fails, as ldap is currently unreachable in CI
   test.skip(
     'Inbetriebnahme-Passwort als Lehrer über das eigene Profil erzeugen',
     { tag: [LONG, STAGE] },

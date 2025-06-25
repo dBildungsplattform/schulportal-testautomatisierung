@@ -112,6 +112,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
       const login: LoginPage = new LoginPage(page);
       const header: HeaderPage = new HeaderPage(page);
       const startseite: StartPage = new StartPage(page);
+      logoutViaStartPage = true;
 
       // Testdaten erstellen
       const idSPs: string[] = [await getSPId(page, 'E-Mail')];
@@ -139,10 +140,6 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         await expect(startseite.cardItemSchulportalAdministration).toBeHidden();
         await startseite.checkSpIsVisible([email]);
       });
-      // #TODO: wait for the last request in the test
-      // sometimes logout breaks the test because of interrupting requests
-      // logoutViaStartPage = true is a workaround
-      logoutViaStartPage = true;
     }
   );
 
