@@ -35,12 +35,24 @@ export default defineConfig({
 
   projects: [
     {
+      name: 'setup',
+      testDir: './',
+      testMatch: 'global-teardown.ts',
+      teardown: 'teardown',
+    },
+    {
+      name: 'teardown',
+      testDir: './',
+      testMatch: 'global-teardown.ts',
+    },
+    {
       name: 'chromium',
       use: {
         ...devices['Desktop Chrome'],
         viewport: { width: 1920, height: 1080 },
         ignoreHTTPSErrors: true,
       },
+      dependencies: ['setup'],
     },
     {
       name: 'firefox',
@@ -49,6 +61,7 @@ export default defineConfig({
         viewport: { width: 1920, height: 1080 },
         ignoreHTTPSErrors: true,
       },
+      dependencies: ['setup'],
     },
     {
       name: 'webkit',
@@ -57,6 +70,7 @@ export default defineConfig({
         viewport: { width: 1920, height: 1080 },
         ignoreHTTPSErrors: true,
       },
+      dependencies: ['setup'],
     },
     /* Test against branded browsers. */
     {
@@ -65,6 +79,7 @@ export default defineConfig({
         channel: 'msedge',
         viewport: { width: 1920, height: 1080 },
       },
+      dependencies: ['setup'],
     },
     {
       name: 'chrome',
@@ -72,7 +87,9 @@ export default defineConfig({
         channel: 'chrome',
         viewport: { width: 1920, height: 1080 },
       },
+      dependencies: ['setup'],
     },
+
     /* Test against mobile viewports. */
     // {
     //   name: 'mobileChromeIphone12Pro',
