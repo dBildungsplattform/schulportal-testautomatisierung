@@ -14,7 +14,7 @@ import { landSH, testschule665Name, testschuleDstNr, testschuleName } from '../b
 import { lehrkraftInVertretungRolle, lehrkraftOeffentlichRolle } from '../base/rollen.ts';
 import { typeLehrer, typeSchueler, typeSchuladmin } from '../base/rollentypen.ts';
 import { email, itslearning } from '../base/sp.ts';
-import { BROWSER, LONG, STAGE } from '../base/tags.ts';
+import { BROWSER, LONG, SHORT, STAGE } from '../base/tags.ts';
 import {
   deleteKlasseByName,
   deletePersonenBySearchStrings,
@@ -622,8 +622,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     }
   );
 
-  // ldap is currently unreachable
-  test.skip(
+  test(
     'Inbetriebnahme-Passwort über die Gesamtübersicht erzeugen',
     { tag: [LONG, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
@@ -839,7 +838,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     'Einen Schüler von einer Klasse in eine Andere versetzen',
-    { tag: [LONG, STAGE] },
+    { tag: [LONG, SHORT, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
       const rolleName: string = await generateRolleName();
       const klasseNameCurrent: string = await generateKlassenname();
@@ -885,7 +884,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await personDetailsView.klassenVersetzen.searchByTitle(klasseNameNew, false);
         await page.getByTestId('klasse-change-submit-button').click();
         await expect(page.getByRole('dialog')).toContainText(
-          `Wollen Sie den Schüler aus Klasse ${klasseNameCurrent} in Klasse ${klasseNameNew} versetzen?`
+          `Wollen Sie den Schüler/die Schülerin aus Klasse ${klasseNameCurrent} in Klasse ${klasseNameNew} versetzen?`
         );
         await page.getByTestId('confirm-change-klasse-button').click();
         await page.getByTestId('zuordnung-changes-save').click();
