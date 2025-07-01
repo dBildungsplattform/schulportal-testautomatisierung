@@ -14,7 +14,7 @@ import { landSH, testschule665Name, testschuleDstNr, testschuleName } from '../b
 import { lehrkraftInVertretungRolle, lehrkraftOeffentlichRolle } from '../base/rollen.ts';
 import { typeLehrer, typeSchueler, typeSchuladmin } from '../base/rollentypen.ts';
 import { email, itslearning } from '../base/sp.ts';
-import { BROWSER, LONG, STAGE } from '../base/tags.ts';
+import { BROWSER, LONG, SHORT, STAGE } from '../base/tags.ts';
 import {
   deleteKlasseByName,
   deletePersonenBySearchStrings,
@@ -810,7 +810,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     'Einen Schüler von einer Klasse in eine Andere versetzen',
-    { tag: [LONG, STAGE] },
+    { tag: [LONG, SHORT, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
       const rolleName: string = await generateRolleName();
       const klasseNameCurrent: string = await generateKlassenname();
