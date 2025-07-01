@@ -621,8 +621,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       logoutViaStartPage = true;
     }
   );
-
-  test(
+ // ldap is currently unreachable
+  test.skip(
     'Inbetriebnahme-Passwort über die Gesamtübersicht erzeugen',
     { tag: [LONG, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
@@ -884,7 +884,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await personDetailsView.klassenVersetzen.searchByTitle(klasseNameNew, false);
         await page.getByTestId('klasse-change-submit-button').click();
         await expect(page.getByRole('dialog')).toContainText(
-          `Wollen Sie den Schüler/die Schülerin aus Klasse ${klasseNameCurrent} in Klasse ${klasseNameNew} versetzen?`
+          `Wollen Sie den Schüler aus Klasse ${klasseNameCurrent} in Klasse ${klasseNameNew} versetzen?`
         );
         await page.getByTestId('confirm-change-klasse-button').click();
         await page.getByTestId('zuordnung-changes-save').click();
