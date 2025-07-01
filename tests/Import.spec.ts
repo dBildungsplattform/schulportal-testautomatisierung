@@ -9,6 +9,7 @@ import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { deletePersonBySearchString } from '../base/testHelperDeleteTestdata.ts';
+import { waitForAPIResponse } from '../base/api/testHelper.page';
 
 // schulen cannot be deleted yet, so we use this testschule, which should already exist
 import { testschule665Name } from '../base/organisation.ts';
@@ -90,6 +91,10 @@ test.describe(`Testfälle für den Benutzerimport": Umgebung: ${process.env.ENV}
           'Achtung, diese Aktion kann nicht rückgängig gemacht werden. Möchten Sie den Import wirklich durchführen?'
         );
         await personImportPage.executeImportButton.click();
+        await expect(personImportPage.importProgressBar).toBeVisible();
+        await page.waitForResponse((response) => response.url().includes('import/importedUsers') && response.status() === 200);
+        await expect(personImportPage.importProgressBar).toHaveText('100%');
+        await expect(personImportPage.importSuccessText).toBeVisible();
         await expect(personImportPage.importSuccessText).toHaveText(
           'Die Daten wurden erfolgreich importiert. Die importierten Daten stehen zum Download bereit.'
         );

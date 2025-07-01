@@ -17,6 +17,7 @@ export class PersonImportViewPage {
   readonly openConfirmationDialogButton: Locator;
   readonly importConfirmationText: Locator;
   readonly executeImportButton: Locator;
+  readonly importProgressBar: Locator;
   readonly importSuccessText: Locator;
   readonly downloadFileButton: Locator;
   readonly closeCardButton: Locator;
@@ -38,6 +39,7 @@ export class PersonImportViewPage {
     this.openConfirmationDialogButton = page.getByTestId('open-confirmation-dialog-button');
     this.importConfirmationText = page.getByTestId('person-import-confirmation-text');
     this.executeImportButton = page.getByTestId('execute-import-button');
+    this.importProgressBar = page.getByTestId('import-progress-bar');
     this.importSuccessText = page.getByTestId('person-import-success-text');
     this.downloadFileButton = page.getByTestId('download-all-data-button');
     this.closeCardButton = page.getByTestId('close-layout-card-button');
