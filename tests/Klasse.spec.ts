@@ -177,7 +177,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     async ({ page }: PlaywrightTestArgs) => {
       const klasseName: string = await generateKlassenname();
 
-      const klasseCreationView: KlasseCreationViewPage = await test.step(`Dialog Schule anlegen öffnen`, async () => {
+      const klasseCreationView: KlasseCreationViewPage = await test.step(`Dialog Klasse anlegen öffnen`, async () => {
         const startseite: StartPage = new StartPage(page);
         const menu: MenuPage = await startseite.goToAdministration();
         const klasseCreationView: KlasseCreationViewPage = await menu.klasseAnlegen();
