@@ -1,85 +1,65 @@
 import { expect, type Locator, Page } from '@playwright/test';
 import { Autocomplete } from '../../../elements/Autocomplete';
+import { AbstractAdminPage } from '../../AbstractAdminPage.page';
 
-export class KlasseDetailsViewPage {
-  /* locators */
-  readonly page: Page;
-  readonly schuleNameAutocomplete: Autocomplete;
-  readonly klasseNameInput: Locator;
-  readonly klasseDeletionButton: Locator;
-  readonly klasseEditButton: Locator;
-  readonly discardChangesButton: Locator;
-  readonly saveChangesButton: Locator;
-  readonly klasseDetailsErrorAlertText: Locator;
-  readonly klasseDetailsErrorAlertButton: Locator;
-  readonly klasseDeletionDialogText: Locator;
-  readonly klasseDeletionDialogCancelButton: Locator;
-  readonly klasseDeletionDialogConfirmButton: Locator;
-  readonly klasseDeletionSuccessText: Locator;
-  readonly closeDeletionSuccessButton: Locator;
-  readonly successText: Locator;
-  readonly successIcon: Locator;
-  readonly savedDataSchuleText: Locator;
-  readonly savedDataKlasseText: Locator;
-  readonly backToListButton: Locator;
-  readonly closeButton: Locator;
+export class KlasseDetailsViewPage extends AbstractAdminPage {
+  /* add global locators here */
 
   constructor(page: Page) {
-    /* details view Klasse */
-    this.page = page;
-    this.schuleNameAutocomplete = new Autocomplete(this.page, page.getByTestId('schule-select'));
-    this.klasseNameInput = page.getByTestId('klassenname-input');
-    this.klasseDeletionButton = page.getByTestId('open-klasse-delete-dialog-button');
-    this.klasseEditButton = page.getByTestId('klasse-edit-button');
-    this.discardChangesButton = page.getByTestId('klasse-form-discard-button');
-    this.saveChangesButton = page.getByTestId('klasse-form-submit-button');
-    this.klasseDetailsErrorAlertText = page.getByTestId('klasse-details-error-alert-text');
-    this.klasseDetailsErrorAlertButton = page.getByTestId('klasse-details-error-alert-button');
-
-    /* delete Klasse dialog */
-    this.klasseDeletionDialogText = page.getByTestId('klasse-delete-confirmation-text');
-    this.klasseDeletionDialogCancelButton = page.getByTestId('cancel-klasse-delete-dialog-button');
-    this.klasseDeletionDialogConfirmButton = page.getByTestId('klasse-delete-button');
-    this.closeDeletionSuccessButton = page.getByTestId('close-klasse-delete-success-dialog-button');
-    this.klasseDeletionSuccessText = page.getByTestId('klasse-delete-success-text');
-
-    /* success template Klasse */
-    this.successText = page.getByTestId('klasse-success-text');
-    this.successIcon = page.getByTestId('klasse-success-icon');
-    this.savedDataSchuleText = page.getByTestId('created-klasse-schule');
-    this.savedDataKlasseText = page.getByTestId('created-klasse-name');
-    this.backToListButton = page.getByTestId('back-to-list-button');
-    this.closeButton = page.getByTestId('close-layout-card-button');
+    super(page);
   }
 
   /* actions */
+  public async waitForPageLoad(): Promise<void> {
+    await expect(this.page.getByTestId('klasse-details-card')).toBeVisible();
+  }
+
   public async editKlasse(klassenname: string): Promise<void> {
-    await this.klasseEditButton.click();
-    await this.klasseNameInput.fill(klassenname);
-    await this.saveChangesButton.click();
+    const klasseEditButton: Locator = this.page.getByTestId('klasse-edit-button');
+    const klasseNameInput: Locator = this.page.getByTestId('klassenname-input');
+    const saveChangesButton: Locator = this.page.getByTestId('klasse-form-submit-button');
+
+    await klasseEditButton.click();
+    await klasseNameInput.fill(klassenname);
+    await saveChangesButton.click();
   }
 
   public async deleteKlasse(klassenname: string, schulname: string): Promise<void> {
-    await this.klasseDeletionButton.click();
-    await expect(this.klasseDeletionDialogText).toHaveText(`Wollen Sie die Klasse ${klassenname} an der Schule ${schulname} wirklich entfernen?`);
-    await this.klasseDeletionDialogConfirmButton.click();
+    const klasseDeletionButton: Locator = this.page.getByTestId('open-klasse-delete-dialog-button');
+    const klasseDeletionDialogText: Locator = this.page.getByTestId('klasse-delete-confirmation-text');
+    const klasseDeletionDialogConfirmButton: Locator = this.page.getByTestId('klasse-delete-button');
+
+    await klasseDeletionButton.click();
+    await expect(klasseDeletionDialogText).toHaveText(`Wollen Sie die Klasse ${klassenname} an der Schule ${schulname} wirklich entfernen?`);
+    await klasseDeletionDialogConfirmButton.click();
   }
 
   /* assertions */
   public async klasseSuccessfullyEdited(schulname: string, dienststellennummer: string, klassenname: string): Promise<void> {
-    await expect(this.successText).toHaveText('Die Klasse wurde erfolgreich geändert.');
-    await this.successIcon.isVisible();
-    await expect(this.savedDataSchuleText).toHaveText(`(${dienststellennummer}) ${schulname}`);
-    await expect(this.savedDataKlasseText).toHaveText(klassenname);
+    const successText: Locator = this.page.getByTestId('klasse-success-text');
+    const successIcon: Locator = this.page.getByTestId('klasse-success-icon');
+    const savedDataSchuleText: Locator = this.page.getByTestId('created-klasse-schule');
+    const savedDataKlasseText: Locator = this.page.getByTestId('created-klasse-name');
+
+    await expect(successText).toHaveText('Die Klasse wurde erfolgreich geändert.');
+    await successIcon.isVisible();
+    await expect(savedDataSchuleText).toHaveText(`(${dienststellennummer}) ${schulname}`);
+    await expect(savedDataKlasseText).toHaveText(klassenname);
   }
 
   public async klasseSuccessfullyDeleted(schulname: string, klassenname: string): Promise<void> {
-    await expect(this.klasseDeletionSuccessText).toHaveText(`Die Klasse ${klassenname} an der Schule ${schulname} wurde erfolgreich gelöscht.`);
-    await this.closeDeletionSuccessButton.click();
+    const closeDeletionSuccessButton: Locator = this.page.getByTestId('close-klasse-delete-success-dialog-button');
+    const klasseDeletionSuccessText: Locator = this.page.getByTestId('klasse-delete-success-text');
+
+    await expect(klasseDeletionSuccessText).toHaveText(`Die Klasse ${klassenname} an der Schule ${schulname} wurde erfolgreich gelöscht.`);
+    await closeDeletionSuccessButton.click();
   }
 
   public async klasseDeletionFailed(): Promise<void> {
-    await expect(this.klasseDetailsErrorAlertText).toHaveText('Die Klasse kann nicht gelöscht werden, da noch Benutzer zugeordnet sind.');
-    await this.klasseDetailsErrorAlertButton.click();
+    const klasseDetailsErrorAlertText: Locator = this.page.getByTestId('klasse-details-error-alert-text');
+    const klasseDetailsErrorAlertButton: Locator = this.page.getByTestId('klasse-details-error-alert-button');
+
+    await expect(klasseDetailsErrorAlertText).toHaveText('Die Klasse kann nicht gelöscht werden, da noch Benutzer zugeordnet sind.');
+    await klasseDetailsErrorAlertButton.click();
   }
 }

@@ -9,7 +9,6 @@ export class PersonImportViewPage extends AbstractAdminPage {
   }
 
   /* actions */
-
   async waitForPageLoad(): Promise<void> {
     return this.page.getByTestId('person-import-card').waitFor({ state: 'visible' });
   }

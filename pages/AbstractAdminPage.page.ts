@@ -6,6 +6,7 @@ import { MenuPage } from './components/MenuBar.page';
  * Base class for all pages in the Schulportal after login.
  */
 export abstract class AbstractAdminPage {
+  /* add global locators here */
   readonly menu: MenuPage;
   readonly header: HeaderPage;
 
@@ -14,6 +15,8 @@ export abstract class AbstractAdminPage {
     this.header = new HeaderPage(page);
   }
 
+  /* actions */
   abstract waitForPageLoad(): Promise<void>;
 
+  /* assertions */
 }

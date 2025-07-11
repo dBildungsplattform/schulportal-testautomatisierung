@@ -1,67 +1,61 @@
 import { expect, type Locator, Page } from '@playwright/test';
 import { Autocomplete } from '../../../elements/Autocomplete';
+import { AbstractAdminPage } from '../../AbstractAdminPage.page';
 
-export class KlasseCreationViewPage {
-  /* locators */
-  readonly page: Page;
-  readonly schuleNameAutocomplete: Autocomplete;
-  readonly klasseNameInput: Locator;
-  readonly klasseDismissalButton: Locator;
-  readonly klasseCreationButton: Locator;
-  readonly successText: Locator;
-  readonly successIcon: Locator;
-  readonly savedDataSchuleText: Locator;
-  readonly savedDataKlasseText: Locator;
-  readonly backToListButton: Locator;
-  readonly createAnotherKlasseButton: Locator;
-  readonly closeButton: Locator;
+export class KlasseCreationViewPage extends AbstractAdminPage {
+  /* add global locators here */
 
   constructor(page: Page) {
-    /* creation form Klasse */
-    this.page = page;
-    this.schuleNameAutocomplete = new Autocomplete(this.page, page.getByTestId('schule-select'));
-    this.klasseNameInput = page.getByTestId('klassenname-input');
-    this.klasseDismissalButton = page.getByTestId('klasse-form-discard-button');
-    this.klasseCreationButton = page.getByTestId('klasse-form-submit-button');
-
-    /* success template Klasse */
-    this.successText = page.getByTestId('klasse-success-text');
-    this.successIcon = page.getByTestId('klasse-success-icon');
-    this.savedDataSchuleText = page.getByTestId('created-klasse-schule');
-    this.savedDataKlasseText = page.getByTestId('created-klasse-name');
-    this.backToListButton = page.getByTestId('back-to-list-button');
-    this.createAnotherKlasseButton = page.getByTestId('create-another-klasse-button');
-    this.closeButton = page.getByTestId('close-layout-card-button');
+    super(page);
   }
 
   /* actions */
+  async waitForPageLoad(): Promise<void> {
+    return this.page.getByTestId('klasse-creation-card').waitFor({ state: 'visible' });
+  }
+
   public async createKlasse(
     schulname: string,
     klassenname: string,
   ): Promise<void> {
-    await this.schuleNameAutocomplete.searchByTitle(schulname, true);
-    await this.klasseNameInput.fill(klassenname);
-    await this.klasseCreationButton.click();
+    const schuleNameAutocomplete: Autocomplete = new Autocomplete(this.page, this.page.getByTestId('schule-select'));
+    const klasseNameInput: Locator = this.page.getByTestId('klassenname-input');
+    const klasseCreationButton: Locator = this.page.getByTestId('klasse-form-submit-button');
+
+    await schuleNameAutocomplete.searchByTitle(schulname, true);
+    await klasseNameInput.fill(klassenname);
+    await klasseCreationButton.click();
   }
 
   public async createAnotherKlasse(schulname: string, klassenname: string,): Promise<void> {
-    await this.createAnotherKlasseButton.click();
+    const createAnotherKlasseButton: Locator = this.page.getByTestId('create-another-klasse-button');
+
+    await createAnotherKlasseButton.click();
     await this.createKlasse(schulname, klassenname);
   }
 
   public async discardKlasseCreation(): Promise<void> {
-    await this.klasseDismissalButton.click();
+    const klasseDismissalButton: Locator = this.page.getByTestId('klasse-form-discard-button');
+
+    await klasseDismissalButton.click();
   }
 
   public async goBackToList(): Promise<void> {
-    await this.backToListButton.click();
+    const backToListButton: Locator = this.page.getByTestId('back-to-list-button');
+
+    await backToListButton.click();
   }
 
   /* assertions */
   public async klasseSuccessfullyCreated(schulname: string, klassenname: string): Promise<void> {
-    await expect(this.successText).toHaveText('Die Klasse wurde erfolgreich hinzugefügt.');
-    await this.successIcon.isVisible();
-    await expect(this.savedDataSchuleText).toHaveText(schulname);
-    await expect(this.savedDataKlasseText).toHaveText(klassenname);
+    const successText: Locator = this.page.getByTestId('klasse-success-text');
+    const successIcon: Locator = this.page.getByTestId('klasse-success-icon');
+    const savedDataSchuleText: Locator = this.page.getByTestId('created-klasse-schule');
+    const savedDataKlasseText: Locator = this.page.getByTestId('created-klasse-name');
+
+    await expect(successText).toHaveText('Die Klasse wurde erfolgreich hinzugefügt.');
+    await successIcon.isVisible();
+    await expect(savedDataSchuleText).toHaveText(schulname);
+    await expect(savedDataKlasseText).toHaveText(klassenname);
   }
 }
