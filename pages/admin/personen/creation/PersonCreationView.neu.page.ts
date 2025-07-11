@@ -31,7 +31,7 @@ export class PersonCreationViewPage extends AbstractAdminPage {
   }
 
   public async fillForm(params: PersonCreationParams): Promise<void> {
-    await this.organisationAutocomplete.searchByTitle(params.organisation, true, this.endpoint);
+    await this.organisationAutocomplete.searchByTitle(params.organisation, false, this.endpoint);
 
     await Promise.all(
       params.rollen.map((rolle: string) => this.rolleAutocomplete.searchByTitle(rolle, true, this.endpoint))

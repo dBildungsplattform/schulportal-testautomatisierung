@@ -1,6 +1,5 @@
-import { expect, Page } from '@playwright/test';
+import { expect, Locator, Page } from '@playwright/test';
 import { AbstractAdminPage } from '../../../AbstractAdminPage.page';
-import { Autocomplete } from '../../../../elements/Autocomplete';
 import { PersonCreationParams } from './PersonCreationView.neu.page';
 
 export type PersonCreationSuccessValidationParams = PersonCreationParams & {
@@ -15,6 +14,15 @@ export class PersonCreationSuccessPage extends AbstractAdminPage {
   /* actions */
   async waitForPageLoad(): Promise<void> {
     return this.page.getByTestId('layout-card-headline').waitFor({ state: 'visible' });
+  }
+
+  public async getBenutzername(): Promise<string> {
+    const benutzernameField: Locator = await this.getBenutzernameField();
+    return benutzernameField.innerText();
+  }
+
+  private async getBenutzernameField(): Promise<Locator> {
+    return this.page.getByTestId('created-person-username');
   }
 
   /* assertions */
@@ -37,7 +45,7 @@ export class PersonCreationSuccessPage extends AbstractAdminPage {
     }
 
     await expect(this.page.getByText('Benutzername:', { exact: true })).toBeVisible();
-    await expect(this.page.getByTestId('created-person-username')).toContainText('tautopw');
+    await expect(await this.getBenutzernameField()).toContainText('tautopw');
 
     await expect(this.page.getByText(' Einstiegs-Passwort:', { exact: true })).toBeVisible();
     await expect(this.page.locator('[data-testid="password-output-field"] input')).toBeVisible();
