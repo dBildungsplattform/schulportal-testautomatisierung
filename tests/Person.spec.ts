@@ -566,9 +566,9 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
       await test.step(`Auf die Gesamtübersicht des neu angelegten Benutzers mit dem Button "Zur Gesamtuebersicht" navigieren`, async () => {
         await personCreationView.buttonOpenGesamtuebersicht.click();
-        const personDeatilsView: PersonDetailsViewPage = new PersonDetailsViewPage(page);
-        await expect(personDeatilsView.textH2BenutzerBearbeiten).toHaveText('Benutzer bearbeiten');
-        await expect(personDeatilsView.username).toHaveText(usernames[0]);
+        const personDetailsView: PersonDetailsViewPage = new PersonDetailsViewPage(page);
+        await expect(personDetailsView.textH2BenutzerBearbeiten).toHaveText('Benutzer bearbeiten');
+        await expect(personDetailsView.username).toHaveText(usernames[0]);
       });
       // #TODO: wait for the last request in the test
       // sometimes logout breaks the test because of interrupting requests
