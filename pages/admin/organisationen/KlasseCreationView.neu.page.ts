@@ -1,4 +1,4 @@
-import { expect, type Locator, Page } from '@playwright/test';
+import { type Locator, Page } from '@playwright/test';
 import { Autocomplete } from '../../../elements/Autocomplete';
 import { AbstractAdminPage } from '../../AbstractAdminPage.page';
 
@@ -27,13 +27,6 @@ export class KlasseCreationViewPage extends AbstractAdminPage {
     await klasseCreationButton.click();
   }
 
-  public async createAnotherKlasse(schulname: string, klassenname: string,): Promise<void> {
-    const createAnotherKlasseButton: Locator = this.page.getByTestId('create-another-klasse-button');
-
-    await createAnotherKlasseButton.click();
-    await this.createKlasse(schulname, klassenname);
-  }
-
   public async discardKlasseCreation(): Promise<void> {
     const klasseDismissalButton: Locator = this.page.getByTestId('klasse-form-discard-button');
 
@@ -47,15 +40,4 @@ export class KlasseCreationViewPage extends AbstractAdminPage {
   }
 
   /* assertions */
-  public async klasseSuccessfullyCreated(schulname: string, klassenname: string): Promise<void> {
-    const successText: Locator = this.page.getByTestId('klasse-success-text');
-    const successIcon: Locator = this.page.getByTestId('klasse-success-icon');
-    const savedDataSchuleText: Locator = this.page.getByTestId('created-klasse-schule');
-    const savedDataKlasseText: Locator = this.page.getByTestId('created-klasse-name');
-
-    await expect(successText).toHaveText('Die Klasse wurde erfolgreich hinzugefügt.');
-    await successIcon.isVisible();
-    await expect(savedDataSchuleText).toHaveText(schulname);
-    await expect(savedDataKlasseText).toHaveText(klassenname);
-  }
 }
