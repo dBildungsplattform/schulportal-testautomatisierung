@@ -139,4 +139,8 @@ export class Autocomplete {
 
     await expect(item).toBeVisible();
   }
+
+  public async checkText(text: string): Promise<void> {
+    await expect(this.locator).toHaveText(text);
+  }
 }
