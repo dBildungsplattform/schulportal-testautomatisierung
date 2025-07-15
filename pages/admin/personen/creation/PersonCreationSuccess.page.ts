@@ -1,6 +1,5 @@
 import { expect, Page } from '@playwright/test';
 import { AbstractAdminPage } from '../../../AbstractAdminPage.page';
-import { Autocomplete } from '../../../../elements/Autocomplete';
 import { PersonCreationParams } from './PersonCreationView.neu.page';
 
 export type PersonCreationSuccessValidationParams = PersonCreationParams & {
@@ -14,7 +13,7 @@ export class PersonCreationSuccessPage extends AbstractAdminPage {
 
   /* actions */
   async waitForPageLoad(): Promise<void> {
-    return this.page.getByTestId('layout-card-headline').waitFor({ state: 'visible' });
+    return this.page.getByTestId('person-success-text').waitFor({ state: 'visible' });
   }
 
   /* assertions */

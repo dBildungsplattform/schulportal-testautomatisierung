@@ -25,9 +25,7 @@ export class PersonCreationViewPage extends AbstractAdminPage {
 
   /* actions */
   public async waitForPageLoad(): Promise<void> {
-    const headline: Locator = this.page.getByTestId('layout-card-headline');
-    await headline.waitFor({ state: 'visible' });
-    await expect(headline).toHaveText('Person anlegen');
+    return this.page.getByTestId('person-creation-card').waitFor({ state: 'visible' });
   }
 
   public async createPerson(params: PersonCreationParams): Promise<PersonCreationSuccessPage> {
