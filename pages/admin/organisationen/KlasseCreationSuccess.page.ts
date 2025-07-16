@@ -1,5 +1,6 @@
 import { expect, type Locator, Page } from '@playwright/test';
 import { AbstractAdminPage } from '../../AbstractAdminPage.page';
+import { KlasseCreationParams } from './KlasseCreationView.neu.page';
 
 export class KlasseCreationSuccessPage extends AbstractAdminPage {
   /* add global locators here */
@@ -26,7 +27,7 @@ export class KlasseCreationSuccessPage extends AbstractAdminPage {
   }
 
   /* assertions */
-  public async checkSuccessfulCreation(schulname: string, klassenname: string): Promise<void> {
+  public async checkSuccessfulCreation(params: KlasseCreationParams): Promise<void> {
     const successText: Locator = this.page.getByTestId('klasse-success-text');
     const successIcon: Locator = this.page.getByTestId('klasse-success-icon');
     const savedDataSchuleText: Locator = this.page.getByTestId('created-klasse-schule');
@@ -34,7 +35,7 @@ export class KlasseCreationSuccessPage extends AbstractAdminPage {
 
     await expect(successText).toHaveText('Die Klasse wurde erfolgreich hinzugefügt.');
     await successIcon.isVisible();
-    await expect(savedDataSchuleText).toHaveText(schulname);
-    await expect(savedDataKlasseText).toHaveText(klassenname);
+    await expect(savedDataSchuleText).toHaveText(params.schulname);
+    await expect(savedDataKlasseText).toHaveText(params.klassenname);
   }
 }

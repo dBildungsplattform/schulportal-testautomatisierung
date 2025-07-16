@@ -2,6 +2,11 @@ import { type Locator, Page } from '@playwright/test';
 import { Autocomplete } from '../../../elements/Autocomplete';
 import { AbstractAdminPage } from '../../AbstractAdminPage.page';
 
+export type KlasseCreationParams = {
+    schulname: string,
+    klassenname: string,
+};
+
 export class KlasseCreationViewPage extends AbstractAdminPage {
   /* add global locators here */
 
@@ -14,16 +19,13 @@ export class KlasseCreationViewPage extends AbstractAdminPage {
     return this.page.getByTestId('klasse-creation-card').waitFor({ state: 'visible' });
   }
 
-  public async createKlasse(
-    schulname: string,
-    klassenname: string,
-  ): Promise<void> {
+  public async createKlasse(params: KlasseCreationParams): Promise<void> {
     const schuleNameAutocomplete: Autocomplete = new Autocomplete(this.page, this.page.getByTestId('schule-select'));
     const klasseNameInput: Locator = this.page.getByTestId('klassenname-input');
     const klasseCreationButton: Locator = this.page.getByTestId('klasse-form-submit-button');
 
-    await schuleNameAutocomplete.searchByTitle(schulname, true);
-    await klasseNameInput.fill(klassenname);
+    await schuleNameAutocomplete.searchByTitle(params.schulname, true);
+    await klasseNameInput.fill(params.klassenname);
     await klasseCreationButton.click();
   }
 
