@@ -1,5 +1,5 @@
 import { Page } from '@playwright/test';
-import { AbstractAdminPage } from '../../../AbstractAdminPage.page';
+import { AbstractAdminPage } from '../../../abstracts/AbstractAdminPage.page';
 import { Autocomplete } from '../../../../elements/Autocomplete';
 import { waitForAPIResponse } from '../../../../base/api/testHelper.page';
 import { PersonCreationSuccessPage } from './PersonCreationSuccess.page';

@@ -1,8 +1,8 @@
 import { expect, Page } from '@playwright/test';
 import { Autocomplete } from '../../../elements/Autocomplete';
-import { DataTable } from '../../components/DataTable.neu.page';
+import { DataTable } from '../../components/DataTable.page';
 import { PersonDetailsViewPage } from './details/PersonDetailsView.neu.page';
-import { AbstractManagementViewPage } from '../../AbstractManagementView.page';
+import { AbstractManagementViewPage } from '../../abstracts/AbstractManagementView.page';
 
 export class PersonManagementViewPage extends AbstractManagementViewPage {
   private readonly personTable: DataTable = new DataTable(this.page, this.page.getByTestId('person-table'));

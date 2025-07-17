@@ -1,11 +1,11 @@
 import { expect, type Locator, Page } from '@playwright/test';
-import { AbstractAdminPage } from '../../AbstractAdminPage.page';
+import { AbstractAdminPage } from '../../abstracts/AbstractAdminPage.page';
 
-type SchuleCreationParams = {
+interface SchuleCreationParams {
   name: string;
   dienststellenNr: string;
   schulform: 'öffentlich';
-};
+}
 
 export class SchuleCreationViewPage extends AbstractAdminPage {
   private readonly headline: Locator = this.page.getByTestId('layout-card-headline');

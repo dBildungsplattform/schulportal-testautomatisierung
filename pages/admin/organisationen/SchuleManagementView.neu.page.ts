@@ -1,5 +1,5 @@
 import { expect, type Locator, Page } from '@playwright/test';
-import { AbstractManagementViewPage } from '../../AbstractManagementView.page';
+import { AbstractManagementViewPage } from '../../abstracts/AbstractManagementView.page';
 import { DataTable } from '../../components/DataTable.page';
 
 export class SchuleManagementViewPage extends AbstractManagementViewPage {

@@ -1,16 +1,16 @@
 import { expect, Page } from '@playwright/test';
-import { AbstractAdminPage } from '../../AbstractAdminPage.page';
+import { AbstractAdminPage } from '../../abstracts/AbstractAdminPage.page';
 import { RolleCreationSuccessPage } from './RolleCreationSuccess.page';
 import { RolleCreationWorkflow } from './RolleCreationWorkflow.page';
 
-export type RolleCreationParams = {
+export interface RolleCreationParams {
   name: string;
   ssk: string;
   art: string;
   merkmale: string[];
   systemrechte: string[];
   serviceProviders: string[];
-};
+}
 
 export class RolleCreationViewPage extends AbstractAdminPage {
   constructor(protected readonly page: Page) {

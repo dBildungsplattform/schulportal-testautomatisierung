@@ -1,6 +1,6 @@
 import { Page } from '@playwright/test';
-import { HeaderPage } from './components/Header.page';
-import { MenuPage } from './components/MenuBar.page';
+import { HeaderPage } from '../components/Header.page';
+import { MenuPage } from '../components/MenuBar.page';
 
 /**
  * Base class for all pages in the Schulportal after login.

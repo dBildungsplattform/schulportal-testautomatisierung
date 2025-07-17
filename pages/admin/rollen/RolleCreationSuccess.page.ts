@@ -1,6 +1,6 @@
 import { expect, Page } from '@playwright/test';
 import { RolleForm } from '../../../components/RolleForm';
-import { AbstractAdminPage } from '../../AbstractAdminPage.page';
+import { AbstractAdminPage } from '../../abstracts/AbstractAdminPage.page';
 import { RolleCreationParams } from './RolleCreationView.neu.page';
 import { RolleManagementViewPage } from './RolleManagementView.page';
 
@@ -14,7 +14,7 @@ export class RolleCreationSuccessPage extends AbstractAdminPage {
 
   /* actions */
   public async waitForPageLoad(): Promise<void> {
-    expect(this.page.getByTestId('layout-card-headline')).toHaveText('Neue Rolle hinzufügen');
+    await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Neue Rolle hinzufügen');
   }
 
   public async backToResultList(): Promise<RolleManagementViewPage> {

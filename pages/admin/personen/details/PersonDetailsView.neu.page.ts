@@ -1,6 +1,6 @@
 import { expect, Locator, Page } from '@playwright/test';
 import { waitForAPIResponse } from '../../../../base/api/testHelper.page';
-import { AbstractAdminPage } from '../../../AbstractAdminPage.page';
+import { AbstractAdminPage } from '../../../abstracts/AbstractAdminPage.page';
 import { PendingZuordnungValidationParams, ZuordnungenPage, ZuordnungValidationParams } from './Zuordnungen.page';
 
 interface PersonDetailsValidationParams { username: string }

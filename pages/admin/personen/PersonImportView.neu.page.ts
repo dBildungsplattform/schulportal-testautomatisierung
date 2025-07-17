@@ -1,6 +1,6 @@
 import { Download, expect, Page } from '@playwright/test';
 import { Autocomplete } from '../../../elements/Autocomplete';
-import { AbstractAdminPage } from '../../AbstractAdminPage.page';
+import { AbstractAdminPage } from '../../abstracts/AbstractAdminPage.page';
 import { PersonManagementViewPage } from './PersonManagementView.page';
 
 export class PersonImportViewPage extends AbstractAdminPage {

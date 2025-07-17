@@ -1,5 +1,5 @@
 import { expect, Locator, Page } from '@playwright/test';
-import { AbstractAdminPage } from '../../../AbstractAdminPage.page';
+import { AbstractAdminPage } from '../../../abstracts/AbstractAdminPage.page';
 import { PersonCreationParams } from './PersonCreationView.neu.page';
 
 export type PersonCreationSuccessValidationParams = PersonCreationParams & {

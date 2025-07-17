@@ -1,5 +1,5 @@
 import { expect, type Locator, Page } from '@playwright/test';
-import { AbstractAdminPage } from '../../AbstractAdminPage.page';
+import { AbstractAdminPage } from '../../abstracts/AbstractAdminPage.page';
 import { KlasseCreationParams } from './KlasseCreationView.neu.page';
 
 export class KlasseCreationSuccessPage extends AbstractAdminPage {

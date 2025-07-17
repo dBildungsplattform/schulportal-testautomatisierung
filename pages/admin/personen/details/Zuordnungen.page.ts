@@ -90,7 +90,7 @@ export class ZuordnungenPage {
   }
 
   private buildExpectedTextForZuordnung(params: ZuordnungValidationParams): string {
-    let expectedText = '';
+    let expectedText: string = '';
     if (params.dstNr) {
       expectedText += `${params.dstNr} (${params.organisation}): `;
     } else {
