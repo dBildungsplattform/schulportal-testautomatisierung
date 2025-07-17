@@ -1,5 +1,4 @@
 import { expect, type Locator, Page } from '@playwright/test';
-import { Autocomplete } from '../../../elements/Autocomplete';
 import { AbstractAdminPage } from '../../AbstractAdminPage.page';
 
 export class KlasseDetailsViewPage extends AbstractAdminPage {

@@ -54,8 +54,22 @@ export class DataTable {
       await expect(currentPageNumberText).toEqual(expectedPageNumber);
     }
 
+    public async checkHeaders(expectedAmount: number, expectedHeaders: string[]): Promise<void> {
+      const tableColumns: Locator[] = await this.tableLocator.locator('thead th.v-data-table__th').all();
+      const tableColumnsCount: number = tableColumns.length;
+
+      await expect(tableColumnsCount).toEqual(expectedAmount);
+
+      for (let i: number = 0; i < tableColumnsCount; i++) {
+        const cell: Locator = tableColumns[i].locator('.v-data-table-header__content').nth(i);
+
+        await expect(cell).toBeVisible();
+        await expect(cell).toHaveText(expectedHeaders[i]);
+      }
+    }
+
     public async checkRows(expectedAmount: number): Promise<void> {
-      const tableRows = this.tableLocator.locator('tbody tr.v-data-table__tr');
+      const tableRows: Locator = this.tableLocator.locator('tbody tr.v-data-table__tr');
       const tableRowsCount: number = await tableRows.count();
 
       await expect(tableRowsCount).toEqual(expectedAmount);
@@ -69,24 +83,10 @@ export class DataTable {
     }
 
     public async checkIfItemIsNotVisible(expectedText: string): Promise<void> {
-      return expect(this.tableLocator.getByRole('cell', { name: expectedText, exact: true })).not.toBeVisible();
+      return expect(this.tableLocator.getByRole('cell', { name: expectedText, exact: true })).toBeHidden();
     }
 
     public async checkIfItemIsVisible(expectedText: string): Promise<void> {
       return expect(this.tableLocator.getByRole('cell', { name: expectedText, exact: true })).toBeVisible();
-    }
-
-    public async checkColumns(expectedAmount: number, expectedHeaders: Array<string>): Promise<void> {
-      const tableColumns: Array<Locator> = await this.tableLocator.locator('thead th.v-data-table__th').all();
-      const tableColumnsCount: number = tableColumns.length;
-
-      await expect(tableColumnsCount).toEqual(expectedAmount);
-
-      for (let i: number = 0; i < tableColumnsCount; i++) {
-        const cell: Locator = tableColumns[i].locator('.v-data-table-header__content').nth(i);
-
-        await expect(cell).toBeVisible();
-        await expect(cell).toHaveText(expectedHeaders[i]);
-      }
     }
 }

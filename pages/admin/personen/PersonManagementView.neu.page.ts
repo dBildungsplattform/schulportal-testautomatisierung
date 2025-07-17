@@ -1,11 +1,11 @@
 import { expect, Page } from '@playwright/test';
 import { Autocomplete } from '../../../elements/Autocomplete';
-import { AbstractAdminPage } from '../../AbstractAdminPage.page';
+import { DataTable } from '../../components/DataTable.neu.page';
 import { PersonDetailsViewPage } from './details/PersonDetailsView.neu.page';
+import { AbstractManagementViewPage } from '../../AbstractManagementView.page';
 
-export class PersonManagementViewPage extends AbstractAdminPage {
-  private readonly tableWrapper = this.page.getByTestId('person-table');
-  private readonly searchFilterInput = this.page.getByTestId('search-filter-input').locator('input');
+export class PersonManagementViewPage extends AbstractManagementViewPage {
+  private readonly personTable: DataTable = new DataTable(this.page, this.page.getByTestId('person-table'));
 
   constructor(page: Page) {
     super(page);
@@ -19,35 +19,38 @@ export class PersonManagementViewPage extends AbstractAdminPage {
     return expect(this.page.getByTestId('person-table')).not.toContainText('Keine Daten');
   }
 
-  public async searchAndOpenGesamtuebersicht(nameOrKopers: string): Promise<PersonDetailsViewPage> {
-    await this.searchBy(nameOrKopers);
-    return this.openGesamtuebersicht(nameOrKopers);
-  }
-
-  public async searchBy(nameOrKopers: string): Promise<void> {
-    await this.searchFilterInput.fill(nameOrKopers);
-    return this.page.getByTestId('apply-search-filter-button').click();
-  }
-
   public async filterBySchule(schule: string): Promise<void> {
-    const autocomplete: Autocomplete = new Autocomplete(this.page, this.page.getByTestId('schule-select'));
-    return autocomplete.searchByTitle(schule, false, 'organisationen**');
+    const schuleFilter: Autocomplete = new Autocomplete(this.page, this.page.getByTestId('schule-select'));
+    return schuleFilter.searchByTitle(schule, false, 'organisationen**');
+  }
+
+  public async filterByRolle(rolle: string): Promise<void> {
+    const rolleFilter: Autocomplete = new Autocomplete(this.page, this.page.getByTestId('rolle-select'));
+    return rolleFilter.searchByTitle(rolle, false, 'rollen**');
   }
 
   public async openGesamtuebersicht(name: string): Promise<PersonDetailsViewPage> {
-    await this.page.getByRole('cell', { name: name, exact: true }).click();
+    await this.personTable.getItemByText(name).click();
     const personDetailsViewPage: PersonDetailsViewPage = new PersonDetailsViewPage(this.page);
     await personDetailsViewPage.waitForPageLoad();
     return personDetailsViewPage;
   }
 
-  /* assertions */
-  public async checkIfEntryIsVisible(value: string): Promise<void> {
-    return expect(this.tableWrapper.getByRole('cell', { name: value, exact: true })).toBeVisible();
+  public async searchAndOpenGesamtuebersicht(nameOrKopers: string): Promise<PersonDetailsViewPage> {
+    await this.searchByText(nameOrKopers, this.page);
+    return this.openGesamtuebersicht(nameOrKopers);
   }
 
-  public async checkIfHeadersAreVisible(): Promise<void> {
-    // TODO: use new table object 
+  /* assertions */
+  public async checkIfPersonExists(name: string): Promise<void> {
+    return this.personTable.checkIfItemIsVisible(name);
+  }
+  public async checkIfPersonNotExists(name: string): Promise<void> {
+    return this.personTable.checkIfItemIsNotVisible(name);
+  }
+
+  public async checkHeaders(expectedAmount: number, expectedHeaders: string[]): Promise<void> {
+    this.personTable.checkHeaders(expectedAmount, expectedHeaders);
   }
 
 }

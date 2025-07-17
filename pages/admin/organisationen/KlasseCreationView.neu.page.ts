@@ -2,10 +2,10 @@ import { type Locator, Page } from '@playwright/test';
 import { Autocomplete } from '../../../elements/Autocomplete';
 import { AbstractAdminPage } from '../../AbstractAdminPage.page';
 
-export type KlasseCreationParams = {
+export interface KlasseCreationParams {
     schulname: string,
     klassenname: string,
-};
+}
 
 export class KlasseCreationViewPage extends AbstractAdminPage {
   /* add global locators here */

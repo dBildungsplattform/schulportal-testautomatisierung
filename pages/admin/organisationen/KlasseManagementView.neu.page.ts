@@ -1,37 +1,46 @@
 import { expect, type Locator, Page } from '@playwright/test';
 import { Autocomplete } from '../../../elements/Autocomplete';
-import { DataTable } from '../../components/DataTable.neu.page';
-import { AbstractAdminPage } from '../../AbstractAdminPage.page';
+import { DataTable } from '../../components/DataTable.page';
+import { KlasseDetailsViewPage } from './KlasseDetailsView.neu.page';
+import { AbstractManagementViewPage } from '../../AbstractManagementView.page';
 
-export class KlasseManagementViewPage extends AbstractAdminPage {
+export class KlasseManagementViewPage extends AbstractManagementViewPage {
   /* add global locators here */
-  readonly klasseTable: DataTable;
+  private readonly klasseTable: DataTable = new DataTable(this.page, this.page.getByTestId('klasse-table'));
 
   constructor(page: Page) {
     super(page);
-
-    this.klasseTable = new DataTable(this.page, this.page.getByTestId('klasse-table'));
   }
 
   /* actions */
   public async waitForPageLoad(): Promise<void> {
-    return this.page.getByTestId('klasse-management-card').waitFor({ state: 'visible' });
+    await this.page.getByTestId('klasse-management-card').waitFor({ state: 'visible' });
+    await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Klassenverwaltung');
+    return expect(this.page.getByTestId('klasse-table')).not.toContainText('Keine Daten');
   }
 
   public async filterBySchule(schulname: string): Promise<void> {
-    const filterSchuleAutocomplete: Autocomplete = new Autocomplete(this.page, this.page.getByTestId('schule-select'));
+    const schuleFilter: Autocomplete = new Autocomplete(this.page, this.page.getByTestId('schule-select'));
 
-    await filterSchuleAutocomplete.searchByTitle(schulname, false);
+    await schuleFilter.searchByTitle(schulname, false);
   }
 
   public async filterByKlasse(klassenname: string): Promise<void> {
-    const filterKlasseAutocomplete: Autocomplete = new Autocomplete(this.page, this.page.getByTestId('klasse-select'));
+    const klasseFilter: Autocomplete = new Autocomplete(this.page, this.page.getByTestId('klasse-select'));
 
-    await filterKlasseAutocomplete.searchByTitle(klassenname, false);
+    await klasseFilter.searchByTitle(klassenname, false);
   }
-
-  public async navigateToKlasseDetails(klassenname: string): Promise<void> {
+  
+  public async openGesamtuebersicht(klassenname: string): Promise<KlasseDetailsViewPage> {
     await this.klasseTable.getItemByText(klassenname).click();
+    const klasseDetailsViewPage: KlasseDetailsViewPage = new KlasseDetailsViewPage(this.page);
+    await klasseDetailsViewPage.waitForPageLoad();
+    return klasseDetailsViewPage;
+  }
+  
+  public async searchAndOpenGesamtuebersicht(klassenname: string): Promise<KlasseDetailsViewPage> {
+    await this.searchByText(klassenname, this.page);
+    return this.openGesamtuebersicht(klassenname);
   }
 
   public async deleteKlasse(klassenname: string, schulname: string): Promise<void> {
@@ -45,13 +54,13 @@ export class KlasseManagementViewPage extends AbstractAdminPage {
   }
 
   /* assertions */
-  public async checkIfTableIsLoaded(numberOfRows: number, numberOfColumns: number, expectedHeaders: Array<string>): Promise<void> {
+  public async checkIfTableIsLoaded(numberOfRows: number, numberOfColumns: number, expectedHeaders: string[]): Promise<void> {
     await this.klasseTable.checkRows(numberOfRows);
-    await this.klasseTable.checkColumns(numberOfColumns, expectedHeaders);
+    await this.klasseTable.checkHeaders(numberOfColumns, expectedHeaders);
   }
 
-  public async checkColumns(expectedAmount: number, expectedHeaders: Array<string>): Promise<void> {
-    this.klasseTable.checkColumns(expectedAmount, expectedHeaders);
+  public async checkHeaders(expectedAmount: number, expectedHeaders: string[]): Promise<void> {
+    this.klasseTable.checkHeaders(expectedAmount, expectedHeaders);
   }
 
   public async checkRows(expectedAmount: number): Promise<void> {

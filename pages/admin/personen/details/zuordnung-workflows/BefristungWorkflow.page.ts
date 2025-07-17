@@ -1,6 +1,4 @@
 import { expect, type Locator, Page } from '@playwright/test';
-import { Autocomplete } from '../../../elements/Autocomplete';
-import { ZuordnungenPage } from '../Zuordnungen.page';
 
 export class BefristungWorkflowPage {
   /* locators */

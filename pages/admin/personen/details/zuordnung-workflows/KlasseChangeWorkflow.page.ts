@@ -1,15 +1,17 @@
-import { expect, type Locator, Page } from '@playwright/test';
-import { Autocomplete } from '../../../elements/Autocomplete';
+import { expect, type Page } from '@playwright/test';
+import { Autocomplete } from '../../../../../elements/Autocomplete';
 import { ZuordnungenPage } from '../Zuordnungen.page';
 
 export class KlasseChangeWorkflowPage {
   /* locators */
   readonly page: Page;
   private readonly organisationen: Autocomplete;
+  private readonly rollen: Autocomplete;
 
   constructor(page: Page) {
     this.page = page;
     this.organisationen = new Autocomplete(this.page, this.page.getByTestId('organisation-select'));
+    this.rollen = new Autocomplete(this.page, this.page.getByTestId('rolle-select'));
   }
 
   /* actions */

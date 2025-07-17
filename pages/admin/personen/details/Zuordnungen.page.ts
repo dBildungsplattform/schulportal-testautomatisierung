@@ -3,14 +3,14 @@ import { Autocomplete } from '../../../../elements/Autocomplete';
 import { AddZuordnungWorkflowPage } from './zuordnung-workflows/AddZuordnungWorkflow.page';
 import { BefristungWorkflowPage } from './zuordnung-workflows/BefristungWorkflow.page';
 
-export type ZuordnungCreationParams = {
+export interface ZuordnungCreationParams {
   rolle: string;
   organisation?: string;
   prefilledOrganisation?: string;
   kopers?: string;
   befristung?: string;
-};
-export type ZuordnungValidationParams = { organisation: string; dstNr?: string; rolle?: string; befristung?: string };
+}
+export interface ZuordnungValidationParams { organisation: string; dstNr?: string; rolle?: string; befristung?: string }
 export type PendingZuordnungValidationParams = ZuordnungValidationParams & {
   status: 'unchanged' | 'delete' | 'create';
 };
@@ -84,7 +84,7 @@ export class ZuordnungenPage {
     // await this.page.getByTestId('change-klasse-success-close').click();
   }
 
-  private async savePendingChanges() {
+  private async savePendingChanges(): Promise<void> {
     await this.page.getByTestId('zuordnung-changes-save').click();
     await this.page.getByRole('dialog').getByRole('button', { name: 'Schließen' }).click();
   }

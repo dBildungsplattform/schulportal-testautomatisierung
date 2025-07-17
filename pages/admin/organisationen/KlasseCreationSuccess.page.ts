@@ -14,7 +14,7 @@ export class KlasseCreationSuccessPage extends AbstractAdminPage {
     return this.page.getByTestId('klasse-success-text').waitFor({ state: 'visible' });
   }
 
-  public async goBackToCreateAnotherKlasse(schulname: string, klassenname: string,): Promise<void> {
+  public async goBackToCreateAnotherKlasse(): Promise<void> {
     const createAnotherKlasseButton: Locator = this.page.getByTestId('create-another-klasse-button');
 
     await createAnotherKlasseButton.click();
