@@ -44,7 +44,7 @@ on:
 jobs:
 
   run_playwright_end2end_tests:
-    environment: dev
+    environment: dev  # TODO selectable as input option
     continue-on-error: true
     timeout-minutes: 60
     runs-on: ubuntu-latest
@@ -79,16 +79,8 @@ jobs:
       run: |
         case "${{ inputs.ldapCluster }}" in
           spshinfra-dev-schulportal-01) echo "TUNNEL_HOST=${{ secrets.TUNNELHOST_INFRA_DEV }}" >> $GITHUB_ENV ;;
-          spsh-dev-schulportal) echo "TUNNEL_HOST=${{ vars.TEST_ENV }}" >> $GITHUB_ENV ;;
+          spsh-dev-schulportal) echo "TUNNEL_HOST=${{ secrets.TUNNELHOST_DEV }}" >> $GITHUB_ENV ;;
           spsh-staging-schulportal) echo "TUNNEL_HOST=${{ secrets.TUNNELHOST_STAGING }}" >> $GITHUB_ENV ;;
-        esac
-
-    - name: Map tunnel target to kubeconfig
-      run: |
-        case "${{ inputs.ldapCluster }}" in
-          spshinfra-dev-schulportal-01) echo "KUBECONFIG_CONTENT=NO_SECRET_AVAILABLE" >> $GITHUB_ENV ;;
-          spsh-dev-schulportal) echo "KUBECONFIG_CONTENT=${{ secrets.SPSH_DEV_KUBECONFIG }}" >> $GITHUB_ENV ;;
-          spsh-staging-schulportal) echo "KUBECONFIG_CONTENT=NO_SECRET_AVAILABLE" >> $GITHUB_ENV ;;
         esac
 
     - name: Add tunnel host to known_hosts
@@ -99,7 +91,7 @@ jobs:
     - name: Add kubeconfig
       run: |
         mkdir -p ~/.kube
-        echo $KUBECONFIG_CONTENT > ~/.kube/config
+        echo ${{ secrets.SPSH_DEV_KUBECONFIG }} > ~/.kube/config
 
     - name: Get Pod IP
       run: |
