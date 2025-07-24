@@ -23,6 +23,14 @@ on:
         description: 'The name of the branch to be tested with Playwright.'
         required: false
         default: main
+      stage:
+        description: 'Stage to run the tests on'
+        required: true
+        default: dev
+        type: choice
+        options:
+          - dev
+          - staging
       ldapCluster:
         description: 'Cluster to which the ssh-tunnel should be created for the ldap connectivity'
         required: false
@@ -44,7 +52,7 @@ on:
 jobs:
 
   run_playwright_end2end_tests:
-    environment: dev  # TODO selectable as input option
+    environment: ${{ inputs.stage }}
     continue-on-error: true
     timeout-minutes: 60
     runs-on: ubuntu-latest
@@ -75,13 +83,13 @@ jobs:
         echo "${{ secrets.SSH_PRIVATE_KEY_LDAP_USER }}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
     
-    - name: Map tunnel target to host
-      run: |
-        case "${{ inputs.ldapCluster }}" in
-          spshinfra-dev-schulportal-01) echo "TUNNEL_HOST=${{ secrets.TUNNELHOST_INFRA_DEV }}" >> $GITHUB_ENV ;;
-          spsh-dev-schulportal) echo "TUNNEL_HOST=${{ secrets.TUNNELHOST_DEV }}" >> $GITHUB_ENV ;;
-          spsh-staging-schulportal) echo "TUNNEL_HOST=${{ secrets.TUNNELHOST_STAGING }}" >> $GITHUB_ENV ;;
-        esac
+    # - name: Map tunnel target to host
+    #   run: |
+    #     case "${{ inputs.ldapCluster }}" in
+    #       spshinfra-dev-schulportal-01) echo "TUNNEL_HOST=${{ secrets.TUNNELHOST_INFRA_DEV }}" >> $GITHUB_ENV ;;
+    #       spsh-dev-schulportal) echo "TUNNEL_HOST=${{ secrets.TUNNELHOST_DEV }}" >> $GITHUB_ENV ;;
+    #       spsh-staging-schulportal) echo "TUNNEL_HOST=${{ secrets.TUNNELHOST_STAGING }}" >> $GITHUB_ENV ;;
+    #     esac
 
     - name: Add tunnel host to known_hosts
       run: |
@@ -100,11 +108,12 @@ jobs:
     - name: Create SSH tunnel to LDAP
       run: |
         ssh -i ~/.ssh/id_rsa \
-            -L 1389:$LDAP_POD_IP:1389 ${{ secrets.TUNNEL_USER }}@$TUNNEL_HOST \
+            -L 1389:$LDAP_POD_IP:1389 ${{ secrets.TUNNEL_USER }}@${{ secrets.TUNNELHOST }} \
             -p ${{ secrets.TUNNEL_PORT }} \
             -N -o ServerAliveInterval=15 -o ExitOnForwardFailure=yes &
         disown
-
+    - name: Test LDAP Connectivity
+      run: ldapwhoami -x -H ldap://localhost:1389 -D "cn=admin,dc=schule-sh,dc=de" -w ${{ secrets.LDAP_ADMIN_PASSWORD }}
     - name: List Playwright tests
       run: npx playwright test --list --grep "@short"
     # - name: Run Playwright tests
