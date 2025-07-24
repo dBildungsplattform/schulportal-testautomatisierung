@@ -74,7 +74,7 @@ jobs:
     
     - name: Map tunnel target to host
       run: |
-        case "${{ github.event.inputs.tunnel_target }}" in
+        case "${{ inputs.ldapCluster }}" in
           spshinfra-dev-schulportal-01) echo "TUNNEL_HOST=${{ secrets.TUNNELHOST_INFRA_DEV }}" >> $GITHUB_ENV ;;
           spsh-dev-schulportal) echo "TUNNEL_HOST=${{ secrets.TUNNELHOST_DEV }}" >> $GITHUB_ENV ;;
           spsh-staging-schulportal) echo "TUNNEL_HOST=${{ secrets.TUNNELHOST_STAGING }}" >> $GITHUB_ENV ;;
@@ -82,7 +82,7 @@ jobs:
 
     - name: Map tunnel target to kubeconfig
       run: |
-        case "${{ github.event.inputs.tunnel_target }}" in
+        case "${{ inputs.ldapCluster }}" in
           spshinfra-dev-schulportal-01) echo "KUBECONFIG_CONTENT=NO_SECRET_AVAILABLE" >> $GITHUB_ENV ;;
           spsh-dev-schulportal) echo "KUBECONFIG_CONTENT=${{ secrets.SPSH_DEV_KUBECONFIG }}" >> $GITHUB_ENV ;;
           spsh-staging-schulportal) echo "KUBECONFIG_CONTENT=NO_SECRET_AVAILABLE" >> $GITHUB_ENV ;;
