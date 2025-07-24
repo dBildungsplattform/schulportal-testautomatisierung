@@ -37,7 +37,7 @@ export class PersonManagementViewPage extends AbstractManagementViewPage {
   }
 
   public async searchAndOpenGesamtuebersicht(nameOrKopers: string): Promise<PersonDetailsViewPage> {
-    await this.searchByText(nameOrKopers, this.page);
+    await this.searchByText(nameOrKopers);
     return this.openGesamtuebersicht(nameOrKopers);
   }
 

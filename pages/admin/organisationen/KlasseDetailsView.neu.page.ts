@@ -11,6 +11,7 @@ export class KlasseDetailsViewPage extends AbstractAdminPage {
   /* actions */
   public async waitForPageLoad(): Promise<void> {
     await expect(this.page.getByTestId('klasse-details-card')).toBeVisible();
+    await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Klasse bearbeiten');
   }
 
   public async editKlasse(klassenname: string): Promise<void> {

@@ -13,6 +13,7 @@ export abstract class AbstractAdminPage {
   constructor(protected readonly page: Page) {
     this.menu = new MenuPage(page);
     this.header = new HeaderPage(page);
+    this.page = page;
   }
 
   /* actions */

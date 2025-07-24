@@ -10,10 +10,9 @@ export interface ZuordnungCreationParams {
   kopers?: string;
   befristung?: string;
 }
-export interface ZuordnungValidationParams { organisation: string; dstNr?: string; rolle?: string; befristung?: string }
-export type PendingZuordnungValidationParams = ZuordnungValidationParams & {
-  status: 'unchanged' | 'delete' | 'create';
-};
+export interface ZuordnungValidationParams {
+  organisation: string; dstNr?: string; rolle?: string; befristung?: string; status?: 'unchanged' | 'delete' | 'create';
+}
 
 export class ZuordnungenPage {
   public constructor(private readonly page: Page) {}
@@ -80,34 +79,69 @@ export class ZuordnungenPage {
     );
     await this.page.getByTestId('confirm-change-klasse-button').click();
     this.savePendingChanges();
-    // await this.page.getByTestId('zuordnung-changes-save').click();
-    // await this.page.getByTestId('change-klasse-success-close').click();
   }
 
   private async savePendingChanges(): Promise<void> {
-    await this.page.getByTestId('zuordnung-changes-save').click();
+    await this.page.getByTestId('zuordnung-changes-save-button').click();
     await this.page.getByRole('dialog').getByRole('button', { name: 'Schließen' }).click();
   }
 
   private buildExpectedTextForZuordnung(params: ZuordnungValidationParams): string {
     let expectedText: string = '';
     if (params.dstNr) {
-      expectedText += `${params.dstNr} (${params.organisation}): `;
+      expectedText += `${params.dstNr} (${params.organisation}):`;
     } else {
-      expectedText += `${params.organisation}: `;
+      expectedText += `${params.organisation}:`;
     }
     if (params.rolle) {
-      expectedText += `${params.rolle} `;
+      expectedText += ` ${params.rolle}`;
     }
     if (params.befristung) {
-      expectedText += `(befristet bis ${params.befristung})`;
+      expectedText += ` (befristet bis ${params.befristung})`;
+    }
+    if (params.status) {
+      switch (params.status) {
+        case 'unchanged':
+          break;
+        case 'delete':
+          expectedText += ' (wird entfernt)';
+          break;
+        case 'create':
+          expectedText += ' (wird hinzugefügt)';
+          break;
+        default:
+          throw new Error(`Unknown status: ${params.status}`);
+      }
     }
     return expectedText;
   }
 
   /* assertions */
+  public async checkSelectedBefristungOption(option: 'unbefristet' | 'schuljahresende'): Promise<void> {
+    const workflowPage: BefristungWorkflowPage = await this.startBefristungWorkflow();
+    await workflowPage.checkSelectedBefristungOption(option);
+  }
+
   public async checkZuordnungExists(params: ZuordnungValidationParams): Promise<void> {
     const expectedText: string = this.buildExpectedTextForZuordnung(params);
-    await expect(this.page.getByTestId('person-details-card')).toContainText(expectedText);
+    await expect(this.page.getByTestId('person-zuordnungen-section-view')).toContainText(expectedText);
+  }
+
+  public async checkPendingZuordnungen(params: ZuordnungValidationParams): Promise<void> {
+    const expectedText: string = this.buildExpectedTextForZuordnung(params);
+
+    switch (params.status) {
+      case 'unchanged':
+        await expect(this.page.getByTestId('person-zuordnungen-section-edit')).toContainText(expectedText);
+        break;
+      case 'delete':
+        await expect(this.page.getByTestId('person-zuordnungen-section-edit span.text-green')).toContainText(expectedText);
+        break;
+      case 'create':
+        await expect(this.page.getByTestId('person-zuordnungen-section-edit span.text-red')).toContainText(expectedText);
+        break;
+      default:
+        throw new Error(`Unknown status: ${params.status}`);
+    }
   }
 }

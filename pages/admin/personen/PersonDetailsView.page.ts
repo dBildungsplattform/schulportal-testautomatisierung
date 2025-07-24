@@ -127,7 +127,7 @@ export class PersonDetailsViewPage {
     this.inputKopersNr = page.getByTestId('kopersnr-input').locator('.v-field__input');
     this.buttonSubmitAddSchulzuordnung = page.getByTestId('zuordnung-creation-submit-button');
     this.buttonConfirmAddSchulzuordnung = page.getByRole('button', { name: 'Ja' });
-    this.buttonSaveAssignmentChanges = page.getByTestId('zuordnung-changes-save');
+    this.buttonSaveAssignmentChanges = page.getByTestId('zuordnung-changes-save-button');
     this.buttonCloseSaveAssignmentChanges = page.getByRole('dialog').getByRole('button', { name: 'Schließen' });
     this.buttonBefristetSchuljahresende = page.getByLabel('Bis Schuljahresende (31.07.');
     this.buttonBefristungUnbefristet = page.getByLabel('Unbefristet');
@@ -138,7 +138,7 @@ export class PersonDetailsViewPage {
     this.buttonBefristungAendern = page.getByTestId('befristung-change-button');
     this.buttonBefristungAendernSubmit = page.getByTestId('change-befristung-submit-button');
     this.buttonBefristungAendernConfirm = page.getByTestId('confirm-change-befristung-button');
-    this.buttonBefristungAendernSave = page.getByTestId('zuordnung-changes-save');
+    this.buttonBefristungAendernSave = page.getByTestId('zuordnung-changes-save-button');
     this.buttonBefristungAendernSuccessClose = page.getByTestId('change-befristung-success-close');
     this.inputBefristung = page.locator('[data-testid="befristung-input"] input');
     this.errorTextInputBefristung = page.getByText('Das eingegebene Datum darf nicht in der Vergangenheit liegen.');

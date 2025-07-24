@@ -39,11 +39,13 @@ export class KlasseManagementViewPage extends AbstractManagementViewPage {
   }
   
   public async searchAndOpenGesamtuebersicht(klassenname: string): Promise<KlasseDetailsViewPage> {
-    await this.searchByText(klassenname, this.page);
+    await this.searchByText(klassenname);
     return this.openGesamtuebersicht(klassenname);
   }
 
-  public async deleteKlasse(klassenname: string, schulname: string): Promise<void> {
+  public async searchAndDeleteKlasse(klassenname: string, schulname: string): Promise<void> {
+    await this.searchByText(klassenname);
+    
     const klasseDeletionButton: Locator = this.page.getByTestId('open-klasse-delete-dialog-icon');
     const klasseDeletionDialogText: Locator = this.page.getByTestId('klasse-delete-confirmation-text');
     const klasseDeletionDialogConfirmButton: Locator = this.page.getByTestId('klasse-delete-button');

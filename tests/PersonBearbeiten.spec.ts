@@ -887,7 +887,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
           `Wollen Sie den Schüler/die Schülerin aus Klasse ${klasseNameCurrent} in Klasse ${klasseNameNew} versetzen?`
         );
         await page.getByTestId('confirm-change-klasse-button').click();
-        await page.getByTestId('zuordnung-changes-save').click();
+        await page.getByTestId('zuordnung-changes-save-button').click();
         await page.getByTestId('change-klasse-success-close').click();
       });
 

@@ -1,7 +1,7 @@
 import { expect, Locator, Page } from '@playwright/test';
 import { waitForAPIResponse } from '../../../../base/api/testHelper.page';
 import { AbstractAdminPage } from '../../../abstracts/AbstractAdminPage.page';
-import { PendingZuordnungValidationParams, ZuordnungenPage, ZuordnungValidationParams } from './Zuordnungen.page';
+import { ZuordnungenPage, ZuordnungValidationParams } from './Zuordnungen.page';
 
 interface PersonDetailsValidationParams { username: string }
 interface LockValidationParams {
@@ -28,8 +28,14 @@ export class PersonDetailsViewPage extends AbstractAdminPage {
     );
   }
 
-  public async changePassword(newPassword: string): Promise<void> {
-    // TODO: Implement password change logic
+  public async changePassword(fullName: string): Promise<void> {
+    await this.page.getByTestId('open-password-reset-dialog-button').click();
+
+    const successText: Locator = this.page.getByTestId('password-reset-info-text');
+    await expect(successText).toContainText(`Sind Sie sicher, dass Sie das Passwort für ${fullName} zurücksetzen möchten?`);
+    await this.page.getByTestId('password-reset-button').click();
+    await expect(successText).toContainText(`Das Passwort wurde erfolgreich zurückgesetzt.`);
+    await this.page.getByTestId('close-password-reset-dialog-button').click();
   }
 
   public async editZuordnungen(): Promise<ZuordnungenPage> {
@@ -95,7 +101,6 @@ export class PersonDetailsViewPage extends AbstractAdminPage {
   }
 
   /* assertions */
-
   public async checkSections(expectedOptionalSections?: {
     twoFactor?: boolean;
     inbetriebnahmePasswort?: boolean;
@@ -136,12 +141,13 @@ export class PersonDetailsViewPage extends AbstractAdminPage {
     ).toBeVisible();
   }
 
-  public async checkPendingZuordnungen(params: PendingZuordnungValidationParams): Promise<void> {
-    // TODO: Implement pending zuordnungen check
-    // await this.zuordnungSection.checkPendingZuordnungen(params);
+  public async checkPendingZuordnungen(params: ZuordnungValidationParams): Promise<void> {
+    await this.zuordnungSection.checkPendingZuordnungen(params);
   }
 
-  public async checkSelectedBefristungOption(): Promise<void> {}
+  public async checkSelectedBefristungOption(option: 'unbefristet' | 'schuljahresende'): Promise<void> {
+    await this.zuordnungSection.checkSelectedBefristungOption(option);
+  }
 
   public async checkPersonLock(params: LockValidationParams): Promise<void> {
     const icon: Locator = this.page.getByTestId('person-lock-info').locator('i');

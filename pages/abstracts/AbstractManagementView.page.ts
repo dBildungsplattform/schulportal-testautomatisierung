@@ -9,16 +9,18 @@ export abstract class AbstractManagementViewPage extends AbstractAdminPage {
 
   constructor(protected readonly page: Page) {
     super(page);
+
+    this.page = page;
   }
 
   /* actions */
   abstract waitForPageLoad(): Promise<void>;
   
-  public async searchByText(nameOrKopers: string, page: Page): Promise<void> {
-    const searchFilterInput: Locator = page.getByTestId('search-filter-input').locator('input');
+  public async searchByText(nameOrKopers: string): Promise<void> {
+    const searchFilterInput: Locator = this.page.getByTestId('search-filter-input').locator('input');
 
     await searchFilterInput.fill(nameOrKopers);
-    return page.getByTestId('apply-search-filter-button').click();
+    return this.page.getByTestId('apply-search-filter-button').click();
   }
 
   /* assertions */
