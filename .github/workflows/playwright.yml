@@ -93,7 +93,7 @@ jobs:
 
     - name: Add tunnel host to known_hosts
       run: |
-        ssh-keyscan -p ${{ secrets.TUNNEL_PORT }} $TUNNEL_HOST >> ~/.ssh/known_hosts
+        ssh-keyscan -p ${{ secrets.TUNNEL_PORT }} ${{ secrets.TUNNELHOST }} >> ~/.ssh/known_hosts
 
     - name: Add kubeconfig
       run: |
