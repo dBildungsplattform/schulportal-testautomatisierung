@@ -87,11 +87,10 @@ jobs:
       run: |
         ssh-keyscan -p ${{ secrets.TUNNEL_PORT }} $TUNNEL_HOST >> ~/.ssh/known_hosts
 
-    # TODO make kubeconfig depend on cluster   
     - name: Add kubeconfig
       run: |
         mkdir -p ~/.kube
-        echo ${{ secrets.SPSH_DEV_KUBECONFIG }} > ~/.kube/config
+        echo "${{ secrets.SPSH_DEV_KUBECONFIG }}" > ~/.kube/config
 
     - name: Get Pod IP
       run: |
