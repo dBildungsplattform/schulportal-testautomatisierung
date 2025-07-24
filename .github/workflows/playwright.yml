@@ -69,7 +69,7 @@ jobs:
     - name: Add ssh key for ldap tunnel
       run: |
         mkdir -p ~/.ssh
-        echo "${{ secrets.SSH_PRIVATE_KEY_LDAP_USER }}" > ~/.ssh/id_rsa
+        echo "${{ secrets.TUNNEL_USER_SSHKEY }}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
     
     - name: Add tunnel host to known_hosts
