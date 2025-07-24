@@ -116,7 +116,7 @@ jobs:
     - name: Install ldap-utils
       run: sudo apt-get install -y ldap-utils
     - name: Test LDAP Connectivity
-      run: ldapwhoami -x -H ldap://localhost:1389 -D "cn=admin,dc=schule-sh,dc=de" -w ${{ secrets.LDAP_ADMIN_PASSWORD }}
+      run: ldapwhoami -x -H ldap://localhost:1389 -D "cn=admin,dc=schule-sh,dc=de" -w ${{ secrets.LDAP_ADMIN_PASSWORD_TEST }}
     - name: List Playwright tests
       run: npx playwright test --list --grep "@short"
     # - name: Run Playwright tests
