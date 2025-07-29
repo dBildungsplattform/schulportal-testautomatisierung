@@ -1,7 +1,7 @@
 import { expect, type Page } from '@playwright/test';
 import { AbstractManagementViewPage } from '../../abstracts/AbstractManagementView.page';
 import { RolleDetailsViewPage } from './RolleDetailsView.neu.page';
-import { DataTable } from '../../components/DataTable.page';
+import { DataTable } from '../../components/DataTable.neu.page';
 
 export class RolleManagementViewPage extends AbstractManagementViewPage {
   /* add global locators here */

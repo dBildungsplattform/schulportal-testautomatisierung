@@ -1,6 +1,6 @@
 import { expect, type Locator, Page } from '@playwright/test';
 import { Autocomplete } from '../../../elements/Autocomplete';
-import { DataTable } from '../../components/DataTable.page';
+import { DataTable } from '../../components/DataTable.neu.page';
 import { KlasseDetailsViewPage } from './KlasseDetailsView.neu.page';
 import { AbstractManagementViewPage } from '../../abstracts/AbstractManagementView.page';
 

@@ -1,6 +1,6 @@
 import { expect, Page } from '@playwright/test';
 import { Autocomplete } from '../../../elements/Autocomplete';
-import { DataTable } from '../../components/DataTable.page';
+import { DataTable } from '../../components/DataTable.neu.page';
 import { PersonDetailsViewPage } from './details/PersonDetailsView.neu.page';
 import { AbstractManagementViewPage } from '../../abstracts/AbstractManagementView.page';
 
@@ -12,7 +12,6 @@ export class PersonManagementViewPage extends AbstractManagementViewPage {
   }
 
   /* actions */
-
   public async waitForPageLoad(): Promise<void> {
     await this.page.getByTestId('admin-headline').waitFor({ state: 'visible' });
     await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Benutzerverwaltung');
