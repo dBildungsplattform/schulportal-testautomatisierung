@@ -27,6 +27,7 @@
     "@faker-js/faker": "^8.4.1",
     "@fast-csv/format": "^4.3.5",
     "@fast-csv/parse": "^4.3.6",
+    "date-fns": "^4.1.0",
     "fast-csv": "^4.3.6",
     "generate-password-ts": "^1.6.5",
     "ldapts": "^7.3.1",

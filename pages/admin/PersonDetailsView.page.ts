@@ -1,77 +1,91 @@
 import { type Locator, Page, expect } from '@playwright/test';
+import { waitForAPIResponse } from '../../base/api/testHelper.page';
 import { ComboBox } from '../../elements/ComboBox';
 
 export class PersonDetailsViewPage {
   readonly page: Page;
-  readonly text_h2_benutzerBearbeiten: Locator;
+  readonly textH2BenutzerBearbeiten: Locator;
+
+  // Persoenliche Daten
+  readonly username: Locator;
 
   // Passwort
-  readonly text_h3_passwort_headline: Locator;
-  readonly button_pwChange: Locator;
-  readonly button_pwReset: Locator;
-  readonly text_pwResetInfo: Locator;
-  readonly input_pw: Locator;
-  readonly button_close_pwreset: Locator;
+  readonly textH3PasswortHeadline: Locator;
+  readonly buttonPwChange: Locator;
+  readonly buttonPwReset: Locator;
+  readonly textPwResetInfo: Locator;
+  readonly inputPw: Locator;
+  readonly buttonClosePwreset: Locator;
 
   // Benutzer löschen
-  readonly button_deletePerson: Locator;
-  readonly button_deletePersonConfirm: Locator;
-  readonly button_closeDeletePersonConfirm: Locator;
+  readonly buttonDeletePerson: Locator;
+  readonly buttonDeletePersonConfirm: Locator;
+  readonly buttonCloseDeletePersonConfirm: Locator;
 
   // Schulzuordnungen
-  readonly text_h3_schulzuordnung_headline: Locator;
-  readonly button_editSchulzuordnung: Locator;
-  readonly button_deleteSchulzuordnung: Locator;
-  readonly button_confirmDeleteSchulzuordnung: Locator;
-  readonly button_addSchulzuordnung: Locator;
-  readonly button_closeZuordnungSuccess: Locator;
-  readonly combobox_organisation: Locator;
-  readonly organisationInput: Locator;
-  readonly combobox_organisationDialogBenutzerSperren: Locator;
-  readonly combobox_rolle: Locator;
-  readonly input_kopersNr: Locator;
-  readonly button_submitAddSchulzuordnung: Locator;
-  readonly button_confirmAddSchulzuordnung: Locator;
-  readonly button_saveAssignmentChanges: Locator;
-  readonly button_closeSaveAssignmentChanges: Locator;
-  readonly button_befristetSchuljahresende: Locator;
-  readonly button_befristungUnbefristet: Locator;
+  readonly textH3SchulzuordnungHeadline: Locator;
+  readonly buttonEditSchulzuordnung: Locator;
+  readonly buttonAddSchulzuordnung: Locator;
+  readonly buttonVersetzen: Locator;
+  readonly comboboxOrganisation: Locator;
+  readonly comboboxOrganisationInput: Locator;
+  readonly comboboxOrganisationDialogBenutzerSperren: Locator;
+  readonly comboboxRolle: Locator;
+  readonly comboboxKlasse: Locator;
+  readonly inputKopersNr: Locator;
+  readonly buttonSubmitAddSchulzuordnung: Locator;
+  readonly buttonConfirmAddSchulzuordnung: Locator;
+  readonly buttonSaveAssignmentChanges: Locator;
+  readonly buttonCloseSaveAssignmentChanges: Locator;
+  readonly buttonBefristetSchuljahresende: Locator;
+  readonly buttonBefristungUnbefristet: Locator;
+  readonly buttonBefristungAendern: Locator;
+  readonly buttonBefristungAendernSubmit: Locator;
+  readonly buttonBefristungAendernConfirm: Locator;
+  readonly buttonBefristungAendernSave: Locator;
+  readonly buttonBefristungAendernSuccessClose: Locator;
+  readonly inputBefristung: Locator;
+  readonly errorTextInputBefristung: Locator;
+  readonly radioButtonBefristungSchuljahresende: Locator;
+  readonly radioButtonUnbefristet: Locator;
+  readonly radioButtonUnbefristetDisabled: Locator;
 
   readonly buttonConfirmZuordnungDialogAddition: Locator;
 
-  readonly comboboxOrganisationInput: ComboBox;
   readonly organisationen: ComboBox;
-  readonly organisationenInput: ComboBox;
   readonly rollen: ComboBox;
+  readonly klassen: ComboBox;
+  readonly klassenVersetzen: ComboBox;
 
   // Benutzer sperren
-  readonly text_h3_lockPerson_headline: Locator;
-  readonly button_lockPerson: Locator;
-  readonly button_lockPersonConfirm: Locator;
-  readonly text_h2_dialogBenutzerSperren: Locator;
-  readonly text_infoLockedUser: Locator;
-  readonly icon_lockedUser: Locator;
-  readonly text_lockedUser: Locator;
-  readonly text_unlockedUser: Locator;
-  readonly input_befristungSperre: Locator;
-  readonly radio_button_befristet: Locator;
-  readonly text_sperrdatumAb: Locator;
-  readonly text_sperrdatumBis: Locator;
+  readonly textH3LockPersonHeadline: Locator;
+  readonly buttonLockPerson: Locator;
+  readonly buttonLockPersonConfirm: Locator;
+  readonly textH2DialogBenutzerSperren: Locator;
+  readonly textInfoLockedUser: Locator;
+  readonly iconLockedUser: Locator;
+  readonly textLockedUser: Locator;
+  readonly textUnlockedUser: Locator;
+  readonly inputBefristungSperre: Locator;
+  readonly radioButtonBefristet: Locator;
+  readonly textSperrdatumAb: Locator;
+  readonly textSperrdatumBis: Locator;
 
   // 2FA
-  readonly text_h3_2FA: Locator;
-  readonly text_token_IstEingerichtet_info: Locator;
-  readonly text_neuen_token_einrichten_info: Locator;
-  readonly text_kein_token_ist_Eingerichtet: Locator;
-  readonly button_2FAEinrichten: Locator;
-  readonly text_2FA_info: Locator;
-  readonly dialog_2FA_Einrichten: Locator;
-  readonly text_h2_2FA_cardheadline: Locator;
-  readonly selectOption_2FA_softwareToken: Locator;
-  readonly text_2FA_softwareToken_info: Locator;
-  readonly button_2FA_Einrichten_Weiter: Locator;
-  readonly button_close_softwareToken_dialog: Locator;
-  readonly button_2FA_Zuruecksetzen_Weiter: Locator;
+  readonly textH3TwoFA: Locator;
+  readonly textTokenIstEingerichtetInfo: Locator;
+  readonly textNeuenTokenEinrichtenInfo: Locator;
+  readonly textKeinTokenIstEingerichtet: Locator;
+  readonly button2FAEinrichten: Locator;
+  readonly text2FAInfo: Locator;
+  readonly dialog2FAEinrichten: Locator;
+  readonly textH2TwoFACardheadline: Locator;
+  readonly selectOption2FASoftwareToken: Locator;
+  readonly text2FASoftwareTokenInfo: Locator;
+  readonly button2FAEinrichtenWeiter: Locator;
+  readonly textSoftwareToken: Locator;
+  readonly buttonCloseSoftwareTokenDialog: Locator;
+  readonly button2FAZuruecksetzenWeiter: Locator;
 
   // Inbetriebnahme-Passwort für LK-Endgerät
   readonly buttonIBNPasswortEinrichtenDialog: Locator;
@@ -79,29 +93,34 @@ export class PersonDetailsViewPage {
   readonly infoIBNPasswortEinrichten: Locator;
   readonly buttonIBNPasswortEinrichtenDialogClose: Locator;
 
-  constructor(page) {
+  constructor(page: Page) {
     this.page = page;
-    this.text_h2_benutzerBearbeiten = page.getByTestId('person-details-card').getByTestId('layout-card-headline');
+    this.textH2BenutzerBearbeiten = page.getByTestId('person-details-card').getByTestId('layout-card-headline');
+
+    // Persoenliche Daten
+    this.username = page.getByTestId('person-username');
 
     // Passwort
-    this.text_h3_passwort_headline = page.locator(`//h3[text()='Passwort']`);
-    this.button_pwChange = page.getByTestId('open-password-reset-dialog-button');
-    this.button_pwReset = page.getByTestId('password-reset-button');
-    this.text_pwResetInfo = page.getByTestId('password-reset-info-text');
-    this.input_pw = page.locator('[data-testid="password-output-field"] input');
-    this.button_close_pwreset = page.getByTestId('close-password-reset-dialog-button');
+    this.textH3PasswortHeadline = page.locator(`//h3[text()='Passwort']`);
+    this.buttonPwChange = page.getByTestId('open-password-reset-dialog-button');
+    this.buttonPwReset = page.getByTestId('password-reset-button');
+    this.buttonVersetzen = page.getByTestId('klasse-change-button');
+    this.textPwResetInfo = page.getByTestId('password-reset-info-text');
+    this.inputPw = page.locator('[data-testid="password-output-field"] input');
+    this.buttonClosePwreset = page.getByTestId('close-password-reset-dialog-button');
 
     // Benutzer löschen
-    this.button_deletePerson = page.getByTestId('open-person-delete-dialog-button');
-    this.button_deletePersonConfirm = page.getByTestId('person-delete-button');
-    this.button_closeDeletePersonConfirm = page.getByTestId('close-person-delete-success-dialog-button');
+    this.buttonDeletePerson = page.getByTestId('open-person-delete-dialog-button');
+    this.buttonDeletePersonConfirm = page.getByTestId('person-delete-button');
+    this.buttonCloseDeletePersonConfirm = page.getByTestId('close-person-delete-success-dialog-button');
 
     // Schulzuordnungen
-    this.text_h3_schulzuordnung_headline = page.getByText('Schulzuordnung(en)');
-    this.button_editSchulzuordnung = page
+    this.textH3SchulzuordnungHeadline = page.getByText('Schulzuordnung(en)');
+    this.buttonEditSchulzuordnung = page
       .locator('div')
       .filter({ hasText: /^Schulzuordnung\(en\)Bearbeiten$/ })
       .getByTestId('zuordnung-edit-button');
+/*<<<<<<< HEAD
     this.button_addSchulzuordnung = page.getByTestId('zuordnung-create-button');
     this.button_closeZuordnungSuccess = page.getByTestId('close-zuordnung-delete-success-button');
     this.combobox_organisationDialogBenutzerSperren = page.getByTestId('person-lock-card').locator('.v-field__input');
@@ -125,40 +144,69 @@ export class PersonDetailsViewPage {
     this.organisationen = new ComboBox(this.page, this.combobox_organisation);
     this.organisationenInput = new ComboBox(this.page, this.organisationInput);
     this.rollen = new ComboBox(this.page, this.combobox_rolle);
+=======*/
+    this.buttonAddSchulzuordnung = page.getByTestId('zuordnung-create-button');
+    this.comboboxOrganisationDialogBenutzerSperren = page.getByTestId('person-lock-card').locator('.v-field__input');
+    this.comboboxRolle = page.getByTestId('rolle-select');
+    this.comboboxOrganisation = page.getByTestId('organisation-select');
+    this.comboboxKlasse = page.getByTestId('klassenname-input').getByRole('combobox');
+
+    this.inputKopersNr = page.getByTestId('kopersnr-input').locator('.v-field__input');
+    this.buttonSubmitAddSchulzuordnung = page.getByTestId('zuordnung-creation-submit-button');
+    this.buttonConfirmAddSchulzuordnung = page.getByRole('button', { name: 'Ja' });
+    this.buttonSaveAssignmentChanges = page.getByTestId('zuordnung-changes-save');
+    this.buttonCloseSaveAssignmentChanges = page.getByRole('dialog').getByRole('button', { name: 'Schließen' });
+    this.buttonBefristetSchuljahresende = page.getByLabel('Bis Schuljahresende (31.07.');
+    this.buttonBefristungUnbefristet = page.getByLabel('Unbefristet');
+    this.organisationen = new ComboBox(this.page, this.comboboxOrganisation);
+    this.rollen = new ComboBox(this.page, this.comboboxRolle);
+    this.klassen = new ComboBox(this.page, this.comboboxKlasse);
+    this.klassenVersetzen = new ComboBox(this.page, page.getByTestId('klasse-change-klasse-select'));
+    this.buttonBefristungAendern = page.getByTestId('befristung-change-button');
+    this.buttonBefristungAendernSubmit = page.getByTestId('change-befristung-submit-button');
+    this.buttonBefristungAendernConfirm = page.getByTestId('confirm-change-befristung-button');
+    this.buttonBefristungAendernSave = page.getByTestId('zuordnung-changes-save');
+    this.buttonBefristungAendernSuccessClose = page.getByTestId('change-befristung-success-close');
+    this.inputBefristung = page.locator('[data-testid="befristung-input"] input');
+    this.errorTextInputBefristung = page.getByText('Das eingegebene Datum darf nicht in der Vergangenheit liegen.');
+    this.radioButtonBefristungSchuljahresende = page.getByTestId('schuljahresende-radio-button');
+    this.radioButtonUnbefristet = page.getByTestId('unbefristet-radio-button');
+    this.radioButtonUnbefristetDisabled = page.getByTestId('unbefristet-radio-button').getByLabel('Unbefristet');
 
     // Benutzer sperren
-    this.text_h3_lockPerson_headline = page.getByTestId('person-lock-info').getByText('Status');
-    this.button_lockPerson = page.getByTestId('open-lock-dialog-button');
-    this.button_lockPersonConfirm = page.getByTestId('lock-user-button');
-    this.text_h2_dialogBenutzerSperren = page.getByTestId('person-lock-card').getByTestId('layout-card-headline');
-    this.text_infoLockedUser = page.getByTestId('lock-user-info-text');
-    this.icon_lockedUser = page.getByTestId('person-lock-info').locator('i');
-    this.text_lockedUser = page.getByText('Dieser Benutzer ist gesperrt.');
-    this.text_unlockedUser = page.getByText('Dieser Benutzer ist aktiv.');
-    this.input_befristungSperre = page.getByTestId('befristung-input').getByPlaceholder('TT.MM.JJJJ');
-    this.radio_button_befristet = page.getByTestId('befristet-radio-button').getByLabel('Befristet');
-    this.text_sperrdatumAb = page.getByTestId('lock-info-1-attribute');
-    this.text_sperrdatumBis = page.getByTestId('lock-info-2-attribute');
+    this.textH3LockPersonHeadline = page.getByTestId('person-lock-info').getByText('Status');
+    this.buttonLockPerson = page.getByTestId('open-lock-dialog-button');
+    this.buttonLockPersonConfirm = page.getByTestId('lock-user-button');
+    this.textH2DialogBenutzerSperren = page.getByTestId('person-lock-card').getByTestId('layout-card-headline');
+    this.textInfoLockedUser = page.getByTestId('lock-user-info-text');
+    this.iconLockedUser = page.getByTestId('person-lock-info').locator('i');
+    this.textLockedUser = page.getByText('Dieser Benutzer ist gesperrt.');
+    this.textUnlockedUser = page.getByText('Dieser Benutzer ist aktiv.');
+    this.inputBefristungSperre = page.getByTestId('befristung-input').getByPlaceholder('TT.MM.JJJJ');
+    this.radioButtonBefristet = page.getByTestId('befristet-radio-button').getByLabel('Befristet');
+    this.textSperrdatumAb = page.getByTestId('lock-info-1-attribute');
+    this.textSperrdatumBis = page.getByTestId('lock-info-2-attribute');
 
     // 2FA
-    this.text_h3_2FA = page.getByText('Zwei-Faktor-Authentifizierung (2FA)');
-    this.text_kein_token_ist_Eingerichtet = page.getByText('Für diesen Benutzer ist aktuell keine 2FA eingerichtet.');
-    this.text_token_IstEingerichtet_info = page.getByText(
+    this.textH3TwoFA = page.getByText('Zwei-Faktor-Authentifizierung (2FA)');
+    this.textKeinTokenIstEingerichtet = page.getByText('Für diesen Benutzer ist aktuell keine 2FA eingerichtet.');
+    this.textTokenIstEingerichtetInfo = page.getByText(
       'Für diesen Benutzer ist aktuell ein Software-Token eingerichtet.'
     );
-    this.text_neuen_token_einrichten_info = page.getByText(
+    this.textNeuenTokenEinrichtenInfo = page.getByText(
       'Um einen neuen Token einzurichten, muss der aktuelle Token durch die schulischen Administratorinnen und Administratoren zurückgesetzt werden.'
     );
-    this.button_2FAEinrichten = page.getByTestId('open-2FA-dialog-icon');
-    this.dialog_2FA_Einrichten = page.getByTestId('two-factor-authentication-dialog');
-    this.text_h2_2FA_cardheadline = this.dialog_2FA_Einrichten.getByTestId('layout-card-headline');
-    this.text_2FA_softwareToken_info = page.getByText(
+    this.button2FAEinrichten = page.getByTestId('open-2FA-dialog-icon');
+    this.dialog2FAEinrichten = page.getByTestId('two-factor-authentication-dialog');
+    this.textH2TwoFACardheadline = this.dialog2FAEinrichten.getByTestId('layout-card-headline');
+    this.text2FASoftwareTokenInfo = page.getByText(
       'Ein QR-Code wird generiert, welcher direkt eingescannt oder ausgedruckt werden kann.'
     );
-    this.selectOption_2FA_softwareToken = page.getByTestId('software-token-radio-button');
-    this.button_2FA_Einrichten_Weiter = page.getByTestId('proceed-two-factor-authentication-dialog-button');
-    this.button_close_softwareToken_dialog = page.getByTestId('close-software-token-dialog-button');
-    this.button_2FA_Zuruecksetzen_Weiter = page.getByTestId('two-way-authentification-set-up-button');
+    this.selectOption2FASoftwareToken = page.getByTestId('software-token-radio-button');
+    this.button2FAEinrichtenWeiter = page.getByTestId('proceed-two-factor-authentication-dialog-button');
+    this.textSoftwareToken = page.getByTestId('software-token-dialog-text');
+    this.buttonCloseSoftwareTokenDialog = page.getByTestId('close-software-token-dialog-button');
+    this.button2FAZuruecksetzenWeiter = page.getByTestId('two-way-authentification-set-up-button');
 
     // Inbetriebnahme-Passwort für LK-Endgerät
     this.buttonIBNPasswortEinrichtenDialog = page.getByTestId('open-device-password-dialog-button');
@@ -167,58 +215,82 @@ export class PersonDetailsViewPage {
     this.buttonIBNPasswortEinrichtenDialogClose = page.getByTestId('close-password-reset-dialog-button');
   }
 
-  public async lockUserWithoutDate() {
-    await this.button_lockPerson.click();
-    await expect(this.text_h2_dialogBenutzerSperren).toHaveText('Benutzer sperren');
-    await expect(this.combobox_organisationDialogBenutzerSperren).toHaveText('Land Schleswig-Holstein');
-    await expect(this.text_infoLockedUser).toHaveText(
+  public async waitForPageToBeLoaded(): Promise<void> {
+    await this.page.waitForURL('admin/personen/*');
+    for (const locator of await this.page.getByRole('progressbar').all()) {
+      await expect(locator).toBeHidden();
+    }
+  }
+
+  public async lockUserWithoutDate(): Promise<void> {
+    await this.buttonLockPerson.click();
+    await expect(this.textH2DialogBenutzerSperren).toHaveText('Benutzer sperren');
+    await expect(this.comboboxOrganisationDialogBenutzerSperren).toHaveText('Land Schleswig-Holstein');
+    await expect(this.textInfoLockedUser).toHaveText(
       'Für die Dauer der Sperre hat der Benutzer keinen Zugriff mehr auf das Schulportal SH und die daran angeschlossenen Dienste.'
     );
-    await expect(this.input_befristungSperre).toBeHidden();
-    await this.button_lockPersonConfirm.click();
+    await expect(this.inputBefristungSperre).toBeHidden();
+    await this.buttonLockPersonConfirm.click();
   }
 
-  public async lockUserWithDate(lockDateTo) {
-    await this.button_lockPerson.click();
-    await expect(this.text_h2_dialogBenutzerSperren).toHaveText('Benutzer sperren');
-    await expect(this.combobox_organisationDialogBenutzerSperren).toHaveText('Land Schleswig-Holstein');
-    await expect(this.text_infoLockedUser).toHaveText(
+  public async lockUserWithDate(lockDateTo: string): Promise<void> {
+    await this.buttonLockPerson.click();
+    await expect(this.textH2DialogBenutzerSperren).toHaveText('Benutzer sperren');
+    await expect(this.comboboxOrganisationDialogBenutzerSperren).toHaveText('Land Schleswig-Holstein');
+    await expect(this.textInfoLockedUser).toHaveText(
       'Für die Dauer der Sperre hat der Benutzer keinen Zugriff mehr auf das Schulportal SH und die daran angeschlossenen Dienste.'
     );
-    await this.radio_button_befristet.click();
-    await expect(this.input_befristungSperre).toBeVisible();
-    await this.input_befristungSperre.fill(lockDateTo);
-    await this.button_lockPersonConfirm.click();
+    await this.radioButtonBefristet.click();
+    await expect(this.inputBefristungSperre).toBeVisible();
+    await this.inputBefristungSperre.fill(lockDateTo);
+    await this.buttonLockPersonConfirm.click();
   }
 
-  public async checkUserIsLocked() {
-    await expect(this.icon_lockedUser).toBeVisible();
-    await expect(this.text_lockedUser).toBeVisible();
+  public async checkUserIsLocked(): Promise<void> {
+    await expect(this.iconLockedUser).toBeVisible();
+    await expect(this.textLockedUser).toBeVisible();
   }
 
-  public async checkLockDateFrom(lockDateFrom: string) {
-    await expect(this.text_sperrdatumAb).toHaveText(lockDateFrom);
+  public async checkLockDateFrom(lockDateFrom: string): Promise<void> {
+    await expect(this.textSperrdatumAb).toHaveText(lockDateFrom);
   }
 
-  public async checkLockDateTo(lockDateTo: string) {
-    await expect(this.text_sperrdatumBis).toHaveText(lockDateTo);
+  public async checkLockDateTo(lockDateTo: string): Promise<void> {
+    await expect(this.textSperrdatumBis).toHaveText(lockDateTo);
   }
 
-  public async softwareTokenEinrichten() {
-    await this.button_2FAEinrichten.click();
-    await expect(this.text_h2_2FA_cardheadline).toHaveText('Zwei-Faktor-Authentifizierung einrichten');
-    await expect(this.selectOption_2FA_softwareToken).toHaveText('Software-Token einrichten');
-    await expect(this.text_2FA_softwareToken_info).toBeVisible();
-    await this.button_2FA_Einrichten_Weiter.click();
-    await expect(this.text_h2_2FA_cardheadline).toHaveText('Software-Token einrichten');
-    await this.button_close_softwareToken_dialog.click();
+  public async softwareTokenEinrichten(): Promise<void> {
+    await this.button2FAEinrichten.click();
+    await expect(this.textH2TwoFACardheadline).toHaveText('Zwei-Faktor-Authentifizierung einrichten');
+    await expect(this.selectOption2FASoftwareToken).toHaveText('Software-Token einrichten');
+    await expect(this.text2FASoftwareTokenInfo).toBeVisible();
+    await this.button2FAEinrichtenWeiter.click();
+    await waitForAPIResponse(this.page, '2fa-token/**/');
+    await expect(this.textH2TwoFACardheadline).toHaveText('Software-Token einrichten');
+    await expect(this.textSoftwareToken).toHaveText('QR-Code scannen oder ausdrucken.');
+    await this.buttonCloseSoftwareTokenDialog.click();
   }
 
-  public async createIbnPassword() {
+  public async createIbnPassword(): Promise<void> {
     await this.buttonIBNPasswortEinrichtenDialog.click();
     await this.buttonIBNPasswortEinrichten.click();
+    await waitForAPIResponse(this.page, 'personen/**/uem-password');
     await expect(this.infoIBNPasswortEinrichten).toContainText('Das Passwort wurde erfolgreich erzeugt.');
     await this.buttonIBNPasswortEinrichtenDialogClose.click();
-    await expect(this.text_h2_benutzerBearbeiten).toHaveText('Benutzer bearbeiten');
+    await expect(this.textH2BenutzerBearbeiten).toHaveText('Benutzer bearbeiten');
+  }
+
+  public async validateEntireNameSchulzuordnung(
+    dstNr: string,
+    testschuleName: string,
+    nameRolle: string,
+    textColor: string,
+    befristungLehrerRolle: string
+  ): Promise<void> {
+    await expect(
+      this.page
+        .getByTestId('person-details-card')
+        .getByText(dstNr + ' (' + testschuleName + '): ' + nameRolle + ' (befristet bis ' + befristungLehrerRolle + ')')
+    ).toHaveCSS('color', textColor);
   }
 }
