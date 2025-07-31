@@ -53,20 +53,25 @@ export class PersonManagementViewPage {
     return new PersonDetailsViewPage(this.page);
   }
 
-public async searchBySuchfeld(name: string): Promise<void> {
-  await this.inputSuchfeld.fill(name);
+  public async searchBySuchfeld(name: string): Promise<void> {
+    // Make sure the search input is visible before filling it
+    await expect(this.inputSuchfeld).toBeVisible();
 
-  // Triggers the click and starts listening for the response at the same time
-  // Guarantees that the response is awaited only after the click and that it won't be missed even if it happens fast
-  await Promise.all([
-    this.page.waitForResponse(response =>
-      response.url().includes('/api/dbiam/personenuebersicht') && response.status() === 201
-    ),
-    this.buttonSuchen.click(),
-  ]);
-  await expect(this.inputSuchfeld).toHaveValue(name);
-  await expect(this.comboboxMenuIconStatus).toBeVisible();
-}
+    await this.inputSuchfeld.fill(name);
+
+    // Triggers the click and starts listening for the response at the same time
+    // Guarantees that the response is awaited only after the click and that it won't be missed even if it happens fast
+    await Promise.all([
+      this.page.waitForResponse(response =>
+        response.url().includes('/api/dbiam/personenuebersicht') &&
+        response.status() === 201
+      ),
+      this.buttonSuchen.click(),
+    ]);
+
+    await expect(this.inputSuchfeld).toHaveValue(name);
+    await expect(this.comboboxMenuIconStatus).toBeVisible();
+  }
 
   public async openGesamtuebersichtPerson(page: Page, name: string): Promise<PersonDetailsViewPage> {
     await page.getByRole('cell', { name: name, exact: true }).click();
