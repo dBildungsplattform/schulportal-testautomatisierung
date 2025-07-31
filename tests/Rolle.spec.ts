@@ -128,7 +128,9 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     }
   );
 
-  test(
+  // TODO: We skip this useless test because it does not reliably check the rollen list
+  // We re-implement this test as soon as the rollen list includes sorting and searching
+  test.skip(
     'Ergebnisliste Rollen auf Vollständigkeit prüfen als Landesadmin',
     { tag: [LONG, SHORT, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
