@@ -62,7 +62,8 @@ test.describe(`Testfälle für den Benutzerimport": Umgebung: ${process.env.ENV}
     });
   });
 
-  test(
+  // Skip for now as it is not working in the current setup of LDAP
+  test.skip(
     'Als Landesadmin eine CSV-Datei mit Benutzerdaten hochladen und importieren',
     { tag: [LONG, STAGE, BROWSER] },
     async ({ page }: PlaywrightTestArgs) => {
