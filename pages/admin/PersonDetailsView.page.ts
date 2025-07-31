@@ -116,7 +116,6 @@ export class PersonDetailsViewPage {
     this.textH3SchulzuordnungHeadline = page.getByText('Schulzuordnung(en)');
     this.buttonEditSchulzuordnung = page
       .locator('div')
-      .filter({ hasText: /^Schulzuordnung\(en\)Bearbeiten$/ })
       .getByTestId('zuordnung-edit-button');
     this.buttonAddSchulzuordnung = page.getByTestId('zuordnung-create-button');
     this.comboboxOrganisationDialogBenutzerSperren = page.getByTestId('person-lock-card').locator('.v-field__input');
