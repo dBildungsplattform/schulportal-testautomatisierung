@@ -68,6 +68,8 @@ export class PersonManagementViewPage {
       ),
       this.buttonSuchen.click(),
     ]);
+    // Wait for the table to be populated with the search results
+    await this.page.getByRole('cell', { name, exact: true }).waitFor({ state: 'visible' });
 
     await expect(this.inputSuchfeld).toHaveValue(name);
     await expect(this.comboboxMenuIconStatus).toBeVisible();
