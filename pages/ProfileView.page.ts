@@ -69,16 +69,16 @@ export class ProfilePage {
     this.titleMeinProfil = page.getByTestId('profile-headline');
     // Persönliche Daten
     this.cardHeadlinePersoenlicheDaten = page.getByTestId('layout-card-headline-persoenliche-daten');
-    this.labelVornameNachname = page.getByTestId('fullName-label');
-    this.dataVornameNachname = page.getByTestId('fullName-value');
-    this.labelBenutzername = page.getByTestId('userName-label');
-    this.dataBenutzername = page.getByTestId('userName-value');
+    this.labelVornameNachname = page.getByTestId('fullname-label');
+    this.dataVornameNachname = page.getByTestId('fullname-value');
+    this.labelBenutzername = page.getByTestId('username-label');
+    this.dataBenutzername = page.getByTestId('username-value');
     this.labelKopersNr = page.getByTestId('kopersnummer-label');
     this.dataKopersNr = page.getByTestId('kopersnummer-value');
     this.iconInfoPersoenlicheDaten = page.getByTestId('info-icon');
     // Die Schulzuordnungen sind als Tabelle dargestellt, darum sind Indizes in den Ids
     // Schulzuordnung 1
-    this.cardHeadlineSchulzuordnung1 = page.getByTestId('zuordung-card-1');
+    this.cardHeadlineSchulzuordnung1 = page.getByTestId('zuordnung-card-1-headline');
     this.labelSchule1 = page.getByTestId('schule-label-1');
     this.dataSchule1 = page.getByTestId('schule-value-1');
     this.labelRolle1 = page.getByTestId('rolle-label-1');
@@ -86,7 +86,7 @@ export class ProfilePage {
     this.labelDienststellennummer1 = page.getByTestId('dienststellennummer-label-1');
     this.dataDienststellennummer1 = page.getByTestId('dienststellennummer-value-1');
     // Schulzuordnung 2
-    this.cardHeadlineSchulzuordnung2 = page.getByTestId('zuordung-card-2');
+    this.cardHeadlineSchulzuordnung2 = page.getByTestId('zuordnung-card-2-headline');
     this.labelSchule2 = page.getByTestId('schule-label-2');
     this.dataSchule2 = page.getByTestId('schule-value-2');
     this.labelRolle2 = page.getByTestId('rolle-label-2');

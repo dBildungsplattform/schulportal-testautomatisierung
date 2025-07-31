@@ -1,4 +1,4 @@
-import { expect, type Locator, Page } from '@playwright/test';
+import { expect, Page } from '@playwright/test';
 import generator from 'generate-password-ts';
 import { StartViewPage } from './StartView.neu.page';
 
@@ -24,7 +24,7 @@ export class LoginViewPage {
   }
 
   async updatePassword(): Promise<string> {
-    const newPassword = generator.generate({ length: 8, numbers: true }) + '1Aa!';
+    const newPassword: string = generator.generate({ length: 8, numbers: true }) + '1Aa!';
     await expect(this.page.getByTestId('update-password-title')).toHaveText('Passwort festlegen');
     await expect(this.page.locator('.password-update-prompt')).toHaveText('Bitte legen Sie ein neues, selbstgewähltes Passwort fest.');
     await this.page.getByTestId('new-password-input').fill(newPassword);
