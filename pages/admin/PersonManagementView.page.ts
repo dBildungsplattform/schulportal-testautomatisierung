@@ -54,9 +54,24 @@ export class PersonManagementViewPage {
   }
 
   public async searchBySuchfeld(name: string): Promise<void> {
-    await this.page.waitForResponse('/api/dbiam/personenuebersicht');
+    // Make sure the search input is visible before filling it
+    await expect(this.inputSuchfeld).toBeVisible();
+
     await this.inputSuchfeld.fill(name);
-    await this.buttonSuchen.click();
+
+    // Triggers the click and starts listening for the response at the same time
+    // Guarantees that the response is awaited only after the click and that it won't be missed even if it happens fast
+    await Promise.all([
+      this.page.waitForResponse(response =>
+        response.url().includes('/api/dbiam/personenuebersicht') &&
+        response.status() === 201
+      ),
+      this.buttonSuchen.click(),
+    ]);
+    // Wait for the table to be populated with the search results
+    await this.page.getByRole('cell', { name, exact: true }).waitFor({ state: 'visible' });
+
+    await expect(this.inputSuchfeld).toHaveValue(name);
     await expect(this.comboboxMenuIconStatus).toBeVisible();
   }
 
