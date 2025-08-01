@@ -1,4 +1,4 @@
-import { expect, Page } from '@playwright/test';
+import { expect, type Page } from '@playwright/test';
 import { Autocomplete } from '../../../../../elements/Autocomplete';
 import { ZuordnungenPage } from '../Zuordnungen.page';
 
