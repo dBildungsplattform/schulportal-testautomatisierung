@@ -23,7 +23,7 @@ export class PersonDetailsViewPage extends AbstractAdminPage {
   /* actions */
 
   public async waitForPageLoad(): Promise<void> {
-    await expect(this.page.getByTestId('person-details-card').waitFor({ state: 'visible' }));
+    await this.page.getByTestId('person-details-card').waitFor({ state: 'visible' });
     await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Benutzer bearbeiten');
   }
 

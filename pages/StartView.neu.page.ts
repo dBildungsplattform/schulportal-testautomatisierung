@@ -1,4 +1,4 @@
-import { expect, type Locator, Page } from '@playwright/test';
+import { expect, Locator, Page } from '@playwright/test';
 
 export class StartViewPage {
   /* add global locators here */
@@ -21,11 +21,11 @@ export class StartViewPage {
     await expect(this.page.getByTestId('all-service-provider-title')).toBeVisible();
   }
 
-  public async checkSpIsVisible(spNames: string[]): Promise<void> {
-    for (const spName of spNames) {
-      const spCard = this.page.locator('[data-testid^="service-provider-card"]', { hasText: spName });
-      await expect(spCard).toBeVisible();
-      await expect(spCard.locator('img')).toBeVisible();
+  public async serviceProviderIsVisible(serviceProviderNames: string[]): Promise<void> {
+    for (const serviceProviderName of serviceProviderNames) {
+      const serviceProviderCard: Locator = this.page.locator('[data-testid^="service-provider-card"]', { hasText: serviceProviderName });
+      await expect(serviceProviderCard).toBeVisible();
+      await expect(serviceProviderCard.locator('img')).toBeVisible();
     }
   }
 }

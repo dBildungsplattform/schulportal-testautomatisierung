@@ -1,4 +1,4 @@
-import { expect, Page } from '@playwright/test';
+import { Page } from '@playwright/test';
 import { KlasseCreationViewPage } from '../admin/organisationen/KlasseCreationView.neu.page';
 import { KlasseManagementViewPage } from '../admin/organisationen/KlasseManagementView.neu.page';
 import { PersonCreationViewPage } from '../admin/personen/creation/PersonCreationView.neu.page';
