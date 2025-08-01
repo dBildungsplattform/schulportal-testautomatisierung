@@ -2,7 +2,7 @@ import { expect, type Locator, Page } from '@playwright/test';
 import { waitForAPIResponse } from '../base/api/testHelper.page';
 
 const noDataMessage: string = 'Keine Daten gefunden.';
-export class ComboBox {
+export class Autocomplete {
   private readonly overlayLocator: Locator;
   private readonly itemsLocator: Locator;
   private readonly modalToggle: Locator;
@@ -118,5 +118,29 @@ export class ComboBox {
     }
 
     await expect(item).toBeHidden();
+  }
+
+  public async validateItemExists(searchString: string, exactMatch: boolean): Promise<void> {
+    await this.inputLocator.click();
+    await this.inputLocator.fill(searchString);
+    let item: Locator;
+
+    if (exactMatch) {
+      item = this.itemsLocator.filter({
+        // use regex to search for an exact match
+        hasText: new RegExp(`^${searchString}$`),
+      });
+    } else {
+      // search for a string inside the item title
+      item = this.itemsLocator.filter({
+        has: this.page.getByText(searchString),
+      });
+    }
+
+    await expect(item).toBeVisible();
+  }
+
+  public async checkText(text: string): Promise<void> {
+    await expect(this.locator).toHaveText(text);
   }
 }

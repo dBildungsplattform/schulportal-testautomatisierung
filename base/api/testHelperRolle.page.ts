@@ -9,8 +9,6 @@ export async function createRolle(
   rolleName: string,
   merkmaleName?: string[]
 ): Promise<string> {
-  let requestData: RolleRequestData;
-
   interface RolleRequestData {
     data: {
       name: string;
@@ -24,7 +22,7 @@ export async function createRolle(
     maxRetries: number;
   }
 
-  requestData = {
+  const requestData: RolleRequestData = {
     data: {
       name: rolleName,
       administeredBySchulstrukturknoten: organisationId,
