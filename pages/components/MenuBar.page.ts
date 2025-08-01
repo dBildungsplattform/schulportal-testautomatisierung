@@ -38,7 +38,7 @@ export class MenuPage {
     this.labelSchultraegerverwaltung = page.locator('[data-testid="schultraeger-management-title"] .v-list-item-title');
     this.labelSchulverwaltung = page.locator('[data-testid="schule-management-title"] .v-list-item-title');
     this.menueItemAlleBenutzerAnzeigen = page.getByTestId('person-management-menu-item');
-    this.menueItemAlleKlassenAnzeigen = page.getByTestId('klassen-management-menu-item');
+    this.menueItemAlleKlassenAnzeigen = page.getByTestId('klasse-management-menu-item');
     this.menueItemAlleRollenAnzeigen = page.getByTestId('rolle-management-menu-item');
     this.menueItemAlleSchulenAnzeigen = page.getByTestId('schule-management-menu-item');
     this.menueItemBenutzerAnlegen = page.getByTestId('person-creation-menu-item');

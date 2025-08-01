@@ -10,7 +10,7 @@ export class LandingViewPage {
   }
 
   /* actions */
-  public async goToLogin(): Promise<LoginViewPage> {
+  public async navigateToLogin(): Promise<LoginViewPage> {
     await this.page.getByTestId('login-button').click();
     return new LoginViewPage(this.page);
   }

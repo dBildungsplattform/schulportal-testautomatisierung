@@ -1,13 +1,14 @@
-import { expect, type Locator, Page } from '@playwright/test';
-import { KlasseCreationViewPage } from '../admin/organisationen/KlasseCreationView.page';
-import { KlasseManagementViewPage, KlasseManagementViewPageOptions } from '../admin/organisationen/KlasseManagementView.page';
-import { PersonCreationViewPage } from '../admin/personen/PersonCreationView.page';
-import { PersonImportViewPage } from '../admin/personen/PersonImportView.page';
-import { PersonManagementViewPage } from '../admin/personen/PersonManagementView.page';
-import { RolleCreationViewPage } from '../admin/rollen/RolleCreationView.page';
-import { RolleManagementViewPage } from '../admin/rollen/RolleManagementView.page';
-import { SchuleCreationViewPage } from '../admin/organisationen/SchuleCreationView.page';
-import { SchuleManagementViewPage } from '../admin/organisationen/SchuleManagementView.page';
+import { expect, Page } from '@playwright/test';
+import { KlasseCreationViewPage } from '../admin/organisationen/KlasseCreationView.neu.page';
+import { KlasseManagementViewPage } from '../admin/organisationen/KlasseManagementView.neu.page';
+import { PersonCreationViewPage } from '../admin/personen/creation/PersonCreationView.neu.page';
+import { PersonImportViewPage } from '../admin/personen/PersonImportView.neu.page';
+import { PersonManagementViewPage } from '../admin/personen/PersonManagementView.neu.page';
+import { RolleCreationViewPage } from '../admin/rollen/RolleCreationView.neu.page';
+import { RolleManagementViewPage } from '../admin/rollen/RolleManagementView.neu.page';
+import { SchuleCreationViewPage } from '../admin/organisationen/SchuleCreationView.neu.page';
+import { SchuleManagementViewPage } from '../admin/organisationen/SchuleManagementView.neu.page';
+import { StartViewPage } from '../StartView.neu.page';
 
 export class MenuBarPage {
   /* add global locators here */
@@ -18,52 +19,64 @@ export class MenuBarPage {
   }
 
   /* actions */
-  public async goToPersonManagement(): Promise<PersonManagementViewPage> {
+  public async navigateToStartPage(): Promise<StartViewPage> {
+    await this.page.getByTestId('back-to-start-link').click();
+    return new StartViewPage(this.page);
+  }
+
+  public async navigateToPersonManagement(): Promise<PersonManagementViewPage> {
     await this.page.getByTestId('person-management-menu-item').click();
     return new PersonManagementViewPage(this.page);
   }
 
-  public async rolleAnlegen(): Promise<RolleCreationViewPage> {
-    await this.page.getByTestId('rolle-creation-menu-item').click();
-    return new RolleCreationViewPage(this.page);
+  public async navigateToPersonCreation(): Promise<PersonCreationViewPage> {
+    await this.page.getByTestId('person-creation-menu-item').click();
+    return new PersonCreationViewPage(this.page);
   }
 
-  public async alleRollenAnzeigen(): Promise<RolleManagementViewPage> {
-    await this.page.getByTestId('rolle-management-menu-item').click();
-    await this.page.waitForURL('**/admin/rollen');
-    return new RolleManagementViewPage(this.page);
-  }
-
-  public async alleSchulenAnzeigen(): Promise<SchuleManagementViewPage> {
-    await this.page.getByTestId('schule-management-menu-item').click();
-    return new SchuleManagementViewPage(this.page);
-  }
-
-  public async schuleAnlegen(): Promise<SchuleCreationViewPage> {
-    await this.page.getByTestId('schule-creation-menu-item').click();
-    return new SchuleCreationViewPage(this.page);
-  }
-
-  public async goToBenutzerImport(): Promise<PersonImportViewPage> {
+  public async navigateToPersonImport(): Promise<PersonImportViewPage> {
     await this.page.getByTestId('person-import-menu-item').click();
     return new PersonImportViewPage(this.page);
   }
 
-  public async alleKlassenAnzeigen(options?: KlasseManagementViewPageOptions): Promise<KlasseManagementViewPage> {
-    await this.page.getByTestId('klassen-management-menu-item').click();
-    return new KlasseManagementViewPage(this.page, options);
-  }
-
-  public async klasseAnlegen(): Promise<KlasseCreationViewPage> {
-    await this.page.getByTestId('klasse-creation-menu-item').click();
-    const klasseCreationView: KlasseCreationViewPage = new KlasseCreationViewPage(this.page);
-    await expect(klasseCreationView.textH2KlasseAnlegen).toContainText('Neue Klasse hinzufügen');
-    return klasseCreationView;
-  }
-
-  public async personAnlegen(): Promise<PersonCreationViewPage> {
-    await this.page.getByTestId('person-creation-menu-item').click();
+  public async navigateToPersonSerch(): Promise<PersonCreationViewPage> {
+    await this.page.getByTestId('person-search-menu-item').click();
     return new PersonCreationViewPage(this.page);
+  }
+
+  public async navigateToPersonAdd(): Promise<PersonCreationViewPage> {
+    await this.page.getByTestId('person-add-menu-item').click();
+    return new PersonCreationViewPage(this.page);
+  }
+
+  public async navigateToKlasseManagement(): Promise<KlasseManagementViewPage> {
+    await this.page.getByTestId('klasse-management-menu-item').click();
+    return new KlasseManagementViewPage(this.page);
+  }
+
+  public async navigateToKlasseCreation(): Promise<KlasseCreationViewPage> {
+    await this.page.getByTestId('klasse-creation-menu-item').click();
+    return new KlasseCreationViewPage(this.page);
+  }
+
+  public async navigateToRolleManagement(): Promise<RolleManagementViewPage> {
+    await this.page.getByTestId('rolle-management-menu-item').click();
+    return new RolleManagementViewPage(this.page);
+  }
+
+  public async navigateToRolleCreation(): Promise<RolleCreationViewPage> {
+    await this.page.getByTestId('rolle-creation-menu-item').click();
+    return new RolleCreationViewPage(this.page);
+  }
+
+  public async navigateToSchuleManagement(): Promise<SchuleManagementViewPage> {
+    await this.page.getByTestId('schule-management-menu-item').click();
+    return new SchuleManagementViewPage(this.page);
+  }
+
+  public async navigateToSchuleCreation(): Promise<SchuleCreationViewPage> {
+    await this.page.getByTestId('schule-creation-menu-item').click();
+    return new SchuleCreationViewPage(this.page);
   }
 
   /* assertions */
