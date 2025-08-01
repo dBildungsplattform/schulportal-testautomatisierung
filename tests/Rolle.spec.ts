@@ -16,7 +16,7 @@ import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
 import { MenuPage } from '../pages/components/MenuBar.page';
 import { StartPage } from '../pages/StartView.page';
-import { FooterDataTablePage } from '../pages/FooterDataTable.page';
+import { FooterDataTablePage } from '../pages/components/FooterDataTable.page';
 
 let startseite: StartPage;
 let loggedIn: boolean = false;
