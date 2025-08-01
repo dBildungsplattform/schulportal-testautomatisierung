@@ -1,4 +1,4 @@
-import { type Locator, Page } from '@playwright/test';
+import { expect, type Locator, Page } from '@playwright/test';
 import { Autocomplete } from '../../../elements/Autocomplete';
 import { AbstractAdminPage } from '../../abstracts/AbstractAdminPage.page';
 
@@ -16,7 +16,8 @@ export class KlasseCreationViewPage extends AbstractAdminPage {
 
   /* actions */
   async waitForPageLoad(): Promise<void> {
-    return this.page.getByTestId('klasse-creation-card').waitFor({ state: 'visible' });
+    await this.page.getByTestId('klasse-creation-card').waitFor({ state: 'visible' });
+    await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Klasse anlegen');
   }
 
   public async createKlasse(params: KlasseCreationParams): Promise<void> {

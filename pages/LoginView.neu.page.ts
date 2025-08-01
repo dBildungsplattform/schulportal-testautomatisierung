@@ -11,6 +11,11 @@ export class LoginViewPage {
   }
 
   /* actions */
+  public async waitForPageLoad(): Promise<void> {
+    await this.page.getByTestId('login-page-title').waitFor({ state: 'visible' });
+    await expect(this.page.getByTestId('login-page-title')).toHaveText('Anmeldung');
+  }
+
   async login(
     username: string = process.env.USER as string,
     password: string = process.env.PW as string

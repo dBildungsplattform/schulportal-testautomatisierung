@@ -9,6 +9,10 @@ export class StartViewPage {
   }
 
   /* actions */
+  public async waitForPageLoad(): Promise<void> {
+    await this.page.getByTestId('start-card-headline').waitFor({ state: 'visible' });
+    await expect(this.page.getByTestId('start-card-headline')).toHaveText('Startseite');
+  }
 
   /* assertions */
   public async serviceProvidersAreLoaded(): Promise<void> {

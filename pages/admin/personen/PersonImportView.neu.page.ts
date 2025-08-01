@@ -10,7 +10,8 @@ export class PersonImportViewPage extends AbstractAdminPage {
 
   /* actions */
   async waitForPageLoad(): Promise<void> {
-    return this.page.getByTestId('person-import-card').waitFor({ state: 'visible' });
+    await this.page.getByTestId('person-import-card').waitFor({ state: 'visible' });
+    await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Benutzer importieren');
   }
 
   async selectSchule(schule: string): Promise<void> {

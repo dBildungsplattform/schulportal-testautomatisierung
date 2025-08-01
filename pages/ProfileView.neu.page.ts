@@ -30,6 +30,11 @@ export class ProfileViewPage {
   }
 
   /* actions */
+  public async waitForPageLoad(): Promise<void> {
+    await this.page.getByTestId('profile-headline').waitFor({ state: 'visible' });
+    await expect(this.page.getByTestId('profile-headline')).toHaveText('Mein Profil');
+  }
+
   public async changePassword(username: string, password: string): Promise<string> {
     await this.page.getByTestId('open-change-password-dialog-button').click();
     await this.page.getByTestId('change-password-button').click();

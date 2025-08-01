@@ -19,6 +19,7 @@ export class RolleCreationViewPage extends AbstractAdminPage {
 
   /* actions */
   public async waitForPageLoad(): Promise<void> {
+    await this.page.getByTestId('rolle-creation-card').waitFor({ state: 'visible' });
     await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Neue Rolle hinzufügen');
   }
 

@@ -1,4 +1,4 @@
-import { Page } from '@playwright/test';
+import { expect, Page } from '@playwright/test';
 import { AbstractAdminPage } from '../../../abstracts/AbstractAdminPage.page';
 import { Autocomplete } from '../../../../elements/Autocomplete';
 import { waitForAPIResponse } from '../../../../base/api/testHelper.page';
@@ -24,8 +24,9 @@ export class PersonCreationViewPage extends AbstractAdminPage {
   }
 
   /* actions */
-  public async waitForPageLoad(): Promise<void> {
-    return this.page.getByTestId('person-creation-card').waitFor({ state: 'visible' });
+  public async waitForPageLoad(expectedHeadline: string): Promise<void> {
+    await this.page.getByTestId('person-creation-card').waitFor({ state: 'visible' });
+    await expect(this.page.getByTestId('layout-card-headline')).toHaveText(expectedHeadline);
   }
 
   public async fillForm(params: PersonCreationParams): Promise<void> {
@@ -70,3 +71,4 @@ export class PersonCreationViewPage extends AbstractAdminPage {
     }
   }
 }
+

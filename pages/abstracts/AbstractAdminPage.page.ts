@@ -17,7 +17,7 @@ export abstract class AbstractAdminPage {
   }
 
   /* actions */
-  abstract waitForPageLoad(): Promise<void>;
+  abstract waitForPageLoad(expectedHeadline?: string): Promise<void>;
 
   /* assertions */
 }

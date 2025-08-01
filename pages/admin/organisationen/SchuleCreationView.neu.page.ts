@@ -18,6 +18,7 @@ export class SchuleCreationViewPage extends AbstractAdminPage {
 
   /* actions */
   public async waitForPageLoad(): Promise<void> {
+    await this.page.getByTestId('schule-creation-card').waitFor({ state: 'visible' });
     await expect(this.headline).toHaveText('Neue Schule hinzufügen');
   }
 
