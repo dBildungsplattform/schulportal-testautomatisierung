@@ -825,16 +825,16 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const rolleNames: string[] = [];
 
       await test.step(`Testdaten: Je 2 Rollen mit Rollenarten LEHR und LERN über die api anlegen`, async () => {
-        const idLandSH: string = await getOrganisationId(page, landSH);
+        const idSchule: string = await getOrganisationId(page, testschuleName);
 
         for (let i: number = 0; i <= 4; i++) {
           rolleNames.push(await generateRolleName());
         }
 
-        rolleIds.push(await createRolle(page, typeLehrer, idLandSH, rolleNames[0]));
-        rolleIds.push(await createRolle(page, typeLehrer, idLandSH, rolleNames[1]));
-        rolleIds.push(await createRolle(page, typeSchueler, idLandSH, rolleNames[2]));
-        rolleIds.push(await createRolle(page, typeSchueler, idLandSH, rolleNames[3]));
+        rolleIds.push(await createRolle(page, typeLehrer, idSchule, rolleNames[0]));
+        rolleIds.push(await createRolle(page, typeLehrer, idSchule, rolleNames[1]));
+        rolleIds.push(await createRolle(page, typeSchueler, idSchule, rolleNames[2]));
+        rolleIds.push(await createRolle(page, typeSchueler, idSchule, rolleNames[3]));
       });
 
       const personCreationView: PersonCreationViewPage = await test.step(`Dialog "Person anlegen" öffnen`, async () => {

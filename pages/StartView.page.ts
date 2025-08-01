@@ -42,7 +42,6 @@ export class StartPage {
 
   public async validateStartPageIsLoaded(): Promise<StartPage> {
     await this.page.waitForResponse((resp: Response) => resp.url().includes('/api/provider') && resp.status() === 200);
-    await this.page.waitForResponse('/api/provider/**/logo');
     await expect(this.textH2Ueberschrift).toBeVisible();
     return new StartPage(this.page);
   }

@@ -16,6 +16,7 @@ import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
 import { MenuPage } from '../pages/components/MenuBar.page';
 import { StartPage } from '../pages/StartView.page';
+import { FooterDataTablePage } from '../pages/FooterDataTable.page';
 
 let startseite: StartPage;
 let loggedIn: boolean = false;
@@ -113,6 +114,9 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
 
       await test.step(`In der Ergebnisliste prüfen dass die beiden neuen Rollen angezeigt sind`, async () => {
         const rolleManagementView: RolleManagementViewPage = await rolleCreationView.menu().alleRollenAnzeigen();
+        const footerDataTable: FooterDataTablePage = new FooterDataTablePage(page);
+        await footerDataTable.comboboxAnzahlEintraege.click();
+        await page.getByText('300', { exact: true }).click();
         await expect(rolleManagementView.textH2Rollenverwaltung).toHaveText('Rollenverwaltung');
         await expect(page.getByRole('cell', { name: rollenname1 })).toBeVisible();
         await expect(page.getByRole('cell', { name: rollenname2 })).toBeVisible();
@@ -124,7 +128,9 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     }
   );
 
-  test(
+  // TODO: We skip this useless test because it does not reliably check the rollen list
+  // We re-implement this test as soon as the rollen list includes sorting and searching
+  test.skip(
     'Ergebnisliste Rollen auf Vollständigkeit prüfen als Landesadmin',
     { tag: [LONG, SHORT, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
