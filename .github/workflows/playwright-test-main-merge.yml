@@ -63,7 +63,7 @@ jobs:
     - name: Determine Frontend Url by checking current branches
       id: determine-fe-url
       run: |
-        if [ ${{ steps.branch-count.outputs.count }} -gt 1 ]; then
+        if [ ${{ steps.branch-count.outputs.count }} -ge 1 ]; then
           echo "At least one more branch for ticket was found, using branch FE and BE infrastructure"
           FRONTEND_URL="https://${{ steps.determine-tag.outputs.tag }}.dev.spsh.dbildungsplattform.de/"
           echo "FRONTEND_URL=$FRONTEND_URL"
