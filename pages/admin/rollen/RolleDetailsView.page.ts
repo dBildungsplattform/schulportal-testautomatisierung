@@ -25,8 +25,8 @@ export class RolleDetailsViewPage {
     this.buttonRolleLoeschenCancel = page.getByTestId('cancel-rolle-delete-button');
     this.textSuccess = page.getByTestId('rolle-delete-success-text');
     this.alert = {
-      title: page.getByTestId('alert-title'),
-      text: page.getByTestId('alert-text'),
+      title: page.getByTestId('rolle-details-error-alert-title'),
+      text: page.getByTestId('rolle-details-error-alert-text'),
       button: page.getByTestId('alert-button'),
     };
   }
