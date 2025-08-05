@@ -27,7 +27,7 @@ export class RolleDetailsViewPage {
     this.alert = {
       title: page.getByTestId('rolle-details-error-alert-title'),
       text: page.getByTestId('rolle-details-error-alert-text'),
-      button: page.getByTestId('alert-button'),
+      button: page.getByTestId('rolle-details-error-alert-button'),
     };
   }
 

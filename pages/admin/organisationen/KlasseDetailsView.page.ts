@@ -1,4 +1,4 @@
-import { type Locator, Page } from '@playwright/test';
+import { expect, type Locator, Page } from '@playwright/test';
 
 export class KlasseDetailsViewPage {
   readonly page: Page;
@@ -21,6 +21,8 @@ export class KlasseDetailsViewPage {
   readonly dataSchule: Locator;
   readonly labelKlasse: Locator;
   readonly dataKlasse: Locator;
+  readonly textAlertDeleteKlasse: Locator;
+  readonly buttonCloseAlert: Locator;
   readonly buttonZurueckErgebnisliste: Locator;
 
   constructor(page: Page) {
@@ -45,6 +47,8 @@ export class KlasseDetailsViewPage {
     this.labelKlasse = page.getByText('Klassenname:', { exact: true });
     this.dataKlasse = page.getByTestId('created-klasse-name');
     this.buttonZurueckErgebnisliste = page.getByTestId('back-to-list-button');
+    this.textAlertDeleteKlasse = page.getByTestId('klasse-details-error-alert-text');
+    this.buttonCloseAlert = page.getByTestId('klasse-details-error-alert-button');
   }
 
   public async klasseBearbeiten(klasseName: string): Promise<void> {
@@ -62,5 +66,15 @@ export class KlasseDetailsViewPage {
   public async startDeleteRowViaQuickAction(): Promise<void> {
     await this.buttonKlasseLoeschenDialog.click();
     await this.buttonKlasseLoeschen.click();
+  }
+  
+  public async checkDeleteClassFailed(): Promise<void> {
+    await expect(this.textAlertDeleteKlasse).toHaveText(
+      'Die Klasse kann nicht gelöscht werden, da noch Benutzer zugeordnet sind.'
+    );
+  }
+
+  public async clickButtonCloseAlert(): Promise<void> {
+    await this.buttonCloseAlert.click();
   }
 }

@@ -43,8 +43,8 @@ export class KlasseManagementViewPage {
     this.footerDataTable = new FooterDataTablePage(page);
     this.organisationInput = page.getByTestId('schule-select');
     this.comboboxOrganisationInput = new Autocomplete(this.page, this.organisationInput);
-    this.textAlertDeleteKlasse = page.getByTestId('klasse-details-error-alert-text');
-    this.buttonCloseAlert = page.getByTestId('alert-button');
+    this.textAlertDeleteKlasse = page.getByTestId('klasse-management-error-alert-text');
+    this.buttonCloseAlert = page.getByTestId('klasse-management-error-alert-button');
     this.iconTableRowDelete = (className: string): Locator =>
       page.getByRole('row', { name: className }).getByTestId('open-klasse-delete-dialog-icon');
     this.currentUserIsLandesadministrator = options?.currentUserIsLandesadministrator || true;

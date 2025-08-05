@@ -759,12 +759,12 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       });
 
       await test.step(`Gesamtübersicht öffnen und prüfen, dass die Klasse nicht gelöscht werden kann`, async () => {
-        const KlasseDetailsViewPage: KlasseDetailsViewPage = await klasseManagementView.openDetailViewClass(
+        const klasseDetailsViewPage: KlasseDetailsViewPage = await klasseManagementView.openDetailViewClass(
           klassenname
         );
-        await KlasseDetailsViewPage.startDeleteRowViaQuickAction();
-        await klasseManagementView.checkDeleteClassFailed();
-        await klasseManagementView.clickButtonCloseAlert();
+        await klasseDetailsViewPage.startDeleteRowViaQuickAction();
+        await klasseDetailsViewPage.checkDeleteClassFailed();
+        await klasseDetailsViewPage.clickButtonCloseAlert();
         await klasseManagementView.waitErgebnislisteIsLoaded();
         await klasseManagementView.filterSchule(testschuleName);
         await klasseManagementView.checkRowExists(klassenname);
