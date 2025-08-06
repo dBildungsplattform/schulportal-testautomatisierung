@@ -1,3 +1,4 @@
+export const testschule = "Testschule Schulportal";
 export const testschuleName: string = 'Testschule Schulportal';
 export const testschuleDstNr: string = '1111111';
 export const testschule665Name: string = "Testschule-PW665";

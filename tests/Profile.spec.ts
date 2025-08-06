@@ -8,33 +8,33 @@ import {
 } from '../base/api/testHelperPerson.page';
 import { addSPToRolle, addSystemrechtToRolle, createRolle } from '../base/api/testHelperRolle.page';
 import { getSPId } from '../base/api/testHelperServiceprovider.page';
-import {
-  klassenVerwalten,
-  personenAnlegen,
-  personenSofortLoeschen,
-  personenVerwalten,
-  rollenVerwalten,
-  schulenVerwalten,
-  schultraegerVerwalten,
-} from '../base/berechtigungen.ts';
-import { klasse1Testschule } from '../base/klassen.ts';
-import { landSH, testschule665Name, testschuleDstNr, testschuleName } from '../base/organisation.ts';
-import { typeLandesadmin, typeLehrer, typeSchuladmin } from '../base/rollentypen.ts';
-import { email, itslearning, schulportaladmin } from '../base/sp.ts';
+import { landSH, testschule665Name, testschuleDstNr, testschuleName  } from '../base/organisation.js';
+import { typeLandesadmin, typeLehrer, typeSchuladmin } from '../base/rollentypen.js';
+import { email, itslearning, schulportaladmin } from '../base/sp.js';
+import { klasse1Testschule } from '../base/klassen';
 import { BROWSER, LONG, SHORT, STAGE } from '../base/tags';
 import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata';
 import {
-  generateKopersNr,
   generateNachname,
   generateRolleName,
   generateVorname,
-} from '../base/testHelperGenerateTestdataNames.ts';
-import FromAnywhere from '../pages/FromAnywhere';
+  generateKopersNr,
+} from '../base/testHelperGenerateTestdataNames.js';
 import { HeaderPage } from '../pages/Header.page';
 import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
 import { ProfilePage } from '../pages/ProfileView.page';
 import { StartPage } from '../pages/StartView.page';
+import FromAnywhere from '../pages/FromAnywhere';
+import {
+  rollenVerwalten,
+  personenSofortLoeschen,
+  personenVerwalten,
+  schulenVerwalten,
+  klassenVerwalten,
+  schultraegerVerwalten,
+  personenAnlegen,
+} from '../base/berechtigungen.js';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -382,6 +382,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
       const vorname: string = await generateVorname();
       const nachname: string = await generateNachname();
+
       const organisation1: string = testschuleName;
       const organisation2: string = testschule665Name;
       const dienststellenNr2: string = '1111165';
