@@ -1,45 +1,50 @@
 import { type Locator, Page, expect } from '@playwright/test';
 import { PersonDetailsViewPage } from './PersonDetailsView.page';
+import { ComboBox } from '../../elements/ComboBox';
 
 export class PersonManagementViewPage {
   readonly page: Page;
-  readonly text_h1_Administrationsbereich: Locator;
-  readonly text_h2_Benutzerverwaltung: Locator;
-  readonly input_Suchfeld: Locator;
-  readonly button_Suchen: Locator;
-  readonly table_header_Nachname: Locator;
-  readonly table_header_Vorname: Locator;
-  readonly table_header_Benutzername: Locator;
-  readonly table_header_KopersNr: Locator;
-  readonly table_header_Rolle: Locator;
-  readonly table_header_Zuordnungen: Locator;
-  readonly table_header_Klasse: Locator;
-  readonly table_wrapper: Locator;
-  readonly comboboxMenuIcon_Schule: Locator;
-  readonly comboboxMenuIcon_Rolle: Locator;
-  readonly comboboxMenuIcon_Klasse: Locator;
-  readonly comboboxMenuIcon_Status: Locator;
-  readonly comboboxMenuIcon_Schule_input: Locator;
+  readonly textH1Administrationsbereich: Locator;
+  readonly textH2Benutzerverwaltung: Locator;
+  readonly inputSuchfeld: Locator;
+  readonly filterResetButton: Locator;
+  readonly buttonSuchen: Locator;
+  readonly tableHeaderNachname: Locator;
+  readonly tableHeaderVorname: Locator;
+  readonly tableHeaderBenutzername: Locator;
+  readonly tableHeaderKopersNr: Locator;
+  readonly tableHeaderRolle: Locator;
+  readonly tableHeaderZuordnungen: Locator;
+  readonly tableHeaderKlasse: Locator;
+  readonly tableWrapper: Locator;
+  readonly comboboxMenuIconSchule: Locator;
+  readonly comboboxMenuIconRolle: Locator;
+  readonly comboboxMenuIconKlasse: Locator;
+  readonly comboboxMenuIconStatus: Locator;
+  readonly comboboxMenuIconSchuleInput: Locator;
+  readonly comboboxSchule: ComboBox;
 
   constructor(page: Page) {
     this.page = page;
-    this.text_h1_Administrationsbereich = page.getByTestId('admin-headline');
-    this.text_h2_Benutzerverwaltung = page.getByTestId('layout-card-headline');
-    this.input_Suchfeld = page.locator('[data-testid="search-filter-input"] input');
-    this.button_Suchen = page.getByTestId('apply-search-filter-button');
-    this.table_header_Nachname = page.getByTestId('person-table').getByText('Nachname', { exact: true });
-    this.table_header_Vorname = page.getByTestId('person-table').getByText('Vorname', { exact: true });
-    this.table_header_Benutzername = page.getByText('Benutzername', { exact: true });
-    this.table_header_KopersNr = page.getByText('KoPers.-Nr.');
-    this.table_header_Rolle = page.getByTestId('person-table').getByText('Rolle', { exact: true });
-    this.table_header_Zuordnungen = page.getByText('Zuordnung(en)');
-    this.table_header_Klasse = page.getByTestId('person-table').getByText('Klasse', { exact: true });
-    this.table_wrapper = page.getByTestId('person-table');
-    this.comboboxMenuIcon_Schule = page.locator('[data-testid="schule-select"] .mdi-menu-down');
-    this.comboboxMenuIcon_Schule_input = page.locator('[data-testid="schule-select"] input');
-    this.comboboxMenuIcon_Rolle = page.locator('[data-testid="rolle-select"] .mdi-menu-down');
-    this.comboboxMenuIcon_Klasse = page.locator('[data-testid="klasse-select"] .mdi-menu-down');
-    this.comboboxMenuIcon_Status = page.locator('[data-testid="status-select"] .mdi-menu-down');
+    this.textH1Administrationsbereich = page.getByTestId('admin-headline');
+    this.textH2Benutzerverwaltung = page.getByTestId('layout-card-headline');
+    this.inputSuchfeld = page.locator('[data-testid="search-filter-input"] input');
+    this.filterResetButton = page.locator('[data-testid="reset-filter-button"]');
+    this.buttonSuchen = page.getByTestId('apply-search-filter-button');
+    this.tableHeaderNachname = page.getByTestId('person-table').getByText('Nachname', { exact: true });
+    this.tableHeaderVorname = page.getByTestId('person-table').getByText('Vorname', { exact: true });
+    this.tableHeaderBenutzername = page.getByText('Benutzername', { exact: true });
+    this.tableHeaderKopersNr = page.getByText('KoPers.-Nr.');
+    this.tableHeaderRolle = page.getByTestId('person-table').getByText('Rolle', { exact: true });
+    this.tableHeaderZuordnungen = page.getByText('Zuordnung(en)');
+    this.tableHeaderKlasse = page.getByTestId('person-table').getByText('Klasse', { exact: true });
+    this.tableWrapper = page.getByTestId('person-table');
+    this.comboboxMenuIconSchule = page.locator('[data-testid="schule-select"] .mdi-menu-down');
+    this.comboboxMenuIconSchuleInput = page.locator('[data-testid="schule-select"] input');
+    this.comboboxMenuIconRolle = page.locator('[data-testid="rolle-select"] .mdi-menu-down');
+    this.comboboxMenuIconKlasse = page.locator('[data-testid="klasse-select"] .mdi-menu-down');
+    this.comboboxMenuIconStatus = page.locator('[data-testid="status-select"] .mdi-menu-down');
+    this.comboboxSchule = new ComboBox(this.page, page.getByTestId('schule-select'));
   }
 
   public async navigateToPersonDetailsViewByNachname(nachname: string): Promise<PersonDetailsViewPage> {
@@ -49,29 +54,55 @@ export class PersonManagementViewPage {
   }
 
   public async searchBySuchfeld(name: string): Promise<void> {
-    await this.page.waitForResponse(response =>
-      (response.url().includes('/api/person-administration/') && (response.status() === 200) || (response.status() === 304))
-    )
-    await this.input_Suchfeld.fill(name);
-    await this.button_Suchen.click();
-    await expect(this.comboboxMenuIcon_Status).toBeVisible();
+    // Make sure the search input is visible before filling it
+    await expect(this.inputSuchfeld).toBeVisible();
+
+    await this.inputSuchfeld.fill(name);
+
+    // Triggers the click and starts listening for the response at the same time
+    // Guarantees that the response is awaited only after the click and that it won't be missed even if it happens fast
+    await Promise.all([
+      this.page.waitForResponse(response =>
+        response.url().includes('/api/dbiam/personenuebersicht') &&
+        response.status() === 201
+      ),
+      this.buttonSuchen.click(),
+    ]);
+    // Wait for the table to be populated with the search results
+    await this.page.getByRole('cell', { name, exact: true }).waitFor({ state: 'visible' });
+
+    await expect(this.inputSuchfeld).toHaveValue(name);
+    await expect(this.comboboxMenuIconStatus).toBeVisible();
   }
 
   public async openGesamtuebersichtPerson(page: Page, name: string): Promise<PersonDetailsViewPage> {
     await page.getByRole('cell', { name: name, exact: true }).click();
-    return new PersonDetailsViewPage(page);
+    const personDetailsViewPage: PersonDetailsViewPage = new PersonDetailsViewPage(page);
+    await personDetailsViewPage.waitForPageToBeLoaded();
+    return personDetailsViewPage;
   }
 
   public async waitForData(): Promise<void> {
-    return expect(this.table_wrapper).not.toContainText('Keine Daten');
+    return expect(this.tableWrapper).not.toContainText('Keine Daten');
   }
 
   public getRows(): Locator {
-    return this.table_wrapper.locator('.v-data-table__tr');
+    return this.tableWrapper.locator('.v-data-table__tr');
   }
 
   public async waitErgebnislisteIsLoaded(): Promise<void> {
-    await this.page.waitForResponse(resp => resp.url().includes('/api/dbiam/personenuebersicht') && resp.status() === 201);
-    await expect(this.text_h2_Benutzerverwaltung).toContainText('Benutzerverwaltung');
+    await this.page.waitForResponse('/api/dbiam/personenuebersicht');
+    await expect(this.textH2Benutzerverwaltung).toContainText('Benutzerverwaltung');
+  }
+
+  public async filterSchule(schule: string): Promise<void> {
+    await this.comboboxSchule.searchByTitle(schule, false, 'organisationen**');
+  }
+
+  public async resetFilter(): Promise<void> {
+    await this.filterResetButton.click();
+    await expect(this.inputSuchfeld).toHaveValue('');
+    await expect(this.comboboxMenuIconSchuleInput).toHaveValue('');
+    await this.waitErgebnislisteIsLoaded();
   }
 }

@@ -23,7 +23,7 @@ export class KlasseDetailsViewPage {
   readonly dataKlasse: Locator;
   readonly buttonZurueckErgebnisliste: Locator;
 
-  constructor(page) {
+  constructor(page: Page) {
     this.page = page;
     this.buttonSchliessen = page.getByTestId('close-layout-card-button');
     this.textH2KlasseBearbeiten = page.getByTestId('klasse-details-card');
@@ -33,8 +33,8 @@ export class KlasseDetailsViewPage {
     this.buttonKlasseLoeschen = page.getByTestId('klasse-delete-button');
     this.buttonKlasseLoeschenClose = page.getByTestId('close-klasse-delete-success-dialog-button');
     this.buttonBearbeiten = page.getByTestId('klasse-edit-button');
-    this.buttonSpeichern = page.getByTestId('klasse-changes-save-button');
-    this.buttonAbbrechen = page.getByTestId('klasse-edit-cancel-button');
+    this.buttonSpeichern = page.getByTestId('klasse-form-submit-button');
+    this.buttonAbbrechen = page.getByTestId('klasse-form-discard-button');
     this.comboboxSchulstrukturknoten = page.getByTestId('schule-select').locator('.v-input__control');
     this.inputKlassenname = page.getByTestId('klassenname-input').locator('input');
     this.textSuccess = page.getByTestId('klasse-success-text');
@@ -47,19 +47,19 @@ export class KlasseDetailsViewPage {
     this.buttonZurueckErgebnisliste = page.getByTestId('back-to-list-button');
   }
 
-  public async klasseBearbeiten(klasseName: string) {
+  public async klasseBearbeiten(klasseName: string): Promise<void> {
     await this.buttonBearbeiten.click();
     await this.inputKlassenname.fill(klasseName);
     await this.buttonSpeichern.click();
   }
 
-  public async deleteClass() {
+  public async deleteClass(): Promise<void> {
     await this.buttonKlasseLoeschenDialog.click();
     await this.buttonKlasseLoeschen.click();
     await this.buttonKlasseLoeschenClose.click();
   }
 
-  public async startDeleteRowViaQuickAction() {
+  public async startDeleteRowViaQuickAction(): Promise<void> {
     await this.buttonKlasseLoeschenDialog.click();
     await this.buttonKlasseLoeschen.click();
   }

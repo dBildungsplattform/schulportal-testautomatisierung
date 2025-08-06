@@ -1,15 +1,20 @@
 import { expect, type Locator, Page } from '@playwright/test';
+import { waitForAPIResponse } from '../base/api/testHelper.page';
 
 const noDataMessage: string = 'Keine Daten gefunden.';
 export class ComboBox {
   private readonly overlayLocator: Locator;
   private readonly itemsLocator: Locator;
   private readonly modalToggle: Locator;
+  private readonly inputLocator: Locator;
+  private readonly loadingLocator: Locator;
 
   constructor(private readonly page: Page, private readonly locator: Locator) {
     this.overlayLocator = this.page.locator('div.v-overlay.v-menu');
     this.itemsLocator = this.page.locator('div.v-overlay.v-menu div.v-list-item');
     this.modalToggle = this.locator.locator('.v-field__append-inner');
+    this.inputLocator = this.locator.locator('input');
+    this.loadingLocator = this.locator.locator('.v-field__loader');
   }
 
   private async waitForData(): Promise<void> {
@@ -48,32 +53,70 @@ export class ComboBox {
 
   public async closeModal(): Promise<void> {
     await this.page.keyboard.press('Escape');
+    await this.page.getByTestId('admin-headline').click();
   }
 
   public async toggleModal(): Promise<void> {
     await this.modalToggle.click();
   }
 
-  public async searchByTitle(searchString: string, exactMatch: boolean): Promise<void> {
-    await this.locator.click();
-    await this.locator.fill(searchString + ' ');  // the combobox doesn't excecute the search correctly when creating a new class, however, this will fix the problem. The bug in the FE will be fixed in SPSH-1769 or SPSH-1733
-    await this.locator.fill(searchString);
-    let item: Locator
-    
+  public async clear(): Promise<void> {
+    await this.inputLocator.clear();
+  }
+
+  // only works on comboboxes, where loading is set properly
+  public async waitUntilLoadingIsDone(): Promise<void> {
+    return expect(this.loadingLocator.getByRole('progressbar')).toBeHidden();
+  }
+
+  public async searchByTitle(searchString: string, exactMatch: boolean, endpoint?: string): Promise<void> {
+    const currentValue: string | null = await this.inputLocator.textContent();
+    if (currentValue === searchString) {
+      return;
+    }
+    await this.openModal();
+    await this.clear();
+    await this.inputLocator.pressSequentially(searchString);
+    let item: Locator;
+
+    if (exactMatch) {
+      item = this.itemsLocator.filter({
+        hasText: new RegExp(`^${searchString}$`),
+      });
+    } else {
+      item = this.itemsLocator.filter({
+        has: this.page.getByText(searchString),
+      });
+    }
+
+    // When creating a Landesadministrator, after selecting a Land as an organisation, we must wait for the personenkontext workflow endpoint to return rollen,
+    // because in that case the API call takes longer than in other cases.
+    // This only occurs in the test case 'Einen Benutzer mit der Rolle Landesadmin anlegen' (Person.spec.ts),
+    // in all other test cases we don't need the parameter 'endpoint'
+    if (endpoint) {
+      await waitForAPIResponse(this.page, endpoint);
+    }
+    await item.click();
+    await this.closeModal();
+  }
+
+  public async validateItemNotExists(searchString: string, exactMatch: boolean): Promise<void> {
+    await this.inputLocator.click();
+    await this.inputLocator.fill(searchString);
+    let item: Locator;
+
     if (exactMatch) {
       item = this.itemsLocator.filter({
         // use regex to search for an exact match
-        hasText: new RegExp(`^${searchString}$`), 
-      })
+        hasText: new RegExp(`^${searchString}$`),
+      });
     } else {
       // search for a string inside the item title
       item = this.itemsLocator.filter({
-        has: this.page.getByText(searchString), 
-      })
-    }    
-    await item.waitFor({ state: 'visible' });
-    // This delay is needed for testcases who are using the method searchByTitle several times. It guarantees that the next combobox data is loaded correctly
-    // TODO: we should improve the way we wait for items to be loaded when multiple comboboxes are clicked in sequence. we should maybe wait for another state or locator to ensure the dropdown menu is fully loaded
-    await item.click({delay: 1000});
+        has: this.page.getByText(searchString),
+      });
+    }
+
+    await expect(item).toBeHidden();
   }
 }

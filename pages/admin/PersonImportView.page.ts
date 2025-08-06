@@ -17,19 +17,20 @@ export class PersonImportViewPage {
   readonly openConfirmationDialogButton: Locator;
   readonly importConfirmationText: Locator;
   readonly executeImportButton: Locator;
+  readonly importProgressBar: Locator;
   readonly importSuccessText: Locator;
   readonly downloadFileButton: Locator;
   readonly closeCardButton: Locator;
   readonly confirmUnsavedChangesButton: Locator;
   
-  constructor(page) {
+  constructor(page: Page) {
     // Benutzerimport
     this.page = page;  
     this.body = page.locator('body');
     this.personImportCard = page.getByTestId('person-import-card');
     this.headlineBenutzerImport = page.getByTestId('layout-card-headline');
     this.schuleSelectInput = page.getByTestId('schule-select').locator('input');
-    this.schuleSelectCombobox = new ComboBox(this.page, this.schuleSelectInput,);
+    this.schuleSelectCombobox = new ComboBox(this.page, page.getByTestId('schule-select'));
     this.rolleSelectInput = page.getByTestId('rolle-select').locator('input');
     this.fileInput = page.getByTestId('file-input').locator('input');
     this.discardFileUploadButton = page.getByTestId('person-import-form-discard-button');
@@ -38,6 +39,7 @@ export class PersonImportViewPage {
     this.openConfirmationDialogButton = page.getByTestId('open-confirmation-dialog-button');
     this.importConfirmationText = page.getByTestId('person-import-confirmation-text');
     this.executeImportButton = page.getByTestId('execute-import-button');
+    this.importProgressBar = page.getByTestId('import-progress-bar');
     this.importSuccessText = page.getByTestId('person-import-success-text');
     this.downloadFileButton = page.getByTestId('download-all-data-button');
     this.closeCardButton = page.getByTestId('close-layout-card-button');

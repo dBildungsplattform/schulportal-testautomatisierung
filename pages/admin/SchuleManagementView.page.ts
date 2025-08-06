@@ -7,7 +7,7 @@ export class SchuleManagementViewPage{
     readonly tableHeaderDienststellennummer: Locator;
     readonly tableHeaderSchulname: Locator;
    
-    constructor(page){
+    constructor(page: Page){
         this.page = page;  
         this.textH1Administrationsbereich = page.getByTestId('admin-headline');
         this.textH2Schulverwaltung = page.getByTestId('layout-card-headline');

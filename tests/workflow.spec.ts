@@ -1,4 +1,4 @@
-import { test, expect, PlaywrightTestArgs } from '@playwright/test';
+import { test, expect, PlaywrightTestArgs, Page } from '@playwright/test';
 import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
 import { StartPage } from '../pages/StartView.page';
@@ -23,6 +23,7 @@ let usernames: string[] = [];
 let rolleIds: string[] = [];
 // This variable must be set to false in the testcase when the logged in user is changed
 let currentUserIsLandesadministrator: boolean = true;
+let logoutViaStartPage: boolean = false;
 
 test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
@@ -31,7 +32,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
         .start()
         .then((landing: LandingPage) => landing.goToLogin())
         .then((login: LoginPage) => login.login())
-        .then((startseite: StartPage) => startseite.checkHeadlineIsVisible());
+        .then((startseite: StartPage) => startseite.validateStartPageIsLoaded());
 
       return startPage;
     });
@@ -44,10 +45,14 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
       const login: LoginPage = new LoginPage(page);
       const startseite: StartPage = new StartPage(page);
 
-      await header.logout();
-      await landing.button_Anmelden.click();
+      if (logoutViaStartPage) {
+        await header.logout({ logoutViaStartPage: true });
+      } else {
+        await header.logout({ logoutViaStartPage: false });
+      }
+      await landing.buttonAnmelden.click();
       await login.login(ADMIN, PW);
-      await startseite.checkHeadlineIsVisible();
+      await startseite.validateStartPageIsLoaded();
     }
 
     await test.step(`Testdaten(Benutzer) löschen via API`, async () => {
@@ -64,7 +69,11 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
 
     await test.step(`Abmelden`, async () => {
       const header: HeaderPage = new HeaderPage(page);
-      await header.logout();
+      if (logoutViaStartPage) {
+        await header.logout({ logoutViaStartPage: true });
+      } else {
+        await header.logout({ logoutViaStartPage: false });
+      }
     });
   });
 
@@ -87,45 +96,49 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
       // Wenn SPSH-1043 auf stage deployed ist, muss der Test erweitert werden. Hier muss dann das erwartete Verhalten getestet werden, wenn man auf stage auf die Kachel(email, Adressbuch, Kalender)  klickt
       await expect(startseite.cardItemEmail).toBeVisible(); // warten bis die Seite geladen ist
 
-      const page_Email4Teacher_Promise = page.waitForEvent('popup');
+      const emailPagePromise: Promise<Page> = page.waitForEvent('popup');
       await startseite.cardItemEmail.click();
-      const page_Email4Teacher = await page_Email4Teacher_Promise;
-      const email4Teacher: Email4TeacherPage = new Email4TeacherPage(page_Email4Teacher);
+      const emailPage: Page = await emailPagePromise;
+      const email4Teacher: Email4TeacherPage = new Email4TeacherPage(emailPage);
       switch (ENV) {
         case 'dev':
-          await expect(email4Teacher.text_h1).toBeVisible(); // dummy Seite email wikipedia
+          await expect(email4Teacher.textH1).toBeVisible(); // dummy Seite email wikipedia
           break;
       }
-      await page_Email4Teacher.close();
+      await emailPage.close();
 
       // Kalender
-      const page_Kalender_Promise = page.waitForEvent('popup');
+      const pageKalenderPromise: Promise<Page> = page.waitForEvent('popup');
       await startseite.cardItemKalender.click();
-      const page_Kalender = await page_Kalender_Promise;
-      const kalender = new CalendarPage(page_Kalender);
+      const pageKalender: Page = await pageKalenderPromise;
+      const kalender: CalendarPage = new CalendarPage(pageKalender);
       switch (ENV) {
         case 'dev':
-          await expect(kalender.text_h1).toBeVisible(); // dummy Seite Kalender wikipedia
+          await expect(kalender.textH1).toBeVisible(); // dummy Seite Kalender wikipedia
           break;
       }
-      await page_Kalender.close();
+      await pageKalender.close();
 
       // Adressbuch
-      const page_Adressbuch_Promise = page.waitForEvent('popup');
+      const directoryPagePromise: Promise<Page> = page.waitForEvent('popup');
       await startseite.cardItemAdressbuch.click();
-      const page_Adressbuch = await page_Adressbuch_Promise;
-      const adressbuch: DirectoryPage = new DirectoryPage(page_Adressbuch);
+      const directoryPage: Page = await directoryPagePromise;
+      const adressbuch: DirectoryPage = new DirectoryPage(directoryPage);
       switch (ENV) {
         case 'dev':
-          await expect(adressbuch.text_h1).toBeVisible(); // dummy Seite Adressbuch wikipedia
+          await expect(adressbuch.textH1).toBeVisible(); // dummy Seite Adressbuch wikipedia
           break;
       }
-      await page_Adressbuch.close();
+      await directoryPage.close();
     });
 
     await test.step(`Prüfen, dass die Startseite noch geöffnet ist`, async () => {
       await expect(startseite.textH2Ueberschrift).toBeVisible();
     });
+    // #TODO: wait for the last request in the test
+    // sometimes logout breaks the test because of interrupting requests
+    // logoutViaStartPage = true is a workaround
+    logoutViaStartPage = true;
   });
 
   test(
@@ -140,43 +153,47 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
       const header: HeaderPage = new HeaderPage(page);
       const lastname: string = 'AutoTester';
       const username: string = 'autotester';
-      let new_password: string = '';
+      let newPassword: string = '';
 
       await test.step(`Benutzerverwaltung öffnen`, async () => {
         await startseite.cardItemSchulportalAdministration.click();
       });
 
       await test.step(`In der Benutzerverwaltung die Zeile für Benutzer ${lastname} anklicken und User-Details öffnen`, async () => {
-        await expect(personManagement.text_h2_Benutzerverwaltung).toBeVisible();
-        await personManagement.input_Suchfeld.fill(username);
-        await personManagement.button_Suchen.click();
+        await expect(personManagement.textH2Benutzerverwaltung).toBeVisible();
+        await personManagement.inputSuchfeld.fill(username);
+        await personManagement.buttonSuchen.click();
         await expect(page.getByRole('cell', { name: lastname, exact: true })).toBeEnabled();
         await page.getByRole('cell', { name: lastname, exact: true }).click();
       });
 
       await test.step(`In den User-Details PW-Reset Dialog starten`, async () => {
-        await expect(personManagementDetail.text_h2_benutzerBearbeiten).toBeVisible();
-        await personManagementDetail.button_pwChange.click();
-        await expect(personManagementDetail.text_pwResetInfo).toBeVisible();
+        await expect(personManagementDetail.textH2BenutzerBearbeiten).toBeVisible();
+        await personManagementDetail.buttonPwChange.click();
+        await expect(personManagementDetail.textPwResetInfo).toBeVisible();
       });
 
       await test.step(`In dem overlay den PW-Reset bestätigen, das PW kopieren und Dialog schließen`, async () => {
-        await personManagementDetail.button_pwReset.click();
-        await expect(personManagementDetail.text_pwResetInfo).toBeVisible();
-        new_password = await personManagementDetail.input_pw.inputValue();
-        await personManagementDetail.button_close_pwreset.click();
+        await personManagementDetail.buttonPwReset.click();
+        await expect(personManagementDetail.textPwResetInfo).toBeVisible();
+        newPassword = await personManagementDetail.inputPw.inputValue();
+        await personManagementDetail.buttonClosePwreset.click();
       });
 
       await test.step(`Login für Benutzer ${lastname} mit dem neuen PW`, async () => {
-        await header.logout();
-        await landing.button_Anmelden.click();
-        await login.login(username, new_password);
+        await header.logout({ logoutViaStartPage: true });
+        await landing.buttonAnmelden.click();
+        await login.login(username, newPassword);
       });
 
       await test.step(`Neues PW vergeben`, async () => {
         await login.updatePW();
-        await startseite.checkHeadlineIsVisible();
+        await startseite.validateStartPageIsLoaded();
       });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
     }
   );
 });

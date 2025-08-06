@@ -14,7 +14,7 @@ export class ProfilePage {
   readonly dataKopersNr: Locator;
   readonly iconInfoPersoenlicheDaten: Locator;
   // Schulzuordnung 1
-  readonly cardHeadline_Schulzuordnung1: Locator;
+  readonly cardHeadlineSchulzuordnung1: Locator;
   readonly labelSchule1: Locator;
   readonly dataSchule1: Locator;
   readonly labelRolle1: Locator;
@@ -22,7 +22,7 @@ export class ProfilePage {
   readonly labelDienststellennummer1: Locator;
   readonly dataDienststellennummer1: Locator;
   // Schulzuordnung 2
-  readonly cardHeadline_Schulzuordnung2: Locator;
+  readonly cardHeadlineSchulzuordnung2: Locator;
   readonly labelSchule2: Locator;
   readonly dataSchule2: Locator;
   readonly labelRolle2: Locator;
@@ -31,7 +31,6 @@ export class ProfilePage {
   readonly dataDienststellennummer2: Locator;
   // Passwort
   readonly cardHeadlinePasswort: Locator;
-  readonly icon_SchluesselPasswort: Locator;
   readonly buttonStartPWChangeDialog: Locator;
   readonly buttonChangePW: Locator;
   readonly labelUsername: Locator;
@@ -53,8 +52,18 @@ export class ProfilePage {
   readonly textOTPInput: Locator;
   readonly text2FASelfServiceError: Locator;
   readonly textOTPEntryError: Locator;
+  // Inbetriebnahme-Passwort für LK-Endgerät
+  readonly cardHeadlinePasswordLKEndgeraet: Locator;
+  readonly infoTextSectionPasswordLKEndgeraet: Locator;
+  readonly buttonCreatePasswordSectionLKEndgeraet: Locator;
+  readonly infoTextDialogPasswordLKEndgeraet: Locator;
+  readonly buttontCreatePasswordDialogLKEndgeraet: Locator;
+  readonly inputPasswortErzeugenDialogLKEndgeraet: Locator;
+  readonly iconShowPassword: Locator;
+  readonly iconCopyPassword: Locator;
+  readonly buttonClosePWReset: Locator;
 
-  constructor(page) {
+  constructor(page: Page) {
     this.page = page;
     this.buttonZurueckVorherigeSeite = page.getByTestId('back-to-previous-page-button');
     this.titleMeinProfil = page.getByTestId('profile-headline');
@@ -69,7 +78,7 @@ export class ProfilePage {
     this.iconInfoPersoenlicheDaten = page.getByTestId('info-icon');
     // Die Schulzuordnungen sind als Tabelle dargestellt, darum sind Indizes in den Ids
     // Schulzuordnung 1
-    this.cardHeadline_Schulzuordnung1 = page.getByTestId('zuordung-card-1');
+    this.cardHeadlineSchulzuordnung1 = page.getByTestId('zuordung-card-1');
     this.labelSchule1 = page.getByTestId('schule-label-1');
     this.dataSchule1 = page.getByTestId('schule-value-1');
     this.labelRolle1 = page.getByTestId('rolle-label-1');
@@ -77,7 +86,7 @@ export class ProfilePage {
     this.labelDienststellennummer1 = page.getByTestId('dienststellennummer-label-1');
     this.dataDienststellennummer1 = page.getByTestId('dienststellennummer-value-1');
     // Schulzuordnung 2
-    this.cardHeadline_Schulzuordnung2 = page.getByTestId('zuordung-card-2');
+    this.cardHeadlineSchulzuordnung2 = page.getByTestId('zuordung-card-2');
     this.labelSchule2 = page.getByTestId('schule-label-2');
     this.dataSchule2 = page.getByTestId('schule-value-2');
     this.labelRolle2 = page.getByTestId('rolle-label-2');
@@ -91,7 +100,6 @@ export class ProfilePage {
     this.labelUsername = page.locator('#kc-attempted-username');
     this.textLoginPrompt = page.getByTestId('login-prompt-text');
     this.inputPassword = page.getByTestId('password-input');
-
     // 2FA
     this.cardHeadline2FA = page.getByTestId('two-factor-card');
     this.textNo2FA = page.getByText('Es wurde noch kein zweiter Faktor für Sie eingerichtet.');
@@ -106,12 +114,26 @@ export class ProfilePage {
     this.textOTPEntryError = page.getByTestId('self-service-otp-error-text');
     this.textOTPInput = page.getByTestId('self-service-otp-input');
     this.text2FASelfServiceError = page.getByTestId('self-service-token-verify-error-text');
-
     // Modal
     this.textLayoutCardHeadline = page.getByTestId('layout-card-headline');
+    // Inbetriebnahme-Passwort für LK-Endgerät
+    this.cardHeadlinePasswordLKEndgeraet = page.getByRole('heading', {
+      name: 'Inbetriebnahme-Passwort für LK-Endgerät',
+    });
+    this.infoTextSectionPasswordLKEndgeraet = page.getByText(
+      'Sie benötigen dieses Passwort ausschließlich zur einmaligen Eingabe beim ersten' +
+        ' Start Ihres neuen LK-Endgerätes oder wenn das Gerät zurückgesetzt wurde!'
+    );
+    this.buttonCreatePasswordSectionLKEndgeraet = page.getByTestId('open-device-password-dialog-button');
+    this.infoTextDialogPasswordLKEndgeraet = page.getByTestId('password-reset-info-text');
+    this.buttontCreatePasswordDialogLKEndgeraet = page.getByTestId('password-reset-button');
+    this.inputPasswortErzeugenDialogLKEndgeraet = page.locator('[data-testid="password-output-field"] input');
+    this.iconShowPassword = page.getByTestId('show-password-icon');
+    this.iconCopyPassword = page.getByTestId('copy-password-icon');
+    this.buttonClosePWReset = page.getByTestId('close-password-reset-dialog-button');
   }
 
-  public async checkSectionPersoenlicheDaten(vorname: string, nachname:string, usernames: string[]) {
+  public async checkSectionPersoenlicheDaten(vorname: string, nachname: string, usernames: string[]): Promise<void> {
     await expect(this.cardHeadlinePersoenlicheDaten).toHaveText('Persönliche Daten');
     await expect(this.labelVornameNachname).toHaveText('Vor- und Nachname:');
     await expect(this.dataVornameNachname).toHaveText(vorname + ' ' + nachname);
@@ -120,5 +142,17 @@ export class ProfilePage {
     await expect(this.labelKopersNr).toBeHidden();
     await expect(this.dataKopersNr).toBeHidden();
     await expect(this.iconInfoPersoenlicheDaten).toBeVisible();
+  }
+
+  public async validatePasswordResetDialog(): Promise<void> {
+    await expect(this.infoTextDialogPasswordLKEndgeraet).toHaveText(
+      'Das Passwort wurde erfolgreich zurückgesetzt. Bitte notieren Sie sich das Passwort oder drucken Sie es aus. Nach dem Schließen des Dialogs' +
+        ' wird das Passwort nicht mehr angezeigt. Sie benötigen dieses Passwort ausschließlich zur erstmaligen Anmeldung an Ihrem neuen LK-Endgerät.'
+    );
+    await expect(this.inputPasswortErzeugenDialogLKEndgeraet).toBeVisible();
+    await expect(this.inputPasswortErzeugenDialogLKEndgeraet).toHaveAttribute('readonly');
+    await expect(this.iconShowPassword).toBeVisible();
+    await expect(this.iconCopyPassword).toBeVisible()
+    await this.buttonClosePWReset.click();
   }
 }
