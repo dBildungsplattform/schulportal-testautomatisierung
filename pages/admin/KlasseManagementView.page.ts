@@ -33,7 +33,7 @@ export class KlasseManagementViewPage {
     this.textH1Administrationsbereich = page.getByTestId('admin-headline');
     this.textH2Klassenverwaltung = page.getByTestId('layout-card-headline');
     this.comboboxFilterSchule = page.getByPlaceholder('Schule');
-    this.klasseInput = page.getByTestId('klassen-management-filter-klasse-select');
+    this.klasseInput = page.getByTestId('klassen-management-klassen-filter-klasse-select');
     this.comboboxFilterKlasse = new ComboBox(this.page, this.klasseInput);
     this.tableHeaderDienststellennummer = page.getByText('Dienststellennummer');
     this.tableHeaderKlassenname = page.getByTestId('klasse-table').getByText('Klasse', { exact: true });
