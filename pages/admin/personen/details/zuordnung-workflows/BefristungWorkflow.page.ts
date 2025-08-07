@@ -17,9 +17,9 @@ export class BefristungWorkflowPage {
 
   public async selectBefristungOption(option: 'unbefristet' | 'schuljahresende'): Promise<void> {
     if (option === 'schuljahresende') {
-      await this.page.getByLabel('Bis Schuljahresende (31.07.)').check();
+      await this.page.getByTestId('schuljahresende-radio-button').locator('input').check();
     } else if (option === 'unbefristet') {
-      await this.page.getByLabel('Unbefristet').check();
+      await this.page.getByTestId('unbefristet-radio-button').locator('input').check();
     }
   }
 

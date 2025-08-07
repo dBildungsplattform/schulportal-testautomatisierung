@@ -1,6 +1,8 @@
 import { expect, type Locator, Page } from '@playwright/test';
 import { Autocomplete } from '../../../elements/Autocomplete';
 import { AbstractAdminPage } from '../../abstracts/AbstractAdminPage.page';
+import { KlasseCreationSuccessPage } from './KlasseCreationSuccess.page';
+import { KlasseManagementViewPage } from './KlasseManagementView.neu.page';
 
 export interface KlasseCreationParams {
     schulname: string,
@@ -20,26 +22,26 @@ export class KlasseCreationViewPage extends AbstractAdminPage {
     await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Klasse anlegen');
   }
 
-  public async createKlasse(params: KlasseCreationParams): Promise<void> {
+  public async createKlasse(params: KlasseCreationParams): Promise<KlasseCreationSuccessPage> {
     const schuleNameAutocomplete: Autocomplete = new Autocomplete(this.page, this.page.getByTestId('schule-select'));
-    const klasseNameInput: Locator = this.page.getByTestId('klassenname-input');
-    const klasseCreationButton: Locator = this.page.getByTestId('klasse-form-submit-button');
 
     await schuleNameAutocomplete.searchByTitle(params.schulname, true);
-    await klasseNameInput.fill(params.klassenname);
-    await klasseCreationButton.click();
+    await this.page.getByTestId('klassenname-input').fill(params.klassenname);
+    await this.page.getByTestId('klasse-form-submit-button').click();
+
+    return new KlasseCreationSuccessPage(this.page);
   }
 
-  public async discardKlasseCreation(): Promise<void> {
-    const klasseDismissalButton: Locator = this.page.getByTestId('klasse-form-discard-button');
+  public async discardKlasseCreation(): Promise<KlasseManagementViewPage> {
+    await this.page.getByTestId('klasse-form-discard-button').click();
 
-    await klasseDismissalButton.click();
+    return new KlasseManagementViewPage(this.page);
   }
 
-  public async goBackToList(): Promise<void> {
-    const backToListButton: Locator = this.page.getByTestId('back-to-list-button');
+  public async goBackToList(): Promise<KlasseManagementViewPage> {
+    await this.page.getByTestId('back-to-list-button').click();
 
-    await backToListButton.click();
+    return new KlasseManagementViewPage(this.page);
   }
 
   /* assertions */

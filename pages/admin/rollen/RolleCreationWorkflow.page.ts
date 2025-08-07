@@ -1,6 +1,6 @@
 import { expect, Page } from '@playwright/test';
 import { RolleForm } from '../../../components/RolleForm';
-import { AbstractAdminPage } from '../../AbstractAdminPage.page';
+import { AbstractAdminPage } from '../../abstracts/AbstractAdminPage.page';
 import { RolleCreationSuccessPage } from './RolleCreationSuccess.page';
 import { RolleCreationParams } from './RolleCreationView.neu.page';
 

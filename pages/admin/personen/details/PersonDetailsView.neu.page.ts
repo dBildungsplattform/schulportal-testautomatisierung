@@ -122,11 +122,13 @@ export class PersonDetailsViewPage extends AbstractAdminPage {
       await expect(
         this.page.getByText('Für diesen Benutzer ist aktuell ein Software-Token eingerichtet.')
       ).toBeVisible();
+
       await expect(
         this.page.getByText(
           'Um einen neuen Token einzurichten, muss der aktuelle Token durch die schulischen Administratorinnen und Administratoren zurückgesetzt werden.'
         )
       ).toBeVisible();
+
     } else await expect(this.page.getByText('Für diesen Benutzer ist aktuell keine 2FA eingerichtet.')).toBeHidden();
   }
 

@@ -1,7 +1,7 @@
 import { expect, Page } from '@playwright/test';
 import { LoginViewPage } from './LoginView.neu.page';
+import { RollenArt } from '../base/rollentypen';
 
-type RollenArt = 'LEIT' | 'LEHR' | 'LERN' | 'EXTERN' | 'ORGADMIN' | 'SYSADMIN';
 
 interface Zuordnung {
   dienststellennummer?: string;
@@ -57,7 +57,6 @@ export class ProfileViewPage {
     await expect(this.page.getByTestId('fullname-label')).toHaveText('Vor- und Nachname:');
     await expect(this.page.getByTestId('fullname-value')).toHaveText(persoenlicheDaten.vorname + ' ' + persoenlicheDaten.nachname);
     await expect(this.page.getByTestId('username-label')).toHaveText('Benutzername:');
-    // Why array??
     await expect(this.page.getByTestId('username-value')).toHaveText(persoenlicheDaten.username);
 
     if (persoenlicheDaten.rollenart === 'LEHR') {

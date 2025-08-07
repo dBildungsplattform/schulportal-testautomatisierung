@@ -45,14 +45,10 @@ export class KlasseManagementViewPage extends AbstractManagementViewPage {
 
   public async searchAndDeleteKlasse(klassenname: string, schulname: string): Promise<void> {
     await this.searchByText(klassenname);
-    
-    const klasseDeletionButton: Locator = this.page.getByTestId('open-klasse-delete-dialog-icon');
-    const klasseDeletionDialogText: Locator = this.page.getByTestId('klasse-delete-confirmation-text');
-    const klasseDeletionDialogConfirmButton: Locator = this.page.getByTestId('klasse-delete-button');
 
-    await klasseDeletionButton.click();
-    await expect(klasseDeletionDialogText).toHaveText(`Wollen Sie die Klasse ${klassenname} an der Schule ${schulname} wirklich entfernen?`);
-    await klasseDeletionDialogConfirmButton.click();
+    await this.page.getByTestId('open-klasse-delete-dialog-icon').click();
+    await expect(this.page.getByTestId('klasse-delete-confirmation-text')).toHaveText(`Wollen Sie die Klasse ${klassenname} an der Schule ${schulname} wirklich entfernen?`);
+    await this.page.getByTestId('klasse-delete-button').click();
   }
 
   /* assertions */
@@ -78,18 +74,12 @@ export class KlasseManagementViewPage extends AbstractManagementViewPage {
   }
 
   public async klasseSuccessfullyDeleted(schulname: string, klassenname: string): Promise<void> {
-    const closeDeletionSuccessButton: Locator = this.page.getByTestId('close-klasse-delete-success-dialog-button');
-    const klasseDeletionSuccessText: Locator = this.page.getByTestId('klasse-delete-success-text');
-
-    await expect(klasseDeletionSuccessText).toHaveText(`Die Klasse ${klassenname} an der Schule ${schulname} wurde erfolgreich gelöscht.`);
-    await closeDeletionSuccessButton.click();
+    await expect(this.page.getByTestId('klasse-delete-success-text')).toHaveText(`Die Klasse ${klassenname} an der Schule ${schulname} wurde erfolgreich gelöscht.`);
+    await this.page.getByTestId('close-klasse-delete-success-dialog-button').click();
   }
 
   public async klasseDeletionFailed(): Promise<void> {
-    const klasseDetailsErrorAlertText: Locator = this.page.getByTestId('klasse-details-error-alert-text');
-    const klasseDetailsErrorAlertButton: Locator = this.page.getByTestId('klasse-details-error-alert-button');
-
-    await expect(klasseDetailsErrorAlertText).toHaveText('Die Klasse kann nicht gelöscht werden, da noch Benutzer zugeordnet sind.');
-    await klasseDetailsErrorAlertButton.click();
+    await expect(this.page.getByTestId('klasse-details-error-alert-text')).toHaveText('Die Klasse kann nicht gelöscht werden, da noch Benutzer zugeordnet sind.');
+    await this.page.getByTestId('klasse-details-error-alert-button').click();
   }
 }

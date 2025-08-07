@@ -28,14 +28,9 @@ export class KlasseCreationSuccessPage extends AbstractAdminPage {
 
   /* assertions */
   public async checkSuccessfulCreation(params: KlasseCreationParams): Promise<void> {
-    const successText: Locator = this.page.getByTestId('klasse-success-text');
-    const successIcon: Locator = this.page.getByTestId('klasse-success-icon');
-    const savedDataSchuleText: Locator = this.page.getByTestId('created-klasse-schule');
-    const savedDataKlasseText: Locator = this.page.getByTestId('created-klasse-name');
-
-    await expect(successText).toHaveText('Die Klasse wurde erfolgreich hinzugefügt.');
-    await successIcon.isVisible();
-    await expect(savedDataSchuleText).toHaveText(params.schulname);
-    await expect(savedDataKlasseText).toHaveText(params.klassenname);
+    await expect(this.page.getByTestId('klasse-success-text')).toHaveText('Die Klasse wurde erfolgreich hinzugefügt.');
+    await expect(this.page.getByTestId('klasse-success-icon')).toBeVisible();
+    await expect(this.page.getByTestId('created-klasse-schule')).toHaveText(params.schulname);
+    await expect(this.page.getByTestId('created-klasse-name')).toHaveText(params.klassenname);
   }
 }
