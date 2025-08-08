@@ -1,7 +1,7 @@
 import { expect, type Locator, Page } from '@playwright/test';
-import { AbstractManagementViewPage } from '../../abstracts/AbstractManagementView.page';
-import { DataTable } from '../../components/DataTable.neu.page';
-import { SearchFilter } from '../../../elements/SearchFilter';
+import { AbstractManagementViewPage } from '../../../abstracts/AbstractManagementView.page';
+import { DataTable } from '../../../components/DataTable.neu.page';
+import { SearchFilter } from '../../../../elements/SearchFilter';
 
 export class SchuleManagementViewPage extends AbstractManagementViewPage {
   /* add global locators here */

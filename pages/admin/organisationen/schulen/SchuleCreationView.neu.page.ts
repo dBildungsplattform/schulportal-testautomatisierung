@@ -1,5 +1,5 @@
 import { expect, type Locator, Page } from '@playwright/test';
-import { AbstractAdminPage } from '../../abstracts/AbstractAdminPage.page';
+import { AbstractAdminPage } from '../../../abstracts/AbstractAdminPage.page';
 
 interface SchuleCreationParams {
   name: string;

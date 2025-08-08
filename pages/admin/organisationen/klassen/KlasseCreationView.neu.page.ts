@@ -1,6 +1,6 @@
 import { expect, type Locator, Page } from '@playwright/test';
-import { Autocomplete } from '../../../elements/Autocomplete';
-import { AbstractAdminPage } from '../../abstracts/AbstractAdminPage.page';
+import { Autocomplete } from '../../../../elements/Autocomplete';
+import { AbstractAdminPage } from '../../../abstracts/AbstractAdminPage.page';
 import { KlasseCreationSuccessPage } from './KlasseCreationSuccess.page';
 import { KlasseManagementViewPage } from './KlasseManagementView.neu.page';
 

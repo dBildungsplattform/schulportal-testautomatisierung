@@ -1,5 +1,5 @@
 import { expect, type Locator, Page } from '@playwright/test';
-import { AbstractAdminPage } from '../../abstracts/AbstractAdminPage.page';
+import { AbstractAdminPage } from '../../../../abstracts/AbstractAdminPage.page';
 
 export class KlasseDetailsViewPage extends AbstractAdminPage {
   /* add global locators here */

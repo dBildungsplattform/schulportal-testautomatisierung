@@ -20,9 +20,9 @@ import {
   generateRolleName,
   generateVorname,
 } from '../base/testHelperGenerateTestdataNames.ts';
-import { KlasseCreationViewPage } from '../pages/admin/organisationen/KlasseCreationView.page';
-import { KlasseDetailsViewPage } from '../pages/admin/organisationen/KlasseDetailsView.page.ts';
-import { KlasseManagementViewPage } from '../pages/admin/organisationen/KlasseManagementView.page';
+import { KlasseCreationViewPage } from '../pages/admin/organisationen/klassen/KlasseCreationView.page';
+import { KlasseDetailsViewPage } from '../pages/admin/organisationen/klassen/details/KlasseDetailsView.page.ts';
+import { KlasseManagementViewPage } from '../pages/admin/organisationen/klassen/KlasseManagementView.page';
 import FromAnywhere from '../pages/FromAnywhere';
 import { HeaderPage } from '../pages/components/Header.page';
 import { LandingPage } from '../pages/LandingView.page';

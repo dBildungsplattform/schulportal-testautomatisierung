@@ -1,9 +1,9 @@
 import { expect, type Locator, Page } from '@playwright/test';
-import { Autocomplete } from '../../../elements/Autocomplete';
-import { DataTable } from '../../components/DataTable.neu.page';
+import { Autocomplete } from '../../../../elements/Autocomplete';
+import { DataTable } from '../../../components/DataTable.neu.page';
 import { KlasseDetailsViewPage } from './KlasseDetailsView.neu.page';
-import { AbstractManagementViewPage } from '../../abstracts/AbstractManagementView.page';
-import { SearchFilter } from '../../../elements/SearchFilter';
+import { AbstractManagementViewPage } from '../../../abstracts/AbstractManagementView.page';
+import { SearchFilter } from '../../../../elements/SearchFilter';
 
 export class KlasseManagementViewPage extends AbstractManagementViewPage {
   /* add global locators here */

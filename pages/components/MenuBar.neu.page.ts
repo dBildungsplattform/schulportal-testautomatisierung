@@ -1,6 +1,6 @@
 import { Page } from '@playwright/test';
-import { KlasseCreationViewPage } from '../admin/organisationen/KlasseCreationView.neu.page';
-import { KlasseManagementViewPage } from '../admin/organisationen/KlasseManagementView.neu.page';
+import { KlasseCreationViewPage } from '../admin/organisationen/klassen/KlasseCreationView.neu.page';
+import { KlasseManagementViewPage } from '../admin/organisationen/klassen/KlasseManagementView.neu.page';
 import { PersonCreationViewPage } from '../admin/personen/creation/PersonCreationView.neu.page';
 // TODO: implement PersonSearchViewPage
 // import { PersonSearchViewPage } from '../admin/personen/creation/PersonSearchView.neu.page';
@@ -8,8 +8,8 @@ import { PersonImportViewPage } from '../admin/personen/PersonImportView.neu.pag
 import { PersonManagementViewPage } from '../admin/personen/PersonManagementView.neu.page';
 import { RolleCreationViewPage } from '../admin/rollen/RolleCreationView.neu.page';
 import { RolleManagementViewPage } from '../admin/rollen/RolleManagementView.neu.page';
-import { SchuleCreationViewPage } from '../admin/organisationen/SchuleCreationView.neu.page';
-import { SchuleManagementViewPage } from '../admin/organisationen/SchuleManagementView.neu.page';
+import { SchuleCreationViewPage } from '../admin/organisationen/schulen/SchuleCreationView.neu.page';
+import { SchuleManagementViewPage } from '../admin/organisationen/schulen/SchuleManagementView.neu.page';
 import { StartViewPage } from '../StartView.neu.page';
 
 export class MenuBarPage {

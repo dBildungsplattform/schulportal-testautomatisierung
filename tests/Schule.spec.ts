@@ -1,8 +1,8 @@
 import { test, expect, PlaywrightTestArgs } from '@playwright/test';
 import { StartPage } from '../pages/StartView.page';
 import { MenuPage } from '../pages/components/MenuBar.page';
-import { SchuleCreationViewPage } from '../pages/admin/organisationen/SchuleCreationView.page';
-import { SchuleManagementViewPage } from '../pages/admin/organisationen/SchuleManagementView.page';
+import { SchuleCreationViewPage } from '../pages/admin/organisationen/schulen/SchuleCreationView.page';
+import { SchuleManagementViewPage } from '../pages/admin/organisationen/schulen/SchuleManagementView.page';
 import { HeaderPage } from '../pages/components/Header.page';
 import { FooterDataTablePage } from '../pages/components/FooterDataTable.page';
 import { LONG, SHORT, STAGE, BROWSER } from '../base/tags';

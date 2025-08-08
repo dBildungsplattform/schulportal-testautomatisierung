@@ -1,6 +1,6 @@
 import { expect, type Locator, Page } from '@playwright/test';
-import { Autocomplete } from '../../../elements/Autocomplete';
-import { FooterDataTablePage } from '../../components/FooterDataTable.page';
+import { Autocomplete } from '../../../../elements/Autocomplete';
+import { FooterDataTablePage } from '../../../components/FooterDataTable.page';
 import { KlasseDetailsViewPage } from './KlasseDetailsView.page';
 
 export interface KlasseManagementViewPageOptions {
