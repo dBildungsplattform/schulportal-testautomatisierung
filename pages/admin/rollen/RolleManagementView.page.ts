@@ -40,7 +40,7 @@ enum TableCells {
 export class RoleTableRow {
   constructor(public readonly locator: Locator) {}
 
-  public spCell() {
+  public spCell(): Locator {
     return this.locator.locator('td').nth(TableCells.ServiceProvider);
   }
 }

@@ -1,9 +1,9 @@
 import { type Locator, Page, expect } from '@playwright/test';
-import { LandingPage } from './LandingView.page';
-import FromAnywhere from '../pages/FromAnywhere';
-import { LoginPage } from '../pages/LoginView.page';
-import { ProfilePage } from './ProfileView.page';
-import { StartPage } from './StartView.page';
+import { LandingPage } from '../LandingView.page';
+import FromAnywhere from '../FromAnywhere';
+import { LoginPage } from '../LoginView.page';
+import { ProfilePage } from '../ProfileView.page';
+import { StartPage } from '../StartView.page';
 
 export class HeaderPage {
   readonly page: Page;

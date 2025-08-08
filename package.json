@@ -14,6 +14,7 @@
     "lint": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
   },
   "devDependencies": {
+    "@rushstack/eslint-patch": "^1.11.0",
     "@playwright/test": "^1.50.1",
     "@types/node": "^20.16.10",
     "@typescript-eslint/eslint-plugin": "^8.8.0",
