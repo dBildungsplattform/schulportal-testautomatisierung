@@ -3,9 +3,11 @@ import { Autocomplete } from '../../../elements/Autocomplete';
 import { DataTable } from '../../components/DataTable.neu.page';
 import { PersonDetailsViewPage } from './details/PersonDetailsView.neu.page';
 import { AbstractManagementViewPage } from '../../abstracts/AbstractManagementView.page';
+import { SearchFilter } from '../../../elements/SearchFilter';
 
 export class PersonManagementViewPage extends AbstractManagementViewPage {
   private readonly personTable: DataTable = new DataTable(this.page, this.page.getByTestId('person-table'));
+  private readonly searchFilter: SearchFilter = new SearchFilter(this.page);
 
   constructor(page: Page) {
     super(page);
@@ -36,7 +38,7 @@ export class PersonManagementViewPage extends AbstractManagementViewPage {
   }
 
   public async searchAndOpenGesamtuebersicht(nameOrKopers: string): Promise<PersonDetailsViewPage> {
-    await this.searchByText(nameOrKopers);
+    await this.searchFilter.searchByText(nameOrKopers);
     return this.openGesamtuebersicht(nameOrKopers);
   }
 

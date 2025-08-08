@@ -74,7 +74,12 @@ export class ProfileViewPage {
     for (let i: number = 0; i < zuordnungen.length; i++) {
       const zuordnung: Zuordnung = zuordnungen[i];
 
-      await expect(this.page.getByTestId(`zuordnung-card-${i}-headline`)).toHaveText('Schulzuordnung ' + (i + 1));
+      if (zuordnungen.length === 1) {
+        await expect(this.page.getByTestId(`zuordnung-card-${i}-headline`)).toHaveText('Schulzuordnung');
+      } else {
+        await expect(this.page.getByTestId(`zuordnung-card-${i}-headline`)).toHaveText('Schulzuordnung ' + (i + 1));
+      }
+
       await expect(this.page.getByTestId(`schule-label-${i}`)).toHaveText('Schule:');
       await expect(this.page.getByTestId(`schule-value-${i}`)).toHaveText(zuordnung.organisationsname);
       await expect(this.page.getByTestId(`rolle-label-${i}`)).toHaveText('Rolle:');

@@ -1,10 +1,12 @@
 import { expect, type Locator, Page } from '@playwright/test';
 import { AbstractManagementViewPage } from '../../abstracts/AbstractManagementView.page';
 import { DataTable } from '../../components/DataTable.neu.page';
+import { SearchFilter } from '../../../elements/SearchFilter';
 
 export class SchuleManagementViewPage extends AbstractManagementViewPage {
   /* add global locators here */
   private readonly schuleTable: DataTable = new DataTable(this.page, this.page.getByTestId('schule-table'));
+  private readonly searchFilter: SearchFilter = new SearchFilter(this.page);
 
   constructor(page: Page) {
     super(page);
@@ -18,7 +20,7 @@ export class SchuleManagementViewPage extends AbstractManagementViewPage {
   }
 
   public async searchAndSyncItslearning(schulname: string): Promise<void> {
-    await this.searchByText(schulname);
+    await this.searchFilter.searchByText(schulname);
     
     await this.page.getByTestId('open-schule-itslearning-sync-dialog-icon').click();
     await expect(this.page.getByTestId('schule-activate-in-itslearning-confirmation-text')).toHaveText(`Wollen Sie die Daten der Schule ${schulname} an itslearning übertragen?`);

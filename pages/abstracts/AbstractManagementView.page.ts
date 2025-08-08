@@ -1,5 +1,6 @@
-import { Locator, Page } from '@playwright/test';
+import { Page } from '@playwright/test';
 import { AbstractAdminPage } from './AbstractAdminPage.page';
+import { DataTable } from '../components/DataTable.neu.page';
 
 /**
  * Base class for all management views in the Schulportal.
@@ -15,13 +16,8 @@ export abstract class AbstractManagementViewPage extends AbstractAdminPage {
 
   /* actions */
   abstract waitForPageLoad(): Promise<void>;
-  
-  public async searchByText(nameOrKopers: string): Promise<void> {
-    const searchFilterInput: Locator = this.page.getByTestId('search-filter-input').locator('input');
 
-    await searchFilterInput.fill(nameOrKopers);
-    return this.page.getByTestId('apply-search-filter-button').click();
-  }
+  // TODO: Implement common actions for management views
 
   /* assertions */
 }

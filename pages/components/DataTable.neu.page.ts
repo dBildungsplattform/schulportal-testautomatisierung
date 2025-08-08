@@ -54,32 +54,25 @@ export class DataTable {
       await expect(currentPageNumberText).toEqual(expectedPageNumber);
     }
 
-    public async checkHeaders(expectedAmount: number, expectedHeaders: string[]): Promise<void> {
-      const tableColumns: Locator[] = await this.tableLocator.locator('thead th.v-data-table__th').all();
-      const tableColumnsCount: number = tableColumns.length;
+    public async checkHeaders(expectedHeaders: string[]): Promise<void> {
+      const tableHeaders: Locator[] = await this.tableLocator.locator('thead th.v-data-table__th').all();
+      const tableHeadersCount: number = tableHeaders.length;
 
-      await expect(tableColumnsCount).toEqual(expectedAmount);
+      await expect(tableHeadersCount).toEqual(expectedHeaders.length);
 
-      for (let i: number = 0; i < tableColumnsCount; i++) {
-        const cell: Locator = tableColumns[i].locator('.v-data-table-header__content').nth(i);
+      for (let i: number = 0; i < tableHeadersCount; i++) {
+        const cell: Locator = tableHeaders[i].locator('.v-data-table-header__content').nth(i);
 
         await expect(cell).toBeVisible();
         await expect(cell).toHaveText(expectedHeaders[i]);
       }
     }
 
-    public async checkRows(expectedAmount: number): Promise<void> {
+    public async checkRowCount(expectedRowCount: number): Promise<void> {
       const tableRows: Locator = this.tableLocator.locator('tbody tr.v-data-table__tr');
       const tableRowsCount: number = await tableRows.count();
 
-      await expect(tableRowsCount).toEqual(expectedAmount);
-
-      for (let i: number = 0; i < tableRowsCount; i++) {
-        const cell: Locator = tableRows[i].locator('td.v-data-table__td').nth(i);
-
-        await expect(cell).toBeVisible();
-        await expect(cell).not.toBeEmpty();
-      }
+      await expect(tableRowsCount).toEqual(expectedRowCount);
     }
 
     public async checkIfItemIsNotVisible(expectedText: string): Promise<void> {

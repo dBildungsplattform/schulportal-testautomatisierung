@@ -3,10 +3,12 @@ import { Autocomplete } from '../../../elements/Autocomplete';
 import { DataTable } from '../../components/DataTable.neu.page';
 import { KlasseDetailsViewPage } from './KlasseDetailsView.neu.page';
 import { AbstractManagementViewPage } from '../../abstracts/AbstractManagementView.page';
+import { SearchFilter } from '../../../elements/SearchFilter';
 
 export class KlasseManagementViewPage extends AbstractManagementViewPage {
   /* add global locators here */
   private readonly klasseTable: DataTable = new DataTable(this.page, this.page.getByTestId('klasse-table'));
+  private readonly searchFilter: SearchFilter = new SearchFilter(this.page);
 
   constructor(page: Page) {
     super(page);
@@ -39,12 +41,12 @@ export class KlasseManagementViewPage extends AbstractManagementViewPage {
   }
   
   public async searchAndOpenGesamtuebersicht(klassenname: string): Promise<KlasseDetailsViewPage> {
-    await this.searchByText(klassenname);
+    await this.searchFilter.searchByText(klassenname);
     return this.openGesamtuebersicht(klassenname);
   }
 
   public async searchAndDeleteKlasse(klassenname: string, schulname: string): Promise<void> {
-    await this.searchByText(klassenname);
+    await this.searchFilter.searchByText(klassenname);
 
     await this.page.getByTestId('open-klasse-delete-dialog-icon').click();
     await expect(this.page.getByTestId('klasse-delete-confirmation-text')).toHaveText(`Wollen Sie die Klasse ${klassenname} an der Schule ${schulname} wirklich entfernen?`);
@@ -52,17 +54,17 @@ export class KlasseManagementViewPage extends AbstractManagementViewPage {
   }
 
   /* assertions */
-  public async checkIfTableIsLoaded(numberOfRows: number, numberOfColumns: number, expectedHeaders: string[]): Promise<void> {
-    await this.klasseTable.checkRows(numberOfRows);
-    await this.klasseTable.checkHeaders(numberOfColumns, expectedHeaders);
+  public async checkIfTableIsLoaded(rowCount: number, expectedHeaders: string[]): Promise<void> {
+    await this.klasseTable.checkRowCount(rowCount);
+    await this.klasseTable.checkHeaders(expectedHeaders);
   }
 
-  public async checkHeaders(expectedAmount: number, expectedHeaders: string[]): Promise<void> {
-    this.klasseTable.checkHeaders(expectedAmount, expectedHeaders);
+  public async checkHeaders(expectedHeaders: string[]): Promise<void> {
+    this.klasseTable.checkHeaders(expectedHeaders);
   }
 
-  public async checkRows(expectedAmount: number): Promise<void> {
-    this.klasseTable.checkRows(expectedAmount);
+  public async checkRows(rowCount: number): Promise<void> {
+    this.klasseTable.checkRowCount(rowCount);
   }
 
   public async checkIfKlasseExists(klassenname: string): Promise<void> {

@@ -12,10 +12,11 @@ export class StartViewPage {
   public async waitForPageLoad(): Promise<void> {
     await this.page.getByTestId('start-card-headline').waitFor({ state: 'visible' });
     await expect(this.page.getByTestId('start-card-headline')).toHaveText('Startseite');
+    await this.serviceProvidersAreLoaded();
   }
 
   /* assertions */
-  public async serviceProvidersAreLoaded(): Promise<void> {
+  private async serviceProvidersAreLoaded(): Promise<void> {
     await this.page.waitForResponse((response) => response.url().includes('/api/provider') && response.status() === 200);
     await this.page.waitForResponse('/api/provider/**/logo');
     await expect(this.page.getByTestId('all-service-provider-title')).toBeVisible();

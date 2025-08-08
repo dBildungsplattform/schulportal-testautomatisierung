@@ -15,23 +15,15 @@ export class RolleDetailsViewPage extends AbstractAdminPage {
   }
 
   public async editRolle(rollenname: string): Promise<void> {
-    const rolleEditButton: Locator = this.page.getByTestId('rolle-edit-button');
-    const rolleNameInput: Locator = this.page.getByTestId('rollenname-input');
-    const saveChangesButton: Locator = this.page.getByTestId('rolle-changes-save-button');
-
-    await rolleEditButton.click();
-    await rolleNameInput.fill(rollenname);
-    await saveChangesButton.click();
+    await this.page.getByTestId('rolle-edit-button').click();
+    await this.page.getByTestId('rollenname-input').fill(rollenname);
+    await this.page.getByTestId('rolle-changes-save-button').click();
   }
 
   /* assertions */
   public async rolleSuccessfullyEdited(rollenname: string): Promise<void> {
-    const successText: Locator = this.page.getByTestId('rolle-success-text');
-    const successIcon: Locator = this.page.getByTestId('rolle-success-icon');
-    const savedDataRolleText: Locator = this.page.getByTestId('updated-rolle-name');
-
-    await expect(successText).toHaveText('Die Rolle wurde erfolgreich geändert.');
-    await successIcon.isVisible();
-    await expect(savedDataRolleText).toHaveText(rollenname);
+    await expect(this.page.getByTestId('rolle-success-text')).toHaveText('Die Rolle wurde erfolgreich geändert.');
+    await this.page.getByTestId('rolle-success-icon').isVisible();
+    await expect(this.page.getByTestId('updated-rolle-name')).toHaveText(rollenname);
   }
 }
