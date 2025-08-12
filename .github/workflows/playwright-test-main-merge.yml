@@ -50,11 +50,11 @@ jobs:
         TAG: ${{ steps.determine-tag.outputs.tag }}
       run: |
         REPOS=(
-          "github.com/dbildungsplattform/dbildungs-iam-server.git"
-          "github.com/dbildungsplattform/schulportal-client.git"
-          "github.com/dbildungsplattform/dbildungs-iam-client.git"
-          "github.com/dbildungsplattform/dbildungs-iam-ldap.git"
-          "github.com/dbildungsplattform/schulportal-testautomatisierung.git"
+          "https://github.com/dBildungsplattform/dbildungs-iam-server.git"
+          "https://github.com/dbildungsplattform/schulportal-client.git"
+          "https://github.com/dbildungsplattform/dbildungs-iam-client.git"
+          "https://github.com/dbildungsplattform/dbildungs-iam-ldap.git"
+          "https://github.com/dbildungsplattform/schulportal-testautomatisierung.git"
         )
 
         MATCH_COUNT=0
