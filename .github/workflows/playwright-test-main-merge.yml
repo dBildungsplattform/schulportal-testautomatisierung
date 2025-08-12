@@ -21,8 +21,8 @@ jobs:
     - name: Install dependencies
       run: npm ci
 
-    - name: Install Playwright Browsers
-      run: npx playwright install --with-deps
+    # - name: Install Playwright Browsers
+    #   run: npx playwright install --with-deps
 
       
     - name: Determine Branch Tag
@@ -44,7 +44,7 @@ jobs:
         echo "branch to merge from tag=${tag}"
         
         
-    - name: Determine Branch Tag
+    - name: Determine Branch Count
       id: branch-count
       env:
         TAG: ${{ steps.determine-tag.outputs.tag }}
@@ -52,7 +52,7 @@ jobs:
         REPOS=(
           "https://github.com/dBildungsplattform/dbildungs-iam-server.git"
           "https://github.com/dbildungsplattform/schulportal-client.git"
-          "https://github.com/dbildungsplattform/dbildungs-iam-client.git"
+          "https://github.com/dbildungsplattform/dbildungs-iam-keycloak.git"
           "https://github.com/dbildungsplattform/dbildungs-iam-ldap.git"
           "https://github.com/dbildungsplattform/schulportal-testautomatisierung.git"
         )
