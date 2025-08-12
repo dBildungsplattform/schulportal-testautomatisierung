@@ -4,10 +4,12 @@ import { KlasseDeletionWorkflowPage } from '../deletion-workflow/KlasseDeletionW
 import { KlasseManagementViewPage } from '../KlasseManagementView.neu.page';
 
 export class KlasseDetailsViewPage extends AbstractAdminPage {
+  private readonly deletionWorkflow: KlasseDeletionWorkflowPage;
   /* add global locators here */
 
   constructor(page: Page) {
     super(page);
+    this.deletionWorkflow = new KlasseDeletionWorkflowPage(page, this);
   }
 
   /* actions */
@@ -17,18 +19,14 @@ export class KlasseDetailsViewPage extends AbstractAdminPage {
   }
 
   public async successfullyDeleteKlasse(schulname: string, klassenname: string): Promise<KlasseManagementViewPage> {
-    const klasseDeletionWorkflowPage = new KlasseDeletionWorkflowPage(this.page, this);
-
-    await klasseDeletionWorkflowPage.deleteKlasse(schulname, klassenname);
-    const klasseManagementViewPage = await klasseDeletionWorkflowPage.klasseSuccessfullyDeleted(schulname, klassenname);
+    await this.deletionWorkflow.deleteKlasse(schulname, klassenname);
+    const klasseManagementViewPage = await this.deletionWorkflow.klasseSuccessfullyDeleted(schulname, klassenname);
     return klasseManagementViewPage;
   }
 
   public async unsuccessfullyDeleteKlasse(schulname: string, klassenname: string): Promise<KlasseManagementViewPage | KlasseDetailsViewPage> {
-    const klasseDeletionWorkflowPage = new KlasseDeletionWorkflowPage(this.page, this);
-
-    await klasseDeletionWorkflowPage.deleteKlasse(schulname, klassenname);
-    return await klasseDeletionWorkflowPage.klasseDeletionFailed();
+    await this.deletionWorkflow.deleteKlasse(schulname, klassenname);
+    return await this.deletionWorkflow.klasseDeletionFailed();
   }
 
 
