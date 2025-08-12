@@ -1,14 +1,14 @@
 import { expect, type Page } from '@playwright/test';
-import { KlasseManagementViewPage } from '../KlasseManagementView.page';
 import { KlasseDetailsViewPage } from '../details/KlasseDetailsView.neu.page';
+import { KlasseManagementViewPage } from '../KlasseManagementView.neu.page';
 
 export class KlasseDeletionWorkflowPage {
   /* add global locators here */
 
-  constructor(protected readonly page: Page) {}
+  constructor(protected readonly page: Page, protected readonly originPage: KlasseManagementViewPage | KlasseDetailsViewPage) {}
 
   /* actions */
-  public async deleteKlasse(klassenname: string, schulname: string): Promise<void> {
+  public async deleteKlasse(schulname: string, klassenname: string): Promise<void> {
     await this.page.getByTestId('open-klasse-delete-dialog-button').click();
     await expect(this.page.getByTestId('klasse-delete-confirmation-text')).toHaveText(`Wollen Sie die Klasse ${klassenname} an der Schule ${schulname} wirklich entfernen?`);
     await this.page.getByTestId('klasse-delete-button').click();
@@ -24,5 +24,6 @@ export class KlasseDeletionWorkflowPage {
   public async klasseDeletionFailed(): Promise<KlasseManagementViewPage | KlasseDetailsViewPage> {
     await expect(this.page.getByTestId('klasse-details-error-alert-text')).toHaveText('Die Klasse kann nicht gelöscht werden, da noch Benutzer zugeordnet sind.');
     await this.page.getByTestId('klasse-details-error-alert-button').click();
+    return this.originPage;
   }
 }

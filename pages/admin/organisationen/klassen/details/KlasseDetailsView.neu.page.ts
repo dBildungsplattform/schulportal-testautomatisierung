@@ -17,20 +17,20 @@ export class KlasseDetailsViewPage extends AbstractAdminPage {
   }
 
   public async successfullyDeleteKlasse(schulname: string, klassenname: string): Promise<KlasseManagementViewPage> {
-    const klasseDeletionWorkflowPage: KlasseDeletionWorkflowPage = new KlasseDeletionWorkflowPage(this.page);
+    const klasseDeletionWorkflowPage = new KlasseDeletionWorkflowPage(this.page, this);
 
     await klasseDeletionWorkflowPage.deleteKlasse(schulname, klassenname);
     const klasseManagementViewPage = await klasseDeletionWorkflowPage.klasseSuccessfullyDeleted(schulname, klassenname);
     return klasseManagementViewPage;
   }
 
-  public async unsuccessfullyDeleteKlasse(schulname: string, klassenname: string): Promise<KlasseManagementViewPage> {
-    const klasseDeletionWorkflowPage: KlasseDeletionWorkflowPage = new KlasseDeletionWorkflowPage(this.page);
+  public async unsuccessfullyDeleteKlasse(schulname: string, klassenname: string): Promise<KlasseManagementViewPage | KlasseDetailsViewPage> {
+    const klasseDeletionWorkflowPage = new KlasseDeletionWorkflowPage(this.page, this);
 
     await klasseDeletionWorkflowPage.deleteKlasse(schulname, klassenname);
-    const klasseManagementViewPage = await klasseDeletionWorkflowPage.klasseDeletionFailed();
-    return klasseManagementViewPage;
+    return await klasseDeletionWorkflowPage.klasseDeletionFailed();
   }
+
 
   public async editKlasse(klassenname: string): Promise<void> {
     const klasseNameInput = this.page.getByTestId('klassenname-input');
