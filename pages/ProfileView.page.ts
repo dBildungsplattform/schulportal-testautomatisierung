@@ -145,10 +145,11 @@ export class ProfilePage {
   }
 
   public async validatePasswordResetDialog(): Promise<void> {
-    await expect(this.infoTextDialogPasswordLKEndgeraet).toHaveText(
-      'Das Passwort wurde erfolgreich zurückgesetzt. Bitte notieren Sie sich das Passwort oder drucken Sie es aus. Nach dem Schließen des Dialogs' +
-        ' wird das Passwort nicht mehr angezeigt. Sie benötigen dieses Passwort ausschließlich zur erstmaligen Anmeldung an Ihrem neuen LK-Endgerät.'
-    );
+    await expect(this.page.getByTestId('password-reset-info-text')).toHaveText(`
+      Das Passwort wurde erfolgreich zurückgesetzt. Bitte notieren Sie sich das Passwort oder drucken Sie es aus.
+      Nach dem Schließen des Dialogs wird das Passwort nicht mehr angezeigt.
+      Sie benötigen dieses Passwort ausschließlich zur erstmaligen Anmeldung an Ihrem neuen LK-Endgerät.
+    `);
     await expect(this.inputPasswortErzeugenDialogLKEndgeraet).toBeVisible();
     await expect(this.inputPasswortErzeugenDialogLKEndgeraet).toHaveAttribute('readonly');
     await expect(this.iconShowPassword).toBeVisible();

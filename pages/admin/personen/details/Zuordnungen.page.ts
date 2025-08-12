@@ -15,7 +15,9 @@ export type ZuordnungValidationParams = {
 }
 
 export class ZuordnungenPage {
-  public constructor(private readonly page: Page) {}
+  public constructor(private readonly page: Page,   private readonly addZuordnungWorkflowFactory: (page: Page) => AddZuordnungWorkflowPage = p => new AddZuordnungWorkflowPage(p),
+  private readonly befristungWorkflowFactory: (page: Page) => BefristungWorkflowPage = p => new BefristungWorkflowPage(p)
+) {}
 
   /* actions */
   public async editZuordnungen(): Promise<void> {
@@ -29,12 +31,12 @@ export class ZuordnungenPage {
 
   public async startAddZuordnungWorkflow(): Promise<AddZuordnungWorkflowPage> {
     await this.page.getByTestId('zuordnung-create-button').click();
-    return new AddZuordnungWorkflowPage(this.page);
+    return this.addZuordnungWorkflowFactory(this.page);
   }
 
   public async startBefristungWorkflow(): Promise<BefristungWorkflowPage> {
     await this.page.getByTestId('befristung-change-button').click();
-    return new BefristungWorkflowPage(this.page);
+    return this.befristungWorkflowFactory(this.page);
   }
 
   public async addZuordnung(params: ZuordnungCreationParams): Promise<void> {
