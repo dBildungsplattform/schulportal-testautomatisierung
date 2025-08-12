@@ -30,21 +30,29 @@ export class PersonCreationViewPage extends AbstractAdminPage {
   }
 
   public async fillForm(params: PersonCreationParams): Promise<void> {
+    const vornameInput = this.page.getByTestId('vorname-input').locator('.v-field__input');
+    const nachnameInput = this.page.getByTestId('familienname-input').locator('.v-field__input');
+
     await this.organisationAutocomplete.searchByTitle(params.organisation, false, this.endpoint);
 
     await Promise.all(
       params.rollen.map((rolle: string) => this.rolleAutocomplete.searchByTitle(rolle, true, this.endpoint))
     );
 
-    await this.page.getByTestId('vorname-input').locator('.v-field__input').fill(params.vorname);
-    await this.page.getByTestId('familienname-input').locator('.v-field__input').fill(params.nachname);
+    await vornameInput.waitFor({ state: 'visible' });
+    await vornameInput.fill(params.vorname);
+
+    await nachnameInput.waitFor({ state: 'visible' });
+    await nachnameInput.fill(params.nachname);
 
     if (params.klasse) {
       const autocomplete: Autocomplete = new Autocomplete(this.page, this.page.getByTestId('personenkontext-create-klasse-select'));
       await autocomplete.searchByTitle(params.klasse, true);
     }
     if (params.kopersnr) {
-      await this.page.getByTestId('kopersnr-input').locator('.v-field__input').fill(params.kopersnr);
+      const kopersnrInput = this.page.getByTestId('kopersnr-input').locator('.v-field__input');
+      await kopersnrInput.waitFor({ state: 'visible' });
+      await kopersnrInput.fill(params.kopersnr);
     }
     if (params.befristung) {
       throw new Error('Befristung field is not implemented yet.');

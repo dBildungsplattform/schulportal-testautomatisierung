@@ -36,13 +36,20 @@ export class ProfileViewPage {
   }
 
   public async changePassword(username: string, password: string): Promise<string> {
+    const passwordInput = this.page.getByTestId('password-input');
+    const loginButton = this.page.getByTestId('login-button');
+
     await this.page.getByTestId('open-change-password-dialog-button').click();
     await this.page.getByTestId('change-password-button').click();
 
     await expect(this.page.locator('#kc-attempted-username')).toHaveText(username);
     await expect(this.page.getByTestId('login-prompt-text')).toHaveText('Bitte geben Sie Ihr aktuelles Passwort ein.');
-    await this.page.getByTestId('password-input').fill(password);
-    await this.page.getByTestId('login-button').click();
+    
+    await passwordInput.waitFor({ state: 'visible' });
+    await passwordInput.fill(password);
+
+    await loginButton.waitFor({ state: 'visible' });
+    await loginButton.click();
 
     const newPassword: string = await this.loginViewPage.updatePassword();
     await this.page.getByTestId('close-password-changed-dialog-button').click();

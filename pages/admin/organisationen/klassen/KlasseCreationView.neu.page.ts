@@ -4,7 +4,7 @@ import { AbstractAdminPage } from '../../../abstracts/AbstractAdminPage.page';
 import { KlasseCreationSuccessPage } from './KlasseCreationSuccess.page';
 import { KlasseManagementViewPage } from './KlasseManagementView.neu.page';
 
-export interface KlasseCreationParams {
+export type KlasseCreationParams = {
     schulname: string,
     klassenname: string,
 }
@@ -24,10 +24,16 @@ export class KlasseCreationViewPage extends AbstractAdminPage {
 
   public async createKlasse(params: KlasseCreationParams): Promise<KlasseCreationSuccessPage> {
     const schuleNameAutocomplete: Autocomplete = new Autocomplete(this.page, this.page.getByTestId('schule-select'));
+    const klasseNameInput: Locator = this.page.getByTestId('klassenname-input');
+    const createKlasseButton: Locator = this.page.getByTestId('klasse-form-submit-button');
 
     await schuleNameAutocomplete.searchByTitle(params.schulname, true);
-    await this.page.getByTestId('klassenname-input').fill(params.klassenname);
-    await this.page.getByTestId('klasse-form-submit-button').click();
+
+    await klasseNameInput.waitFor({ state: 'visible' });
+    await klasseNameInput.fill(params.klassenname);
+
+    await createKlasseButton.waitFor({ state: 'visible' });
+    await createKlasseButton.click();
 
     return new KlasseCreationSuccessPage(this.page);
   }

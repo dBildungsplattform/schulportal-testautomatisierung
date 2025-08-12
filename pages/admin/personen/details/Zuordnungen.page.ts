@@ -56,7 +56,7 @@ export class ZuordnungenPage {
       await workflowPage.selectBefristungOption(params.option);
     }
     if ('befristung' in params) {
-      await workflowPage.fill(params.befristung);
+      await workflowPage.fillBefristungInput(params.befristung);
     }
     await workflowPage.submit();
     await this.savePendingChanges();

@@ -11,8 +11,10 @@ export class BefristungWorkflowPage {
   }
 
   /* actions */
-  public async fill(befristung: string): Promise<void> {
-    this.page.locator('[data-testid="befristung-input"] input').fill(befristung);
+  public async fillBefristungInput(befristung: string): Promise<void> {
+    const befristungInput: Locator = this.page.getByTestId('befristung-input').locator('input');
+    await befristungInput.waitFor({ state: 'visible' });
+    await befristungInput.fill(befristung);
   }
 
   public async selectBefristungOption(option: 'unbefristet' | 'schuljahresende'): Promise<void> {
@@ -24,15 +26,21 @@ export class BefristungWorkflowPage {
   }
 
   public async submit(): Promise<void> {
-    await this.page.getByTestId('change-befristung-submit-button').click();
+    const submitButton: Locator = this.page.getByTestId('change-befristung-submit-button');
+    await submitButton.waitFor({ state: 'visible' });
+    await submitButton.click();
   }
 
   public async confirm(): Promise<void> {
-    await this.page.getByTestId('confirm-change-befristung-button').click();
+    const confirmButton: Locator = this.page.getByTestId('confirm-change-befristung-button');
+    await confirmButton.waitFor({ state: 'visible' });
+    await confirmButton.click();
   }
 
   public async closeSuccessDialog(): Promise<void> {
-    await this.page.getByTestId('change-befristung-success-close').click();
+    const closeDialogButton: Locator = this.page.getByTestId('change-befristung-success-dialog-close-button');
+    await closeDialogButton.waitFor({ state: 'visible' });
+    await closeDialogButton.click();
   }
 
   /* assertions */

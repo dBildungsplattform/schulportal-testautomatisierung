@@ -117,8 +117,8 @@ export class PersonDetailsViewPage extends AbstractAdminPage {
     await expect(this.page.getByTestId('person-username')).toHaveText(params.username);
   }
 
-  public async check2FASetup(shouldBeSetup: boolean): Promise<void> {
-    if (shouldBeSetup) {
+  public async check2FASetup(hasBeenSetup: boolean): Promise<void> {
+    if (hasBeenSetup) {
       await expect(
         this.page.getByText('Für diesen Benutzer ist aktuell ein Software-Token eingerichtet.')
       ).toBeVisible();
@@ -129,7 +129,7 @@ export class PersonDetailsViewPage extends AbstractAdminPage {
         )
       ).toBeVisible();
 
-    } else await expect(this.page.getByText('Für diesen Benutzer ist aktuell keine 2FA eingerichtet.')).toBeHidden();
+    } else await expect(this.page.getByText('Für diesen Benutzer ist aktuell keine 2FA eingerichtet.')).toBeVisible();
   }
 
   public async checkZuordnungExists(params: ZuordnungValidationParams): Promise<void> {

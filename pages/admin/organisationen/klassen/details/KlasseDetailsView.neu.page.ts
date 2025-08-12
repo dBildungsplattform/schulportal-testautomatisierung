@@ -1,5 +1,7 @@
-import { expect, type Locator, Page } from '@playwright/test';
+import { expect, Page } from '@playwright/test';
 import { AbstractAdminPage } from '../../../../abstracts/AbstractAdminPage.page';
+import { KlasseDeletionWorkflowPage } from '../deletion-workflow/KlasseDeletionWorkflow.page';
+import { KlasseManagementViewPage } from '../KlasseManagementView.neu.page';
 
 export class KlasseDetailsViewPage extends AbstractAdminPage {
   /* add global locators here */
@@ -14,16 +16,35 @@ export class KlasseDetailsViewPage extends AbstractAdminPage {
     await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Klasse bearbeiten');
   }
 
-  public async editKlasse(klassenname: string): Promise<void> {
-    await this.page.getByTestId('klasse-edit-button').click();
-    await this.page.getByTestId('klassenname-input').fill(klassenname);
-    await this.page.getByTestId('klasse-form-submit-button').click();
+  public async successfullyDeleteKlasse(schulname: string, klassenname: string): Promise<KlasseManagementViewPage> {
+    const klasseDeletionWorkflowPage: KlasseDeletionWorkflowPage = new KlasseDeletionWorkflowPage(this.page);
+
+    await klasseDeletionWorkflowPage.deleteKlasse(schulname, klassenname);
+    const klasseManagementViewPage = await klasseDeletionWorkflowPage.klasseSuccessfullyDeleted(schulname, klassenname);
+    return klasseManagementViewPage;
   }
 
-  public async deleteKlasse(klassenname: string, schulname: string): Promise<void> {
-    await this.page.getByTestId('open-klasse-delete-dialog-button').click();
-    await expect(this.page.getByTestId('klasse-delete-confirmation-text')).toHaveText(`Wollen Sie die Klasse ${klassenname} an der Schule ${schulname} wirklich entfernen?`);
-    await this.page.getByTestId('klasse-delete-button').click();
+  public async unsuccessfullyDeleteKlasse(schulname: string, klassenname: string): Promise<KlasseManagementViewPage> {
+    const klasseDeletionWorkflowPage: KlasseDeletionWorkflowPage = new KlasseDeletionWorkflowPage(this.page);
+
+    await klasseDeletionWorkflowPage.deleteKlasse(schulname, klassenname);
+    const klasseManagementViewPage = await klasseDeletionWorkflowPage.klasseDeletionFailed();
+    return klasseManagementViewPage;
+  }
+
+  public async editKlasse(klassenname: string): Promise<void> {
+    const klasseNameInput = this.page.getByTestId('klassenname-input');
+    const editKlasseButton = this.page.getByTestId('klasse-edit-button');
+    const editKlasseSubmitButton = this.page.getByTestId('klasse-form-submit-button');
+
+    await editKlasseButton.waitFor({ state: 'visible' });
+    await editKlasseButton.click();
+
+    await klasseNameInput.waitFor({ state: 'visible' });
+    await klasseNameInput.fill(klassenname);
+
+    await editKlasseSubmitButton.waitFor({ state: 'visible' });
+    await editKlasseSubmitButton.click();
   }
 
   /* assertions */
@@ -32,15 +53,5 @@ export class KlasseDetailsViewPage extends AbstractAdminPage {
     await this.page.getByTestId('klasse-success-icon').isVisible();
     await expect(this.page.getByTestId('created-klasse-schule')).toHaveText(`(${dienststellennummer}) ${schulname}`);
     await expect(this.page.getByTestId('created-klasse-name')).toHaveText(klassenname);
-  }
-
-  public async klasseSuccessfullyDeleted(schulname: string, klassenname: string): Promise<void> {
-    await expect(this.page.getByTestId('klasse-delete-success-text')).toHaveText(`Die Klasse ${klassenname} an der Schule ${schulname} wurde erfolgreich gelöscht.`);
-    await this.page.getByTestId('close-klasse-delete-success-dialog-button').click();
-  }
-
-  public async klasseDeletionFailed(): Promise<void> {
-    await expect(this.page.getByTestId('klasse-details-error-alert-text')).toHaveText('Die Klasse kann nicht gelöscht werden, da noch Benutzer zugeordnet sind.');
-    await this.page.getByTestId('klasse-details-error-alert-button').click();
   }
 }

@@ -1,7 +1,8 @@
 import { expect, type Locator, Page } from '@playwright/test';
 import { AbstractAdminPage } from '../../../abstracts/AbstractAdminPage.page';
+import { SchuleCreationSuccessPage } from './SchuleCreationSuccess.page';
 
-interface SchuleCreationParams {
+export type SchuleCreationParams = {
   name: string;
   dienststellenNr: string;
   schulform: 'öffentlich';
@@ -22,15 +23,26 @@ export class SchuleCreationViewPage extends AbstractAdminPage {
     await expect(this.headline).toHaveText('Neue Schule hinzufügen');
   }
 
-  public async createSchule(params: SchuleCreationParams): Promise<void> {
+  public async createSchule(params: SchuleCreationParams): Promise<SchuleCreationSuccessPage> {
+    const dienststellenNrInput = this.page.getByTestId('dienststellennummer-input').locator('input');
+    const schuleNameInput = this.page.getByTestId('schulname-input').locator('input');
+    const createSchuleButton = this.page.getByTestId('schule-creation-form-submit-button');
+
     if (params.schulform === 'öffentlich') {
       await this.oeffentlicheSchuleOption.click();
       this.selectedSchultraegerName = await this.oeffentlicheSchuleOption.innerText();
     }
 
-    await this.page.getByTestId('dienststellennummer-input').locator('input').fill(params.dienststellenNr);
-    await this.page.getByTestId('schulname-input').locator('input').fill(params.name);
-    await this.page.getByTestId('schule-creation-form-submit-button').click();
+    await dienststellenNrInput.waitFor({ state: 'visible' });
+    await dienststellenNrInput.fill(params.dienststellenNr);
+
+    await schuleNameInput.waitFor({ state: 'visible' });
+    await schuleNameInput.fill(params.name);
+
+    await createSchuleButton.waitFor({ state: 'visible' });
+    await createSchuleButton.click();
+
+    return new SchuleCreationSuccessPage(this.page);
   }
 
   public async createAnother(): Promise<void> {

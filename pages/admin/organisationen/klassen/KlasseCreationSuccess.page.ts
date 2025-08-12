@@ -1,6 +1,7 @@
-import { expect, type Locator, Page } from '@playwright/test';
+import { expect, Page } from '@playwright/test';
 import { AbstractAdminPage } from '../../../abstracts/AbstractAdminPage.page';
-import { KlasseCreationParams } from './KlasseCreationView.neu.page';
+import { KlasseCreationParams, KlasseCreationViewPage } from './KlasseCreationView.neu.page';
+import { KlasseManagementViewPage } from './KlasseManagementView.neu.page';
 
 export class KlasseCreationSuccessPage extends AbstractAdminPage {
   /* add global locators here */
@@ -14,16 +15,14 @@ export class KlasseCreationSuccessPage extends AbstractAdminPage {
     return this.page.getByTestId('klasse-success-text').waitFor({ state: 'visible' });
   }
 
-  public async goBackToCreateAnotherKlasse(): Promise<void> {
-    const createAnotherKlasseButton: Locator = this.page.getByTestId('create-another-klasse-button');
-
-    await createAnotherKlasseButton.click();
+  public async goBackToCreateAnotherKlasse(): Promise<KlasseCreationViewPage> {
+    await this.page.getByTestId('create-another-klasse-button').click();
+    return new KlasseCreationViewPage(this.page);
   }
 
-  public async goBackToList(): Promise<void> {
-    const backToListButton: Locator = this.page.getByTestId('back-to-list-button');
-
-    await backToListButton.click();
+  public async goBackToList(): Promise<KlasseManagementViewPage> {
+    await this.page.getByTestId('back-to-list-button').click();
+    return new KlasseManagementViewPage(this.page);
   }
 
   /* assertions */

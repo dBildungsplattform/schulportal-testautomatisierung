@@ -15,9 +15,18 @@ export class RolleDetailsViewPage extends AbstractAdminPage {
   }
 
   public async editRolle(rollenname: string): Promise<void> {
-    await this.page.getByTestId('rolle-edit-button').click();
-    await this.page.getByTestId('rollenname-input').fill(rollenname);
-    await this.page.getByTestId('rolle-changes-save-button').click();
+    const rolleNameInput = this.page.getByTestId('rollenname-input');
+    const editRolleButton = this.page.getByTestId('rolle-edit-button');
+    const editRolleSubmitButton = this.page.getByTestId('rolle-changes-save-button');
+
+    await editRolleButton.waitFor({ state: 'visible' });
+    await editRolleButton.click();
+
+    await rolleNameInput.waitFor({ state: 'visible' });
+    await rolleNameInput.fill(rollenname);
+
+    await editRolleSubmitButton.waitFor({ state: 'visible' });
+    await editRolleSubmitButton.click();
   }
 
   /* assertions */
