@@ -41,6 +41,19 @@ USER='xxx' PW='xxx' FRONTEND_URL='https://main.dev.spsh.dbildungsplattform.de/' 
 
 USER='xxx' PW='xxx' FRONTEND_URL='https://main.dev.spsh.dbildungsplattform.de/' npx playwright test Schule.spec.ts
 
+### Tests ausführen in denen auch Operationen bzgl. LDAP getestet werden:
+- Zusätzlich die Variablen LDAP_URL und LDAP_ADMIN_PASSWORD definieren
+- Bsp.: 
+```properties
+USER='xxx' PW='xxx' FRONTEND_URL='https://main.dev.spsh.dbildungsplattform.de/' LDAP_URL='ldap://localhost' LDAP_ADMIN_PASSWORD='xxx' npx playwright test
+
+USER='xxx' PW='xxx' FRONTEND_URL='https://main.dev.spsh.dbildungsplattform.de/' LDAP_URL='ldap://localhost' LDAP_ADMIN_PASSWORD='xxx' npx playwright test -g "Einen Benutzer mit der Rolle Lehrkraft anlegen" --headed
+
+USER='xxx' PW='xxx' FRONTEND_URL='https://main.dev.spsh.dbildungsplattform.de/' LDAP_URL='ldap://localhost' LDAP_ADMIN_PASSWORD='xxx' npx playwright test Schule.spec.ts
+
+...
+``` 
+
 #### debug-mode:
 
 PWDEBUG=1 USER='xxx' PW='xxx' FRONTEND_URL='https://main.dev.spsh.dbildungsplattform.de/' npx playwright test -g "Einen Benutzer mit der Rolle Lehrkraft anlegen"

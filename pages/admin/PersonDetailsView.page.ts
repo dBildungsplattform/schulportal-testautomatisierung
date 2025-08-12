@@ -50,6 +50,8 @@ export class PersonDetailsViewPage {
   readonly radioButtonUnbefristet: Locator;
   readonly radioButtonUnbefristetDisabled: Locator;
 
+  readonly buttonConfirmZuordnungDialogAddition: Locator;
+
   readonly organisationen: ComboBox;
   readonly rollen: ComboBox;
   readonly klassen: ComboBox;
@@ -117,6 +119,31 @@ export class PersonDetailsViewPage {
     this.buttonEditSchulzuordnung = page
       .locator('div')
       .getByTestId('zuordnung-edit-button');
+/*<<<<<<< HEAD
+    this.button_addSchulzuordnung = page.getByTestId('zuordnung-create-button');
+    this.button_closeZuordnungSuccess = page.getByTestId('close-zuordnung-delete-success-button');
+    this.combobox_organisationDialogBenutzerSperren = page.getByTestId('person-lock-card').locator('.v-field__input');
+    this.combobox_organisation = page.getByTestId('organisation-select').locator('.v-field__input');
+    this.combobox_rolle = page.getByTestId('rolle-select').locator('.v-field__input');
+    this.combobox_organisation = page.getByTestId('organisation-select').locator('.v-field');
+    this.organisationInput = page.getByTestId('organisation-select').locator('input');
+    this.comboboxOrganisationInput = new ComboBox(this.page, this.organisationInput);
+
+    this.button_deleteSchulzuordnung = page.getByTestId('open-zuordnung-delete-dialog-button');
+    this.button_confirmDeleteSchulzuordnung = page.getByTestId('zuordnung-delete-button');
+    this.combobox_rolle = page.getByTestId('rolle-select').locator('.v-field');
+    this.input_kopersNr = page.getByTestId('kopersnr-input').locator('.v-field__input');
+    this.button_submitAddSchulzuordnung = page.getByTestId('zuordnung-creation-submit-button');
+    this.button_confirmAddSchulzuordnung = page.getByRole('button', { name: 'Ja' });
+    this.button_saveAssignmentChanges = page.getByTestId('zuordnung-changes-save');
+    this.button_closeSaveAssignmentChanges = page.getByRole('dialog').getByRole('button', { name: 'Schließen' });
+    this.button_befristetSchuljahresende = page.getByLabel('Bis Schuljahresende (31.07.');
+    this.button_befristungUnbefristet = page.getByLabel('Unbefristet');
+    this.buttonConfirmZuordnungDialogAddition = page.getByTestId('confirm-zuordnung-dialog-addition');
+    this.organisationen = new ComboBox(this.page, this.combobox_organisation);
+    this.organisationenInput = new ComboBox(this.page, this.organisationInput);
+    this.rollen = new ComboBox(this.page, this.combobox_rolle);
+=======*/
     this.buttonAddSchulzuordnung = page.getByTestId('zuordnung-create-button');
     this.comboboxOrganisationDialogBenutzerSperren = page.getByTestId('person-lock-card').locator('.v-field__input');
     this.comboboxRolle = page.getByTestId('rolle-select');
