@@ -84,7 +84,7 @@ jobs:
           echo "No branch to ticket found, using main FE and BE infrastructure"
           FRONTEND_URL="https://main.dev.spsh.dbildungsplattform.de/"
           echo "FRONTEND_URL=$FRONTEND_URL"
-          echo "fe_url=${FRONTEND_URL}" >> "$GITHUB_OUTPUT"
+          echo "fe_url=${FRONTEND_URL}" >> "$GITHUB_OUTPUT" 
         fi
       
     - name: Run Playwright tests
