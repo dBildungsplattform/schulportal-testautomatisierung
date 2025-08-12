@@ -14,11 +14,8 @@ import { StartViewPage } from '../StartView.neu.page';
 
 export class MenuBarPage {
   /* add global locators here */
-  readonly page: Page;
 
-  constructor(page: Page) {
-    this.page = page;
-  }
+  constructor(protected readonly page: Page) {}
 
   /* actions */
   public async navigateToStartPage(): Promise<StartViewPage> {

@@ -17,7 +17,7 @@ export class KlasseCreationViewPage extends AbstractAdminPage {
   }
 
   /* actions */
-  async waitForPageLoad(): Promise<void> {
+  public async waitForPageLoad(): Promise<void> {
     await this.page.getByTestId('klasse-creation-card').waitFor({ state: 'visible' });
     await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Klasse anlegen');
   }

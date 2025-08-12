@@ -3,13 +3,11 @@ import { Autocomplete } from '../../../../../elements/Autocomplete';
 import { ZuordnungenPage } from '../Zuordnungen.page';
 
 export class AddZuordnungWorkflowPage {
-  /* locators */
-  readonly page: Page;
+  /* add global locators here */
   private readonly organisationen: Autocomplete;
   private readonly rollen: Autocomplete;
 
-  constructor(page: Page) {
-    this.page = page;
+  constructor(protected readonly page: Page) {
     this.organisationen = new Autocomplete(this.page, this.page.getByTestId('organisation-select'));
     this.rollen = new Autocomplete(this.page, this.page.getByTestId('rolle-select'));
   }

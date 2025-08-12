@@ -4,11 +4,8 @@ import { StartViewPage } from './StartView.neu.page';
 
 export class LoginViewPage {
   /* add global locators here */
-  readonly page: Page;
 
-  constructor(page: Page) {
-    this.page = page;
-  }
+  constructor(protected readonly page: Page) {}
 
   /* actions */
   public async waitForPageLoad(): Promise<void> {

@@ -2,8 +2,7 @@ import { expect, Page } from '@playwright/test';
 import { LoginViewPage } from './LoginView.neu.page';
 import { RollenArt } from '../base/rollentypen';
 
-
-interface Zuordnung {
+type Zuordnung = {
   dienststellennummer?: string;
   kopersnummer?: string;
   organisationsname: string;
@@ -11,7 +10,7 @@ interface Zuordnung {
   rollenname: string;
 }
 
-interface PersoenlicheDaten {
+type PersoenlicheDaten = {
   kopersnummer?: string;
   nachname: string;
   rollenart: RollenArt;
@@ -21,11 +20,9 @@ interface PersoenlicheDaten {
 
 export class ProfileViewPage {
   /* add global locators here */
-  readonly page: Page;
   readonly loginViewPage: LoginViewPage;
 
-  constructor(page: Page) {
-    this.page = page;
+  constructor(protected readonly page: Page) {
     this.loginViewPage = new LoginViewPage(page);
   }
 
@@ -80,17 +77,13 @@ export class ProfileViewPage {
   public async checkZuordnungen(zuordnungen: Zuordnung[]): Promise<void> {
     for (let i: number = 0; i < zuordnungen.length; i++) {
       const zuordnung: Zuordnung = zuordnungen[i];
-
-      if (zuordnungen.length === 1) {
-        await expect(this.page.getByTestId(`zuordnung-card-${i}-headline`)).toHaveText('Schulzuordnung');
-      } else {
-        await expect(this.page.getByTestId(`zuordnung-card-${i}-headline`)).toHaveText('Schulzuordnung ' + (i + 1));
-      }
-
-      await expect(this.page.getByTestId(`schule-label-${i}`)).toHaveText('Schule:');
-      await expect(this.page.getByTestId(`schule-value-${i}`)).toHaveText(zuordnung.organisationsname);
-      await expect(this.page.getByTestId(`rolle-label-${i}`)).toHaveText('Rolle:');
-      await expect(this.page.getByTestId(`rolle-value-${i}`)).toHaveText(zuordnung.rollenname);
+        await Promise.all([
+          expect(this.page.getByTestId(`zuordnung-card-${i}-headline`)).toHaveText((zuordnungen.length === 1 ? 'Schulzuordnung' : `Schulzuordnung ${i + 1}`)),
+          expect(this.page.getByTestId(`schule-label-${i}`)).toHaveText('Schule:'),
+          expect(this.page.getByTestId(`schule-value-${i}`)).toHaveText(zuordnung.organisationsname),
+          expect(this.page.getByTestId(`rolle-label-${i}`)).toHaveText('Rolle:'),
+          expect(this.page.getByTestId(`rolle-value-${i}`)).toHaveText(zuordnung.rollenname)
+        ]);
 
       if (zuordnung.rollenart === 'SYSADMIN') {
         await expect(this.page.getByTestId(`dienststellennummer-label-${i}`)).toBeHidden();

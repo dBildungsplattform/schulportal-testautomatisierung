@@ -1,12 +1,10 @@
 import { expect, type Locator, Page } from '@playwright/test';
 
 export class BefristungWorkflowPage {
-  /* locators */
-  readonly page: Page;
+  /* add global locators here */
   private readonly unbefristetRadioButton: Locator;
 
-  constructor(page: Page) {
-    this.page = page;
+  constructor(protected readonly page: Page) {
     this.unbefristetRadioButton = this.page.getByTestId('unbefristet-radio-button');
   }
 

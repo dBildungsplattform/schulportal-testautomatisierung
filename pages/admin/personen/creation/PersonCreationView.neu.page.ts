@@ -4,7 +4,7 @@ import { Autocomplete } from '../../../../elements/Autocomplete';
 import { waitForAPIResponse } from '../../../../base/api/testHelper.page';
 import { PersonCreationSuccessPage } from './PersonCreationSuccess.page';
 
-export interface PersonCreationParams {
+export type PersonCreationParams = {
   organisation: string;
   rollen: string[];
   vorname: string;

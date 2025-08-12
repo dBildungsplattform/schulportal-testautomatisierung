@@ -2,16 +2,16 @@ import { expect, Locator, Page } from '@playwright/test';
 
 export class StartViewPage {
   /* add global locators here */
-  readonly page: Page;
+  readonly startCardHeadline: Locator;
 
-  constructor(page: Page) {
-    this.page = page;
+  constructor(protected readonly page: Page) {
+    this.startCardHeadline = this.page.locator('[data-testid="start-card-headline"]');
   }
 
   /* actions */
   public async waitForPageLoad(): Promise<void> {
-    await this.page.getByTestId('start-card-headline').waitFor({ state: 'visible' });
-    await expect(this.page.getByTestId('start-card-headline')).toHaveText('Startseite');
+    await this.startCardHeadline.waitFor({ state: 'visible' });
+    await expect(this.startCardHeadline).toHaveText('Startseite');
     await this.serviceProvidersAreLoaded();
   }
 
@@ -23,10 +23,12 @@ export class StartViewPage {
   }
 
   public async serviceProviderIsVisible(serviceProviderNames: string[]): Promise<void> {
-    for (const serviceProviderName of serviceProviderNames) {
-      const serviceProviderCard: Locator = this.page.locator('[data-testid^="service-provider-card"]', { hasText: serviceProviderName });
-      await expect(serviceProviderCard).toBeVisible();
-      await expect(serviceProviderCard.locator('img')).toBeVisible();
-    }
+    await Promise.all([
+      ...serviceProviderNames.map((serviceProviderName) => {
+        const serviceProviderCard = this.page.locator(`[data-testid^="service-provider-card"]`, { hasText: serviceProviderName });
+        expect(serviceProviderCard).toBeVisible();
+        expect(serviceProviderCard.locator('img')).toBeVisible();
+      }),
+    ]);
   }
 }

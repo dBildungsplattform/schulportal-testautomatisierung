@@ -11,7 +11,7 @@ export class SchuleCreationSuccessPage extends AbstractAdminPage {
   }
 
   /* actions */
-  async waitForPageLoad(): Promise<void> {
+  public async waitForPageLoad(): Promise<void> {
     return this.page.getByTestId('schule-success-text').waitFor({ state: 'visible' });
   }
 

@@ -1,9 +1,7 @@
 import { type Locator, Page } from '@playwright/test';
 
 export class SearchFilter {
-  constructor(private readonly page: Page) {
-      this.page = page;
-    }
+  constructor(private readonly page: Page) {}
   
   public async searchByText(searchText: string): Promise<void> {
     const searchFilterInput: Locator = this.page.getByTestId('search-filter-input').locator('input');

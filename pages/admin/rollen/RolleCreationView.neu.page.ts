@@ -3,7 +3,7 @@ import { AbstractAdminPage } from '../../abstracts/AbstractAdminPage.page';
 import { RolleCreationSuccessPage } from './RolleCreationSuccess.page';
 import { RolleCreationWorkflow } from './RolleCreationWorkflow.page';
 
-export interface RolleCreationParams {
+export type RolleCreationParams = {
   name: string;
   ssk: string;
   art: string;

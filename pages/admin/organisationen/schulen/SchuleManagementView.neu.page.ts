@@ -16,7 +16,7 @@ export class SchuleManagementViewPage extends AbstractManagementViewPage {
   public async waitForPageLoad(): Promise<void> {
     await this.page.getByTestId('schule-management-card').waitFor({ state: 'visible' });
     await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Schulverwaltung');
-    return expect(this.page.getByTestId('schule-table')).not.toContainText('Keine Daten');
+    await expect(this.page.getByTestId('schule-table')).not.toContainText('Keine Daten');
   }
 
   public async searchAndSyncItslearning(schulname: string): Promise<void> {

@@ -3,14 +3,17 @@ import { waitForAPIResponse } from '../../../../base/api/testHelper.page';
 import { AbstractAdminPage } from '../../../abstracts/AbstractAdminPage.page';
 import { ZuordnungenPage, ZuordnungValidationParams } from './Zuordnungen.page';
 
-interface PersonDetailsValidationParams { username: string }
-interface LockValidationParams {
+type PersonDetailsValidationParams = { 
+  username: string
+};
+
+type LockValidationParams = {
   locked: boolean;
   from?: string;
   until?: string;
   reason?: string;
   organisation?: string;
-}
+};
 
 export class PersonDetailsViewPage extends AbstractAdminPage {
   private readonly zuordnungSection: ZuordnungenPage;

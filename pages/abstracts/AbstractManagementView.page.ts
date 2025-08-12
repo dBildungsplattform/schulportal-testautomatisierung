@@ -10,8 +10,6 @@ export abstract class AbstractManagementViewPage extends AbstractAdminPage {
 
   constructor(protected readonly page: Page) {
     super(page);
-
-    this.page = page;
   }
 
   /* actions */

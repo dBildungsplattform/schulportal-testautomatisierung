@@ -3,11 +3,8 @@ import { LoginViewPage } from './LoginView.neu.page';
 
 export class LandingViewPage {
   /* add global locators here */
-  readonly page: Page;
 
-  constructor(page: Page) {
-    this.page = page;
-  }
+  constructor(private readonly page: Page) {}
 
   /* actions */
   public async waitForPageLoad(): Promise<void> {

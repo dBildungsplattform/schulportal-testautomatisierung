@@ -1,7 +1,7 @@
 import { expect, type Locator, Page } from '@playwright/test';
 import { Autocomplete } from '../../../../elements/Autocomplete';
 import { FooterDataTablePage } from '../../../components/FooterDataTable.page';
-import { KlasseDetailsViewPage } from './KlasseDetailsView.page';
+import { KlasseDetailsViewPage } from './details/KlasseDetailsView.page';
 
 export interface KlasseManagementViewPageOptions {
   currentUserIsLandesadministrator: boolean;

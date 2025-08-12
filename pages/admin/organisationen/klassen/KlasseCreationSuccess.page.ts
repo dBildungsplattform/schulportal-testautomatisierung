@@ -11,8 +11,8 @@ export class KlasseCreationSuccessPage extends AbstractAdminPage {
   }
 
   /* actions */
-  async waitForPageLoad(): Promise<void> {
-    return this.page.getByTestId('klasse-success-text').waitFor({ state: 'visible' });
+  public async waitForPageLoad(): Promise<void> {
+    await this.page.getByTestId('klasse-success-text').waitFor({ state: 'visible' });
   }
 
   public async goBackToCreateAnotherKlasse(): Promise<KlasseCreationViewPage> {

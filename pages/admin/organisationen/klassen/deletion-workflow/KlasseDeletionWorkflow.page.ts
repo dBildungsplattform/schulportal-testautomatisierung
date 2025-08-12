@@ -3,12 +3,9 @@ import { KlasseManagementViewPage } from '../KlasseManagementView.page';
 import { KlasseDetailsViewPage } from '../details/KlasseDetailsView.neu.page';
 
 export class KlasseDeletionWorkflowPage {
-  /* locators */
-  readonly page: Page;
+  /* add global locators here */
 
-  constructor(page: Page) {
-    this.page = page;
-  }
+  constructor(protected readonly page: Page) {}
 
   /* actions */
   public async deleteKlasse(klassenname: string, schulname: string): Promise<void> {

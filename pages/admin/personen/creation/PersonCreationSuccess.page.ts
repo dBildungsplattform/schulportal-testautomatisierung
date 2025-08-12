@@ -12,7 +12,7 @@ export class PersonCreationSuccessPage extends AbstractAdminPage {
   }
 
   /* actions */
-  async waitForPageLoad(): Promise<void> {
+  public async waitForPageLoad(): Promise<void> {
     return this.page.getByTestId('person-success-text').waitFor({ state: 'visible' });
   }
 

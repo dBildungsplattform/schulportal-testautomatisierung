@@ -50,20 +50,31 @@ export class SchuleCreationViewPage extends AbstractAdminPage {
   }
 
   /* assertions */
-  public async checkSuccessPage(params: Omit<SchuleCreationParams, 'schulform'>): Promise<void> {
-    await expect(this.page.getByTestId('schule-success-text')).toBeVisible();
+  public async checkSuccessPage(
+    params: Omit<SchuleCreationParams, 'schulform'>
+  ): Promise<void> {
+    /* header */
     await expect(this.headline).toHaveText('Neue Schule hinzufügen');
-    await expect(this.page.getByTestId('close-layout-card-button')).toBeVisible();
-    await expect(this.page.getByTestId('schule-success-text')).toBeVisible();
     await expect(this.page.locator('.mdi-check-circle')).toBeVisible();
-    await expect(this.page.getByText('Folgende Daten wurden gespeichert:')).toBeVisible();
-    await expect(this.page.getByText('Schulform:', { exact: true })).toBeVisible();
-    await expect(this.page.getByTestId('created-schule-form')).toContainText(this.selectedSchultraegerName);
-    await expect(this.page.getByText('Dienststellennummer:', { exact: true })).toBeVisible();
-    await expect(this.page.getByTestId('created-schule-dienststellennummer')).toHaveText(params.dienststellenNr);
-    await expect(this.page.getByText('Schulname:', { exact: true })).toBeVisible();
-    await expect(this.page.getByTestId('created-schule-name')).toHaveText(params.name);
+    await expect(this.page.getByTestId('schule-success-text')).toBeVisible();
+
+    /* buttons */
+    await expect(this.page.getByTestId('close-layout-card-button')).toBeVisible();
     await expect(this.page.getByTestId('create-another-schule-button')).toBeVisible();
     await expect(this.page.getByTestId('back-to-list-button')).toBeVisible();
+
+    /* key column */
+    await expect(this.page.getByText('Folgende Daten wurden gespeichert:')).toBeVisible();
+    await expect(this.page.getByText('Schulform:', { exact: true })).toBeVisible();
+    await expect(this.page.getByText('Dienststellennummer:', { exact: true })).toBeVisible();
+    await expect(this.page.getByText('Schulname:', { exact: true })).toBeVisible();
+
+    /* value column */
+    await expect(this.page.getByTestId('created-schule-form'))
+      .toContainText(this.selectedSchultraegerName);
+    await expect(this.page.getByTestId('created-schule-dienststellennummer'))
+      .toHaveText(params.dienststellenNr);
+    await expect(this.page.getByTestId('created-schule-name'))
+      .toHaveText(params.name);
   }
 }
