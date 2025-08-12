@@ -21,8 +21,8 @@ jobs:
     - name: Install dependencies
       run: npm ci
 
-    - name: Install Playwright Browsers
-      run: npx playwright install --with-deps
+    # - name: Install Playwright Browsers
+    #   run: npx playwright install --with-deps
 
       
     - name: Determine Branch Tag
@@ -31,48 +31,58 @@ jobs:
         regex_long='^([[:alpha:]]+?-[[:digit:]]+-[[:digit:]]+)'
         regex_short='^([[:alpha:]]+?-[[:digit:]]+)'
         if [[ "${{ github.head_ref }}" =~ $regex_long ]]; then
-          tag="$(echo ${BASH_REMATCH[1]} | tr [A-Z] [a-z])"
+          tag="$(echo ${BASH_REMATCH[1]})"
         elif [[ "${{ github.head_ref }}" =~ $regex_short ]]; then
-          tag="$(echo ${BASH_REMATCH[1]} | tr [A-Z] [a-z])"
+          tag="$(echo ${BASH_REMATCH[1]})"
         elif [[ "${{ github.head_ref }}" == 'main' ]]; then
-          tag=""
+        tag=""
         else
         echo "::error::Couldn't extract ticket from branch" ${{ github.head_ref }} ". If not main the branch name should begin alpha-digit or alpha-digit-digit blocks (e.g. SPSH-1234-test-name or release-1-1-optional-text)"
-          exit 1
+        exit 1
         fi
         echo "tag=${tag}" >> "$GITHUB_OUTPUT"
         echo "branch to merge from tag=${tag}"
         
-    - name: Get list of all branches
-      run: |
-        git fetch --all  # Ensure we have all branches
-        git branch -r | sed 's/origin\///' > branches.txt
-        echo "Branches found:"
-        cat branches.txt
-
-    - name: Count branches containing same ticketprefix
+        
+    - name: Determine Branch Count
       id: branch-count
+      env:
+        TAG: ${{ steps.determine-tag.outputs.tag }}
       run: |
-        SEARCH_STRING="${{ steps.determine-tag.outputs.tag }}"  
-        COUNT=$(grep -i -c "$SEARCH_STRING" branches.txt || true)
-        echo "Occurrences of '$SEARCH_STRING': $COUNT"
-        echo "MATCH_COUNT=$COUNT" >> $GITHUB_ENV
-        echo "The string appears $COUNT times in branch names"
-        echo "count=${COUNT}" >> "$GITHUB_OUTPUT"
+        REPOS=(
+          "https://github.com/dBildungsplattform/dbildungs-iam-server.git"
+          "https://github.com/dbildungsplattform/schulportal-client.git"
+          "https://github.com/dbildungsplattform/dbildungs-iam-keycloak.git"
+          "https://github.com/dbildungsplattform/dbildungs-iam-ldap.git"
+        )
+        MATCH_COUNT=0
+        for REPO in "${REPOS[@]}"; do
+          echo "🔍 Checking $REPO for branch '$TAG'"
+          BRANCH_EXISTS=$(git ls-remote --heads "$REPO" "refs/heads/$TAG")
+          if [[ -n "$BRANCH_EXISTS" ]]; then
+            echo "✅ Branch '$TAG' exists in $REPO"
+            MATCH_COUNT=$((MATCH_COUNT + 1))
+          else
+            echo "Branch '$TAG' does NOT exist in $REPO"
+          fi
+        done
+        echo "Total matches found: $MATCH_COUNT"
+        echo "count=$MATCH_COUNT" >> "$GITHUB_OUTPUT"
     
     - name: Determine Frontend Url by checking current branches
       id: determine-fe-url
       run: |
-        if [ "${{ steps.branch-count.outputs.count }}" -gt 1 ]; then
-          echo "At least one more branch for ticket was found, using branch FE and BE infrastructure"
-          FRONTEND_URL="https://${{ steps.determine-tag.outputs.tag }}.dev.spsh.dbildungsplattform.de/"
+        if [ ${{ steps.branch-count.outputs.count }} -ge 1 ]; then
+          echo "At least one branch for ticket was found, using branch FE and BE infrastructure"
+          FRONTEND_URL_PREFIX=$(echo "${{ steps.determine-tag.outputs.tag }}" | tr '[:upper:]' '[:lower:]')
+          FRONTEND_URL="https://${FRONTEND_URL_PREFIX}.dev.spsh.dbildungsplattform.de/"
           echo "FRONTEND_URL=$FRONTEND_URL"
           echo "fe_url=${FRONTEND_URL}" >> "$GITHUB_OUTPUT"
         else
-          echo "No other branch to ticket found, using main FE and BE infrastructure"
+          echo "No branch to ticket found, using main FE and BE infrastructure"
           FRONTEND_URL="https://main.dev.spsh.dbildungsplattform.de/"
           echo "FRONTEND_URL=$FRONTEND_URL"
-          echo "fe_url=${FRONTEND_URL}" >> "$GITHUB_OUTPUT"
+          echo "fe_url=${FRONTEND_URL}" >> "$GITHUB_OUTPUT" 
         fi
       
     - name: Run Playwright tests
