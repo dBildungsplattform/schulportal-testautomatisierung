@@ -54,7 +54,6 @@ jobs:
           "https://github.com/dbildungsplattform/schulportal-client.git"
           "https://github.com/dbildungsplattform/dbildungs-iam-keycloak.git"
           "https://github.com/dbildungsplattform/dbildungs-iam-ldap.git"
-          "https://github.com/dbildungsplattform/schulportal-testautomatisierung.git"
         )
 
         MATCH_COUNT=0
@@ -66,7 +65,7 @@ jobs:
             echo "✅ Branch '$TAG' exists in $REPO"
             MATCH_COUNT=$((MATCH_COUNT + 1))
           else
-            echo "❌ Branch '$TAG' does NOT exist in $REPO"
+            echo "Branch '$TAG' does NOT exist in $REPO"
           fi
         done
 
@@ -77,12 +76,12 @@ jobs:
       id: determine-fe-url
       run: |
         if [ ${{ steps.branch-count.outputs.count }} -ge 1 ]; then
-          echo "At least one more branch for ticket was found, using branch FE and BE infrastructure"
+          echo "At least one branch for ticket was found, using branch FE and BE infrastructure"
           FRONTEND_URL="https://${{ steps.determine-tag.outputs.tag }}.dev.spsh.dbildungsplattform.de/"
           echo "FRONTEND_URL=$FRONTEND_URL"
           echo "fe_url=${FRONTEND_URL}" >> "$GITHUB_OUTPUT"
         else
-          echo "No other branch to ticket found, using main FE and BE infrastructure"
+          echo "No branch to ticket found, using main FE and BE infrastructure"
           FRONTEND_URL="https://main.dev.spsh.dbildungsplattform.de/"
           echo "FRONTEND_URL=$FRONTEND_URL"
           echo "fe_url=${FRONTEND_URL}" >> "$GITHUB_OUTPUT"
