@@ -11,7 +11,7 @@ import { fileURLToPath } from 'url';
 import { deletePersonBySearchString } from '../base/testHelperDeleteTestdata.ts';
 import { waitForAPIResponse } from '../base/api/testHelper.page';
 
-// schulen cannot be deleted yet, so we use this testschule, which should already exist
+// schulen cannot be deleted yet, so we use this testschule, which should already exist //
 import { testschule665Name } from '../base/organisation.ts';
 
 const PW: string = process.env.PW as string;
