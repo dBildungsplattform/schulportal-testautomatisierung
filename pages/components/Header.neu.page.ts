@@ -1,4 +1,4 @@
-import { Page } from '@playwright/test';
+import { expect, Page } from '@playwright/test';
 import { LandingViewPage } from '../LandingView.neu.page';
 import { LoginViewPage } from '../LoginView.neu.page';
 import { ProfileViewPage } from '../ProfileView.neu.page';
@@ -28,7 +28,7 @@ export class HeaderPage {
 
   /* assertions */
   public async checkIfIconsAreVisible(): Promise<void> {
-    await this.page.locator('.mdi-account-outline').isVisible();
-    await this.page.locator('.mdi-logout').isVisible();
+    await expect(this.page.locator('.mdi-account-outline')).toBeVisible;
+    await expect(this.page.locator('.mdi-logout')).toBeVisible;
   }
 }

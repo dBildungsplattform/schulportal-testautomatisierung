@@ -78,7 +78,7 @@ export class ZuordnungenPage {
       `Wollen Sie den Schüler/die Schülerin aus Klasse ${from} in Klasse ${to} versetzen?`
     );
     await this.page.getByTestId('confirm-change-klasse-button').click();
-    this.savePendingChanges();
+    await this.savePendingChanges();
   }
 
   private async savePendingChanges(): Promise<void> {

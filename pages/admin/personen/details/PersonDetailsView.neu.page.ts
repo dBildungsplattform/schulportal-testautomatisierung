@@ -18,7 +18,7 @@ type LockValidationParams = {
 export class PersonDetailsViewPage extends AbstractAdminPage {
   private readonly zuordnungSection: ZuordnungenPage;
 
-  public constructor(page: Page) {
+  constructor(page: Page) {
     super(page);
     this.zuordnungSection = new ZuordnungenPage(page);
   }

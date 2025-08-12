@@ -14,34 +14,24 @@ export class DataTable {
       return this.tableLocator.getByRole('cell', { name: expectedText, exact: true });
     }
 
-    public setItemsPerPage(value: string): void {
-      const itemsPerPageSelect: Locator = this.page.locator('.v-data-table-footer__items-per-page .v-select');
-
-      itemsPerPageSelect.selectOption(value);
+    public async setItemsPerPage(value: string): Promise<void> {
+      await this.page.locator('.v-data-table-footer__items-per-page .v-select').selectOption(value);
     }
 
     public async goToFirstPage(): Promise<void> {
-      const goToFirstPageButton: Locator = this.page.locator('.v-pagination__first button:not(.v-btn--disabled)');
-      
-      await goToFirstPageButton.click();
+      await this.page.locator('.v-pagination__first button:not(.v-btn--disabled)').click();
     }
 
     public async goToPreviousPage(): Promise<void> {
-      const goToPreviousPageButton: Locator = this.page.locator('.v-pagination__prev button:not(.v-btn--disabled)');
-      
-      await goToPreviousPageButton.click();
+      await this.page.locator('.v-pagination__prev button:not(.v-btn--disabled)').click();
     }
 
     public async goToNextPage(): Promise<void> {
-      const goToNextPageButton: Locator = this.page.locator('.v-pagination__next button:not(.v-btn--disabled)');
-      
-      await goToNextPageButton.click();
+      await this.page.locator('.v-pagination__next button:not(.v-btn--disabled)').click();
     }
 
     public async goToLastPage(): Promise<void> {
-      const goToLastPageButton: Locator = this.page.locator('.v-pagination__last button:not(.v-btn--disabled)');
-      
-      await goToLastPageButton.click();
+      await this.page.locator('.v-pagination__last button:not(.v-btn--disabled)').click();
     }
 
     /* assertions */
@@ -49,7 +39,7 @@ export class DataTable {
       const currentPageNumberElement: Locator = this.page.locator('.v-pagination__item');
       const currentPageNumberText: string | null = await currentPageNumberElement.textContent();
 
-      await expect(currentPageNumberText).toEqual(expectedPageNumber);
+      await expect(Number(currentPageNumberText)).toBe(expectedPageNumber);
     }
 
     public async checkHeaders(expectedHeaders: string[]): Promise<void> {
@@ -74,10 +64,10 @@ export class DataTable {
     }
 
     public async checkIfItemIsNotVisible(expectedText: string): Promise<void> {
-      return expect(this.tableLocator.getByRole('cell', { name: expectedText, exact: true })).toBeHidden();
+      await expect(this.tableLocator.getByRole('cell', { name: expectedText, exact: true })).toBeHidden();
     }
 
     public async checkIfItemIsVisible(expectedText: string): Promise<void> {
-      return expect(this.tableLocator.getByRole('cell', { name: expectedText, exact: true })).toBeVisible();
+      await expect(this.tableLocator.getByRole('cell', { name: expectedText, exact: true })).toBeVisible();
     }
 }

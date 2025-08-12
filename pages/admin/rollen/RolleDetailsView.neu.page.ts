@@ -32,7 +32,7 @@ export class RolleDetailsViewPage extends AbstractAdminPage {
   /* assertions */
   public async rolleSuccessfullyEdited(rollenname: string): Promise<void> {
     await expect(this.page.getByTestId('rolle-success-text')).toHaveText('Die Rolle wurde erfolgreich geändert.');
-    await this.page.getByTestId('rolle-success-icon').isVisible();
+    await expect(this.page.getByTestId('rolle-success-icon')).toBeVisible();
     await expect(this.page.getByTestId('updated-rolle-name')).toHaveText(rollenname);
   }
 }

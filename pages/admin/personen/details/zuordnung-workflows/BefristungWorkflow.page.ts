@@ -3,9 +3,11 @@ import { expect, type Locator, Page } from '@playwright/test';
 export class BefristungWorkflowPage {
   /* add global locators here */
   private readonly unbefristetRadioButton: Locator;
+  private readonly schuljahresendeRadioButton: Locator;
 
   constructor(protected readonly page: Page) {
     this.unbefristetRadioButton = this.page.getByTestId('unbefristet-radio-button');
+    this.schuljahresendeRadioButton = this.page.getByTestId('schuljahresende-radio-button');
   }
 
   /* actions */
@@ -16,11 +18,7 @@ export class BefristungWorkflowPage {
   }
 
   public async selectBefristungOption(option: 'unbefristet' | 'schuljahresende'): Promise<void> {
-    if (option === 'schuljahresende') {
-      await this.page.getByTestId('schuljahresende-radio-button').locator('input').check();
-    } else if (option === 'unbefristet') {
-      await this.page.getByTestId('unbefristet-radio-button').locator('input').check();
-    }
+    await this.page.getByTestId(`${option}-radio-button`).locator('input').check();
   }
 
   public async submit(): Promise<void> {
@@ -58,7 +56,7 @@ export class BefristungWorkflowPage {
   }
 
   public async checkSelectedBefristungOption(option: 'unbefristet' | 'schuljahresende'): Promise<void> {
-    if (option === 'schuljahresende') await expect(this.page.getByTestId('schuljahresende-radio-button')).toBeChecked();
+    if (option === 'schuljahresende') await expect(this.schuljahresendeRadioButton).toBeChecked();
     if (option === 'unbefristet') await expect(this.unbefristetRadioButton).toBeChecked();
   }
 

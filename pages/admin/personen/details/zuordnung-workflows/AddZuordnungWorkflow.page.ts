@@ -6,6 +6,7 @@ export class AddZuordnungWorkflowPage {
   /* add global locators here */
   private readonly organisationen: Autocomplete;
   private readonly rollen: Autocomplete;
+  private static readonly ENDPOINT = 'personenkontext-workflow/**';
 
   constructor(protected readonly page: Page) {
     this.organisationen = new Autocomplete(this.page, this.page.getByTestId('organisation-select'));
@@ -24,7 +25,7 @@ export class AddZuordnungWorkflowPage {
   }
 
   public async selectRolle(rolle: string): Promise<void> {
-    await this.rollen.searchByTitle(rolle, true, 'personenkontext-workflow/**');
+    await this.rollen.searchByTitle(rolle, true, AddZuordnungWorkflowPage.ENDPOINT);
   }
 
   public async fillKopers(kopers: string): Promise<void> {

@@ -7,9 +7,9 @@ import { RolleCreationParams } from './RolleCreationView.neu.page';
 export class RolleCreationWorkflow extends AbstractAdminPage {
   private readonly rolleForm: RolleForm;
 
-  constructor(protected readonly page: Page) {
+  constructor(page: Page) {
     super(page);
-    this.rolleForm = new RolleForm(this.page);
+    this.rolleForm = new RolleForm(page);
   }
 
   /* actions */
@@ -30,21 +30,21 @@ export class RolleCreationWorkflow extends AbstractAdminPage {
   }
 
   public async selectMerkmale(merkmale: RolleCreationParams['merkmale']): Promise<void> {
-    for (const merkmal of merkmale) {
-      await this.rolleForm.merkmale.inputElement.selectByTitle(merkmal);
-    }
+    await Promise.all(
+      merkmale.map(merkmal => this.rolleForm.merkmale.inputElement.selectByTitle(merkmal))
+    );
   }
 
   public async selectSystemrechte(systemrechte: RolleCreationParams['systemrechte']): Promise<void> {
-    for (const systemrecht of systemrechte) {
-      await this.rolleForm.systemrechte.inputElement.selectByTitle(systemrecht);
-    }
+    await Promise.all(
+      systemrechte.map(systemrecht => this.rolleForm.systemrechte.inputElement.selectByTitle(systemrecht))
+    );
   }
 
   public async selectServiceProviders(serviceProviders: RolleCreationParams['serviceProviders']): Promise<void> {
-    for (const provider of serviceProviders) {
-      await this.rolleForm.angebote.inputElement.selectByTitle(provider);
-    }
+    await Promise.all(
+      serviceProviders.map(provider => this.rolleForm.angebote.inputElement.selectByTitle(provider))
+    );
   }
 
   public async selectServiceProvidersByPosition(positions: number[]): Promise<void> {
@@ -53,7 +53,11 @@ export class RolleCreationWorkflow extends AbstractAdminPage {
 
   public async submit(): Promise<RolleCreationSuccessPage> {
     await this.page.getByTestId('rolle-form-submit-button').click();
-    return new RolleCreationSuccessPage(this.page);
+
+    const rolleCreationSuccessPage: RolleCreationSuccessPage = new RolleCreationSuccessPage(this.page);
+    await rolleCreationSuccessPage.waitForPageLoad();
+
+    return rolleCreationSuccessPage;
   }
 
   /* assertions */

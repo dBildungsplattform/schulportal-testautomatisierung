@@ -13,7 +13,7 @@ export type RolleCreationParams = {
 }
 
 export class RolleCreationViewPage extends AbstractAdminPage {
-  constructor(protected readonly page: Page) {
+  constructor(page: Page) {
     super(page);
   }
 

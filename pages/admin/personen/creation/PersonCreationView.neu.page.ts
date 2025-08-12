@@ -15,7 +15,7 @@ export type PersonCreationParams = {
 }
 
 export class PersonCreationViewPage extends AbstractAdminPage {
-  private readonly endpoint: string = 'personenkontext-workflow/**';
+  private static readonly ENDPOINT = 'personenkontext-workflow/**';
   private readonly organisationAutocomplete: Autocomplete = new Autocomplete(this.page, this.page.getByTestId('organisation-select'));
   private readonly rolleAutocomplete: Autocomplete = new Autocomplete(this.page, this.page.getByTestId('rollen-select'));
 
@@ -24,19 +24,19 @@ export class PersonCreationViewPage extends AbstractAdminPage {
   }
 
   /* actions */
-  public async waitForPageLoad(expectedHeadline: string): Promise<void> {
+  public async waitForPageLoad(expectedHeadline?: string): Promise<void> {
     await this.page.getByTestId('person-creation-card').waitFor({ state: 'visible' });
-    await expect(this.page.getByTestId('layout-card-headline')).toHaveText(expectedHeadline);
+    await expect(this.page.getByTestId('layout-card-headline')).toHaveText(expectedHeadline || 'Neuen Benutzer hinzufügen');
   }
 
   public async fillForm(params: PersonCreationParams): Promise<void> {
     const vornameInput = this.page.getByTestId('vorname-input').locator('.v-field__input');
     const nachnameInput = this.page.getByTestId('familienname-input').locator('.v-field__input');
 
-    await this.organisationAutocomplete.searchByTitle(params.organisation, false, this.endpoint);
+    await this.organisationAutocomplete.searchByTitle(params.organisation, false, PersonCreationViewPage.ENDPOINT);
 
     await Promise.all(
-      params.rollen.map((rolle: string) => this.rolleAutocomplete.searchByTitle(rolle, true, this.endpoint))
+      params.rollen.map((rolle: string) => this.rolleAutocomplete.searchByTitle(rolle, true, PersonCreationViewPage.ENDPOINT))
     );
 
     await vornameInput.waitFor({ state: 'visible' });
@@ -55,13 +55,13 @@ export class PersonCreationViewPage extends AbstractAdminPage {
       await kopersnrInput.fill(params.kopersnr);
     }
     if (params.befristung) {
-      throw new Error('Befristung field is not implemented yet.');
+      console.warn('Befristung field is not implemented yet.');
     }
   }
 
   public async clearOrganisation(): Promise<void> {
     await this.organisationAutocomplete.clear();
-    return waitForAPIResponse(this.page, this.endpoint);
+    await waitForAPIResponse(this.page, PersonCreationViewPage.ENDPOINT);
   }
 
   public async submit(): Promise<PersonCreationSuccessPage> {

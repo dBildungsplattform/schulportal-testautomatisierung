@@ -13,7 +13,7 @@ export class PersonCreationSuccessPage extends AbstractAdminPage {
 
   /* actions */
   public async waitForPageLoad(): Promise<void> {
-    return this.page.getByTestId('person-success-text').waitFor({ state: 'visible' });
+    await this.page.getByTestId('person-success-text').waitFor({ state: 'visible' });
   }
 
   public async getBenutzername(): Promise<string> {
@@ -21,7 +21,7 @@ export class PersonCreationSuccessPage extends AbstractAdminPage {
     return benutzernameField.innerText();
   }
 
-  private async getBenutzernameField(): Promise<Locator> {
+  private getBenutzernameField(): Locator{
     return this.page.getByTestId('created-person-username');
   }
 
@@ -45,7 +45,7 @@ export class PersonCreationSuccessPage extends AbstractAdminPage {
     }
 
     await expect(this.page.getByText('Benutzername:', { exact: true })).toBeVisible();
-    await expect(await this.getBenutzernameField()).toContainText('tautopw');
+    await expect(this.getBenutzernameField()).toContainText('tautopw');
 
     await expect(this.page.getByText(' Einstiegs-Passwort:', { exact: true })).toBeVisible();
     await expect(this.page.locator('[data-testid="password-output-field"] input')).toBeVisible();

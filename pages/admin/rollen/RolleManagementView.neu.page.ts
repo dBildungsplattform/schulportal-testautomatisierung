@@ -15,7 +15,7 @@ export class RolleManagementViewPage extends AbstractManagementViewPage {
   public async waitForPageLoad(): Promise<void> {
     await this.page.getByTestId('rolle-management-card').waitFor({ state: 'visible' });
     await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Rollenverwaltung');
-    return expect(this.page.getByTestId('rolle-table')).not.toContainText('Keine Daten');
+    await expect(this.page.getByTestId('rolle-table')).not.toContainText('Keine Daten');
   }
 
   public async openGesamtuebersicht(rollenname: string): Promise<RolleDetailsViewPage> {

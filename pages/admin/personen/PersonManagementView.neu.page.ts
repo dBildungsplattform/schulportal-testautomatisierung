@@ -17,17 +17,18 @@ export class PersonManagementViewPage extends AbstractManagementViewPage {
   public async waitForPageLoad(): Promise<void> {
     await this.page.getByTestId('admin-headline').waitFor({ state: 'visible' });
     await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Benutzerverwaltung');
-    return expect(this.page.getByTestId('person-table')).not.toContainText('Keine Daten');
+    await expect(this.page.getByTestId('person-table')).not.toContainText('Keine Daten');
   }
 
+  private async filterByText(text: string, testId: string, endpoint: string): Promise<void> {
+    const filter: Autocomplete = new Autocomplete(this.page, this.page.getByTestId(testId));
+    await filter.searchByTitle(text, false, endpoint);
+  }
   public async filterBySchule(schule: string): Promise<void> {
-    const schuleFilter: Autocomplete = new Autocomplete(this.page, this.page.getByTestId('schule-select'));
-    return schuleFilter.searchByTitle(schule, false, 'organisationen**');
+    await this.filterByText(schule, 'schule-select', 'organisationen**');
   }
-
   public async filterByRolle(rolle: string): Promise<void> {
-    const rolleFilter: Autocomplete = new Autocomplete(this.page, this.page.getByTestId('rolle-select'));
-    return rolleFilter.searchByTitle(rolle, false, 'rollen**');
+    await this.filterByText(rolle, 'rolle-select', 'rollen**');
   }
 
   public async openGesamtuebersicht(name: string): Promise<PersonDetailsViewPage> {
@@ -44,14 +45,14 @@ export class PersonManagementViewPage extends AbstractManagementViewPage {
 
   /* assertions */
   public async checkIfPersonExists(name: string): Promise<void> {
-    return this.personTable.checkIfItemIsVisible(name);
+    await this.personTable.checkIfItemIsVisible(name);
   }
   public async checkIfPersonNotExists(name: string): Promise<void> {
-    return this.personTable.checkIfItemIsNotVisible(name);
+    await this.personTable.checkIfItemIsNotVisible(name);
   }
 
-  public async checkHeaders(expectedAmount: number, expectedHeaders: string[]): Promise<void> {
-    this.personTable.checkHeaders(expectedAmount, expectedHeaders);
+  public async checkHeaders(expectedHeaders: string[]): Promise<void> {
+    await this.personTable.checkHeaders(expectedHeaders);
   }
 
 }
