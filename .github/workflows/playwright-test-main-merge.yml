@@ -35,30 +35,43 @@ jobs:
         elif [[ "${{ github.head_ref }}" =~ $regex_short ]]; then
           tag="$(echo ${BASH_REMATCH[1]} | tr [A-Z] [a-z])"
         elif [[ "${{ github.head_ref }}" == 'main' ]]; then
-          tag=""
+        tag=""
         else
         echo "::error::Couldn't extract ticket from branch" ${{ github.head_ref }} ". If not main the branch name should begin alpha-digit or alpha-digit-digit blocks (e.g. SPSH-1234-test-name or release-1-1-optional-text)"
-          exit 1
+        exit 1
         fi
         echo "tag=${tag}" >> "$GITHUB_OUTPUT"
         echo "branch to merge from tag=${tag}"
         
-    - name: Get list of all branches
-      run: |
-        git fetch --all  # Ensure we have all branches
-        git branch -r | sed 's/origin\///' > branches.txt
-        echo "Branches found:"
-        cat branches.txt
-
-    - name: Count branches containing same ticketprefix
+        
+    - name: Determine Branch Tag
       id: branch-count
+      env:
+        TAG: ${{ steps.determine-tag.outputs.tag }}
       run: |
-        SEARCH_STRING="${{ steps.determine-tag.outputs.tag }}"  
-        COUNT=$(grep -i -c "$SEARCH_STRING" branches.txt || true)
-        echo "Occurrences of '$SEARCH_STRING': $COUNT"
-        echo "MATCH_COUNT=$COUNT" >> $GITHUB_ENV
-        echo "The string appears $COUNT times in branch names"
-        echo "count=${COUNT}" >> "$GITHUB_OUTPUT"
+        REPOS=(
+          "github.com/dbildungsplattform/dbildungs-iam-server.git"
+          "github.com/dbildungsplattform/schulportal-client.git"
+          "github.com/dbildungsplattform/dbildungs-iam-client.git"
+          "github.com/dbildungsplattform/dbildungs-iam-ldap.git"
+          "github.com/dbildungsplattform/schulportal-testautomatisierung.git"
+        )
+
+        MATCH_COUNT=0
+
+        for REPO in "${REPOS[@]}"; do
+          echo "🔍 Checking $REPO for branch '$TAG'"
+          BRANCH_EXISTS=$(git ls-remote --heads "$REPO" "refs/heads/$TAG")
+          if [[ -n "$BRANCH_EXISTS" ]]; then
+            echo "✅ Branch '$TAG' exists in $REPO"
+            MATCH_COUNT=$((MATCH_COUNT + 1))
+          else
+            echo "❌ Branch '$TAG' does NOT exist in $REPO"
+          fi
+        done
+
+        echo "Total matches found: $MATCH_COUNT"
+        echo "count=$MATCH_COUNT" >> "$GITHUB_OUTPUT"
     
     - name: Determine Frontend Url by checking current branches
       id: determine-fe-url
