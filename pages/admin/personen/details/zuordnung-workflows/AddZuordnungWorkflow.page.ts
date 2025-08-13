@@ -1,6 +1,7 @@
 import { expect, type Page } from '@playwright/test';
 import { Autocomplete } from '../../../../../elements/Autocomplete';
 import { ZuordnungenPage } from '../Zuordnungen.page';
+import { waitForAPIResponse } from '../../../../../base/api/testHelper.page';
 
 export class AddZuordnungWorkflowPage {
   /* add global locators here */
@@ -17,6 +18,7 @@ export class AddZuordnungWorkflowPage {
   public async submit(): Promise<ZuordnungenPage> {
     await this.page.getByTestId('zuordnung-creation-submit-button').click();
     await this.page.getByRole('button', { name: 'Ja' }).click();
+    await waitForAPIResponse(this.page, AddZuordnungWorkflowPage.ENDPOINT);
     return new ZuordnungenPage(this.page);
   }
 
