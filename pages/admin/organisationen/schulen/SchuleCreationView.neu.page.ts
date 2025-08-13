@@ -2,7 +2,7 @@ import { expect, type Locator, Page } from '@playwright/test';
 import { AbstractAdminPage } from '../../../abstracts/AbstractAdminPage.page';
 import { SchuleCreationSuccessPage } from './SchuleCreationSuccess.page';
 
-export type SchuleCreationParams = {
+export interface SchuleCreationParams {
   name: string;
   dienststellenNr: string;
   schulform: 'öffentlich';

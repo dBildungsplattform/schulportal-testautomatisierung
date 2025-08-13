@@ -1,4 +1,4 @@
-import { expect, type Locator, Page } from '@playwright/test';
+import { expect, Page } from '@playwright/test';
 import { AbstractAdminPage } from '../../abstracts/AbstractAdminPage.page';
 
 export class RolleDetailsViewPage extends AbstractAdminPage {

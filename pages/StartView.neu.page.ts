@@ -26,8 +26,8 @@ export class StartViewPage {
     await Promise.all([
       ...serviceProviderNames.map((serviceProviderName) => {
         const serviceProviderCard = this.page.locator(`[data-testid^="service-provider-card"]`, { hasText: serviceProviderName });
-        expect(serviceProviderCard).toBeVisible();
-        expect(serviceProviderCard.locator('img')).toBeVisible();
+        await expect(serviceProviderCard).toBeVisible();
+        await expect(serviceProviderCard.locator('img')).toBeVisible();
       }),
     ]);
   }

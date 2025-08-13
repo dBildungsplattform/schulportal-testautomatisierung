@@ -4,7 +4,7 @@ import { AbstractAdminPage } from '../../../abstracts/AbstractAdminPage.page';
 import { KlasseCreationSuccessPage } from './KlasseCreationSuccess.page';
 import { KlasseManagementViewPage } from './KlasseManagementView.neu.page';
 
-export type KlasseCreationParams = {
+export interface KlasseCreationParams {
     schulname: string,
     klassenname: string,
 }

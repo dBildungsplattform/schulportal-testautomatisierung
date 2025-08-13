@@ -28,7 +28,7 @@ export class HeaderPage {
 
   /* assertions */
   public async checkIfIconsAreVisible(): Promise<void> {
-    await expect(this.page.locator('.mdi-account-outline')).toBeVisible;
-    await expect(this.page.locator('.mdi-logout')).toBeVisible;
+    await expect(this.page.locator('.mdi-account-outline')).toBeVisible();
+    await expect(this.page.locator('.mdi-logout')).toBeVisible();
   }
 }

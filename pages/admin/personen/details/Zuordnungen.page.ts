@@ -3,14 +3,14 @@ import { Autocomplete } from '../../../../elements/Autocomplete';
 import { AddZuordnungWorkflowPage } from './zuordnung-workflows/AddZuordnungWorkflow.page';
 import { BefristungWorkflowPage } from './zuordnung-workflows/BefristungWorkflow.page';
 
-export type ZuordnungCreationParams = {
+export interface ZuordnungCreationParams {
   rolle: string;
   organisation?: string;
   prefilledOrganisation?: string;
   kopers?: string;
   befristung?: string;
 }
-export type ZuordnungValidationParams = {
+export interface ZuordnungValidationParams {
   organisation: string; dstNr?: string; rolle?: string; befristung?: string; status?: 'unchanged' | 'delete' | 'create';
 }
 

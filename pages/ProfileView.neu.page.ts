@@ -2,7 +2,7 @@ import { expect, Page } from '@playwright/test';
 import { LoginViewPage } from './LoginView.neu.page';
 import { RollenArt } from '../base/rollentypen';
 
-type Zuordnung = {
+interface Zuordnung {
   dienststellennummer?: string;
   kopersnummer?: string;
   organisationsname: string;
@@ -10,7 +10,7 @@ type Zuordnung = {
   rollenname: string;
 }
 
-type PersoenlicheDaten = {
+interface PersoenlicheDaten {
   kopersnummer?: string;
   nachname: string;
   rollenart: RollenArt;
