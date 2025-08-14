@@ -42,7 +42,7 @@ export class PersonManagementViewPage {
     this.comboboxMenuIconSchule = page.locator('[data-testid="schule-select"] .mdi-menu-down');
     this.comboboxMenuIconSchuleInput = page.locator('[data-testid="schule-select"] input');
     this.comboboxMenuIconRolle = page.locator('[data-testid="rolle-select"] .mdi-menu-down');
-    this.comboboxMenuIconKlasse = page.locator('[data-testid="klasse-select"] .mdi-menu-down');
+    this.comboboxMenuIconKlasse = page.locator('[data-testid="personen-management-klasse-select"] .mdi-menu-down');
     this.comboboxMenuIconStatus = page.locator('[data-testid="status-select"] .mdi-menu-down');
     this.comboboxSchule = new Autocomplete(this.page, page.getByTestId('schule-select'));
   }
