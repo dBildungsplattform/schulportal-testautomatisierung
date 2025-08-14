@@ -2,10 +2,15 @@ import { expect, type Locator, Page } from '@playwright/test';
 import { AbstractAdminPage } from '../../../abstracts/AbstractAdminPage.page';
 import { SchuleCreationSuccessPage } from './SchuleCreationSuccess.page';
 
+enum Schulform {
+  Oeffentlich = 'öffentlich',
+  Ersatz = 'ersatz'
+}
+
 export interface SchuleCreationParams {
   name: string;
   dienststellenNr: string;
-  schulform: 'öffentlich';
+  schulform: Schulform;
 }
 
 export class SchuleCreationViewPage extends AbstractAdminPage {
@@ -24,11 +29,11 @@ export class SchuleCreationViewPage extends AbstractAdminPage {
   }
 
   public async createSchule(params: SchuleCreationParams): Promise<SchuleCreationSuccessPage> {
-    const dienststellenNrInput = this.page.getByTestId('dienststellennummer-input').locator('input');
-    const schuleNameInput = this.page.getByTestId('schulname-input').locator('input');
-    const createSchuleButton = this.page.getByTestId('schule-creation-form-submit-button');
+    const dienststellenNrInput: Locator = this.page.getByTestId('dienststellennummer-input').locator('input');
+    const schuleNameInput: Locator = this.page.getByTestId('schulname-input').locator('input');
+    const createSchuleButton: Locator = this.page.getByTestId('schule-creation-form-submit-button');
 
-    if (params.schulform === 'öffentlich') {
+    if (params.schulform === Schulform.Oeffentlich) {
       await this.oeffentlicheSchuleOption.click();
       this.selectedSchultraegerName = await this.oeffentlicheSchuleOption.innerText();
     }

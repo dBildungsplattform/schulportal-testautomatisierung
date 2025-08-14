@@ -1,4 +1,4 @@
-import { expect, type Locator, Page } from '@playwright/test';
+import { expect, Page } from '@playwright/test';
 import { AbstractAdminPage } from '../../../abstracts/AbstractAdminPage.page';
 import { SchuleCreationViewPage, type SchuleCreationParams } from './SchuleCreationView.neu.page';
 import { SchuleManagementViewPage } from './SchuleManagementView.neu.page';

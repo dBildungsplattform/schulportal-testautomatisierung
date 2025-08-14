@@ -31,19 +31,19 @@ export class RolleCreationWorkflow extends AbstractAdminPage {
 
   public async selectMerkmale(merkmale: RolleCreationParams['merkmale']): Promise<void> {
     await Promise.all(
-      merkmale.map(merkmal => this.rolleForm.merkmale.inputElement.selectByTitle(merkmal))
+      merkmale.map((merkmal: string) => this.rolleForm.merkmale.inputElement.selectByTitle(merkmal))
     );
   }
 
   public async selectSystemrechte(systemrechte: RolleCreationParams['systemrechte']): Promise<void> {
     await Promise.all(
-      systemrechte.map(systemrecht => this.rolleForm.systemrechte.inputElement.selectByTitle(systemrecht))
+      systemrechte.map((systemrecht: string) => this.rolleForm.systemrechte.inputElement.selectByTitle(systemrecht))
     );
   }
 
   public async selectServiceProviders(serviceProviders: RolleCreationParams['serviceProviders']): Promise<void> {
     await Promise.all(
-      serviceProviders.map(provider => this.rolleForm.angebote.inputElement.selectByTitle(provider))
+      serviceProviders.map((provider: string) => this.rolleForm.angebote.inputElement.selectByTitle(provider))
     );
   }
 

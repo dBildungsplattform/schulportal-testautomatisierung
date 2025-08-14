@@ -1,4 +1,4 @@
-import { expect, Page } from '@playwright/test';
+import { expect, type Locator, Page } from '@playwright/test';
 import { AbstractAdminPage } from '../../../../abstracts/AbstractAdminPage.page';
 import { KlasseDeletionWorkflowPage } from '../deletion-workflow/KlasseDeletionWorkflow.page';
 import { KlasseManagementViewPage } from '../KlasseManagementView.neu.page';
@@ -20,7 +20,7 @@ export class KlasseDetailsViewPage extends AbstractAdminPage {
 
   public async successfullyDeleteKlasse(schulname: string, klassenname: string): Promise<KlasseManagementViewPage> {
     await this.deletionWorkflow.deleteKlasse(schulname, klassenname);
-    const klasseManagementViewPage = await this.deletionWorkflow.klasseSuccessfullyDeleted(schulname, klassenname);
+    const klasseManagementViewPage: KlasseManagementViewPage = await this.deletionWorkflow.klasseSuccessfullyDeleted(schulname, klassenname);
     return klasseManagementViewPage;
   }
 
@@ -31,9 +31,9 @@ export class KlasseDetailsViewPage extends AbstractAdminPage {
 
 
   public async editKlasse(klassenname: string): Promise<void> {
-    const klasseNameInput = this.page.getByTestId('klassenname-input');
-    const editKlasseButton = this.page.getByTestId('klasse-edit-button');
-    const editKlasseSubmitButton = this.page.getByTestId('klasse-form-submit-button');
+    const klasseNameInput: Locator = this.page.getByTestId('klassenname-input');
+    const editKlasseButton: Locator = this.page.getByTestId('klasse-edit-button');
+    const editKlasseSubmitButton: Locator = this.page.getByTestId('klasse-form-submit-button');
 
     await editKlasseButton.waitFor({ state: 'visible' });
     await editKlasseButton.click();

@@ -1,4 +1,4 @@
-import { expect, Page } from '@playwright/test';
+import { expect, type Locator, Page } from '@playwright/test';
 import { AbstractAdminPage } from '../../../abstracts/AbstractAdminPage.page';
 import { Autocomplete } from '../../../../elements/Autocomplete';
 import { waitForAPIResponse } from '../../../../base/api/testHelper.page';
@@ -15,7 +15,7 @@ export interface PersonCreationParams {
 }
 
 export class PersonCreationViewPage extends AbstractAdminPage {
-  private static readonly ENDPOINT = 'personenkontext-workflow/**';
+  private static readonly ENDPOINT: string = 'personenkontext-workflow/**';
   private readonly organisationAutocomplete: Autocomplete = new Autocomplete(this.page, this.page.getByTestId('organisation-select'));
   private readonly rolleAutocomplete: Autocomplete = new Autocomplete(this.page, this.page.getByTestId('rollen-select'));
 
@@ -30,8 +30,8 @@ export class PersonCreationViewPage extends AbstractAdminPage {
   }
 
   public async fillForm(params: PersonCreationParams): Promise<void> {
-    const vornameInput = this.page.getByTestId('vorname-input').locator('.v-field__input');
-    const nachnameInput = this.page.getByTestId('familienname-input').locator('.v-field__input');
+    const vornameInput: Locator = this.page.getByTestId('vorname-input').locator('.v-field__input');
+    const nachnameInput: Locator = this.page.getByTestId('familienname-input').locator('.v-field__input');
 
     await this.organisationAutocomplete.searchByTitle(params.organisation, false, PersonCreationViewPage.ENDPOINT);
 
@@ -50,7 +50,7 @@ export class PersonCreationViewPage extends AbstractAdminPage {
       await autocomplete.searchByTitle(params.klasse, true);
     }
     if (params.kopersnr) {
-      const kopersnrInput = this.page.getByTestId('kopersnr-input').locator('.v-field__input');
+      const kopersnrInput: Locator = this.page.getByTestId('kopersnr-input').locator('.v-field__input');
       await kopersnrInput.waitFor({ state: 'visible' });
       await kopersnrInput.fill(params.kopersnr);
     }

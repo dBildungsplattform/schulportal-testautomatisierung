@@ -1,4 +1,4 @@
-import { expect, Page } from '@playwright/test';
+import { expect, type Locator, Page } from '@playwright/test';
 import { AbstractAdminPage } from '../../abstracts/AbstractAdminPage.page';
 
 export class RolleDetailsViewPage extends AbstractAdminPage {
@@ -15,9 +15,9 @@ export class RolleDetailsViewPage extends AbstractAdminPage {
   }
 
   public async editRolle(rollenname: string): Promise<void> {
-    const rolleNameInput = this.page.getByTestId('rollenname-input');
-    const editRolleButton = this.page.getByTestId('rolle-edit-button');
-    const editRolleSubmitButton = this.page.getByTestId('rolle-changes-save-button');
+    const rolleNameInput: Locator = this.page.getByTestId('rollenname-input');
+    const editRolleButton: Locator = this.page.getByTestId('rolle-edit-button');
+    const editRolleSubmitButton: Locator = this.page.getByTestId('rolle-changes-save-button');
 
     await editRolleButton.waitFor({ state: 'visible' });
     await editRolleButton.click();

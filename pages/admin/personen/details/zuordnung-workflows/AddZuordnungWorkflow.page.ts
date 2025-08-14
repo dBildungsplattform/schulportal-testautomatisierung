@@ -7,7 +7,7 @@ export class AddZuordnungWorkflowPage {
   /* add global locators here */
   private readonly organisationen: Autocomplete;
   private readonly rollen: Autocomplete;
-  private static readonly ENDPOINT = 'personenkontext-workflow/**';
+  private static readonly ENDPOINT: string = 'personenkontext-workflow/**';
 
   constructor(protected readonly page: Page) {
     this.organisationen = new Autocomplete(this.page, this.page.getByTestId('organisation-select'));
