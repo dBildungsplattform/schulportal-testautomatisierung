@@ -1,13 +1,13 @@
 import { expect, type Locator, Page } from '@playwright/test';
-import { KlasseCreationViewPage } from './admin/KlasseCreationView.page';
-import { KlasseManagementViewPage, KlasseManagementViewPageOptions } from './admin/KlasseManagementView.page';
-import { PersonCreationViewPage } from './admin/PersonCreationView.page';
-import { PersonImportViewPage } from './admin/PersonImportView.page';
-import { PersonManagementViewPage } from './admin/PersonManagementView.page';
-import { RolleCreationViewPage } from './admin/RolleCreationView.page';
-import { RolleManagementViewPage } from './admin/RolleManagementView.page';
-import { SchuleCreationViewPage } from './admin/SchuleCreationView.page';
-import { SchuleManagementViewPage } from './admin/SchuleManagementView.page';
+import { KlasseCreationViewPage } from '../admin/organisationen/klassen/KlasseCreationView.page';
+import { KlasseManagementViewPage, KlasseManagementViewPageOptions } from '../admin/organisationen/klassen/KlasseManagementView.page';
+import { PersonCreationViewPage } from '../admin/personen/PersonCreationView.page';
+import { PersonImportViewPage } from '../admin/personen/PersonImportView.page';
+import { PersonManagementViewPage } from '../admin/personen/PersonManagementView.page';
+import { RolleCreationViewPage } from '../admin/rollen/RolleCreationView.page';
+import { RolleManagementViewPage } from '../admin/rollen/RolleManagementView.page';
+import { SchuleCreationViewPage } from '../admin/organisationen/schulen/SchuleCreationView.page';
+import { SchuleManagementViewPage } from '../admin/organisationen/schulen/SchuleManagementView.page';
 
 export class MenuPage {
   readonly page: Page;
@@ -38,7 +38,7 @@ export class MenuPage {
     this.labelSchultraegerverwaltung = page.locator('[data-testid="schultraeger-management-title"] .v-list-item-title');
     this.labelSchulverwaltung = page.locator('[data-testid="schule-management-title"] .v-list-item-title');
     this.menueItemAlleBenutzerAnzeigen = page.getByTestId('person-management-menu-item');
-    this.menueItemAlleKlassenAnzeigen = page.getByTestId('klassen-management-menu-item');
+    this.menueItemAlleKlassenAnzeigen = page.getByTestId('klasse-management-menu-item');
     this.menueItemAlleRollenAnzeigen = page.getByTestId('rolle-management-menu-item');
     this.menueItemAlleSchulenAnzeigen = page.getByTestId('schule-management-menu-item');
     this.menueItemBenutzerAnlegen = page.getByTestId('person-creation-menu-item');

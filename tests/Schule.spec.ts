@@ -1,10 +1,10 @@
 import { test, expect, PlaywrightTestArgs } from '@playwright/test';
 import { StartPage } from '../pages/StartView.page';
-import { MenuPage } from '../pages/MenuBar.page';
-import { SchuleCreationViewPage } from '../pages/admin/SchuleCreationView.page';
-import { SchuleManagementViewPage } from '../pages/admin/SchuleManagementView.page';
-import { HeaderPage } from '../pages/Header.page';
-import { FooterDataTablePage } from '../pages/FooterDataTable.page';
+import { MenuPage } from '../pages/components/MenuBar.page';
+import { SchuleCreationViewPage } from '../pages/admin/organisationen/schulen/SchuleCreationView.page';
+import { SchuleManagementViewPage } from '../pages/admin/organisationen/schulen/SchuleManagementView.page';
+import { HeaderPage } from '../pages/components/Header.page';
+import { FooterDataTablePage } from '../pages/components/FooterDataTable.page';
 import { LONG, SHORT, STAGE, BROWSER } from '../base/tags';
 import { generateSchulname, generateDienststellenNr } from '../base/testHelperGenerateTestdataNames';
 import FromAnywhere from '../pages/FromAnywhere';
