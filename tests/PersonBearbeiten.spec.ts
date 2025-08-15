@@ -690,6 +690,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         );
         await personDetailsView.errorTextInputBefristung.isVisible();
 
+        // enter invalid date
         await personDetailsView.inputBefristung.fill(
           await generateCurrentDate({ days: 0, months: -3, formatDMY: true })
         );

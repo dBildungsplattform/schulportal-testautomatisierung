@@ -138,7 +138,7 @@ export class PersonDetailsViewPage {
     this.buttonBefristungAendernSubmit = page.getByTestId('change-befristung-submit-button');
     this.buttonBefristungAendernConfirm = page.getByTestId('confirm-change-befristung-button');
     this.buttonBefristungAendernSave = page.getByTestId('zuordnung-changes-save-button');
-    this.buttonBefristungAendernSuccessClose = page.getByTestId('change-befristung-success-close');
+    this.buttonBefristungAendernSuccessClose = page.getByTestId('change-befristung-success-dialog-close-button');
     this.inputBefristung = page.locator('[data-testid="befristung-input"] input');
     this.errorTextInputBefristung = page.getByText('Das eingegebene Datum darf nicht in der Vergangenheit liegen.');
     this.radioButtonBefristungSchuljahresende = page.getByTestId('schuljahresende-radio-button');
