@@ -24,8 +24,8 @@ export class StartViewPage {
 
   public async serviceProviderIsVisible(serviceProviderNames: string[]): Promise<void> {
     await Promise.all([
-      ...serviceProviderNames.map((serviceProviderName) => {
-        const serviceProviderCard = this.page.locator(`[data-testid^="service-provider-card"]`, { hasText: serviceProviderName });
+      ...serviceProviderNames.map(async (serviceProviderName: string) => {
+        const serviceProviderCard: Locator = this.page.locator(`[data-testid^="service-provider-card"]`, { hasText: serviceProviderName });
         await expect(serviceProviderCard).toBeVisible();
         await expect(serviceProviderCard.locator('img')).toBeVisible();
       }),

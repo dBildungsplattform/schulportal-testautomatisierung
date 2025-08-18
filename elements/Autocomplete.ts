@@ -66,7 +66,7 @@ export class Autocomplete {
 
   // only works on comboboxes, where loading is set properly
   public async waitUntilLoadingIsDone(): Promise<void> {
-    return expect(this.loadingLocator.getByRole('progressbar')).toBeHidden();
+    await expect(this.loadingLocator.getByRole('progressbar')).toBeHidden();
   }
 
   public async searchByTitle(searchString: string, exactMatch: boolean, endpoint?: string): Promise<void> {

@@ -57,7 +57,7 @@ export class ProfilePage {
   readonly infoTextSectionPasswordLKEndgeraet: Locator;
   readonly buttonCreatePasswordSectionLKEndgeraet: Locator;
   readonly infoTextDialogPasswordLKEndgeraet: Locator;
-  readonly buttontCreatePasswordDialogLKEndgeraet: Locator;
+  readonly buttonCreatePasswordDialogLKEndgeraet: Locator;
   readonly inputPasswortErzeugenDialogLKEndgeraet: Locator;
   readonly iconShowPassword: Locator;
   readonly iconCopyPassword: Locator;
@@ -115,7 +115,7 @@ export class ProfilePage {
     this.textOTPInput = page.getByTestId('self-service-otp-input');
     this.text2FASelfServiceError = page.getByTestId('self-service-token-verify-error-text');
     // Modal
-    this.textLayoutCardHeadline = page.getByTestId('layout-card-headline');
+    this.textLayoutCardHeadline = page.getByTestId('password-reset-dialog-header');
     // Inbetriebnahme-Passwort für LK-Endgerät
     this.cardHeadlinePasswordLKEndgeraet = page.getByRole('heading', {
       name: 'Inbetriebnahme-Passwort für LK-Endgerät',
@@ -126,7 +126,7 @@ export class ProfilePage {
     );
     this.buttonCreatePasswordSectionLKEndgeraet = page.getByTestId('open-device-password-dialog-button');
     this.infoTextDialogPasswordLKEndgeraet = page.getByTestId('password-reset-info-text');
-    this.buttontCreatePasswordDialogLKEndgeraet = page.getByTestId('password-reset-button');
+    this.buttonCreatePasswordDialogLKEndgeraet = page.getByTestId('password-reset-button');
     this.inputPasswortErzeugenDialogLKEndgeraet = page.locator('[data-testid="password-output-field"] input');
     this.iconShowPassword = page.getByTestId('show-password-icon');
     this.iconCopyPassword = page.getByTestId('copy-password-icon');

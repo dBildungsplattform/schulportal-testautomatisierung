@@ -99,7 +99,7 @@ export class PersonDetailsViewPage extends AbstractAdminPage {
   public async deletePerson(): Promise<void> {
     await this.page.getByTestId('open-person-delete-dialog-button').click();
     await this.page.getByTestId('person-delete-button').click();
-    return this.page.getByTestId('close-person-delete-success-dialog-button').click();
+    await this.page.getByTestId('close-person-delete-success-dialog-button').click();
   }
 
   /* assertions */

@@ -1,4 +1,4 @@
-import { expect, Page } from '@playwright/test';
+import { expect, type Locator, Page } from '@playwright/test';
 import { LoginViewPage } from './LoginView.neu.page';
 import { RollenArt } from '../base/rollentypen';
 
@@ -33,8 +33,8 @@ export class ProfileViewPage {
   }
 
   public async changePassword(username: string, password: string): Promise<string> {
-    const passwordInput = this.page.getByTestId('password-input');
-    const loginButton = this.page.getByTestId('login-button');
+    const passwordInput: Locator = this.page.getByTestId('password-input');
+    const loginButton: Locator = this.page.getByTestId('login-button');
 
     await this.page.getByTestId('open-change-password-dialog-button').click();
     await this.page.getByTestId('change-password-button').click();
@@ -53,6 +53,24 @@ export class ProfileViewPage {
 
     await expect(this.page.getByTestId('profile-headline')).toHaveText('Mein Profil');
     return newPassword;
+  }
+
+  public async resetDevicePassword (): Promise<void> {
+    /* zuordnung card for password reset */
+    await expect(this.page.getByTestId('reset-device-password-card-headline')).toBeVisible();
+    await expect(this.page.getByTestId('device-password-info-text')).toBeVisible();
+    await this.page.getByTestId('open-device-password-dialog-button').click();
+
+    /* reset dialog */
+    await expect(this.page.getByTestId('password-reset-dialog-header')).toHaveText('Inbetriebnahme-Passwort erzeugen');
+    await expect(this.page.getByTestId('password-reset-info-text')).toHaveText(
+      'Bitte notieren Sie sich das Passwort oder drucken Sie es aus. Nach dem Schließen des Dialogs wird das Passwort' +
+        ' nicht mehr angezeigt. Sie benötigen dieses Passwort ausschließlich zur erstmaligen Anmeldung an Ihrem neuen LK-Endgerät.'
+    );
+    await this.page.getByTestId('password-reset-button').click();
+
+    await this.validatePasswordResetDialog();
+    await expect(this.page.getByTestId('profile-headline')).toBeVisible();
   }
 
   /* assertions */
@@ -98,10 +116,11 @@ export class ProfileViewPage {
   }
 
   public async validatePasswordResetDialog(): Promise<void> {
-    await expect(this.page.getByTestId('password-reset-info-text')).toHaveText(
-      'Das Passwort wurde erfolgreich zurückgesetzt. Bitte notieren Sie sich das Passwort oder drucken Sie es aus. Nach dem Schließen des Dialogs' +
-        ' wird das Passwort nicht mehr angezeigt. Sie benötigen dieses Passwort ausschließlich zur erstmaligen Anmeldung an Ihrem neuen LK-Endgerät.'
-    );
+    await expect(this.page.getByTestId('password-reset-info-text')).toHaveText(`
+      Das Passwort wurde erfolgreich zurückgesetzt. Bitte notieren Sie sich das Passwort oder drucken Sie es aus.
+      Nach dem Schließen des Dialogs wird das Passwort nicht mehr angezeigt.
+      Sie benötigen dieses Passwort ausschließlich zur erstmaligen Anmeldung an Ihrem neuen LK-Endgerät.
+    `);
     await expect(this.page.locator('[data-testid="password-output-field"] input')).toBeVisible();
     await expect(this.page.locator('[data-testid="password-output-field"] input')).toHaveAttribute('readonly');
     await expect(this.page.getByTestId('show-password-icon')).toBeVisible();

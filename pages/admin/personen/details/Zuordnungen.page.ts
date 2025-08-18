@@ -111,8 +111,6 @@ export class ZuordnungenPage {
         case 'create':
           expectedText += ' (wird hinzugefügt)';
           break;
-        default:
-          throw new Error(`Unknown status: ${params.status}`);
       }
     }
     return expectedText;
@@ -142,8 +140,6 @@ export class ZuordnungenPage {
       case 'create':
         await expect(this.page.getByTestId('person-zuordnungen-section-edit span.text-red')).toContainText(expectedText);
         break;
-      default:
-        throw new Error(`Unknown status: ${params.status}`);
     }
   }
 }

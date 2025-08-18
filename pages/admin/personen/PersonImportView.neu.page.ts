@@ -16,12 +16,12 @@ export class PersonImportViewPage extends AbstractAdminPage {
 
   public async selectSchule(schule: string): Promise<void> {
     const schuleAutocomplete: Autocomplete = new Autocomplete(this.page, this.page.getByTestId('schule-select'));
-    return schuleAutocomplete.searchByTitle(schule, true);
+    await schuleAutocomplete.searchByTitle(schule, true);
   }
 
   public async selectRolle(rolle: string): Promise<void> {
     const rolleAutocomplete: Autocomplete = new Autocomplete(this.page, this.page.getByTestId('rolle-select'));
-    return rolleAutocomplete.searchByTitle(rolle, true);
+    await rolleAutocomplete.searchByTitle(rolle, true);
   }
 
   public async uploadFile(filePath: string): Promise<void> {
@@ -56,7 +56,7 @@ export class PersonImportViewPage extends AbstractAdminPage {
     );
   }
 
-  public async verifyFileName(download: Download, fileName: string = 'Benutzerdaten.txt'): Promise<void> {
-    await expect(download.suggestedFilename()).toBe(fileName);
+  public verifyFileName(download: Download, fileName: string = 'Benutzerdaten.txt'): void {
+    expect(download.suggestedFilename()).toBe(fileName);
   }
 }

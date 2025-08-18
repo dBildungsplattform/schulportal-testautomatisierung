@@ -21,7 +21,7 @@ export class KlasseManagementViewPage extends AbstractManagementViewPage {
   public async waitForPageLoad(): Promise<void> {
     await this.page.getByTestId('klasse-management-card').waitFor({ state: 'visible' });
     await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Klassenverwaltung');
-    return expect(this.page.getByTestId('klasse-table')).not.toContainText('Keine Daten');
+    await expect(this.page.getByTestId('klasse-table')).not.toContainText('Keine Daten');
   }
 
   private async filterByText(text: string, testId: string): Promise<void> {

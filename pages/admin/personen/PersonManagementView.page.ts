@@ -83,7 +83,7 @@ export class PersonManagementViewPage {
   }
 
   public async waitForData(): Promise<void> {
-    return expect(this.tableWrapper).not.toContainText('Keine Daten');
+    await expect(this.tableWrapper).not.toContainText('Keine Daten');
   }
 
   public getRows(): Locator {
