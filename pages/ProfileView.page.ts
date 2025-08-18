@@ -48,6 +48,7 @@ export class ProfilePage {
   readonly text2FASelfServiceQRInfo: Locator;
   readonly data2FAQRCode: Locator;
   readonly textLayoutCardHeadline: Locator;
+  readonly passwordResetDialogHeadline: Locator;
   readonly textOTPEntryInfo: Locator;
   readonly textOTPInput: Locator;
   readonly text2FASelfServiceError: Locator;
@@ -115,7 +116,8 @@ export class ProfilePage {
     this.textOTPInput = page.getByTestId('self-service-otp-input');
     this.text2FASelfServiceError = page.getByTestId('self-service-token-verify-error-text');
     // Modal
-    this.textLayoutCardHeadline = page.getByTestId('password-reset-dialog-header');
+    this.passwordResetDialogHeadline = page.getByTestId('password-reset-dialog-header');
+    this.textLayoutCardHeadline = page.getByTestId('layout-card-headline');
     // Inbetriebnahme-Passwort für LK-Endgerät
     this.cardHeadlinePasswordLKEndgeraet = page.getByRole('heading', {
       name: 'Inbetriebnahme-Passwort für LK-Endgerät',
