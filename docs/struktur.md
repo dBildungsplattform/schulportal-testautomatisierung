@@ -3,8 +3,8 @@ In diesem Dokument wird beschrieben, wie wir unsere Playwright-Tests strukturier
 
 ## Zielsetzung
 Das Ziel bei unseren Tests ist es, die Benutzerinteraktionen so abstrakt wie möglich zu beschreiben.
-Das heißt zum Beispiel, dass wir nicht in jedem Test erneut beschreiben wollen, wie man eine ComboBox bedient.
-Stattdessen soll der Test lediglich fordern, dass aus einer ComboBox ein Eintrag ausgewählt wird.
+Das heißt zum Beispiel, dass wir nicht in jedem Test erneut beschreiben wollen, wie man eine Autocomplete bedient.
+Stattdessen soll der Test lediglich fordern, dass aus einer Autocomplete ein Eintrag ausgewählt wird.
 
 Für die Seiten heißt das, dass eine Page-Klasse Methoden hat, die Seitenausgänge beschreiben.
 Wenn eine Seite, ohne vorherige Interaktion mit einer anderen Seite angesteuert werden kann, braucht sie zudem

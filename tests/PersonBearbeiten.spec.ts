@@ -28,13 +28,13 @@ import {
   generateVorname,
 } from '../base/testHelperGenerateTestdataNames.ts';
 import { generateCurrentDate, gotoTargetURL } from '../base/testHelperUtils.ts';
-import { PersonDetailsViewPage } from '../pages/admin/PersonDetailsView.page.ts';
-import { PersonManagementViewPage } from '../pages/admin/PersonManagementView.page.ts';
+import { PersonDetailsViewPage } from '../pages/admin/personen/PersonDetailsView.page.ts';
+import { PersonManagementViewPage } from '../pages/admin/personen/PersonManagementView.page.ts';
 import FromAnywhere from '../pages/FromAnywhere';
-import { HeaderPage } from '../pages/Header.page.ts';
+import { HeaderPage } from '../pages/components/Header.page.ts';
 import { LandingPage } from '../pages/LandingView.page.ts';
 import { LoginPage } from '../pages/LoginView.page.ts';
-import { MenuPage } from '../pages/MenuBar.page.ts';
+import { MenuPage } from '../pages/components/MenuBar.page.ts';
 import { StartPage } from '../pages/StartView.page.ts';
 
 const PW: string | undefined = process.env.PW;
@@ -243,6 +243,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     await test.step(`Befristung bei ${unbefristeteRolle} und ${befristeteRolle} überprüfen`, async () => {
       await personDetailsView.rollen.selectByTitle(befristeteRolle);
       await expect(personDetailsView.buttonBefristetSchuljahresende).toBeChecked();
+      await personDetailsView.rollen.clear();
       await personDetailsView.rollen.selectByTitle(unbefristeteRolle);
       await expect(personDetailsView.buttonBefristungUnbefristet).toBeChecked();
     });
@@ -689,6 +690,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         );
         await personDetailsView.errorTextInputBefristung.isVisible();
 
+        // enter invalid date
         await personDetailsView.inputBefristung.fill(
           await generateCurrentDate({ days: 0, months: -3, formatDMY: true })
         );
@@ -859,7 +861,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
           `Wollen Sie den Schüler aus Klasse ${klasseNameCurrent} in Klasse ${klasseNameNew} versetzen?`
         );
         await page.getByTestId('confirm-change-klasse-button').click();
-        await page.getByTestId('zuordnung-changes-save').click();
+        await page.getByTestId('zuordnung-changes-save-button').click();
         await page.getByTestId('change-klasse-success-close').click();
       });
 

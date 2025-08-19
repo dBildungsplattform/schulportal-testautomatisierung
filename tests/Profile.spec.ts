@@ -30,7 +30,7 @@ import {
   generateVorname,
 } from '../base/testHelperGenerateTestdataNames.ts';
 import FromAnywhere from '../pages/FromAnywhere';
-import { HeaderPage } from '../pages/Header.page';
+import { HeaderPage } from '../pages/components/Header.page';
 import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
 import { ProfilePage } from '../pages/ProfileView.page';
@@ -785,7 +785,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
           'Bitte notieren Sie sich das Passwort oder drucken Sie es aus. Nach dem Schließen des Dialogs wird das Passwort' +
             ' nicht mehr angezeigt. Sie benötigen dieses Passwort ausschließlich zur erstmaligen Anmeldung an Ihrem neuen LK-Endgerät.'
         );
-        await profileView.buttontCreatePasswordDialogLKEndgeraet.click();
+        await profileView.buttonCreatePasswordDialogLKEndgeraet.click();
 
         // Dialog Inbetriebnahme-Passwort erzeugen
         await profileView.validatePasswordResetDialog();

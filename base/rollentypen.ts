@@ -1,4 +1,6 @@
-export const typeLandesadmin: string = 'SYSADMIN';
-export const typeLehrer: string = 'LEHR';
-export const typeSchueler: string = 'LERN';
-export const typeSchuladmin: string = 'LEIT';
+export type RollenArt = 'LEIT' | 'LEHR' | 'LERN' | 'EXTERN' | 'ORGADMIN' | 'SYSADMIN';
+
+export const typeLandesadmin: RollenArt = 'SYSADMIN';
+export const typeLehrer: RollenArt = 'LEHR';
+export const typeSchueler: RollenArt = 'LERN';
+export const typeSchuladmin: RollenArt = 'LEIT';

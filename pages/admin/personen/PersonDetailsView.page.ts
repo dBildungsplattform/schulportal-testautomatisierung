@@ -1,6 +1,6 @@
 import { type Locator, Page, expect } from '@playwright/test';
-import { waitForAPIResponse } from '../../base/api/testHelper.page';
-import { ComboBox } from '../../elements/ComboBox';
+import { Autocomplete } from '../../../elements/Autocomplete';
+import { waitForAPIResponse } from '../../../base/api/testHelper.page';
 
 export class PersonDetailsViewPage {
   readonly page: Page;
@@ -50,10 +50,10 @@ export class PersonDetailsViewPage {
   readonly radioButtonUnbefristet: Locator;
   readonly radioButtonUnbefristetDisabled: Locator;
 
-  readonly organisationen: ComboBox;
-  readonly rollen: ComboBox;
-  readonly klassen: ComboBox;
-  readonly klassenVersetzen: ComboBox;
+  readonly organisationen: Autocomplete;
+  readonly rollen: Autocomplete;
+  readonly klassen: Autocomplete;
+  readonly klassenVersetzen: Autocomplete;
 
   // Benutzer sperren
   readonly textH3LockPersonHeadline: Locator;
@@ -126,19 +126,19 @@ export class PersonDetailsViewPage {
     this.inputKopersNr = page.getByTestId('kopersnr-input').locator('.v-field__input');
     this.buttonSubmitAddSchulzuordnung = page.getByTestId('zuordnung-creation-submit-button');
     this.buttonConfirmAddSchulzuordnung = page.getByRole('button', { name: 'Ja' });
-    this.buttonSaveAssignmentChanges = page.getByTestId('zuordnung-changes-save');
+    this.buttonSaveAssignmentChanges = page.getByTestId('zuordnung-changes-save-button');
     this.buttonCloseSaveAssignmentChanges = page.getByRole('dialog').getByRole('button', { name: 'Schließen' });
     this.buttonBefristetSchuljahresende = page.getByLabel('Bis Schuljahresende (31.07.');
     this.buttonBefristungUnbefristet = page.getByLabel('Unbefristet');
-    this.organisationen = new ComboBox(this.page, this.comboboxOrganisation);
-    this.rollen = new ComboBox(this.page, this.comboboxRolle);
-    this.klassen = new ComboBox(this.page, this.comboboxKlasse);
-    this.klassenVersetzen = new ComboBox(this.page, page.getByTestId('klasse-change-klasse-select'));
+    this.organisationen = new Autocomplete(this.page, this.comboboxOrganisation);
+    this.rollen = new Autocomplete(this.page, this.comboboxRolle);
+    this.klassen = new Autocomplete(this.page, this.comboboxKlasse);
+    this.klassenVersetzen = new Autocomplete(this.page, page.getByTestId('klasse-change-klasse-select'));
     this.buttonBefristungAendern = page.getByTestId('befristung-change-button');
     this.buttonBefristungAendernSubmit = page.getByTestId('change-befristung-submit-button');
     this.buttonBefristungAendernConfirm = page.getByTestId('confirm-change-befristung-button');
-    this.buttonBefristungAendernSave = page.getByTestId('zuordnung-changes-save');
-    this.buttonBefristungAendernSuccessClose = page.getByTestId('change-befristung-success-close');
+    this.buttonBefristungAendernSave = page.getByTestId('zuordnung-changes-save-button');
+    this.buttonBefristungAendernSuccessClose = page.getByTestId('change-befristung-success-dialog-close-button');
     this.inputBefristung = page.locator('[data-testid="befristung-input"] input');
     this.errorTextInputBefristung = page.getByText('Das eingegebene Datum darf nicht in der Vergangenheit liegen.');
     this.radioButtonBefristungSchuljahresende = page.getByTestId('schuljahresende-radio-button');

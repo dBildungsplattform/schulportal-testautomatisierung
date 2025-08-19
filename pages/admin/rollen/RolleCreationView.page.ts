@@ -1,6 +1,6 @@
 import { type Locator, Page } from '@playwright/test';
-import { RolleForm } from '../../components/RolleForm';
-import { MenuPage } from '../MenuBar.page';
+import { RolleForm } from '../../../components/RolleForm';
+import { MenuPage } from '../../components/MenuBar.page';
 import { RolleCreationConfirmPage } from './RolleCreationConfirm.page';
 
 export class RolleCreationViewPage {
