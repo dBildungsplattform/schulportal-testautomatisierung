@@ -1,5 +1,5 @@
 import { type Locator, Page } from '@playwright/test';
-import { ComboBox } from '../../elements/ComboBox';
+import { Autocomplete } from '../../../../elements/Autocomplete';
 
 export class KlasseCreationViewPage {
   readonly page: Page;
@@ -17,7 +17,7 @@ export class KlasseCreationViewPage {
   readonly dataKlasse: Locator;
   readonly buttonZurueckErgebnisliste: Locator;
   readonly buttonWeitereKlasseAnlegen: Locator;
-  readonly comboboxOrganisationInput: ComboBox;
+  readonly comboboxOrganisationInput: Autocomplete;
   readonly organisation: Locator;
   readonly organisationInput: Locator;
 
@@ -41,7 +41,7 @@ export class KlasseCreationViewPage {
     this.dataKlasse = page.getByTestId('created-klasse-name');
     this.buttonZurueckErgebnisliste = page.getByTestId('back-to-list-button');
     this.buttonWeitereKlasseAnlegen = page.getByTestId('create-another-klasse-button');
-    this.comboboxOrganisationInput = new ComboBox(this.page, page.getByTestId('schule-select'));
+    this.comboboxOrganisationInput = new Autocomplete(this.page, page.getByTestId('schule-select'));
   }
 
   public async waitForFilterToLoad(): Promise<void> {

@@ -13,21 +13,21 @@ import {
   deleteKlasseByName,
   deletePersonenBySearchStrings,
   deleteRolleById,
-} from '../base/testHelperDeleteTestdata.js';
+} from '../base/testHelperDeleteTestdata';
 import {
   generateKlassenname,
   generateNachname,
   generateRolleName,
   generateVorname,
-} from '../base/testHelperGenerateTestdataNames.js';
-import { KlasseCreationViewPage } from '../pages/admin/KlasseCreationView.page';
-import { KlasseDetailsViewPage } from '../pages/admin/KlasseDetailsView.page.js';
-import { KlasseManagementViewPage } from '../pages/admin/KlasseManagementView.page';
+} from '../base/testHelperGenerateTestdataNames';
+import { KlasseCreationViewPage } from '../pages/admin/organisationen/klassen/KlasseCreationView.page';
+import { KlasseDetailsViewPage } from '../pages/admin/organisationen/klassen/details/KlasseDetailsView.page';
+import { KlasseManagementViewPage } from '../pages/admin/organisationen/klassen/KlasseManagementView.page';
 import FromAnywhere from '../pages/FromAnywhere';
-import { HeaderPage } from '../pages/Header.page';
+import { HeaderPage } from '../pages/components/Header.page';
 import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
-import { MenuPage } from '../pages/MenuBar.page';
+import { MenuPage } from '../pages/components/MenuBar.page';
 import { StartPage } from '../pages/StartView.page';
 
 const PW: string | undefined = process.env.PW;
@@ -177,7 +177,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     async ({ page }: PlaywrightTestArgs) => {
       const klasseName: string = await generateKlassenname();
 
-      const klasseCreationView: KlasseCreationViewPage = await test.step(`Dialog Schule anlegen öffnen`, async () => {
+      const klasseCreationView: KlasseCreationViewPage = await test.step(`Dialog Klasse anlegen öffnen`, async () => {
         const startseite: StartPage = new StartPage(page);
         const menu: MenuPage = await startseite.goToAdministration();
         const klasseCreationView: KlasseCreationViewPage = await menu.klasseAnlegen();
@@ -759,12 +759,12 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       });
 
       await test.step(`Gesamtübersicht öffnen und prüfen, dass die Klasse nicht gelöscht werden kann`, async () => {
-        const KlasseDetailsViewPage: KlasseDetailsViewPage = await klasseManagementView.openDetailViewClass(
+        const klasseDetailsViewPage: KlasseDetailsViewPage = await klasseManagementView.openDetailViewClass(
           klassenname
         );
-        await KlasseDetailsViewPage.startDeleteRowViaQuickAction();
-        await klasseManagementView.checkDeleteClassFailed();
-        await klasseManagementView.clickButtonCloseAlert();
+        await klasseDetailsViewPage.startDeleteRowViaQuickAction();
+        await klasseDetailsViewPage.checkDeleteClassFailed();
+        await klasseDetailsViewPage.clickButtonCloseAlert();
         await klasseManagementView.waitErgebnislisteIsLoaded();
         await klasseManagementView.filterSchule(testschuleName);
         await klasseManagementView.checkRowExists(klassenname);

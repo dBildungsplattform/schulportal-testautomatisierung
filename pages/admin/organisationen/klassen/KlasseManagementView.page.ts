@@ -1,7 +1,7 @@
 import { expect, type Locator, Page } from '@playwright/test';
-import { ComboBox } from '../../elements/ComboBox';
-import { FooterDataTablePage } from '../FooterDataTable.page';
-import { KlasseDetailsViewPage } from './KlasseDetailsView.page';
+import { Autocomplete } from '../../../../elements/Autocomplete';
+import { FooterDataTablePage } from '../../../components/FooterDataTable.page';
+import { KlasseDetailsViewPage } from './details/KlasseDetailsView.page';
 
 export interface KlasseManagementViewPageOptions {
   currentUserIsLandesadministrator: boolean;
@@ -12,7 +12,7 @@ export class KlasseManagementViewPage {
   readonly textH1Administrationsbereich: Locator;
   readonly textH2Klassenverwaltung: Locator;
   readonly comboboxFilterSchule: Locator;
-  readonly comboboxFilterKlasse: ComboBox;
+  readonly comboboxFilterKlasse: Autocomplete;
   readonly tableHeaderDienststellennummer: Locator;
   readonly tableHeaderKlassenname: Locator;
   readonly iconKlasseLoeschen: Locator;
@@ -20,7 +20,7 @@ export class KlasseManagementViewPage {
   readonly buttonSchliesseKlasseLoeschenDialog: Locator;
   readonly tableRows: Locator;
   readonly footerDataTable: FooterDataTablePage;
-  readonly comboboxOrganisationInput: ComboBox;
+  readonly comboboxOrganisationInput: Autocomplete;
   readonly organisationInput: Locator;
   readonly klasseInput: Locator;
   readonly textAlertDeleteKlasse: Locator;
@@ -33,8 +33,8 @@ export class KlasseManagementViewPage {
     this.textH1Administrationsbereich = page.getByTestId('admin-headline');
     this.textH2Klassenverwaltung = page.getByTestId('layout-card-headline');
     this.comboboxFilterSchule = page.getByPlaceholder('Schule');
-    this.klasseInput = page.getByTestId('klasse-select');
-    this.comboboxFilterKlasse = new ComboBox(this.page, this.klasseInput);
+    this.klasseInput = page.getByTestId('klassen-management-klasse-select');
+    this.comboboxFilterKlasse = new Autocomplete(this.page, this.klasseInput);
     this.tableHeaderDienststellennummer = page.getByText('Dienststellennummer');
     this.tableHeaderKlassenname = page.getByTestId('klasse-table').getByText('Klasse', { exact: true });
     this.buttonKlasseLoeschen = page.getByTestId('klasse-delete-button');
@@ -42,9 +42,9 @@ export class KlasseManagementViewPage {
     this.tableRows = page.locator('table >> tbody >> tr');
     this.footerDataTable = new FooterDataTablePage(page);
     this.organisationInput = page.getByTestId('schule-select');
-    this.comboboxOrganisationInput = new ComboBox(this.page, this.organisationInput);
-    this.textAlertDeleteKlasse = page.getByTestId('alert-text');
-    this.buttonCloseAlert = page.getByTestId('alert-button');
+    this.comboboxOrganisationInput = new Autocomplete(this.page, this.organisationInput);
+    this.textAlertDeleteKlasse = page.getByTestId('klasse-management-error-alert-text');
+    this.buttonCloseAlert = page.getByTestId('klasse-management-error-alert-button');
     this.iconTableRowDelete = (className: string): Locator =>
       page.getByRole('row', { name: className }).getByTestId('open-klasse-delete-dialog-icon');
     this.currentUserIsLandesadministrator = options?.currentUserIsLandesadministrator || true;

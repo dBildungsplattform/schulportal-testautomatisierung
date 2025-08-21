@@ -1,10 +1,4 @@
 import { expect, test, PlaywrightTestArgs } from '@playwright/test';
-import { LandingPage } from '../pages/LandingView.page';
-import { LoginPage } from '../pages/LoginView.page';
-import { StartPage } from '../pages/StartView.page';
-import { PersonManagementViewPage } from '../pages/admin/PersonManagementView.page';
-import { PersonDetailsViewPage } from '../pages/admin/PersonDetailsView.page';
-import { HeaderPage } from '../pages/Header.page';
 import { createPerson, createRolleAndPersonWithUserContext, setUEMPassword, setTimeLimitPersonenkontext } from '../base/api/testHelperPerson.page';
 import { getSPId } from '../base/api/testHelperServiceprovider.page';
 import { UserInfo, waitForAPIResponse } from '../base/api/testHelper.page';
@@ -26,9 +20,15 @@ import { generateCurrentDate, gotoTargetURL } from '../base/testHelperUtils';
 import { lehrkraftOeffentlichRolle, lehrkraftInVertretungRolle } from '../base/rollen';
 import { klasse1Testschule } from '../base/klassen';
 import { befristungPflicht, kopersNrPflicht } from '../base/merkmale';
-import FromAnywhere from '../pages/FromAnywhere';
 import { TestHelperLdap } from '../base/testHelperLdap';
-import { MenuPage } from '../pages/MenuBar.page';
+import { PersonDetailsViewPage } from '../pages/admin/personen/PersonDetailsView.page';
+import { PersonManagementViewPage } from '../pages/admin/personen/PersonManagementView.page';
+import FromAnywhere from '../pages/FromAnywhere';
+import { HeaderPage } from '../pages/components/Header.page';
+import { LandingPage } from '../pages/LandingView.page';
+import { LoginPage } from '../pages/LoginView.page';
+import { MenuPage } from '../pages/components/MenuBar.page';
+import { StartPage } from '../pages/StartView.page';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -255,6 +255,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     await test.step(`Befristung bei ${unbefristeteRolle} und ${befristeteRolle} überprüfen`, async () => {
       await personDetailsView.rollen.selectByTitle(befristeteRolle);
       await expect(personDetailsView.buttonBefristetSchuljahresende).toBeChecked();
+      await personDetailsView.rollen.clear();
       await personDetailsView.rollen.selectByTitle(unbefristeteRolle);
       await expect(personDetailsView.buttonBefristungUnbefristet).toBeChecked();
     });
@@ -701,6 +702,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         );
         await personDetailsView.errorTextInputBefristung.isVisible();
 
+        // enter invalid date
         await personDetailsView.inputBefristung.fill(
           await generateCurrentDate({ days: 0, months: -3, formatDMY: true })
         );
@@ -871,7 +873,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
           `Wollen Sie den Schüler aus Klasse ${klasseNameCurrent} in Klasse ${klasseNameNew} versetzen?`
         );
         await page.getByTestId('confirm-change-klasse-button').click();
-        await page.getByTestId('zuordnung-changes-save').click();
+        await page.getByTestId('zuordnung-changes-save-button').click();
         await page.getByTestId('change-klasse-success-close').click();
       });
 

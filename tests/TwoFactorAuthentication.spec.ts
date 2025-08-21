@@ -1,5 +1,5 @@
 import { test, expect, PlaywrightTestArgs } from '@playwright/test';
-import { UserInfo } from '../base/api/testHelper.page.js';
+import { UserInfo } from '../base/api/testHelper.page';
 import { createRolleAndPersonWithUserContext } from '../base/api/testHelperPerson.page';
 import { getSPId } from '../base/api/testHelperServiceprovider.page';
 import { LONG, STAGE, BROWSER } from '../base/tags';
@@ -8,14 +8,14 @@ import { testschuleName } from '../base/organisation';
 import { typeLehrer } from '../base/rollentypen';
 import { email } from '../base/sp';
 import { gotoTargetURL } from '../base/testHelperUtils';
-import { PersonDetailsViewPage } from '../pages/admin/PersonDetailsView.page';
-import { PersonManagementViewPage } from '../pages/admin/PersonManagementView.page';
-import { HeaderPage } from '../pages/Header.page.js';
-import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata.js';
+import { PersonDetailsViewPage } from '../pages/admin/personen/PersonDetailsView.page';
+import { PersonManagementViewPage } from '../pages/admin/personen/PersonManagementView.page';
+import { HeaderPage } from '../pages/components/Header.page';
+import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata';
 import FromAnywhere from '../pages/FromAnywhere';
-import { StartPage } from '../pages/StartView.page.js';
-import { LandingPage } from '../pages/LandingView.page.js';
-import { LoginPage } from '../pages/LoginView.page.js';
+import { StartPage } from '../pages/StartView.page';
+import { LandingPage } from '../pages/LandingView.page';
+import { LoginPage } from '../pages/LoginView.page';
 
 // The created test data will be deleted in the afterEach block
 let usernames: string[] = [];
