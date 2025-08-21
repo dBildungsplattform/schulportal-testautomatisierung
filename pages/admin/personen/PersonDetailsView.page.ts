@@ -25,10 +25,13 @@ export class PersonDetailsViewPage {
   // Schulzuordnungen
   readonly textH3SchulzuordnungHeadline: Locator;
   readonly buttonEditSchulzuordnung: Locator;
+  readonly button_deleteSchulzuordnung: Locator;
+  readonly button_confirmDeleteSchulzuordnung: Locator;
   readonly buttonAddSchulzuordnung: Locator;
+  readonly button_closeZuordnungSuccess: Locator;
   readonly buttonVersetzen: Locator;
   readonly comboboxOrganisation: Locator;
-  readonly comboboxOrganisationInput: Locator;
+  readonly organisationInput: Locator;
   readonly comboboxOrganisationDialogBenutzerSperren: Locator;
   readonly comboboxRolle: Locator;
   readonly comboboxKlasse: Locator;
@@ -50,6 +53,7 @@ export class PersonDetailsViewPage {
   readonly radioButtonUnbefristet: Locator;
   readonly radioButtonUnbefristetDisabled: Locator;
 
+  readonly buttonConfirmZuordnungDialogAddition: Locator;
   readonly organisationen: Autocomplete;
   readonly rollen: Autocomplete;
   readonly klassen: Autocomplete;
@@ -118,10 +122,15 @@ export class PersonDetailsViewPage {
       .locator('div')
       .getByTestId('zuordnung-edit-button');
     this.buttonAddSchulzuordnung = page.getByTestId('zuordnung-create-button');
+    this.button_closeZuordnungSuccess = page.getByTestId('close-zuordnung-delete-success-button');
     this.comboboxOrganisationDialogBenutzerSperren = page.getByTestId('person-lock-card').locator('.v-field__input');
     this.comboboxRolle = page.getByTestId('rolle-select');
     this.comboboxOrganisation = page.getByTestId('organisation-select');
+    this.organisationInput = page.getByTestId('organisation-select').locator('input');
+    this.button_deleteSchulzuordnung = page.getByTestId('open-zuordnung-delete-dialog-button');
+    this.button_confirmDeleteSchulzuordnung = page.getByTestId('zuordnung-delete-button');
     this.comboboxKlasse = page.getByTestId('klassenname-input').getByRole('combobox');
+    this.buttonConfirmZuordnungDialogAddition = page.getByTestId('confirm-zuordnung-dialog-addition');
 
     this.inputKopersNr = page.getByTestId('kopersnr-input').locator('.v-field__input');
     this.buttonSubmitAddSchulzuordnung = page.getByTestId('zuordnung-creation-submit-button');
