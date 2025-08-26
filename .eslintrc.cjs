@@ -1,3 +1,7 @@
+/* eslint-env node */
+/* eslint-disable-next-line */
+require('@rushstack/eslint-patch/modern-module-resolution')
+
 module.exports = {
   extends: [
     'eslint:recommended',

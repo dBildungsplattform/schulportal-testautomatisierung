@@ -1,6 +1,6 @@
 import { type Locator, Page, expect } from '@playwright/test';
 import { PersonDetailsViewPage } from './PersonDetailsView.page';
-import { ComboBox } from '../../elements/ComboBox';
+import { Autocomplete } from '../../../elements/Autocomplete';
 
 export class PersonManagementViewPage {
   readonly page: Page;
@@ -22,7 +22,7 @@ export class PersonManagementViewPage {
   readonly comboboxMenuIconKlasse: Locator;
   readonly comboboxMenuIconStatus: Locator;
   readonly comboboxMenuIconSchuleInput: Locator;
-  readonly comboboxSchule: ComboBox;
+  readonly comboboxSchule: Autocomplete;
 
   constructor(page: Page) {
     this.page = page;
@@ -42,9 +42,9 @@ export class PersonManagementViewPage {
     this.comboboxMenuIconSchule = page.locator('[data-testid="schule-select"] .mdi-menu-down');
     this.comboboxMenuIconSchuleInput = page.locator('[data-testid="schule-select"] input');
     this.comboboxMenuIconRolle = page.locator('[data-testid="rolle-select"] .mdi-menu-down');
-    this.comboboxMenuIconKlasse = page.locator('[data-testid="klasse-select"] .mdi-menu-down');
+    this.comboboxMenuIconKlasse = page.locator('[data-testid="personen-management-klasse-select"] .mdi-menu-down');
     this.comboboxMenuIconStatus = page.locator('[data-testid="status-select"] .mdi-menu-down');
-    this.comboboxSchule = new ComboBox(this.page, page.getByTestId('schule-select'));
+    this.comboboxSchule = new Autocomplete(this.page, page.getByTestId('schule-select'));
   }
 
   public async navigateToPersonDetailsViewByNachname(nachname: string): Promise<PersonDetailsViewPage> {
@@ -54,9 +54,24 @@ export class PersonManagementViewPage {
   }
 
   public async searchBySuchfeld(name: string): Promise<void> {
-    await this.page.waitForResponse('/api/dbiam/personenuebersicht');
+    // Make sure the search input is visible before filling it
+    await expect(this.inputSuchfeld).toBeVisible();
+
     await this.inputSuchfeld.fill(name);
-    await this.buttonSuchen.click();
+
+    // Triggers the click and starts listening for the response at the same time
+    // Guarantees that the response is awaited only after the click and that it won't be missed even if it happens fast
+    await Promise.all([
+      this.page.waitForResponse((response) =>
+        response.url().includes('/api/dbiam/personenuebersicht') &&
+        response.status() === 201
+      ),
+      this.buttonSuchen.click(),
+    ]);
+    // Wait for the table to be populated with the search results
+    await this.page.getByRole('cell', { name, exact: true }).waitFor({ state: 'visible' });
+
+    await expect(this.inputSuchfeld).toHaveValue(name);
     await expect(this.comboboxMenuIconStatus).toBeVisible();
   }
 
@@ -68,7 +83,7 @@ export class PersonManagementViewPage {
   }
 
   public async waitForData(): Promise<void> {
-    return expect(this.tableWrapper).not.toContainText('Keine Daten');
+    await expect(this.tableWrapper).not.toContainText('Keine Daten');
   }
 
   public getRows(): Locator {

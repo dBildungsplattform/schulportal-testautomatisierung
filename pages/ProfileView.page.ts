@@ -48,6 +48,7 @@ export class ProfilePage {
   readonly text2FASelfServiceQRInfo: Locator;
   readonly data2FAQRCode: Locator;
   readonly textLayoutCardHeadline: Locator;
+  readonly passwordResetDialogHeadline: Locator;
   readonly textOTPEntryInfo: Locator;
   readonly textOTPInput: Locator;
   readonly text2FASelfServiceError: Locator;
@@ -57,7 +58,7 @@ export class ProfilePage {
   readonly infoTextSectionPasswordLKEndgeraet: Locator;
   readonly buttonCreatePasswordSectionLKEndgeraet: Locator;
   readonly infoTextDialogPasswordLKEndgeraet: Locator;
-  readonly buttontCreatePasswordDialogLKEndgeraet: Locator;
+  readonly buttonCreatePasswordDialogLKEndgeraet: Locator;
   readonly inputPasswortErzeugenDialogLKEndgeraet: Locator;
   readonly iconShowPassword: Locator;
   readonly iconCopyPassword: Locator;
@@ -69,16 +70,16 @@ export class ProfilePage {
     this.titleMeinProfil = page.getByTestId('profile-headline');
     // Persönliche Daten
     this.cardHeadlinePersoenlicheDaten = page.getByTestId('layout-card-headline-persoenliche-daten');
-    this.labelVornameNachname = page.getByTestId('fullName-label');
-    this.dataVornameNachname = page.getByTestId('fullName-value');
-    this.labelBenutzername = page.getByTestId('userName-label');
-    this.dataBenutzername = page.getByTestId('userName-value');
+    this.labelVornameNachname = page.getByTestId('fullname-label');
+    this.dataVornameNachname = page.getByTestId('fullname-value');
+    this.labelBenutzername = page.getByTestId('username-label');
+    this.dataBenutzername = page.getByTestId('username-value');
     this.labelKopersNr = page.getByTestId('kopersnummer-label');
     this.dataKopersNr = page.getByTestId('kopersnummer-value');
     this.iconInfoPersoenlicheDaten = page.getByTestId('info-icon');
     // Die Schulzuordnungen sind als Tabelle dargestellt, darum sind Indizes in den Ids
     // Schulzuordnung 1
-    this.cardHeadlineSchulzuordnung1 = page.getByTestId('zuordung-card-1');
+    this.cardHeadlineSchulzuordnung1 = page.getByTestId('zuordnung-card-1-headline');
     this.labelSchule1 = page.getByTestId('schule-label-1');
     this.dataSchule1 = page.getByTestId('schule-value-1');
     this.labelRolle1 = page.getByTestId('rolle-label-1');
@@ -86,7 +87,7 @@ export class ProfilePage {
     this.labelDienststellennummer1 = page.getByTestId('dienststellennummer-label-1');
     this.dataDienststellennummer1 = page.getByTestId('dienststellennummer-value-1');
     // Schulzuordnung 2
-    this.cardHeadlineSchulzuordnung2 = page.getByTestId('zuordung-card-2');
+    this.cardHeadlineSchulzuordnung2 = page.getByTestId('zuordnung-card-2-headline');
     this.labelSchule2 = page.getByTestId('schule-label-2');
     this.dataSchule2 = page.getByTestId('schule-value-2');
     this.labelRolle2 = page.getByTestId('rolle-label-2');
@@ -115,6 +116,7 @@ export class ProfilePage {
     this.textOTPInput = page.getByTestId('self-service-otp-input');
     this.text2FASelfServiceError = page.getByTestId('self-service-token-verify-error-text');
     // Modal
+    this.passwordResetDialogHeadline = page.getByTestId('password-reset-dialog-header');
     this.textLayoutCardHeadline = page.getByTestId('layout-card-headline');
     // Inbetriebnahme-Passwort für LK-Endgerät
     this.cardHeadlinePasswordLKEndgeraet = page.getByRole('heading', {
@@ -126,7 +128,7 @@ export class ProfilePage {
     );
     this.buttonCreatePasswordSectionLKEndgeraet = page.getByTestId('open-device-password-dialog-button');
     this.infoTextDialogPasswordLKEndgeraet = page.getByTestId('password-reset-info-text');
-    this.buttontCreatePasswordDialogLKEndgeraet = page.getByTestId('password-reset-button');
+    this.buttonCreatePasswordDialogLKEndgeraet = page.getByTestId('password-reset-button');
     this.inputPasswortErzeugenDialogLKEndgeraet = page.locator('[data-testid="password-output-field"] input');
     this.iconShowPassword = page.getByTestId('show-password-icon');
     this.iconCopyPassword = page.getByTestId('copy-password-icon');
@@ -145,10 +147,11 @@ export class ProfilePage {
   }
 
   public async validatePasswordResetDialog(): Promise<void> {
-    await expect(this.infoTextDialogPasswordLKEndgeraet).toHaveText(
-      'Das Passwort wurde erfolgreich zurückgesetzt. Bitte notieren Sie sich das Passwort oder drucken Sie es aus. Nach dem Schließen des Dialogs' +
-        ' wird das Passwort nicht mehr angezeigt. Sie benötigen dieses Passwort ausschließlich zur erstmaligen Anmeldung an Ihrem neuen LK-Endgerät.'
-    );
+    await expect(this.page.getByTestId('password-reset-info-text')).toHaveText(`
+      Das Passwort wurde erfolgreich zurückgesetzt. Bitte notieren Sie sich das Passwort oder drucken Sie es aus.
+      Nach dem Schließen des Dialogs wird das Passwort nicht mehr angezeigt.
+      Sie benötigen dieses Passwort ausschließlich zur erstmaligen Anmeldung an Ihrem neuen LK-Endgerät.
+    `);
     await expect(this.inputPasswortErzeugenDialogLKEndgeraet).toBeVisible();
     await expect(this.inputPasswortErzeugenDialogLKEndgeraet).toHaveAttribute('readonly');
     await expect(this.iconShowPassword).toBeVisible();

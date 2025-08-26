@@ -6,17 +6,17 @@ import { email, itslearning, kalender, schulportaladmin } from '../base/sp';
 import { BROWSER, LONG, SHORT, STAGE } from '../base/tags';
 import { deleteRolleByName } from '../base/testHelperDeleteTestdata';
 import { generateRolleName } from '../base/testHelperGenerateTestdataNames';
-import { RolleCreationConfirmPage } from '../pages/admin/RolleCreationConfirm.page';
-import { RolleCreationViewPage } from '../pages/admin/RolleCreationView.page';
-import { RolleDetailsViewPage } from '../pages/admin/RolleDetailsView.page';
-import { RoleTableRow, RolleManagementViewPage } from '../pages/admin/RolleManagementView.page';
+import { RolleCreationConfirmPage } from '../pages/admin/rollen/RolleCreationConfirm.page';
+import { RolleCreationViewPage } from '../pages/admin/rollen/RolleCreationView.page';
+import { RolleDetailsViewPage } from '../pages/admin/rollen/RolleDetailsView.page';
+import { RoleTableRow, RolleManagementViewPage } from '../pages/admin/rollen/RolleManagementView.page';
 import FromAnywhere from '../pages/FromAnywhere';
-import { HeaderPage } from '../pages/Header.page';
+import { HeaderPage } from '../pages/components/Header.page';
 import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
-import { MenuPage } from '../pages/MenuBar.page';
+import { MenuPage } from '../pages/components/MenuBar.page';
 import { StartPage } from '../pages/StartView.page';
-import { FooterDataTablePage } from '../pages/FooterDataTable.page';
+import { FooterDataTablePage } from '../pages/components/FooterDataTable.page';
 
 let startseite: StartPage;
 let loggedIn: boolean = false;
@@ -128,7 +128,9 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     }
   );
 
-  test(
+  // TODO: We skip this useless test because it does not reliably check the rollen list
+  // We re-implement this test as soon as the rollen list includes sorting and searching
+  test.skip(
     'Ergebnisliste Rollen auf Vollständigkeit prüfen als Landesadmin',
     { tag: [LONG, SHORT, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {

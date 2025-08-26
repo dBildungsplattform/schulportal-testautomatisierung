@@ -1,10 +1,10 @@
 import { test, expect, Download, PlaywrightTestArgs } from '@playwright/test';
-import { HeaderPage } from '../pages/Header.page';
+import { HeaderPage } from '../pages/components/Header.page';
 import { LONG, STAGE, BROWSER } from '../base/tags';
 import { schuelerRolle } from '../base/rollen';
 import FromAnywhere from '../pages/FromAnywhere';
-import { PersonImportViewPage } from '../pages/admin/PersonImportView.page';
-import { PersonManagementViewPage } from '../pages/admin/PersonManagementView.page';
+import { PersonImportViewPage } from '../pages/admin/personen/PersonImportView.page';
+import { PersonManagementViewPage } from '../pages/admin/personen/PersonManagementView.page';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
@@ -62,7 +62,8 @@ test.describe(`Testfälle für den Benutzerimport": Umgebung: ${process.env.ENV}
     });
   });
 
-  test(
+  // Skip for now as it is not working in the current setup of LDAP
+  test.skip(
     'Als Landesadmin eine CSV-Datei mit Benutzerdaten hochladen und importieren',
     { tag: [LONG, STAGE, BROWSER] },
     async ({ page }: PlaywrightTestArgs) => {

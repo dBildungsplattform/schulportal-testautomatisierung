@@ -1,6 +1,6 @@
 import { type Locator, Page } from '@playwright/test';
-import { RolleForm } from '../../components/RolleForm';
-import { MenuPage } from '../MenuBar.page';
+import { RolleForm } from '../../../components/RolleForm';
+import { MenuPage } from '../../components/MenuBar.page';
 
 export class RolleDetailsViewPage {
   readonly rolleForm: RolleForm;
@@ -25,9 +25,9 @@ export class RolleDetailsViewPage {
     this.buttonRolleLoeschenCancel = page.getByTestId('cancel-rolle-delete-button');
     this.textSuccess = page.getByTestId('rolle-delete-success-text');
     this.alert = {
-      title: page.getByTestId('alert-title'),
-      text: page.getByTestId('alert-text'),
-      button: page.getByTestId('alert-button'),
+      title: page.getByTestId('rolle-details-error-alert-title'),
+      text: page.getByTestId('rolle-details-error-alert-text'),
+      button: page.getByTestId('rolle-details-error-alert-button'),
     };
   }
 
