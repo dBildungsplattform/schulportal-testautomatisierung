@@ -72,9 +72,8 @@ jobs:
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
 
-    # ✅ safer SSH key handling
     - name: Setup SSH key for ldap tunnel
-      uses: webfactory/ssh-agent@v0.9.0
+      uses: webfactory/ssh-agent@b4bd5f3a8a0c5c7c66a4dfb9b47f8cc2cb8f6e9b # v0.9.0
       with:
         ssh-private-key: ${{ secrets.TUNNEL_USER_SSHKEY }}
 
