@@ -539,7 +539,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     'Eine Lehrkraft anlegen und Ihren Kontext entfernen dann wieder hinzufügen und den LDAP Inhalt vollständig prüfen',
-    { tag: [LONG, SHORT, STAGE] },
+    { tag: [LONG, SHORT] },
     async ({ page }: PlaywrightTestArgs) => {
       const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
       let personDetailsView: PersonDetailsViewPage = new PersonDetailsViewPage(page);
@@ -587,6 +587,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         expect(generatedMailPrimaryAddress).toContain('schule-sh.de');
         expect(generatedMailPrimaryAddress.length).toBeGreaterThan(5);
       });
+
       await test.step(`Dialog Gesamtübersicht öffnen`, async () => {
         await personCreationView.buttonOpenGesamtuebersicht.click();
       });
@@ -636,7 +637,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     'Eine Lehrkraft anlegen in der Rolle Landesadmin und die Bestätigungsseite sowie den LDAP Inhalt vollständig prüfen',
-    { tag: [LONG, SHORT, STAGE, BROWSER] },
+    { tag: [LONG, SHORT, BROWSER] },
     async ({ page }: PlaywrightTestArgs) => {
       const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
       const rolleNames: string[] = ['Lehrkraft'];

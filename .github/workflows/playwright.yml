@@ -7,10 +7,6 @@ on:
         type: string
         description: 'Hostname of the frontend server (optional)'
         required: false
-      ldapUrl:
-        type: string
-        description: 'URL for the LDAP used by the branch to be testet with Playwright (optional)'
-        required: false
       playwright_branch:
         type: string
         description: 'The name of the branch to be tested with Playwright.'
@@ -22,21 +18,32 @@ on:
         type: string
         description: 'Hostname of the frontend server (optional)'
         required: true
-      ldapUrl:
-        type: string
-        description: 'URL for the LDAP used by the branch to be testet with Playwright'
-        required: true
       playwright_branch:
         type: string
         description: 'The name of the branch to be tested with Playwright.'
         required: false
         default: main
+      stage:
+        description: 'Stage to run the tests on'
+        required: true
+        default: dev
+        type: choice
+        options:
+          - dev
+          - staging
+      ldapNamespace:
+        description: 'Namespace of the ldap pod to be used'
+        required: true
+        default: 'main'
+        type: string
+
   push:
     branches: [ main ]
 
 jobs:
 
   run_playwright_end2end_tests:
+    environment: ${{ inputs.stage }}
     continue-on-error: true
     timeout-minutes: 60
     runs-on: ubuntu-latest
@@ -59,27 +66,58 @@ jobs:
       run: npm ci
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
+    - name: Add ssh key for ldap tunnel
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.TUNNEL_USER_SSHKEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
     
+    - name: Add tunnel host to known_hosts
+      run: |
+        ssh-keyscan -p ${{ secrets.TUNNEL_PORT }} ${{ secrets.TUNNELHOST }} >> ~/.ssh/known_hosts
+
+    - name: Add kubeconfig
+      run: |
+        mkdir -p ~/.kube
+        echo "${{ secrets.SPSH_DEV_KUBECONFIG }}" > ~/.kube/config
+
+    - name: Get Pod IP
+      run: |
+        POD_IP=$(kubectl get pod dbildungs-iam-ldap-0 -n ${{inputs.ldapNamespace}} -o=jsonpath='{.status.podIP}')
+        echo "LDAP_POD_IP=$POD_IP" >> $GITHUB_ENV
+    
+    - name: Create SSH tunnel to LDAP
+      run: |
+        ssh -i ~/.ssh/id_rsa \
+            -L 1389:$LDAP_POD_IP:1389 ${{ secrets.TUNNEL_USER }}@${{ secrets.TUNNELHOST }} \
+            -p ${{ secrets.TUNNEL_PORT }} \
+            -N -o ServerAliveInterval=15 -o ExitOnForwardFailure=yes &
+        disown
+    
+      # Just for testing:
+    - name: Install ldap-utils
+      run: sudo apt-get install -y ldap-utils
+    - name: Test LDAP Connectivity
+      run: ldapwhoami -x -H ldap://localhost:1389 -D "cn=admin,dc=schule-sh,dc=de" -w ${{ secrets.LDAP_ADMIN_PASSWORD }}
     - name: List Playwright tests
       run: npx playwright test --list --grep "@short"
-    - name: Run Playwright tests
-      run: npx playwright test --config=playwright.config.ts --grep "@short" --project "chromium"
+    # - name: Run Playwright tests
+    #   run: npx playwright test --config=playwright.config.ts --grep "@short" --project "chromium"
     
-      env:
-        USER: '${{ secrets.USER }}'
-        PW: '${{ secrets.PW }}'
-        LDAP_ADMIN_PASSWORD: '${{ secrets.LDAP_ADMIN_PASSWORD}}'
-    - uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: playwright-report
-        path: playwright-report/
-        retention-days: 30
-    - uses: RocketChat/Rocket.Chat.GitHub.Action.Notification@1.1.1
-      if: failure()
-      with:
-        type: ${{ job.status }} 
-        job_name: 'Playwright Job Status: '
-        url: ${{ secrets.RC_WEBHOOK }}
-        channel: '#SPSH-Test-Automation'
-        username: Playwright Notificator
+    #   env:
+    #     USER: '${{ secrets.USER }}'
+    #     PW: '${{ secrets.PW }}'
+    # - uses: actions/upload-artifact@v4
+    #   if: always()
+    #   with:
+    #     name: playwright-report
+    #     path: playwright-report/
+    #     retention-days: 30
+    # - uses: RocketChat/Rocket.Chat.GitHub.Action.Notification@1.1.1
+    #   if: failure()
+    #   with:
+    #     type: ${{ job.status }} 
+    #     job_name: 'Playwright Job Status: '
+    #     url: ${{ secrets.RC_WEBHOOK }}
+    #     channel: '#SPSH-Test-Automation'
+    #     username: Playwright Notificator
