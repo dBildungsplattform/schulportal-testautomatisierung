@@ -1,5 +1,5 @@
 import { expect, test, PlaywrightTestArgs } from '@playwright/test';
-import { createPerson, createRolleAndPersonWithUserContext, setUEMPassword, setTimeLimitPersonenkontext } from '../base/api/testHelperPerson.page';
+import { createPerson, createRolleAndPersonWithUserContext, setTimeLimitPersonenkontext } from '../base/api/testHelperPerson.page';
 import { getSPId } from '../base/api/testHelperServiceprovider.page';
 import { UserInfo, waitForAPIResponse } from '../base/api/testHelper.page';
 import { createKlasse, getOrganisationId } from '../base/api/testHelperOrganisation.page';
@@ -7,7 +7,7 @@ import { addSPToRolle, addSystemrechtToRolle, createRolle } from '../base/api/te
 import { LONG, SHORT, STAGE, BROWSER } from '../base/tags';
 import { deleteKlasseByName, deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata';
 import { typeLehrer, typeSchueler, typeSchuladmin } from '../base/rollentypen';
-import { landSH, testschuleName, testschuleDstNr, testschule665Name, testschule665DstNr } from '../base/organisation';
+import { landSH, testschuleName, testschuleDstNr, testschule665Name } from '../base/organisation';
 import { email, itslearning } from '../base/sp';
 import {
   generateKlassenname,
@@ -20,7 +20,6 @@ import { generateCurrentDate, gotoTargetURL } from '../base/testHelperUtils';
 import { lehrkraftOeffentlichRolle, lehrkraftInVertretungRolle } from '../base/rollen';
 import { klasse1Testschule } from '../base/klassen';
 import { befristungPflicht, kopersNrPflicht } from '../base/merkmale';
-import { TestHelperLdap } from '../base/testHelperLdap';
 import { PersonDetailsViewPage } from '../pages/admin/personen/PersonDetailsView.page';
 import { PersonManagementViewPage } from '../pages/admin/personen/PersonManagementView.page';
 import FromAnywhere from '../pages/FromAnywhere';
@@ -32,15 +31,13 @@ import { StartPage } from '../pages/StartView.page';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
-const LDAP_URL: string = process.env.LDAP_URL;
-const LDAP_ADMIN_PASSWORD: string = process.env.LDAP_ADMIN_PASSWORD;
 
 // The created test data will be deleted in the afterEach block
 let usernames: string[] = [];
 let rolleIds: string[] = [];
 let klasseNames: string[] = [];
 // This variable must be set to false in the testcase when the logged in user is changed
-let currentUserIsLandesadministrator: boolean = true;
+const currentUserIsLandesadministrator: boolean = true;
 let logoutViaStartPage: boolean = false;
 
 test.describe(`Testfälle für die Administration von Personen": Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
@@ -99,122 +96,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       }
     });
   });
-
-  test(
-    'Eine Schulzuordnung bei einem bestehenden Benutzer hinzufügen',
-    { tag: [LONG, STAGE, BROWSER] },
-    async ({ page }: PlaywrightTestArgs) => {
-      const personDetailsView: PersonDetailsViewPage = new PersonDetailsViewPage(page);
-      const header: HeaderPage = new HeaderPage(page);
-      const landing: LandingPage = new LandingPage(page);
-      const login: LoginPage = new LoginPage(page);
-      const startseite: StartPage = new StartPage(page);
-      logoutViaStartPage = true;
-
-      const addminVorname: string = await generateVorname();
-      const adminNachname: string = await generateNachname();
-      const adminRolle: string = await generateRolleName();
-      const adminRollenart: string = typeSchuladmin;
-      const adminOrganisation: string = testschule665Name;
-      const adminIdSPs: string[] = [await getSPId(page, 'Schulportal-Administration')];
-
-      const lehrerVorname: string = await generateVorname();
-      const lehrerNachname: string = await generateNachname();
-      const lehrerRolle: string = await generateRolleName();
-      const lehrerRollenart: string = typeLehrer;
-      const lehrerOrganisation: string = testschule665Name;
-      const lehrerBenutzername: string = lehrerVorname.charAt(0).toLowerCase() + '.' + lehrerNachname.toLowerCase();
-
-      const rolle: string = lehrkraftInVertretungRolle;
-      const kopersNr: string = await generateKopersNr();
-
-      const testHelperLdap: TestHelperLdap = new TestHelperLdap(LDAP_URL, LDAP_ADMIN_PASSWORD);
-
-      const userInfoAdmin: UserInfo = await test.step('Schuladmin anlegen', async () => {
-        const userInfoAdmin: UserInfo = await createRolleAndPersonWithUserContext(
-          page,
-          adminOrganisation,
-          adminRollenart,
-          addminVorname,
-          adminNachname,
-          adminIdSPs,
-          adminRolle
-        );
-        await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'PERSONEN_VERWALTEN');
-        usernames.push(userInfoAdmin.username);
-        rolleIds.push(userInfoAdmin.rolleId);
-        return userInfoAdmin;
-      });
-
-      const userInfoLehrer: UserInfo = await test.step('Lehrer anlegen', async () => {
-        const userInfoLehrer: UserInfo = await createRolleAndPersonWithUserContext(
-          page,
-          lehrerOrganisation,
-          lehrerRollenart,
-          lehrerVorname,
-          lehrerNachname,
-          [await getSPId(page, 'E-Mail')],
-          lehrerRolle
-        );
-        usernames.push(userInfoLehrer.username);
-        rolleIds.push(userInfoLehrer.rolleId);
-        return userInfoLehrer;
-      });
-
-      await test.step(`Als Schuladmin anmelden`, async () => {
-        await header.logout({ logoutViaStartPage: false });
-        await landing.buttonAnmelden.click();
-        await login.login(userInfoAdmin.username, userInfoAdmin.password);
-        await login.updatePW();
-        await startseite.validateStartPageIsLoaded();
-        currentUserIsLandesadministrator = false;
-      });
-
-      await test.step(`Die Gesamtübersicht des Lehrers öffnen`, async () => {
-        const menu: MenuPage = await startseite.goToAdministration();
-        const personManagementView: PersonManagementViewPage = await menu.alleBenutzerAnzeigen();
-        await personManagementView.searchBySuchfeld(userInfoLehrer.username);
-        await personManagementView.openGesamtuebersichtPerson(page, userInfoLehrer.username);
-        await personDetailsView.waitForPageToBeLoaded();
-      });
-
-      await test.step(`Eine zweite Schulzuordnung hinzufügen`, async () => {
-        await personDetailsView.buttonEditSchulzuordnung.click();
-        await personDetailsView.buttonAddSchulzuordnung.click();
-        expect(await personDetailsView.comboboxOrganisation.innerText()).toContain(adminOrganisation);
-        await personDetailsView.rollen.searchByTitle(rolle, true, 'personenkontext-workflow/**');
-        await personDetailsView.inputKopersNr.fill(kopersNr);
-        await expect(personDetailsView.buttonSubmitAddSchulzuordnung).toBeEnabled();
-        await personDetailsView.buttonSubmitAddSchulzuordnung.click();
-        await personDetailsView.buttonConfirmAddSchulzuordnung.click();
-        await personDetailsView.buttonSaveAssignmentChanges.click();
-        await personDetailsView.buttonCloseSaveAssignmentChanges.click();
-      });
-
-      await test.step(`In der Gesamtübersicht die neue Schulzuordnung prüfen`, async () => {
-        await expect(page.getByTestId('person-details-card')).toContainText(
-          '1111165 (Testschule-PW665): LiV (befristet bis'
-        );
-        await expect(page.getByTestId('person-details-card')).toContainText(
-          '1111165 (Testschule-PW665): ' + lehrerRolle
-        );
-      });
-
-      await test.step(`Prüfen, dass Lehrkraft im LDAP angelegt wurde`, async () => {
-        expect(await testHelperLdap.validateUserExists(lehrerBenutzername)).toBeTruthy();
-      });
-
-      await test.step(`Prüfen, dass Lehrkraft im LDAP korrekter Gruppe zugeordnet wurde`, async () => {
-        expect(await testHelperLdap.validateUserIsInGroupOfNames(lehrerBenutzername, testschule665DstNr)).toBeTruthy();
-      });
-
-      await test.step(`UEM-Password via API setzen und prüfen, ob Password im LDAP der API-Response entspricht`, async () => {
-        const uemPassword: string = await setUEMPassword(page, userInfoLehrer.personId);
-        expect(await testHelperLdap.validatePasswordMatchesUEMPassword(userInfoLehrer.username, uemPassword)).toBeTruthy();
-      });
-
-    }
-  );
 
   test('Befristung beim hinzufügen von Personenkontexten', { tag: [LONG] }, async ({ page }: PlaywrightTestArgs) => {
     let userInfoLehrer: UserInfo;

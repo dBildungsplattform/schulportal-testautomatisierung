@@ -31,13 +31,25 @@ export class TestHelperLdap {
 
   /**
    * Checks whether a user-entry exists in LDAP for the specified username.
+   * Polls until the user exists or the maximum attempts are reached.
    * Uses retries for enhanced reliability of the LDAP-request and its result.
    * @param username
    */
-  public async validateUserExists(username: string): Promise<boolean> {
-    const res: Result<Entry> = await this.executeWithRetry(() => this.getUser(username));
-
-    return res.ok && !!res.value;
+  public async validateUserExists(username: string, maxAttempts: number = 10, delayMs: number = 1000): Promise<boolean> {
+    for (let attempt: number = 1; attempt <= maxAttempts; attempt++) {
+      const res: Result<Entry> = await this.executeWithRetry(() => this.getUser(username));
+      
+      if (res.ok && !!res.value) {
+        return true;
+      }
+      
+      // If this wasn't the last attempt, wait before trying again
+      if (attempt < maxAttempts) {
+        await new Promise((resolve: (value: unknown) => void) => setTimeout(resolve, delayMs));
+      }
+    }
+    
+    return false;
   }
 
   /**
@@ -97,25 +109,41 @@ export class TestHelperLdap {
     return res.ok && res.value;
   }
 
-  public async getMailPrimaryAddress(username: string): Promise<string> {
-    const res: Result<Entry> = await this.executeWithRetry(() => this.getUser(username));
-
-    if(!res.ok){
-      throw new Error('getUser returned Error');
-    }
-    const mailPrimaryAddress: string | Buffer<ArrayBufferLike> | Buffer<ArrayBufferLike>[] | string[] = res.value['mailPrimaryAddress'];
-
-    if (Array.isArray(mailPrimaryAddress)) {
+  // Polls for the primary email address of a user in LDAP until the email is not empty (This is necessary because email creation is asynchronous and could return an empty if we dont wait)
+  public async getMailPrimaryAddress(username: string, maxAttempts: number = 10, delayMs: number = 1000): Promise<string> {
+    for (let attempt: number = 1; attempt <= maxAttempts; attempt++) {
+      const res: Result<Entry> = await this.executeWithRetry(() => this.getUser(username));
+      
+      if (!res.ok) {
+        throw new Error('Retrieving the user from LDAP resulted in an unexpected error!');
+      }
+      
+      const mailPrimaryAddress: string | Buffer<ArrayBufferLike> | Buffer<ArrayBufferLike>[] | string[] = res.value['mailPrimaryAddress'];
+      
+      let emailString: string;
+      if (Array.isArray(mailPrimaryAddress)) {
         const firstValue: string | Buffer<ArrayBufferLike> = mailPrimaryAddress[0];
-        return Buffer.isBuffer(firstValue) ? firstValue.toString() : firstValue;
+        emailString = Buffer.isBuffer(firstValue) ? firstValue.toString() : firstValue;
+      } else {
+        emailString = Buffer.isBuffer(mailPrimaryAddress) ? mailPrimaryAddress.toString() : mailPrimaryAddress;
+      }
+      
+      // If we got a non-empty email, return it
+      if (emailString && emailString.trim() !== '') {
+        return emailString;
+      }
+      
+      // If this wasn't the last attempt, wait before trying again
+      if (attempt < maxAttempts) {
+        await new Promise((resolve: (value: unknown) => void) => setTimeout(resolve, delayMs));
+      }
     }
-
-    return Buffer.isBuffer(mailPrimaryAddress) ? mailPrimaryAddress.toString() : mailPrimaryAddress;
+    
+    // If we get here, we never found a non-empty email
+    return '';
   }
 
-
   //** PRIVATE methods */
-
   private async bind(): Promise<void> {
     await this.client.bind(TestHelperLdap.BIND_DN, this.ldapAdminPassword);
   }
