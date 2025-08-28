@@ -134,6 +134,15 @@ jobs:
     - name: Test LDAP connectivity (no auth)
       run: ldapsearch -x -H ldap://localhost:1389 -s base -b "" namingContexts
 
+    - name: Debug secrets availability
+      run: |
+        if [ -z "${{ secrets.LDAP_ADMIN_PASSWORD }}" ]; then
+        echo "LDAP_ADMIN_PASSWORD is NOT available in this run"
+        else
+          echo "LDAP_ADMIN_PASSWORD is present (value hidden)"
+        fi
+
+
     # --------------------------
     # Test LDAP Connectivity
     # --------------------------
