@@ -156,8 +156,8 @@ jobs:
         ENV: dev
         USER: ${{ secrets.USER }}
         PW: ${{ secrets.PW }}
-        LDAP_URL: ldap://localhost:1389
-        LDAP_ADMIN_PASSWORD: ${{ secrets.LDAP_ADMIN_PASSWORD }}
+        LDAP_URL: 'ldap://localhost:1389'
+        LDAP_ADMIN_PASSWORD: '${{ secrets.LDAP_ADMIN_PASSWORD }}'
 
     # --------------------------
     # Upload report
