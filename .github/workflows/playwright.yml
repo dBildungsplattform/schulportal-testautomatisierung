@@ -84,9 +84,12 @@ jobs:
     # Add kubeconfig
     # --------------------------
     - name: Add kubeconfig
+      env:
+        KUBECONFIG_CONTENT: ${{ secrets.SPSH_DEV_KUBECONFIG }}
       run: |
         mkdir -p ~/.kube
-        echo "${{ secrets.SPSH_DEV_KUBECONFIG }}" > ~/.kube/config
+        echo "$KUBECONFIG_CONTENT" > ~/.kube/config
+        chmod 600 ~/.kube/config
 
     # --------------------------
     # Get LDAP Pod IP
@@ -108,12 +111,17 @@ jobs:
     # Create SSH tunnel to LDAP
     # --------------------------
     - name: Create SSH tunnel to LDAP
+      env:
+        TUNNEL_USER: ${{ secrets.TUNNEL_USER }}
+        TUNNELHOST: ${{ secrets.TUNNELHOST }}
+        TUNNEL_PORT: ${{ secrets.TUNNEL_PORT }}
       run: |
         ssh -o StrictHostKeyChecking=no \
-            -L 1389:$LDAP_POD_IP:1389 ${{ secrets.TUNNEL_USER }}@${{ secrets.TUNNELHOST }} \
-            -p ${{ secrets.TUNNEL_PORT }} \
+            -L 1389:$LDAP_POD_IP:1389 $TUNNEL_USER@$TUNNELHOST \
+            -p $TUNNEL_PORT \
             -N -o ServerAliveInterval=15 -o ExitOnForwardFailure=yes &
         disown
+
         
     # --------------------------
     # Install ldap utils
