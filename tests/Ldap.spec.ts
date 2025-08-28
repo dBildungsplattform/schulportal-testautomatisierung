@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { LONG, SHORT, STAGE } from '../base/tags';
+import { LONG, SHORT } from '../base/tags';
 import { TestHelperLdap } from '../base/testHelperLdap';
 
 const LDAP_URL: string = process.env.LDAP_URL;
@@ -11,7 +11,7 @@ test.describe(`Testfälle für LDAP: Umgebung: ${process.env.ENV}: URL: ${proces
   //** Die für den u.g. Test genutzen Daten müssen bereits existieren, der Test legt diese nicht im Vorfeld an. */
   test(
     'TestHelperLdap testen',
-    { tag: [LONG, SHORT, STAGE] }, async () => {
+    { tag: [LONG, SHORT] }, async () => {
 
       const testHelperLdap: TestHelperLdap = new TestHelperLdap(LDAP_URL, LDAP_ADMIN_PASSWORD);
 
@@ -20,7 +20,7 @@ test.describe(`Testfälle für LDAP: Umgebung: ${process.env.ENV}: URL: ${proces
       // console.log('Jetzt gehts weiter');
 
       await test.step(`Prüfen, dass die Validierungsmethoden korrekte Ergebnisse liefern`, async () => {
-        const userExist: boolean = await testHelperLdap.validateUserExists('rmeierrolf');
+        const userExist: boolean = await testHelperLdap.validateUserExists('faltmann');
         expect(userExist).toBeTruthy();
 
         const ouExist: boolean = await testHelperLdap.validateOuExists('0702948');
