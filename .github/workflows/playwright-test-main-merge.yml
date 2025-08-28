@@ -52,6 +52,9 @@ jobs:
         POD_IP=$(kubectl get pod dbildungs-iam-ldap-0 -n main -o=jsonpath='{.status.podIP}')
         echo "LDAP_POD_IP=$POD_IP" >> $GITHUB_ENV
 
+    # --------------------------
+    # Get LDAP admin password from Kubernetes
+    # --------------------------
     - name: Get LDAP admin password from Kubernetes
       run: |
         LDAP_PASS=$(kubectl -n main get secret dbildungs-iam-ldap -o jsonpath='{.data.LDAP_ADMIN_PASSWORD}' | base64 -d)
@@ -63,7 +66,7 @@ jobs:
     - name: Create SSH tunnel to LDAP
       run: |
         ssh -o StrictHostKeyChecking=no \
-            -L 1389:$LDAP_POD_IP:1389 ${{ secrets.TUNNEL_USER }}@${{ secrets.TUNNELHOST }} \
+            -L 389:$LDAP_POD_IP:389 ${{ secrets.TUNNEL_USER }}@${{ secrets.TUNNELHOST }} \
             -p ${{ secrets.TUNNEL_PORT }} \
             -N -o ServerAliveInterval=15 -o ExitOnForwardFailure=yes &
         disown
@@ -75,21 +78,10 @@ jobs:
       run: sudo apt-get install -y ldap-utils
 
     # --------------------------
-    # Secrets availability check
-    # --------------------------
-    - name: Debug secrets availability
-      run: |
-        if [ -z "${{ secrets.LDAP_ADMIN_PASSWORD }}" ]; then
-        echo "LDAP_ADMIN_PASSWORD is NOT available in this run"
-        else
-          echo "LDAP_ADMIN_PASSWORD is present (value hidden)"
-        fi
-
-    # --------------------------
     # Test LDAP Connectivity
     # --------------------------
     - name: Test LDAP Connectivity
-      run: ldapwhoami -x -H ldap://localhost:1389 -D "cn=admin,dc=schule-sh,dc=de" -w "$LDAP_ADMIN_PASSWORD"
+      run: ldapwhoami -x -H ldap://localhost:389 -D "cn=admin,dc=schule-sh,dc=de" -w "$LDAP_ADMIN_PASSWORD"
 
     # --------------------------
     # Determine Branch Tag
