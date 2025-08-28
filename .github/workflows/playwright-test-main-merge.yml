@@ -143,8 +143,13 @@ jobs:
         if [ ${{ steps.branch-count.outputs.count }} -ge 1 ]; then
           FRONTEND_URL_PREFIX=$(echo "${{ steps.determine-tag.outputs.tag }}" | tr '[:upper:]' '[:lower:]')
           FRONTEND_URL="https://${FRONTEND_URL_PREFIX}.dev.spsh.dbildungsplattform.de/"
+          echo "FRONTEND_URL=$FRONTEND_URL"
+          echo "fe_url=${FRONTEND_URL}" >> "$GITHUB_OUTPUT"
         else
+          echo "No branch to ticket found, using main FE and BE infrastructure"
           FRONTEND_URL="https://main.dev.spsh.dbildungsplattform.de/"
+          echo "FRONTEND_URL=$FRONTEND_URL"
+          echo "fe_url=${FRONTEND_URL}" >> "$GITHUB_OUTPUT" 
         fi
         echo "fe_url=${FRONTEND_URL}" >> "$GITHUB_OUTPUT"
 
