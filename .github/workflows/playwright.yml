@@ -97,6 +97,14 @@ jobs:
         echo "LDAP_POD_IP=$POD_IP" >> $GITHUB_ENV
 
     # --------------------------
+    # Get LDAP admin password from Kubernetes
+    # --------------------------
+    - name: Get LDAP admin password from Kubernetes
+      run: |
+        LDAP_PASS=$(kubectl -n main get secret dbildungs-iam-ldap -o jsonpath='{.data.LDAP_ADMIN_PASSWORD}' | base64 -d)
+        echo "LDAP_ADMIN_PASSWORD=$LDAP_PASS" >> $GITHUB_ENV
+
+    # --------------------------
     # Create SSH tunnel to LDAP
     # --------------------------
     - name: Create SSH tunnel to LDAP
@@ -117,7 +125,7 @@ jobs:
     # Test LDAP Connectivity
     # --------------------------
     - name: Test LDAP Connectivity
-      run: ldapwhoami -x -H ldap://localhost:1389 -D "cn=admin,dc=schule-sh,dc=de" -w ${{ secrets.LDAP_ADMIN_PASSWORD }}
+      run: ldapwhoami -x -H ldap://localhost:1389 -D "cn=admin,dc=schule-sh,dc=de" -w $LDAP_ADMIN_PASSWORD"
 
     # --------------------------
     # List Playwright tests

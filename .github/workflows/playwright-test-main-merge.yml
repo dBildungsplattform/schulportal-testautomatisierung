@@ -92,14 +92,14 @@ jobs:
         regex_long='^([[:alpha:]]+?-[[:digit:]]+-[[:digit:]]+)'
         regex_short='^([[:alpha:]]+?-[[:digit:]]+)'
         if [[ "${{ github.head_ref }}" =~ $regex_long ]]; then
-          tag="${BASH_REMATCH[1]}"
+          tag="$(echo ${BASH_REMATCH[1]})"
         elif [[ "${{ github.head_ref }}" =~ $regex_short ]]; then
           tag="${BASH_REMATCH[1]}"
         elif [[ "${{ github.head_ref }}" == 'main' ]]; then
           tag=""
         else
-          echo "::error::Couldn't extract ticket from branch ${{ github.head_ref }}"
-          exit 1
+        echo "::error::Couldn't extract ticket from branch" ${{ github.head_ref }} ". If not main the branch name should begin alpha-digit or alpha-digit-digit blocks (e.g. SPSH-1234-test-name or release-1-1-optional-text)"
+        exit 1
         fi
         echo "tag=${tag}" >> "$GITHUB_OUTPUT"
         echo "branch to merge from tag=${tag}"
@@ -139,6 +139,7 @@ jobs:
       id: determine-fe-url
       run: |
         if [ ${{ steps.branch-count.outputs.count }} -ge 1 ]; then
+          echo "At least one branch for ticket was found, using branch FE and BE infrastructure"
           FRONTEND_URL_PREFIX=$(echo "${{ steps.determine-tag.outputs.tag }}" | tr '[:upper:]' '[:lower:]')
           FRONTEND_URL="https://${FRONTEND_URL_PREFIX}.dev.spsh.dbildungsplattform.de/"
           echo "FRONTEND_URL=$FRONTEND_URL"
@@ -149,7 +150,6 @@ jobs:
           echo "FRONTEND_URL=$FRONTEND_URL"
           echo "fe_url=${FRONTEND_URL}" >> "$GITHUB_OUTPUT" 
         fi
-        echo "fe_url=${FRONTEND_URL}" >> "$GITHUB_OUTPUT"
 
     # --------------------------
     # Run Playwright tests
