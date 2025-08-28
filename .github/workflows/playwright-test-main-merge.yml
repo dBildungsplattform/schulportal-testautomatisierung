@@ -56,9 +56,10 @@ jobs:
     # --------------------------
     - name: Create SSH tunnel to LDAP
       run: |
-        ssh -o ServerAliveInterval=15 -o ExitOnForwardFailure=yes \
+        ssh -o StrictHostKeyChecking=no \
             -L 1389:$LDAP_POD_IP:1389 ${{ secrets.TUNNEL_USER }}@${{ secrets.TUNNELHOST }} \
-            -p ${{ secrets.TUNNEL_PORT }} -N &
+            -p ${{ secrets.TUNNEL_PORT }} \
+            -N -o ServerAliveInterval=15 -o ExitOnForwardFailure=yes &
         disown
 
     # --------------------------
@@ -123,6 +124,12 @@ jobs:
           FRONTEND_URL="https://main.dev.spsh.dbildungsplattform.de/"
         fi
         echo "fe_url=${FRONTEND_URL}" >> "$GITHUB_OUTPUT"
+
+    - name: Install ldap-utils
+      run: sudo apt-get install -y ldap-utils
+
+    - name: Test LDAP Connectivity
+      run: ldapwhoami -x -H ldap://localhost:1389 -D "cn=admin,dc=schule-sh,dc=de" -w ${{ secrets.LDAP_ADMIN_PASSWORD }}
 
     # --------------------------
     # Run Playwright tests
