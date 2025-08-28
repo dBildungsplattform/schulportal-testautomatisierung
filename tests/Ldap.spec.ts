@@ -20,7 +20,7 @@ test.describe(`Testfälle für LDAP: Umgebung: ${process.env.ENV}: URL: ${proces
       // console.log('Jetzt gehts weiter');
 
       await test.step(`Prüfen, dass die Validierungsmethoden korrekte Ergebnisse liefern`, async () => {
-        const userExist: boolean = await testHelperLdap.validateUserExists('faltmann');
+        const userExist: boolean = await testHelperLdap.validateUserExists('rmeierrolf');
         expect(userExist).toBeTruthy();
 
         const ouExist: boolean = await testHelperLdap.validateOuExists('0702948');
