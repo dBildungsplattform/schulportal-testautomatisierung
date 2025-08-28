@@ -125,9 +125,18 @@ jobs:
         fi
         echo "fe_url=${FRONTEND_URL}" >> "$GITHUB_OUTPUT"
 
+    # --------------------------
+    # Install ldap utils
+    # --------------------------
     - name: Install ldap-utils
       run: sudo apt-get install -y ldap-utils
 
+    - name: Test LDAP connectivity (no auth)
+      run: ldapsearch -x -H ldap://localhost:1389 -s base -b "" namingContexts
+
+    # --------------------------
+    # Test LDAP Connectivity
+    # --------------------------
     - name: Test LDAP Connectivity
       run: ldapwhoami -x -H ldap://localhost:1389 -D "cn=admin,dc=schule-sh,dc=de" -w ${{ secrets.LDAP_ADMIN_PASSWORD }}
 
