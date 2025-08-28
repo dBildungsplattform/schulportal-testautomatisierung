@@ -83,8 +83,7 @@ jobs:
     # Test LDAP Connectivity
     # --------------------------
     - name: Test LDAP Connectivity
-      run: |
-        ldapwhoami -x -H ldap://localhost:1389 -D "cn=admin,dc=schule-sh,dc=de" -w "${{ secrets.LDAP_ADMIN_PASSWORD }}"
+      run: ldapwhoami -x -H ldap://localhost:1389 -D "cn=admin,dc=schule-sh,dc=de" -w ${{ secrets.LDAP_ADMIN_PASSWORD }}
 
     # --------------------------
     # Determine Branch Tag
