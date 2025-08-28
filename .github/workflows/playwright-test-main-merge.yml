@@ -84,12 +84,7 @@ jobs:
     # --------------------------
     - name: Test LDAP Connectivity
       run: # Wait up to 15s for LDAP to be ready
-        for i in {1..15}; do
-          ldapwhoami -x -H ldap://localhost:1389 -D "cn=admin,dc=schule-sh,dc=de" -w "${{ secrets.LDAP_ADMIN_PASSWORD }}" && break
-          echo "LDAP not ready, retrying..."
-          sleep 1
-        done
-
+        for i in {1..15}; do ldapwhoami -x -H ldap://localhost:1389 -D "cn=admin,dc=schule-sh,dc=de" -w "${{ secrets.LDAP_ADMIN_PASSWORD }}" && break; echo "LDAP not ready, retrying..."; sleep 1; done
 
     # --------------------------
     # Determine Branch Tag

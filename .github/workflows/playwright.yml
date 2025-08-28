@@ -97,7 +97,7 @@ jobs:
         echo "LDAP_POD_IP=$POD_IP" >> $GITHUB_ENV
 
     # --------------------------
-    # Setup SSH agent for LDAP tunnel
+    # Create SSH tunnel to LDAP
     # --------------------------
     - name: Create SSH tunnel to LDAP
       run: |
