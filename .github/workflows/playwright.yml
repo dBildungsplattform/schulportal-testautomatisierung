@@ -72,21 +72,33 @@ jobs:
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
 
+    # --------------------------
+    # Setup SSH key for the LDAP tunnel
+    # --------------------------
     - name: Setup SSH key for ldap tunnel
       uses: webfactory/ssh-agent@v0.9.0
       with:
         ssh-private-key: ${{ secrets.TUNNEL_USER_SSHKEY }}
 
+    # --------------------------
+    # Add kubeconfig
+    # --------------------------
     - name: Add kubeconfig
       run: |
         mkdir -p ~/.kube
         echo "${{ secrets.SPSH_DEV_KUBECONFIG }}" > ~/.kube/config
 
+    # --------------------------
+    # Get LDAP Pod IP
+    # --------------------------
     - name: Get Pod IP
       run: |
         POD_IP=$(kubectl get pod dbildungs-iam-ldap-0 -n ${{inputs.ldapNamespace}} -o=jsonpath='{.status.podIP}')
         echo "LDAP_POD_IP=$POD_IP" >> $GITHUB_ENV
 
+    # --------------------------
+    # Setup SSH agent for LDAP tunnel
+    # --------------------------
     - name: Create SSH tunnel to LDAP
       run: |
         ssh -o StrictHostKeyChecking=no \
@@ -94,16 +106,28 @@ jobs:
             -p ${{ secrets.TUNNEL_PORT }} \
             -N -o ServerAliveInterval=15 -o ExitOnForwardFailure=yes &
         disown
-
+        
+    # --------------------------
+    # Install ldap utils
+    # --------------------------
     - name: Install ldap-utils
       run: sudo apt-get install -y ldap-utils
 
+    # --------------------------
+    # Test LDAP Connectivity
+    # --------------------------
     - name: Test LDAP Connectivity
       run: ldapwhoami -x -H ldap://localhost:1389 -D "cn=admin,dc=schule-sh,dc=de" -w ${{ secrets.LDAP_ADMIN_PASSWORD }}
 
+    # --------------------------
+    # List Playwright tests
+    # --------------------------
     - name: List Playwright tests
       run: npx playwright test --list --grep "@short"
 
+    # --------------------------
+    # Run Playwright tests
+    # --------------------------
     - name: Run Playwright tests
       run: npx playwright test --config=playwright.config.ts --grep "@short" --project "chromium"
       env:
