@@ -48,11 +48,24 @@ jobs:
         chmod 600 ~/.kube/config
 
     # --------------------------
+    # Determine Namespace
+    # --------------------------
+    - name: Determine Namespace
+      id: determine-namespace
+      run: |
+        if [[ -z "${{ steps.determine-tag.outputs.tag }}" ]]; then
+          ns="main"
+        else
+          ns=$(echo "${{ steps.determine-tag.outputs.tag }}" | tr '[:upper:]' '[:lower:]')
+        fi
+        echo "namespace=$ns" >> "$GITHUB_OUTPUT"
+
+    # --------------------------
     # Get LDAP Pod IP
     # --------------------------
     - name: Get LDAP Pod IP
       run: |
-        POD_IP=$(kubectl get pod dbildungs-iam-ldap-0 -n main -o=jsonpath='{.status.podIP}')
+        POD_IP=$(kubectl get pod dbildungs-iam-ldap-0 -n ${{ steps.determine-namespace.outputs.namespace }} -o=jsonpath='{.status.podIP}')
         echo "LDAP_POD_IP=$POD_IP" >> $GITHUB_ENV
 
     # --------------------------
@@ -60,7 +73,7 @@ jobs:
     # --------------------------
     - name: Get LDAP admin password from Kubernetes
       run: |
-        LDAP_PASS=$(kubectl -n main get secret dbildungs-iam-ldap -o jsonpath='{.data.LDAP_ADMIN_PASSWORD}' | base64 -d)
+        LDAP_PASS=$(kubectl -n ${{ steps.determine-namespace.outputs.namespace }} get secret dbildungs-iam-ldap -o jsonpath='{.data.LDAP_ADMIN_PASSWORD}' | base64 -d)
         echo "LDAP_ADMIN_PASSWORD=$LDAP_PASS" >> $GITHUB_ENV
 
     # --------------------------
@@ -77,7 +90,6 @@ jobs:
             -p $TUNNEL_PORT \
             -N -o ServerAliveInterval=15 -o ExitOnForwardFailure=yes &
         disown
-
 
     # --------------------------
     # Install ldap utils
