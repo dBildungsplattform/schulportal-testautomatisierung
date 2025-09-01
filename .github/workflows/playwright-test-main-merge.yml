@@ -116,17 +116,28 @@ jobs:
         chmod 600 ~/.kube/config
 
     # --------------------------
-    # Determine Namespace
+    # Determine namespace
     # --------------------------
     - name: Determine Namespace
       id: determine-namespace
       run: |
-        if [[ -z "${{ steps.determine-tag.outputs.tag }}" ]]; then
+        REPO_URL="https://github.com/dBildungsplattform/dbildungs-iam-server.git"
+        TAG="${{ steps.determine-tag.outputs.tag }}"
+
+        if [[ -z "$TAG" ]]; then
           ns="main"
         else
-          ns=$(echo "${{ steps.determine-tag.outputs.tag }}" | tr '[:upper:]' '[:lower:]')
+          BRANCH_EXISTS=$(git ls-remote --heads "$REPO_URL" "refs/heads/$TAG")
+          if [[ -n "$BRANCH_EXISTS" ]]; then
+            ns=$(echo "$TAG" | tr '[:upper:]' '[:lower:]')
+          else
+            echo "::warning::Branch '$TAG' does not exist in $REPO_URL, defaulting namespace to 'main'"
+            ns="main"
+          fi
         fi
+
         echo "namespace=$ns" >> "$GITHUB_OUTPUT"
+        echo "Namespace selected: $ns"
 
     # --------------------------
     # Get LDAP Pod IP
