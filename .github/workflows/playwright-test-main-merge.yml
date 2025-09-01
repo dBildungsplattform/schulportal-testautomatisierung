@@ -49,7 +49,7 @@ jobs:
         echo "tag=${tag}" >> "$GITHUB_OUTPUT"
         echo "branch to merge from tag=${tag}"
 
-          # --------------------------
+    # --------------------------
     # Determine Branch Count
     # --------------------------
     - name: Determine Branch Count
