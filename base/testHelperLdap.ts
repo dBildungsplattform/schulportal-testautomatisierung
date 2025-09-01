@@ -80,7 +80,7 @@ export class TestHelperLdap {
    * @param orgaKennung
    */
   public async validateGroupOfNamesExists(orgaKennung: string): Promise<boolean> {
-    const res: Result<Entry> = await this.executeWithRetry(() => this.getGroupOfNames(orgaKennung));
+    const res: Result<Entry> = await this.executeWithRetry(() => this.getLehrerGroupEntry(orgaKennung));
 
     return res.ok && !!res.value;
   }
@@ -112,13 +112,13 @@ export class TestHelperLdap {
   // Polls for the primary email address of a user in LDAP until the email is not empty (This is necessary because email creation is asynchronous and could return an empty if we dont wait)
   public async getMailPrimaryAddress(username: string, maxAttempts: number = 10, delayMs: number = 1000): Promise<string> {
     for (let attempt: number = 1; attempt <= maxAttempts; attempt++) {
-      const res: Result<Entry> = await this.executeWithRetry(() => this.getUser(username));
-      
-      if (!res.ok) {
-        throw new Error('Retrieving the user from LDAP resulted in an unexpected error!');
-      }
-      
-      const mailPrimaryAddress: string | Buffer<ArrayBufferLike> | Buffer<ArrayBufferLike>[] | string[] = res.value['mailPrimaryAddress'];
+    const res: Result<Entry> = await this.executeWithRetry(() => this.getUser(username));
+    
+    if (!res.ok) {
+      throw new Error(`Failed to retrieve user ${username} from LDAP: ${(res as { ok: false; error: Error }).error.message}`);
+    }
+
+    const mailPrimaryAddress: string | Buffer<ArrayBufferLike> | Buffer<ArrayBufferLike>[] | string[] = res.value['mailPrimaryAddress'];
       
       let emailString: string;
       if (Array.isArray(mailPrimaryAddress)) {
@@ -225,7 +225,7 @@ export class TestHelperLdap {
     }
   }
 
-  private async getGroupOfNames(orgaKennung: string): Promise<Result<Entry>> {
+  private async getLehrerGroupEntry(orgaKennung: string): Promise<Result<Entry>> {
     await this.bind();
 
     try {
@@ -252,7 +252,7 @@ export class TestHelperLdap {
   private async checkUserIsInGroupOfNames(username: string, orgaKennung: string): Promise<Result<boolean>> {
     await this.bind();
     try {
-      const groupOfNames: Result<Entry> = await this.getGroupOfNames(orgaKennung);
+      const groupOfNames: Result<Entry> = await this.getLehrerGroupEntry(orgaKennung);
       if (!groupOfNames.ok) return groupOfNames;
       const userUid: string = `uid=${username},${TestHelperLdap.OEFFENTLICHE_SCHULEN_OU},${TestHelperLdap.BASE_DN}`;
       const isUserInGroup: boolean = this.isUserInGroup(groupOfNames.value, userUid);
@@ -285,43 +285,17 @@ export class TestHelperLdap {
         },
       );
 
-      if (searchResultLehrer.searchEntries.length !== 1) return {
-        ok: true,
-        value: false,
-      };
+      if (searchResultLehrer.searchEntries.length !== 1) {
+        return { ok: true, value: false };
+      }
 
-      return {
-        ok: true,
-        value: searchResultLehrer.searchEntries[0]['userPassword'] === password,
-      };
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch(ex: unknown) {
+      const matches: boolean = searchResultLehrer.searchEntries[0]['userPassword'] === password;
+      return { ok: true, value: matches };
+    } catch {
+      return { ok: false, error: new LdapOperationError('checkUserPasswordMatchesPassword') };
+    } finally {
       await this.unbind();
-      return {
-        ok: false,
-        error: new LdapOperationError('checkUserPasswordMatchesPassword'),
-      };
     }
-  }
-
-  private async checkUserAttributes(username: string, surname: string, givenName: string): Promise<boolean> {
-    const searchResultLehrer: SearchResult = await this.client.search(
-      `${TestHelperLdap.OEFFENTLICHE_SCHULEN_OU},${TestHelperLdap.BASE_DN}`,
-      {
-        scope: 'sub',
-        filter: `(uid=${username})`,
-        attributes: ['givenName', 'sn', 'uid', 'cn'],
-        returnAttributeValues: true,
-      },
-    );
-
-    if (searchResultLehrer.searchEntries.length !== 1) return false;
-    if (searchResultLehrer.searchEntries[0]['givenName'] !== givenName) return false;
-    if (searchResultLehrer.searchEntries[0]['surname'] !== surname) return false;
-    if (searchResultLehrer.searchEntries[0]['uid'] !== username) return false;
-    if (searchResultLehrer.searchEntries[0]['cn'] !== username) return false;
-
-    return true;
   }
 
   /**
@@ -372,7 +346,7 @@ export class TestHelperLdap {
         if (result.ok) {
           return result;
         } else {
-          throw new Error(`Function returned error: ${result.error.message}`);
+          throw new Error(`Function returned error: ${(result as { ok: false; error: Error }).error.message}`);
         }
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch(error: unknown) {

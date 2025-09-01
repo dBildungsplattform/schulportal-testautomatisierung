@@ -628,7 +628,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         expect(await testHelperLdap.validateUserIsInGroupOfNames(createdBenutzername, dienststellenNr)).toBeTruthy();
       });
 
-      await test.step(`Prüfen, eine Mail weiterhin existiert und zugeordnet ist`, async () => {
+      await test.step(`Prüfen, dass eine Mail weiterhin existiert und zugeordnet ist`, async () => {
         const mailPrimaryAddress: string = await testHelperLdap.getMailPrimaryAddress(createdBenutzername);
         expect(mailPrimaryAddress).toContain('schule-sh.de');
         expect(mailPrimaryAddress.length).toBeGreaterThan(5);
