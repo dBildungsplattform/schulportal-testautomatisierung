@@ -29,6 +29,74 @@ jobs:
       run: npx playwright install --with-deps
 
     # --------------------------
+    # Determine Branch Tag
+    # --------------------------
+    - name: Determine Branch Tag
+      id: determine-tag
+      run: |
+        regex_long='^([[:alpha:]]+?-[[:digit:]]+-[[:digit:]]+)'
+        regex_short='^([[:alpha:]]+?-[[:digit:]]+)'
+        if [[ "${{ github.head_ref }}" =~ $regex_long ]]; then
+          tag="$(echo ${BASH_REMATCH[1]})"
+        elif [[ "${{ github.head_ref }}" =~ $regex_short ]]; then
+          tag="${BASH_REMATCH[1]}"
+        elif [[ "${{ github.head_ref }}" == 'main' ]]; then
+          tag=""
+        else
+        echo "::error::Couldn't extract ticket from branch" ${{ github.head_ref }} ". If not main the branch name should begin alpha-digit or alpha-digit-digit blocks (e.g. SPSH-1234-test-name or release-1-1-optional-text)"
+        exit 1
+        fi
+        echo "tag=${tag}" >> "$GITHUB_OUTPUT"
+        echo "branch to merge from tag=${tag}"
+
+          # --------------------------
+    # Determine Branch Count
+    # --------------------------
+    - name: Determine Branch Count
+      id: branch-count
+      env:
+        TAG: ${{ steps.determine-tag.outputs.tag }}
+      run: |
+        REPOS=(
+          "https://github.com/dBildungsplattform/dbildungs-iam-server.git"
+          "https://github.com/dbildungsplattform/schulportal-client.git"
+          "https://github.com/dbildungsplattform/dbildungs-iam-keycloak.git"
+          "https://github.com/dbildungsplattform/dbildungs-iam-ldap.git"
+        )
+        MATCH_COUNT=0
+        for REPO in "${REPOS[@]}"; do
+          echo "🔍 Checking $REPO for branch '$TAG'"
+          BRANCH_EXISTS=$(git ls-remote --heads "$REPO" "refs/heads/$TAG")
+          if [[ -n "$BRANCH_EXISTS" ]]; then
+            echo "✅ Branch '$TAG' exists in $REPO"
+            MATCH_COUNT=$((MATCH_COUNT + 1))
+          else
+            echo "Branch '$TAG' does NOT exist in $REPO"
+          fi
+        done
+        echo "Total matches found: $MATCH_COUNT"
+        echo "count=$MATCH_COUNT" >> "$GITHUB_OUTPUT"
+
+    # --------------------------
+    # Determine Frontend URL
+    # --------------------------
+    - name: Determine Frontend Url
+      id: determine-fe-url
+      run: |
+        if [ ${{ steps.branch-count.outputs.count }} -ge 1 ]; then
+          echo "At least one branch for ticket was found, using branch FE and BE infrastructure"
+          FRONTEND_URL_PREFIX=$(echo "${{ steps.determine-tag.outputs.tag }}" | tr '[:upper:]' '[:lower:]')
+          FRONTEND_URL="https://${FRONTEND_URL_PREFIX}.dev.spsh.dbildungsplattform.de/"
+          echo "FRONTEND_URL=$FRONTEND_URL"
+          echo "fe_url=${FRONTEND_URL}" >> "$GITHUB_OUTPUT"
+        else
+          echo "No branch to ticket found, using main FE and BE infrastructure"
+          FRONTEND_URL="https://main.dev.spsh.dbildungsplattform.de/"
+          echo "FRONTEND_URL=$FRONTEND_URL"
+          echo "fe_url=${FRONTEND_URL}" >> "$GITHUB_OUTPUT" 
+        fi
+
+    # --------------------------
     # Setup SSH agent for LDAP tunnel
     # --------------------------
     - name: Setup SSH agent
@@ -102,74 +170,6 @@ jobs:
     # --------------------------
     - name: Test LDAP Connectivity
       run: ldapwhoami -x -H ldap://localhost:1389 -D "cn=admin,dc=schule-sh,dc=de" -w "$LDAP_ADMIN_PASSWORD"
-
-    # --------------------------
-    # Determine Branch Tag
-    # --------------------------
-    - name: Determine Branch Tag
-      id: determine-tag
-      run: |
-        regex_long='^([[:alpha:]]+?-[[:digit:]]+-[[:digit:]]+)'
-        regex_short='^([[:alpha:]]+?-[[:digit:]]+)'
-        if [[ "${{ github.head_ref }}" =~ $regex_long ]]; then
-          tag="$(echo ${BASH_REMATCH[1]})"
-        elif [[ "${{ github.head_ref }}" =~ $regex_short ]]; then
-          tag="${BASH_REMATCH[1]}"
-        elif [[ "${{ github.head_ref }}" == 'main' ]]; then
-          tag=""
-        else
-        echo "::error::Couldn't extract ticket from branch" ${{ github.head_ref }} ". If not main the branch name should begin alpha-digit or alpha-digit-digit blocks (e.g. SPSH-1234-test-name or release-1-1-optional-text)"
-        exit 1
-        fi
-        echo "tag=${tag}" >> "$GITHUB_OUTPUT"
-        echo "branch to merge from tag=${tag}"
-
-    # --------------------------
-    # Determine Branch Count
-    # --------------------------
-    - name: Determine Branch Count
-      id: branch-count
-      env:
-        TAG: ${{ steps.determine-tag.outputs.tag }}
-      run: |
-        REPOS=(
-          "https://github.com/dBildungsplattform/dbildungs-iam-server.git"
-          "https://github.com/dbildungsplattform/schulportal-client.git"
-          "https://github.com/dbildungsplattform/dbildungs-iam-keycloak.git"
-          "https://github.com/dbildungsplattform/dbildungs-iam-ldap.git"
-        )
-        MATCH_COUNT=0
-        for REPO in "${REPOS[@]}"; do
-          echo "🔍 Checking $REPO for branch '$TAG'"
-          BRANCH_EXISTS=$(git ls-remote --heads "$REPO" "refs/heads/$TAG")
-          if [[ -n "$BRANCH_EXISTS" ]]; then
-            echo "✅ Branch '$TAG' exists in $REPO"
-            MATCH_COUNT=$((MATCH_COUNT + 1))
-          else
-            echo "Branch '$TAG' does NOT exist in $REPO"
-          fi
-        done
-        echo "Total matches found: $MATCH_COUNT"
-        echo "count=$MATCH_COUNT" >> "$GITHUB_OUTPUT"
-
-    # --------------------------
-    # Determine Frontend URL
-    # --------------------------
-    - name: Determine Frontend Url
-      id: determine-fe-url
-      run: |
-        if [ ${{ steps.branch-count.outputs.count }} -ge 1 ]; then
-          echo "At least one branch for ticket was found, using branch FE and BE infrastructure"
-          FRONTEND_URL_PREFIX=$(echo "${{ steps.determine-tag.outputs.tag }}" | tr '[:upper:]' '[:lower:]')
-          FRONTEND_URL="https://${FRONTEND_URL_PREFIX}.dev.spsh.dbildungsplattform.de/"
-          echo "FRONTEND_URL=$FRONTEND_URL"
-          echo "fe_url=${FRONTEND_URL}" >> "$GITHUB_OUTPUT"
-        else
-          echo "No branch to ticket found, using main FE and BE infrastructure"
-          FRONTEND_URL="https://main.dev.spsh.dbildungsplattform.de/"
-          echo "FRONTEND_URL=$FRONTEND_URL"
-          echo "fe_url=${FRONTEND_URL}" >> "$GITHUB_OUTPUT" 
-        fi
 
     # --------------------------
     # Run Playwright tests
