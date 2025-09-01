@@ -121,19 +121,14 @@ jobs:
     - name: Determine Namespace
       id: determine-namespace
       run: |
-        REPO_URL="https://github.com/dBildungsplattform/dbildungs-iam-server.git"
         TAG="${{ steps.determine-tag.outputs.tag }}"
+        BRANCH_COUNT=${{ steps.branch-count.outputs.count }}
 
-        if [[ -z "$TAG" ]]; then
+        if [[ -z "$TAG" || "$BRANCH_COUNT" -eq 0 ]]; then
           ns="main"
+          echo "::warning::No branch for tag '$TAG' found in any repo, defaulting namespace to 'main'"
         else
-          BRANCH_EXISTS=$(git ls-remote --heads "$REPO_URL" "refs/heads/$TAG")
-          if [[ -n "$BRANCH_EXISTS" ]]; then
-            ns=$(echo "$TAG" | tr '[:upper:]' '[:lower:]')
-          else
-            echo "::warning::Branch '$TAG' does not exist in $REPO_URL, defaulting namespace to 'main'"
-            ns="main"
-          fi
+          ns=$(echo "$TAG" | tr '[:upper:]' '[:lower:]')
         fi
 
         echo "namespace=$ns" >> "$GITHUB_OUTPUT"
