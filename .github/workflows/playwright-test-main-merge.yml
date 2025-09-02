@@ -7,24 +7,30 @@ on:
 
 jobs:
   run_playwright_pre_pr_test:
+    environment: dev
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+
     - uses: actions/setup-node@v3
       with:
         node-version: 16
-    - name: Remove Microsoft APT and  Update Packages
+
+    - name: Remove Microsoft APT and Update Packages
       run: |
         sudo rm /etc/apt/sources.list.d/microsoft-prod.list
         sudo apt-get update || true
+
     - name: Install dependencies
       run: npm ci
 
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
 
-      
+    # --------------------------
+    # Determine Branch Tag
+    # --------------------------
     - name: Determine Branch Tag
       id: determine-tag
       run: |
@@ -33,17 +39,19 @@ jobs:
         if [[ "${{ github.head_ref }}" =~ $regex_long ]]; then
           tag="$(echo ${BASH_REMATCH[1]})"
         elif [[ "${{ github.head_ref }}" =~ $regex_short ]]; then
-          tag="$(echo ${BASH_REMATCH[1]})"
+          tag="${BASH_REMATCH[1]}"
         elif [[ "${{ github.head_ref }}" == 'main' ]]; then
-        tag=""
+          tag=""
         else
         echo "::error::Couldn't extract ticket from branch" ${{ github.head_ref }} ". If not main the branch name should begin alpha-digit or alpha-digit-digit blocks (e.g. SPSH-1234-test-name or release-1-1-optional-text)"
         exit 1
         fi
         echo "tag=${tag}" >> "$GITHUB_OUTPUT"
         echo "branch to merge from tag=${tag}"
-        
-        
+
+    # --------------------------
+    # Determine Branch Count
+    # --------------------------
     - name: Determine Branch Count
       id: branch-count
       env:
@@ -68,8 +76,11 @@ jobs:
         done
         echo "Total matches found: $MATCH_COUNT"
         echo "count=$MATCH_COUNT" >> "$GITHUB_OUTPUT"
-    
-    - name: Determine Frontend Url by checking current branches
+
+    # --------------------------
+    # Determine Frontend URL
+    # --------------------------
+    - name: Determine Frontend Url
       id: determine-fe-url
       run: |
         if [ ${{ steps.branch-count.outputs.count }} -ge 1 ]; then
@@ -84,23 +95,118 @@ jobs:
           echo "FRONTEND_URL=$FRONTEND_URL"
           echo "fe_url=${FRONTEND_URL}" >> "$GITHUB_OUTPUT" 
         fi
-      
-    - name: Run Playwright tests
-      run:  ENV='dev' FRONTEND_URL='${{ steps.determine-fe-url.outputs.fe_url }}' npx playwright test --config=playwright.config.ts --grep "@long" --project "chromium"
-      
+
+    # --------------------------
+    # Setup SSH agent for LDAP tunnel
+    # --------------------------
+    - name: Setup SSH agent
+      uses: webfactory/ssh-agent@v0.9.0
+      with:
+        ssh-private-key: ${{ secrets.TUNNEL_USER_SSHKEY }}
+
+    # --------------------------
+    # Add kubeconfig
+    # --------------------------
+    - name: Add kubeconfig
       env:
-        USER: '${{ secrets.USER }}'
-        PW: '${{ secrets.PW }}'
+        KUBECONFIG_CONTENT: ${{ secrets.SPSH_DEV_KUBECONFIG }}
+      run: |
+        mkdir -p ~/.kube
+        echo "$KUBECONFIG_CONTENT" > ~/.kube/config
+        chmod 600 ~/.kube/config
+
+    # --------------------------
+    # Determine namespace
+    # --------------------------
+    - name: Determine Namespace
+      id: determine-namespace
+      run: |
+        TAG="${{ steps.determine-tag.outputs.tag }}"
+        BRANCH_COUNT=${{ steps.branch-count.outputs.count }}
+
+        if [[ -z "$TAG" || "$BRANCH_COUNT" -eq 0 ]]; then
+          ns="main"
+          echo "::warning::No branch for tag '$TAG' found in any repo, defaulting namespace to 'main'"
+        else
+          ns=$(echo "$TAG" | tr '[:upper:]' '[:lower:]')
+        fi
+
+        echo "namespace=$ns" >> "$GITHUB_OUTPUT"
+        echo "Namespace selected: $ns"
+
+    # --------------------------
+    # Get LDAP Pod IP
+    # --------------------------
+    - name: Get LDAP Pod IP
+      run: |
+        POD_IP=$(kubectl get pod dbildungs-iam-ldap-0 -n ${{ steps.determine-namespace.outputs.namespace }} -o=jsonpath='{.status.podIP}')
+        echo "LDAP_POD_IP=$POD_IP" >> $GITHUB_ENV
+
+    # --------------------------
+    # Get LDAP admin password from Kubernetes
+    # --------------------------
+    - name: Get LDAP admin password from Kubernetes
+      run: |
+        LDAP_PASS=$(kubectl -n ${{ steps.determine-namespace.outputs.namespace }} get secret dbildungs-iam-ldap -o jsonpath='{.data.LDAP_ADMIN_PASSWORD}' | base64 -d)
+        echo "LDAP_ADMIN_PASSWORD=$LDAP_PASS" >> $GITHUB_ENV
+
+    # --------------------------
+    # Create SSH tunnel to LDAP
+    # --------------------------
+    - name: Create SSH tunnel to LDAP
+      env:
+        TUNNEL_USER: ${{ secrets.TUNNEL_USER }}
+        TUNNELHOST: ${{ secrets.TUNNELHOST }}
+        TUNNEL_PORT: ${{ secrets.TUNNEL_PORT }}
+      run: |
+        ssh -o StrictHostKeyChecking=no \
+            -L 1389:$LDAP_POD_IP:1389 $TUNNEL_USER@$TUNNELHOST \
+            -p $TUNNEL_PORT \
+            -N -o ServerAliveInterval=15 -o ExitOnForwardFailure=yes &
+        disown
+
+    # --------------------------
+    # Install ldap utils
+    # --------------------------
+    - name: Install ldap-utils
+      run: sudo apt-get install -y ldap-utils
+
+    # --------------------------
+    # Test LDAP Connectivity
+    # --------------------------
+    - name: Test LDAP Connectivity
+      run: ldapwhoami -x -H ldap://localhost:1389 -D "cn=admin,dc=schule-sh,dc=de" -w "$LDAP_ADMIN_PASSWORD"
+
+    # --------------------------
+    # Run Playwright tests
+    # --------------------------
+    - name: Run Playwright tests
+      run: npx playwright test --config=playwright.config.ts --grep "@long" --project "chromium"
+      env:
+        FRONTEND_URL: ${{ steps.determine-fe-url.outputs.fe_url }}
+        ENV: dev
+        USER: ${{ secrets.USER }}
+        PW: ${{ secrets.PW }}
+        LDAP_URL: 'ldap://localhost:1389'
+        LDAP_ADMIN_PASSWORD: '${{ secrets.LDAP_ADMIN_PASSWORD }}'
+
+    # --------------------------
+    # Upload report
+    # --------------------------
     - uses: actions/upload-artifact@v4
       if: always()
       with:
         name: playwright-report
         path: playwright-report/
-        retention-days: 30npm login
+        retention-days: 30
+
+    # --------------------------
+    # Notify RocketChat on failure
+    # --------------------------
     - uses: RocketChat/Rocket.Chat.GitHub.Action.Notification@1.1.1
       if: failure()
       with:
-        type: ${{ job.status }} 
+        type: ${{ job.status }}
         job_name: 'Playwright Job Status: '
         url: ${{ secrets.RC_WEBHOOK }}
         channel: '#SPSH-Test-Automation'

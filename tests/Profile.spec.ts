@@ -16,11 +16,11 @@ import {
   rollenVerwalten,
   schulenVerwalten,
   schultraegerVerwalten,
-} from '../base/berechtigungen.ts';
-import { klasse1Testschule } from '../base/klassen.ts';
-import { landSH, testschule665Name, testschuleDstNr, testschuleName } from '../base/organisation.ts';
-import { typeLandesadmin, typeLehrer, typeSchuladmin } from '../base/rollentypen.ts';
-import { email, itslearning, schulportaladmin } from '../base/sp.ts';
+} from '../base/berechtigungen';
+import { klasse1Testschule } from '../base/klassen';
+import { landSH, testschule665Name, testschuleDstNr, testschuleName } from '../base/organisation';
+import { typeLandesadmin, typeLehrer, typeSchuladmin } from '../base/rollentypen';
+import { email, itslearning, schulportaladmin } from '../base/sp';
 import { BROWSER, LONG, SHORT, STAGE } from '../base/tags';
 import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata';
 import {
@@ -28,7 +28,7 @@ import {
   generateNachname,
   generateRolleName,
   generateVorname,
-} from '../base/testHelperGenerateTestdataNames.ts';
+} from '../base/testHelperGenerateTestdataNames';
 import FromAnywhere from '../pages/FromAnywhere';
 import { HeaderPage } from '../pages/components/Header.page';
 import { LandingPage } from '../pages/LandingView.page';

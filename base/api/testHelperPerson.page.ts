@@ -196,15 +196,26 @@ export async function createTeacherAndLogin(page: Page): Promise<UserInfo> {
 }
 
 export async function lockPerson(page: Page, personId: string, organisationId: string): Promise<void> {
-  const response: APIResponse = await page.request.put(FRONTEND_URL + `api/personen/${personId}/lock-user`, {
-    data: {
-      lock: true,
-      locked_by: organisationId,
-    },
-    failOnStatusCode: false,
-    maxRetries: 3,
-  });
-  expect(response.status()).toBe(202);
+    const response: APIResponse = await page.request.put(FRONTEND_URL + `api/personen/${personId}/lock-user`, {
+        data: {
+          lock: true,
+          locked_by: organisationId,
+        },
+        failOnStatusCode: false,
+        maxRetries: 3,
+      });
+      expect(response.status()).toBe(202);
+}
+
+/**
+ * Sets the UEM-Password for a person in LDAP.
+ * @param page
+ * @param personId
+ */
+export async function setUEMPassword(page: Page, personId: string): Promise<string> {
+    const response: APIResponse = await page.request.patch(FRONTEND_URL + `api/personen/${personId}/uem-password`, {failOnStatusCode: false, maxRetries: 3});
+    expect(response.status()).toBe(202);
+    return await response.text();
 }
 
 export async function setTimeLimitPersonenkontext(
