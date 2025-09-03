@@ -19,7 +19,7 @@ import {
   generateNachname,
   generateRolleName,
   generateVorname,
-} from '../base/testHelperGenerateTestdataNames.ts';
+} from '../base/utils/generateTestdata.ts';
 import { KlasseCreationViewPage } from '../pages/admin/organisationen/klassen/KlasseCreationView.page';
 import { KlasseDetailsViewPage } from '../pages/admin/organisationen/klassen/details/KlasseDetailsView.page.ts';
 import { KlasseManagementViewPage } from '../pages/admin/organisationen/klassen/KlasseManagementView.page';

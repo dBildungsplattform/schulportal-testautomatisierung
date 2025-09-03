@@ -4,12 +4,13 @@ import { LandingPage } from '../pages/LandingView.page';
 import { StartPage } from '../pages/StartView.page';
 import { HeaderPage } from '../pages/components/Header.page';
 import { LONG, SHORT, SMOKE, STAGE, BROWSER } from '../base/tags';
-import { createRolleAndPersonWithUserContext, lockPerson } from '../base/api/testHelperPerson.page.ts';
+import { createRolleAndPersonWithUserContext } from '../base/api/testHelperPerson.page.ts';
+import { lockPerson } from '../base/api/personApi.ts';
 import { getSPId } from '../base/api/testHelperServiceprovider.page.ts';
 import { UserInfo } from '../base/api/testHelper.page.ts';
 import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata.ts';
 import { getOrganisationId } from '../base/api/testHelperOrganisation.page.ts';
-import { generateRolleName, generateNachname, generateVorname } from '../base/testHelperGenerateTestdataNames.ts';
+import { generateRolleName, generateNachname, generateVorname } from '../base/utils/generateTestdata.ts';
 import { testschuleName } from '../base/organisation.ts';
 
 const PW: string | undefined = process.env.PW;

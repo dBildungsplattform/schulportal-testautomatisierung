@@ -6,7 +6,7 @@ import { SchuleManagementViewPage } from '../pages/admin/organisationen/schulen/
 import { HeaderPage } from '../pages/components/Header.page';
 import { FooterDataTablePage } from '../pages/components/FooterDataTable.page';
 import { LONG, SHORT, STAGE, BROWSER } from '../base/tags';
-import { generateSchulname, generateDienststellenNr } from '../base/testHelperGenerateTestdataNames';
+import { generateSchulname, generateDienststellenNr } from '../base/utils/generateTestdata';
 import FromAnywhere from '../pages/FromAnywhere';
 import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';

@@ -3,10 +3,11 @@ import { UserInfo } from '../base/api/testHelper.page';
 import { getOrganisationId } from '../base/api/testHelperOrganisation.page';
 import {
   addSecondOrganisationToPerson,
-  createPerson,
   createRolleAndPersonWithUserContext,
 } from '../base/api/testHelperPerson.page';
-import { addSPToRolle, addSystemrechtToRolle, createRolle } from '../base/api/testHelperRolle.page';
+import { createPerson } from '../base/api/personApi.ts';
+import { addSPToRolle, addSystemrechtToRolle } from '../base/api/testHelperRolle.page';
+import { createRolle } from '../base/api/rolleApi.ts';
 import { getSPId } from '../base/api/testHelperServiceprovider.page';
 import {
   klassenVerwalten,
@@ -28,7 +29,7 @@ import {
   generateNachname,
   generateRolleName,
   generateVorname,
-} from '../base/testHelperGenerateTestdataNames.ts';
+} from '../base/utils/generateTestdata.ts';
 import FromAnywhere from '../pages/FromAnywhere';
 import { HeaderPage } from '../pages/components/Header.page';
 import { LandingPage } from '../pages/LandingView.page';

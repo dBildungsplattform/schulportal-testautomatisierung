@@ -2,11 +2,12 @@ import { expect, PlaywrightTestArgs, test } from '@playwright/test';
 import { UserInfo } from '../base/api/testHelper.page';
 import { getOrganisationId } from '../base/api/testHelperOrganisation.page.ts';
 import {
-  createPerson,
   createRolleAndPersonWithUserContext,
   setTimeLimitPersonenkontext,
 } from '../base/api/testHelperPerson.page';
-import { addSPToRolle, addSystemrechtToRolle, createRolle } from '../base/api/testHelperRolle.page';
+import { createPerson } from '../base/api/personApi.ts';
+import { addSPToRolle, addSystemrechtToRolle } from '../base/api/testHelperRolle.page';
+import { createRolle } from '../base/api/rolleApi.ts';
 import { getSPId } from '../base/api/testHelperServiceprovider.page';
 import { klasse1Testschule } from '../base/klassen.ts';
 import { befristungPflicht, kopersNrPflicht } from '../base/merkmale.ts';
@@ -33,7 +34,7 @@ import {
   generateNachname,
   generateRolleName,
   generateVorname,
-} from '../base/testHelperGenerateTestdataNames';
+} from '../base/utils/generateTestdata';
 import { generateCurrentDate } from '../base/testHelperUtils.ts';
 import FromAnywhere from '../pages/FromAnywhere';
 import { HeaderPage } from '../pages/components/Header.page';

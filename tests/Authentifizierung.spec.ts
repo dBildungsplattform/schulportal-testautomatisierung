@@ -4,12 +4,11 @@ import { LoginViewPage } from '../pages/LoginView.neu.page';
 import { StartViewPage } from '../pages/StartView.neu.page';
 import { LandingViewPage } from '../pages/LandingView.neu.page';
 import { HeaderPage } from '../pages/components/Header.neu.page';
-import { createPerson, type UserInfo } from '../base/api/personApi';
+import { createPerson, lockPerson, type UserInfo } from '../base/api/personApi';
 import { createRolle } from '../base/api/rolleApi';
 import { testschuleName } from '../base/organisation';
 import { getOrganisationId } from '../base/api/testHelperOrganisation.page';
 import { generateRolleName } from '../base/utils/generateTestdata';
-import { lockPerson } from '../base/api/testHelperPerson.page';
 
 const ADMIN: string | undefined = process.env.USER;
 const PASSWORD: string | undefined = process.env.PW;
