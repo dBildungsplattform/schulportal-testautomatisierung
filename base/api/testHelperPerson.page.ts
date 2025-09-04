@@ -53,10 +53,10 @@ export async function createRolleAndPersonWithUserContext(
   await addSPToRolle(page, rolleId, idSPs);
   const userInfo: UserInfo = await createPerson(
     page,
-    familienname,
-    vorname,
     organisationId,
     rolleId,
+    familienname,
+    vorname,
     koPersNr,
     klasseId,
     merkmaleName
