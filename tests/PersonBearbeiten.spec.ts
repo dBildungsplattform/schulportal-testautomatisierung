@@ -243,10 +243,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await addSPToRolle(page, rolleId, [await getSPId(page, 'itslearning')]);
         userInfoSchueler = await createPerson(
           page,
-          await generateNachname(),
-          await generateVorname(),
           schuleId,
           rolleId,
+          await generateNachname(),
+          await generateVorname(),
           '',
           klasseId
         );

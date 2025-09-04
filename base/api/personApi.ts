@@ -12,6 +12,28 @@ export interface UserInfo {
   personId: string;
 }
 
+interface CreatedPersonResponse {
+  person: {
+    id: string,
+    referrer: string,
+    mandant: string,
+    name: {
+      familienname: string,
+      vorname: string
+    },
+    revision: string,
+    startpasswort: string,
+    lastModified: string
+  },
+  dBiamPersonenkontextResponses: [
+    {
+      personId: string,
+      organisationId: string,
+      rolleId: string
+    }
+  ]
+}
+
 export async function createPerson(
   page: Page,
   organisationId: string,
@@ -20,7 +42,7 @@ export async function createPerson(
   vorname?: string,
   koPersNr?: string,
   klasseId?: string,
-  merkmalelName?: string[]
+  merkmaleName?: string[]
 ): Promise<UserInfo> {
   interface PersonRequestData {
     data: {
@@ -61,9 +83,9 @@ export async function createPerson(
     requestData.data['personalnummer'] = koPersNr;
   }
 
-  if (merkmalelName) {
-    for (const index in merkmalelName) {
-      if (merkmalelName[index] == befristungPflicht) {
+  if (merkmaleName) {
+    for (const index in merkmaleName) {
+      if (merkmaleName[index] == befristungPflicht) {
         requestData.data['befristung'] = await generateCurrentDate({ days: 0, months: 6, formatDMY: false });
       }
     }
@@ -71,7 +93,7 @@ export async function createPerson(
 
   const response: APIResponse = await page.request.post(FRONTEND_URL + 'api/personenkontext-workflow/', requestData);
   expect(response.status()).toBe(201);
-  const json = await response.json();
+  const json: CreatedPersonResponse = await response.json();
 
   return {
     username: json.person.referrer,

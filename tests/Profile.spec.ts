@@ -265,7 +265,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         const idSPs: string[] = [await getSPId(page, 'itslearning')];
         const rolleId: string = await createRolle(page, 'LERN', schuleId, rollenname);
         await addSPToRolle(page, rolleId, idSPs);
-        const userInfo: UserInfo = await createPerson(page, nachname, vorname, schuleId, rolleId, '', klasseId);
+        const userInfo: UserInfo = await createPerson(page, schuleId, rolleId, nachname, vorname, '', klasseId);
         rolleIds.push(userInfo.rolleId);
         usernames.push(userInfo.username);
 
@@ -679,10 +679,10 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await addSPToRolle(page, rolleId, idSPs);
         userInfoSchueler = await createPerson(
           page,
-          await generateNachname(),
-          await generateVorname(),
           schuleId,
           rolleId,
+          await generateNachname(),
+          await generateVorname(),
           '',
           klasseId
         );

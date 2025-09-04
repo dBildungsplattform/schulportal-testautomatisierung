@@ -30,7 +30,7 @@ export async function createPersonWithUserContext(
   // Organisation wird nicht angelegt, da diese zur Zeit nicht gelöscht werden kann
   const organisationId: string = await getOrganisationId(page, organisationName);
   const rolleId: string = await getRolleId(page, rolleName);
-  const userInfo: UserInfo = await createPerson(page, familienname, vorname, organisationId, rolleId, koPersNr);
+  const userInfo: UserInfo = await createPerson(page, organisationId, rolleId, familienname, vorname, koPersNr);
   return userInfo;
 }
 

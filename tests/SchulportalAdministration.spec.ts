@@ -161,10 +161,10 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
       await addSPToRolle(page, rolleId, idSPs);
       const userInfo: UserInfo = await createPerson(
         page,
-        await generateNachname(),
-        await generateVorname(),
         schuleId,
         rolleId,
+        await generateNachname(),
+        await generateVorname(),
         '',
         klasseId
       );
