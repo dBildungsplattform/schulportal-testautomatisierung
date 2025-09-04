@@ -5,7 +5,7 @@ import { landesadminRolle } from '../base/rollen';
 import { email, itslearning, kalender, schulportaladmin } from '../base/sp';
 import { BROWSER, LONG, SHORT, STAGE } from '../base/tags';
 import { deleteRolleByName } from '../base/testHelperDeleteTestdata';
-import { generateRolleName } from '../base/testHelperGenerateTestdataNames';
+import { generateRolleName } from '../base/utils/generateTestdata';
 import { RolleCreationConfirmPage } from '../pages/admin/rollen/RolleCreationConfirm.page';
 import { RolleCreationViewPage } from '../pages/admin/rollen/RolleCreationView.page';
 import { RolleDetailsViewPage } from '../pages/admin/rollen/RolleDetailsView.page';

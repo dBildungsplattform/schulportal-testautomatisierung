@@ -2,7 +2,8 @@ import { expect, PlaywrightTestArgs, test } from '@playwright/test';
 import { UserInfo } from '../base/api/testHelper.page';
 import { getOrganisationId } from '../base/api/testHelperOrganisation.page';
 import { createRolleAndPersonWithUserContext } from '../base/api/testHelperPerson.page';
-import { addSystemrechtToRolle, createRolle } from '../base/api/testHelperRolle.page';
+import { addSystemrechtToRolle } from '../base/api/testHelperRolle.page';
+import { createRolle } from '../base/api/rolleApi';
 import { getSPId } from '../base/api/testHelperServiceprovider.page';
 import {
   ersatzLandSH,
@@ -21,7 +22,7 @@ import {
   generateNachname,
   generateRolleName,
   generateVorname,
-} from '../base/testHelperGenerateTestdataNames';
+} from '../base/utils/generateTestdata';
 import { PersonCreationViewPage } from '../pages/admin/personen/PersonCreationView.page';
 import { PersonDetailsViewPage } from '../pages/admin/personen/PersonDetailsView.page';
 import { PersonManagementViewPage } from '../pages/admin/personen/PersonManagementView.page';

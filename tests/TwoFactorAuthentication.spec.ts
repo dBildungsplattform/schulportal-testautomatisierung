@@ -3,7 +3,7 @@ import { UserInfo } from '../base/api/testHelper.page';
 import { createRolleAndPersonWithUserContext } from '../base/api/testHelperPerson.page';
 import { getSPId } from '../base/api/testHelperServiceprovider.page';
 import { LONG, STAGE, BROWSER } from '../base/tags';
-import { generateNachname, generateVorname, generateRolleName } from '../base/testHelperGenerateTestdataNames';
+import { generateNachname, generateVorname, generateRolleName } from '../base/utils/generateTestdata';
 import { testschuleName } from '../base/organisation';
 import { typeLehrer } from '../base/rollentypen';
 import { email } from '../base/sp';

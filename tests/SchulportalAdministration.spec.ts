@@ -2,11 +2,12 @@ import { expect, PlaywrightTestArgs, test } from '@playwright/test';
 import { UserInfo } from '../base/api/testHelper.page';
 import { getOrganisationId } from '../base/api/testHelperOrganisation.page';
 import {
-  createPerson,
   createRolleAndPersonWithUserContext,
   setTimeLimitPersonenkontext,
 } from '../base/api/testHelperPerson.page';
-import { addSPToRolle, addSystemrechtToRolle, createRolle } from '../base/api/testHelperRolle.page';
+import { createPerson } from '../base/api/personApi';
+import { addSPToRolle, addSystemrechtToRolle } from '../base/api/testHelperRolle.page';
+import { createRolle } from '../base/api/rolleApi';
 import { getSPId } from '../base/api/testHelperServiceprovider.page';
 import { klasse1Testschule } from '../base/klassen';
 import { befristungPflicht, kopersNrPflicht } from '../base/merkmale';
@@ -33,8 +34,8 @@ import {
   generateNachname,
   generateRolleName,
   generateVorname,
-} from '../base/testHelperGenerateTestdataNames';
-import { generateCurrentDate } from '../base/testHelperUtils';
+} from '../base/utils/generateTestdata';
+import { generateCurrentDate } from '../base/utils/generateTestdata';
 import FromAnywhere from '../pages/FromAnywhere';
 import { HeaderPage } from '../pages/components/Header.page';
 import { LandingPage } from '../pages/LandingView.page';
@@ -160,10 +161,10 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
       await addSPToRolle(page, rolleId, idSPs);
       const userInfo: UserInfo = await createPerson(
         page,
-        await generateNachname(),
-        await generateVorname(),
         schuleId,
         rolleId,
+        await generateNachname(),
+        await generateVorname(),
         '',
         klasseId
       );
