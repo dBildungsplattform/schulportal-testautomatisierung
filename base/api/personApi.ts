@@ -22,7 +22,20 @@ export async function createPerson(
   klasseId?: string,
   merkmalelName?: string[]
 ): Promise<UserInfo> {
-  const requestData = {
+  interface PersonRequestData {
+    data: {
+      familienname: string;
+      vorname: string;
+      createPersonenkontexte: {
+        organisationId: string;
+        rolleId: string;
+      }[];
+    };
+    failOnStatusCode: boolean;
+    maxRetries: number;
+  }
+
+  const requestData: PersonRequestData = {
     data: {
       familienname: familienname || await generateNachname(),
       vorname: vorname || await generateVorname(),

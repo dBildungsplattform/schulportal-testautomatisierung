@@ -8,11 +8,10 @@ import { PersonManagementViewPage } from '../pages/admin/personen/PersonManageme
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
-import { deletePersonBySearchString } from '../base/testHelperDeleteTestdata.ts';
-import { waitForAPIResponse } from '../base/api/testHelper.page';
+import { deletePersonBySearchString } from '../base/testHelperDeleteTestdata';
 
 // schulen cannot be deleted yet, so we use this testschule, which should already exist
-import { testschule665Name } from '../base/organisation.ts';
+import { testschule665Name } from '../base/organisation';
 
 const PW: string = process.env.PW as string;
 const ADMIN: string = process.env.USER as string;

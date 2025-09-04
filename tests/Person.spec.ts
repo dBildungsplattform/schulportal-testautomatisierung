@@ -1,9 +1,9 @@
 import { expect, PlaywrightTestArgs, test } from '@playwright/test';
 import { UserInfo } from '../base/api/testHelper.page';
-import { getOrganisationId } from '../base/api/testHelperOrganisation.page.ts';
+import { getOrganisationId } from '../base/api/testHelperOrganisation.page';
 import { createRolleAndPersonWithUserContext } from '../base/api/testHelperPerson.page';
 import { addSystemrechtToRolle } from '../base/api/testHelperRolle.page';
-import { createRolle } from '../base/api/rolleApi.ts';
+import { createRolle } from '../base/api/rolleApi';
 import { getSPId } from '../base/api/testHelperServiceprovider.page';
 import {
   ersatzLandSH,
@@ -12,17 +12,17 @@ import {
   testschule665Name,
   testschuleDstNr,
   testschuleName,
-} from '../base/organisation.ts';
-import { landesadminRolle, schuelerRolle, schuladminOeffentlichRolle } from '../base/rollen.ts';
-import { typeLehrer, typeSchueler } from '../base/rollentypen.ts';
+} from '../base/organisation';
+import { landesadminRolle, schuelerRolle, schuladminOeffentlichRolle } from '../base/rollen';
+import { typeLehrer, typeSchueler } from '../base/rollentypen';
 import { BROWSER, LONG, SHORT, STAGE } from '../base/tags';
-import { deletePersonenBySearchStrings, deleteRolleById, deleteRolleByName } from '../base/testHelperDeleteTestdata.ts';
+import { deletePersonenBySearchStrings, deleteRolleById, deleteRolleByName } from '../base/testHelperDeleteTestdata';
 import {
   generateKopersNr,
   generateNachname,
   generateRolleName,
   generateVorname,
-} from '../base/utils/generateTestdata.ts';
+} from '../base/utils/generateTestdata';
 import { PersonCreationViewPage } from '../pages/admin/personen/PersonCreationView.page';
 import { PersonDetailsViewPage } from '../pages/admin/personen/PersonDetailsView.page';
 import { PersonManagementViewPage } from '../pages/admin/personen/PersonManagementView.page';
@@ -32,10 +32,13 @@ import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
 import { MenuPage } from '../pages/components/MenuBar.page';
 import { StartPage } from '../pages/StartView.page';
-import { schulportaladmin } from '../base/sp.ts';
+import { TestHelperLdap } from '../base/testHelperLdap';
+import { schulportaladmin } from '../base/sp';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
+const LDAP_URL: string = process.env.LDAP_URL;
+const LDAP_ADMIN_PASSWORD: string = process.env.LDAP_ADMIN_PASSWORD;
 
 // The created test data will be deleted in the afterEach block
 let usernames: string[] = [];
@@ -495,7 +498,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(page.getByRole('cell', { name: 'ssuperadmin', exact: true })).toBeVisible();
       });
 
-      await test.step(`Suche mit leerer Ergebnisliste. Gepüft wird das der Text "Keine Daten gefunden." gefunden wird, danach wird gepüft dass die Tabelle 0 Zeilen hat.`, async () => {
+      await test.step(`Suche mit leerer Ergebnisliste. Geprüft wird das der Text "Keine Daten gefunden." gefunden wird, danach wird gepüft dass die Tabelle 0 Zeilen hat.`, async () => {
         await personManagementView.inputSuchfeld.fill('!§$%aavvccdd44xx@');
         await personManagementView.buttonSuchen.click();
         await expect(page.getByRole('cell', { name: 'Keine Daten gefunden.' })).toBeVisible();
@@ -536,8 +539,106 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
   );
 
   test(
-    'Eine Lehrkraft anlegen in der Rolle Landesadmin und die Bestätigungsseite vollständig prüfen',
-    { tag: [LONG, SHORT, STAGE, BROWSER] },
+    'Eine Lehrkraft anlegen und Ihren Kontext entfernen dann wieder hinzufügen und den LDAP Inhalt vollständig prüfen',
+    { tag: [LONG] },
+    async ({ page }: PlaywrightTestArgs) => {
+      const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
+      let personDetailsView: PersonDetailsViewPage = new PersonDetailsViewPage(page);
+      const rolle: string = 'Lehrkraft';
+      const vorname: string = await generateVorname();
+      const nachname: string = await generateNachname();
+      const kopersnr: string = await generateKopersNr();
+      const schulstrukturknoten: string = testschuleName;
+      const dienststellenNr: string = '1111111';
+      const testHelperLdap: TestHelperLdap = new TestHelperLdap(LDAP_URL, LDAP_ADMIN_PASSWORD);
+      let createdBenutzername: string;
+
+      await test.step(`Dialog Person anlegen öffnen`, async () => {
+        await page.goto('/' + 'admin/personen/new');
+      });
+
+      await test.step(`Benutzer anlegen`, async () => {
+        await personCreationView.comboboxOrganisationInput.searchByTitle(schulstrukturknoten, false);
+        await personCreationView.comboboxRolle.click();
+        await page.getByText(rolle, { exact: true }).click();
+        await personCreationView.inputVorname.fill(vorname);
+        await personCreationView.inputNachname.fill(nachname);
+        await personCreationView.inputKopersnr.fill(kopersnr);
+        await personCreationView.buttonPersonAnlegen.click();
+      });
+
+      await test.step(`Auf Bestätigungsseite warten`, async () => {
+        await expect(personCreationView.textH2PersonAnlegen).toBeVisible();
+        usernames.push(await personCreationView.dataBenutzername.innerText());
+        createdBenutzername = await personCreationView.dataBenutzername.innerText();
+        await expect(personCreationView.buttonZurueckErgebnisliste).toBeVisible();
+      });
+
+      await test.step(`Prüfen, dass Lehrkraft im LDAP angelegt wurde`, async () => {
+        expect(await testHelperLdap.validateUserExists(createdBenutzername, 10, 1000)).toBeTruthy();
+      });
+
+      await test.step(`Prüfen, dass Lehrkraft im LDAP korrekter Gruppe zugeordnet wurde`, async () => {
+        expect(await testHelperLdap.validateUserIsInGroupOfNames(createdBenutzername, dienststellenNr)).toBeTruthy();
+      });
+
+      let generatedMailPrimaryAddress: string | null = null;
+      await test.step(`Mail Primary Address Auf Existenz Prüfen`, async () => {
+        generatedMailPrimaryAddress = await testHelperLdap.getMailPrimaryAddress(createdBenutzername, 10, 1000);
+        expect(generatedMailPrimaryAddress).toContain('schule-sh.de');
+        expect(generatedMailPrimaryAddress.length).toBeGreaterThan(5);
+      });
+
+      await test.step(`Dialog Gesamtübersicht öffnen`, async () => {
+        await personCreationView.buttonOpenGesamtuebersicht.click();
+      });
+
+      await test.step(`Schulzuordnung entfernen`, async () => {
+        await personDetailsView.buttonEditSchulzuordnung.click();
+        await page.locator('div.v-selection-control__input').click()
+        await personDetailsView.button_deleteSchulzuordnung.click()
+        await personDetailsView.button_confirmDeleteSchulzuordnung.click();
+        await personDetailsView.buttonSaveAssignmentChanges.click();
+        await personDetailsView.button_closeZuordnungSuccess.click();
+      });
+
+      const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
+      personDetailsView = await test.step(`Kontextlose Person suchen und Gesamtübersicht öffnen`, async () => {
+          await personManagementView.searchBySuchfeld(createdBenutzername);
+          return await personManagementView.openGesamtuebersichtPerson(page, createdBenutzername);
+        });
+
+      await test.step(`Schulzuordnung wieder hinzufügen`, async () => {
+        await personDetailsView.buttonEditSchulzuordnung.click();
+        await personDetailsView.buttonAddSchulzuordnung.click();
+      });
+
+      await personDetailsView.organisationen.searchByTitle(schulstrukturknoten, false);
+      await personDetailsView.comboboxRolle.click();
+      await page.getByText(rolle, { exact: true }).click();
+      await personDetailsView.buttonSubmitAddSchulzuordnung.click();
+      await personDetailsView.buttonConfirmZuordnungDialogAddition.click();
+      await personDetailsView.buttonSaveAssignmentChanges.click();
+      await personDetailsView.buttonCloseSaveAssignmentChanges.click();
+
+      await test.step(`Prüfen, dass Lehrkraft im LDAP noch existiert`, async () => {
+        expect(await testHelperLdap.validateUserExists(createdBenutzername, 10, 1000)).toBeTruthy();
+      });
+
+      await test.step(`Prüfen, dass Lehrkraft noch im LDAP korrekter Gruppe zugeordnet ist`, async () => {
+        expect(await testHelperLdap.validateUserIsInGroupOfNames(createdBenutzername, dienststellenNr)).toBeTruthy();
+      });
+
+      await test.step(`Prüfen, dass eine Mail weiterhin existiert und zugeordnet ist`, async () => {
+        const mailPrimaryAddress: string = await testHelperLdap.getMailPrimaryAddress(createdBenutzername);
+        expect(mailPrimaryAddress).toContain('schule-sh.de');
+        expect(mailPrimaryAddress.length).toBeGreaterThan(5);
+      });
+    });
+
+  test(
+    'Eine Lehrkraft anlegen in der Rolle Landesadmin und die Bestätigungsseite sowie den LDAP Inhalt vollständig prüfen',
+    { tag: [LONG] },
     async ({ page }: PlaywrightTestArgs) => {
       const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
       const rolleNames: string[] = ['Lehrkraft'];
@@ -545,6 +646,9 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const nachname: string = await generateNachname();
       const kopersnr: string = await generateKopersNr();
       const schulstrukturknoten: string = testschuleName;
+      const dienststellenNr: string = '1111111';
+      const testHelperLdap: TestHelperLdap = new TestHelperLdap(LDAP_URL, LDAP_ADMIN_PASSWORD);
+      let createdBenutzername: string;
 
       await test.step(`Dialog Person anlegen öffnen`, async () => {
         await page.goto('/' + 'admin/personen/new');
@@ -563,6 +667,38 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
           schulstrukturknoten
         );
         usernames.push(await personCreationView.dataBenutzername.innerText());
+        createdBenutzername = await personCreationView.dataBenutzername.innerText();
+        await expect(personCreationView.textDatenGespeichert).toBeVisible();
+        await expect(personCreationView.labelVorname).toHaveText('Vorname:');
+        await expect(personCreationView.dataVorname).toHaveText(vorname);
+        await expect(personCreationView.labelNachname).toHaveText('Nachname:');
+        await expect(personCreationView.dataNachname).toHaveText(nachname);
+        await expect(personCreationView.labelBenutzername).toHaveText('Benutzername:');
+        await expect(personCreationView.dataBenutzername).toContainText('tautopw');
+        await expect(personCreationView.labelEinstiegsPasswort).toHaveText('Einstiegs-Passwort:');
+        await expect(personCreationView.inputEinstiegsPasswort).toBeVisible();
+        await expect(personCreationView.labelRolle).toHaveText('Rolle:');
+        await expect(personCreationView.dataRolle).toContainText('Lehrkraft');
+        await expect(personCreationView.labelOrganisationsebene).toHaveText('Organisationsebene:');
+        await expect(personCreationView.dataOrganisationsebene).toHaveText(
+          dienststellenNr + ' (' + schulstrukturknoten + ')'
+        );
+        await expect(personCreationView.buttonWeiterenBenutzerAnlegen).toBeVisible();
+        await expect(personCreationView.buttonZurueckErgebnisliste).toBeVisible();
+      });
+
+      await test.step(`Prüfen, dass Lehrkraft im LDAP angelegt wurde`, async () => {
+         expect(await testHelperLdap.validateUserExists(createdBenutzername, 10, 1000)).toBeTruthy();
+      });
+
+      await test.step(`Prüfen, dass Lehrkraft im LDAP korrekter Gruppe zugeordnet wurde`, async () => {
+        expect(await testHelperLdap.validateUserIsInGroupOfNames(createdBenutzername, dienststellenNr)).toBeTruthy();
+      });
+
+      await test.step(`Mail Primary Address Auf Existenz Prüfen`, async () => {
+        const mailPrimaryAddress: string = await testHelperLdap.getMailPrimaryAddress(createdBenutzername, 10, 1000);
+        expect(mailPrimaryAddress).toContain('schule-sh.de');
+        expect(mailPrimaryAddress.length).toBeGreaterThan(5);
       });
 
       await test.step(`Auf die Gesamtübersicht des neu angelegten Benutzers mit dem Button "Zur Gesamtuebersicht" navigieren`, async () => {

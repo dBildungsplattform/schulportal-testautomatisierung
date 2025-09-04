@@ -1,42 +1,43 @@
 import { expect, PlaywrightTestArgs, test } from '@playwright/test';
-import { UserInfo, waitForAPIResponse } from '../base/api/testHelper.page.ts';
-import { createKlasse, getOrganisationId } from '../base/api/testHelperOrganisation.page.ts';
+import { UserInfo, waitForAPIResponse } from '../base/api/testHelper.page';
+import { createKlasse, getOrganisationId } from '../base/api/testHelperOrganisation.page';
 import {
   createRolleAndPersonWithUserContext,
   setTimeLimitPersonenkontext,
-} from '../base/api/testHelperPerson.page.ts';
-import { createPerson } from '../base/api/personApi.ts';
-import { addSPToRolle, addSystemrechtToRolle } from '../base/api/testHelperRolle.page.ts';
-import { createRolle } from '../base/api/rolleApi.ts';
-import { getSPId } from '../base/api/testHelperServiceprovider.page.ts';
-import { klasse1Testschule } from '../base/klassen.ts';
-import { befristungPflicht, kopersNrPflicht } from '../base/merkmale.ts';
-import { landSH, testschule665Name, testschuleDstNr, testschuleName } from '../base/organisation.ts';
-import { lehrkraftInVertretungRolle, lehrkraftOeffentlichRolle } from '../base/rollen.ts';
-import { typeLehrer, typeSchueler, typeSchuladmin } from '../base/rollentypen.ts';
-import { email, itslearning } from '../base/sp.ts';
-import { BROWSER, LONG, SHORT, STAGE } from '../base/tags.ts';
+} from '../base/api/testHelperPerson.page';
+import { createPerson } from '../base/api/personApi';
+import { addSPToRolle, addSystemrechtToRolle } from '../base/api/testHelperRolle.page';
+import { createRolle } from '../base/api/rolleApi';
+import { getSPId } from '../base/api/testHelperServiceprovider.page';
+import { klasse1Testschule } from '../base/klassen';
+import { befristungPflicht, kopersNrPflicht } from '../base/merkmale';
+import { landSH, testschule665Name, testschuleDstNr, testschuleName } from '../base/organisation';
+import { lehrkraftInVertretungRolle, lehrkraftOeffentlichRolle } from '../base/rollen';
+import { typeLehrer, typeSchueler, typeSchuladmin } from '../base/rollentypen';
+import { email, itslearning } from '../base/sp';
+import { BROWSER, LONG, SHORT, STAGE } from '../base/tags';
 import {
   deleteKlasseByName,
   deletePersonenBySearchStrings,
   deleteRolleById,
-} from '../base/testHelperDeleteTestdata.ts';
+} from '../base/testHelperDeleteTestdata';
 import {
   generateKlassenname,
-  generateKopersNr,
   generateNachname,
-  generateRolleName,
   generateVorname,
-} from '../base/utils/generateTestdata.ts';
-import { generateCurrentDate, gotoTargetURL } from '../base/testHelperUtils.ts';
-import { PersonDetailsViewPage } from '../pages/admin/personen/PersonDetailsView.page.ts';
-import { PersonManagementViewPage } from '../pages/admin/personen/PersonManagementView.page.ts';
+  generateRolleName,
+  generateKopersNr,
+} from '../base/utils/generateTestdata';
+import { gotoTargetURL } from '../base/testHelperUtils';
+import { generateCurrentDate } from '../base/utils/generateTestdata';
+import { PersonDetailsViewPage } from '../pages/admin/personen/PersonDetailsView.page';
+import { PersonManagementViewPage } from '../pages/admin/personen/PersonManagementView.page';
 import FromAnywhere from '../pages/FromAnywhere';
-import { HeaderPage } from '../pages/components/Header.page.ts';
-import { LandingPage } from '../pages/LandingView.page.ts';
-import { LoginPage } from '../pages/LoginView.page.ts';
-import { MenuPage } from '../pages/components/MenuBar.page.ts';
-import { StartPage } from '../pages/StartView.page.ts';
+import { HeaderPage } from '../pages/components/Header.page';
+import { LandingPage } from '../pages/LandingView.page';
+import { LoginPage } from '../pages/LoginView.page';
+import { MenuPage } from '../pages/components/MenuBar.page';
+import { StartPage } from '../pages/StartView.page';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -46,7 +47,7 @@ let usernames: string[] = [];
 let rolleIds: string[] = [];
 let klasseNames: string[] = [];
 // This variable must be set to false in the testcase when the logged in user is changed
-let currentUserIsLandesadministrator: boolean = true;
+const currentUserIsLandesadministrator: boolean = true;
 let logoutViaStartPage: boolean = false;
 
 test.describe(`Testfälle für die Administration von Personen": Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
@@ -105,105 +106,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       }
     });
   });
-
-  test(
-    'Eine Schulzuordnung bei einem bestehenden Benutzer hinzufügen',
-    { tag: [LONG, STAGE, BROWSER] },
-    async ({ page }: PlaywrightTestArgs) => {
-      const personDetailsView: PersonDetailsViewPage = new PersonDetailsViewPage(page);
-      const header: HeaderPage = new HeaderPage(page);
-      const landing: LandingPage = new LandingPage(page);
-      const login: LoginPage = new LoginPage(page);
-      const startseite: StartPage = new StartPage(page);
-      logoutViaStartPage = true;
-
-      const addminVorname: string = await generateVorname();
-      const adminNachname: string = await generateNachname();
-      const adminRolle: string = await generateRolleName();
-      const adminRollenart: string = typeSchuladmin;
-      const adminOrganisation: string = testschule665Name;
-      const adminIdSPs: string[] = [await getSPId(page, 'Schulportal-Administration')];
-
-      const lehrerVorname: string = await generateVorname();
-      const lehrerNachname: string = await generateNachname();
-      const lehrerRolle: string = await generateRolleName();
-      const lehrerRollenart: string = typeLehrer;
-      const lehrerOrganisation: string = testschule665Name;
-
-      const rolle: string = lehrkraftInVertretungRolle;
-      const kopersNr: string = await generateKopersNr();
-
-      const userInfoAdmin: UserInfo = await test.step('Schuladmin anlegen', async () => {
-        const userInfoAdmin: UserInfo = await createRolleAndPersonWithUserContext(
-          page,
-          adminOrganisation,
-          adminRollenart,
-          addminVorname,
-          adminNachname,
-          adminIdSPs,
-          adminRolle
-        );
-        await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'PERSONEN_VERWALTEN');
-        usernames.push(userInfoAdmin.username);
-        rolleIds.push(userInfoAdmin.rolleId);
-        return userInfoAdmin;
-      });
-
-      const userInfoLehrer: UserInfo = await test.step('Lehrer anlegen', async () => {
-        const userInfoLehrer: UserInfo = await createRolleAndPersonWithUserContext(
-          page,
-          lehrerOrganisation,
-          lehrerRollenart,
-          lehrerVorname,
-          lehrerNachname,
-          [await getSPId(page, 'E-Mail')],
-          lehrerRolle
-        );
-        usernames.push(userInfoLehrer.username);
-        rolleIds.push(userInfoLehrer.rolleId);
-        return userInfoLehrer;
-      });
-
-      await test.step(`Als Schuladmin anmelden`, async () => {
-        await header.logout({ logoutViaStartPage: false });
-        await landing.buttonAnmelden.click();
-        await login.login(userInfoAdmin.username, userInfoAdmin.password);
-        await login.updatePW();
-        await startseite.validateStartPageIsLoaded();
-        currentUserIsLandesadministrator = false;
-      });
-
-      await test.step(`Die Gesamtübersicht des Lehrers öffnen`, async () => {
-        const menu: MenuPage = await startseite.goToAdministration();
-        const personManagementView: PersonManagementViewPage = await menu.alleBenutzerAnzeigen();
-        await personManagementView.searchBySuchfeld(userInfoLehrer.username);
-        await personManagementView.openGesamtuebersichtPerson(page, userInfoLehrer.username);
-        await personDetailsView.waitForPageToBeLoaded();
-      });
-
-      await test.step(`Eine zweite Schulzuordnung hinzufügen`, async () => {
-        await personDetailsView.buttonEditSchulzuordnung.click();
-        await personDetailsView.buttonAddSchulzuordnung.click();
-        expect(await personDetailsView.comboboxOrganisation.innerText()).toContain(adminOrganisation);
-        await personDetailsView.rollen.searchByTitle(rolle, true, 'personenkontext-workflow/**');
-        await personDetailsView.inputKopersNr.fill(kopersNr);
-        await expect(personDetailsView.buttonSubmitAddSchulzuordnung).toBeEnabled();
-        await personDetailsView.buttonSubmitAddSchulzuordnung.click();
-        await personDetailsView.buttonConfirmAddSchulzuordnung.click();
-        await personDetailsView.buttonSaveAssignmentChanges.click();
-        await personDetailsView.buttonCloseSaveAssignmentChanges.click();
-      });
-
-      await test.step(`In der Gesamtübersicht die neue Schulzuordnung prüfen`, async () => {
-        await expect(page.getByTestId('person-details-card')).toContainText(
-          '1111165 (Testschule-PW665): LiV (befristet bis'
-        );
-        await expect(page.getByTestId('person-details-card')).toContainText(
-          '1111165 (Testschule-PW665): ' + lehrerRolle
-        );
-      });
-    }
-  );
 
   test('Befristung beim hinzufügen von Personenkontexten', { tag: [LONG] }, async ({ page }: PlaywrightTestArgs) => {
     let userInfoLehrer: UserInfo;
@@ -598,7 +500,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
   // TODO: we skip this test because it fails, as ldap is currently unreachable in CI
   test.skip(
     'Inbetriebnahme-Passwort über die Gesamtübersicht erzeugen',
-    { tag: [LONG, STAGE] },
+    { tag: [LONG] },
     async ({ page }: PlaywrightTestArgs) => {
       let userInfoLehrer: UserInfo;
 

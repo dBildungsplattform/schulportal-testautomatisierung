@@ -1,8 +1,8 @@
 import { test as teardown, APIResponse, PlaywrightTestArgs, test } from '@playwright/test';
 import FromAnywhere from '../pages/FromAnywhere';
-import { LandingPage } from '../pages/LandingView.page.ts';
-import { StartPage } from '../pages/StartView.page.ts';
-import { LoginPage } from '../pages/LoginView.page.ts';
+import { LandingPage } from '../pages/LandingView.page';
+import { StartPage } from '../pages/StartView.page';
+import { LoginPage } from '../pages/LoginView.page';
 
 const FRONTEND_URL: string | undefined = process.env.FRONTEND_URL || '';
 const searchString: string = 'TAuto';

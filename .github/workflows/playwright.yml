@@ -23,6 +23,15 @@ on:
         description: 'The name of the branch to be tested with Playwright.'
         required: false
         default: main
+      stage:
+        description: 'Stage to run the tests on'
+        required: true
+        default: dev
+        type: choice
+        options:
+          - dev
+          - staging
+
   push:
     branches: [ main ]
 

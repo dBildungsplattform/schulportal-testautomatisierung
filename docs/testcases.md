@@ -25,7 +25,7 @@
 ### Ergebnisliste Benutzer auf Vollständigkeit prüfen als Landesadmin @long @short @stage
 ### Prüfung auf korrekte Rollen in dem Dropdown 'Rolle' nach Auswahl der Organisation bei Anlage eines Benutzer in der Rolle Landesadmin @long @short @stage
 ### In der Ergebnisliste die Suchfunktion ausführen als Landesadmin @long @short @stage
-### Eine Lehrkraft anlegen in der Rolle Landesadmin und die Bestätigungsseite vollständig prüfen @long @short @stage
+### Eine Lehrkraft anlegen in der Rolle Landesadmin und die Bestätigungsseite sowie den LDAP Inhalt vollständig prüfen @long @short @stage
 ### Mehrere Benutzer hintereinander anlegen in der Rolle Landesadmin für die Rollenarten SuS und LEHR und die Bestätigungsseiten vollständig prüfen @long @stage
 
 ## Rolle.spec.ts

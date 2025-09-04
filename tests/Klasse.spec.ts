@@ -1,27 +1,27 @@
 import { expect, PlaywrightTestArgs, test } from '@playwright/test';
-import { UserInfo } from '../base/api/testHelper.page.ts';
-import { createKlasse, getOrganisationId } from '../base/api/testHelperOrganisation.page.ts';
-import { createRolleAndPersonWithUserContext } from '../base/api/testHelperPerson.page.ts';
-import { addSystemrechtToRolle } from '../base/api/testHelperRolle.page.ts';
-import { getSPId } from '../base/api/testHelperServiceprovider.page.ts';
-import { klasse1Testschule } from '../base/klassen.ts';
-import { landSH, testschuleDstNr, testschuleName } from '../base/organisation.ts';
-import { typeLandesadmin, typeSchueler, typeSchuladmin } from '../base/rollentypen.ts';
-import { schulportaladmin } from '../base/sp.ts';
+import { UserInfo } from '../base/api/testHelper.page';
+import { createKlasse, getOrganisationId } from '../base/api/testHelperOrganisation.page';
+import { createRolleAndPersonWithUserContext } from '../base/api/testHelperPerson.page';
+import { addSystemrechtToRolle } from '../base/api/testHelperRolle.page';
+import { getSPId } from '../base/api/testHelperServiceprovider.page';
+import { klasse1Testschule } from '../base/klassen';
+import { landSH, testschuleDstNr, testschuleName } from '../base/organisation';
+import { typeLandesadmin, typeSchueler, typeSchuladmin } from '../base/rollentypen';
+import { schulportaladmin } from '../base/sp';
 import { BROWSER, LONG, SHORT, STAGE } from '../base/tags';
 import {
   deleteKlasseByName,
   deletePersonenBySearchStrings,
   deleteRolleById,
-} from '../base/testHelperDeleteTestdata.ts';
+} from '../base/testHelperDeleteTestdata';
 import {
   generateKlassenname,
   generateNachname,
   generateRolleName,
   generateVorname,
-} from '../base/utils/generateTestdata.ts';
+} from '../base/utils/generateTestdata';
 import { KlasseCreationViewPage } from '../pages/admin/organisationen/klassen/KlasseCreationView.page';
-import { KlasseDetailsViewPage } from '../pages/admin/organisationen/klassen/details/KlasseDetailsView.page.ts';
+import { KlasseDetailsViewPage } from '../pages/admin/organisationen/klassen/details/KlasseDetailsView.page';
 import { KlasseManagementViewPage } from '../pages/admin/organisationen/klassen/KlasseManagementView.page';
 import FromAnywhere from '../pages/FromAnywhere';
 import { HeaderPage } from '../pages/components/Header.page';

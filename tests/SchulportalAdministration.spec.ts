@@ -1,18 +1,18 @@
 import { expect, PlaywrightTestArgs, test } from '@playwright/test';
 import { UserInfo } from '../base/api/testHelper.page';
-import { getOrganisationId } from '../base/api/testHelperOrganisation.page.ts';
+import { getOrganisationId } from '../base/api/testHelperOrganisation.page';
 import {
   createRolleAndPersonWithUserContext,
   setTimeLimitPersonenkontext,
 } from '../base/api/testHelperPerson.page';
-import { createPerson } from '../base/api/personApi.ts';
+import { createPerson } from '../base/api/personApi';
 import { addSPToRolle, addSystemrechtToRolle } from '../base/api/testHelperRolle.page';
-import { createRolle } from '../base/api/rolleApi.ts';
+import { createRolle } from '../base/api/rolleApi';
 import { getSPId } from '../base/api/testHelperServiceprovider.page';
-import { klasse1Testschule } from '../base/klassen.ts';
-import { befristungPflicht, kopersNrPflicht } from '../base/merkmale.ts';
+import { klasse1Testschule } from '../base/klassen';
+import { befristungPflicht, kopersNrPflicht } from '../base/merkmale';
 import { testschuleName } from '../base/organisation';
-import { typeLehrer } from '../base/rollentypen.ts';
+import { typeLehrer } from '../base/rollentypen';
 import {
   adressbuch,
   anleitungen,
@@ -35,7 +35,7 @@ import {
   generateRolleName,
   generateVorname,
 } from '../base/utils/generateTestdata';
-import { generateCurrentDate } from '../base/testHelperUtils.ts';
+import { generateCurrentDate } from '../base/utils/generateTestdata';
 import FromAnywhere from '../pages/FromAnywhere';
 import { HeaderPage } from '../pages/components/Header.page';
 import { LandingPage } from '../pages/LandingView.page';
