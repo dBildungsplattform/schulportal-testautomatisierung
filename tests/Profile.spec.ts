@@ -1,14 +1,13 @@
 import { expect, PlaywrightTestArgs, test } from '@playwright/test';
-import { UserInfo } from '../base/api/testHelper.page';
-import { getOrganisationId } from '../base/api/testHelperOrganisation.page';
+import { getOrganisationId } from '../base/api/organisationApi';
 import {
+  createPerson,
+  UserInfo,
   addSecondOrganisationToPerson,
   createRolleAndPersonWithUserContext,
-} from '../base/api/testHelperPerson.page';
-import { createPerson } from '../base/api/personApi';
-import { addSPToRolle, addSystemrechtToRolle } from '../base/api/testHelperRolle.page';
-import { createRolle } from '../base/api/rolleApi';
-import { getSPId } from '../base/api/testHelperServiceprovider.page';
+} from '../base/api/personApi';
+import { addSPToRolle, addSystemrechtToRolle, createRolle } from '../base/api/rolleApi';
+import { getServiceProviderId } from '../base/api/serviceProviderApi';
 import {
   klassenVerwalten,
   personenAnlegen,
@@ -118,7 +117,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       const rollenart: string = typeLandesadmin;
 
       await test.step(`Landesadmin via api anlegen und mit diesem anmelden`, async () => {
-        const idSPs: string[] = [await getSPId(page, 'Schulportal-Administration')];
+        const idSPs: string[] = [await getServiceProviderId(page, 'Schulportal-Administration')];
         const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
           page,
           organisation,
@@ -194,7 +193,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       const rollenart: string = typeLehrer;
 
       await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
-        const idSPs: string[] = [await getSPId(page, email)];
+        const idSPs: string[] = [await getServiceProviderId(page, email)];
         const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
           page,
           organisation,
@@ -262,7 +261,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       await test.step(`Schüler via api anlegen und mit diesem anmelden`, async () => {
         const schuleId: string = await getOrganisationId(page, testschuleName);
         const klasseId: string = await getOrganisationId(page, klasse1Testschule);
-        const idSPs: string[] = [await getSPId(page, 'itslearning')];
+        const idSPs: string[] = [await getServiceProviderId(page, 'itslearning')];
         const rolleId: string = await createRolle(page, 'LERN', schuleId, rollenname);
         await addSPToRolle(page, rolleId, idSPs);
         const userInfo: UserInfo = await createPerson(page, schuleId, rolleId, nachname, vorname, '', klasseId);
@@ -322,7 +321,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       const rollenart: string = typeSchuladmin;
 
       await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
-        const idSPs: string[] = [await getSPId(page, 'Schulportal-Administration')];
+        const idSPs: string[] = [await getServiceProviderId(page, 'Schulportal-Administration')];
         const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
           page,
           organisation,
@@ -390,7 +389,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       const rollenart: string = typeLehrer;
 
       await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
-        const idSPs: string[] = [await getSPId(page, itslearning), await getSPId(page, email)];
+        const idSPs: string[] = [await getServiceProviderId(page, itslearning), await getServiceProviderId(page, email)];
         const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
           page,
           organisation1,
@@ -497,7 +496,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       const rollenart: string = typeLehrer;
 
       await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
-        const idSPs: string[] = [await getSPId(page, itslearning)];
+        const idSPs: string[] = [await getServiceProviderId(page, itslearning)];
         const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
           page,
           organisation,
@@ -558,7 +557,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       const rollenart: string = typeLehrer;
 
       await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
-        const idSPs: string[] = [await getSPId(page, email)];
+        const idSPs: string[] = [await getServiceProviderId(page, email)];
         const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
           page,
           organisation,
@@ -665,7 +664,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
           typeLehrer,
           await generateNachname(),
           await generateVorname(),
-          [await getSPId(page, email)],
+          [await getServiceProviderId(page, email)],
           await generateRolleName(),
           await generateKopersNr()
         );
@@ -674,7 +673,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
         const schuleId: string = await getOrganisationId(page, testschuleName);
         const klasseId: string = await getOrganisationId(page, klasse1Testschule);
-        const idSPs: string[] = [await getSPId(page, 'itslearning')];
+        const idSPs: string[] = [await getServiceProviderId(page, 'itslearning')];
         const rolleId: string = await createRolle(page, 'LERN', schuleId, await generateRolleName());
         await addSPToRolle(page, rolleId, idSPs);
         userInfoSchueler = await createPerson(
@@ -752,7 +751,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
           typeLehrer,
           await generateNachname(),
           await generateVorname(),
-          [await getSPId(page, email)],
+          [await getServiceProviderId(page, email)],
           await generateRolleName(),
           await generateKopersNr()
         );

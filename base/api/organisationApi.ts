@@ -1,6 +1,15 @@
 import { Page, expect, APIResponse } from '@playwright/test';
+import { FRONTEND_URL } from './baseApi';
 
-const FRONTEND_URL: string | undefined = process.env.FRONTEND_URL || '';
+interface CreatedOrganisationResponse {
+  id: string,
+  administriertVon: string,
+  zugehoerigZu: string,
+  name: string,
+  typ: string,
+  itslearningEnabled: boolean,
+  version: number
+}
 
 export async function getOrganisationId(page: Page, nameOrganisation: string): Promise<string> {
   const response: APIResponse = await page.request.get(FRONTEND_URL + `api/organisationen?name=${nameOrganisation}`, {
@@ -32,11 +41,11 @@ export async function getKlasseId(page: Page, Klassennname: string): Promise<str
   return json[0]?.id;
 }
 
-export async function createKlasse(page: Page, idSchule: string, name: string): Promise<string> {
+export async function createKlasse(page: Page, schuleId: string, name: string): Promise<string> {
   const response: APIResponse = await page.request.post(FRONTEND_URL + 'api/organisationen/', {
     data: {
-      administriertVon: idSchule,
-      zugehoerigZu: idSchule,
+      administriertVon: schuleId,
+      zugehoerigZu: schuleId,
       name: name,
       typ: 'KLASSE',
     },
@@ -44,6 +53,6 @@ export async function createKlasse(page: Page, idSchule: string, name: string): 
     maxRetries: 3,
   });
   expect(response.status()).toBe(201);
-  const json = await response.json();
+  const json: CreatedOrganisationResponse = await response.json();
   return json.id;
 }

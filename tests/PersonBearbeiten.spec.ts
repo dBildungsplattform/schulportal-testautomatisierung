@@ -1,14 +1,14 @@
 import { expect, PlaywrightTestArgs, test } from '@playwright/test';
-import { UserInfo, waitForAPIResponse } from '../base/api/testHelper.page';
-import { createKlasse, getOrganisationId } from '../base/api/testHelperOrganisation.page';
+import { createPerson, UserInfo } from '../base/api/personApi';
+import { waitForAPIResponse } from '../base/api/baseApi';
+import { createKlasse, getOrganisationId } from '../base/api/organisationApi';
 import {
   createRolleAndPersonWithUserContext,
   setTimeLimitPersonenkontext,
-} from '../base/api/testHelperPerson.page';
-import { createPerson } from '../base/api/personApi';
-import { addSPToRolle, addSystemrechtToRolle } from '../base/api/testHelperRolle.page';
+} from '../base/api/personApi';
+import { addSPToRolle, addSystemrechtToRolle } from '../base/api/rolleApi';
 import { createRolle } from '../base/api/rolleApi';
-import { getSPId } from '../base/api/testHelperServiceprovider.page';
+import { getServiceProviderId } from '../base/api/serviceProviderApi';
 import { klasse1Testschule } from '../base/klassen';
 import { befristungPflicht, kopersNrPflicht } from '../base/merkmale';
 import { landSH, testschule665Name, testschuleDstNr, testschuleName } from '../base/organisation';
@@ -120,7 +120,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         typeLehrer,
         await generateNachname(),
         await generateVorname(),
-        [await getSPId(page, email)],
+        [await getServiceProviderId(page, email)],
         await generateRolleName()
       );
       usernames.push(userInfoLehrer.username);
@@ -167,7 +167,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
           typeLehrer,
           await generateNachname(),
           await generateVorname(),
-          [await getSPId(page, email)],
+          [await getServiceProviderId(page, email)],
           await generateRolleName()
         );
         usernames.push(userInfoLehrer.username);
@@ -204,7 +204,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         typeLehrer,
         await generateNachname(),
         await generateVorname(),
-        [await getSPId(page, email)],
+        [await getServiceProviderId(page, email)],
         await generateRolleName()
       );
       usernames.push(userInfoLehrer.username);
@@ -240,7 +240,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         const klasseId: string = await getOrganisationId(page, klasse1Testschule);
         const rollenname: string = await generateRolleName();
         const rolleId: string = await createRolle(page, 'LERN', schuleId, rollenname);
-        await addSPToRolle(page, rolleId, [await getSPId(page, 'itslearning')]);
+        await addSPToRolle(page, rolleId, [await getServiceProviderId(page, 'itslearning')]);
         userInfoSchueler = await createPerson(
           page,
           schuleId,
@@ -293,7 +293,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
           typeLehrer,
           await generateNachname(),
           await generateVorname(),
-          [await getSPId(page, email)],
+          [await getServiceProviderId(page, email)],
           await generateRolleName()
         );
         usernames.push(userInfoLehrer.username);
@@ -333,7 +333,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
           adminRollenart,
           addminVorname,
           adminNachname,
-          [await getSPId(page, 'Schulportal-Administration')],
+          [await getServiceProviderId(page, 'Schulportal-Administration')],
           await generateRolleName()
         );
         await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'PERSONEN_VERWALTEN');
@@ -375,7 +375,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
           rollenart,
           addminVorname,
           adminNachname,
-          [await getSPId(page, 'Schulportal-Administration')],
+          [await getServiceProviderId(page, 'Schulportal-Administration')],
           await generateRolleName()
         );
         await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'ROLLEN_VERWALTEN');
@@ -426,7 +426,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
           adminRollenart,
           await generateNachname(),
           await generateVorname(),
-          [await getSPId(page, 'Schulportal-Administration')],
+          [await getServiceProviderId(page, 'Schulportal-Administration')],
           await generateRolleName()
         );
         await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'PERSONEN_VERWALTEN');
@@ -466,7 +466,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
           typeLehrer,
           await generateNachname(),
           await generateVorname(),
-          [await getSPId(page, email)],
+          [await getServiceProviderId(page, email)],
           await generateRolleName()
         );
         usernames.push(userInfoLehrer.username);
@@ -511,7 +511,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
           typeLehrer,
           await generateNachname(),
           await generateVorname(),
-          [await getSPId(page, email)],
+          [await getServiceProviderId(page, email)],
           await generateRolleName()
         );
         usernames.push(userInfoLehrer.username);
@@ -553,7 +553,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
           typeLehrer,
           await generateNachname(),
           await generateVorname(),
-          [await getSPId(page, email)],
+          [await getServiceProviderId(page, email)],
           nameRolle
         );
         usernames.push(userInfoLehrer.username);
@@ -678,7 +678,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
           typeLehrer,
           await generateNachname(),
           await generateVorname(),
-          [await getSPId(page, email)],
+          [await getServiceProviderId(page, email)],
           nameRolle,
           await generateKopersNr(),
           undefined,
@@ -731,7 +731,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
           typeSchueler,
           await generateNachname(),
           await generateVorname(),
-          [await getSPId(page, itslearning)],
+          [await getServiceProviderId(page, itslearning)],
           rolleName,
           undefined,
           klasseIdCurrent
