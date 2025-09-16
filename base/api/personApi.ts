@@ -2,7 +2,8 @@ import { Page, expect, APIResponse } from '@playwright/test';
 import { befristungPflicht } from '../merkmale';
 import { generateCurrentDate, generateVorname, generateNachname } from '../utils/generateTestdata';
 import { FRONTEND_URL } from './baseApi';
-
+import FromAnywhere from '../../pages/FromAnywhere.neu';
+import { LoginViewPage } from '../../pages/LoginView.neu.page';
 
 export interface UserInfo {
   username: string;
@@ -10,6 +11,21 @@ export interface UserInfo {
   rolleId: string;
   organisationId: string;
   personId: string;
+}
+
+interface PersonRequestData {
+  data: {
+    familienname: string;
+    vorname: string;
+    createPersonenkontexte: {
+      organisationId: string;
+      rolleId: string;
+    }[];
+    personalnummer?: string;
+    befristung?: string;
+  };
+  failOnStatusCode: boolean;
+  maxRetries: number;
 }
 
 interface CreatedPersonResponse {
@@ -34,6 +50,10 @@ interface CreatedPersonResponse {
   ]
 }
 
+export async function freshLoginPage(page: Page): Promise<LoginViewPage> {
+  return (await FromAnywhere(page).start()).navigateToLogin();
+}
+
 export async function createPerson(
   page: Page,
   organisationId: string,
@@ -42,21 +62,8 @@ export async function createPerson(
   vorname?: string,
   koPersNr?: string,
   klasseId?: string,
-  merkmaleName?: string[]
+  merkmalNames?: string[]
 ): Promise<UserInfo> {
-  interface PersonRequestData {
-    data: {
-      familienname: string;
-      vorname: string;
-      createPersonenkontexte: {
-        organisationId: string;
-        rolleId: string;
-      }[];
-    };
-    failOnStatusCode: boolean;
-    maxRetries: number;
-  }
-
   const requestData: PersonRequestData = {
     data: {
       familienname: familienname || await generateNachname(),
@@ -83,15 +90,15 @@ export async function createPerson(
     requestData.data['personalnummer'] = koPersNr;
   }
 
-  if (merkmaleName) {
-    for (const index in merkmaleName) {
-      if (merkmaleName[index] == befristungPflicht) {
-        requestData.data['befristung'] = await generateCurrentDate({ days: 0, months: 6, formatDMY: false });
+  if (merkmalNames) {
+    for (const merkmal of merkmalNames) {
+      if (merkmal == befristungPflicht) {
+        requestData.data.befristung = await generateCurrentDate({ days: 0, months: 6, formatDMY: false });
       }
     }
   }
 
-  const response: APIResponse = await page.request.post(FRONTEND_URL + 'api/personenkontext-workflow/', requestData);
+  const response: APIResponse = await page.request.post(new URL('api/personenkontext-workflow/', FRONTEND_URL).toString(), requestData);
   expect(response.status()).toBe(201);
   const json: CreatedPersonResponse = await response.json();
 

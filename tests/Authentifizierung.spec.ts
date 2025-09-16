@@ -9,6 +9,7 @@ import { createRolle } from '../base/api/rolleApi';
 import { testschuleName } from '../base/organisation';
 import { getOrganisationId } from '../base/api/testHelperOrganisation.page';
 import { generateRolleName } from '../base/utils/generateTestdata';
+import { freshLoginPage } from '../base/api/personApi';
 
 const ADMIN: string | undefined = process.env.USER;
 const PASSWORD: string | undefined = process.env.PW;
@@ -19,8 +20,7 @@ test.describe(`Testfälle für den Login: Umgebung: ${process.env.ENV}: URL: ${p
   let header: HeaderPage;
 
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
-    landingPage = await (await FromAnywhere(page).start());
-    loginPage = await landingPage.navigateToLogin();
+    loginPage = await freshLoginPage(page);
     header = new HeaderPage(page);
   });
 
@@ -47,7 +47,7 @@ test.describe(`Testfälle für den Login: Umgebung: ${process.env.ENV}: URL: ${p
     await lockPerson(page, userinfo.personId, testSchuleId);
 
     await header.logout();
-    loginPage = await (await FromAnywhere(page).start()).navigateToLogin();
+    loginPage = await freshLoginPage(page);
     await loginPage.login(userinfo.username, userinfo.password);
     await expect(loginPage.loginFailedWithLockedUser()).toBeTruthy();
   });
