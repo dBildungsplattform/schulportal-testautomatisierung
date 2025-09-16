@@ -1,6 +1,6 @@
 import { type Locator, Page, expect } from '@playwright/test';
 import { Autocomplete } from '../../../elements/Autocomplete';
-import { waitForAPIResponse } from '../../../base/api/testHelper.page';
+import { waitForAPIResponse } from '../../../base/api/baseApi';
 
 export class PersonDetailsViewPage {
   readonly page: Page;
