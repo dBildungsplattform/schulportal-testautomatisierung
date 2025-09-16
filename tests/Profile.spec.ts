@@ -6,8 +6,7 @@ import {
   addSecondOrganisationToPerson,
   createRolleAndPersonWithUserContext,
 } from '../base/api/personApi';
-import { addSPToRolle, addSystemrechtToRolle } from '../base/api/rolleApi';
-import { createRolle } from '../base/api/rolleApi';
+import { addSPToRolle, addSystemrechtToRolle, createRolle } from '../base/api/rolleApi';
 import { getServiceProviderId } from '../base/api/serviceProviderApi';
 import {
   klassenVerwalten,

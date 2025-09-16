@@ -2,7 +2,7 @@ name: Playwright - Scheduled Main MSEdge
 on:
   workflow_dispatch:
   schedule:
-    - cron: '10 6 * * 3'
+    - cron: '30 6 * * 3'
 jobs:
   test:
     timeout-minutes: 60

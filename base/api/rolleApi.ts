@@ -56,7 +56,6 @@ export async function createRolle(
   rolleName: string,
   merkmaleName?: string[]
 ): Promise<string> {
-
   const requestData: RolleRequestData = {
     data: {
       name: rolleName,

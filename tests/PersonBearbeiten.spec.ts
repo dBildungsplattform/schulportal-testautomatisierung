@@ -1,12 +1,11 @@
 import { expect, PlaywrightTestArgs, test } from '@playwright/test';
-import { UserInfo } from '../base/api/personApi';
+import { createPerson, UserInfo } from '../base/api/personApi';
 import { waitForAPIResponse } from '../base/api/baseApi';
 import { createKlasse, getOrganisationId } from '../base/api/organisationApi';
 import {
   createRolleAndPersonWithUserContext,
   setTimeLimitPersonenkontext,
 } from '../base/api/personApi';
-import { createPerson } from '../base/api/personApi';
 import { addSPToRolle, addSystemrechtToRolle } from '../base/api/rolleApi';
 import { createRolle } from '../base/api/rolleApi';
 import { getServiceProviderId } from '../base/api/serviceProviderApi';

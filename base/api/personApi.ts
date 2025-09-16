@@ -1,15 +1,12 @@
 import { Page, expect, APIResponse } from '@playwright/test';
-import { befristungPflicht } from '../merkmale';
-import {
-  generateCurrentDate,
-  generateVorname,
-  generateNachname,
-  generateKopersNr,
-  generateRolleName
-} from '../utils/generateTestdata';
-import { getOrganisationId } from './organisationApi';
-import { createRolle, addSPToRolle } from './rolleApi'
 import { FRONTEND_URL } from './baseApi';
+import { generateCurrentDate, generateKopersNr, generateNachname, generateRolleName } from '../utils/generateTestdata';
+import { generateVorname } from '../utils/generateTestdata';
+import { LoginViewPage } from '../../pages/LoginView.neu.page';
+import FromAnywhere from '../../pages/FromAnywhere.neu';
+import { befristungPflicht } from '../merkmale';
+import { getOrganisationId } from './organisationApi';
+import { addSPToRolle, createRolle, getRolleId } from './rolleApi';
 import { HeaderPage } from '../../pages/components/Header.page';
 import { LoginPage } from '../../pages/LoginView.page';
 import { testschuleName } from '../organisation';
@@ -46,6 +43,8 @@ interface PersonRequestData {
       organisationId: string;
       rolleId: string;
     }[];
+    personalnummer?: string;
+    befristung?: string;
   };
   failOnStatusCode: boolean;
   maxRetries: number;
@@ -64,6 +63,10 @@ interface CreatedPersonResponse {
 
 interface PersonenFrontendResponse { total: 1, offset: 0, limit: 1, items: [ { person: Person } ] }
 
+export async function freshLoginPage(page: Page): Promise<LoginViewPage> {
+  return (await FromAnywhere(page).start()).navigateToLogin();
+}
+
 export async function createPerson(
   page: Page,
   organisationId: string,
@@ -72,7 +75,7 @@ export async function createPerson(
   vorname?: string,
   koPersNr?: string,
   klasseId?: string,
-  merkmaleName?: string[]
+  merkmalNames?: string[]
 ): Promise<UserInfo> {
   const requestData: PersonRequestData = {
     data: {
@@ -100,15 +103,15 @@ export async function createPerson(
     requestData.data['personalnummer'] = koPersNr;
   }
 
-  if (merkmaleName) {
-    for (const index in merkmaleName) {
-      if (merkmaleName[index] == befristungPflicht) {
-        requestData.data['befristung'] = await generateCurrentDate({ days: 0, months: 6, formatDMY: false });
+  if (merkmalNames) {
+    for (const merkmal of merkmalNames) {
+      if (merkmal == befristungPflicht) {
+        requestData.data.befristung = await generateCurrentDate({ days: 0, months: 6, formatDMY: false });
       }
     }
   }
 
-  const response: APIResponse = await page.request.post(FRONTEND_URL + 'api/personenkontext-workflow/', requestData);
+  const response: APIResponse = await page.request.post(new URL('api/personenkontext-workflow/', FRONTEND_URL).toString(), requestData);
   expect(response.status()).toBe(201);
   const json: CreatedPersonResponse = await response.json();
 
@@ -131,6 +134,21 @@ export async function lockPerson(page: Page, personId: string, organisationId: s
     maxRetries: 3,
   });
   expect(response.status()).toBe(202);
+}
+
+export async function createPersonWithUserContext(
+  page: Page,
+  organisationName: string,
+  familienname: string,
+  vorname: string,
+  rolleName: string,
+  koPersNr?: string
+): Promise<UserInfo> {
+  // Organisation wird nicht angelegt, da diese zur Zeit nicht gelöscht werden kann
+  const organisationId: string = await getOrganisationId(page, organisationName);
+  const rolleId: string = await getRolleId(page, rolleName);
+  const userInfo: UserInfo = await createPerson(page, organisationId, rolleId, familienname, vorname, koPersNr);
+  return userInfo;
 }
 
 export async function createRolleAndPersonWithUserContext(
