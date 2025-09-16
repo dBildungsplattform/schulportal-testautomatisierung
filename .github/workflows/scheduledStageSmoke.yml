@@ -2,7 +2,7 @@ name: Playwright - Scheduled Stage Smoketest
 on:
   workflow_dispatch:
   schedule:
-    - cron: '40 5 * * *'
+    - cron: '45 6 * * *'
 jobs:
   test:
     timeout-minutes: 60
