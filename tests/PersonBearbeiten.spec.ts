@@ -1,25 +1,35 @@
-import { expect, test, PlaywrightTestArgs } from '@playwright/test';
-import { createPerson, createRolleAndPersonWithUserContext, setTimeLimitPersonenkontext } from '../base/api/testHelperPerson.page';
-import { getSPId } from '../base/api/testHelperServiceprovider.page';
+import { expect, PlaywrightTestArgs, test } from '@playwright/test';
 import { UserInfo, waitForAPIResponse } from '../base/api/testHelper.page';
 import { createKlasse, getOrganisationId } from '../base/api/testHelperOrganisation.page';
-import { addSPToRolle, addSystemrechtToRolle, createRolle } from '../base/api/testHelperRolle.page';
-import { LONG, SHORT, STAGE, BROWSER } from '../base/tags';
-import { deleteKlasseByName, deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata';
+import {
+  createRolleAndPersonWithUserContext,
+  setTimeLimitPersonenkontext,
+} from '../base/api/testHelperPerson.page';
+import { createPerson } from '../base/api/personApi';
+import { addSPToRolle, addSystemrechtToRolle } from '../base/api/testHelperRolle.page';
+import { createRolle } from '../base/api/rolleApi';
+import { getSPId } from '../base/api/testHelperServiceprovider.page';
+import { klasse1Testschule } from '../base/klassen';
+import { befristungPflicht, kopersNrPflicht } from '../base/merkmale';
+import { landSH, testschule665Name, testschuleDstNr, testschuleName } from '../base/organisation';
+import { lehrkraftInVertretungRolle, lehrkraftOeffentlichRolle } from '../base/rollen';
 import { typeLehrer, typeSchueler, typeSchuladmin } from '../base/rollentypen';
-import { landSH, testschuleName, testschuleDstNr, testschule665Name } from '../base/organisation';
 import { email, itslearning } from '../base/sp';
+import { BROWSER, LONG, SHORT, STAGE } from '../base/tags';
+import {
+  deleteKlasseByName,
+  deletePersonenBySearchStrings,
+  deleteRolleById,
+} from '../base/testHelperDeleteTestdata';
 import {
   generateKlassenname,
   generateNachname,
   generateVorname,
   generateRolleName,
   generateKopersNr,
-} from '../base/testHelperGenerateTestdataNames';
-import { generateCurrentDate, gotoTargetURL } from '../base/testHelperUtils';
-import { lehrkraftOeffentlichRolle, lehrkraftInVertretungRolle } from '../base/rollen';
-import { klasse1Testschule } from '../base/klassen';
-import { befristungPflicht, kopersNrPflicht } from '../base/merkmale';
+} from '../base/utils/generateTestdata';
+import { gotoTargetURL } from '../base/testHelperUtils';
+import { generateCurrentDate } from '../base/utils/generateTestdata';
 import { PersonDetailsViewPage } from '../pages/admin/personen/PersonDetailsView.page';
 import { PersonManagementViewPage } from '../pages/admin/personen/PersonManagementView.page';
 import FromAnywhere from '../pages/FromAnywhere';
@@ -233,10 +243,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await addSPToRolle(page, rolleId, [await getSPId(page, 'itslearning')]);
         userInfoSchueler = await createPerson(
           page,
-          await generateNachname(),
-          await generateVorname(),
           schuleId,
           rolleId,
+          await generateNachname(),
+          await generateVorname(),
           '',
           klasseId
         );
@@ -490,7 +500,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
   // TODO: we skip this test because it fails, as ldap is currently unreachable in CI
   test.skip(
     'Inbetriebnahme-Passwort über die Gesamtübersicht erzeugen',
-    { tag: [LONG, STAGE] },
+    { tag: [LONG] },
     async ({ page }: PlaywrightTestArgs) => {
       let userInfoLehrer: UserInfo;
 

@@ -3,10 +3,11 @@ import { UserInfo } from '../base/api/testHelper.page';
 import { getOrganisationId } from '../base/api/testHelperOrganisation.page';
 import {
   addSecondOrganisationToPerson,
-  createPerson,
   createRolleAndPersonWithUserContext,
 } from '../base/api/testHelperPerson.page';
-import { addSPToRolle, addSystemrechtToRolle, createRolle } from '../base/api/testHelperRolle.page';
+import { createPerson } from '../base/api/personApi';
+import { addSPToRolle, addSystemrechtToRolle } from '../base/api/testHelperRolle.page';
+import { createRolle } from '../base/api/rolleApi';
 import { getSPId } from '../base/api/testHelperServiceprovider.page';
 import {
   klassenVerwalten,
@@ -28,7 +29,7 @@ import {
   generateNachname,
   generateRolleName,
   generateVorname,
-} from '../base/testHelperGenerateTestdataNames';
+} from '../base/utils/generateTestdata';
 import FromAnywhere from '../pages/FromAnywhere';
 import { HeaderPage } from '../pages/components/Header.page';
 import { LandingPage } from '../pages/LandingView.page';
@@ -264,7 +265,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         const idSPs: string[] = [await getSPId(page, 'itslearning')];
         const rolleId: string = await createRolle(page, 'LERN', schuleId, rollenname);
         await addSPToRolle(page, rolleId, idSPs);
-        const userInfo: UserInfo = await createPerson(page, nachname, vorname, schuleId, rolleId, '', klasseId);
+        const userInfo: UserInfo = await createPerson(page, schuleId, rolleId, nachname, vorname, '', klasseId);
         rolleIds.push(userInfo.rolleId);
         usernames.push(userInfo.username);
 
@@ -678,10 +679,10 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await addSPToRolle(page, rolleId, idSPs);
         userInfoSchueler = await createPerson(
           page,
-          await generateNachname(),
-          await generateVorname(),
           schuleId,
           rolleId,
+          await generateNachname(),
+          await generateVorname(),
           '',
           klasseId
         );

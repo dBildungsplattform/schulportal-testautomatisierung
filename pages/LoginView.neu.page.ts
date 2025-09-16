@@ -60,4 +60,17 @@ export class LoginViewPage {
   }
 
   /* assertions */
+  public async loginFailedWithWrongCredentials(): Promise<void> {
+    const inputErrorSpan: Locator = this.page.getByTestId('input-error-message');
+
+    await expect(inputErrorSpan).toBeVisible();
+    await expect(inputErrorSpan).toHaveText('Ungültiger Benutzername oder Passwort.');
+  }
+
+  public async loginFailedWithLockedUser(): Promise<void> {
+    const loginErrorSpan: Locator = this.page.getByTestId('login-error-message');
+
+    await expect(loginErrorSpan).toBeVisible();
+    await expect(loginErrorSpan).toHaveText('Ihr Benutzerkonto ist gesperrt. Bitte wenden Sie sich an Ihre schulischen Administratorinnen und Administratoren.');
+  }
 }

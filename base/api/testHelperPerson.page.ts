@@ -1,80 +1,23 @@
 import { Page, expect, APIResponse } from '@playwright/test';
 import { getOrganisationId } from './testHelperOrganisation.page';
-import { createRolle, addSPToRolle, getRolleId } from './testHelperRolle.page';
+import { createRolle } from './rolleApi'
+import { addSPToRolle, getRolleId } from './testHelperRolle.page';
 import { getSPId } from './testHelperServiceprovider.page';
 import { UserInfo } from './testHelper.page';
 import { HeaderPage } from '../../pages/components/Header.page';
 import { LoginPage } from '../../pages/LoginView.page';
-import { befristungPflicht } from '../merkmale';
+import { createPerson } from './personApi';
 import {
   generateNachname,
   generateVorname,
   generateKopersNr,
   generateRolleName,
-} from '../testHelperGenerateTestdataNames';
+} from '../utils/generateTestdata';
 import { testschuleName } from '../organisation';
 import { email, kalender, adressbuch } from '../sp';
 import { typeLehrer } from '../rollentypen';
-import { generateCurrentDate } from '../../base/testHelperUtils';
 
 const FRONTEND_URL: string | undefined = process.env.FRONTEND_URL || '';
-
-export async function createPerson(
-  page: Page,
-  familienname: string,
-  vorname: string,
-  organisationId: string,
-  rolleId: string,
-  koPersNr?: string,
-  klasseId?: string,
-  merkmalelName?: string[]
-): Promise<UserInfo> {
-  const requestData = {
-    data: {
-      familienname,
-      vorname,
-      createPersonenkontexte: [
-        {
-          organisationId: organisationId,
-          rolleId: rolleId,
-        },
-      ],
-    },
-    failOnStatusCode: false,
-    maxRetries: 3,
-  };
-
-  if (klasseId) {
-    requestData.data.createPersonenkontexte.push({
-      organisationId: klasseId,
-      rolleId: rolleId,
-    });
-  }
-
-  if (koPersNr) {
-    requestData.data['personalnummer'] = koPersNr;
-  }
-
-  if (merkmalelName) {
-    for (const index in merkmalelName) {
-      if (merkmalelName[index] == befristungPflicht) {
-        requestData.data['befristung'] = await generateCurrentDate({ days: 0, months: 6, formatDMY: false });
-      }
-    }
-  }
-
-  const response: APIResponse = await page.request.post(FRONTEND_URL + 'api/personenkontext-workflow/', requestData);
-  expect(response.status()).toBe(201);
-  const json = await response.json();
-
-  return {
-    username: json.person.referrer,
-    password: json.person.startpasswort,
-    rolleId: rolleId,
-    organisationId: organisationId,
-    personId: json.person.id,
-  };
-}
 
 export async function createPersonWithUserContext(
   page: Page,
@@ -87,7 +30,7 @@ export async function createPersonWithUserContext(
   // Organisation wird nicht angelegt, da diese zur Zeit nicht gelöscht werden kann
   const organisationId: string = await getOrganisationId(page, organisationName);
   const rolleId: string = await getRolleId(page, rolleName);
-  const userInfo: UserInfo = await createPerson(page, familienname, vorname, organisationId, rolleId, koPersNr);
+  const userInfo: UserInfo = await createPerson(page, organisationId, rolleId, familienname, vorname, koPersNr);
   return userInfo;
 }
 
@@ -110,10 +53,10 @@ export async function createRolleAndPersonWithUserContext(
   await addSPToRolle(page, rolleId, idSPs);
   const userInfo: UserInfo = await createPerson(
     page,
-    familienname,
-    vorname,
     organisationId,
     rolleId,
+    familienname,
+    vorname,
     koPersNr,
     klasseId,
     merkmaleName
@@ -193,18 +136,6 @@ export async function createTeacherAndLogin(page: Page): Promise<UserInfo> {
   await expect(header.iconMyProfil).toBeVisible();
   await expect(header.iconLogout).toBeVisible();
   return userInfo;
-}
-
-export async function lockPerson(page: Page, personId: string, organisationId: string): Promise<void> {
-    const response: APIResponse = await page.request.put(FRONTEND_URL + `api/personen/${personId}/lock-user`, {
-        data: {
-          lock: true,
-          locked_by: organisationId,
-        },
-        failOnStatusCode: false,
-        maxRetries: 3,
-      });
-      expect(response.status()).toBe(202);
 }
 
 /**

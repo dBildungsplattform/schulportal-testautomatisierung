@@ -19,7 +19,7 @@ import {
   generateNachname,
   generateRolleName,
   generateVorname,
-} from '../base/testHelperGenerateTestdataNames';
+} from '../base/utils/generateTestdata';
 import { KlasseCreationViewPage } from '../pages/admin/organisationen/klassen/KlasseCreationView.page';
 import { KlasseDetailsViewPage } from '../pages/admin/organisationen/klassen/details/KlasseDetailsView.page';
 import { KlasseManagementViewPage } from '../pages/admin/organisationen/klassen/KlasseManagementView.page';

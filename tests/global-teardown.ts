@@ -3,7 +3,6 @@ import FromAnywhere from '../pages/FromAnywhere';
 import { LandingPage } from '../pages/LandingView.page';
 import { StartPage } from '../pages/StartView.page';
 import { LoginPage } from '../pages/LoginView.page';
-import { Serializable } from 'child_process';
 
 const FRONTEND_URL: string | undefined = process.env.FRONTEND_URL || '';
 const searchString: string = 'TAuto';
