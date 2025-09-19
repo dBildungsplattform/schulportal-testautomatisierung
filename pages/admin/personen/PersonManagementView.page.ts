@@ -40,7 +40,7 @@ export class PersonManagementViewPage {
     this.tableHeaderKlasse = page.getByTestId('person-table').getByText('Klasse', { exact: true });
     this.tableWrapper = page.getByTestId('person-table');
     this.comboboxMenuIconSchule = page.locator('[data-testid="schule-select"] .mdi-menu-down');
-    this.comboboxMenuIconSchuleInput = page.locator('[data-testid="schule-select"] input');
+    this.comboboxMenuIconSchuleInput = page.locator('[data-testid="person-management-organisation-select"] input');
     this.comboboxMenuIconRolle = page.locator('[data-testid="rolle-select"] .mdi-menu-down');
     this.comboboxMenuIconKlasse = page.locator('[data-testid="personen-management-klasse-select"] .mdi-menu-down');
     this.comboboxMenuIconStatus = page.locator('[data-testid="status-select"] .mdi-menu-down');
