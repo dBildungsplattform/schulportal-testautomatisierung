@@ -30,7 +30,7 @@ export class KlasseManagementViewPage extends AbstractManagementViewPage {
   }
 
   public async filterBySchule(schulname: string): Promise<void> {
-    await this.filterByText(schulname, 'schule-select');
+    await this.filterByText(schulname, 'klassen-management-schule-select');
   }
 
   public async filterByKlasse(klassenname: string): Promise<void> {

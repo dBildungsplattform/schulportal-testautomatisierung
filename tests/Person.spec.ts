@@ -527,7 +527,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await test.step(`Filter öffnen und Schule selektieren`, async () => {
         await personManagementView.filterSchule(testschule665Name);
 
-        await expect(page.getByTestId('schule-select')).toHaveText('1111165 (Testschule-PW665)');
+        await expect(page.getByTestId('person-management-organisation-select')).toHaveText('1111165 (Testschule-PW665)');
 
         await expect(personManagementView.getRows().first()).toContainText('1111165');
       });

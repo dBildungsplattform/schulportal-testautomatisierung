@@ -23,7 +23,7 @@ export class KlasseCreationViewPage extends AbstractAdminPage {
   }
 
   public async createKlasse(params: KlasseCreationParams): Promise<KlasseCreationSuccessPage> {
-    const schuleNameAutocomplete: Autocomplete = new Autocomplete(this.page, this.page.getByTestId('schule-select'));
+    const schuleNameAutocomplete: Autocomplete = new Autocomplete(this.page, this.page.getByTestId('klasse-form-schule-select'));
     const klasseNameInput: Locator = this.page.getByTestId('klassenname-input');
     const createKlasseButton: Locator = this.page.getByTestId('klasse-form-submit-button');
 

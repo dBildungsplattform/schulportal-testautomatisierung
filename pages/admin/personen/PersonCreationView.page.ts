@@ -53,13 +53,13 @@ export class PersonCreationViewPage {
     this.buttonSchliessen = page.getByTestId('close-layout-card-button');
     this.comboboxRolle = page.getByTestId('rollen-select').locator('.v-field__input');
     this.comboboxRolleClear = page.getByTestId('rollen-select').getByLabel('leeren');
-    this.comboboxSchulstrukturknotenClear = page.getByTestId('organisation-select').getByLabel('leeren');
-    this.organisation = page.getByTestId('organisation-select').locator('.v-field');
-    this.organisationInput = page.getByTestId('organisation-select');
+    this.comboboxSchulstrukturknotenClear = page.getByTestId('personenkontext-create-organisation-select').getByLabel('leeren');
+    this.organisation = page.getByTestId('personenkontext-create-organisation-select').locator('.v-field');
+    this.organisationInput = page.getByTestId('personenkontext-create-organisation-select');
     this.inputVorname = page.getByTestId('vorname-input').locator('.v-field__input');
     this.inputNachname = page.getByTestId('familienname-input').locator('.v-field__input');
     this.inputKopersnr = page.getByTestId('kopersnr-input').locator('.v-field__input');
-    this.comboboxSchulstrukturknoten = page.getByTestId('organisation-select').locator('.v-field__input');
+    this.comboboxSchulstrukturknoten = page.getByTestId('personenkontext-create-organisation-select').locator('.v-field__input');
     this.comboboxKlasse = page.getByTestId('personenkontext-create-klasse-select').locator('.v-field__input');
     this.buttonPersonAnlegen = page.getByTestId('person-creation-form-submit-button');
     this.comboboxOrganisationInput = new Autocomplete(this.page, this.organisationInput);
