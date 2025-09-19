@@ -125,8 +125,8 @@ export class PersonDetailsViewPage {
     this.button_closeZuordnungSuccess = page.getByTestId('close-zuordnung-delete-success-button');
     this.comboboxOrganisationDialogBenutzerSperren = page.getByTestId('person-lock-card').locator('.v-field__input');
     this.comboboxRolle = page.getByTestId('rolle-select');
-    this.comboboxOrganisation = page.getByTestId('organisation-select');
-    this.organisationInput = page.getByTestId('organisation-select').locator('input');
+    this.comboboxOrganisation = page.getByTestId('personenkontext-create-organisation-select');
+    this.organisationInput = page.getByTestId('personenkontext-create-organisation-select').locator('input');
     this.button_deleteSchulzuordnung = page.getByTestId('open-zuordnung-delete-dialog-button');
     this.button_confirmDeleteSchulzuordnung = page.getByTestId('zuordnung-delete-button');
     this.comboboxKlasse = page.getByTestId('klassenname-input').getByRole('combobox');

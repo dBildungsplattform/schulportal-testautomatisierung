@@ -17,7 +17,7 @@ export class RolleForm {
       }),
       page.getByTestId('created-rolle-administrationsebene'),
       new Autocomplete(this.page, this.page.getByTestId('rolle-form-organisation-select').locator('.v-input__control')),
-      page.locator('#administrationsebene-select-messages'),
+      page.locator('#rolle-form-organisation-select-messages'),
     );
     this.rollenart = new Row(
       page.getByText('Rollenart:', { exact: true }),
