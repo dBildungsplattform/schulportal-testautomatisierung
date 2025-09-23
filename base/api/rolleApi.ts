@@ -1,82 +1,38 @@
 import { Page, expect, APIResponse } from '@playwright/test';
 import { FRONTEND_URL } from './baseApi';
-import { ServiceProviderFromRolleResponse } from './serviceProviderApi';
+import { ApiResponse } from './generated';
+import { RolleApi, RolleControllerCreateRolleRequest } from './generated/apis/RolleApi';
+import { CreateRolleBodyParams, RollenArt, RollenMerkmal, RollenSystemRecht, RolleResponse } from './generated/models';
 
-interface RolleRequestData {
-  data: {
-    name: string;
-    administeredBySchulstrukturknoten: string;
-    rollenart: string;
-    systemrechte: string[];
-    version: number;
-    merkmale?: string[];
-  };
-  failOnStatusCode: boolean;
-  maxRetries: number;
-}
-
-interface Systemrecht {
-  name: string,
-  isTechnical: boolean
-}
-
-interface CreatedRolleResponse {
-  id: string,
-  createdAt: string,
-  updatedAt: string,
-  name: string,
-  administeredBySchulstrukturknoten: string,
-  rollenart: string,
-  merkmale: string[],
-  systemrechte: Systemrecht[],
-  version: number
-}
-
-interface RolleResponse {
-  id: string,
-  createdAt: string,
-  updatedAt: string,
-  name: string,
-  administeredBySchulstrukturknoten: string,
-  rollenart: string,
-  merkmale: string[],
-  systemrechte: Systemrecht[],
-  administeredBySchulstrukturknotenName: string,
-  administeredBySchulstrukturknotenKennung: string,
-  version: number,
-  serviceProviders: ServiceProviderFromRolleResponse[]
-}
-
-type RollenResponse = RolleResponse[];
+const rolleApi: RolleApi = new RolleApi();
 
 export async function createRolle(
   page: Page,
-  rollenArt: string,
+  rollenArt: RollenArt,
   organisationId: string,
   rolleName: string,
-  merkmaleName?: string[]
+  merkmale?: RollenMerkmal[]
 ): Promise<string> {
-  const requestData: RolleRequestData = {
-    data: {
-      name: rolleName,
-      administeredBySchulstrukturknoten: organisationId,
-      rollenart: rollenArt,
-      systemrechte: [],
-      version: 1,
-    },
-    failOnStatusCode: false,
-    maxRetries: 3,
+  const createRolleBodyParams: CreateRolleBodyParams = {
+    name: rolleName,
+    administeredBySchulstrukturknoten: organisationId,
+    rollenart: rollenArt,
+    merkmale: new Set<RollenMerkmal>(),
+    systemrechte: new Set<RollenSystemRecht>(),
   };
 
-  if (merkmaleName) {
-    requestData.data['merkmale'] = merkmaleName;
-  } else {
-    requestData.data['merkmale'] = [];
+  if (merkmale) {
+    createRolleBodyParams.merkmale = new Set(merkmale);
   }
 
-  const response: APIResponse = await page.request.post(FRONTEND_URL + 'api/rolle/', requestData);
-  expect(response.status()).toBe(201);
-  const json: CreatedRolleResponse = await response.json();
+  const requestParameters: RolleControllerCreateRolleRequest = {
+    createRolleBodyParams
+  };
+
+  // const response: APIResponse = await page.request.post(FRONTEND_URL + 'api/rolle/', createRolleBodyParams);
+  const response: ApiResponse<RolleResponse> = await rolleApi.rolleControllerCreateRolleRaw(requestParameters);
+  expect(response.raw.status).toBe(201);
+  const json = await response.value();
   return json.id;
 }
 
@@ -119,6 +75,6 @@ export async function getRolleId(page: Page, Rollenname: string): Promise<string
     maxRetries: 3,
   });
   expect(response.status()).toBe(200);
-  const json: RollenResponse = await response.json();
+  const json: RolleResponse = await response.json();
   return json[0].id;
 }
