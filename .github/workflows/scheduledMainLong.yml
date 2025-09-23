@@ -1,40 +1,123 @@
 name: Playwright - Scheduled Main Long
+
 on:
   workflow_dispatch:
   schedule:
     - cron: '15 6 * * *'
+
 jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
+    # --------------------------
+    # Checkout & Node setup
+    # --------------------------
     - uses: actions/checkout@v3
     - uses: actions/setup-node@v3
       with:
         node-version: 16
-    - name: Remove Microsoft APT and  Update Packages
+
+    - name: Remove Microsoft APT and Update Packages
       run: |
         sudo rm /etc/apt/sources.list.d/microsoft-prod.list
         sudo apt-get update || true
+
     - name: Install dependencies
       run: npm ci
+
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
-    - name: Run Playwright tests
-      run: ENV='dev' FRONTEND_URL='https://main.dev.spsh.dbildungsplattform.de/' npx playwright test -g "@long" --project "chromium"
+
+    # --------------------------
+    # Setup SSH agent for LDAP tunnel
+    # --------------------------
+    - name: Setup SSH agent
+      uses: webfactory/ssh-agent@v0.9.0
+      with:
+        ssh-private-key: ${{ secrets.TUNNEL_USER_SSHKEY }}
+
+    # --------------------------
+    # Add kubeconfig (main namespace only)
+    # --------------------------
+    - name: Add kubeconfig
       env:
-        USER: '${{ secrets.USER }}'
-        PW: '${{ secrets.PW }}'
+        KUBECONFIG_CONTENT: ${{ secrets.SPSH_DEV_KUBECONFIG }}
+      run: |
+        mkdir -p ~/.kube
+        echo "$KUBECONFIG_CONTENT" > ~/.kube/config
+        chmod 600 ~/.kube/config
+
+    # --------------------------
+    # Get LDAP Pod IP
+    # --------------------------
+    - name: Get LDAP Pod IP
+      run: |
+        POD_IP=$(kubectl get pod dbildungs-iam-ldap-0 -n main -o=jsonpath='{.status.podIP}')
+        echo "LDAP_POD_IP=$POD_IP" >> $GITHUB_ENV
+
+    # --------------------------
+    # Get LDAP admin password from Kubernetes
+    # --------------------------
+    - name: Get LDAP admin password from Kubernetes
+      run: |
+        LDAP_PASS=$(kubectl -n main get secret dbildungs-iam-ldap -o jsonpath='{.data.LDAP_ADMIN_PASSWORD}' | base64 -d)
+        echo "LDAP_ADMIN_PASSWORD=$LDAP_PASS" >> $GITHUB_ENV
+
+    # --------------------------
+    # Create SSH tunnel to LDAP
+    # --------------------------
+    - name: Create SSH tunnel to LDAP
+      env:
+        TUNNEL_USER: ${{ secrets.TUNNEL_USER }}
+        TUNNELHOST: ${{ secrets.TUNNELHOST }}
+        TUNNEL_PORT: ${{ secrets.TUNNEL_PORT }}
+      run: |
+        ssh -o StrictHostKeyChecking=no \
+            -L 1389:$LDAP_POD_IP:1389 $TUNNEL_USER@$TUNNELHOST \
+            -p $TUNNEL_PORT \
+            -N -o ServerAliveInterval=15 -o ExitOnForwardFailure=yes &
+        disown
+
+    # --------------------------
+    # Install ldap-utils & test connectivity
+    # --------------------------
+    - name: Install ldap-utils
+      run: sudo apt-get install -y ldap-utils
+
+    - name: Test LDAP Connectivity
+      run: ldapwhoami -x -H ldap://localhost:1389 -D "cn=admin,dc=schule-sh,dc=de" -w "$LDAP_ADMIN_PASSWORD"
+
+    # --------------------------
+    # Run Playwright tests
+    # --------------------------
+    - name: Run Playwright tests
+      run: npx playwright test --config=playwright.config.ts --grep "@long" --project "chromium"
+      env:
+        FRONTEND_URL: https://main.dev.spsh.dbildungsplattform.de/
+        ENV: dev
+        USER: ${{ secrets.USER }}
+        PW: ${{ secrets.PW }}
+        LDAP_URL: ldap://localhost:1389
+        LDAP_ADMIN_PASSWORD: ${{ env.LDAP_ADMIN_PASSWORD }}
+
+    # --------------------------
+    # Upload report
+    # --------------------------
     - uses: actions/upload-artifact@v4
       if: always()
       with:
         name: playwright-report
         path: playwright-report/
-        retention-days: 30npm login
+        retention-days: 30
+
+    # --------------------------
+    # Notify RocketChat on failure
+    # --------------------------
     - uses: RocketChat/Rocket.Chat.GitHub.Action.Notification@1.1.1
       if: failure()
       with:
-        type: ${{ job.status }} 
+        type: ${{ job.status }}
         job_name: 'Playwright Job Status: '
         url: ${{ secrets.RC_WEBHOOK }}
         channel: '#SPSH-Test-Automation'
