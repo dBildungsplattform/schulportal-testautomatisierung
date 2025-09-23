@@ -4,6 +4,9 @@ import { ApiResponse } from './generated';
 import { RolleApi, RolleControllerCreateRolleRequest } from './generated/apis/RolleApi';
 import { CreateRolleBodyParams, RollenArt, RollenMerkmal, RollenSystemRecht, RolleResponse } from './generated/models';
 
+export { RollenArt };
+export { RollenMerkmal };
+
 const rolleApi: RolleApi = new RolleApi();
 
 export async function createRolle(
@@ -11,7 +14,7 @@ export async function createRolle(
   rollenArt: RollenArt,
   organisationId: string,
   rolleName: string,
-  merkmale?: RollenMerkmal[]
+  merkmale?: Set<RollenMerkmal>
 ): Promise<string> {
   const createRolleBodyParams: CreateRolleBodyParams = {
     name: rolleName,

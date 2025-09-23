@@ -6,7 +6,7 @@ import {
   addSecondOrganisationToPerson,
   createRolleAndPersonWithUserContext,
 } from '../base/api/personApi';
-import { addSPToRolle, addSystemrechtToRolle, createRolle } from '../base/api/rolleApi';
+import { addSPToRolle, addSystemrechtToRolle, createRolle, RollenArt } from '../base/api/rolleApi';
 import { getServiceProviderId } from '../base/api/serviceProviderApi';
 import {
   klassenVerwalten,
@@ -114,7 +114,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       const nachname: string = await generateNachname();
       const organisation: string = landSH;
       const rollenname: string = await generateRolleName();
-      const rollenart: string = typeLandesadmin;
+      const rollenart: RollenArt = typeLandesadmin;
 
       await test.step(`Landesadmin via api anlegen und mit diesem anmelden`, async () => {
         const idSPs: string[] = [await getServiceProviderId(page, 'Schulportal-Administration')];
@@ -190,7 +190,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       const nachname: string = await generateNachname();
       const organisation: string = testschuleName;
       const rollenname: string = await generateRolleName();
-      const rollenart: string = typeLehrer;
+      const rollenart: RollenArt = typeLehrer;
 
       await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
         const idSPs: string[] = [await getServiceProviderId(page, email)];
@@ -318,7 +318,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       const nachname: string = await generateNachname();
       const organisation: string = testschuleName;
       const rollenname: string = await generateRolleName();
-      const rollenart: string = typeSchuladmin;
+      const rollenart: RollenArt = typeSchuladmin;
 
       await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
         const idSPs: string[] = [await getServiceProviderId(page, 'Schulportal-Administration')];
@@ -386,7 +386,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       const organisation2: string = testschule665Name;
       const dienststellenNr2: string = '1111165';
       const rollenname: string = await generateRolleName();
-      const rollenart: string = typeLehrer;
+      const rollenart: RollenArt = typeLehrer;
 
       await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
         const idSPs: string[] = [await getServiceProviderId(page, itslearning), await getServiceProviderId(page, email)];
@@ -493,7 +493,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       const login: LoginPage = new LoginPage(page);
 
       const organisation: string = testschuleName;
-      const rollenart: string = typeLehrer;
+      const rollenart: RollenArt = typeLehrer;
 
       await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
         const idSPs: string[] = [await getServiceProviderId(page, itslearning)];
@@ -554,7 +554,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       const login: LoginPage = new LoginPage(page);
 
       const organisation: string = testschuleName;
-      const rollenart: string = typeLehrer;
+      const rollenart: RollenArt = typeLehrer;
 
       await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
         const idSPs: string[] = [await getServiceProviderId(page, email)];

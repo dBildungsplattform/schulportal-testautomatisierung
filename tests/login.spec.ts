@@ -10,6 +10,7 @@ import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelp
 import { getOrganisationId } from '../base/api/organisationApi';
 import { generateRolleName, generateNachname, generateVorname } from '../base/utils/generateTestdata';
 import { testschuleName } from '../base/organisation';
+import { RollenArt } from '../base/api/rolleApi';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -115,7 +116,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
       const lehrerVorname: string = await generateVorname();
       const lehrerNachname: string = await generateNachname();
       const lehrerRolle: string = await generateRolleName();
-      const lehrerRollenart: string = 'LEHR';
+      const lehrerRollenart: RollenArt = 'LEHR';
       const lehrerOrganisation: string = testschuleName;
       let userInfoLehrer: UserInfo;
       let organisationIDLandSh: string = '';

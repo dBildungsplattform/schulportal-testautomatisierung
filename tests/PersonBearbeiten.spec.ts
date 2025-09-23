@@ -6,7 +6,7 @@ import {
   createRolleAndPersonWithUserContext,
   setTimeLimitPersonenkontext,
 } from '../base/api/personApi';
-import { addSPToRolle, addSystemrechtToRolle } from '../base/api/rolleApi';
+import { addSPToRolle, addSystemrechtToRolle, RollenArt } from '../base/api/rolleApi';
 import { createRolle } from '../base/api/rolleApi';
 import { getServiceProviderId } from '../base/api/serviceProviderApi';
 import { klasse1Testschule } from '../base/klassen';
@@ -321,7 +321,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     async ({ page }: PlaywrightTestArgs) => {
       const addminVorname: string = await generateVorname();
       const adminNachname: string = await generateNachname();
-      const adminRollenart: string = typeSchuladmin;
+      const adminRollenart: RollenArt = typeSchuladmin;
       const adminOrganisation: string = testschule665Name;
       let userInfoAdmin: UserInfo;
       logoutViaStartPage = true;
@@ -363,7 +363,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const addminVorname: string = await generateVorname();
       const adminNachname: string = await generateNachname();
       const organisation: string = landSH;
-      const rollenart: string = 'SYSADMIN';
+      const rollenart: RollenArt = 'SYSADMIN';
 
       let userInfoAdmin: UserInfo;
       logoutViaStartPage = true;
@@ -414,7 +414,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     'Gesamtübersicht für einen Benutzer als Schuladmin öffnen, 2FA Token einrichten und 2FA Status prüfen dass ein Token eingerichtet ist',
     { tag: [LONG, STAGE, BROWSER] },
     async ({ page }: PlaywrightTestArgs) => {
-      const adminRollenart: string = typeSchuladmin;
+      const adminRollenart: RollenArt = typeSchuladmin;
       const adminOrganisation: string = testschule665Name;
       let userInfoAdmin: UserInfo;
       logoutViaStartPage = true;

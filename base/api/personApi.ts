@@ -13,6 +13,7 @@ import { testschuleName } from '../organisation';
 import { typeLehrer } from '../rollentypen';
 import { getServiceProviderId } from './serviceProviderApi';
 import { adressbuch, email, kalender } from '../sp';
+import { RollenArt, RollenMerkmal } from './generated';
 
 export interface UserInfo {
   username: string;
@@ -154,18 +155,18 @@ export async function createPersonWithUserContext(
 export async function createRolleAndPersonWithUserContext(
   page: Page,
   organisationName: string,
-  rollenArt: string,
+  rollenArt: RollenArt,
   familienname: string,
   vorname: string,
   idSPs: string[],
   rolleName: string,
   koPersNr?: string,
   klasseId?: string,
-  merkmaleName?: string[]
+  merkmaleName?: RollenMerkmal[]
 ): Promise<UserInfo> {
   // Organisation wird nicht angelegt, da diese zur Zeit nicht gelöscht werden kann
   const organisationId: string = await getOrganisationId(page, organisationName);
-  const rolleId: string = await createRolle(page, rollenArt, organisationId, rolleName, merkmaleName);
+  const rolleId: string = await createRolle(page, rollenArt, organisationId, rolleName, new Set<RollenMerkmal>(merkmaleName));
 
   await addSPToRolle(page, rolleId, idSPs);
   const userInfo: UserInfo = await createPerson(
