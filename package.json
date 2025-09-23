@@ -11,11 +11,13 @@
   "author": "Dataport AöR",
   "license": "EUPL-1.2",
   "scripts": {
+    "generate-client": "openapi-generator-cli generate --generator-key backend --openapi-normalizer REFACTOR_ALLOF_WITH_PROPERTIES_ONLY=true",
     "lint": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
   },
   "devDependencies": {
-    "@rushstack/eslint-patch": "^1.11.0",
+    "@openapitools/openapi-generator-cli": "^2.23.4",
     "@playwright/test": "^1.50.1",
+    "@rushstack/eslint-patch": "^1.11.0",
     "@types/node": "^20.16.10",
     "@typescript-eslint/eslint-plugin": "^8.8.0",
     "@typescript-eslint/parser": "^8.8.0",
