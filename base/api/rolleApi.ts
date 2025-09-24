@@ -1,13 +1,10 @@
 import { Page, expect, APIResponse } from '@playwright/test';
 import { FRONTEND_URL } from './baseApi';
-import { ApiResponse } from './generated';
-import { RolleApi, RolleControllerCreateRolleRequest } from './generated/apis/RolleApi';
 import { CreateRolleBodyParams, RollenArt, RollenMerkmal, RollenSystemRecht, RolleResponse } from './generated/models';
 
 export { RollenArt };
 export { RollenMerkmal };
 
-const rolleApi: RolleApi = new RolleApi();
 
 export async function createRolle(
   page: Page,
@@ -28,14 +25,12 @@ export async function createRolle(
     createRolleBodyParams.merkmale = new Set(merkmale);
   }
 
-  const requestParameters: RolleControllerCreateRolleRequest = {
-    createRolleBodyParams
-  };
-
-  // const response: APIResponse = await page.request.post(FRONTEND_URL + 'api/rolle/', createRolleBodyParams);
-  const response: ApiResponse<RolleResponse> = await rolleApi.rolleControllerCreateRolleRaw(requestParameters);
-  expect(response.raw.status).toBe(201);
-  const json = await response.value();
+  const response: APIResponse = await page.request.post(FRONTEND_URL + 'api/rolle/', {
+    data: createRolleBodyParams,
+  });
+  //const response: ApiResponse<RolleResponse> = await rolleApi.rolleControllerCreateRolleRaw(requestParameters);
+  //expect(response.raw.status).toBe(201);
+  const json: RolleResponse = await response.json();
   return json.id;
 }
 
