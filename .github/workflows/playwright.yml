@@ -51,7 +51,7 @@ jobs:
         ref: ${{ inputs.playwright_branch }}
     - uses: actions/setup-node@v3
       with:
-        node-version: 16
+        node-version: 18
     - name: Remove Microsoft APT and  Update Packages
       run: |
         sudo rm /etc/apt/sources.list.d/microsoft-prod.list
