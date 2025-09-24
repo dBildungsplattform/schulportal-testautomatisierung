@@ -25,7 +25,7 @@ export class PersonManagementViewPage extends AbstractManagementViewPage {
     await filter.searchByTitle(text, false, endpoint);
   }
   public async filterBySchule(schule: string): Promise<void> {
-    await this.filterByText(schule, 'schule-select', 'organisationen**');
+    await this.filterByText(schule, 'person-management-schule-select', 'organisationen**');
   }
   public async filterByRolle(rolle: string): Promise<void> {
     await this.filterByText(rolle, 'rolle-select', 'rollen**');

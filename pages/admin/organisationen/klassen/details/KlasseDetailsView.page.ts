@@ -37,7 +37,7 @@ export class KlasseDetailsViewPage {
     this.buttonBearbeiten = page.getByTestId('klasse-edit-button');
     this.buttonSpeichern = page.getByTestId('klasse-form-submit-button');
     this.buttonAbbrechen = page.getByTestId('klasse-form-discard-button');
-    this.comboboxSchulstrukturknoten = page.getByTestId('schule-select').locator('.v-input__control');
+    this.comboboxSchulstrukturknoten = page.getByTestId('klasse-form-schule-select').locator('.v-input__control');
     this.inputKlassenname = page.getByTestId('klassenname-input').locator('input');
     this.textSuccess = page.getByTestId('klasse-success-text');
     this.iconSuccess = page.locator('.mdi-check-circle');
