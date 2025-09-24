@@ -1,46 +1,78 @@
 import { Page, expect, APIResponse } from '@playwright/test';
 import { FRONTEND_URL } from './baseApi';
+import { CreateRolleBodyParams, RollenArt, RollenMerkmal, RollenSystemRecht, RolleResponse } from './generated/models';
+
+export { RollenArt };
+export { RollenMerkmal };
+
 
 export async function createRolle(
   page: Page,
-  rollenArt: string,
+  rollenArt: RollenArt,
   organisationId: string,
   rolleName: string,
-  merkmaleName?: string[]
+  merkmale?: Set<RollenMerkmal>
 ): Promise<string> {
-  interface RolleRequestData {
-    data: {
-      name: string;
-      administeredBySchulstrukturknoten: string;
-      rollenart: string;
-      systemrechte: string[];
-      version: number;
-      merkmale?: string[];
-    };
-    failOnStatusCode: boolean;
-    maxRetries: number;
+  const createRolleBodyParams: CreateRolleBodyParams = {
+    name: rolleName,
+    administeredBySchulstrukturknoten: organisationId,
+    rollenart: rollenArt,
+    merkmale: new Set<RollenMerkmal>(),
+    systemrechte: new Set<RollenSystemRecht>(),
+  };
+
+  if (merkmale) {
+    createRolleBodyParams.merkmale = new Set(merkmale);
   }
 
-  const requestData: RolleRequestData = {
+  const response: APIResponse = await page.request.post(FRONTEND_URL + 'api/rolle/', {
+    data: createRolleBodyParams,
+  });
+  //const response: ApiResponse<RolleResponse> = await rolleApi.rolleControllerCreateRolleRaw(requestParameters);
+  //expect(response.raw.status).toBe(201);
+  const json: RolleResponse = await response.json();
+  return json.id;
+}
+
+export async function addSPToRolle(page: Page, rolleId: string, idSPs: string[]): Promise<void> {
+  const response: APIResponse = await page.request.put(FRONTEND_URL + `api/rolle/${rolleId}/serviceProviders`, {
     data: {
-      name: rolleName,
-      administeredBySchulstrukturknoten: organisationId,
-      rollenart: rollenArt,
-      systemrechte: [],
+      serviceProviderIds: idSPs,
       version: 1,
     },
     failOnStatusCode: false,
     maxRetries: 3,
-  };
+  });
 
-  if (merkmaleName) {
-    requestData.data['merkmale'] = merkmaleName;
-  } else {
-    requestData.data['merkmale'] = [];
-  }
-
-  const response: APIResponse = await page.request.post(FRONTEND_URL + 'api/rolle/', requestData);
   expect(response.status()).toBe(201);
-  const json = await response.json();
-  return json.id;
+}
+
+export async function addSystemrechtToRolle(page: Page, rolleId: string, systemrecht: string): Promise<void> {
+  const response: APIResponse = await page.request.patch(FRONTEND_URL + `api/rolle/${rolleId}`, {
+    data: {
+      systemRecht: systemrecht,
+      version: 1,
+    },
+    failOnStatusCode: false,
+    maxRetries: 3,
+  });
+  expect(response.status()).toBe(200);
+}
+
+export async function deleteRolle(page: Page, RolleId: string): Promise<void> {
+  const response: APIResponse = await page.request.delete(FRONTEND_URL + `api/rolle/${RolleId}`, {
+    failOnStatusCode: false,
+    maxRetries: 3,
+  });
+  expect(response.status()).toBe(204);
+}
+
+export async function getRolleId(page: Page, Rollenname: string): Promise<string> {
+  const response: APIResponse = await page.request.get(FRONTEND_URL + `api/rolle?searchStr=${Rollenname}`, {
+    failOnStatusCode: false,
+    maxRetries: 3,
+  });
+  expect(response.status()).toBe(200);
+  const json: RolleResponse = await response.json();
+  return json[0].id;
 }

@@ -1,5 +1,4 @@
 import { expect, type Page, test, type PlaywrightTestArgs } from '@playwright/test';
-import FromAnywhere from '../pages/FromAnywhere.neu';
 import { LoginViewPage } from '../pages/LoginView.neu.page';
 import { StartViewPage } from '../pages/StartView.neu.page';
 import { LandingViewPage } from '../pages/LandingView.neu.page';
@@ -7,7 +6,7 @@ import { HeaderPage } from '../pages/components/Header.neu.page';
 import { createPerson, lockPerson, type UserInfo } from '../base/api/personApi';
 import { createRolle } from '../base/api/rolleApi';
 import { testschuleName } from '../base/organisation';
-import { getOrganisationId } from '../base/api/testHelperOrganisation.page';
+import { getOrganisationId } from '../base/api/organisationApi';
 import { generateRolleName } from '../base/utils/generateTestdata';
 import { freshLoginPage } from '../base/api/personApi';
 

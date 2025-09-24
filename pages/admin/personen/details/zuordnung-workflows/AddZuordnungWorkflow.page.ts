@@ -1,7 +1,7 @@
 import { expect, type Page } from '@playwright/test';
 import { Autocomplete } from '../../../../../elements/Autocomplete';
 import { ZuordnungenPage } from '../Zuordnungen.page';
-import { waitForAPIResponse } from '../../../../../base/api/testHelper.page';
+import { waitForAPIResponse } from '../../../../../base/api/baseApi';
 
 export class AddZuordnungWorkflowPage {
   /* add global locators here */

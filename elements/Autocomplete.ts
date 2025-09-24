@@ -1,5 +1,5 @@
 import { expect, type Locator, Page } from '@playwright/test';
-import { waitForAPIResponse } from '../base/api/testHelper.page';
+import { waitForAPIResponse } from '../base/api/baseApi';
 
 const noDataMessage: string = 'Keine Daten gefunden.';
 export class Autocomplete {
