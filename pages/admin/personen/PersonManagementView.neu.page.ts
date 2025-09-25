@@ -3,18 +3,28 @@ import { Autocomplete } from '../../../elements/Autocomplete';
 import { DataTable } from '../../components/DataTable.neu.page';
 import { PersonDetailsViewPage } from './details/PersonDetailsView.neu.page';
 import { AbstractManagementViewPage } from '../../abstracts/AbstractManagementView.page';
+import { MenuBarPage } from '../../components/MenuBar.neu.page';
+import { HeaderPage } from '../../components/Header.neu.page';
 import { SearchFilter } from '../../../elements/SearchFilter';
 
 export class PersonManagementViewPage extends AbstractManagementViewPage {
-  private readonly personTable: DataTable = new DataTable(this.page, this.page.getByTestId('person-table'));
-  private readonly searchFilter: SearchFilter = new SearchFilter(this.page);
+  readonly menu: MenuBarPage;
+  readonly header: HeaderPage;
+  private readonly personTable: DataTable;
+  private readonly searchFilter: SearchFilter;
 
   constructor(page: Page) {
     super(page);
+    this.menu = new MenuBarPage(page);
+    this.header = new HeaderPage(page);
+    this.personTable = new DataTable(this.page, this.page.getByTestId('person-table'));
+    this.searchFilter = new SearchFilter(this.page);
   }
 
   /* actions */
   public async waitForPageLoad(): Promise<void> {
+    console.log('Aktuelle URL:', await this.page.url());
+    await this.page.screenshot({ path: 'debug-waitForPageLoad.png' });
     await this.page.getByTestId('admin-headline').waitFor({ state: 'visible' });
     await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Benutzerverwaltung');
     await expect(this.page.getByTestId('person-table')).not.toContainText('Keine Daten');
