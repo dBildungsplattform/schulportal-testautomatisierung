@@ -96,8 +96,11 @@ export class Autocomplete {
     if (endpoint) {
       await waitForAPIResponse(this.page, endpoint);
     }
-    await item.click();
-    await this.closeModal();
+
+    if (await item.count() > 0) {
+      await item.click();
+      await this.closeModal();
+    }
   }
 
   public async validateItemNotExists(searchString: string, exactMatch: boolean): Promise<void> {
