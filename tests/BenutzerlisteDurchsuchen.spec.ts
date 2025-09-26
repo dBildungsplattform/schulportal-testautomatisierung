@@ -17,11 +17,10 @@ test.describe('Testfälle für das Anlegen von Benutzern', () => {
       await startPage.waitForPageLoad();
 
         // 2. Zur Benutzerverwaltung navigieren
-      personManagementView = new PersonManagementViewPage(page);
-      await personManagementView.waitForPageLoad();
+      personManagementView = await startPage.goToAdministration();
   });
 
-  test.only('Rollenfilter zeigt 0 Rollen gefunden bei unzulässigem Begriff', async ({ page }: {page: Page}) => {
+  test('Rollenfilter zeigt 0 Rollen gefunden bei unzulässigem Begriff', async ({ page }: {page: Page}) => {
   // 3. Im Rollenfilter einen unzulässigen Begriff eingeben
   const unzulaessig: string = 'xyz_unerlaubt';
   await personManagementView.filterByRolle(unzulaessig);

@@ -2,19 +2,17 @@ import { expect, Page } from '@playwright/test';
 import { Autocomplete } from '../../../elements/Autocomplete';
 import { DataTable } from '../../components/DataTable.neu.page';
 import { PersonDetailsViewPage } from './details/PersonDetailsView.neu.page';
-import { AbstractManagementViewPage } from '../../abstracts/AbstractManagementView.page';
 import { MenuBarPage } from '../../components/MenuBar.neu.page';
 import { HeaderPage } from '../../components/Header.neu.page';
 import { SearchFilter } from '../../../elements/SearchFilter';
 
-export class PersonManagementViewPage extends AbstractManagementViewPage {
+export class PersonManagementViewPage {
   readonly menu: MenuBarPage;
   readonly header: HeaderPage;
   private readonly personTable: DataTable;
   private readonly searchFilter: SearchFilter;
 
-  constructor(page: Page) {
-    super(page);
+  constructor(private readonly page: Page) {
     this.menu = new MenuBarPage(page);
     this.header = new HeaderPage(page);
     this.personTable = new DataTable(this.page, this.page.getByTestId('person-table'));
@@ -23,8 +21,6 @@ export class PersonManagementViewPage extends AbstractManagementViewPage {
 
   /* actions */
   public async waitForPageLoad(): Promise<void> {
-    console.log('Aktuelle URL:', await this.page.url());
-    await this.page.screenshot({ path: 'debug-waitForPageLoad.png' });
     await this.page.getByTestId('admin-headline').waitFor({ state: 'visible' });
     await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Benutzerverwaltung');
     await expect(this.page.getByTestId('person-table')).not.toContainText('Keine Daten');
@@ -34,11 +30,13 @@ export class PersonManagementViewPage extends AbstractManagementViewPage {
     const filter: Autocomplete = new Autocomplete(this.page, this.page.getByTestId(testId));
     await filter.searchByTitle(text, false, endpoint);
   }
+
   public async filterBySchule(schule: string): Promise<void> {
     await this.filterByText(schule, 'person-management-schule-select', 'organisationen**');
   }
+
   public async filterByRolle(rolle: string): Promise<void> {
-    await this.filterByText(rolle, 'rolle-select', 'rollen**');
+    await this.filterByText(rolle, 'rolle-select', 'person-administration/rollen**');
   }
 
   public async openGesamtuebersicht(name: string): Promise<PersonDetailsViewPage> {
