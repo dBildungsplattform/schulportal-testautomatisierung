@@ -11,6 +11,8 @@ import { RolleManagementViewPage } from '../admin/rollen/RolleManagementView.neu
 import { SchuleCreationViewPage } from '../admin/organisationen/schulen/SchuleCreationView.neu.page';
 import { SchuleManagementViewPage } from '../admin/organisationen/schulen/SchuleManagementView.neu.page';
 import { StartViewPage } from '../StartView.neu.page';
+import { LandesbedienstetenSuchenUndHinzufuegenPage } from '../admin/personen/LandesbedienstetenSuchenUndHinzufuegen.page';
+import { AbstractAdminPage } from '../abstracts/AbstractAdminPage.page';
 
 export class MenuBarPage {
   /* add global locators here */
@@ -40,11 +42,10 @@ export class MenuBarPage {
   public async navigateToPersonImport(): Promise<PersonImportViewPage> {
     return this.navigateTo('person-import-menu-item', PersonImportViewPage, p => p.waitForPageLoad());
   }
-
-  // TODO: implement PersonSearchViewPage
-  // public async navigateToPersonSearch(): Promise<PersonSearchViewPage> {
-  //   return this.navigateTo('person-search-menu-item', PersonSearchViewPage, PersonSearchViewPage.prototype.waitForPageLoad);
-  // }
+  
+  public async navigateToLandesbedienstetenSuchenUndHinzufuegen(): Promise<LandesbedienstetenSuchenUndHinzufuegenPage> {
+    return this.navigateTo('person-search-menu-item', LandesbedienstetenSuchenUndHinzufuegenPage, (p : AbstractAdminPage) => p.waitForPageLoad());
+  }
 
   public async navigateToPersonAdd(): Promise<PersonCreationViewPage> {
     return this.navigateTo('person-add-menu-item', PersonCreationViewPage, p => p.waitForPageLoad('Andere Person (neu anlegen)'));

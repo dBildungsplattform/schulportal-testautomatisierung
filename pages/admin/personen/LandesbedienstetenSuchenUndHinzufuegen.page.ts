@@ -1,5 +1,5 @@
 import { Locator, Page } from "@playwright/test";
-import { AbstractAdminPage } from "./abstracts/AbstractAdminPage.page";
+import { AbstractAdminPage } from "../../abstracts/AbstractAdminPage.page";
 
 export class LandesbedienstetenSuchenUndHinzufuegenPage extends AbstractAdminPage {
   constructor(protected readonly page: Page) {
