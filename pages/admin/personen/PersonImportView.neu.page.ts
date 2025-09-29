@@ -15,7 +15,7 @@ export class PersonImportViewPage extends AbstractAdminPage {
   }
 
   public async selectSchule(schule: string): Promise<void> {
-    const schuleAutocomplete: Autocomplete = new Autocomplete(this.page, this.page.getByTestId('schule-select'));
+    const schuleAutocomplete: Autocomplete = new Autocomplete(this.page, this.page.getByTestId('person-import-schule-select'));
     await schuleAutocomplete.searchByTitle(schule, true);
   }
 

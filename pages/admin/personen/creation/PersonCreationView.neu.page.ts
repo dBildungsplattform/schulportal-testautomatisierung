@@ -16,7 +16,7 @@ export interface PersonCreationParams {
 
 export class PersonCreationViewPage extends AbstractAdminPage {
   private static readonly ENDPOINT: string = 'personenkontext-workflow/**';
-  private readonly organisationAutocomplete: Autocomplete = new Autocomplete(this.page, this.page.getByTestId('organisation-select'));
+  private readonly organisationAutocomplete: Autocomplete = new Autocomplete(this.page, this.page.getByTestId('personenkontext-create-organisation-select'));
   private readonly rolleAutocomplete: Autocomplete = new Autocomplete(this.page, this.page.getByTestId('rollen-select'));
 
   constructor(page: Page) {
