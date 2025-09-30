@@ -166,7 +166,7 @@ export async function createRolleAndPersonWithUserContext(
 ): Promise<UserInfo> {
   // Organisation wird nicht angelegt, da diese zur Zeit nicht gelöscht werden kann
   const organisationId: string = await getOrganisationId(page, organisationName);
-  const rolleId: string = await createRolle(page, rollenArt, organisationId, rolleName, new Set<RollenMerkmal>(merkmaleName));
+  const rolleId: string = await createRolle(page, rollenArt, organisationId, rolleName, merkmaleName);
 
   await addSPToRolle(page, rolleId, idSPs);
   const userInfo: UserInfo = await createPerson(
