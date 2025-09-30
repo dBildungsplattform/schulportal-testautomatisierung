@@ -18,13 +18,13 @@ import { email, kalender, adressbuch } from '../sp';
 import { typeLehrer } from '../rollentypen';
 
 const FRONTEND_URL: string | undefined = process.env.FRONTEND_URL || '';
-
-export async function createPersonWithUserContext(
+// Person anlegen mit existierender Rolle
+export async function createPersonWithPersonenkontext(
   page: Page,
   organisationName: string,
-  familienname: string,
-  vorname: string,
   rolleName: string,
+  familienname?: string,
+  vorname?: string,
   koPersNr?: string
 ): Promise<UserInfo> {
   // Organisation wird nicht angelegt, da diese zur Zeit nicht gelöscht werden kann
@@ -33,7 +33,7 @@ export async function createPersonWithUserContext(
   const userInfo: UserInfo = await createPerson(page, organisationId, rolleId, familienname, vorname, koPersNr);
   return userInfo;
 }
-
+// Personen anlegen mit neuer Rolle
 export async function createRolleAndPersonWithUserContext(
   page: Page,
   organisationName: string,
