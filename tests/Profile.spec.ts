@@ -780,7 +780,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await profileView.buttonCreatePasswordSectionLKEndgeraet.click();
 
         // Dialog Inbetriebnahme-Passwort für LK-Endgeräte
-        await expect(profileView.textLayoutCardHeadline).toHaveText('Inbetriebnahme-Passwort erzeugen');
+        await expect(profileView.passwordResetDialogHeadline).toHaveText('Inbetriebnahme-Passwort erzeugen');
         await expect(profileView.infoTextDialogPasswordLKEndgeraet).toHaveText(
           'Bitte notieren Sie sich das Passwort oder drucken Sie es aus. Nach dem Schließen des Dialogs wird das Passwort' +
             ' nicht mehr angezeigt. Sie benötigen dieses Passwort ausschließlich zur erstmaligen Anmeldung an Ihrem neuen LK-Endgerät.'
