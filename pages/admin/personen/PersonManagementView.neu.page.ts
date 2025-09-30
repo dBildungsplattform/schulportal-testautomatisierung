@@ -4,13 +4,21 @@ import { DataTable } from '../../components/DataTable.neu.page';
 import { PersonDetailsViewPage } from './details/PersonDetailsView.neu.page';
 import { AbstractManagementViewPage } from '../../abstracts/AbstractManagementView.page';
 import { SearchFilter } from '../../../elements/SearchFilter';
+import { HeaderPage } from '../../components/Header.neu.page';
+import { MenuBarPage } from '../../components/MenuBar.neu.page';
 
 export class PersonManagementViewPage extends AbstractManagementViewPage {
-  private readonly personTable: DataTable = new DataTable(this.page, this.page.getByTestId('person-table'));
-  private readonly searchFilter: SearchFilter = new SearchFilter(this.page);
+  readonly menu: MenuBarPage;
+  readonly header: HeaderPage;
+  private readonly personTable: DataTable;
+  private readonly searchFilter: SearchFilter;
 
   constructor(page: Page) {
     super(page);
+    this.menu = new MenuBarPage(page);
+    this.header = new HeaderPage(page);
+    this.personTable = new DataTable(this.page, this.page.getByTestId('person-table'));
+    this.searchFilter = new SearchFilter(this.page);
   }
 
   /* actions */
@@ -54,5 +62,4 @@ export class PersonManagementViewPage extends AbstractManagementViewPage {
   public async checkHeaders(expectedHeaders: string[]): Promise<void> {
     await this.personTable.checkHeaders(expectedHeaders);
   }
-
 }
