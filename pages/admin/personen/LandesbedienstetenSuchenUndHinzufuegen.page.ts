@@ -4,7 +4,6 @@ import { AbstractAdminPage } from "../../abstracts/AbstractAdminPage.page";
 export class LandesbedienstetenSuchenUndHinzufuegenPage extends AbstractAdminPage {
   constructor(protected readonly page: Page) {
     super(page);
-
   }
 
   /* Locators */

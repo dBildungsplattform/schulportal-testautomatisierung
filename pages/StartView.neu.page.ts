@@ -1,5 +1,5 @@
 import { expect, Locator, Page } from '@playwright/test';
-
+import { PersonManagementViewPage } from './admin/personen/PersonManagementView.neu.page';
 export class StartViewPage {
   /* add global locators here */
   readonly startCardHeadline: Locator;
@@ -12,6 +12,13 @@ export class StartViewPage {
   public async waitForPageLoad(): Promise<void> {
     await this.startCardHeadline.waitFor({ state: 'visible' });
     await expect(this.startCardHeadline).toHaveText('Startseite');
+  }
+
+  private async navigateTo(cardTitle: string, pageClass: any, waitForPageLoad: (page: any) => Promise<void>): Promise<any> {
+    await this.page.getByTestId('card-title').filter({ hasText: cardTitle }).click();
+    const newPage: any = new pageClass(this.page);
+    await waitForPageLoad.call(newPage);
+    return newPage;
   }
 
   /* assertions */
@@ -29,5 +36,9 @@ export class StartViewPage {
         await expect(serviceProviderCard.locator('img')).toBeVisible();
       }),
     ]);
+  }
+
+  public async navigateToSchulportalAdministration(): Promise<PersonManagementViewPage> {
+    return this.navigateTo('Schulportal-Administration', PersonManagementViewPage, p => p.waitForPageLoad());
   }
 }
