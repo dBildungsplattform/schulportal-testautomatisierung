@@ -19,6 +19,7 @@ export class PersonManagementViewPage extends AbstractManagementViewPage {
     this.header = new HeaderPage(page);
     this.personTable = new DataTable(this.page, this.page.getByTestId('person-table'));
     this.searchFilter = new SearchFilter(this.page);
+    console.log('PersonManagementViewPage: Constructor ausgeführt');
   }
 
   /* actions */

@@ -1,4 +1,4 @@
-import { Page } from '@playwright/test';
+import { Locator, Page } from '@playwright/test';
 import { KlasseCreationViewPage } from '../admin/organisationen/klassen/KlasseCreationView.neu.page';
 import { KlasseManagementViewPage } from '../admin/organisationen/klassen/KlasseManagementView.neu.page';
 import { PersonCreationViewPage } from '../admin/personen/creation/PersonCreationView.neu.page';
@@ -10,10 +10,10 @@ import { SchuleCreationViewPage } from '../admin/organisationen/schulen/SchuleCr
 import { SchuleManagementViewPage } from '../admin/organisationen/schulen/SchuleManagementView.neu.page';
 import { StartViewPage } from '../StartView.neu.page';
 import { LandesbedienstetenSuchenUndHinzufuegenPage } from '../admin/personen/LandesbedienstetenSuchenUndHinzufuegen.page';
-import { AbstractAdminPage } from '../abstracts/AbstractAdminPage.page';
 
 export class MenuBarPage {
   /* add global locators here */
+  private landesbedienstetenSuchenUndHinzufuegen: Locator = this.page.getByTestId('person-search-menu-item');
 
   constructor(protected readonly page: Page) {}
 
@@ -40,11 +40,19 @@ export class MenuBarPage {
   public async navigateToPersonImport(): Promise<PersonImportViewPage> {
     return this.navigateTo('person-import-menu-item', PersonImportViewPage, p => p.waitForPageLoad());
   }
-  
-  public async navigateToLandesbedienstetenSuchenUndHinzufuegen(): Promise<LandesbedienstetenSuchenUndHinzufuegenPage> {
-    return this.navigateTo('person-search-menu-item', LandesbedienstetenSuchenUndHinzufuegenPage, (p : AbstractAdminPage) => p.waitForPageLoad());
-  }
 
+  // händisch lösen
+  // public async navigateToLandesbedienstetenSuchenUndHinzufuegen(): Promise<LandesbedienstetenSuchenUndHinzufuegenPage> {
+  //   return this.navigateTo('person-search-menu-item', LandesbedienstetenSuchenUndHinzufuegenPage,
+  // (p: LandesbedienstetenSuchenUndHinzufuegenPage) => p.waitForPageLoad());
+  // }
+  public async navigateToLandesbedienstetenSuchenUndHinzufuegen(): Promise<LandesbedienstetenSuchenUndHinzufuegenPage> {
+    await this.landesbedienstetenSuchenUndHinzufuegen.click();
+    const newPage: LandesbedienstetenSuchenUndHinzufuegenPage = new LandesbedienstetenSuchenUndHinzufuegenPage(this.page);
+    await newPage.waitForPageLoad();
+    return newPage;
+  }
+  
   public async navigateToPersonAdd(): Promise<PersonCreationViewPage> {
     return this.navigateTo('person-add-menu-item', PersonCreationViewPage, p => p.waitForPageLoad('Andere Person (neu anlegen)'));
   }

@@ -17,6 +17,7 @@ export class StartViewPage {
   private async navigateTo(cardTitle: string, pageClass: any, waitForPageLoad: (page: any) => Promise<void>): Promise<any> {
     await this.page.getByTestId('card-title').filter({ hasText: cardTitle }).click();
     const newPage: any = new pageClass(this.page);
+    console.log('neue Seite: ',newPage)
     await waitForPageLoad.call(newPage);
     return newPage;
   }
@@ -41,4 +42,12 @@ export class StartViewPage {
   public async navigateToSchulportalAdministration(): Promise<PersonManagementViewPage> {
     return this.navigateTo('Schulportal-Administration', PersonManagementViewPage, p => p.waitForPageLoad());
   }
+
+  // navigateTo funktioniert nicht, deswegen hier die manuelle Variante
+  public async goToAdministration(): Promise<PersonManagementViewPage> {
+      await this.page.locator('[data-testid^="service-provider-card"]').filter({ hasText: 'Schulportal-Administration' }).click();
+      const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(this.page);
+      await personManagementView.waitForPageLoad();
+      return personManagementView;
+    }
 }

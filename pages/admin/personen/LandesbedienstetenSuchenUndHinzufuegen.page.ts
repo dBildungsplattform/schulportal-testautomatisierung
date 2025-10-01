@@ -8,10 +8,10 @@ export class LandesbedienstetenSuchenUndHinzufuegenPage extends AbstractAdminPag
   }
 
   /* Locators */
-  private kopersRadio : Locator = this.page.getByTestId('kopers-radio');
-  private emailRadio : Locator = this.page.getByTestId('email-radio');
-  private usernameRadio : Locator = this.page.getByTestId('username-radio');
-  private nameRadio : Locator = this.page.getByTestId('name-radio');
+  private kopersRadio : Locator = this.page.getByLabel('per KoPers.-Nr.');
+  private emailRadio : Locator = this.page.getByLabel('per E-Mail');
+  private usernameRadio : Locator = this.page.getByLabel('per Benutzername');
+  private nameRadio : Locator = this.page.getByLabel('per Vorname und Nachname');
 
   // Inputfelder nur sichtbar, wenn das jeweilige Radio ausgewählt ist
   private kopersInput : Locator = this.page.locator('#kopers-input');
@@ -37,7 +37,7 @@ export class LandesbedienstetenSuchenUndHinzufuegenPage extends AbstractAdminPag
     //    den Link Schließen mit einem X Icon,
     await expect(this.page.getByTestId('close-layout-card-button')).toBeVisible();
     //    Den Hinweistext: Bitte wählen Sie, wie Sie nach dem Landesbediensteten suchen möchten.
-    await expect(this.page.getByTestId('hint-text')).toHaveText('Bitte wählen Sie, wie Sie nach dem Landesbediensteten suchen möchten.');
+    await expect(this.page.getByText('Bitte wählen Sie, wie Sie nach dem Landesbediensteten suchen möchten.', { exact: false })).toBeVisible();
     //  Es gibt 4 Möglichkeiten zu suchen:
     //    per KoPers.-Nr. (Radio Button, vorausgewählt) mit Eingabefeld,
     await expect(this.kopersRadio).toBeChecked();
