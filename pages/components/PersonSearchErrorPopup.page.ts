@@ -2,15 +2,16 @@ import { expect, Locator, Page } from '@playwright/test';
 
 export class PersonSearchErrorPopup {
   constructor(private readonly page: Page) {}
+  public popup: Locator = this.page.getByTestId('person-search-error-dialog');
 
   // Überschrift
-  public headline: Locator = this.page.getByTestId('layout-card-headline');
+  public headline: Locator = this.popup.getByTestId('layout-card-headline');
 
   // Infotext
-  public noPersonFoundText: Locator = this.page.getByTestId('no-person-found-text');
+  public noPersonFoundText: Locator = this.popup.getByTestId('no-person-found-text');
 
   // Abbrechen-Button
-  public cancelButton: Locator = this.page.getByTestId('cancel-person-search-error-button');
+  public cancelButton: Locator = this.popup.getByTestId('cancel-person-search-error-button');
 
   // Aktionen
   // Prüfen, dass alles auf dem Popup sichtbar ist

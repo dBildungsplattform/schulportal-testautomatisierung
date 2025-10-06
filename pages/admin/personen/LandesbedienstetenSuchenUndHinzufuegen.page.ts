@@ -28,7 +28,7 @@ export class LandesbedienstetenSuchenUndHinzufuegenPage extends AbstractAdminPag
   private resetButton : Locator = this.page.getByTestId('person-search-form-discard-button');
   private searchButton : Locator = this.page.getByTestId('person-search-form-submit-button');
 
-  public errorNachname : Locator = this.page.getByTestId('nachname-input-message');
+  public errorNachname : Locator = this.page.locator('#nachname-input-messages .v-messages__message');
   
   public async waitForPageLoad(): Promise<void> {
     await this.kopersInputField.waitFor({ state: 'visible' });
