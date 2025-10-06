@@ -59,12 +59,37 @@ test.describe('Testfälle für das Anlegen von Benutzern', () => {
     await expect(landesbedienstetenSuchenUndHinzufuegenPage.errorNachname).toHaveText("Der Nachname ist erforderlich.");
   });
   //SPSH-2631 Step 2
-  // Es wird das Popup Suchergebnis angezeigt, mit Text und Abbrechen Button
-  test('Popup wird angezeigt, wenn kein Treffer gefunden wurde', async () => {
+  //Suchergebnis Popup wird angezeigt, wenn kein Treffer gefunden wurde: falsche Namen 
+  //Es wird das Popup Suchergebnis angezeigt, mit Text und Abbrechen Button
+  test('Kein Treffer wegen falschen Namen: Popup wird angezeigt und ist vollständig', async () => {
     await landesbedienstetenSuchenUndHinzufuegenPage.fillVornameNachname("zzzzz", "yyyyy");
     await landesbedienstetenSuchenUndHinzufuegenPage.clickSearch();
     await popup.checkPopupCompleteness();
     await expect(popup.noPersonFoundText).toHaveText('Es wurde leider kein Treffer gefunden. Bitte prüfen Sie Ihre Eingabe. Sollten Sie Hilfe benötigen, eröffnen Sie ein Störungsticket über den IQSH-Helpdesk.');
     await expect(popup.cancelButton).toHaveText('Abbrechen');
+  });
+  //SPSH-2631 Step 3 - 5
+  // Suchergebnis Popup wird angezeigt, wenn kein Treffer gefunden wurde
+  test('Kein Treffer: Popup wird angezeigt und kann geschlossen werden (KoPersNr, Email, Benutzername)', async () => {
+    await test.step('Suchen per KoPers.-Nr.', async () => {
+      await landesbedienstetenSuchenUndHinzufuegenPage.fillKopersNr("abc9999");
+      await landesbedienstetenSuchenUndHinzufuegenPage.clickSearch();
+      await popup.checkPopupCompleteness();
+      await popup.cancelButton.click();
+    });
+
+    await test.step('Suchen per E-Mail', async () => {
+      await landesbedienstetenSuchenUndHinzufuegenPage.fillEmail("nicht@existiert.de");
+      await landesbedienstetenSuchenUndHinzufuegenPage.clickSearch();
+      await popup.checkPopupCompleteness();
+      await popup.cancelButton.click();
+    });
+
+    await test.step('Suchen per Benutzername', async () => {
+      await landesbedienstetenSuchenUndHinzufuegenPage.fillBenutzername("unbekannt123");
+      await landesbedienstetenSuchenUndHinzufuegenPage.clickSearch();
+      await popup.checkPopupCompleteness();
+      expect(true).toBeTruthy();
+   });
   });
 });

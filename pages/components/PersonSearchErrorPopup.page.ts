@@ -20,12 +20,4 @@ export class PersonSearchErrorPopup {
     await expect(this.noPersonFoundText).toBeVisible();
     await expect(this.cancelButton).toBeVisible();
   }
-
-//   async clickCancel() {
-//     await this.cancelButton.click();
-//   }
-
-//   async isVisible() {
-//     return await this.headline.isVisible();
-//   }
 }
