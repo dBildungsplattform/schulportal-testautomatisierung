@@ -17,10 +17,12 @@ let landingPage: LandingViewPage;
 let landesbedienstetenSuchenUndHinzufuegenPage: LandesbedienstetenSuchenUndHinzufuegenPage;
 let personManagementViewPage: PersonManagementViewPage;
 let header: HeaderPage;
+let popup: PersonSearchErrorPopup;
 
 test.describe('Testfälle für das Anlegen von Benutzern', () => {
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
     header = new HeaderPage(page);
+    popup = new PersonSearchErrorPopup(page);
     // Testdaten anlegen (Schuladmin)
     loginPage = await freshLoginPage(page);
     await loginPage.login(process.env.USER, process.env.PW);
@@ -54,16 +56,15 @@ test.describe('Testfälle für das Anlegen von Benutzern', () => {
   test('Nachname ist ein Pflichtfeld', async () => {
     await landesbedienstetenSuchenUndHinzufuegenPage.fillVornameNachname("zzzzz", "");
     await landesbedienstetenSuchenUndHinzufuegenPage.clickSearch();
-    expect(landesbedienstetenSuchenUndHinzufuegenPage.errorNachname).toHaveText("Der Nachname ist erforderlich.");
+    await expect(landesbedienstetenSuchenUndHinzufuegenPage.errorNachname).toHaveText("Der Nachname ist erforderlich.");
   });
   //SPSH-2631 Step 2
   // Es wird das Popup Suchergebnis angezeigt, mit Text und Abbrechen Button
-  test('Popup wird angezeigt, wenn kein Treffer gefunden wurde', async ({page}) => {
-    const popup = new PersonSearchErrorPopup(page);
+  test('Popup wird angezeigt, wenn kein Treffer gefunden wurde', async () => {
     await landesbedienstetenSuchenUndHinzufuegenPage.fillVornameNachname("zzzzz", "yyyyy");
     await landesbedienstetenSuchenUndHinzufuegenPage.clickSearch();
     await popup.checkPopupCompleteness();
     await expect(popup.noPersonFoundText).toHaveText('Es wurde leider kein Treffer gefunden. Bitte prüfen Sie Ihre Eingabe. Sollten Sie Hilfe benötigen, eröffnen Sie ein Störungsticket über den IQSH-Helpdesk.');
     await expect(popup.cancelButton).toHaveText('Abbrechen');
-  }
+  });
 });
