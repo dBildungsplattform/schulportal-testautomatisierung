@@ -31,6 +31,7 @@ test.describe('Testfälle für das Anlegen von Benutzern', () => {
     landingPage = await header.logout();
     loginPage2 = await landingPage.navigateToLogin();
     await loginPage2.waitForPageLoad();
+    
     // Erstmalige Anmeldung mit Passwortänderung  
     const startPage: StartViewPage = await loginPage2.firstLogin(username, password);
     await startPage.waitForPageLoad();
@@ -41,7 +42,7 @@ test.describe('Testfälle für das Anlegen von Benutzern', () => {
     await landesbedienstetenSuchenUndHinzufuegenPage.waitForPageLoad();
   });
 
-  test.only('Seiteninhalte werden angezeigt', async () => {
+  test('Seiteninhalte werden angezeigt', async () => {
     await landesbedienstetenSuchenUndHinzufuegenPage.checkForPageCompleteness();
     expect(true).toBeTruthy();
   });
