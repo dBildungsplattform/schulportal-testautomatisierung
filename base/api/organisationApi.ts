@@ -48,6 +48,7 @@ export async function getOrganisationId(page: Page, nameOrganisation: string): P
 
   } catch (error) {
     console.error('[ERROR] getOrganisationId failed:', error);
+    throw error;
   }
 }
 

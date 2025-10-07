@@ -39,10 +39,14 @@ import { APIResponse, Page } from '@playwright/test';
  * @param page Playwright Page (provides `page.request.fetch`)
  * @returns A function compatible with the `fetchApi` option in OpenAPI Configuration
  */
-
 export function makeFetchWithPlaywright(page: Page) {
-  return async (url: string, init?: RequestInit): Promise<Response> => {
-    const resp: APIResponse = await page.request.fetch(url, init);
+  return async (url: string, init?): Promise<Response> => {
+        const playwrightInit = {
+      ...init,
+      data: init?.body,
+    };
+
+    const resp: APIResponse = await page.request.fetch(url, playwrightInit);
 
     const headers: Headers = new Headers(resp.headers());
 

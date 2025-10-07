@@ -1,37 +1,58 @@
 import { Page, expect, APIResponse } from '@playwright/test';
 import { FRONTEND_URL } from './baseApi';
 import { CreateRolleBodyParams, RollenArt, RollenMerkmal, RollenSystemRecht, RolleResponse } from './generated/models';
-// import { ApiResponse, RolleApi } from './generated';
+import { RolleApi, RolleControllerCreateRolleRequest } from './generated/apis/RolleApi';
+import { makeFetchWithPlaywright } from './playwrightFetchAdapter';
+import { Configuration } from './generated/runtime';
 
 export { RollenArt };
 export { RollenMerkmal };
 
-// const rolleApi: RolleApi = new RolleApi();
+export function createRolleApi(page: Page): RolleApi {
+  const config: Configuration = new Configuration({
+    basePath: FRONTEND_URL.replace(/\/$/, ''),
+    fetchApi: makeFetchWithPlaywright(page),
+  });
+  return new RolleApi(config);
+}
 
 export async function createRolle(
   page: Page,
   rollenArt: RollenArt,
   organisationId: string,
   rolleName: string,
-  merkmale?: RollenMerkmal[],
-  systemrechte?: RollenSystemRecht[]
+  merkmale?: Set<RollenMerkmal>
 ): Promise<string> {
-  const createRolleBodyParams: CreateRolleBodyParams = {
-    name: rolleName,
-    administeredBySchulstrukturknoten: organisationId,
-    rollenart: rollenArt,
-    merkmale: merkmale as unknown as Set<RollenMerkmal> || new Set<RollenMerkmal>(),
-    systemrechte: systemrechte as unknown as Set<RollenSystemRecht> || new Set<RollenSystemRecht>(),
-  };
+  try {
+    const createRolleBodyParams: CreateRolleBodyParams = {
+      name: rolleName,
+      administeredBySchulstrukturknoten: organisationId,
+      rollenart: rollenArt,
+      merkmale: new Set<RollenMerkmal>(),
+      systemrechte: new Set<RollenSystemRecht>(),
+    };
 
-  const response: APIResponse = await page.request.post(FRONTEND_URL + 'api/rolle/', {
-    data: createRolleBodyParams,
-  });
-  // const response: ApiResponse<RolleResponse> = await rolleApi.rolleControllerCreateRolleRaw({createRolleBodyParams});
-  // expect(response.raw.status).toBe(201);
-  const json: RolleResponse = await response.json();
-  return json.id;
+    if (merkmale) {
+      createRolleBodyParams.merkmale = new Set(merkmale);
+    }
+
+    const requestParameters: RolleControllerCreateRolleRequest = {
+      createRolleBodyParams,
+    };
+
+    const rolleApi: RolleApi = createRolleApi(page);
+
+    const response: RolleResponse =
+      await rolleApi.rolleControllerCreateRolle(requestParameters);
+
+    return response.id;
+
+  } catch (error) {
+    console.error('[ERROR] createRolle failed:', error);
+    throw error;
+  }
 }
+
 
 export async function addSPToRolle(page: Page, rolleId: string, idSPs: string[]): Promise<void> {
   const response: APIResponse = await page.request.put(FRONTEND_URL + `api/rolle/${rolleId}/serviceProviders`, {
