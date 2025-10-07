@@ -11,6 +11,10 @@ export interface UserInfo {
   rolleId: string;
   organisationId: string;
   personId: string;
+  vorname: string;
+  familienname: string;
+  kopersnummer: string;
+  email: string;
 }
 
 interface PersonRequestData {
@@ -102,12 +106,22 @@ export async function createPerson(
   expect(response.status()).toBe(201);
   const json: CreatedPersonResponse = await response.json();
 
+  function normalize(str: string): string {
+    return str.toLowerCase();
+  }
+
+  const email: string = normalize(json.person.name.vorname) + '.' + normalize(json.person.name.familienname) + '@schule-sh.de';
+
   return {
     username: json.person.referrer,
     password: json.person.startpasswort,
     rolleId: rolleId,
     organisationId: organisationId,
     personId: json.person.id,
+    familienname: json.person.name.familienname,
+    vorname: json.person.name.vorname,
+    kopersnummer: koPersNr || '',
+    email: email,
   };
 }
 

@@ -5,11 +5,11 @@ import { freshLoginPage, UserInfo } from "../base/api/personApi";
 import { StartViewPage } from "../pages/StartView.neu.page";
 import { LandesbedienstetenSuchenUndHinzufuegenPage } from "../pages/admin/personen/LandesbedienstetenSuchenUndHinzufuegen.page";
 import { createPersonWithPersonenkontext } from "../base/api/testHelperPerson.page";
-import { testschuleName } from "../base/organisation";
-import { schuladminOeffentlichRolle } from "../base/rollen";
+import { lehrkraftOeffentlichRolle, schuladminOeffentlichRolle } from "../base/rollen";
 import { HeaderPage } from "../pages/components/Header.neu.page";
 import { LandingViewPage } from "../pages/LandingView.neu.page";
 import { PersonSearchErrorPopup } from "../pages/components/PersonSearchErrorPopup.page";
+import { testschuleDstNr, testschuleName } from "../base/organisation";
 
 let loginPage: LoginViewPage;
 let loginPage2: LoginViewPage;
@@ -18,6 +18,7 @@ let landesbedienstetenSuchenUndHinzufuegenPage: LandesbedienstetenSuchenUndHinzu
 let personManagementViewPage: PersonManagementViewPage;
 let header: HeaderPage;
 let popup: PersonSearchErrorPopup;
+let lehrkraft: UserInfo;
 
 test.describe('Testfälle für das Anlegen von Benutzern', () => {
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
@@ -26,17 +27,19 @@ test.describe('Testfälle für das Anlegen von Benutzern', () => {
     // Testdaten anlegen (Schuladmin)
     loginPage = await freshLoginPage(page);
     await loginPage.login(process.env.USER, process.env.PW);
-    const userInfo: UserInfo = await createPersonWithPersonenkontext(page, testschuleName, schuladminOeffentlichRolle);
-    const username: string = userInfo.username;
-    const password: string = userInfo.password;
-        
+    const adminUserInfo: UserInfo = await createPersonWithPersonenkontext(page, testschuleName, schuladminOeffentlichRolle);
+    const schuladminUsername: string = adminUserInfo.username;
+    const schuladminPassword: string = adminUserInfo.password;
+    // Lehrkraft
+    lehrkraft = await createPersonWithPersonenkontext(page, testschuleName, lehrkraftOeffentlichRolle, undefined, undefined, "87654321");
+            
     // 1. Anmelden im Schulportal SH
     landingPage = await header.logout();
     loginPage2 = await landingPage.navigateToLogin();
     await loginPage2.waitForPageLoad();
     
     // Erstmalige Anmeldung mit Passwortänderung  
-    const startPage: StartViewPage = await loginPage2.firstLogin(username, password);
+    const startPage: StartViewPage = await loginPage2.firstLogin(schuladminUsername, schuladminPassword);
     await startPage.waitForPageLoad();
   
     // 2. Zur Seite navigieren
@@ -92,4 +95,29 @@ test.describe('Testfälle für das Anlegen von Benutzern', () => {
       expect(true).toBeTruthy();
    });
   });
+
+  //SPSH-2632 - Suchergebnis UI Test & Happy Path Landesbediensteten per Namen suchen
+  test('Persönliche Daten und Zuordnung werden korrekt angezeigt', async () => {
+    const lehrFullname: string = lehrkraft.vorname + " " + lehrkraft.familienname;
+    await landesbedienstetenSuchenUndHinzufuegenPage.fillVornameNachname(lehrkraft.vorname, lehrkraft.familienname);
+    await landesbedienstetenSuchenUndHinzufuegenPage.clickSearch();
+    
+    await expect(landesbedienstetenSuchenUndHinzufuegenPage.suchergebnisCardHeadline).toHaveText('Suchergebnis');
+    await expect(landesbedienstetenSuchenUndHinzufuegenPage.buttonLandesbedienstetenHinzufuegen).toBeVisible();
+    await expect(landesbedienstetenSuchenUndHinzufuegenPage.buttonZurueckZurSuche).toBeVisible();
+    // Card Persönliche Daten prüfen
+    await expect(landesbedienstetenSuchenUndHinzufuegenPage.personalDataHeadline).toHaveText('Persönliche Daten');
+    await expect(landesbedienstetenSuchenUndHinzufuegenPage.pCardFullname).toHaveText(lehrFullname);
+    await expect(landesbedienstetenSuchenUndHinzufuegenPage.pCardUsername).toHaveText(lehrkraft.username);
+    await expect(landesbedienstetenSuchenUndHinzufuegenPage.pCardKopersnummer).toHaveText(lehrkraft.kopersnummer);
+    await expect(landesbedienstetenSuchenUndHinzufuegenPage.pCardEmail).toHaveText(lehrkraft.email);
+
+    // Card Schulzuordnung prüfen
+    await expect(landesbedienstetenSuchenUndHinzufuegenPage.zuordnungHeadline).toHaveText('Schulzuordnung');
+    await expect(landesbedienstetenSuchenUndHinzufuegenPage.zCardOrganisation).toHaveText(testschuleName);
+    await expect(landesbedienstetenSuchenUndHinzufuegenPage.zCardRolle).toHaveText(lehrkraftOeffentlichRolle);
+    await expect(landesbedienstetenSuchenUndHinzufuegenPage.zCardDienststellennummer).toHaveText(testschuleDstNr);
+    expect(true).toBeTruthy();  
+  });
+
 });

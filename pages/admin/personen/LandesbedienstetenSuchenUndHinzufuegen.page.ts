@@ -27,9 +27,29 @@ export class LandesbedienstetenSuchenUndHinzufuegenPage extends AbstractAdminPag
   // Buttons
   private resetButton : Locator = this.page.getByTestId('person-search-form-discard-button');
   private searchButton : Locator = this.page.getByTestId('person-search-form-submit-button');
-
+  // Fehlermeldung bei nicht gefundenen Landesbediensteten
   public errorNachname : Locator = this.page.locator('#nachname-input-messages .v-messages__message');
   
+  // Suchergebnis Cards
+  public suchergebnisCardHeadline: Locator = this.page.getByRole('heading', { name: 'Suchergebnis' });
+  // Persönliche Daten
+  public personalDataCard: Locator = this.page.getByTestId('personal-data-card').nth(1);
+  public personalDataHeadline: Locator = this.personalDataCard.getByRole('heading', { name: 'Persönliche Daten' });
+  public pCardFullname: Locator = this.personalDataCard.getByTestId('fullname-value');
+  public pCardUsername: Locator = this.personalDataCard.getByTestId('username-value');
+  public pCardKopersnummer: Locator = this.personalDataCard.getByTestId('kopersnummer-value');
+  public pCardEmail: Locator = this.personalDataCard.getByTestId('person-email-value');
+  // Schulzuordnung
+  public zuordnungCard: Locator = this.page.getByTestId('zuordnung-card-1');
+  public zuordnungHeadline: Locator = this.zuordnungCard.getByTestId('zuordnung-card-1-headline');
+  public zCardOrganisation: Locator = this.zuordnungCard.getByTestId('organisation-value-1');
+  public zCardRolle: Locator = this.zuordnungCard.getByTestId('rolle-value-1');
+  public zCardDienststellennummer: Locator = this.zuordnungCard.getByTestId('dienststellennummer-value-1');
+  // Buttons
+  public buttonZurueckZurSuche: Locator = this.page.getByTestId('reset-search-button');
+  public buttonLandesbedienstetenHinzufuegen: Locator = this.page.getByTestId('add-state-employee-button');
+
+
   public async waitForPageLoad(): Promise<void> {
     await this.kopersInputField.waitFor({ state: 'visible' });
   }

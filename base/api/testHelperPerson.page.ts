@@ -3,10 +3,9 @@ import { getOrganisationId } from './testHelperOrganisation.page';
 import { createRolle } from './rolleApi'
 import { addSPToRolle, getRolleId } from './testHelperRolle.page';
 import { getSPId } from './testHelperServiceprovider.page';
-import { UserInfo } from './testHelper.page';
 import { HeaderPage } from '../../pages/components/Header.page';
 import { LoginPage } from '../../pages/LoginView.page';
-import { createPerson } from './personApi';
+import { createPerson, UserInfo } from './personApi';
 import {
   generateNachname,
   generateVorname,
