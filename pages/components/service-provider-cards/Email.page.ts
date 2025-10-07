@@ -6,6 +6,7 @@ export class Email{
 
     constructor(page: Page){
         this.page = page;
-        this.textH1 = page.getByTestId('card-title').getByText('E-Mail', { exact: true });
+        // TODO: this looks bad, but it works
+        this.textH1 = page.getByRole('heading', { name: 'E-Mail', exact: true }).locator('span');
     }
 }

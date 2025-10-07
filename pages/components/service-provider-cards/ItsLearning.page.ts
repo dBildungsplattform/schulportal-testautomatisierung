@@ -6,6 +6,7 @@ export class ItsLearningPage{
 
     constructor(page: Page){
         this.page = page;
-        this.textH1 = page.getByTestId('card-title').getByText('Staging Umgebung Schleswig-Holstein', { exact: true });
+        // TODO: this looks bad, but it works
+        this.textH1 = page.getByRole('heading', { name: 'Staging Umgebung Schleswig-Holstein', exact: true }).locator('span');
     }
 }

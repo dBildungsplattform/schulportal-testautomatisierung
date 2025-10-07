@@ -6,6 +6,7 @@ export class DirectoryPage{
 
     constructor(page: Page){
         this.page = page;
-        this.textH1 = page.getByTestId('card-title').getByText('Adressbuch', { exact: true });
+        // TODO: this looks bad, but it works
+        this.textH1 = page.getByRole('heading', { name: 'Adressbuch', exact: true }).locator('span');
     }
 }
