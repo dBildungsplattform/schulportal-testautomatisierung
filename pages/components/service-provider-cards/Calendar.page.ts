@@ -5,7 +5,7 @@ export class CalendarPage{
     readonly textH1: Locator;
 
     constructor(page: Page){
-        this.page = page;  
-        this.textH1 = page.getByRole('heading', { name: 'Kalender', exact: true }).locator('span');
+        this.page = page;
+        this.textH1 = page.getByTestId('card-title').getByText('Kalender', { exact: true });
     }
 }

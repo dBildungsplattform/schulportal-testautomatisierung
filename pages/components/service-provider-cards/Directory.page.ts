@@ -5,7 +5,7 @@ export class DirectoryPage{
     readonly textH1: Locator;
 
     constructor(page: Page){
-        this.page = page;  
-        this.textH1 = page.getByRole('heading', { name: 'Adressbuch', exact: true }).locator('span');
+        this.page = page;
+        this.textH1 = page.getByTestId('card-title').getByText('Adressbuch', { exact: true });
     }
 }

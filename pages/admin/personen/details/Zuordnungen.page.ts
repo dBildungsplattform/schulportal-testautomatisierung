@@ -76,7 +76,7 @@ export class ZuordnungenPage {
     await this.page.getByTestId('klasse-change-button').click();
     await autocomplete.searchByTitle(to, false);
     await this.page.getByTestId('klasse-change-submit-button').click();
-    await expect(this.page.getByRole('dialog')).toContainText(
+    await expect(this.page.getByTestId('change-klasse-confirmation-dialog-text')).toContainText(
       `Wollen Sie den Schüler/die Schülerin aus Klasse ${from} in Klasse ${to} versetzen?`
     );
     await this.page.getByTestId('confirm-change-klasse-button').click();
@@ -85,7 +85,7 @@ export class ZuordnungenPage {
 
   private async savePendingChanges(): Promise<void> {
     await this.page.getByTestId('zuordnung-changes-save-button').click();
-    await this.page.getByRole('dialog').getByRole('button', { name: 'Schließen' }).click();
+    await this.page.getByTestId('change-klasse-success-dialog-close-button').click();
   }
 
   private buildExpectedTextForZuordnung(params: ZuordnungValidationParams): string {
@@ -135,10 +135,10 @@ export class ZuordnungenPage {
         await expect(this.page.getByTestId('person-zuordnungen-section-edit')).toContainText(expectedText);
         break;
       case 'delete':
-        await expect(this.page.getByTestId('person-zuordnungen-section-edit span.text-green')).toContainText(expectedText);
+        await expect(this.page.getByTestId('person-zuordnungen-section-edit').locator('span.text-green')).toContainText(expectedText);
         break;
       case 'create':
-        await expect(this.page.getByTestId('person-zuordnungen-section-edit span.text-red')).toContainText(expectedText);
+        await expect(this.page.getByTestId('person-zuordnungen-section-edit').locator('span.text-red')).toContainText(expectedText);
         break;
     }
   }
