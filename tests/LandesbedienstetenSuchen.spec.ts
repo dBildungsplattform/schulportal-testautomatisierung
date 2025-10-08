@@ -121,7 +121,7 @@ test.describe('Testfälle für das Anlegen von Benutzern', () => {
   });
 
   //SPSH-2633
-  test.only('Buttons zum Zurücksetzen funktionieren', async () => {
+  test('Buttons zum Zurücksetzen funktionieren', async () => {
     const lehrFullname: string = lehrkraft.vorname + " " + lehrkraft.familienname;
     await test.step ('Button Zurück zur Suche funktioniert', async () => {
       await landesbedienstetenSuchenUndHinzufuegenPage.fillVornameNachname(lehrkraft.vorname, lehrkraft.familienname);
