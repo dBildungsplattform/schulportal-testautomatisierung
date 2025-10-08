@@ -120,4 +120,27 @@ test.describe('Testfälle für das Anlegen von Benutzern', () => {
     expect(true).toBeTruthy();  
   });
 
+  //SPSH-2633
+  test.only('Buttons zum Zurücksetzen funktionieren', async () => {
+    const lehrFullname: string = lehrkraft.vorname + " " + lehrkraft.familienname;
+    await test.step ('Button Zurück zur Suche funktioniert', async () => {
+      await landesbedienstetenSuchenUndHinzufuegenPage.fillVornameNachname(lehrkraft.vorname, lehrkraft.familienname);
+      await landesbedienstetenSuchenUndHinzufuegenPage.clickSearch();
+      await expect(landesbedienstetenSuchenUndHinzufuegenPage.pCardFullname).toHaveText(lehrFullname);
+      await landesbedienstetenSuchenUndHinzufuegenPage.buttonZurueckZurSuche.click();
+      await expect(landesbedienstetenSuchenUndHinzufuegenPage.pCardFullname).not.toBeVisible();
+      await expect(landesbedienstetenSuchenUndHinzufuegenPage.nameRadio).toBeChecked();
+      await expect(landesbedienstetenSuchenUndHinzufuegenPage.vornameInputField).toHaveValue(lehrkraft.vorname);
+      await expect(landesbedienstetenSuchenUndHinzufuegenPage.nachnameInputField).toHaveValue(lehrkraft.familienname);
+    });
+    await test.step ('Button Zurücksetzen funktioniert', async () => {
+      await landesbedienstetenSuchenUndHinzufuegenPage.clickSearch();
+      await expect(landesbedienstetenSuchenUndHinzufuegenPage.pCardFullname).toHaveText(lehrFullname);
+      await landesbedienstetenSuchenUndHinzufuegenPage.buttonZuruecksetzen.click();
+      await expect(landesbedienstetenSuchenUndHinzufuegenPage.pCardFullname).not.toBeVisible();
+      await expect(landesbedienstetenSuchenUndHinzufuegenPage.nameRadio).toBeChecked();
+      await expect(landesbedienstetenSuchenUndHinzufuegenPage.vornameInputField).toBeEmpty();
+      await expect(landesbedienstetenSuchenUndHinzufuegenPage.nachnameInputField).toBeEmpty();
+    });
+  });
 });

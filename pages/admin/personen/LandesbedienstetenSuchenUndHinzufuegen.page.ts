@@ -9,24 +9,24 @@ export class LandesbedienstetenSuchenUndHinzufuegenPage extends AbstractAdminPag
 
   /* Locators */
   // Radio Buttons
-  private kopersRadio : Locator = this.page.getByLabel('per KoPers.-Nr.');
-  private emailRadio : Locator = this.page.getByLabel('per E-Mail');
-  private usernameRadio : Locator = this.page.getByLabel('per Benutzername');
-  private nameRadio : Locator = this.page.getByLabel('per Vorname und Nachname');
+  public kopersRadio : Locator = this.page.getByLabel('per KoPers.-Nr.');
+  public emailRadio : Locator = this.page.getByLabel('per E-Mail');
+  public usernameRadio : Locator = this.page.getByLabel('per Benutzername');
+  public nameRadio : Locator = this.page.getByLabel('per Vorname und Nachname');
 
   // Input Eingabefelder nur sichtbar, wenn das jeweilige Radio ausgewählt ist
-  private kopersInputField : Locator = this.page.locator('#kopers-input');
-  private emailInputField : Locator = this.page.locator('#email-input');
-  private usernameInputField : Locator = this.page.locator('#username-input');
-  private vornameInputField : Locator = this.page.locator('#vorname-input');
-  private nachnameInputField : Locator = this.page.locator('#nachname-input');
+  public kopersInputField : Locator = this.page.locator('#kopers-input');
+  public emailInputField : Locator = this.page.locator('#email-input');
+  public usernameInputField : Locator = this.page.locator('#username-input');
+  public vornameInputField : Locator = this.page.locator('#vorname-input');
+  public nachnameInputField : Locator = this.page.locator('#nachname-input');
 
   // Inputfelder
   public nachnameInput : Locator = this.page.getByTestId('nachname-input');
   public vornameInput : Locator = this.page.getByTestId('vorname-input')
   // Buttons
-  private resetButton : Locator = this.page.getByTestId('person-search-form-discard-button');
-  private searchButton : Locator = this.page.getByTestId('person-search-form-submit-button');
+  public buttonZuruecksetzen : Locator = this.page.getByTestId('person-search-form-discard-button');
+  public buttonLandesbedienstetenSuchen : Locator = this.page.getByTestId('person-search-form-submit-button');
   // Fehlermeldung bei nicht gefundenen Landesbediensteten
   public errorNachname : Locator = this.page.locator('#nachname-input-messages .v-messages__message');
   
@@ -80,8 +80,8 @@ export class LandesbedienstetenSuchenUndHinzufuegenPage extends AbstractAdminPag
     await expect(this.vornameInputField).toBeHidden();
     await expect(this.nachnameInputField).toBeHidden();
     // die Buttons Zurücksetzen im Status aktiv und Landesbediensteten suchen im Status disabled
-    await expect(this.resetButton).toBeEnabled();
-    await expect(this.searchButton).toBeDisabled();
+    await expect(this.buttonZuruecksetzen).toBeEnabled();
+    await expect(this.buttonLandesbedienstetenSuchen).toBeDisabled();
   }
 
   // Formular ausfüllen
@@ -130,13 +130,13 @@ export class LandesbedienstetenSuchenUndHinzufuegenPage extends AbstractAdminPag
    * Klickt auf den Zurücksetzen-Button.
    */
   public async clickReset(): Promise<void> {
-    await this.resetButton.click();
+    await this.buttonZuruecksetzen.click();
   }
 
   /**
    * Klickt auf den Suchen-Button.
    */
   public async clickSearch(): Promise<void> {
-    await this.searchButton.click();
+    await this.buttonLandesbedienstetenSuchen.click();
   }
 }
