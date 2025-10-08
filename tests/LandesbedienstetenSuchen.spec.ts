@@ -1,4 +1,4 @@
-import test, { expect, PlaywrightTestArgs } from "@playwright/test";
+import test, { PlaywrightTestArgs } from "@playwright/test";
 import { PersonManagementViewPage } from "../pages/admin/personen/PersonManagementView.neu.page";
 import { LoginViewPage } from "../pages/LoginView.neu.page";
 import { freshLoginPage, UserInfo } from "../base/api/personApi";
@@ -9,9 +9,9 @@ import { testschuleName } from "../base/organisation";
 import { schuladminOeffentlichRolle } from "../base/rollen";
 import { HeaderPage } from "../pages/components/Header.neu.page";
 import { LandingViewPage } from "../pages/LandingView.neu.page";
+import { LONG, SHORT, STAGE } from "../base/tags";
 
 let loginPage: LoginViewPage;
-let loginPage2: LoginViewPage;
 let landingPage: LandingViewPage;
 let landesbedienstetenSuchenUndHinzufuegenPage: LandesbedienstetenSuchenUndHinzufuegenPage;
 let personManagementViewPage: PersonManagementViewPage;
@@ -29,11 +29,10 @@ test.describe('Testfälle für das Anlegen von Benutzern', () => {
         
     // 1. Anmelden im Schulportal SH
     landingPage = await header.logout();
-    loginPage2 = await landingPage.navigateToLogin();
-    await loginPage2.waitForPageLoad();
+    landingPage.navigateToLogin();
     
-    // Erstmalige Anmeldung mit Passwortänderung  
-    const startPage: StartViewPage = await loginPage2.firstLogin(username, password);
+    // Erstmalige Anmeldung mit Passwortänderung
+    const startPage: StartViewPage = await loginPage.firstLogin(username, password);
     await startPage.waitForPageLoad();
   
     // 2. Zur Seite navigieren
@@ -42,8 +41,7 @@ test.describe('Testfälle für das Anlegen von Benutzern', () => {
     await landesbedienstetenSuchenUndHinzufuegenPage.waitForPageLoad();
   });
 
-  test('Seiteninhalte werden angezeigt', async () => {
+  test.only('Seiteninhalte werden angezeigt',{ tag: [LONG, SHORT, STAGE] }, async () => {
     await landesbedienstetenSuchenUndHinzufuegenPage.checkForPageCompleteness();
-    expect(true).toBeTruthy();
-  });
+  });  
 });
