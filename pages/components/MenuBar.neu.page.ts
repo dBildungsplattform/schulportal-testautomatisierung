@@ -40,12 +40,7 @@ export class MenuBarPage {
   public async navigateToPersonImport(): Promise<PersonImportViewPage> {
     return this.navigateTo('person-import-menu-item', PersonImportViewPage, p => p.waitForPageLoad());
   }
-
-  // händisch lösen
-  // public async navigateToLandesbedienstetenSuchenUndHinzufuegen(): Promise<LandesbedienstetenSuchenUndHinzufuegenPage> {
-  //   return this.navigateTo('person-search-menu-item', LandesbedienstetenSuchenUndHinzufuegenPage,
-  // (p: LandesbedienstetenSuchenUndHinzufuegenPage) => p.waitForPageLoad());
-  // }
+  // Die Funktion oben funktioniert nicht, daher hier eine eigene Funktion, bis die andere gefixt ist
   public async navigateToLandesbedienstetenSuchenUndHinzufuegen(): Promise<LandesbedienstetenSuchenUndHinzufuegenPage> {
     await this.landesbedienstetenSuchenUndHinzufuegen.click();
     const newPage: LandesbedienstetenSuchenUndHinzufuegenPage = new LandesbedienstetenSuchenUndHinzufuegenPage(this.page);
