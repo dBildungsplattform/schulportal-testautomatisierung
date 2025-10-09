@@ -8,22 +8,22 @@ export class LandesbedienstetenSuchenUndHinzufuegenPage extends AbstractAdminPag
   }
 
   /* Locators */
-  private kopersRadio : Locator = this.page.getByLabel('per KoPers.-Nr.');
-  private emailRadio : Locator = this.page.getByLabel('per E-Mail');
-  private usernameRadio : Locator = this.page.getByLabel('per Benutzername');
-  private nameRadio : Locator = this.page.getByLabel('per Vorname und Nachname');
+  private kopersRadioButton : Locator = this.page.getByLabel('per KoPers.-Nr.');
+  private emailRadioButton : Locator = this.page.getByLabel('per E-Mail');
+  private usernameRadioButton : Locator = this.page.getByLabel('per Benutzername');
+  private nameRadioButton : Locator = this.page.getByLabel('per Vorname und Nachname');
 
-  private kopersInput : Locator = this.page.locator('#kopers-input');
-  private emailInput : Locator = this.page.locator('#email-input');
-  private usernameInput : Locator = this.page.locator('#username-input');
-  private vornameInput : Locator = this.page.locator('#vorname-input');
-  private nachnameInput : Locator = this.page.locator('#nachname-input');
+  private kopersTextInput : Locator = this.page.locator('#kopers-input');
+  private emailTextInput : Locator = this.page.locator('#email-input');
+  private usernameTextInput : Locator = this.page.locator('#username-input');
+  private vornameTextInput : Locator = this.page.locator('#vorname-input');
+  private nachnameTextInput : Locator = this.page.locator('#nachname-input');
   
   private resetButton : Locator = this.page.getByTestId('person-search-form-discard-button');
   private searchButton : Locator = this.page.getByTestId('person-search-form-submit-button');
   
   public async waitForPageLoad(): Promise<void> {
-    await this.kopersInput.waitFor({ state: 'visible' });
+    await this.kopersTextInput.waitFor({ state: 'visible' });
   }
 
   /* actions */
@@ -34,15 +34,15 @@ export class LandesbedienstetenSuchenUndHinzufuegenPage extends AbstractAdminPag
     await expect(this.page.getByTestId('close-layout-card-button')).toBeVisible();
     await expect(this.page.getByText('Bitte wählen Sie, wie Sie nach dem Landesbediensteten suchen möchten.', { exact: false })).toBeVisible();
     //  Es gibt 4 Möglichkeiten zu suchen:
-    await expect(this.kopersRadio).toBeChecked();
-    await expect(this.kopersInput).toBeVisible();
-    await expect(this.emailRadio).toBeVisible();
-    await expect(this.emailInput).toBeHidden();
-    await expect(this.usernameRadio).toBeVisible();
-    await expect(this.usernameInput).toBeHidden();
-    await expect(this.nameRadio).toBeVisible();
-    await expect(this.vornameInput).toBeHidden();
-    await expect(this.nachnameInput).toBeHidden();
+    await expect(this.kopersRadioButton).toBeChecked();
+    await expect(this.kopersTextInput).toBeVisible();
+    await expect(this.emailRadioButton).toBeVisible();
+    await expect(this.emailTextInput).toBeHidden();
+    await expect(this.usernameRadioButton).toBeVisible();
+    await expect(this.usernameTextInput).toBeHidden();
+    await expect(this.nameRadioButton).toBeVisible();
+    await expect(this.vornameTextInput).toBeHidden();
+    await expect(this.nachnameTextInput).toBeHidden();
     // die Buttons Zurücksetzen im Status aktiv und Landesbediensteten suchen im Status disabled
     await expect(this.resetButton).toBeEnabled();
     await expect(this.searchButton).toBeDisabled();
