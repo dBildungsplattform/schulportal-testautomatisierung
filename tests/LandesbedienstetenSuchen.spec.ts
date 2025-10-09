@@ -10,6 +10,7 @@ import { HeaderPage } from "../pages/components/Header.neu.page";
 import { LandingViewPage } from "../pages/LandingView.neu.page";
 import { PersonSearchErrorPopup } from "../pages/components/PersonSearchErrorPopup.page";
 import { testschuleDstNr, testschuleName } from "../base/organisation";
+import { LONG, SHORT, STAGE } from "../base/tags";
 
 let loginPage: LoginViewPage;
 let loginPage2: LoginViewPage;
@@ -35,8 +36,7 @@ test.describe('Testfälle für das Anlegen von Benutzern', () => {
             
     // 1. Anmelden im Schulportal SH
     landingPage = await header.logout();
-    loginPage2 = await landingPage.navigateToLogin();
-    await loginPage2.waitForPageLoad();
+    landingPage.navigateToLogin();
     
     // Erstmalige Anmeldung mit Passwortänderung  
     const startPage: StartViewPage = await loginPage2.loginNewUserWithPasswordChange(schuladminUsername, schuladminPassword);
@@ -49,14 +49,14 @@ test.describe('Testfälle für das Anlegen von Benutzern', () => {
   });
 
   //SPSH-2630
-  test('Seiteninhalte werden angezeigt', async () => {
+  test('Seiteninhalte werden angezeigt', { tag: [LONG, SHORT, STAGE] }, async () => {
     await landesbedienstetenSuchenUndHinzufuegenPage.checkForPageCompleteness();
     expect(true).toBeTruthy();
   });
 
   //SPSH-2631 Step 1
   //Das Feld Nachname wird rot umrandet und es steht darunter die Aufforderung: Der Nachname ist erforderlich.
-  test('Nachname ist ein Pflichtfeld', async () => {
+  test('Nachname ist ein Pflichtfeld', { tag: [LONG, SHORT, STAGE] }, async () => {
     await landesbedienstetenSuchenUndHinzufuegenPage.fillVornameNachname("zzzzz", "");
     await landesbedienstetenSuchenUndHinzufuegenPage.clickSearch();
     await expect(landesbedienstetenSuchenUndHinzufuegenPage.errorNachname).toHaveText("Der Nachname ist erforderlich.");
@@ -64,7 +64,7 @@ test.describe('Testfälle für das Anlegen von Benutzern', () => {
   //SPSH-2631 Step 2
   //Suchergebnis Popup wird angezeigt, wenn kein Treffer gefunden wurde: falsche Namen 
   //Es wird das Popup Suchergebnis angezeigt, mit Text und Abbrechen Button
-  test('Kein Treffer wegen falschen Namen: Popup wird angezeigt und ist vollständig', async () => {
+  test('Kein Treffer wegen falschen Namen: Popup wird angezeigt und ist vollständig', { tag: [LONG, SHORT, STAGE] }, async () => {
     await landesbedienstetenSuchenUndHinzufuegenPage.fillVornameNachname("zzzzz", "yyyyy");
     await landesbedienstetenSuchenUndHinzufuegenPage.clickSearch();
     await popup.checkPopupCompleteness();
@@ -73,7 +73,7 @@ test.describe('Testfälle für das Anlegen von Benutzern', () => {
   });
   //SPSH-2631 Step 3 - 5
   // Suchergebnis Popup wird angezeigt, wenn kein Treffer gefunden wurde
-  test('Kein Treffer: Popup wird angezeigt und kann geschlossen werden (KoPersNr, Email, Benutzername)', async () => {
+  test('Kein Treffer: Popup wird angezeigt und kann geschlossen werden (KoPersNr, Email, Benutzername)', { tag: [LONG, SHORT, STAGE] }, async () => {
     await test.step('Suchen per KoPers.-Nr.', async () => {
       await landesbedienstetenSuchenUndHinzufuegenPage.fillKopersNr("abc9999");
       await landesbedienstetenSuchenUndHinzufuegenPage.clickSearch();
@@ -91,13 +91,12 @@ test.describe('Testfälle für das Anlegen von Benutzern', () => {
     await test.step('Suchen per Benutzername', async () => {
       await landesbedienstetenSuchenUndHinzufuegenPage.fillBenutzername("unbekannt123");
       await landesbedienstetenSuchenUndHinzufuegenPage.clickSearch();
-      await popup.checkPopupCompleteness();
-      expect(true).toBeTruthy();
+      expect(await popup.checkPopupCompleteness()).toBeTruthy();
    });
   });
 
   //SPSH-2632 - Suchergebnis UI Test & Happy Path Landesbediensteten per Namen suchen
-  test('Persönliche Daten und Zuordnung werden korrekt angezeigt', async () => {
+  test('Persönliche Daten und Zuordnung werden korrekt angezeigt', { tag: [LONG, SHORT, STAGE] }, async () => {
     const lehrFullname: string = lehrkraft.vorname + " " + lehrkraft.familienname;
     await landesbedienstetenSuchenUndHinzufuegenPage.fillVornameNachname(lehrkraft.vorname, lehrkraft.familienname);
     await landesbedienstetenSuchenUndHinzufuegenPage.clickSearch();
@@ -121,7 +120,7 @@ test.describe('Testfälle für das Anlegen von Benutzern', () => {
   });
 
   //SPSH-2633
-  test('Buttons zum Zurücksetzen funktionieren', async () => {
+  test('Buttons zum Zurücksetzen funktionieren', { tag: [LONG, SHORT, STAGE] }, async () => {
     const lehrFullname: string = lehrkraft.vorname + " " + lehrkraft.familienname;
     await test.step ('Button Zurück zur Suche funktioniert', async () => {
       await landesbedienstetenSuchenUndHinzufuegenPage.fillVornameNachname(lehrkraft.vorname, lehrkraft.familienname);
