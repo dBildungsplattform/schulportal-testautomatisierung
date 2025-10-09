@@ -8,7 +8,7 @@ import { createPersonWithPersonenkontext } from "../base/api/testHelperPerson.pa
 import { lehrkraftOeffentlichRolle, schuladminOeffentlichRolle } from "../base/rollen";
 import { HeaderPage } from "../pages/components/Header.neu.page";
 import { LandingViewPage } from "../pages/LandingView.neu.page";
-import { PersonSearchErrorPopup } from "../pages/components/PersonSearchErrorPopup.page";
+import { SuchergebnisPopup } from "../pages/components/PersonSearchErrorPopup.page";
 import { testschuleDstNr, testschuleName } from "../base/organisation";
 import { LONG, SHORT, STAGE } from "../base/tags";
 
@@ -17,14 +17,16 @@ let landingPage: LandingViewPage;
 let landesbedienstetenSuchenUndHinzufuegenPage: LandesbedienstetenSuchenUndHinzufuegenPage;
 let personManagementViewPage: PersonManagementViewPage;
 let header: HeaderPage;
-let popup: PersonSearchErrorPopup;
+let suchergebnisPopup: SuchergebnisPopup;
 let lehrkraft: UserInfo;
 let lockedLehrkraft: UserInfo;
+let lehrkraftDoppel1: UserInfo;
+let lehrkraftDoppel2: UserInfo;
 
 test.describe('Testfälle für das Anlegen von Benutzern', () => {
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
     header = new HeaderPage(page);
-    popup = new PersonSearchErrorPopup(page);
+    suchergebnisPopup = new SuchergebnisPopup(page);
     // Testdaten anlegen (Schuladmin)
     loginPage = await freshLoginPage(page);
     await loginPage.login(process.env.USER, process.env.PW);
@@ -35,6 +37,8 @@ test.describe('Testfälle für das Anlegen von Benutzern', () => {
     lehrkraft = await createPersonWithPersonenkontext(page, testschuleName, lehrkraftOeffentlichRolle, undefined, undefined, "87654321");
     lockedLehrkraft = await createPersonWithPersonenkontext(page, testschuleName, lehrkraftOeffentlichRolle, undefined, undefined, "98765432");
     await lockPerson(page, lockedLehrkraft.personId, testschuleDstNr);
+    lehrkraftDoppel1 = await createPersonWithPersonenkontext(page, testschuleName, lehrkraftOeffentlichRolle, "TAutoMax", "TAutoMustermann", "3219876");
+    lehrkraftDoppel2 = await createPersonWithPersonenkontext(page, testschuleName, lehrkraftOeffentlichRolle, "TAutoMax", "TAutoMustermann", "3219875");
             
     // 1. Anmelden im Schulportal SH
     landingPage = await header.logout();
@@ -52,8 +56,7 @@ test.describe('Testfälle für das Anlegen von Benutzern', () => {
 
   //SPSH-2630
   test('Seiteninhalte werden angezeigt', { tag: [LONG, SHORT, STAGE] }, async () => {
-    await landesbedienstetenSuchenUndHinzufuegenPage.checkForPageCompleteness();
-    expect(true).toBeTruthy();
+    expect(await landesbedienstetenSuchenUndHinzufuegenPage.checkForPageCompleteness()).toBeTruthy();
   });
 
   //SPSH-2631 Step 1
@@ -69,9 +72,9 @@ test.describe('Testfälle für das Anlegen von Benutzern', () => {
   test('Kein Treffer wegen falschen Namen: Popup wird angezeigt und ist vollständig', { tag: [LONG, SHORT, STAGE] }, async () => {
     await landesbedienstetenSuchenUndHinzufuegenPage.fillVornameNachname("zzzzz", "yyyyy");
     await landesbedienstetenSuchenUndHinzufuegenPage.clickSearch();
-    await popup.checkPopupCompleteness();
-    await expect(popup.noPersonFoundText).toHaveText('Es wurde leider kein Treffer gefunden. Bitte prüfen Sie Ihre Eingabe. Sollten Sie Hilfe benötigen, eröffnen Sie ein Störungsticket über den IQSH-Helpdesk.');
-    await expect(popup.cancelButton).toHaveText('Abbrechen');
+    await suchergebnisPopup.checkPopupCompleteness();
+    await expect(suchergebnisPopup.noPersonFoundText).toHaveText('Es wurde leider kein Treffer gefunden. Bitte prüfen Sie Ihre Eingabe. Sollten Sie Hilfe benötigen, eröffnen Sie ein Störungsticket über den IQSH-Helpdesk.');
+    await expect(suchergebnisPopup.cancelButton).toHaveText('Abbrechen');
   });
   //SPSH-2631 Step 3 - 5
   // Suchergebnis Popup wird angezeigt, wenn kein Treffer gefunden wurde
@@ -79,29 +82,39 @@ test.describe('Testfälle für das Anlegen von Benutzern', () => {
     await test.step('Suchen per KoPers.-Nr.', async () => {
       await landesbedienstetenSuchenUndHinzufuegenPage.fillKopersNr("abc9999");
       await landesbedienstetenSuchenUndHinzufuegenPage.clickSearch();
-      await popup.checkPopupCompleteness();
-      await popup.cancelButton.click();
+      await suchergebnisPopup.checkPopupCompleteness();
+      await suchergebnisPopup.cancelButton.click();
     });
 
     await test.step('Suchen per E-Mail', async () => {
       await landesbedienstetenSuchenUndHinzufuegenPage.fillEmail("nicht@existiert.de");
       await landesbedienstetenSuchenUndHinzufuegenPage.clickSearch();
-      await popup.checkPopupCompleteness();
-      await popup.cancelButton.click();
+      await suchergebnisPopup.checkPopupCompleteness();
+      await suchergebnisPopup.cancelButton.click();
     });
 
     await test.step('Suchen per Benutzername', async () => {
       await landesbedienstetenSuchenUndHinzufuegenPage.fillBenutzername("unbekannt123");
       await landesbedienstetenSuchenUndHinzufuegenPage.clickSearch();
-      expect(await popup.checkPopupCompleteness()).toBeTruthy();
+      expect(await suchergebnisPopup.checkPopupCompleteness()).toBeTruthy();
    });
   });
 
   // Gesperrte Person kann nicht gefunden werden
-  test.only('Gesperrte Person kann nicht gefunden werden', { tag: [LONG, SHORT, STAGE] }, async () => {
+  test('Gesperrte Person kann nicht gefunden werden', { tag: [LONG, SHORT, STAGE] }, async () => {
     await landesbedienstetenSuchenUndHinzufuegenPage.fillKopersNr(lockedLehrkraft.kopersnummer);
     await landesbedienstetenSuchenUndHinzufuegenPage.clickSearch();
-    await popup.checkPopupCompleteness();
+    await suchergebnisPopup.checkPopupCompleteness();
+  });
+
+  // Doppelter Name Fehlermeldung (!) Wir verwenden absichtlich die Namen der 2 Lehrkräfte, 
+  // damit wir keinen Eslint Fehler bekommen, weil die 2. Lehrkraft nie benutzt wird.
+  test('Doppelter Name: Fehlermeldung wird angezeigt', { tag: [LONG, SHORT, STAGE] }, async () => {
+    await landesbedienstetenSuchenUndHinzufuegenPage.fillVornameNachname(lehrkraftDoppel1.vorname, lehrkraftDoppel2.familienname);
+    await landesbedienstetenSuchenUndHinzufuegenPage.clickSearch();
+    await suchergebnisPopup.checkPopupCompleteness();
+    await expect(suchergebnisPopup.noPersonFoundText).toHaveText('Es wurde mehr als ein Treffer gefunden. Bitte verwenden Sie zur Suche die KoPers.-Nr., die Landes-Mailadresse oder den Benutzernamen. Sollten Sie Hilfe benötigen, eröffnen Sie ein Störungsticket über den IQSH-Helpdesk.');
+    await expect(suchergebnisPopup.cancelButton).toHaveText('Abbrechen');
   });
 
   //SPSH-2632 - Suchergebnis UI Test & Happy Path Landesbediensteten per Namen suchen
@@ -125,18 +138,17 @@ test.describe('Testfälle für das Anlegen von Benutzern', () => {
     await expect(landesbedienstetenSuchenUndHinzufuegenPage.zCardOrganisation).toHaveText(testschuleName);
     await expect(landesbedienstetenSuchenUndHinzufuegenPage.zCardRolle).toHaveText(lehrkraftOeffentlichRolle);
     await expect(landesbedienstetenSuchenUndHinzufuegenPage.zCardDienststellennummer).toHaveText(testschuleDstNr);
-    expect(true).toBeTruthy();  
   });
 
   //SPSH-2633
-  test('Buttons zum Zurücksetzen funktionieren', { tag: [LONG, SHORT, STAGE] }, async () => {
+  test.only('Buttons zum Zurücksetzen funktionieren', { tag: [LONG, SHORT, STAGE] }, async () => {
     const lehrFullname: string = lehrkraft.vorname + " " + lehrkraft.familienname;
     await test.step ('Button Zurück zur Suche funktioniert', async () => {
       await landesbedienstetenSuchenUndHinzufuegenPage.fillVornameNachname(lehrkraft.vorname, lehrkraft.familienname);
       await landesbedienstetenSuchenUndHinzufuegenPage.clickSearch();
       await expect(landesbedienstetenSuchenUndHinzufuegenPage.pCardFullname).toHaveText(lehrFullname);
       await landesbedienstetenSuchenUndHinzufuegenPage.buttonZurueckZurSuche.click();
-      await expect(landesbedienstetenSuchenUndHinzufuegenPage.pCardFullname).not.toBeVisible();
+      await expect(landesbedienstetenSuchenUndHinzufuegenPage.pCardFullname).toBeHidden();
       await expect(landesbedienstetenSuchenUndHinzufuegenPage.nameRadioButton).toBeChecked();
       await expect(landesbedienstetenSuchenUndHinzufuegenPage.vornameInputField).toHaveValue(lehrkraft.vorname);
       await expect(landesbedienstetenSuchenUndHinzufuegenPage.nachnameInputField).toHaveValue(lehrkraft.familienname);
@@ -145,7 +157,7 @@ test.describe('Testfälle für das Anlegen von Benutzern', () => {
       await landesbedienstetenSuchenUndHinzufuegenPage.clickSearch();
       await expect(landesbedienstetenSuchenUndHinzufuegenPage.pCardFullname).toHaveText(lehrFullname);
       await landesbedienstetenSuchenUndHinzufuegenPage.buttonZuruecksetzen.click();
-      await expect(landesbedienstetenSuchenUndHinzufuegenPage.pCardFullname).not.toBeVisible();
+      await expect(landesbedienstetenSuchenUndHinzufuegenPage.pCardFullname).toBeHidden();
       await expect(landesbedienstetenSuchenUndHinzufuegenPage.nameRadioButton).toBeChecked();
       await expect(landesbedienstetenSuchenUndHinzufuegenPage.vornameInputField).toBeEmpty();
       await expect(landesbedienstetenSuchenUndHinzufuegenPage.nachnameInputField).toBeEmpty();

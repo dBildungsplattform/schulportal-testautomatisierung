@@ -1,6 +1,6 @@
 import { expect, Locator, Page } from '@playwright/test';
 
-export class PersonSearchErrorPopup {
+export class SuchergebnisPopup {
   constructor(private readonly page: Page) {}
   public popup: Locator = this.page.getByTestId('person-search-error-dialog');
 
