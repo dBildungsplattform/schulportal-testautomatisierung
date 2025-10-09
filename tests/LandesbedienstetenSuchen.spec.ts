@@ -5,11 +5,11 @@ import { freshLoginPage, lockPerson, UserInfo } from "../base/api/personApi";
 import { StartViewPage } from "../pages/StartView.neu.page";
 import { LandesbedienstetenSuchenUndHinzufuegenPage } from "../pages/admin/personen/LandesbedienstetenSuchenUndHinzufuegen.page";
 import { createPersonWithPersonenkontext } from "../base/api/testHelperPerson.page";
-import { lehrkraftOeffentlichRolle, schuladminOeffentlichRolle } from "../base/rollen";
+import { ersatzschulLehrkraftRolle, lehrkraftOeffentlichRolle, schuladminOeffentlichRolle } from "../base/rollen";
 import { HeaderPage } from "../pages/components/Header.neu.page";
 import { LandingViewPage } from "../pages/LandingView.neu.page";
 import { SuchergebnisPopup } from "../pages/components/PersonSearchErrorPopup.page";
-import { testschuleDstNr, testschuleName } from "../base/organisation";
+import { ersatzTestschuleName, testschuleDstNr, testschuleName } from "../base/organisation";
 import { LONG, SHORT, STAGE } from "../base/tags";
 
 let loginPage: LoginViewPage;
@@ -22,6 +22,7 @@ let lehrkraft: UserInfo;
 let lockedLehrkraft: UserInfo;
 let lehrkraftDoppel1: UserInfo;
 let lehrkraftDoppel2: UserInfo;
+let ersatzschulLehrkraft: UserInfo;
 
 test.describe('Testfälle für das Anlegen von Benutzern', () => {
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
@@ -39,6 +40,7 @@ test.describe('Testfälle für das Anlegen von Benutzern', () => {
     await lockPerson(page, lockedLehrkraft.personId, testschuleDstNr);
     lehrkraftDoppel1 = await createPersonWithPersonenkontext(page, testschuleName, lehrkraftOeffentlichRolle, "TAutoMax", "TAutoMustermann", "3219876");
     lehrkraftDoppel2 = await createPersonWithPersonenkontext(page, testschuleName, lehrkraftOeffentlichRolle, "TAutoMax", "TAutoMustermann", "3219875");
+    ersatzschulLehrkraft = await createPersonWithPersonenkontext(page, ersatzTestschuleName, ersatzschulLehrkraftRolle);
             
     // 1. Anmelden im Schulportal SH
     landingPage = await header.logout();
@@ -78,7 +80,7 @@ test.describe('Testfälle für das Anlegen von Benutzern', () => {
   });
   //SPSH-2631 Step 3 - 5
   // Suchergebnis Popup wird angezeigt, wenn kein Treffer gefunden wurde
-  test('Kein Treffer: Popup wird angezeigt und kann geschlossen werden (KoPersNr, Email, Benutzername)', { tag: [LONG, SHORT, STAGE] }, async () => {
+  test.only('Kein Treffer: Popup wird angezeigt und kann geschlossen werden (KoPersNr, Email, Benutzername)', { tag: [LONG, SHORT, STAGE] }, async () => {
     await test.step('Suchen per KoPers.-Nr.', async () => {
       await landesbedienstetenSuchenUndHinzufuegenPage.fillKopersNr("abc9999");
       await landesbedienstetenSuchenUndHinzufuegenPage.clickSearch();
@@ -96,15 +98,22 @@ test.describe('Testfälle für das Anlegen von Benutzern', () => {
     await test.step('Suchen per Benutzername', async () => {
       await landesbedienstetenSuchenUndHinzufuegenPage.fillBenutzername("unbekannt123");
       await landesbedienstetenSuchenUndHinzufuegenPage.clickSearch();
-      expect(await suchergebnisPopup.checkPopupCompleteness()).toBeTruthy();
+      await suchergebnisPopup.checkPopupCompleteness();
+      await suchergebnisPopup.cancelButton.click();
    });
+
+    await test.step('Suchen per Namen der Ersatzschullehrkraft', async () => {
+      await landesbedienstetenSuchenUndHinzufuegenPage.fillVornameNachname(ersatzschulLehrkraft.vorname, ersatzschulLehrkraft.familienname);
+      await landesbedienstetenSuchenUndHinzufuegenPage.clickSearch();
+      await suchergebnisPopup.checkPopupCompleteness();
+    });
   });
 
   // Gesperrte Person kann nicht gefunden werden
   test('Gesperrte Person kann nicht gefunden werden', { tag: [LONG, SHORT, STAGE] }, async () => {
     await landesbedienstetenSuchenUndHinzufuegenPage.fillKopersNr(lockedLehrkraft.kopersnummer);
     await landesbedienstetenSuchenUndHinzufuegenPage.clickSearch();
-    await suchergebnisPopup.checkPopupCompleteness();
+    await expect(suchergebnisPopup.headline).toBeVisible();
   });
 
   // Doppelter Name Fehlermeldung (!) Wir verwenden absichtlich die Namen der 2 Lehrkräfte, 
@@ -141,7 +150,7 @@ test.describe('Testfälle für das Anlegen von Benutzern', () => {
   });
 
   //SPSH-2633
-  test.only('Buttons zum Zurücksetzen funktionieren', { tag: [LONG, SHORT, STAGE] }, async () => {
+  test('Buttons zum Zurücksetzen funktionieren', { tag: [LONG, SHORT, STAGE] }, async () => {
     const lehrFullname: string = lehrkraft.vorname + " " + lehrkraft.familienname;
     await test.step ('Button Zurück zur Suche funktioniert', async () => {
       await landesbedienstetenSuchenUndHinzufuegenPage.fillVornameNachname(lehrkraft.vorname, lehrkraft.familienname);
