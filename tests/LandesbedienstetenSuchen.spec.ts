@@ -24,7 +24,7 @@ let lehrkraftDoppel1: UserInfo;
 let lehrkraftDoppel2: UserInfo;
 let ersatzschulLehrkraft: UserInfo;
 
-test.describe('Testfälle für das Anlegen von Benutzern', () => {
+test.describe('Testfälle für Landesbediensteten suchen, Funktion und UI-Vollständigkeit', () => {
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
     header = new HeaderPage(page);
     suchergebnisPopup = new SuchergebnisPopup(page);
@@ -80,7 +80,7 @@ test.describe('Testfälle für das Anlegen von Benutzern', () => {
   });
   //SPSH-2631 Step 3 - 5
   // Suchergebnis Popup wird angezeigt, wenn kein Treffer gefunden wurde
-  test.only('Kein Treffer: Popup wird angezeigt und kann geschlossen werden (KoPersNr, Email, Benutzername)', { tag: [LONG, SHORT, STAGE] }, async () => {
+  test('Kein Treffer: Popup wird angezeigt und kann geschlossen werden (KoPersNr, Email, Benutzername)', { tag: [LONG, SHORT, STAGE] }, async () => {
     await test.step('Suchen per KoPers.-Nr.', async () => {
       await landesbedienstetenSuchenUndHinzufuegenPage.fillKopersNr("abc9999");
       await landesbedienstetenSuchenUndHinzufuegenPage.clickSearch();
