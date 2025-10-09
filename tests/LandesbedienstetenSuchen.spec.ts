@@ -1,7 +1,7 @@
 import test, { expect, PlaywrightTestArgs } from "@playwright/test";
 import { PersonManagementViewPage } from "../pages/admin/personen/PersonManagementView.neu.page";
 import { LoginViewPage } from "../pages/LoginView.neu.page";
-import { freshLoginPage, UserInfo } from "../base/api/personApi";
+import { freshLoginPage, lockPerson, UserInfo } from "../base/api/personApi";
 import { StartViewPage } from "../pages/StartView.neu.page";
 import { LandesbedienstetenSuchenUndHinzufuegenPage } from "../pages/admin/personen/LandesbedienstetenSuchenUndHinzufuegen.page";
 import { createPersonWithPersonenkontext } from "../base/api/testHelperPerson.page";
@@ -13,13 +13,13 @@ import { testschuleDstNr, testschuleName } from "../base/organisation";
 import { LONG, SHORT, STAGE } from "../base/tags";
 
 let loginPage: LoginViewPage;
-let loginPage2: LoginViewPage;
 let landingPage: LandingViewPage;
 let landesbedienstetenSuchenUndHinzufuegenPage: LandesbedienstetenSuchenUndHinzufuegenPage;
 let personManagementViewPage: PersonManagementViewPage;
 let header: HeaderPage;
 let popup: PersonSearchErrorPopup;
 let lehrkraft: UserInfo;
+let lockedLehrkraft: UserInfo;
 
 test.describe('Testfälle für das Anlegen von Benutzern', () => {
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
@@ -33,13 +33,15 @@ test.describe('Testfälle für das Anlegen von Benutzern', () => {
     const schuladminPassword: string = adminUserInfo.password;
     // Lehrkraft
     lehrkraft = await createPersonWithPersonenkontext(page, testschuleName, lehrkraftOeffentlichRolle, undefined, undefined, "87654321");
+    lockedLehrkraft = await createPersonWithPersonenkontext(page, testschuleName, lehrkraftOeffentlichRolle, undefined, undefined, "98765432");
+    await lockPerson(page, lockedLehrkraft.personId, testschuleDstNr);
             
     // 1. Anmelden im Schulportal SH
     landingPage = await header.logout();
     landingPage.navigateToLogin();
     
     // Erstmalige Anmeldung mit Passwortänderung  
-    const startPage: StartViewPage = await loginPage2.loginNewUserWithPasswordChange(schuladminUsername, schuladminPassword);
+    const startPage: StartViewPage = await loginPage.loginNewUserWithPasswordChange(schuladminUsername, schuladminPassword);
     await startPage.waitForPageLoad();
   
     // 2. Zur Seite navigieren
@@ -93,6 +95,13 @@ test.describe('Testfälle für das Anlegen von Benutzern', () => {
       await landesbedienstetenSuchenUndHinzufuegenPage.clickSearch();
       expect(await popup.checkPopupCompleteness()).toBeTruthy();
    });
+  });
+
+  // Gesperrte Person kann nicht gefunden werden
+  test.only('Gesperrte Person kann nicht gefunden werden', { tag: [LONG, SHORT, STAGE] }, async () => {
+    await landesbedienstetenSuchenUndHinzufuegenPage.fillKopersNr(lockedLehrkraft.kopersnummer);
+    await landesbedienstetenSuchenUndHinzufuegenPage.clickSearch();
+    await popup.checkPopupCompleteness();
   });
 
   //SPSH-2632 - Suchergebnis UI Test & Happy Path Landesbediensteten per Namen suchen
