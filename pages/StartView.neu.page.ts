@@ -14,17 +14,9 @@ export class StartViewPage {
     await expect(this.startCardHeadline).toHaveText('Startseite');
   }
 
-  private async navigateTo(cardTitle: string, pageClass: any, waitForPageLoad: (page: any) => Promise<void>): Promise<any> {
-    await this.page.getByTestId('card-title').filter({ hasText: cardTitle }).click();
-    const newPage: any = new pageClass(this.page);
-    console.log('neue Seite: ',newPage)
-    await waitForPageLoad.call(newPage);
-    return newPage;
-  }
-
   /* assertions */
   public async serviceProvidersAreLoaded(): Promise<void> {
-    await this.page.waitForResponse((response) => response.url().includes('/api/provider') && response.status() === 200);
+    await this.page.waitForResponse((response: import('@playwright/test').Response) => response.url().includes('/api/provider') && response.status() === 200);
     await this.page.waitForResponse('/api/provider/**/logo');
     await expect(this.page.getByTestId('all-service-provider-title')).toBeVisible();
   }
@@ -39,11 +31,6 @@ export class StartViewPage {
     ]);
   }
 
-  public async navigateToSchulportalAdministration(): Promise<PersonManagementViewPage> {
-    return this.navigateTo('Schulportal-Administration', PersonManagementViewPage, p => p.waitForPageLoad());
-  }
-
-  // navigateTo funktioniert nicht, deswegen hier die manuelle Variante
   public async goToAdministration(): Promise<PersonManagementViewPage> {
       await this.page.locator('[data-testid^="service-provider-card"]').filter({ hasText: 'Schulportal-Administration' }).click();
       const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(this.page);

@@ -39,7 +39,7 @@ test.describe('Testfälle für das Anlegen von Benutzern', () => {
     await loginPage2.waitForPageLoad();
     
     // Erstmalige Anmeldung mit Passwortänderung  
-    const startPage: StartViewPage = await loginPage2.firstLogin(schuladminUsername, schuladminPassword);
+    const startPage: StartViewPage = await loginPage2.loginNewUserWithPasswordChange(schuladminUsername, schuladminPassword);
     await startPage.waitForPageLoad();
   
     // 2. Zur Seite navigieren
@@ -129,7 +129,7 @@ test.describe('Testfälle für das Anlegen von Benutzern', () => {
       await expect(landesbedienstetenSuchenUndHinzufuegenPage.pCardFullname).toHaveText(lehrFullname);
       await landesbedienstetenSuchenUndHinzufuegenPage.buttonZurueckZurSuche.click();
       await expect(landesbedienstetenSuchenUndHinzufuegenPage.pCardFullname).not.toBeVisible();
-      await expect(landesbedienstetenSuchenUndHinzufuegenPage.nameRadio).toBeChecked();
+      await expect(landesbedienstetenSuchenUndHinzufuegenPage.nameRadioButton).toBeChecked();
       await expect(landesbedienstetenSuchenUndHinzufuegenPage.vornameInputField).toHaveValue(lehrkraft.vorname);
       await expect(landesbedienstetenSuchenUndHinzufuegenPage.nachnameInputField).toHaveValue(lehrkraft.familienname);
     });
@@ -138,7 +138,7 @@ test.describe('Testfälle für das Anlegen von Benutzern', () => {
       await expect(landesbedienstetenSuchenUndHinzufuegenPage.pCardFullname).toHaveText(lehrFullname);
       await landesbedienstetenSuchenUndHinzufuegenPage.buttonZuruecksetzen.click();
       await expect(landesbedienstetenSuchenUndHinzufuegenPage.pCardFullname).not.toBeVisible();
-      await expect(landesbedienstetenSuchenUndHinzufuegenPage.nameRadio).toBeChecked();
+      await expect(landesbedienstetenSuchenUndHinzufuegenPage.nameRadioButton).toBeChecked();
       await expect(landesbedienstetenSuchenUndHinzufuegenPage.vornameInputField).toBeEmpty();
       await expect(landesbedienstetenSuchenUndHinzufuegenPage.nachnameInputField).toBeEmpty();
     });

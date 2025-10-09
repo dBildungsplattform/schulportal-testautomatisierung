@@ -9,10 +9,10 @@ export class LandesbedienstetenSuchenUndHinzufuegenPage extends AbstractAdminPag
 
   /* Locators */
   // Radio Buttons
-  public kopersRadio : Locator = this.page.getByLabel('per KoPers.-Nr.');
-  public emailRadio : Locator = this.page.getByLabel('per E-Mail');
-  public usernameRadio : Locator = this.page.getByLabel('per Benutzername');
-  public nameRadio : Locator = this.page.getByLabel('per Vorname und Nachname');
+  public kopersRadioButton : Locator = this.page.getByLabel('per KoPers.-Nr.');
+  public emailRadioButton : Locator = this.page.getByLabel('per E-Mail');
+  public usernameRadioButton : Locator = this.page.getByLabel('per Benutzername');
+  public nameRadioButton : Locator = this.page.getByLabel('per Vorname und Nachname');
 
   // Input Eingabefelder nur sichtbar, wenn das jeweilige Radio ausgewählt ist
   public kopersInputField : Locator = this.page.locator('#kopers-input');
@@ -55,87 +55,59 @@ export class LandesbedienstetenSuchenUndHinzufuegenPage extends AbstractAdminPag
   }
 
   /* actions */
-  // Prüfung: Formular wird vollständig angezeigt
   public async checkForPageCompleteness(): Promise<void> {
     await expect(this.page.getByTestId('admin-headline')).toHaveText('Landesbediensteten (suchen und hinzufügen)');
-    // 2. Das Dialogfenster enthält:
-    //  den Titel Landesbediensteten suchen,
     await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Landesbediensteten suchen');
-    //    den Link Schließen mit einem X Icon,
     await expect(this.page.getByTestId('close-layout-card-button')).toBeVisible();
-    //    Den Hinweistext: Bitte wählen Sie, wie Sie nach dem Landesbediensteten suchen möchten.
     await expect(this.page.getByText('Bitte wählen Sie, wie Sie nach dem Landesbediensteten suchen möchten.', { exact: false })).toBeVisible();
     //  Es gibt 4 Möglichkeiten zu suchen:
-    //    per KoPers.-Nr. (Radio Button, vorausgewählt) mit Eingabefeld,
-    await expect(this.kopersRadio).toBeChecked();
+    await expect(this.kopersRadioButton).toBeChecked();
     await expect(this.kopersInputField).toBeVisible();
-    //    per E-Mail-Adresse (Radio Button)
-    await expect(this.emailRadio).toBeVisible();
+    await expect(this.emailRadioButton).toBeVisible();
     await expect(this.emailInputField).toBeHidden();
-    //    per Benutzernamen (Radio Button)
-    await expect(this.usernameRadio).toBeVisible();
+    await expect(this.usernameRadioButton).toBeVisible();
     await expect(this.usernameInputField).toBeHidden();
-    //    per Vorname und Nachname (Radio Button)
-    await expect(this.nameRadio).toBeVisible();
+    await expect(this.nameRadioButton).toBeVisible();
     await expect(this.vornameInputField).toBeHidden();
     await expect(this.nachnameInputField).toBeHidden();
-    // die Buttons Zurücksetzen im Status aktiv und Landesbediensteten suchen im Status disabled
     await expect(this.buttonZuruecksetzen).toBeEnabled();
     await expect(this.buttonLandesbedienstetenSuchen).toBeDisabled();
   }
 
   // Formular ausfüllen
-  /**
-   * Füllt das KoPers.-Nr.-Feld aus, wählt ggf. den Radiobutton aus.
-   */
   public async fillKopersNr(kopersNr: string): Promise<void> {
-    if (!(await this.kopersRadio.isChecked())) {
-      await this.kopersRadio.check();
+    if (!(await this.kopersRadioButton.isChecked())) {
+      await this.kopersRadioButton.check();
     }
     await this.kopersInputField.fill(kopersNr);
   }
 
-  /**
-   * Füllt das E-Mail-Feld aus, wählt ggf. den Radiobutton aus.
-   */
   public async fillEmail(email: string): Promise<void> {
-    if (!(await this.emailRadio.isChecked())) {
-      await this.emailRadio.check();
+    if (!(await this.emailRadioButton.isChecked())) {
+      await this.emailRadioButton.check();
     }
     await this.emailInputField.fill(email);
   }
 
-  /**
-   * Füllt das Benutzername-Feld aus, wählt ggf. den Radiobutton aus.
-   */
   public async fillBenutzername(benutzername: string): Promise<void> {
-    if (!(await this.usernameRadio.isChecked())) {
-      await this.usernameRadio.check();
+    if (!(await this.usernameRadioButton.isChecked())) {
+      await this.usernameRadioButton.check();
     }
     await this.usernameInputField.fill(benutzername);
   }
 
-  /**
-   * Füllt die Felder Vorname und Nachname aus, wählt ggf. den Radiobutton aus.
-   */
   public async fillVornameNachname( vorname: string, nachname: string): Promise<void> {
-    if (!(await this.nameRadio.isChecked())) {
-      await this.nameRadio.check();
+    if (!(await this.nameRadioButton.isChecked())) {
+      await this.nameRadioButton.check();
     }
     await this.nachnameInputField.fill(nachname);
     await this.vornameInputField.fill(vorname);
   }
 
-    /**
-   * Klickt auf den Zurücksetzen-Button.
-   */
   public async clickReset(): Promise<void> {
     await this.buttonZuruecksetzen.click();
   }
 
-  /**
-   * Klickt auf den Suchen-Button.
-   */
   public async clickSearch(): Promise<void> {
     await this.buttonLandesbedienstetenSuchen.click();
   }

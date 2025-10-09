@@ -58,8 +58,8 @@ export class LoginViewPage {
     await setPasswordButton.click();
     return newPassword;
   }
-  // Erster Login mit Passwortänderung
-  public async firstLogin(username: string, password: string) : Promise<StartViewPage> {
+  
+  public async loginNewUserWithPasswordChange(username: string, password: string) : Promise<StartViewPage> {
     const startPage: StartViewPage = await this.login(username, password);
     await this.updatePassword();
     return startPage;
