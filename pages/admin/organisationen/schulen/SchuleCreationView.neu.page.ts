@@ -56,11 +56,11 @@ export class SchuleCreationViewPage extends AbstractAdminPage {
 
   /* assertions */
   public async checkSuccessPage(
-    params: Omit<SchuleCreationParams, 'schulform'>
+    params: SchuleCreationParams
   ): Promise<void> {
     /* header */
     await expect(this.headline).toHaveText('Neue Schule hinzufügen');
-    await expect(this.page.locator('.mdi-check-circle')).toBeVisible();
+    await expect(this.page.getByTestId('schule-success-icon')).toBeVisible();
     await expect(this.page.getByTestId('schule-success-text')).toBeVisible();
 
     /* buttons */
@@ -69,10 +69,10 @@ export class SchuleCreationViewPage extends AbstractAdminPage {
     await expect(this.page.getByTestId('back-to-list-button')).toBeVisible();
 
     /* key column */
-    await expect(this.page.getByText('Folgende Daten wurden gespeichert:')).toBeVisible();
-    await expect(this.page.getByText('Schulform:', { exact: true })).toBeVisible();
-    await expect(this.page.getByText('Dienststellennummer:', { exact: true })).toBeVisible();
-    await expect(this.page.getByText('Schulname:', { exact: true })).toBeVisible();
+    await expect(this.page.getByTestId('following-data-created-text')).toBeVisible();
+    await expect(this.page.getByTestId('created-schule-form-label')).toBeVisible();
+    await expect(this.page.getByTestId('created-schule-dienststellennummer-label')).toBeVisible();
+    await expect(this.page.getByTestId('created-schule-name-label')).toBeVisible();
 
     /* value column */
     await expect(this.page.getByTestId('created-schule-form'))

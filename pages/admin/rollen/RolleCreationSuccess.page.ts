@@ -26,7 +26,7 @@ export class RolleCreationSuccessPage extends AbstractAdminPage {
   public async checkSuccessPage(params: RolleCreationParams): Promise<void> {
     await expect(this.page.getByText('Folgende Daten wurden gespeichert:')).toBeVisible();
     await expect(this.page.getByTestId('rolle-success-text')).toBeVisible();
-    await expect(this.page.locator('.mdi-check-circle')).toBeVisible();
+    await expect(this.page.getByTestId('rolle-success-icon')).toBeVisible();
     await expect(this.rolleForm.rollenname.label).toBeVisible();
     await expect(this.rolleForm.rollenname.data).toHaveText(params.name);
     await expect(this.rolleForm.adminstrationsebene.label).toBeVisible();
