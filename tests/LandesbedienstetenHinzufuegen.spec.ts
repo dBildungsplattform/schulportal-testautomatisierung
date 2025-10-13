@@ -14,6 +14,7 @@ import { LandingViewPage } from "../pages/LandingView.neu.page";
 import { getOrganisationId } from "../base/api/testHelperOrganisation.page";
 import { getRolleId } from "../base/api/testHelperRolle.page";
 import { generateKopersNr } from "../base/utils/generateTestdata";
+import { LONG, SHORT, STAGE } from "../base/tags";
 
 
 let loginPage: LoginViewPage;
@@ -112,29 +113,49 @@ test.describe('Testfälle für Landesbediensteten hinzufügen, Funktion und UI-V
     await landesbedienstetenSuchenUndHinzufuegenPage.landesbedienstetenSuchen(lehrkraft2.username);
     await landesbedienstetenHinzufuegenPage.waitForPageLoad();
   });
-  
-  test('Schuladmin 2 Schulen: Organisationen auswählbar', async () => {
-    await expect(landesbedienstetenHinzufuegenPage.headline).toHaveText('Landesbediensteten hinzufügen');
-    await expect(landesbedienstetenHinzufuegenPage.pflichtfelderHinweisText).toHaveText('Mit * markierte Felder sind Pflichtangaben.');
-    await expect(landesbedienstetenHinzufuegenPage.closeButtonDesktop).toBeVisible();
-    await expect(landesbedienstetenHinzufuegenPage.vornameInput).toBeVisible();
-    await expect(landesbedienstetenHinzufuegenPage.nachnameInput).toBeVisible();
-    await expect(landesbedienstetenHinzufuegenPage.kopersnrInput).toBeVisible();
-    await expect(landesbedienstetenHinzufuegenPage.hasNoKopersnrCheckbox).toBeVisible();
-    await expect(landesbedienstetenHinzufuegenPage.organisationSelect).toBeVisible();
-    await expect(landesbedienstetenHinzufuegenPage.abbrechenButton).toBeVisible();
-    await expect(landesbedienstetenHinzufuegenPage.landesbedienstetenHinzufuegenButton).toBeVisible();
-    await expect(landesbedienstetenHinzufuegenPage.personalInfoHeadline).toBeVisible();
-    await expect(landesbedienstetenHinzufuegenPage.organisationHeadline).toBeVisible();
-    await expect(landesbedienstetenHinzufuegenPage.landesbedienstetenHinzufuegenButton).toBeDisabled();
-    // Persönliche Daten sind vorausgefüllt
-    await expect(landesbedienstetenHinzufuegenPage.vornameTextInputfield).toHaveValue(lehrkraft2.vorname);
-    await expect(landesbedienstetenHinzufuegenPage.nachnameTextInputfield).toHaveValue(lehrkraft2.familienname);
-    await expect(landesbedienstetenHinzufuegenPage.kopersnrTextInputfield).toHaveValue(lehrkraft2.kopersnummer);
-    // Organisationen sind eingeschränkt auswählbar
-    await landesbedienstetenHinzufuegenPage.organisationSelect.click();
-    const optionTexts: string[] = await landesbedienstetenHinzufuegenPage.organisationAutocomplete.allTextContents();
-    const erwarteteOrganisationen: string[] = [testschuleDstNrUndName, testschule665DstNrUndName];
-    expect(optionTexts).toEqual(expect.arrayContaining(erwarteteOrganisationen));
+  //SPSH-2634 Step 1
+  test.only('Schuladmin 2 Schulen', { tag: [LONG, SHORT, STAGE] }, async () => {
+    await test.step('Organisation nur aus zugewiesenen Organisationen auswählbar, UI Elemente werden angezeigt', async () => {
+      await expect(landesbedienstetenHinzufuegenPage.headline).toHaveText('Landesbediensteten hinzufügen');
+      await expect(landesbedienstetenHinzufuegenPage.pflichtfelderHinweisText).toHaveText('Mit * markierte Felder sind Pflichtangaben.');
+      await expect(landesbedienstetenHinzufuegenPage.closeButtonDesktop).toBeVisible();
+      await expect(landesbedienstetenHinzufuegenPage.vornameInput).toBeVisible();
+      await expect(landesbedienstetenHinzufuegenPage.nachnameInput).toBeVisible();
+      await expect(landesbedienstetenHinzufuegenPage.kopersnrInput).toBeVisible();
+      await expect(landesbedienstetenHinzufuegenPage.hasNoKopersnrCheckbox).toBeVisible();
+      await expect(landesbedienstetenHinzufuegenPage.organisationSelect).toBeVisible();
+      await expect(landesbedienstetenHinzufuegenPage.abbrechenButton).toBeVisible();
+      await expect(landesbedienstetenHinzufuegenPage.landesbedienstetenHinzufuegenButton).toBeVisible();
+      await expect(landesbedienstetenHinzufuegenPage.personalInfoHeadline).toBeVisible();
+      await expect(landesbedienstetenHinzufuegenPage.organisationHeadline).toBeVisible();
+      await expect(landesbedienstetenHinzufuegenPage.landesbedienstetenHinzufuegenButton).toBeDisabled();
+      // Persönliche Daten sind vorausgefüllt
+      await expect(landesbedienstetenHinzufuegenPage.vornameTextInputfield).toHaveValue(lehrkraft2.vorname);
+      await expect(landesbedienstetenHinzufuegenPage.nachnameTextInputfield).toHaveValue(lehrkraft2.familienname);
+      await expect(landesbedienstetenHinzufuegenPage.kopersnrTextInputfield).toHaveValue(lehrkraft2.kopersnummer);
+      // Organisationen sind eingeschränkt auswählbar
+      await landesbedienstetenHinzufuegenPage.organisationOeffnenButton.click();
+      const optionTexts: string[] = await landesbedienstetenHinzufuegenPage.organisationAutocomplete.allTextContents();
+      const erwarteteOrganisationen: string[] = [testschuleDstNrUndName, testschule665DstNrUndName];
+      expect(optionTexts).toEqual(expect.arrayContaining(erwarteteOrganisationen));
+    });
+    //SPSH-2634 Step 2
+    await test.step('Nach Organisationsauswahl werden Rollenfelder angezeigt, Auswahl 2. Organisation im Dropdown', async () => {
+      // Auswahl der zweiten Organisation
+      await landesbedienstetenHinzufuegenPage.organisationAutocomplete.selectByName(testschule665DstNrUndName);
+      await expect(landesbedienstetenHinzufuegenPage.rolleHeadline).toBeVisible();
+      await expect(landesbedienstetenHinzufuegenPage.rollenSelect).toBeVisible();
+    });
+    //SPSH-2634 Step 3
+    await test.step('Befristung wird angezeigt bei Auswahl LiV', async () => {
+      await landesbedienstetenHinzufuegenPage.rolleOeffnenButton.click();
+      await landesbedienstetenHinzufuegenPage.rolleAutocomplete.selectByTitle('LiV');
+      await expect(landesbedienstetenHinzufuegenPage.befristungHeadline).toBeVisible();
+      await expect(landesbedienstetenHinzufuegenPage.befristungInput).toBeVisible();
+      await expect(landesbedienstetenHinzufuegenPage.bisSchuljahresendeRadio).toBeVisible();
+      await expect(landesbedienstetenHinzufuegenPage.unbefristetRadio).toBeVisible();
+      await expect(landesbedienstetenHinzufuegenPage.bisSchuljahresendeRadio).toBeChecked();
+      await expect(landesbedienstetenHinzufuegenPage.landesbedienstetenHinzufuegenButton).toBeEnabled();
+    });
   });
 });

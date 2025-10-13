@@ -154,4 +154,13 @@ export class Autocomplete {
     const options: Locator = this.page.locator('.v-list-item, [role="option"]');
     return await options.allTextContents();
   }
+  
+  public async selectByName(name: string): Promise<void> {
+    const option: Locator = this.page.locator('.v-list-item, [role="option"]').filter({
+      hasText: name,
+    });
+    //await option.waitFor({ state: 'visible' });
+    await option.click();
+  }
+  
 }

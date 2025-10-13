@@ -28,15 +28,21 @@ export class LandesbedienstetenHinzufuegenPage extends AbstractAdminPage {
   public nachnameInput: Locator = this.form.getByTestId('familienname-input');
   public kopersnrInput: Locator = this.form.getByTestId('kopersnr-input');
   public hasNoKopersnrCheckbox: Locator = this.form.getByTestId('has-no-kopersnr-checkbox');
+  public befristungInput: Locator = this.form.getByTestId('befristung-input');
+
+  public bisSchuljahresendeRadio: Locator = this.form.locator('input[type="radio"][aria-label*="Schuljahresende"]');
+  public unbefristetRadio: Locator = this.form.getByTestId('unbefristet-radio-button');
   // Inputfelder für die Dateneingabe
   public vornameTextInputfield: Locator = this.form.getByTestId('vorname-input').locator('input');
   public nachnameTextInputfield: Locator = this.form.getByTestId('familienname-input').locator('input');
   public kopersnrTextInputfield: Locator = this.form.getByTestId('kopersnr-input').locator('input');
-
+  public befristungDateInputfield: Locator = this.form.getByTestId('befristung-input').locator('input');
   public organisationSelect: Locator = this.form.getByTestId('personenkontext-create-organisation-select');
+  public organisationOeffnenButton: Locator = this.page.locator('[data-testid="personenkontext-create-organisation-select"] i[aria-label="Öffnen"]');
   public organisationDropdown: Locator = this.organisationSelect.locator('.v-list-item, [role="option"]');
+  
   public rollenSelect: Locator = this.form.getByTestId('rollen-select');
-
+  public rolleOeffnenButton: Locator = this.page.locator('[data-testid="rollen-select"] i[aria-label="Öffnen"]');
   public organisationAutocomplete: Autocomplete = new Autocomplete(this.page, this.page.getByTestId('personenkontext-create-organisation-select'));
   public rolleAutocomplete: Autocomplete = new Autocomplete(this.page, this.page.getByTestId('rollen-select'));
   // Buttons
@@ -47,8 +53,9 @@ export class LandesbedienstetenHinzufuegenPage extends AbstractAdminPage {
   public personalInfoHeadline: Locator = this.form.locator('h3', { hasText: '1. Persönliche Informationen' });
   public organisationHeadline: Locator = this.form.locator('h3', { hasText: '2. Organisationsebene zuordnen' });
   public rolleHeadline: Locator = this.form.locator('h3', { hasText: '3. Rolle zuordnen' });
+  public befristungHeadline: Locator = this.form.locator('h3', { hasText: '4. Befristung zuordnen' });
 
-  // Organisation wählen
-  public organisationOption = (organisationName: string): Locator =>
-    this.page.getByRole('option', { name: organisationName });
+  // // Organisation wählen
+  // public organisationOption = (organisationName: string): Locator =>
+  //   this.page.getByRole('option', { name: organisationName });
 }
