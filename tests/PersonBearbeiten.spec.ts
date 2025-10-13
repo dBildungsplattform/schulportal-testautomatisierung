@@ -497,8 +497,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     }
   );
 
-  // TODO: we skip this test because it fails, as ldap is currently unreachable in CI
-  test.skip(
+  test(
     'Inbetriebnahme-Passwort über die Gesamtübersicht erzeugen',
     { tag: [LONG] },
     async ({ page }: PlaywrightTestArgs) => {
