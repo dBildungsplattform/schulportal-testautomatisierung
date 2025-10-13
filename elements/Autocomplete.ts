@@ -8,6 +8,7 @@ export class Autocomplete {
   private readonly modalToggle: Locator;
   private readonly inputLocator: Locator;
   private readonly loadingLocator: Locator;
+  private readonly root: Locator // Das Autocomplete-Element
 
   constructor(private readonly page: Page, private readonly locator: Locator) {
     this.overlayLocator = this.page.locator('div.v-overlay.v-menu');
@@ -142,5 +143,15 @@ export class Autocomplete {
 
   public async checkText(text: string): Promise<void> {
     await expect(this.locator).toHaveText(text);
+  }
+
+  // Gibt alle sichtbaren Optionen als Array von Strings zurück
+  public async allTextContents(): Promise<string[]> {
+    // Öffne ggf. das Dropdown, falls nötig
+    //await this.root.click();
+
+    // Locator für die Dropdown-Optionen
+    const options: Locator = this.page.locator('.v-list-item, [role="option"]');
+    return await options.allTextContents();
   }
 }

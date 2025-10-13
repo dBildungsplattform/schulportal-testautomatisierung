@@ -3,6 +3,7 @@ export const testschuleDstNr: string = '1111111';
 export const testschuleDstNrUndName: string = '1111111 (Testschule Schulportal)';
 export const testschule665Name: string = "Testschule-PW665";
 export const testschule665DstNr: string = '1111165';
+export const testschule665DstNrUndName: string = '1111165 (Testschule-PW665)';
 export const ersatzTestschuleName: string = 'Duborg-Skolen';
 export const ersatzTestschuleDstNr: string = '0799801';
 export const landSH: string = 'Land Schleswig-Holstein';

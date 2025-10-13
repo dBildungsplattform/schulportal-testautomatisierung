@@ -91,7 +91,7 @@ export class LandesbedienstetenSuchenUndHinzufuegenPage extends AbstractAdminPag
 
   public async fillBenutzername(benutzername: string): Promise<void> {
     if (!(await this.usernameRadioButton.isChecked())) {
-      await this.usernameRadioButton.check();
+      await this.usernameRadioButton.click();
     }
     await this.usernameInputField.fill(benutzername);
   }
@@ -110,5 +110,13 @@ export class LandesbedienstetenSuchenUndHinzufuegenPage extends AbstractAdminPag
 
   public async clickSearch(): Promise<void> {
     await this.buttonLandesbedienstetenSuchen.click();
+  }
+
+  // Landesbediensteten suchen und Landesbediensteten hinzufügen klicken
+  public async landesbedienstetenSuchen(benutzername: string): Promise<void> {
+    await this.waitForPageLoad();
+    await this.fillBenutzername(benutzername);
+    await this.clickSearch();
+    await this.buttonLandesbedienstetenHinzufuegen.click();
   }
 }

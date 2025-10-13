@@ -27,7 +27,7 @@ export async function generateRolleName(): Promise<string> {
 }
 
 export async function generateKopersNr(): Promise<string> {
-  return '0815' + faker.string.numeric({ length: 8 });
+  return '0815' + faker.string.numeric({ length: 3 });
 }
 
 export async function generateKlassenname(): Promise<string> {
