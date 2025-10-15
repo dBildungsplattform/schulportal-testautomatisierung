@@ -2,7 +2,7 @@ import { test, expect, PlaywrightTestArgs, Page } from '@playwright/test';
 import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
 import { StartPage } from '../pages/StartView.page';
-import { Email4TeacherPage } from '../pages/components/service-provider-cards/Email4Teacher.page';
+import { Email } from '../pages/components/service-provider-cards/Email.page';
 import { PersonManagementViewPage } from '../pages/admin/personen/PersonManagementView.page';
 import { PersonDetailsViewPage } from '../pages/admin/personen/PersonDetailsView.page';
 import { HeaderPage } from '../pages/components/Header.page';
@@ -98,10 +98,10 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
       const emailPagePromise: Promise<Page> = page.waitForEvent('popup');
       await startseite.cardItemEmail.click();
       const emailPage: Page = await emailPagePromise;
-      const email4Teacher: Email4TeacherPage = new Email4TeacherPage(emailPage);
+      const email: Email = new Email(emailPage);
       switch (ENV) {
         case 'dev':
-          await expect(email4Teacher.textH1).toBeVisible(); // dummy Seite email wikipedia
+          await expect(email.textH1).toBeVisible(); // dummy Seite email wikipedia
           break;
       }
       await emailPage.close();

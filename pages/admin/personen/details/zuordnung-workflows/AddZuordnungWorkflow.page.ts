@@ -17,7 +17,7 @@ export class AddZuordnungWorkflowPage {
   /* actions */
   public async submit(): Promise<ZuordnungenPage> {
     await this.page.getByTestId('zuordnung-creation-submit-button').click();
-    await this.page.getByRole('button', { name: 'Ja' }).click();
+    await this.page.getByTestId('confirm-zuordnung-dialog-addition').click();
     await waitForAPIResponse(this.page, AddZuordnungWorkflowPage.ENDPOINT);
     return new ZuordnungenPage(this.page);
   }
@@ -31,11 +31,11 @@ export class AddZuordnungWorkflowPage {
   }
 
   public async fillKopers(kopers: string): Promise<void> {
-    await this.page.getByTestId('kopersnr-input').locator('.v-field__input').fill(kopers);
+    await this.page.getByTestId('kopersnr-input').locator('input').fill(kopers);
   }
 
   public async fillBefristung(befristung: string): Promise<void> {
-    await this.page.locator('[data-testid="befristung-input"] input').fill(befristung);
+    await this.page.getByTestId('befristung-input').locator('input').fill(befristung);
   }
 
   /* assertions */
