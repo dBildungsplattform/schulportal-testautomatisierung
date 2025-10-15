@@ -50,22 +50,19 @@ export async function generateDienststellenNr(): Promise<string> {
   return '0' + faker.number.bigInt({ min: 10000000, max: 100000000 });
 }
 
-export async function generateCurrentDate({
+export function generateCurrentDate({
   days,
   months,
-  formatDMY,
 }: {
   days: number;
   months: number;
-  formatDMY: boolean;
-}): Promise<string> {
+}): Date {
   // creates current date and adds days + month to the current date
-  // returned format is DD.MM.YYYY or YYYY.MM.DD
   const newDate: Date = addDays(addMonths(new Date(), months), days);
+  
+  return newDate;
+}
 
-  if (formatDMY) {
-    return format(newDate, 'dd.MM.yyyy');
-  } else {
-    return format(newDate, 'yyyy.MM.dd');
-  }
+export function formatDateDMY(date: Date): string {
+  return format(date, 'dd.MM.yyyy');
 }

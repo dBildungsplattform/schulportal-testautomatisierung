@@ -6,11 +6,11 @@ import {
   createPerson,
   UserInfo
 } from '../base/api/personApi';
-import { addSPToRolle, addSystemrechtToRolle } from '../base/api/rolleApi';
+import { addServiceProvidersToRolle, addSystemrechtToRolle, RollenMerkmal } from '../base/api/rolleApi';
 import { createRolle } from '../base/api/rolleApi';
 import { getServiceProviderId } from '../base/api/serviceProviderApi';
 import { klasse1Testschule } from '../base/klassen';
-import { befristungPflicht, kopersNrPflicht } from '../base/merkmale';
+import { kopersNrPflicht } from '../base/merkmale';
 import { testschuleName } from '../base/organisation';
 import { typeLehrer } from '../base/rollentypen';
 import {
@@ -30,6 +30,7 @@ import {
 import { LONG, SHORT, STAGE } from '../base/tags';
 import { deletePersonById, deleteRolleById } from '../base/testHelperDeleteTestdata';
 import {
+  formatDateDMY,
   generateKopersNr,
   generateNachname,
   generateRolleName,
@@ -158,7 +159,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
       const klasseId: string = await getOrganisationId(page, klasse1Testschule);
       const idSPs: string[] = [await getServiceProviderId(page, 'itslearning')];
       const rolleId: string = await createRolle(page, 'LERN', schuleId, await generateRolleName());
-      await addSPToRolle(page, rolleId, idSPs);
+      await addServiceProvidersToRolle(page, rolleId, idSPs);
       const userInfo: UserInfo = await createPerson(
         page,
         schuleId,
@@ -263,7 +264,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         userInfoLehrer1.personId,
         userInfoLehrer1.organisationId,
         userInfoLehrer1.rolleId,
-        await generateCurrentDate({ days: 50, months: 0, formatDMY: false })
+        generateCurrentDate({ days: 50, months: 0 })
       );
 
       // Lehrer2: Schulzuordnung noch 12 Tage gültig
@@ -284,12 +285,12 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         userInfoLehrer2.personId,
         userInfoLehrer2.organisationId,
         userInfoLehrer2.rolleId,
-        await generateCurrentDate({ days: 12, months: 0, formatDMY: false })
+        generateCurrentDate({ days: 12, months: 0 })
       );
     });
 
     await test.step(`Lehrer1 meldet sich an und die orangene News-Box wird geprüft`, async () => {
-      const timeLimitTeacherRolle1: string = await generateCurrentDate({ days: 50, months: 0, formatDMY: true });
+      const timeLimitTeacherRolle1: string = formatDateDMY(generateCurrentDate({ days: 50, months: 0 }));
       const alertText: string =
         `Hinweis: Die Zuordnung dieses Benutzerkontos zu der Schule "${testschuleName}" mit der Rolle "${rollenNameLehrer1}" ist bis zum ${timeLimitTeacherRolle1} befristet. ` +
         `Sollte dies nicht zutreffen, wenden Sie sich bitte an Ihre Schulleitung. Nach Ende der Zuordnung sind Funktionalitäten, die im Bezug zu dieser Schule und Rolle stehen, nicht mehr verfügbar.`;
@@ -306,7 +307,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
     });
 
     await test.step(`Lehrer2 meldet sich an und die rote News-Box wird geprüft`, async () => {
-      const timeLimitTeacherRolle2: string = await generateCurrentDate({ days: 12, months: 0, formatDMY: true });
+      const timeLimitTeacherRolle2: string = formatDateDMY(generateCurrentDate({ days: 12, months: 0 }));
       const alertText: string =
         `Hinweis: Die Zuordnung dieses Benutzerkontos zu der Schule "${testschuleName}" mit der Rolle "${rollenNameLehrer2}" ist bis zum ${timeLimitTeacherRolle2} befristet. ` +
         `Sollte dies nicht zutreffen, wenden Sie sich bitte an Ihre Schulleitung. Nach Ende der Zuordnung sind Funktionalitäten, die im Bezug zu dieser Schule und Rolle stehen, nicht mehr verfügbar.`;
@@ -430,7 +431,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
           await generateRolleName(),
           await generateKopersNr(),
           undefined,
-          [kopersNrPflicht]
+          new Set<RollenMerkmal>([kopersNrPflicht])
         );
         personIds.push(userInfo.personId);
         rolleIds.push(userInfo.rolleId);
@@ -476,7 +477,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
           await generateRolleName(),
           await generateKopersNr(),
           undefined,
-          [kopersNrPflicht]
+          new Set<RollenMerkmal>([kopersNrPflicht])
         );
         personIds.push(userInfo.personId);
         rolleIds.push(userInfo.rolleId);
@@ -525,7 +526,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
           await generateRolleName(),
           await generateKopersNr(),
           undefined,
-          [kopersNrPflicht]
+          new Set<RollenMerkmal>([kopersNrPflicht])
         );
         personIds.push(userInfo.personId);
         rolleIds.push(userInfo.rolleId);
@@ -574,7 +575,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
           await generateRolleName(),
           undefined,
           undefined,
-          [befristungPflicht]
+          new Set<RollenMerkmal>([kopersNrPflicht])
         );
         personIds.push(userInfo.personId);
         rolleIds.push(userInfo.rolleId);
@@ -622,7 +623,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
           await generateRolleName(),
           await generateKopersNr(),
           undefined,
-          [befristungPflicht, kopersNrPflicht]
+          new Set<RollenMerkmal>([kopersNrPflicht])
         );
         personIds.push(userInfo.personId);
         rolleIds.push(userInfo.rolleId);
@@ -670,7 +671,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
           await generateRolleName(),
           await generateKopersNr(),
           undefined,
-          [befristungPflicht, kopersNrPflicht]
+          new Set<RollenMerkmal>([kopersNrPflicht])
         );
         personIds.push(userInfo.personId);
         rolleIds.push(userInfo.rolleId);

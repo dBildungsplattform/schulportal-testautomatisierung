@@ -6,7 +6,7 @@ import {
   createRolleAndPersonWithUserContext,
   setTimeLimitPersonenkontext,
 } from '../base/api/personApi';
-import { addSPToRolle, addSystemrechtToRolle, RollenArt } from '../base/api/rolleApi';
+import { addServiceProvidersToRolle, addSystemrechtToRolle, RollenArt, RollenMerkmal } from '../base/api/rolleApi';
 import { createRolle } from '../base/api/rolleApi';
 import { getServiceProviderId } from '../base/api/serviceProviderApi';
 import { klasse1Testschule } from '../base/klassen';
@@ -27,6 +27,7 @@ import {
   generateVorname,
   generateRolleName,
   generateKopersNr,
+  formatDateDMY,
 } from '../base/utils/generateTestdata';
 import { gotoTargetURL } from '../base/testHelperUtils';
 import { generateCurrentDate } from '../base/utils/generateTestdata';
@@ -157,7 +158,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     { tag: [LONG, STAGE, BROWSER] },
     async ({ page }: PlaywrightTestArgs) => {
       let userInfoLehrer: UserInfo;
-      const sperrDatumAbHeute: string = await generateCurrentDate({ days: 0, months: 0, formatDMY: true });
+      const sperrDatumAbHeute: string = formatDateDMY(generateCurrentDate({ days: 0, months: 0 }));
       logoutViaStartPage = true;
 
       await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) und SP(email) über die api anlegen ${ADMIN}`, async () => {
@@ -193,8 +194,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test('Einen Benutzer über das FE befristet sperren', { tag: [LONG, STAGE] }, async ({ page }: PlaywrightTestArgs) => {
     let userInfoLehrer: UserInfo;
-    const sperrDatumAbHeute: string = await generateCurrentDate({ days: 0, months: 0, formatDMY: true });
-    const sperrDatumBis: string = await generateCurrentDate({ days: 5, months: 2, formatDMY: true });
+    const sperrDatumAbHeute: string = formatDateDMY(generateCurrentDate({ days: 0, months: 0 }));
+    const sperrDatumBis: string = formatDateDMY(generateCurrentDate({ days: 5, months: 2 }));
     logoutViaStartPage = true;
 
     await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) und SP(email) über die api anlegen ${ADMIN}`, async () => {
@@ -240,7 +241,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         const klasseId: string = await getOrganisationId(page, klasse1Testschule);
         const rollenname: string = await generateRolleName();
         const rolleId: string = await createRolle(page, 'LERN', schuleId, rollenname);
-        await addSPToRolle(page, rolleId, [await getServiceProviderId(page, 'itslearning')]);
+        await addServiceProvidersToRolle(page, rolleId, [await getServiceProviderId(page, 'itslearning')]);
         userInfoSchueler = await createPerson(
           page,
           schuleId,
@@ -541,7 +542,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     { tag: [LONG, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
       let userInfoLehrer: UserInfo;
-      const timeLimitTeacherRolle: string = await generateCurrentDate({ days: 3, months: 5, formatDMY: true });
+      const timeLimitTeacherRolle: string = formatDateDMY(generateCurrentDate({ days: 3, months: 5 }));
       let timeLimitTeacherRolleNew: string;
       const nameRolle: string = await generateRolleName();
       let colorTextEntireNameSchulzuordnung: string = '';
@@ -564,7 +565,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
           userInfoLehrer.personId,
           userInfoLehrer.organisationId,
           userInfoLehrer.rolleId,
-          await generateCurrentDate({ days: 3, months: 5, formatDMY: false })
+          generateCurrentDate({ days: 3, months: 5 })
         );
       });
 
@@ -589,23 +590,23 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await test.step(`Ungültige und gültige Befristungen eingeben`, async () => {
         // enter invalid date
         await personDetailsView.inputBefristung.fill(
-          await generateCurrentDate({ days: 0, months: 0, formatDMY: true })
+          formatDateDMY(generateCurrentDate({ days: 0, months: 0 }))
         );
         await personDetailsView.errorTextInputBefristung.isVisible();
 
         // enter invalid date
         await personDetailsView.inputBefristung.fill(
-          await generateCurrentDate({ days: 0, months: -3, formatDMY: true })
+          formatDateDMY(generateCurrentDate({ days: 0, months: -3 }))
         );
         await personDetailsView.errorTextInputBefristung.isVisible();
 
         // enter valid date
         await personDetailsView.inputBefristung.fill(
-          await generateCurrentDate({ days: 22, months: 6, formatDMY: true })
+          formatDateDMY(generateCurrentDate({ days: 22, months: 6 }))
         );
         await personDetailsView.errorTextInputBefristung.isHidden();
 
-        timeLimitTeacherRolleNew = await generateCurrentDate({ days: 0, months: 8, formatDMY: true });
+        timeLimitTeacherRolleNew = formatDateDMY(generateCurrentDate({ days: 0, months: 8 }));
         await personDetailsView.inputBefristung.fill(timeLimitTeacherRolleNew);
         await personDetailsView.errorTextInputBefristung.isHidden();
       });
@@ -682,7 +683,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
           nameRolle,
           await generateKopersNr(),
           undefined,
-          [befristungPflicht, kopersNrPflicht]
+          new Set<RollenMerkmal>([befristungPflicht, kopersNrPflicht])
         );
         usernames.push(userInfoLehrer.username);
         rolleIds.push(userInfoLehrer.rolleId);

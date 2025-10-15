@@ -6,7 +6,7 @@ import {
   addSecondOrganisationToPerson,
   createRolleAndPersonWithUserContext,
 } from '../base/api/personApi';
-import { addSPToRolle, addSystemrechtToRolle, createRolle, RollenArt } from '../base/api/rolleApi';
+import { addServiceProvidersToRolle, addSystemrechtToRolle, createRolle, RollenArt } from '../base/api/rolleApi';
 import { getServiceProviderId } from '../base/api/serviceProviderApi';
 import {
   klassenVerwalten,
@@ -263,7 +263,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         const klasseId: string = await getOrganisationId(page, klasse1Testschule);
         const idSPs: string[] = [await getServiceProviderId(page, 'itslearning')];
         const rolleId: string = await createRolle(page, 'LERN', schuleId, rollenname);
-        await addSPToRolle(page, rolleId, idSPs);
+        await addServiceProvidersToRolle(page, rolleId, idSPs);
         const userInfo: UserInfo = await createPerson(page, schuleId, rolleId, nachname, vorname, '', klasseId);
         rolleIds.push(userInfo.rolleId);
         usernames.push(userInfo.username);
@@ -675,7 +675,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         const klasseId: string = await getOrganisationId(page, klasse1Testschule);
         const idSPs: string[] = [await getServiceProviderId(page, 'itslearning')];
         const rolleId: string = await createRolle(page, 'LERN', schuleId, await generateRolleName());
-        await addSPToRolle(page, rolleId, idSPs);
+        await addServiceProvidersToRolle(page, rolleId, idSPs);
         userInfoSchueler = await createPerson(
           page,
           schuleId,

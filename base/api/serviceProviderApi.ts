@@ -1,4 +1,8 @@
-import { Page, expect, APIResponse } from '@playwright/test';
+import { expect, Page } from '@playwright/test';
+import { ProviderApi } from './generated/apis/ProviderApi';
+import { ApiResponse, Configuration } from './generated/runtime';
+import { makeFetchWithPlaywright } from './playwrightFetchAdapter';
+import { ServiceProviderResponse } from './generated/models';
 
 const FRONTEND_URL: string | undefined = process.env.FRONTEND_URL || '';
 
@@ -7,32 +11,32 @@ export interface ServiceProviderFromRolleResponse {
   name: string
 }
 
-interface ServiceProvider {
-  id: string,
-  name: string,
-  target: string,
-  url: string,
-  kategorie: string,
-  hasLogo: boolean,
-  requires2fa: boolean,
-  merkmale: string[]
+export function constructProviderApi(page: Page): ProviderApi {
+  const config: Configuration = new Configuration({
+    basePath: FRONTEND_URL.replace(/\/$/, ''),
+    fetchApi: makeFetchWithPlaywright(page),
+  });
+  return new ProviderApi(config);
 }
 
-type ServiceProviders = ServiceProvider[];
-
 export async function getServiceProviderId(page: Page, serviceProviderName: string): Promise<string> {
-  const response: APIResponse = await page.request.get(FRONTEND_URL + `api/provider/all`, {
-    failOnStatusCode: false,
-    maxRetries: 3,
-  });
-  expect(response.status()).toBe(200);
+  try {
+    const providerApi: ProviderApi = constructProviderApi(page);
+    const response: ApiResponse<ServiceProviderResponse[]> = await providerApi.providerControllerGetAllServiceProvidersRaw();
+    await expect(response.raw.status).toBe(200);
 
-  const json: ServiceProviders = await response.json();
-  let idSP: string = '';
-  json.forEach((element: ServiceProvider) => {
-    if (element.name === serviceProviderName) {
-      idSP = element.id;
+    const fetchedServiceProviders: ServiceProviderResponse[] = await response.value();
+    let serviceProviderId: string = '';
+
+    for (const value of fetchedServiceProviders) {
+      if (value.name === serviceProviderName) {
+        serviceProviderId = value.id;
+      }
     }
-  });
-  return idSP;
+
+    return serviceProviderId;
+  } catch (error) {
+    console.error('[ERROR] getServiceProviderId failed:', error);
+    throw error;
+  }
 }

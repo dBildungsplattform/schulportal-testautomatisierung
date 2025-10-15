@@ -1,19 +1,11 @@
-import { Page, expect, APIResponse } from '@playwright/test';
+import { Page, expect } from '@playwright/test';
 import { FRONTEND_URL } from './baseApi';
-import { Configuration, OrganisationControllerFindOrganizationsRequest, OrganisationenApi, OrganisationResponse } from './generated';
+import { ApiResponse, Configuration } from './generated/runtime';
 import { makeFetchWithPlaywright } from './playwrightFetchAdapter';
+import { OrganisationControllerCreateOrganisationRequest, OrganisationControllerDeleteKlasseRequest, OrganisationControllerFindOrganizationsRequest, OrganisationenApi } from './generated/apis/OrganisationenApi';
+import { CreateOrganisationBodyParams, OrganisationResponse } from './generated/models';
 
-interface CreatedOrganisationResponse {
-  id: string,
-  administriertVon: string,
-  zugehoerigZu: string,
-  name: string,
-  typ: string,
-  itslearningEnabled: boolean,
-  version: number
-}
-
-export function createOrgaApi(page: Page): OrganisationenApi {
+export function constructOrganisationApi(page: Page): OrganisationenApi {
   const config: Configuration = new Configuration({
     basePath: FRONTEND_URL.replace(/\/$/, ''),
     fetchApi: makeFetchWithPlaywright(page),
@@ -21,69 +13,93 @@ export function createOrgaApi(page: Page): OrganisationenApi {
   return new OrganisationenApi(config);
 }
 
-export async function getOrganisationId(page: Page, nameOrganisation: string): Promise<string> {
-  
+export async function getOrganisationId(page: Page, organisationName: string): Promise<string> {
   try {
     const requestParameters: OrganisationControllerFindOrganizationsRequest = {
-      name: nameOrganisation
+      name: organisationName
     };
-    // Create API instance
-    const orgaApi: OrganisationenApi = createOrgaApi(page);
 
-    const organisations: OrganisationResponse[] = await orgaApi.organisationControllerFindOrganizations(requestParameters);
+    const organisationApi: OrganisationenApi = constructOrganisationApi(page);
+    const response: ApiResponse<OrganisationResponse[]> = await organisationApi.organisationControllerFindOrganizationsRaw(requestParameters);
+    await expect(response.raw.status).toBe(200);
 
-    // Validate we have organisations
+    const organisations: OrganisationResponse[] = await response.value();
+
     if (!organisations || organisations.length === 0) {
-      throw new Error(`No organisations found with name: "${nameOrganisation}"`);
+      throw new Error(`No organisations found with name: "${organisationName}"`);
     }
 
-    // Validate first organisation has an ID
     if (!organisations[0] || !organisations[0].id) {
       throw new Error('First organisation in response does not have an ID');
     }
 
-    const orgId: string = organisations[0].id;
-    
-    return orgId;
-
+    const fetchedOrganisationId: string = organisations[0].id;
+    return fetchedOrganisationId;
   } catch (error) {
     console.error('[ERROR] getOrganisationId failed:', error);
     throw error;
   }
 }
 
-export async function deleteKlasse(page: Page, KlasseId: string): Promise<void> {
-  const response: APIResponse = await page.request.delete(FRONTEND_URL + `api/organisationen/${KlasseId}/klasse`, {
-    failOnStatusCode: false,
-    maxRetries: 3,
-  });
-  expect(response.status()).toBe(204);
+export async function deleteKlasse(page: Page, klasseId: string): Promise<void> {
+  try {
+    const requestParameters: OrganisationControllerDeleteKlasseRequest = {
+      organisationId: klasseId
+    };
+
+    const organisationApi: OrganisationenApi = constructOrganisationApi(page);
+    const response: ApiResponse<void> = await organisationApi.organisationControllerDeleteKlasseRaw(requestParameters);
+    await expect(response.raw.status).toBe(204);
+  } catch (error) {
+    console.error('[ERROR] deleteKlasse failed:', error);
+    throw error;
+  }
 }
 
-export async function getKlasseId(page: Page, Klassennname: string): Promise<string | undefined> {
-  const response: APIResponse = await page.request.get(
-    FRONTEND_URL +
-      `api/organisationen?name=${Klassennname}&excludeTyp=ROOT&excludeTyp=LAND&excludeTyp=TRAEGER&excludeTyp=SCHULE&excludeTyp=ANBIETER&excludeTyp=SONSTIGE%20ORGANISATION%20%2F%20EINRICHTUNG&excludeTyp=UNBESTAETIGT`,
-    { failOnStatusCode: false, maxRetries: 3 }
-  );
-  expect(response.status()).toBe(200);
-  const json: APIResponse = await response.json();
+export async function getKlasseId(page: Page, klassennname: string): Promise<string | undefined> {
+  try {
+    const requestParameters: OrganisationControllerFindOrganizationsRequest = {
+      name: klassennname,
+      excludeTyp: ['ROOT', 'LAND', 'TRAEGER', 'SCHULE', 'ANBIETER', 'SONSTIGE ORGANISATION / EINRICHTUNG', 'UNBESTAETIGT'],
+    }
 
-  return json[0]?.id;
+    const organisationApi: OrganisationenApi = constructOrganisationApi(page);
+    const response: ApiResponse<OrganisationResponse[]> = await organisationApi.organisationControllerFindOrganizationsRaw(requestParameters);
+    await expect(response.raw.status).toBe(200);
+
+    const organisations: OrganisationResponse[] = await response.value();
+    if (!organisations || organisations.length === 0) {
+      return undefined;
+    }
+
+    return organisations[0].id;
+  } catch (error) {
+    console.error('[ERROR] getKlasseId failed:', error);
+    throw error;
+  }
 }
 
 export async function createKlasse(page: Page, schuleId: string, name: string): Promise<string> {
-  const response: APIResponse = await page.request.post(FRONTEND_URL + 'api/organisationen/', {
-    data: {
+  try {
+    const createOrganisationBodyParams: CreateOrganisationBodyParams = {
       administriertVon: schuleId,
       zugehoerigZu: schuleId,
       name: name,
       typ: 'KLASSE',
-    },
-    failOnStatusCode: false,
-    maxRetries: 3,
-  });
-  expect(response.status()).toBe(201);
-  const json: CreatedOrganisationResponse = await response.json();
-  return json.id;
+    }
+
+    const requestParameters: OrganisationControllerCreateOrganisationRequest = {
+      createOrganisationBodyParams,
+    }
+
+    const organisationApi: OrganisationenApi = constructOrganisationApi(page);
+    const response: ApiResponse<OrganisationResponse> = await organisationApi.organisationControllerCreateOrganisationRaw(requestParameters);
+    await expect(response.raw.status).toBe(201);
+
+    const createdKlasse: OrganisationResponse = await response.value();
+    return createdKlasse.id;
+  } catch (error) {
+    console.error('[ERROR] createKlasse failed:', error);
+    throw error;
+  }
 }

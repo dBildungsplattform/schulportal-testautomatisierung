@@ -41,7 +41,7 @@ import { APIResponse, Page } from '@playwright/test';
  */
 export function makeFetchWithPlaywright(page: Page) {
   return async (url: string, init?): Promise<Response> => {
-        const playwrightInit = {
+    const playwrightInit = {
       ...init,
       data: init?.body,
     };
