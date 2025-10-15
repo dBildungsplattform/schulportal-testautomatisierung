@@ -64,7 +64,7 @@ export async function addServiceProvidersToRolle(page: Page, rolleId: string, se
 
     const rolleApi: RolleApi = constructRolleApi(page);
     const response: ApiResponse<ServiceProviderResponse[]> = await rolleApi.rolleControllerUpdateServiceProvidersByIdRaw(requestParameters);
-    await expect(response.raw.status).toBe(200);
+    await expect(response.raw.status).toBe(201);
 
     const addedServiceProviders: ServiceProviderResponse[] = await response.value();
     expect(addedServiceProviders.length).toBe(serviceProviderIds.length);
