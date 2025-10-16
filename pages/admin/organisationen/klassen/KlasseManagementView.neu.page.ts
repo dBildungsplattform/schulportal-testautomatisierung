@@ -2,17 +2,14 @@ import { expect, Page } from '@playwright/test';
 import { Autocomplete } from '../../../../elements/Autocomplete';
 import { DataTable } from '../../../components/DataTable.neu.page';
 import { KlasseDetailsViewPage } from './details/KlasseDetailsView.neu.page';
-import { AbstractManagementViewPage } from '../../../abstracts/AbstractManagementView.page';
 import { SearchFilter } from '../../../../elements/SearchFilter';
 
-export class KlasseManagementViewPage extends AbstractManagementViewPage {
+export class KlasseManagementViewPage {
   /* add global locators here */
   private readonly klasseTable: DataTable;
   private readonly searchFilter: SearchFilter;
 
   constructor(protected readonly page: Page) {
-    super(page);
-
     this.klasseTable = new DataTable(this.page, this.page.getByTestId('klasse-table'));
     this.searchFilter = new SearchFilter(this.page);
   }

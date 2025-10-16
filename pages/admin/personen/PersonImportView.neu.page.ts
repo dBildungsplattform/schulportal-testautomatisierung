@@ -1,12 +1,9 @@
 import { Download, expect, Page } from '@playwright/test';
 import { Autocomplete } from '../../../elements/Autocomplete';
-import { AbstractAdminPage } from '../../abstracts/AbstractAdminPage.page';
 import { PersonManagementViewPage } from './PersonManagementView.page';
 
-export class PersonImportViewPage extends AbstractAdminPage {
-  constructor(page: Page) {
-    super(page);
-  }
+export class PersonImportViewPage {
+  constructor(protected readonly page: Page) {}
 
   /* actions */
   public async waitForPageLoad(): Promise<void> {

@@ -1,15 +1,12 @@
 import { expect, type Page } from '@playwright/test';
-import { AbstractManagementViewPage } from '../../abstracts/AbstractManagementView.page';
 import { RolleDetailsViewPage } from './RolleDetailsView.neu.page';
 import { DataTable } from '../../components/DataTable.neu.page';
 
-export class RolleManagementViewPage extends AbstractManagementViewPage {
+export class RolleManagementViewPage {
   /* add global locators here */
   private readonly rolleTable: DataTable = new DataTable(this.page, this.page.getByTestId('rolle-table'));
 
-  constructor(page: Page) {
-    super(page);
-  }
+  constructor(protected readonly page: Page) {}
 
   /* actions */
   public async waitForPageLoad(): Promise<void> {

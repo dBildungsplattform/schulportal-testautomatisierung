@@ -1,12 +1,9 @@
 import { expect, type Locator, Page } from '@playwright/test';
-import { AbstractAdminPage } from '../../abstracts/AbstractAdminPage.page';
 
-export class RolleDetailsViewPage extends AbstractAdminPage {
+export class RolleDetailsViewPage {
   /* add global locators here */
 
-  constructor(page: Page) {
-    super(page);
-  }
+  constructor(protected readonly page: Page) {}
 
   /* actions */
   public async waitForPageLoad(): Promise<void> {

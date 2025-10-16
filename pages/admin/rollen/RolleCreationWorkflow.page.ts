@@ -1,14 +1,12 @@
 import { expect, Page } from '@playwright/test';
 import { RolleForm } from '../../../components/RolleForm';
-import { AbstractAdminPage } from '../../abstracts/AbstractAdminPage.page';
 import { RolleCreationSuccessPage } from './RolleCreationSuccess.page';
 import { RolleCreationParams } from './RolleCreationView.neu.page';
 
-export class RolleCreationWorkflow extends AbstractAdminPage {
+export class RolleCreationWorkflow {
   private readonly rolleForm: RolleForm;
 
-  constructor(page: Page) {
-    super(page);
+  constructor(protected readonly page: Page) {
     this.rolleForm = new RolleForm(page);
   }
 

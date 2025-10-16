@@ -1,5 +1,4 @@
 import { expect, type Page, test, type PlaywrightTestArgs } from '@playwright/test';
-import FromAnywhere from '../pages/FromAnywhere.neu';
 import { LoginViewPage } from '../pages/LoginView.neu.page';
 import { StartViewPage } from '../pages/StartView.neu.page';
 import { LandingViewPage } from '../pages/LandingView.neu.page';
