@@ -1,6 +1,5 @@
 import { expect, Locator, Page } from '@playwright/test';
 import { waitForAPIResponse } from '../../../../base/api/baseApi';
-import { AbstractAdminPage } from '../../../abstracts/AbstractAdminPage.page';
 import { ZuordnungenPage, ZuordnungValidationParams } from './Zuordnungen.page';
 
 interface PersonDetailsValidationParams { 
@@ -15,11 +14,10 @@ interface LockValidationParams {
   organisation?: string;
 }
 
-export class PersonDetailsViewPage extends AbstractAdminPage {
+export class PersonDetailsViewPage {
   private readonly zuordnungSection: ZuordnungenPage;
 
-  constructor(page: Page) {
-    super(page);
+  constructor(protected readonly page: Page) {
     this.zuordnungSection = new ZuordnungenPage(page);
   }
 

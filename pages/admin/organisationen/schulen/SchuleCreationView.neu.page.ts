@@ -1,5 +1,4 @@
 import { expect, type Locator, Page } from '@playwright/test';
-import { AbstractAdminPage } from '../../../abstracts/AbstractAdminPage.page';
 import { SchuleCreationSuccessPage } from './SchuleCreationSuccess.page';
 
 enum Schulform {
@@ -13,14 +12,12 @@ export interface SchuleCreationParams {
   schulform: Schulform;
 }
 
-export class SchuleCreationViewPage extends AbstractAdminPage {
+export class SchuleCreationViewPage {
   private readonly headline: Locator = this.page.getByTestId('layout-card-headline');
   private readonly oeffentlicheSchuleOption: Locator = this.page.getByTestId('schulform-radio-button-0');
   private selectedSchultraegerName: string;
 
-  constructor(page: Page) {
-    super(page);
-  }
+  constructor(protected readonly page: Page) {}
 
   /* actions */
   public async waitForPageLoad(): Promise<void> {

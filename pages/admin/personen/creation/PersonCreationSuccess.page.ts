@@ -1,15 +1,12 @@
 import { expect, Locator, Page } from '@playwright/test';
-import { AbstractAdminPage } from '../../../abstracts/AbstractAdminPage.page';
 import { PersonCreationParams } from './PersonCreationView.neu.page';
 
 export type PersonCreationSuccessValidationParams = PersonCreationParams & {
   dstNr?: string;
 };
 
-export class PersonCreationSuccessPage extends AbstractAdminPage {
-  constructor(page: Page) {
-    super(page);
-  }
+export class PersonCreationSuccessPage {
+  constructor(protected readonly page: Page) {}
 
   /* actions */
   public async waitForPageLoad(): Promise<void> {

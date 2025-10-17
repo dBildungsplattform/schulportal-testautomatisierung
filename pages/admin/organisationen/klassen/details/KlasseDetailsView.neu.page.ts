@@ -1,14 +1,12 @@
 import { expect, type Locator, Page } from '@playwright/test';
-import { AbstractAdminPage } from '../../../../abstracts/AbstractAdminPage.page';
 import { KlasseDeletionWorkflowPage } from '../deletion-workflow/KlasseDeletionWorkflow.page';
 import { KlasseManagementViewPage } from '../KlasseManagementView.neu.page';
 
-export class KlasseDetailsViewPage extends AbstractAdminPage {
+export class KlasseDetailsViewPage {
   private readonly deletionWorkflow: KlasseDeletionWorkflowPage;
   /* add global locators here */
 
-  constructor(page: Page) {
-    super(page);
+  constructor(protected readonly page: Page) {
     this.deletionWorkflow = new KlasseDeletionWorkflowPage(page, this);
   }
 

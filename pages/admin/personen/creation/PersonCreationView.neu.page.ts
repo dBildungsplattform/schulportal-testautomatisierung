@@ -1,5 +1,4 @@
 import { expect, type Locator, Page } from '@playwright/test';
-import { AbstractAdminPage } from '../../../abstracts/AbstractAdminPage.page';
 import { Autocomplete } from '../../../../elements/Autocomplete';
 import { waitForAPIResponse } from '../../../../base/api/baseApi';
 import { PersonCreationSuccessPage } from './PersonCreationSuccess.page';
@@ -14,14 +13,12 @@ export interface PersonCreationParams {
   befristung?: string;
 }
 
-export class PersonCreationViewPage extends AbstractAdminPage {
+export class PersonCreationViewPage {
   private static readonly ENDPOINT: string = 'personenkontext-workflow/**';
   private readonly organisationAutocomplete: Autocomplete = new Autocomplete(this.page, this.page.getByTestId('personenkontext-create-organisation-select'));
   private readonly rolleAutocomplete: Autocomplete = new Autocomplete(this.page, this.page.getByTestId('rollen-select'));
 
-  constructor(page: Page) {
-    super(page);
-  }
+  constructor(protected readonly page: Page) {}
 
   /* actions */
   public async waitForPageLoad(expectedHeadline?: string): Promise<void> {
