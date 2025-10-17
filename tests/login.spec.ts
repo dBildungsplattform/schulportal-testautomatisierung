@@ -4,14 +4,13 @@ import { LandingPage } from '../pages/LandingView.page';
 import { StartPage } from '../pages/StartView.page';
 import { HeaderPage } from '../pages/components/Header.page';
 import { LONG, SHORT, SMOKE, STAGE, BROWSER } from '../base/tags';
-import { createRolleAndPersonWithUserContext } from '../base/api/testHelperPerson.page';
-import { lockPerson } from '../base/api/personApi';
-import { getSPId } from '../base/api/testHelperServiceprovider.page';
-import { UserInfo } from '../base/api/testHelper.page';
+import { createRolleAndPersonWithUserContext, lockPerson, UserInfo } from '../base/api/personApi';
+import { getServiceProviderId } from '../base/api/serviceProviderApi';
 import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata';
-import { getOrganisationId } from '../base/api/testHelperOrganisation.page';
+import { getOrganisationId } from '../base/api/organisationApi';
 import { generateRolleName, generateNachname, generateVorname } from '../base/utils/generateTestdata';
 import { testschuleName } from '../base/organisation';
+import { RollenArt } from '../base/api/rolleApi';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -117,7 +116,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
       const lehrerVorname: string = await generateVorname();
       const lehrerNachname: string = await generateNachname();
       const lehrerRolle: string = await generateRolleName();
-      const lehrerRollenart: string = 'LEHR';
+      const lehrerRollenart: RollenArt = 'LEHR';
       const lehrerOrganisation: string = testschuleName;
       let userInfoLehrer: UserInfo;
       let organisationIDLandSh: string = '';
@@ -126,7 +125,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
         await page.goto('/');
         await landing.buttonAnmelden.click();
         await login.login(ADMIN, PW);
-        const lehrerIdSPs: string[] = [await getSPId(page, 'E-Mail')];
+        const lehrerIdSPs: string[] = [await getServiceProviderId(page, 'E-Mail')];
         organisationIDLandSh = await getOrganisationId(page, 'Land Schleswig-Holstein');
         userInfoLehrer = await createRolleAndPersonWithUserContext(
           page,

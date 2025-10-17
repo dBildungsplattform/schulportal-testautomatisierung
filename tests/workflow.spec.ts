@@ -9,8 +9,7 @@ import { HeaderPage } from '../pages/components/Header.page';
 import { LONG, SHORT, STAGE, BROWSER } from '../base/tags';
 import { CalendarPage } from '../pages/components/service-provider-cards/Calendar.page';
 import { DirectoryPage } from '../pages/components/service-provider-cards/Directory.page';
-import { createTeacherAndLogin } from '../base/api/testHelperPerson.page';
-import { UserInfo } from '../base/api/testHelper.page';
+import { createTeacherAndLogin, UserInfo } from '../base/api/personApi';
 import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata';
 import FromAnywhere from '../pages/FromAnywhere';
 

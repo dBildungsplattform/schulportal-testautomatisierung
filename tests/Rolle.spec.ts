@@ -1,5 +1,4 @@
 import { expect, Locator, PlaywrightTestArgs, test } from '@playwright/test';
-import { deleteRolle, getRolleId } from '../base/api/testHelperRolle.page';
 import { ersatzLandSH, landSH } from '../base/organisation';
 import { landesadminRolle } from '../base/rollen';
 import { email, itslearning, kalender, schulportaladmin } from '../base/sp';
@@ -392,12 +391,5 @@ test.describe('Testet die Anlage einer neuen Rolle', () => {
     // sometimes logout breaks the test because of interrupting requests
     // logoutViaStartPage = true is a workaround
     logoutViaStartPage = true;
-  });
-
-  test.afterEach(async ({ page }: PlaywrightTestArgs) => {
-    if (rolleNames) {
-      const rolleIds: string = await getRolleId(page, rolleNames);
-      await deleteRolle(page, rolleIds);
-    }
   });
 });

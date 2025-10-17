@@ -1,5 +1,5 @@
 import { expect, Locator, Page } from '@playwright/test';
-import { waitForAPIResponse } from '../../../../base/api/testHelper.page';
+import { waitForAPIResponse } from '../../../../base/api/baseApi';
 import { ZuordnungenPage, ZuordnungValidationParams } from './Zuordnungen.page';
 
 interface PersonDetailsValidationParams { 
