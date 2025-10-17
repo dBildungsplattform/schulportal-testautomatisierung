@@ -1,15 +1,12 @@
 import { expect, Locator, Page } from '@playwright/test';
-import { AbstractAdminPage } from '../../../abstracts/AbstractAdminPage.page';
 import { KlasseCreationParams, KlasseCreationViewPage } from './KlasseCreationView.neu.page';
 import { KlasseManagementViewPage } from './KlasseManagementView.neu.page';
 
-export class KlasseCreationSuccessPage extends AbstractAdminPage {
+export class KlasseCreationSuccessPage  {
   /* add global locators here */
   private readonly headline: Locator = this.page.getByTestId('layout-card-headline');
 
-  constructor(page: Page) {
-    super(page);
-  }
+  constructor(protected readonly page: Page) {}
 
   /* actions */
   public async waitForPageLoad(): Promise<void> {

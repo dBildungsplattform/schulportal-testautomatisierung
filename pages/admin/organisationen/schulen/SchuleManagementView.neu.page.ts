@@ -1,16 +1,13 @@
 import { expect, Page } from '@playwright/test';
-import { AbstractManagementViewPage } from '../../../abstracts/AbstractManagementView.page';
 import { DataTable } from '../../../components/DataTable.neu.page';
 import { SearchFilter } from '../../../../elements/SearchFilter';
 
-export class SchuleManagementViewPage extends AbstractManagementViewPage {
+export class SchuleManagementViewPage {
   /* add global locators here */
   private readonly schuleTable: DataTable = new DataTable(this.page, this.page.getByTestId('schule-table'));
   private readonly searchFilter: SearchFilter = new SearchFilter(this.page);
 
-  constructor(page: Page) {
-    super(page);
-  }
+  constructor(protected readonly page: Page) {}
 
   /* actions */
   public async waitForPageLoad(): Promise<void> {

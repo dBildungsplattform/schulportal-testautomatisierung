@@ -1,6 +1,5 @@
 import { expect, type Locator, Page } from '@playwright/test';
 import { Autocomplete } from '../../../../elements/Autocomplete';
-import { AbstractAdminPage } from '../../../abstracts/AbstractAdminPage.page';
 import { KlasseCreationSuccessPage } from './KlasseCreationSuccess.page';
 import { KlasseManagementViewPage } from './KlasseManagementView.neu.page';
 
@@ -9,12 +8,10 @@ export interface KlasseCreationParams {
     klassenname: string,
 }
 
-export class KlasseCreationViewPage extends AbstractAdminPage {
+export class KlasseCreationViewPage {
   /* add global locators here */
 
-  constructor(page: Page) {
-    super(page);
-  }
+  constructor(protected readonly page: Page) {}
 
   /* actions */
   public async waitForPageLoad(): Promise<void> {
