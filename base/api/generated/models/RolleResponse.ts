@@ -1,3 +1,4 @@
+/* tslint:disable */
 /* eslint-disable */
 /**
  * dBildungs IAM
@@ -24,12 +25,12 @@ import {
     RollenMerkmalFromJSONTyped,
     RollenMerkmalToJSON,
 } from './RollenMerkmal';
-import type { RollenSystemRecht } from './RollenSystemRecht';
+import type { SystemRechtResponse } from './SystemRechtResponse';
 import {
-    RollenSystemRechtFromJSON,
-    RollenSystemRechtFromJSONTyped,
-    RollenSystemRechtToJSON,
-} from './RollenSystemRecht';
+    SystemRechtResponseFromJSON,
+    SystemRechtResponseFromJSONTyped,
+    SystemRechtResponseToJSON,
+} from './SystemRechtResponse';
 
 /**
  * 
@@ -81,10 +82,10 @@ export interface RolleResponse {
     merkmale: Set<RollenMerkmal>;
     /**
      * 
-     * @type {Set<RollenSystemRecht>}
+     * @type {Set<SystemRechtResponse>}
      * @memberof RolleResponse
      */
-    systemrechte: Set<RollenSystemRecht>;
+    systemrechte: Set<SystemRechtResponse>;
     /**
      * 
      * @type {string}
@@ -142,7 +143,7 @@ export function RolleResponseFromJSONTyped(json: any, ignoreDiscriminator: boole
         'administeredBySchulstrukturknoten': json['administeredBySchulstrukturknoten'],
         'rollenart': RollenArtFromJSON(json['rollenart']),
         'merkmale': (new Set((json['merkmale'] as Array<any>).map(RollenMerkmalFromJSON))),
-        'systemrechte': (new Set((json['systemrechte'] as Array<any>).map(RollenSystemRechtFromJSON))),
+        'systemrechte': (new Set((json['systemrechte'] as Array<any>).map(SystemRechtResponseFromJSON))),
         'administeredBySchulstrukturknotenName': json['administeredBySchulstrukturknotenName'],
         'administeredBySchulstrukturknotenKennung': json['administeredBySchulstrukturknotenKennung'],
         'version': json['version'],
@@ -165,7 +166,7 @@ export function RolleResponseToJSON(value?: RolleResponse | null): any {
         'administeredBySchulstrukturknoten': value.administeredBySchulstrukturknoten,
         'rollenart': RollenArtToJSON(value.rollenart),
         'merkmale': (Array.from(value.merkmale as Set<any>).map(RollenMerkmalToJSON)),
-        'systemrechte': (Array.from(value.systemrechte as Set<any>).map(RollenSystemRechtToJSON)),
+        'systemrechte': (Array.from(value.systemrechte as Set<any>).map(SystemRechtResponseToJSON)),
         'administeredBySchulstrukturknotenName': value.administeredBySchulstrukturknotenName,
         'administeredBySchulstrukturknotenKennung': value.administeredBySchulstrukturknotenKennung,
         'version': value.version,

@@ -1,3 +1,4 @@
+/* tslint:disable */
 /* eslint-disable */
 /**
  * dBildungs IAM
@@ -19,9 +20,7 @@ import type {
   PersonenkontextResponse,
   PersonenkontextdatensatzResponse,
   Personenstatus,
-  RollenSystemRecht,
   Sichtfreigabe,
-  SystemrechtResponse,
 } from '../models';
 import {
     DeleteRevisionBodyParamsFromJSON,
@@ -34,12 +33,8 @@ import {
     PersonenkontextdatensatzResponseToJSON,
     PersonenstatusFromJSON,
     PersonenstatusToJSON,
-    RollenSystemRechtFromJSON,
-    RollenSystemRechtToJSON,
     SichtfreigabeFromJSON,
     SichtfreigabeToJSON,
-    SystemrechtResponseFromJSON,
-    SystemrechtResponseToJSON,
 } from '../models';
 
 export interface PersonenkontextControllerDeletePersonenkontextByIdRequest {
@@ -55,14 +50,9 @@ export interface PersonenkontextControllerFindPersonenkontexteRequest {
     offset?: number;
     limit?: number;
     personId?: string | null;
-    referrer?: string | null;
+    username?: string | null;
     personenstatus?: Personenstatus;
     sichtfreigabe?: Sichtfreigabe;
-}
-
-export interface PersonenkontextControllerHatSystemRechtRequest {
-    personId: string;
-    systemRecht: RollenSystemRecht;
 }
 
 export interface PersonenkontextControllerUpdatePersonenkontextWithIdRequest {
@@ -108,7 +98,7 @@ export interface PersonenkontexteApiInterface {
      * @param {number} [offset] The offset of the paginated list.
      * @param {number} [limit] The requested limit for the page size.
      * @param {string} [personId] 
-     * @param {string} [referrer] 
+     * @param {string} [username] 
      * @param {Personenstatus} [personenstatus] 
      * @param {Sichtfreigabe} [sichtfreigabe] 
      * @param {*} [options] Override http request option.
@@ -120,20 +110,6 @@ export interface PersonenkontexteApiInterface {
     /**
      */
     personenkontextControllerFindPersonenkontexte(requestParameters: PersonenkontextControllerFindPersonenkontexteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<PersonenkontextdatensatzResponse>>;
-
-    /**
-     * 
-     * @param {string} personId The id for the account.
-     * @param {RollenSystemRecht} systemRecht 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof PersonenkontexteApiInterface
-     */
-    personenkontextControllerHatSystemRechtRaw(requestParameters: PersonenkontextControllerHatSystemRechtRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SystemrechtResponse>>;
-
-    /**
-     */
-    personenkontextControllerHatSystemRecht(requestParameters: PersonenkontextControllerHatSystemRechtRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SystemrechtResponse>;
 
     /**
      * 
@@ -263,8 +239,8 @@ export class PersonenkontexteApi extends runtime.BaseAPI implements Personenkont
             queryParameters['personId'] = requestParameters.personId;
         }
 
-        if (requestParameters.referrer !== undefined) {
-            queryParameters['referrer'] = requestParameters.referrer;
+        if (requestParameters.username !== undefined) {
+            queryParameters['username'] = requestParameters.username;
         }
 
         if (requestParameters.personenstatus !== undefined) {
@@ -304,55 +280,6 @@ export class PersonenkontexteApi extends runtime.BaseAPI implements Personenkont
      */
     async personenkontextControllerFindPersonenkontexte(requestParameters: PersonenkontextControllerFindPersonenkontexteRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<PersonenkontextdatensatzResponse>> {
         const response = await this.personenkontextControllerFindPersonenkontexteRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     */
-    async personenkontextControllerHatSystemRechtRaw(requestParameters: PersonenkontextControllerHatSystemRechtRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SystemrechtResponse>> {
-        if (requestParameters.personId === null || requestParameters.personId === undefined) {
-            throw new runtime.RequiredError('personId','Required parameter requestParameters.personId was null or undefined when calling personenkontextControllerHatSystemRecht.');
-        }
-
-        if (requestParameters.systemRecht === null || requestParameters.systemRecht === undefined) {
-            throw new runtime.RequiredError('systemRecht','Required parameter requestParameters.systemRecht was null or undefined when calling personenkontextControllerHatSystemRecht.');
-        }
-
-        const queryParameters: any = {};
-
-        if (requestParameters.systemRecht !== undefined) {
-            queryParameters['systemRecht'] = requestParameters.systemRecht;
-        }
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("bearer", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-        if (this.configuration && this.configuration.accessToken) {
-            // oauth required
-            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2", []);
-        }
-
-        const response = await this.request({
-            path: `/api/personenkontexte/{personId}/hatSystemrecht`.replace(`{${"personId"}}`, encodeURIComponent(String(requestParameters.personId))),
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SystemrechtResponseFromJSON(jsonValue));
-    }
-
-    /**
-     */
-    async personenkontextControllerHatSystemRecht(requestParameters: PersonenkontextControllerHatSystemRechtRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SystemrechtResponse> {
-        const response = await this.personenkontextControllerHatSystemRechtRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

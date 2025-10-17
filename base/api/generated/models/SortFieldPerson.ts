@@ -1,3 +1,4 @@
+/* tslint:disable */
 /* eslint-disable */
 /**
  * dBildungs IAM
@@ -20,7 +21,7 @@ export const SortFieldPerson = {
     Familienname: 'familienname',
     Vorname: 'vorname',
     Personalnummer: 'personalnummer',
-    Referrer: 'referrer'
+    Username: 'username'
 } as const;
 export type SortFieldPerson = typeof SortFieldPerson[keyof typeof SortFieldPerson];
 

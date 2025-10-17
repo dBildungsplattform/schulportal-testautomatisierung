@@ -1,3 +1,4 @@
+/* tslint:disable */
 /* eslint-disable */
 /**
  * dBildungs IAM
@@ -18,12 +19,12 @@ import {
     RollenMerkmalFromJSONTyped,
     RollenMerkmalToJSON,
 } from './RollenMerkmal';
-import type { RollenSystemRecht } from './RollenSystemRecht';
+import type { RollenSystemRechtEnum } from './RollenSystemRechtEnum';
 import {
-    RollenSystemRechtFromJSON,
-    RollenSystemRechtFromJSONTyped,
-    RollenSystemRechtToJSON,
-} from './RollenSystemRecht';
+    RollenSystemRechtEnumFromJSON,
+    RollenSystemRechtEnumFromJSONTyped,
+    RollenSystemRechtEnumToJSON,
+} from './RollenSystemRechtEnum';
 
 /**
  * 
@@ -45,10 +46,10 @@ export interface UpdateRolleBodyParams {
     merkmale: Set<RollenMerkmal>;
     /**
      * 
-     * @type {Set<RollenSystemRecht>}
+     * @type {Set<RollenSystemRechtEnum>}
      * @memberof UpdateRolleBodyParams
      */
-    systemrechte: Set<RollenSystemRecht>;
+    systemrechte: Set<RollenSystemRechtEnum>;
     /**
      * 
      * @type {Set<string>}
@@ -89,7 +90,7 @@ export function UpdateRolleBodyParamsFromJSONTyped(json: any, ignoreDiscriminato
         
         'name': json['name'],
         'merkmale': (new Set((json['merkmale'] as Array<any>).map(RollenMerkmalFromJSON))),
-        'systemrechte': (new Set((json['systemrechte'] as Array<any>).map(RollenSystemRechtFromJSON))),
+        'systemrechte': (new Set((json['systemrechte'] as Array<any>).map(RollenSystemRechtEnumFromJSON))),
         'serviceProviderIds': json['serviceProviderIds'],
         'version': json['version'],
     };
@@ -106,7 +107,7 @@ export function UpdateRolleBodyParamsToJSON(value?: UpdateRolleBodyParams | null
         
         'name': value.name,
         'merkmale': (Array.from(value.merkmale as Set<any>).map(RollenMerkmalToJSON)),
-        'systemrechte': (Array.from(value.systemrechte as Set<any>).map(RollenSystemRechtToJSON)),
+        'systemrechte': (Array.from(value.systemrechte as Set<any>).map(RollenSystemRechtEnumToJSON)),
         'serviceProviderIds': Array.from(value.serviceProviderIds as Set<any>),
         'version': value.version,
     };

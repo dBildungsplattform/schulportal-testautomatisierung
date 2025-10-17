@@ -1,3 +1,4 @@
+/* tslint:disable */
 /* eslint-disable */
 /**
  * dBildungs IAM
@@ -30,6 +31,12 @@ export interface FeatureFlagResponse {
      * @memberof FeatureFlagResponse
      */
     befristungBearbeitenEnabled: boolean;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof FeatureFlagResponse
+     */
+    rolleErweiternEnabled: boolean;
 }
 
 /**
@@ -39,6 +46,7 @@ export function instanceOfFeatureFlagResponse(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "rolleBearbeitenEnabled" in value;
     isInstance = isInstance && "befristungBearbeitenEnabled" in value;
+    isInstance = isInstance && "rolleErweiternEnabled" in value;
 
     return isInstance;
 }
@@ -55,6 +63,7 @@ export function FeatureFlagResponseFromJSONTyped(json: any, ignoreDiscriminator:
         
         'rolleBearbeitenEnabled': json['rolleBearbeitenEnabled'],
         'befristungBearbeitenEnabled': json['befristungBearbeitenEnabled'],
+        'rolleErweiternEnabled': json['rolleErweiternEnabled'],
     };
 }
 
@@ -69,6 +78,7 @@ export function FeatureFlagResponseToJSON(value?: FeatureFlagResponse | null): a
         
         'rolleBearbeitenEnabled': value.rolleBearbeitenEnabled,
         'befristungBearbeitenEnabled': value.befristungBearbeitenEnabled,
+        'rolleErweiternEnabled': value.rolleErweiternEnabled,
     };
 }
 

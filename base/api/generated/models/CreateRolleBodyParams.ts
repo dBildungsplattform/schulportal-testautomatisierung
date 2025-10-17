@@ -1,3 +1,4 @@
+/* tslint:disable */
 /* eslint-disable */
 /**
  * dBildungs IAM
@@ -24,12 +25,12 @@ import {
     RollenMerkmalFromJSONTyped,
     RollenMerkmalToJSON,
 } from './RollenMerkmal';
-import type { RollenSystemRecht } from './RollenSystemRecht';
+import type { RollenSystemRechtEnum } from './RollenSystemRechtEnum';
 import {
-    RollenSystemRechtFromJSON,
-    RollenSystemRechtFromJSONTyped,
-    RollenSystemRechtToJSON,
-} from './RollenSystemRecht';
+    RollenSystemRechtEnumFromJSON,
+    RollenSystemRechtEnumFromJSONTyped,
+    RollenSystemRechtEnumToJSON,
+} from './RollenSystemRechtEnum';
 
 /**
  * 
@@ -63,10 +64,10 @@ export interface CreateRolleBodyParams {
     merkmale: Set<RollenMerkmal>;
     /**
      * 
-     * @type {Set<RollenSystemRecht>}
+     * @type {Set<RollenSystemRechtEnum>}
      * @memberof CreateRolleBodyParams
      */
-    systemrechte: Set<RollenSystemRecht>;
+    systemrechte: Set<RollenSystemRechtEnum>;
 }
 
 /**
@@ -97,7 +98,7 @@ export function CreateRolleBodyParamsFromJSONTyped(json: any, ignoreDiscriminato
         'administeredBySchulstrukturknoten': json['administeredBySchulstrukturknoten'],
         'rollenart': RollenArtFromJSON(json['rollenart']),
         'merkmale': (new Set((json['merkmale'] as Array<any>).map(RollenMerkmalFromJSON))),
-        'systemrechte': (new Set((json['systemrechte'] as Array<any>).map(RollenSystemRechtFromJSON))),
+        'systemrechte': (new Set((json['systemrechte'] as Array<any>).map(RollenSystemRechtEnumFromJSON))),
     };
 }
 
@@ -114,7 +115,7 @@ export function CreateRolleBodyParamsToJSON(value?: CreateRolleBodyParams | null
         'administeredBySchulstrukturknoten': value.administeredBySchulstrukturknoten,
         'rollenart': RollenArtToJSON(value.rollenart),
         'merkmale': (Array.from(value.merkmale as Set<any>).map(RollenMerkmalToJSON)),
-        'systemrechte': (Array.from(value.systemrechte as Set<any>).map(RollenSystemRechtToJSON)),
+        'systemrechte': (Array.from(value.systemrechte as Set<any>).map(RollenSystemRechtEnumToJSON)),
     };
 }
 

@@ -1,3 +1,4 @@
+/* tslint:disable */
 /* eslint-disable */
 /**
  * dBildungs IAM
@@ -17,7 +18,8 @@
  * @export
  */
 export const ServiceProviderMerkmal = {
-    NachtraeglichZuweisbar: 'NACHTRAEGLICH_ZUWEISBAR'
+    NachtraeglichZuweisbar: 'NACHTRAEGLICH_ZUWEISBAR',
+    VerfuegbarFuerRollenerweiterung: 'VERFUEGBAR_FUER_ROLLENERWEITERUNG'
 } as const;
 export type ServiceProviderMerkmal = typeof ServiceProviderMerkmal[keyof typeof ServiceProviderMerkmal];
 

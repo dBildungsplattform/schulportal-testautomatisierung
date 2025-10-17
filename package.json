@@ -11,7 +11,7 @@
   "author": "Dataport AöR",
   "license": "EUPL-1.2",
   "scripts": {
-    "generate-client": "openapi-generator-cli generate --generator-key backend --openapi-normalizer REFACTOR_ALLOF_WITH_PROPERTIES_ONLY=true",
+    "generate-api": "openapi-generator-cli generate --generator-key backend --openapi-normalizer REFACTOR_ALLOF_WITH_PROPERTIES_ONLY=true",
     "lint": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
   },
   "devDependencies": {

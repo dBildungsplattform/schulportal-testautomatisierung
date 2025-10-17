@@ -1,3 +1,4 @@
+/* tslint:disable */
 /* eslint-disable */
 /**
  * dBildungs IAM
@@ -22,9 +23,7 @@ import type {
   PersonMetadataBodyParams,
   PersonendatensatzResponse,
   Personenstatus,
-  ScopeOrder,
   Sichtfreigabe,
-  SortFieldPerson,
   UpdatePersonBodyParams,
 } from '../models';
 import {
@@ -44,12 +43,8 @@ import {
     PersonendatensatzResponseToJSON,
     PersonenstatusFromJSON,
     PersonenstatusToJSON,
-    ScopeOrderFromJSON,
-    ScopeOrderToJSON,
     SichtfreigabeFromJSON,
     SichtfreigabeToJSON,
-    SortFieldPersonFromJSON,
-    SortFieldPersonToJSON,
     UpdatePersonBodyParamsFromJSON,
     UpdatePersonBodyParamsToJSON,
 } from '../models';
@@ -79,23 +74,9 @@ export interface PersonControllerFindPersonenkontexteRequest {
     offset?: number;
     limit?: number;
     personId2?: string | null;
-    referrer?: string | null;
+    username?: string | null;
     personenstatus?: Personenstatus;
     sichtfreigabe?: Sichtfreigabe;
-}
-
-export interface PersonControllerFindPersonsRequest {
-    offset?: number;
-    limit?: number;
-    referrer?: string | null;
-    familienname?: string | null;
-    vorname?: string | null;
-    sichtfreigabe?: PersonControllerFindPersonsSichtfreigabeEnum;
-    organisationIDs?: Array<string>;
-    rolleIDs?: Array<string>;
-    suchFilter?: string | null;
-    sortOrder?: ScopeOrder;
-    sortField?: SortFieldPerson;
 }
 
 export interface PersonControllerLockPersonRequest {
@@ -197,7 +178,7 @@ export interface PersonenApiInterface {
      * @param {number} [offset] The offset of the paginated list.
      * @param {number} [limit] The requested limit for the page size.
      * @param {string} [personId2] 
-     * @param {string} [referrer] 
+     * @param {string} [username] 
      * @param {Personenstatus} [personenstatus] 
      * @param {Sichtfreigabe} [sichtfreigabe] 
      * @param {*} [options] Override http request option.
@@ -209,29 +190,6 @@ export interface PersonenApiInterface {
     /**
      */
     personControllerFindPersonenkontexte(requestParameters: PersonControllerFindPersonenkontexteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PersonControllerFindPersonenkontexte200Response>;
-
-    /**
-     * 
-     * @param {number} [offset] The offset of the paginated list.
-     * @param {number} [limit] The requested limit for the page size.
-     * @param {string} [referrer] 
-     * @param {string} [familienname] 
-     * @param {string} [vorname] 
-     * @param {'ja' | 'nein'} [sichtfreigabe] 
-     * @param {Array<string>} [organisationIDs] List of Organisation ID used to filter for Persons.
-     * @param {Array<string>} [rolleIDs] List of Role ID used to filter for Persons.
-     * @param {string} [suchFilter] Search filter used to filter for Persons. It could be the vorname, familienname, referrer or the personalnummer.
-     * @param {ScopeOrder} [sortOrder] Order to sort by.
-     * @param {SortFieldPerson} [sortField] Field to sort by.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof PersonenApiInterface
-     */
-    personControllerFindPersonsRaw(requestParameters: PersonControllerFindPersonsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<PersonendatensatzResponse>>>;
-
-    /**
-     */
-    personControllerFindPersons(requestParameters: PersonControllerFindPersonsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<PersonendatensatzResponse>>;
 
     /**
      * 
@@ -534,8 +492,8 @@ export class PersonenApi extends runtime.BaseAPI implements PersonenApiInterface
             queryParameters['personId'] = requestParameters.personId2;
         }
 
-        if (requestParameters.referrer !== undefined) {
-            queryParameters['referrer'] = requestParameters.referrer;
+        if (requestParameters.username !== undefined) {
+            queryParameters['username'] = requestParameters.username;
         }
 
         if (requestParameters.personenstatus !== undefined) {
@@ -575,87 +533,6 @@ export class PersonenApi extends runtime.BaseAPI implements PersonenApiInterface
      */
     async personControllerFindPersonenkontexte(requestParameters: PersonControllerFindPersonenkontexteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PersonControllerFindPersonenkontexte200Response> {
         const response = await this.personControllerFindPersonenkontexteRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     */
-    async personControllerFindPersonsRaw(requestParameters: PersonControllerFindPersonsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<PersonendatensatzResponse>>> {
-        const queryParameters: any = {};
-
-        if (requestParameters.offset !== undefined) {
-            queryParameters['offset'] = requestParameters.offset;
-        }
-
-        if (requestParameters.limit !== undefined) {
-            queryParameters['limit'] = requestParameters.limit;
-        }
-
-        if (requestParameters.referrer !== undefined) {
-            queryParameters['referrer'] = requestParameters.referrer;
-        }
-
-        if (requestParameters.familienname !== undefined) {
-            queryParameters['familienname'] = requestParameters.familienname;
-        }
-
-        if (requestParameters.vorname !== undefined) {
-            queryParameters['vorname'] = requestParameters.vorname;
-        }
-
-        if (requestParameters.sichtfreigabe !== undefined) {
-            queryParameters['sichtfreigabe'] = requestParameters.sichtfreigabe;
-        }
-
-        if (requestParameters.organisationIDs) {
-            queryParameters['organisationIDs'] = requestParameters.organisationIDs;
-        }
-
-        if (requestParameters.rolleIDs) {
-            queryParameters['rolleIDs'] = requestParameters.rolleIDs;
-        }
-
-        if (requestParameters.suchFilter !== undefined) {
-            queryParameters['suchFilter'] = requestParameters.suchFilter;
-        }
-
-        if (requestParameters.sortOrder !== undefined) {
-            queryParameters['sortOrder'] = requestParameters.sortOrder;
-        }
-
-        if (requestParameters.sortField !== undefined) {
-            queryParameters['sortField'] = requestParameters.sortField;
-        }
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("bearer", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-        if (this.configuration && this.configuration.accessToken) {
-            // oauth required
-            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2", []);
-        }
-
-        const response = await this.request({
-            path: `/api/personen`,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(PersonendatensatzResponseFromJSON));
-    }
-
-    /**
-     */
-    async personControllerFindPersons(requestParameters: PersonControllerFindPersonsRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<PersonendatensatzResponse>> {
-        const response = await this.personControllerFindPersonsRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -975,12 +852,3 @@ export class PersonenApi extends runtime.BaseAPI implements PersonenApiInterface
     }
 
 }
-
-/**
- * @export
- */
-export const PersonControllerFindPersonsSichtfreigabeEnum = {
-    Ja: 'ja',
-    Nein: 'nein'
-} as const;
-export type PersonControllerFindPersonsSichtfreigabeEnum = typeof PersonControllerFindPersonsSichtfreigabeEnum[keyof typeof PersonControllerFindPersonsSichtfreigabeEnum];

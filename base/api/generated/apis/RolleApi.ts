@@ -1,3 +1,4 @@
+/* tslint:disable */
 /* eslint-disable */
 /**
  * dBildungs IAM
@@ -16,12 +17,15 @@ import * as runtime from '../runtime';
 import type {
   AddSystemrechtBodyParams,
   CreateRolleBodyParams,
+  CreateRollenerweiterungBodyParams,
   DbiamRolleError,
   RolleResponse,
   RolleServiceProviderBodyParams,
   RolleServiceProviderResponse,
   RolleWithServiceProvidersResponse,
+  RollenerweiterungResponse,
   ServiceProviderResponse,
+  SystemRechtResponse,
   UpdateRolleBodyParams,
 } from '../models';
 import {
@@ -29,6 +33,8 @@ import {
     AddSystemrechtBodyParamsToJSON,
     CreateRolleBodyParamsFromJSON,
     CreateRolleBodyParamsToJSON,
+    CreateRollenerweiterungBodyParamsFromJSON,
+    CreateRollenerweiterungBodyParamsToJSON,
     DbiamRolleErrorFromJSON,
     DbiamRolleErrorToJSON,
     RolleResponseFromJSON,
@@ -39,8 +45,12 @@ import {
     RolleServiceProviderResponseToJSON,
     RolleWithServiceProvidersResponseFromJSON,
     RolleWithServiceProvidersResponseToJSON,
+    RollenerweiterungResponseFromJSON,
+    RollenerweiterungResponseToJSON,
     ServiceProviderResponseFromJSON,
     ServiceProviderResponseToJSON,
+    SystemRechtResponseFromJSON,
+    SystemRechtResponseToJSON,
     UpdateRolleBodyParamsFromJSON,
     UpdateRolleBodyParamsToJSON,
 } from '../models';
@@ -52,6 +62,10 @@ export interface RolleControllerAddSystemRechtRequest {
 
 export interface RolleControllerCreateRolleRequest {
     createRolleBodyParams: CreateRolleBodyParams;
+}
+
+export interface RolleControllerCreateRollenerweiterungRequest {
+    createRollenerweiterungBodyParams: CreateRollenerweiterungBodyParams;
 }
 
 export interface RolleControllerDeleteRolleRequest {
@@ -128,6 +142,22 @@ export interface RolleApiInterface {
     rolleControllerCreateRolle(requestParameters: RolleControllerCreateRolleRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<RolleResponse>;
 
     /**
+     * Create a new rollenerweiterung.
+     * @summary 
+     * @param {CreateRollenerweiterungBodyParams} createRollenerweiterungBodyParams 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof RolleApiInterface
+     */
+    rolleControllerCreateRollenerweiterungRaw(requestParameters: RolleControllerCreateRollenerweiterungRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<RollenerweiterungResponse>>;
+
+    /**
+     * Create a new rollenerweiterung.
+     * 
+     */
+    rolleControllerCreateRollenerweiterung(requestParameters: RolleControllerCreateRollenerweiterungRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<RollenerweiterungResponse>;
+
+    /**
      * Delete a role by id.
      * @summary 
      * @param {string} rolleId The id for the rolle.
@@ -176,6 +206,21 @@ export interface RolleApiInterface {
      * 
      */
     rolleControllerFindRollen(requestParameters: RolleControllerFindRollenRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<RolleWithServiceProvidersResponse>>;
+
+    /**
+     * Get all systemrechte for rollen.
+     * @summary 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof RolleApiInterface
+     */
+    rolleControllerGetAllSystemrechteRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<SystemRechtResponse>>>;
+
+    /**
+     * Get all systemrechte for rollen.
+     * 
+     */
+    rolleControllerGetAllSystemrechte(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<SystemRechtResponse>>;
 
     /**
      * Get service-providers for a rolle by its id.
@@ -351,6 +396,54 @@ export class RolleApi extends runtime.BaseAPI implements RolleApiInterface {
     }
 
     /**
+     * Create a new rollenerweiterung.
+     * 
+     */
+    async rolleControllerCreateRollenerweiterungRaw(requestParameters: RolleControllerCreateRollenerweiterungRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<RollenerweiterungResponse>> {
+        if (requestParameters.createRollenerweiterungBodyParams === null || requestParameters.createRollenerweiterungBodyParams === undefined) {
+            throw new runtime.RequiredError('createRollenerweiterungBodyParams','Required parameter requestParameters.createRollenerweiterungBodyParams was null or undefined when calling rolleControllerCreateRollenerweiterung.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearer", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2", []);
+        }
+
+        const response = await this.request({
+            path: `/api/rolle/erweiterung`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: CreateRollenerweiterungBodyParamsToJSON(requestParameters.createRollenerweiterungBodyParams),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => RollenerweiterungResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Create a new rollenerweiterung.
+     * 
+     */
+    async rolleControllerCreateRollenerweiterung(requestParameters: RolleControllerCreateRollenerweiterungRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<RollenerweiterungResponse> {
+        const response = await this.rolleControllerCreateRollenerweiterungRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
      * Delete a role by id.
      * 
      */
@@ -489,6 +582,47 @@ export class RolleApi extends runtime.BaseAPI implements RolleApiInterface {
      */
     async rolleControllerFindRollen(requestParameters: RolleControllerFindRollenRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<RolleWithServiceProvidersResponse>> {
         const response = await this.rolleControllerFindRollenRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Get all systemrechte for rollen.
+     * 
+     */
+    async rolleControllerGetAllSystemrechteRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<SystemRechtResponse>>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearer", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2", []);
+        }
+
+        const response = await this.request({
+            path: `/api/rolle/systemrechte`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(SystemRechtResponseFromJSON));
+    }
+
+    /**
+     * Get all systemrechte for rollen.
+     * 
+     */
+    async rolleControllerGetAllSystemrechte(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<SystemRechtResponse>> {
+        const response = await this.rolleControllerGetAllSystemrechteRaw(initOverrides);
         return await response.value();
     }
 

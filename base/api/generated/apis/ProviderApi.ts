@@ -1,3 +1,4 @@
+/* tslint:disable */
 /* eslint-disable */
 /**
  * dBildungs IAM
@@ -14,12 +15,27 @@
 
 import * as runtime from '../runtime';
 import type {
+  ManageableServiceProviderResponse,
+  ProviderControllerGetManageableServiceProviders200Response,
   ServiceProviderResponse,
 } from '../models';
 import {
+    ManageableServiceProviderResponseFromJSON,
+    ManageableServiceProviderResponseToJSON,
+    ProviderControllerGetManageableServiceProviders200ResponseFromJSON,
+    ProviderControllerGetManageableServiceProviders200ResponseToJSON,
     ServiceProviderResponseFromJSON,
     ServiceProviderResponseToJSON,
 } from '../models';
+
+export interface ProviderControllerGetManageableServiceProviderByIdRequest {
+    angebotId: string;
+}
+
+export interface ProviderControllerGetManageableServiceProvidersRequest {
+    offset?: number;
+    limit?: number;
+}
 
 export interface ProviderControllerGetServiceProviderLogoRequest {
     angebotId: string;
@@ -61,6 +77,39 @@ export interface ProviderApiInterface {
      * 
      */
     providerControllerGetAvailableServiceProviders(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<ServiceProviderResponse>>;
+
+    /**
+     * Get service-provider the logged-in user is allowed to manage.
+     * @summary 
+     * @param {string} angebotId The id of the service provider
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ProviderApiInterface
+     */
+    providerControllerGetManageableServiceProviderByIdRaw(requestParameters: ProviderControllerGetManageableServiceProviderByIdRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ManageableServiceProviderResponse>>;
+
+    /**
+     * Get service-provider the logged-in user is allowed to manage.
+     * 
+     */
+    providerControllerGetManageableServiceProviderById(requestParameters: ProviderControllerGetManageableServiceProviderByIdRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ManageableServiceProviderResponse>;
+
+    /**
+     * Get service-providers the logged-in user is allowed to manage.
+     * @summary 
+     * @param {number} [offset] The offset of the paginated list.
+     * @param {number} [limit] The requested limit for the page size.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ProviderApiInterface
+     */
+    providerControllerGetManageableServiceProvidersRaw(requestParameters: ProviderControllerGetManageableServiceProvidersRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ProviderControllerGetManageableServiceProviders200Response>>;
+
+    /**
+     * Get service-providers the logged-in user is allowed to manage.
+     * 
+     */
+    providerControllerGetManageableServiceProviders(requestParameters: ProviderControllerGetManageableServiceProvidersRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ProviderControllerGetManageableServiceProviders200Response>;
 
     /**
      * 
@@ -161,6 +210,100 @@ export class ProviderApi extends runtime.BaseAPI implements ProviderApiInterface
      */
     async providerControllerGetAvailableServiceProviders(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<ServiceProviderResponse>> {
         const response = await this.providerControllerGetAvailableServiceProvidersRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Get service-provider the logged-in user is allowed to manage.
+     * 
+     */
+    async providerControllerGetManageableServiceProviderByIdRaw(requestParameters: ProviderControllerGetManageableServiceProviderByIdRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ManageableServiceProviderResponse>> {
+        if (requestParameters.angebotId === null || requestParameters.angebotId === undefined) {
+            throw new runtime.RequiredError('angebotId','Required parameter requestParameters.angebotId was null or undefined when calling providerControllerGetManageableServiceProviderById.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearer", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2", []);
+        }
+
+        const response = await this.request({
+            path: `/api/provider/manageable/{angebotId}`.replace(`{${"angebotId"}}`, encodeURIComponent(String(requestParameters.angebotId))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ManageableServiceProviderResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Get service-provider the logged-in user is allowed to manage.
+     * 
+     */
+    async providerControllerGetManageableServiceProviderById(requestParameters: ProviderControllerGetManageableServiceProviderByIdRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ManageableServiceProviderResponse> {
+        const response = await this.providerControllerGetManageableServiceProviderByIdRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Get service-providers the logged-in user is allowed to manage.
+     * 
+     */
+    async providerControllerGetManageableServiceProvidersRaw(requestParameters: ProviderControllerGetManageableServiceProvidersRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ProviderControllerGetManageableServiceProviders200Response>> {
+        const queryParameters: any = {};
+
+        if (requestParameters.offset !== undefined) {
+            queryParameters['offset'] = requestParameters.offset;
+        }
+
+        if (requestParameters.limit !== undefined) {
+            queryParameters['limit'] = requestParameters.limit;
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearer", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2", []);
+        }
+
+        const response = await this.request({
+            path: `/api/provider/manageable`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ProviderControllerGetManageableServiceProviders200ResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Get service-providers the logged-in user is allowed to manage.
+     * 
+     */
+    async providerControllerGetManageableServiceProviders(requestParameters: ProviderControllerGetManageableServiceProvidersRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ProviderControllerGetManageableServiceProviders200Response> {
+        const response = await this.providerControllerGetManageableServiceProvidersRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

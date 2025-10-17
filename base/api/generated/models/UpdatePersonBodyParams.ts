@@ -1,3 +1,4 @@
+/* tslint:disable */
 /* eslint-disable */
 /**
  * dBildungs IAM
@@ -12,30 +13,12 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { Geschlecht } from './Geschlecht';
-import {
-    GeschlechtFromJSON,
-    GeschlechtFromJSONTyped,
-    GeschlechtToJSON,
-} from './Geschlecht';
-import type { PersonBirthParams } from './PersonBirthParams';
-import {
-    PersonBirthParamsFromJSON,
-    PersonBirthParamsFromJSONTyped,
-    PersonBirthParamsToJSON,
-} from './PersonBirthParams';
 import type { PersonNameParams } from './PersonNameParams';
 import {
     PersonNameParamsFromJSON,
     PersonNameParamsFromJSONTyped,
     PersonNameParamsToJSON,
 } from './PersonNameParams';
-import type { Vertrauensstufe } from './Vertrauensstufe';
-import {
-    VertrauensstufeFromJSON,
-    VertrauensstufeFromJSONTyped,
-    VertrauensstufeToJSON,
-} from './Vertrauensstufe';
 
 /**
  * 
@@ -48,7 +31,7 @@ export interface UpdatePersonBodyParams {
      * @type {string}
      * @memberof UpdatePersonBodyParams
      */
-    referrer?: string;
+    username?: string;
     /**
      * 
      * @type {string}
@@ -61,36 +44,6 @@ export interface UpdatePersonBodyParams {
      * @memberof UpdatePersonBodyParams
      */
     name: PersonNameParams;
-    /**
-     * 
-     * @type {PersonBirthParams}
-     * @memberof UpdatePersonBodyParams
-     */
-    geburt?: PersonBirthParams;
-    /**
-     * 
-     * @type {Geschlecht}
-     * @memberof UpdatePersonBodyParams
-     */
-    geschlecht?: Geschlecht;
-    /**
-     * 
-     * @type {string}
-     * @memberof UpdatePersonBodyParams
-     */
-    lokalisierung?: string;
-    /**
-     * 
-     * @type {Vertrauensstufe}
-     * @memberof UpdatePersonBodyParams
-     */
-    vertrauensstufe?: Vertrauensstufe;
-    /**
-     * 
-     * @type {boolean}
-     * @memberof UpdatePersonBodyParams
-     */
-    auskunftssperre?: boolean;
     /**
      * 
      * @type {string}
@@ -120,14 +73,9 @@ export function UpdatePersonBodyParamsFromJSONTyped(json: any, ignoreDiscriminat
     }
     return {
         
-        'referrer': !exists(json, 'referrer') ? undefined : json['referrer'],
+        'username': !exists(json, 'username') ? undefined : json['username'],
         'stammorganisation': !exists(json, 'stammorganisation') ? undefined : json['stammorganisation'],
         'name': PersonNameParamsFromJSON(json['name']),
-        'geburt': !exists(json, 'geburt') ? undefined : PersonBirthParamsFromJSON(json['geburt']),
-        'geschlecht': !exists(json, 'geschlecht') ? undefined : GeschlechtFromJSON(json['geschlecht']),
-        'lokalisierung': !exists(json, 'lokalisierung') ? undefined : json['lokalisierung'],
-        'vertrauensstufe': !exists(json, 'vertrauensstufe') ? undefined : VertrauensstufeFromJSON(json['vertrauensstufe']),
-        'auskunftssperre': !exists(json, 'auskunftssperre') ? undefined : json['auskunftssperre'],
         'revision': json['revision'],
     };
 }
@@ -141,14 +89,9 @@ export function UpdatePersonBodyParamsToJSON(value?: UpdatePersonBodyParams | nu
     }
     return {
         
-        'referrer': value.referrer,
+        'username': value.username,
         'stammorganisation': value.stammorganisation,
         'name': PersonNameParamsToJSON(value.name),
-        'geburt': PersonBirthParamsToJSON(value.geburt),
-        'geschlecht': GeschlechtToJSON(value.geschlecht),
-        'lokalisierung': value.lokalisierung,
-        'vertrauensstufe': VertrauensstufeToJSON(value.vertrauensstufe),
-        'auskunftssperre': value.auskunftssperre,
         'revision': value.revision,
     };
 }

@@ -1,3 +1,4 @@
+/* tslint:disable */
 /* eslint-disable */
 /**
  * dBildungs IAM
@@ -30,7 +31,7 @@ import {
 export interface PersonFrontendControllerFindPersonsRequest {
     offset?: number;
     limit?: number;
-    referrer?: string | null;
+    username?: string | null;
     familienname?: string | null;
     vorname?: string | null;
     sichtfreigabe?: PersonFrontendControllerFindPersonsSichtfreigabeEnum;
@@ -52,13 +53,13 @@ export interface PersonenFrontendApiInterface {
      * 
      * @param {number} [offset] The offset of the paginated list.
      * @param {number} [limit] The requested limit for the page size.
-     * @param {string} [referrer] 
+     * @param {string} [username] 
      * @param {string} [familienname] 
      * @param {string} [vorname] 
      * @param {'ja' | 'nein'} [sichtfreigabe] 
      * @param {Array<string>} [organisationIDs] List of Organisation ID used to filter for Persons.
      * @param {Array<string>} [rolleIDs] List of Role ID used to filter for Persons.
-     * @param {string} [suchFilter] Search filter used to filter for Persons. It could be the vorname, familienname, referrer or the personalnummer.
+     * @param {string} [suchFilter] Search filter used to filter for Persons. It could be the vorname, familienname, username or the personalnummer.
      * @param {ScopeOrder} [sortOrder] Order to sort by.
      * @param {SortFieldPerson} [sortField] Field to sort by.
      * @param {*} [options] Override http request option.
@@ -91,8 +92,8 @@ export class PersonenFrontendApi extends runtime.BaseAPI implements PersonenFron
             queryParameters['limit'] = requestParameters.limit;
         }
 
-        if (requestParameters.referrer !== undefined) {
-            queryParameters['referrer'] = requestParameters.referrer;
+        if (requestParameters.username !== undefined) {
+            queryParameters['username'] = requestParameters.username;
         }
 
         if (requestParameters.familienname !== undefined) {

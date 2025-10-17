@@ -1,3 +1,4 @@
+/* tslint:disable */
 /* eslint-disable */
 /**
  * dBildungs IAM
@@ -30,54 +31,6 @@ export interface PersonNameResponse {
      * @memberof PersonNameResponse
      */
     vorname: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof PersonNameResponse
-     */
-    initialenfamilienname: string | null;
-    /**
-     * 
-     * @type {string}
-     * @memberof PersonNameResponse
-     */
-    initialenvorname: string | null;
-    /**
-     * 
-     * @type {string}
-     * @memberof PersonNameResponse
-     */
-    rufname: string | null;
-    /**
-     * 
-     * @type {string}
-     * @memberof PersonNameResponse
-     */
-    titel: string | null;
-    /**
-     * 
-     * @type {Array<string>}
-     * @memberof PersonNameResponse
-     */
-    anrede: Array<string> | null;
-    /**
-     * 
-     * @type {Array<string>}
-     * @memberof PersonNameResponse
-     */
-    namenspraefix: Array<string> | null;
-    /**
-     * 
-     * @type {Array<string>}
-     * @memberof PersonNameResponse
-     */
-    namenssuffix: Array<string> | null;
-    /**
-     * 
-     * @type {string}
-     * @memberof PersonNameResponse
-     */
-    sortierindex: string | null;
 }
 
 /**
@@ -87,14 +40,6 @@ export function instanceOfPersonNameResponse(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "familiennamen" in value;
     isInstance = isInstance && "vorname" in value;
-    isInstance = isInstance && "initialenfamilienname" in value;
-    isInstance = isInstance && "initialenvorname" in value;
-    isInstance = isInstance && "rufname" in value;
-    isInstance = isInstance && "titel" in value;
-    isInstance = isInstance && "anrede" in value;
-    isInstance = isInstance && "namenspraefix" in value;
-    isInstance = isInstance && "namenssuffix" in value;
-    isInstance = isInstance && "sortierindex" in value;
 
     return isInstance;
 }
@@ -111,14 +56,6 @@ export function PersonNameResponseFromJSONTyped(json: any, ignoreDiscriminator: 
         
         'familiennamen': json['familiennamen'],
         'vorname': json['vorname'],
-        'initialenfamilienname': json['initialenfamilienname'],
-        'initialenvorname': json['initialenvorname'],
-        'rufname': json['rufname'],
-        'titel': json['titel'],
-        'anrede': json['anrede'],
-        'namenspraefix': json['namenspraefix'],
-        'namenssuffix': json['namenssuffix'],
-        'sortierindex': json['sortierindex'],
     };
 }
 
@@ -133,14 +70,6 @@ export function PersonNameResponseToJSON(value?: PersonNameResponse | null): any
         
         'familiennamen': value.familiennamen,
         'vorname': value.vorname,
-        'initialenfamilienname': value.initialenfamilienname,
-        'initialenvorname': value.initialenvorname,
-        'rufname': value.rufname,
-        'titel': value.titel,
-        'anrede': value.anrede,
-        'namenspraefix': value.namenspraefix,
-        'namenssuffix': value.namenssuffix,
-        'sortierindex': value.sortierindex,
     };
 }
 

@@ -1,3 +1,4 @@
+/* tslint:disable */
 /* eslint-disable */
 /**
  * dBildungs IAM
@@ -22,7 +23,7 @@ import type {
   OperationContext,
   PersonenkontextWorkflowResponse,
   PersonenkontexteUpdateResponse,
-  RollenSystemRecht,
+  RollenSystemRechtEnum,
 } from '../models';
 import {
     DBiamPersonResponseFromJSON,
@@ -41,8 +42,8 @@ import {
     PersonenkontextWorkflowResponseToJSON,
     PersonenkontexteUpdateResponseFromJSON,
     PersonenkontexteUpdateResponseToJSON,
-    RollenSystemRechtFromJSON,
-    RollenSystemRechtToJSON,
+    RollenSystemRechtEnumFromJSON,
+    RollenSystemRechtEnumToJSON,
 } from '../models';
 
 export interface DbiamPersonenkontextWorkflowControllerCommitRequest {
@@ -63,7 +64,7 @@ export interface DbiamPersonenkontextWorkflowControllerProcessStepRequest {
     rolleName?: string | null;
     organisationName?: string | null;
     limit?: number;
-    requestedWithSystemrecht?: RollenSystemRecht;
+    requestedWithSystemrecht?: RollenSystemRechtEnum;
 }
 
 /**
@@ -110,7 +111,7 @@ export interface PersonenkontextApiInterface {
      * @param {string} [rolleName] Rolle name used to filter for rollen in personenkontext.
      * @param {string} [organisationName] Organisation/SSK name used to filter for schulstrukturknoten in personenkontext.
      * @param {number} [limit] The limit of items for the request.
-     * @param {RollenSystemRecht} [requestedWithSystemrecht] The systemrecht used to filter for rollen in personenkontext.
+     * @param {RollenSystemRechtEnum} [requestedWithSystemrecht] The systemrecht used to filter for rollen in personenkontext.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PersonenkontextApiInterface

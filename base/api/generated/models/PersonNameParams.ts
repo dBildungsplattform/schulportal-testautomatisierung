@@ -1,3 +1,4 @@
+/* tslint:disable */
 /* eslint-disable */
 /**
  * dBildungs IAM
@@ -30,54 +31,6 @@ export interface PersonNameParams {
      * @memberof PersonNameParams
      */
     vorname: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof PersonNameParams
-     */
-    initialenfamilienname?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof PersonNameParams
-     */
-    initialenvorname?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof PersonNameParams
-     */
-    rufname?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof PersonNameParams
-     */
-    titel?: string;
-    /**
-     * 
-     * @type {Array<string>}
-     * @memberof PersonNameParams
-     */
-    anrede?: Array<string>;
-    /**
-     * 
-     * @type {Array<string>}
-     * @memberof PersonNameParams
-     */
-    namenssuffix?: Array<string>;
-    /**
-     * 
-     * @type {Array<string>}
-     * @memberof PersonNameParams
-     */
-    namenspraefix?: Array<string>;
-    /**
-     * 
-     * @type {string}
-     * @memberof PersonNameParams
-     */
-    sortierindex?: string;
 }
 
 /**
@@ -103,14 +56,6 @@ export function PersonNameParamsFromJSONTyped(json: any, ignoreDiscriminator: bo
         
         'familienname': json['familienname'],
         'vorname': json['vorname'],
-        'initialenfamilienname': !exists(json, 'initialenfamilienname') ? undefined : json['initialenfamilienname'],
-        'initialenvorname': !exists(json, 'initialenvorname') ? undefined : json['initialenvorname'],
-        'rufname': !exists(json, 'rufname') ? undefined : json['rufname'],
-        'titel': !exists(json, 'titel') ? undefined : json['titel'],
-        'anrede': !exists(json, 'anrede') ? undefined : json['anrede'],
-        'namenssuffix': !exists(json, 'namenssuffix') ? undefined : json['namenssuffix'],
-        'namenspraefix': !exists(json, 'namenspraefix') ? undefined : json['namenspraefix'],
-        'sortierindex': !exists(json, 'sortierindex') ? undefined : json['sortierindex'],
     };
 }
 
@@ -125,14 +70,6 @@ export function PersonNameParamsToJSON(value?: PersonNameParams | null): any {
         
         'familienname': value.familienname,
         'vorname': value.vorname,
-        'initialenfamilienname': value.initialenfamilienname,
-        'initialenvorname': value.initialenvorname,
-        'rufname': value.rufname,
-        'titel': value.titel,
-        'anrede': value.anrede,
-        'namenssuffix': value.namenssuffix,
-        'namenspraefix': value.namenspraefix,
-        'sortierindex': value.sortierindex,
     };
 }
 

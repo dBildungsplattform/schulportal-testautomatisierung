@@ -1,3 +1,4 @@
+/* tslint:disable */
 /* eslint-disable */
 /**
  * dBildungs IAM
@@ -35,7 +36,7 @@ export interface AssignHardwareTokenBodyParams {
      * @type {string}
      * @memberof AssignHardwareTokenBodyParams
      */
-    referrer: string;
+    username: string;
     /**
      * 
      * @type {string}
@@ -51,7 +52,7 @@ export function instanceOfAssignHardwareTokenBodyParams(value: object): boolean 
     let isInstance = true;
     isInstance = isInstance && "serial" in value;
     isInstance = isInstance && "otp" in value;
-    isInstance = isInstance && "referrer" in value;
+    isInstance = isInstance && "username" in value;
     isInstance = isInstance && "userId" in value;
 
     return isInstance;
@@ -69,7 +70,7 @@ export function AssignHardwareTokenBodyParamsFromJSONTyped(json: any, ignoreDisc
         
         'serial': json['serial'],
         'otp': json['otp'],
-        'referrer': json['referrer'],
+        'username': json['username'],
         'userId': json['userId'],
     };
 }
@@ -85,7 +86,7 @@ export function AssignHardwareTokenBodyParamsToJSON(value?: AssignHardwareTokenB
         
         'serial': value.serial,
         'otp': value.otp,
-        'referrer': value.referrer,
+        'username': value.username,
         'userId': value.userId,
     };
 }

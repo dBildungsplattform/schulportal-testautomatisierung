@@ -1,3 +1,4 @@
+/* tslint:disable */
 /* eslint-disable */
 /**
  * dBildungs IAM
@@ -24,7 +25,7 @@ import type {
   OrganisationsTyp,
   ParentOrganisationenResponse,
   ParentOrganisationsByIdsBodyParams,
-  RollenSystemRecht,
+  RollenSystemRechtEnum,
   UpdateOrganisationBodyParams,
 } from '../models';
 import {
@@ -48,8 +49,8 @@ import {
     ParentOrganisationenResponseToJSON,
     ParentOrganisationsByIdsBodyParamsFromJSON,
     ParentOrganisationsByIdsBodyParamsToJSON,
-    RollenSystemRechtFromJSON,
-    RollenSystemRechtToJSON,
+    RollenSystemRechtEnumFromJSON,
+    RollenSystemRechtEnumToJSON,
     UpdateOrganisationBodyParamsFromJSON,
     UpdateOrganisationBodyParamsToJSON,
 } from '../models';
@@ -82,7 +83,7 @@ export interface OrganisationControllerFindOrganizationsRequest {
     name?: string | null;
     searchString?: string | null;
     typ?: OrganisationsTyp;
-    systemrechte?: Array<RollenSystemRecht>;
+    systemrechte?: Array<RollenSystemRechtEnum>;
     excludeTyp?: Array<OrganisationsTyp>;
     administriertVon?: Array<string>;
     zugehoerigZu?: Array<string>;
@@ -200,7 +201,7 @@ export interface OrganisationenApiInterface {
      * @param {string} [name] 
      * @param {string} [searchString] 
      * @param {OrganisationsTyp} [typ] 
-     * @param {Array<RollenSystemRecht>} [systemrechte] 
+     * @param {Array<RollenSystemRechtEnum>} [systemrechte] 
      * @param {Array<OrganisationsTyp>} [excludeTyp] 
      * @param {Array<string>} [administriertVon] 
      * @param {Array<string>} [zugehoerigZu] Liefert die Kind-Organisationen, die den angegebenen IDs zugehörig sind.

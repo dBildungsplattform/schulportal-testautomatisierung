@@ -1,3 +1,4 @@
+/* tslint:disable */
 /* eslint-disable */
 /**
  * dBildungs IAM
@@ -44,7 +45,9 @@ export const DbiamRolleErrorI18nKeyEnum = {
     RollennameEnthaeltLeerzeichen: 'ROLLENNAME_ENTHAELT_LEERZEICHEN',
     NewerVersionOfRolleAvailable: 'NEWER_VERSION_OF_ROLLE_AVAILABLE',
     RolleNameUniqueOnSsk: 'ROLLE_NAME_UNIQUE_ON_SSK',
-    ServiceProviderNichtNachtraeglichZuweisbar: 'SERVICE_PROVIDER_NICHT_NACHTRAEGLICH_ZUWEISBAR'
+    ServiceProviderNichtNachtraeglichZuweisbar: 'SERVICE_PROVIDER_NICHT_NACHTRAEGLICH_ZUWEISBAR',
+    ServiceProviderNichtVerfuegbarFuerRollenerweiterung: 'SERVICE_PROVIDER_NICHT_VERFUEGBAR_FUER_ROLLENERWEITERUNG',
+    NoRedundantRollenerweiterung: 'NO_REDUNDANT_ROLLENERWEITERUNG'
 } as const;
 export type DbiamRolleErrorI18nKeyEnum = typeof DbiamRolleErrorI18nKeyEnum[keyof typeof DbiamRolleErrorI18nKeyEnum];
 

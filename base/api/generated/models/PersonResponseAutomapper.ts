@@ -1,3 +1,4 @@
+/* tslint:disable */
 /* eslint-disable */
 /**
  * dBildungs IAM
@@ -12,24 +13,12 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { PersonBirthParams } from './PersonBirthParams';
-import {
-    PersonBirthParamsFromJSON,
-    PersonBirthParamsFromJSONTyped,
-    PersonBirthParamsToJSON,
-} from './PersonBirthParams';
 import type { PersonNameParams } from './PersonNameParams';
 import {
     PersonNameParamsFromJSON,
     PersonNameParamsFromJSONTyped,
     PersonNameParamsToJSON,
 } from './PersonNameParams';
-import type { Vertrauensstufe } from './Vertrauensstufe';
-import {
-    VertrauensstufeFromJSON,
-    VertrauensstufeFromJSONTyped,
-    VertrauensstufeToJSON,
-} from './Vertrauensstufe';
 
 /**
  * 
@@ -48,7 +37,7 @@ export interface PersonResponseAutomapper {
      * @type {string}
      * @memberof PersonResponseAutomapper
      */
-    referrer: string;
+    username: string;
     /**
      * 
      * @type {string}
@@ -63,34 +52,10 @@ export interface PersonResponseAutomapper {
     name: PersonNameParams;
     /**
      * 
-     * @type {PersonBirthParams}
-     * @memberof PersonResponseAutomapper
-     */
-    geburt: PersonBirthParams;
-    /**
-     * 
      * @type {string}
      * @memberof PersonResponseAutomapper
      */
     stammorganisation: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof PersonResponseAutomapper
-     */
-    geschlecht: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof PersonResponseAutomapper
-     */
-    lokalisierung: string;
-    /**
-     * 
-     * @type {Vertrauensstufe}
-     * @memberof PersonResponseAutomapper
-     */
-    vertrauensstufe: Vertrauensstufe;
     /**
      * 
      * @type {string}
@@ -117,14 +82,10 @@ export interface PersonResponseAutomapper {
 export function instanceOfPersonResponseAutomapper(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "id" in value;
-    isInstance = isInstance && "referrer" in value;
+    isInstance = isInstance && "username" in value;
     isInstance = isInstance && "mandant" in value;
     isInstance = isInstance && "name" in value;
-    isInstance = isInstance && "geburt" in value;
     isInstance = isInstance && "stammorganisation" in value;
-    isInstance = isInstance && "geschlecht" in value;
-    isInstance = isInstance && "lokalisierung" in value;
-    isInstance = isInstance && "vertrauensstufe" in value;
     isInstance = isInstance && "revision" in value;
     isInstance = isInstance && "startpasswort" in value;
     isInstance = isInstance && "personalnummer" in value;
@@ -143,14 +104,10 @@ export function PersonResponseAutomapperFromJSONTyped(json: any, ignoreDiscrimin
     return {
         
         'id': json['id'],
-        'referrer': json['referrer'],
+        'username': json['username'],
         'mandant': json['mandant'],
         'name': PersonNameParamsFromJSON(json['name']),
-        'geburt': PersonBirthParamsFromJSON(json['geburt']),
         'stammorganisation': json['stammorganisation'],
-        'geschlecht': json['geschlecht'],
-        'lokalisierung': json['lokalisierung'],
-        'vertrauensstufe': VertrauensstufeFromJSON(json['vertrauensstufe']),
         'revision': json['revision'],
         'startpasswort': json['startpasswort'],
         'personalnummer': json['personalnummer'],
@@ -167,14 +124,10 @@ export function PersonResponseAutomapperToJSON(value?: PersonResponseAutomapper 
     return {
         
         'id': value.id,
-        'referrer': value.referrer,
+        'username': value.username,
         'mandant': value.mandant,
         'name': PersonNameParamsToJSON(value.name),
-        'geburt': PersonBirthParamsToJSON(value.geburt),
         'stammorganisation': value.stammorganisation,
-        'geschlecht': value.geschlecht,
-        'lokalisierung': value.lokalisierung,
-        'vertrauensstufe': VertrauensstufeToJSON(value.vertrauensstufe),
         'revision': value.revision,
         'startpasswort': value.startpasswort,
         'personalnummer': value.personalnummer,

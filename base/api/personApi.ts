@@ -108,7 +108,7 @@ export async function createPerson(
     const createdPerson: DBiamPersonResponse = await response.value();
 
     return {
-      username: createdPerson.person.referrer,
+      username: createdPerson.person.username,
       password: createdPerson.person.startpasswort,
       rolleId: rolleId,
       organisationId: organisationId,

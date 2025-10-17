@@ -1,3 +1,4 @@
+/* tslint:disable */
 /* eslint-disable */
 /**
  * dBildungs IAM
@@ -42,7 +43,7 @@ export interface PersonenInfoKontextResponse {
      * @type {string}
      * @memberof PersonenInfoKontextResponse
      */
-    referrer: string | null;
+    username: string | null;
     /**
      * 
      * @type {string}
@@ -141,7 +142,7 @@ export type PersonenInfoKontextResponseSichtfreigabeEnum = typeof PersonenInfoKo
 export function instanceOfPersonenInfoKontextResponse(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "id" in value;
-    isInstance = isInstance && "referrer" in value;
+    isInstance = isInstance && "username" in value;
     isInstance = isInstance && "mandant" in value;
     isInstance = isInstance && "organisation" in value;
     isInstance = isInstance && "rollenart" in value;
@@ -166,7 +167,7 @@ export function PersonenInfoKontextResponseFromJSONTyped(json: any, ignoreDiscri
     return {
         
         'id': json['id'],
-        'referrer': json['referrer'],
+        'username': json['username'],
         'mandant': json['mandant'],
         'organisation': PersonenInfoKontextOrganisationResponseFromJSON(json['organisation']),
         'rollenart': json['rollenart'],
@@ -189,7 +190,7 @@ export function PersonenInfoKontextResponseToJSON(value?: PersonenInfoKontextRes
     return {
         
         'id': value.id,
-        'referrer': value.referrer,
+        'username': value.username,
         'mandant': value.mandant,
         'organisation': PersonenInfoKontextOrganisationResponseToJSON(value.organisation),
         'rollenart': value.rollenart,

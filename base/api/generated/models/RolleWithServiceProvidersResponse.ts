@@ -1,3 +1,4 @@
+/* tslint:disable */
 /* eslint-disable */
 /**
  * dBildungs IAM
@@ -24,18 +25,18 @@ import {
     RollenMerkmalFromJSONTyped,
     RollenMerkmalToJSON,
 } from './RollenMerkmal';
-import type { RollenSystemRecht } from './RollenSystemRecht';
-import {
-    RollenSystemRechtFromJSON,
-    RollenSystemRechtFromJSONTyped,
-    RollenSystemRechtToJSON,
-} from './RollenSystemRecht';
 import type { ServiceProviderIdNameResponse } from './ServiceProviderIdNameResponse';
 import {
     ServiceProviderIdNameResponseFromJSON,
     ServiceProviderIdNameResponseFromJSONTyped,
     ServiceProviderIdNameResponseToJSON,
 } from './ServiceProviderIdNameResponse';
+import type { SystemRechtResponse } from './SystemRechtResponse';
+import {
+    SystemRechtResponseFromJSON,
+    SystemRechtResponseFromJSONTyped,
+    SystemRechtResponseToJSON,
+} from './SystemRechtResponse';
 
 /**
  * 
@@ -87,10 +88,10 @@ export interface RolleWithServiceProvidersResponse {
     merkmale: Set<RollenMerkmal>;
     /**
      * 
-     * @type {Set<RollenSystemRecht>}
+     * @type {Set<SystemRechtResponse>}
      * @memberof RolleWithServiceProvidersResponse
      */
-    systemrechte: Set<RollenSystemRecht>;
+    systemrechte: Set<SystemRechtResponse>;
     /**
      * 
      * @type {string}
@@ -155,7 +156,7 @@ export function RolleWithServiceProvidersResponseFromJSONTyped(json: any, ignore
         'administeredBySchulstrukturknoten': json['administeredBySchulstrukturknoten'],
         'rollenart': RollenArtFromJSON(json['rollenart']),
         'merkmale': (new Set((json['merkmale'] as Array<any>).map(RollenMerkmalFromJSON))),
-        'systemrechte': (new Set((json['systemrechte'] as Array<any>).map(RollenSystemRechtFromJSON))),
+        'systemrechte': (new Set((json['systemrechte'] as Array<any>).map(SystemRechtResponseFromJSON))),
         'administeredBySchulstrukturknotenName': json['administeredBySchulstrukturknotenName'],
         'administeredBySchulstrukturknotenKennung': json['administeredBySchulstrukturknotenKennung'],
         'version': json['version'],
@@ -179,7 +180,7 @@ export function RolleWithServiceProvidersResponseToJSON(value?: RolleWithService
         'administeredBySchulstrukturknoten': value.administeredBySchulstrukturknoten,
         'rollenart': RollenArtToJSON(value.rollenart),
         'merkmale': (Array.from(value.merkmale as Set<any>).map(RollenMerkmalToJSON)),
-        'systemrechte': (Array.from(value.systemrechte as Set<any>).map(RollenSystemRechtToJSON)),
+        'systemrechte': (Array.from(value.systemrechte as Set<any>).map(SystemRechtResponseToJSON)),
         'administeredBySchulstrukturknotenName': value.administeredBySchulstrukturknotenName,
         'administeredBySchulstrukturknotenKennung': value.administeredBySchulstrukturknotenKennung,
         'version': value.version,

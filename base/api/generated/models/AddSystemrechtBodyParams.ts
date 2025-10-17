@@ -1,3 +1,4 @@
+/* tslint:disable */
 /* eslint-disable */
 /**
  * dBildungs IAM
@@ -12,12 +13,12 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { RollenSystemRecht } from './RollenSystemRecht';
+import type { RollenSystemRechtEnum } from './RollenSystemRechtEnum';
 import {
-    RollenSystemRechtFromJSON,
-    RollenSystemRechtFromJSONTyped,
-    RollenSystemRechtToJSON,
-} from './RollenSystemRecht';
+    RollenSystemRechtEnumFromJSON,
+    RollenSystemRechtEnumFromJSONTyped,
+    RollenSystemRechtEnumToJSON,
+} from './RollenSystemRechtEnum';
 
 /**
  * 
@@ -27,10 +28,10 @@ import {
 export interface AddSystemrechtBodyParams {
     /**
      * 
-     * @type {RollenSystemRecht}
+     * @type {RollenSystemRechtEnum}
      * @memberof AddSystemrechtBodyParams
      */
-    systemRecht: RollenSystemRecht;
+    systemRecht: RollenSystemRechtEnum;
 }
 
 /**
@@ -53,7 +54,7 @@ export function AddSystemrechtBodyParamsFromJSONTyped(json: any, ignoreDiscrimin
     }
     return {
         
-        'systemRecht': RollenSystemRechtFromJSON(json['systemRecht']),
+        'systemRecht': RollenSystemRechtEnumFromJSON(json['systemRecht']),
     };
 }
 
@@ -66,7 +67,7 @@ export function AddSystemrechtBodyParamsToJSON(value?: AddSystemrechtBodyParams 
     }
     return {
         
-        'systemRecht': RollenSystemRechtToJSON(value.systemRecht),
+        'systemRecht': RollenSystemRechtEnumToJSON(value.systemRecht),
     };
 }
 

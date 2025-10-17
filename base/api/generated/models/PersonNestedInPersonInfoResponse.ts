@@ -1,3 +1,4 @@
+/* tslint:disable */
 /* eslint-disable */
 /**
  * dBildungs IAM
@@ -12,24 +13,12 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { PersonBirthResponse } from './PersonBirthResponse';
-import {
-    PersonBirthResponseFromJSON,
-    PersonBirthResponseFromJSONTyped,
-    PersonBirthResponseToJSON,
-} from './PersonBirthResponse';
 import type { PersonNameResponse } from './PersonNameResponse';
 import {
     PersonNameResponseFromJSON,
     PersonNameResponseFromJSONTyped,
     PersonNameResponseToJSON,
 } from './PersonNameResponse';
-import type { Vertrauensstufe } from './Vertrauensstufe';
-import {
-    VertrauensstufeFromJSON,
-    VertrauensstufeFromJSONTyped,
-    VertrauensstufeToJSON,
-} from './Vertrauensstufe';
 
 /**
  * 
@@ -48,7 +37,7 @@ export interface PersonNestedInPersonInfoResponse {
      * @type {string}
      * @memberof PersonNestedInPersonInfoResponse
      */
-    referrer: string | null;
+    username: string | null;
     /**
      * 
      * @type {string}
@@ -63,34 +52,10 @@ export interface PersonNestedInPersonInfoResponse {
     name: PersonNameResponse;
     /**
      * 
-     * @type {PersonBirthResponse}
-     * @memberof PersonNestedInPersonInfoResponse
-     */
-    geburt: PersonBirthResponse | null;
-    /**
-     * 
      * @type {string}
      * @memberof PersonNestedInPersonInfoResponse
      */
     stammorganisation: string | null;
-    /**
-     * 
-     * @type {string}
-     * @memberof PersonNestedInPersonInfoResponse
-     */
-    geschlecht: string | null;
-    /**
-     * 
-     * @type {string}
-     * @memberof PersonNestedInPersonInfoResponse
-     */
-    lokalisierung: string | null;
-    /**
-     * 
-     * @type {Vertrauensstufe}
-     * @memberof PersonNestedInPersonInfoResponse
-     */
-    vertrauensstufe: Vertrauensstufe;
     /**
      * 
      * @type {string}
@@ -117,14 +82,10 @@ export interface PersonNestedInPersonInfoResponse {
 export function instanceOfPersonNestedInPersonInfoResponse(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "id" in value;
-    isInstance = isInstance && "referrer" in value;
+    isInstance = isInstance && "username" in value;
     isInstance = isInstance && "mandant" in value;
     isInstance = isInstance && "name" in value;
-    isInstance = isInstance && "geburt" in value;
     isInstance = isInstance && "stammorganisation" in value;
-    isInstance = isInstance && "geschlecht" in value;
-    isInstance = isInstance && "lokalisierung" in value;
-    isInstance = isInstance && "vertrauensstufe" in value;
     isInstance = isInstance && "revision" in value;
     isInstance = isInstance && "personalnummer" in value;
     isInstance = isInstance && "dienststellen" in value;
@@ -143,14 +104,10 @@ export function PersonNestedInPersonInfoResponseFromJSONTyped(json: any, ignoreD
     return {
         
         'id': json['id'],
-        'referrer': json['referrer'],
+        'username': json['username'],
         'mandant': json['mandant'],
         'name': PersonNameResponseFromJSON(json['name']),
-        'geburt': PersonBirthResponseFromJSON(json['geburt']),
         'stammorganisation': json['stammorganisation'],
-        'geschlecht': json['geschlecht'],
-        'lokalisierung': json['lokalisierung'],
-        'vertrauensstufe': VertrauensstufeFromJSON(json['vertrauensstufe']),
         'revision': json['revision'],
         'personalnummer': json['personalnummer'],
         'dienststellen': json['dienststellen'],
@@ -167,14 +124,10 @@ export function PersonNestedInPersonInfoResponseToJSON(value?: PersonNestedInPer
     return {
         
         'id': value.id,
-        'referrer': value.referrer,
+        'username': value.username,
         'mandant': value.mandant,
         'name': PersonNameResponseToJSON(value.name),
-        'geburt': PersonBirthResponseToJSON(value.geburt),
         'stammorganisation': value.stammorganisation,
-        'geschlecht': value.geschlecht,
-        'lokalisierung': value.lokalisierung,
-        'vertrauensstufe': VertrauensstufeToJSON(value.vertrauensstufe),
         'revision': value.revision,
         'personalnummer': value.personalnummer,
         'dienststellen': value.dienststellen,

@@ -1,3 +1,4 @@
+/* tslint:disable */
 /* eslint-disable */
 /**
  * dBildungs IAM
@@ -72,12 +73,6 @@ export interface UserinfoResponse {
      * @type {string}
      * @memberof UserinfoResponse
      */
-    nickname: string | null;
-    /**
-     * 
-     * @type {string}
-     * @memberof UserinfoResponse
-     */
     preferredUsername: string | null;
     /**
      * 
@@ -109,18 +104,6 @@ export interface UserinfoResponse {
      * @memberof UserinfoResponse
      */
     emailVerified: boolean | null;
-    /**
-     * 
-     * @type {string}
-     * @memberof UserinfoResponse
-     */
-    gender: string | null;
-    /**
-     * 
-     * @type {string}
-     * @memberof UserinfoResponse
-     */
-    birthdate: string | null;
     /**
      * 
      * @type {string}
@@ -182,15 +165,12 @@ export function instanceOfUserinfoResponse(value: object): boolean {
     isInstance = isInstance && "givenName" in value;
     isInstance = isInstance && "familyName" in value;
     isInstance = isInstance && "middleName" in value;
-    isInstance = isInstance && "nickname" in value;
     isInstance = isInstance && "preferredUsername" in value;
     isInstance = isInstance && "profile" in value;
     isInstance = isInstance && "picture" in value;
     isInstance = isInstance && "website" in value;
     isInstance = isInstance && "email" in value;
     isInstance = isInstance && "emailVerified" in value;
-    isInstance = isInstance && "gender" in value;
-    isInstance = isInstance && "birthdate" in value;
     isInstance = isInstance && "zoneinfo" in value;
     isInstance = isInstance && "locale" in value;
     isInstance = isInstance && "phoneNumber" in value;
@@ -219,15 +199,12 @@ export function UserinfoResponseFromJSONTyped(json: any, ignoreDiscriminator: bo
         'givenName': json['given_name'],
         'familyName': json['family_name'],
         'middleName': json['middle_name'],
-        'nickname': json['nickname'],
         'preferredUsername': json['preferred_username'],
         'profile': json['profile'],
         'picture': json['picture'],
         'website': json['website'],
         'email': json['email'],
         'emailVerified': json['email_verified'],
-        'gender': json['gender'],
-        'birthdate': json['birthdate'],
         'zoneinfo': json['zoneinfo'],
         'locale': json['locale'],
         'phoneNumber': json['phone_number'],
@@ -254,15 +231,12 @@ export function UserinfoResponseToJSON(value?: UserinfoResponse | null): any {
         'given_name': value.givenName,
         'family_name': value.familyName,
         'middle_name': value.middleName,
-        'nickname': value.nickname,
         'preferred_username': value.preferredUsername,
         'profile': value.profile,
         'picture': value.picture,
         'website': value.website,
         'email': value.email,
         'email_verified': value.emailVerified,
-        'gender': value.gender,
-        'birthdate': value.birthdate,
         'zoneinfo': value.zoneinfo,
         'locale': value.locale,
         'phone_number': value.phoneNumber,
