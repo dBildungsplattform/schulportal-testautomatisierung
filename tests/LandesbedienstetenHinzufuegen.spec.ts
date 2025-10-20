@@ -102,7 +102,7 @@ test.describe('Testfälle für Landesbediensteten hinzufügen, Funktion und UI-V
     // 1. Anmelden im Schulportal SH
     landingPage = await header.logout();
     landingPage.navigateToLogin();
-    console.log(`Username des Schuladmin: ${schuladmin2Schulen.username}`);
+    
     // Erstmalige Anmeldung mit Passwortänderung
     const startPage: StartViewPage = await loginPage.loginNewUserWithPasswordChange(schuladmin2Schulen.username, schuladmin2Schulen.password);
     await startPage.waitForPageLoad();
@@ -163,7 +163,7 @@ test.describe('Testfälle für Landesbediensteten hinzufügen, Funktion und UI-V
       await landesbedienstetenHinzufuegenPage.landesbedienstetenHinzufuegenButton.click();
       await landesbedienstetenHinzufuegenPage.checkForBestaetigungspopupCompleteness();
       const confirmationText: string = await landesbedienstetenHinzufuegenPage.nachfragetextImBestaetigungsPopup.textContent();
-      expect(confirmationText).toContainEqual(`Wollen Sie ${lehrkraft2.username} als LiV hinzufügen?`);
+      expect(confirmationText).toContain(`Wollen Sie ${lehrkraft2.username} als LiV hinzufügen?`);
     });
     //SPSH-2634 Step 5
     await test.step('Abbrechen im Bestätigungs-Popup funktioniert', async () => {
@@ -198,12 +198,12 @@ test.describe('Testfälle für Landesbediensteten hinzufügen, Funktion und UI-V
       //Wert bei Befristung wird angezeigt, es wird nicht auf korrektem Datum geprüft
       await expect(landesbedienstetenHinzufuegenPage.card.getByTestId('added-landesbediensteter-befristung')).toBeVisible();
       // Werte zu Feldern auf der Card prüfen
-      await expect(landesbedienstetenHinzufuegenPage.card.getByTestId('landesbediensteter-vorname')).toHaveText(lehrkraft2.vorname);
-      await expect(landesbedienstetenHinzufuegenPage.card.getByTestId('landesbediensteter-nachname')).toHaveText(lehrkraft2.familienname);
-      await expect(landesbedienstetenHinzufuegenPage.card.getByTestId('landesbediensteter-kopersnr')).toHaveText(lehrkraft2.kopersnummer);
-      await expect(landesbedienstetenHinzufuegenPage.card.getByTestId('landesbediensteter-benutzername')).toHaveText(lehrkraft2.username);
-      await expect(landesbedienstetenHinzufuegenPage.card.getByTestId('landesbediensteter-organisation')).toHaveText(testschule665DstNrUndName);
-      await expect(landesbedienstetenHinzufuegenPage.card.getByTestId('landesbediensteter-rolle')).toHaveText('LiV');
+      await expect(landesbedienstetenHinzufuegenPage.card.getByTestId('added-landesbediensteter-vorname')).toHaveText(lehrkraft2.vorname);
+      await expect(landesbedienstetenHinzufuegenPage.card.getByTestId('added-landesbediensteter-familienname')).toHaveText(lehrkraft2.familienname);
+      await expect(landesbedienstetenHinzufuegenPage.card.getByTestId('added-landesbediensteter-personalnummer')).toHaveText(lehrkraft2.kopersnummer);
+      await expect(landesbedienstetenHinzufuegenPage.card.getByTestId('added-landesbediensteter-username')).toHaveText(lehrkraft2.username);
+      await expect(landesbedienstetenHinzufuegenPage.card.getByTestId('added-landesbediensteter-organisation')).toHaveText(testschule665DstNrUndName);
+      await expect(landesbedienstetenHinzufuegenPage.card.getByTestId('added-landesbediensteter-rolle')).toHaveText('LiV');
     });
   });
 });

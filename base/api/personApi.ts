@@ -35,7 +35,7 @@ interface PersonRequestData {
 interface CreatedPersonResponse {
   person: {
     id: string,
-    referrer: string,
+    username: string,
     mandant: string,
     name: {
       familienname: string,
@@ -113,7 +113,7 @@ export async function createPerson(
   const email: string = normalize(json.person.name.vorname) + '.' + normalize(json.person.name.familienname) + '@schule-sh.de';
 
   return {
-    username: json.person.referrer,
+    username: json.person.username,
     password: json.person.startpasswort,
     rolleId: rolleId,
     organisationId: organisationId,
