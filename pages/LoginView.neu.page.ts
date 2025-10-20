@@ -18,16 +18,14 @@ export class LoginViewPage {
   }
 
   public async login(
-    username: string = process.env.USER as string,
-    password: string = process.env.PW as string
-  ): Promise<StartViewPage> {
+    username: string, password: string): Promise<StartViewPage> {
     const usernameInput: Locator = this.page.getByTestId('username-input');
     const passwordInput: Locator = this.page.getByTestId('password-input');
     const loginButton: Locator = this.page.getByTestId('login-button');
 
     await expect(this.page.getByTestId('login-page-title')).toHaveText('Anmeldung');
     await expect(this.page.getByTestId('login-prompt-text')).toHaveText('Bitte geben Sie Ihre persönlichen Zugangsdaten ein.');
-    
+    console.log(`Logging in with username: ${username}`);
     await usernameInput.waitFor({ state: 'visible' });
     await usernameInput.fill(username);
     
@@ -59,8 +57,8 @@ export class LoginViewPage {
     return newPassword;
   }
   
-  public async loginNewUserWithPasswordChange(username: string, password: string) : Promise<StartViewPage> {
-    const startPage: StartViewPage = await this.login(username, password);
+  public async loginNewUserWithPasswordChange(givenUsername: string, givenPassword: string) : Promise<StartViewPage> {
+    const startPage: StartViewPage = await this.login(givenUsername, givenPassword);
     await this.updatePassword();
     return startPage;
   }
