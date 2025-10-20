@@ -16,16 +16,16 @@ export class KlasseCreationViewPage {
   /* actions */
   public async waitForPageLoad(): Promise<KlasseCreationViewPage> {
     await this.page.getByTestId('klasse-creation-card').waitFor({ state: 'visible' });
-    await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Klasse anlegen');
+    await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Neue Klasse hinzufügen');
     return this;
   }
 
   public async createKlasse(params: KlasseCreationParams): Promise<KlasseCreationSuccessPage> {
     const schuleNameAutocomplete: Autocomplete = new Autocomplete(this.page, this.page.getByTestId('klasse-form-schule-select'));
-    const klasseNameInput: Locator = this.page.getByTestId('klassenname-input');
+    const klasseNameInput: Locator = this.page.getByTestId('klassenname-input').locator('input');
     const createKlasseButton: Locator = this.page.getByTestId('klasse-form-submit-button');
 
-    await schuleNameAutocomplete.searchByTitle(params.schulname, true);
+    await schuleNameAutocomplete.searchByTitle(params.schulname, false);
 
     await klasseNameInput.waitFor({ state: 'visible' });
     await klasseNameInput.fill(params.klassenname);

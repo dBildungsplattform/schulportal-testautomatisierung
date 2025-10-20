@@ -27,9 +27,8 @@ export class KlasseDetailsViewPage {
     return await this.deletionWorkflow.klasseDeletionFailed();
   }
 
-
   public async editKlasse(klassenname: string): Promise<void> {
-    const klasseNameInput: Locator = this.page.getByTestId('klassenname-input');
+    const klasseNameInput: Locator = this.page.getByTestId('klassenname-input').locator('input');
     const editKlasseButton: Locator = this.page.getByTestId('klasse-edit-button');
     const editKlasseSubmitButton: Locator = this.page.getByTestId('klasse-form-submit-button');
 
@@ -47,7 +46,7 @@ export class KlasseDetailsViewPage {
   public async klasseSuccessfullyEdited(schulname: string, dienststellennummer: string, klassenname: string): Promise<void> {
     await expect(this.page.getByTestId('klasse-success-text')).toHaveText('Die Klasse wurde erfolgreich geändert.');
     await this.page.getByTestId('klasse-success-icon').isVisible();
-    await expect(this.page.getByTestId('created-klasse-schule')).toHaveText(`(${dienststellennummer}) ${schulname}`);
+    await expect(this.page.getByTestId('created-klasse-schule')).toHaveText(`${dienststellennummer} (${schulname})`);
     await expect(this.page.getByTestId('created-klasse-name')).toHaveText(klassenname);
   }
 }

@@ -32,7 +32,7 @@ export class KlasseManagementViewPage {
   }
 
   public async filterByKlasse(klassenname: string): Promise<void> {
-    await this.filterByText(klassenname, 'klasse-select');
+    await this.filterByText(klassenname, 'klassen-management-klasse-select');
   }
   
   public async openGesamtuebersicht(klassenname: string): Promise<KlasseDetailsViewPage> {
