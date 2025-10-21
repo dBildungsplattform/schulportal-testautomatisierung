@@ -28,6 +28,10 @@ let lehrkraft2: UserInfo;
 let schuladmin1Schule: UserInfo;
 let schuladmin2Schulen: UserInfo;
 
+/*
+  Schuladmin 1 Schule UI Tests +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+*/
+
 test.describe('Testfälle für Landesbediensteten hinzufügen, Funktion und UI-Vollständigkeit - Schuladmin 1 Schule', () => {
   // alles speziell für Schuladmin mit 1 Schule
    test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
@@ -57,65 +61,70 @@ test.describe('Testfälle für Landesbediensteten hinzufügen, Funktion und UI-V
     await landesbedienstetenHinzufuegenPage.waitForPageLoad();
   });
 
-    test('Schuladmin 1 Schule: UI-Vollständigkeit und vorausgefüllte Daten', async () => {
-    await expect(landesbedienstetenHinzufuegenPage.headline).toHaveText('Landesbediensteten hinzufügen');
-    await expect(landesbedienstetenHinzufuegenPage.pflichtfelderHinweisText).toHaveText('Mit * markierte Felder sind Pflichtangaben.');
-    await expect(landesbedienstetenHinzufuegenPage.closeButtonX).toBeVisible();
-    await expect(landesbedienstetenHinzufuegenPage.vornameInput).toBeVisible();
-    await expect(landesbedienstetenHinzufuegenPage.nachnameInput).toBeVisible();
-    await expect(landesbedienstetenHinzufuegenPage.kopersnrInput).toBeVisible();
-    await expect(landesbedienstetenHinzufuegenPage.hasNoKopersnrCheckbox).toBeVisible();
-    await expect(landesbedienstetenHinzufuegenPage.organisationSelect).toBeVisible();
-    await expect(landesbedienstetenHinzufuegenPage.rollenSelect).toBeVisible();
-    await expect(landesbedienstetenHinzufuegenPage.abbrechenButton).toBeVisible();
-    await expect(landesbedienstetenHinzufuegenPage.landesbedienstetenHinzufuegenButton).toBeVisible();
-    await expect(landesbedienstetenHinzufuegenPage.personalInfoHeadline).toBeVisible();
-    await expect(landesbedienstetenHinzufuegenPage.organisationHeadline).toBeVisible();
-    await expect(landesbedienstetenHinzufuegenPage.rolleHeadline).toBeVisible();
-    await expect(landesbedienstetenHinzufuegenPage.landesbedienstetenHinzufuegenButton).toBeDisabled();
-    // Persönliche Daten sind vorausgefüllt
-    await expect(landesbedienstetenHinzufuegenPage.vornameTextInputfield).toHaveValue(lehrkraft1.vorname);
-    await expect(landesbedienstetenHinzufuegenPage.nachnameTextInputfield).toHaveValue(lehrkraft1.familienname);
-    await expect(landesbedienstetenHinzufuegenPage.kopersnrTextInputfield).toHaveValue(lehrkraft1.kopersnummer);
-    // Organisation ist vorausgewählt
-    await expect(landesbedienstetenHinzufuegenPage.organisationSelect).toHaveText(testschuleDstNrUndName);
+  //SPSH-2634 Step 7
+  test('Schuladmin 1 Schule, Landesbediensteten hinzufügen: UI-Vollständigkeit und vorausgefüllte Daten', { tag: [LONG, SHORT, STAGE] }, async () => {
+  await expect(landesbedienstetenHinzufuegenPage.headline).toHaveText('Landesbediensteten hinzufügen');
+  await expect(landesbedienstetenHinzufuegenPage.pflichtfelderHinweisText).toHaveText('Mit * markierte Felder sind Pflichtangaben.');
+  await expect(landesbedienstetenHinzufuegenPage.closeButtonX).toBeVisible();
+  await expect(landesbedienstetenHinzufuegenPage.vornameInput).toBeVisible();
+  await expect(landesbedienstetenHinzufuegenPage.nachnameInput).toBeVisible();
+  await expect(landesbedienstetenHinzufuegenPage.kopersnrInput).toBeVisible();
+  await expect(landesbedienstetenHinzufuegenPage.hasNoKopersnrCheckbox).toBeVisible();
+  await expect(landesbedienstetenHinzufuegenPage.organisationSelect).toBeVisible();
+  await expect(landesbedienstetenHinzufuegenPage.rollenSelect).toBeVisible();
+  await expect(landesbedienstetenHinzufuegenPage.abbrechenButton).toBeVisible();
+  await expect(landesbedienstetenHinzufuegenPage.landesbedienstetenHinzufuegenButton).toBeVisible();
+  await expect(landesbedienstetenHinzufuegenPage.personalInfoHeadline).toBeVisible();
+  await expect(landesbedienstetenHinzufuegenPage.organisationHeadline).toBeVisible();
+  await expect(landesbedienstetenHinzufuegenPage.rolleHeadline).toBeVisible();
+  await expect(landesbedienstetenHinzufuegenPage.landesbedienstetenHinzufuegenButton).toBeDisabled();
+  // Persönliche Daten sind vorausgefüllt
+  await expect(landesbedienstetenHinzufuegenPage.vornameTextInputfield).toHaveValue(lehrkraft1.vorname);
+  await expect(landesbedienstetenHinzufuegenPage.nachnameTextInputfield).toHaveValue(lehrkraft1.familienname);
+  await expect(landesbedienstetenHinzufuegenPage.kopersnrTextInputfield).toHaveValue(lehrkraft1.kopersnummer);
+  // Organisation ist vorausgewählt
+  await expect(landesbedienstetenHinzufuegenPage.organisationSelect).toHaveText(testschuleDstNrUndName);
   });
-
 });
+
+/*
+  Schuladmin 2 Schulen UI Tests +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+*/
+
 test.describe('Testfälle für Landesbediensteten hinzufügen, Funktion und UI-Vollständigkeit - Schuladmin 2 Schulen', () => {
   // alles speziell für Schuladmin mit 2 Schulen
-    test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
-    header = new HeaderPage(page);
-    
-    loginPage = await freshLoginPage(page);
-    await loginPage.login(process.env.USER, process.env.PW);
-    // Testdaten anlegen (Schuladmin)
-    schuladmin2Schulen = await createPersonWithPersonenkontext(page, testschuleName, schuladminOeffentlichRolle);
-    const testschuleID: string = await getOrganisationId(page, testschuleName);
-    const testschule665ID: string = await getOrganisationId(page, testschule665Name);
-    const schuladminRolleId: string = await getRolleId(page, schuladminOeffentlichRolle);
-    await addSecondOrganisationToPerson(page, schuladmin2Schulen.personId, testschuleID, testschule665ID, schuladminRolleId);
-    // Lehrkraft
-    const kopers2 : string = await generateKopersNr();
-    lehrkraft2 = await createPersonWithPersonenkontext(page, testschuleName, lehrkraftOeffentlichRolle, undefined, undefined, kopers2);
-
-    // 1. Anmelden im Schulportal SH
-    landingPage = await header.logout();
-    landingPage.navigateToLogin();
-    
-    // Erstmalige Anmeldung mit Passwortänderung
-    const startPage: StartViewPage = await loginPage.loginNewUserWithPasswordChange(schuladmin2Schulen.username, schuladmin2Schulen.password);
-    await startPage.waitForPageLoad();
+  test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
+  header = new HeaderPage(page);
   
-    // 2. Zur Seite navigieren und LB suchen
-    landesbedienstetenHinzufuegenPage = new LandesbedienstetenHinzufuegenPage(page);
-    personManagementViewPage = await startPage.goToAdministration();
-    landesbedienstetenSuchenUndHinzufuegenPage = await personManagementViewPage.menu.navigateToLandesbedienstetenSuchenUndHinzufuegen();
-    await landesbedienstetenSuchenUndHinzufuegenPage.landesbedienstetenSuchen(lehrkraft2.username);
-    await landesbedienstetenHinzufuegenPage.waitForPageLoad();
+  loginPage = await freshLoginPage(page);
+  await loginPage.login(process.env.USER, process.env.PW);
+  // Testdaten anlegen (Schuladmin)
+  schuladmin2Schulen = await createPersonWithPersonenkontext(page, testschuleName, schuladminOeffentlichRolle);
+  const testschuleID: string = await getOrganisationId(page, testschuleName);
+  const testschule665ID: string = await getOrganisationId(page, testschule665Name);
+  const schuladminRolleId: string = await getRolleId(page, schuladminOeffentlichRolle);
+  await addSecondOrganisationToPerson(page, schuladmin2Schulen.personId, testschuleID, testschule665ID, schuladminRolleId);
+  // Lehrkraft
+  const kopers2 : string = await generateKopersNr();
+  lehrkraft2 = await createPersonWithPersonenkontext(page, testschuleName, lehrkraftOeffentlichRolle, undefined, undefined, kopers2);
+
+  // 1. Anmelden im Schulportal SH
+  landingPage = await header.logout();
+  landingPage.navigateToLogin();
+  
+  // Erstmalige Anmeldung mit Passwortänderung
+  const startPage: StartViewPage = await loginPage.loginNewUserWithPasswordChange(schuladmin2Schulen.username, schuladmin2Schulen.password);
+  await startPage.waitForPageLoad();
+
+  // 2. Zur Seite navigieren und LB suchen
+  landesbedienstetenHinzufuegenPage = new LandesbedienstetenHinzufuegenPage(page);
+  personManagementViewPage = await startPage.goToAdministration();
+  landesbedienstetenSuchenUndHinzufuegenPage = await personManagementViewPage.menu.navigateToLandesbedienstetenSuchenUndHinzufuegen();
+  await landesbedienstetenSuchenUndHinzufuegenPage.landesbedienstetenSuchen(lehrkraft2.username);
+  await landesbedienstetenHinzufuegenPage.waitForPageLoad();
   });
   //SPSH-2634 Step 1
-  test.only('Schuladmin 2 Schulen', { tag: [LONG, SHORT, STAGE] }, async () => {
+  test('Schuladmin 2 Schulen', { tag: [LONG, SHORT, STAGE] }, async () => {
     await test.step('Organisation nur aus zugewiesenen Organisationen auswählbar, UI Elemente werden angezeigt', async () => {
       await expect(landesbedienstetenHinzufuegenPage.headline).toHaveText('Landesbediensteten hinzufügen');
       await expect(landesbedienstetenHinzufuegenPage.pflichtfelderHinweisText).toHaveText('Mit * markierte Felder sind Pflichtangaben.');
