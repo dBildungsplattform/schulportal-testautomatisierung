@@ -1,6 +1,7 @@
 import { expect } from '@playwright/test';
 import { Locator, Page } from "@playwright/test";
 import { AbstractAdminPage } from "../../abstracts/AbstractAdminPage.page";
+import { Autocomplete } from '../../../elements/Autocomplete';
 
 export class LandesbedienstetenSuchenUndHinzufuegenPage extends AbstractAdminPage {
   constructor(protected readonly page: Page) {
@@ -8,29 +9,28 @@ export class LandesbedienstetenSuchenUndHinzufuegenPage extends AbstractAdminPag
   }
 
   /* Locators */
+  /*Landesbediensteten suchen*/
   // Radio Buttons
   public kopersRadioButton : Locator = this.page.getByLabel('per KoPers.-Nr.');
   public emailRadioButton : Locator = this.page.getByLabel('per E-Mail');
   public usernameRadioButton : Locator = this.page.getByLabel('per Benutzername');
   public nameRadioButton : Locator = this.page.getByLabel('per Vorname und Nachname');
-
   // Input Eingabefelder nur sichtbar, wenn das jeweilige Radio ausgewählt ist
   public kopersInputField : Locator = this.page.locator('#kopers-input');
   public emailInputField : Locator = this.page.locator('#email-input');
   public usernameInputField : Locator = this.page.locator('#username-input');
   public vornameInputField : Locator = this.page.locator('#vorname-input');
   public nachnameInputField : Locator = this.page.locator('#nachname-input');
-
-  // Inputfelder
+  // Inputfelder zur Dateneingabe
   public nachnameInput : Locator = this.page.getByTestId('nachname-input');
   public vornameInput : Locator = this.page.getByTestId('vorname-input')
   // Buttons
   public buttonZuruecksetzen : Locator = this.page.getByTestId('person-search-form-discard-button');
   public buttonLandesbedienstetenSuchen : Locator = this.page.getByTestId('person-search-form-submit-button');
-  // Fehlermeldung bei nicht gefundenen Landesbediensteten
+  /* Fehlermeldung bei nicht gefundenen Landesbediensteten */
   public errorNachname : Locator = this.page.locator('#nachname-input-messages .v-messages__message');
   
-  // Suchergebnis Cards
+  /* Suchergebnis Cards */
   public suchergebnisCardHeadline: Locator = this.page.getByRole('heading', { name: 'Suchergebnis' });
   // Persönliche Daten
   public personalDataCard: Locator = this.page.getByTestId('personal-data-card').nth(1);
@@ -48,6 +48,52 @@ export class LandesbedienstetenSuchenUndHinzufuegenPage extends AbstractAdminPag
   // Buttons
   public buttonZurueckZurSuche: Locator = this.page.getByTestId('reset-search-button');
   public buttonLandesbedienstetenHinzufuegen: Locator = this.page.getByTestId('add-state-employee-button');
+
+  /*Landesbediensteten Hinzufügen*/
+  // Card Elemente
+  public card: Locator = this.page.getByTestId('person-creation-card');
+  public headline: Locator = this.card.getByTestId('layout-card-headline');
+  public closeButtonX: Locator = this.card.getByTestId('close-layout-card-button');
+  public erfolgsText: Locator = this.card.getByTestId('landesbediensteter-success-text');
+  // Buttons nach erfolgreichem Hinzufügen auf Bestätigungscard
+  public zurGesamtuebersichtButton: Locator = this.card.getByTestId('to-details-button');
+  public zurueckZurErgebnislisteButton: Locator = this.card.getByTestId('back-to-list-button');
+  public weiterenLandesbedienstetenSuchenButton: Locator = this.card.getByTestId('search-another-landesbediensteter-button');
+  // Formular
+  public form: Locator = this.card.getByTestId('person-creation-form');
+  public pflichtfelderHinweisText: Locator = this.page.getByTestId('person-creation-form').locator('label.subtitle-2');
+  public formVornameInput: Locator = this.form.getByTestId('vorname-input');
+  public formNachnameInput: Locator = this.form.getByTestId('familienname-input');
+  public kopersnrInput: Locator = this.form.getByTestId('kopersnr-input');
+  public hasNoKopersnrCheckbox: Locator = this.form.getByTestId('has-no-kopersnr-checkbox');
+  public befristungInput: Locator = this.form.getByTestId('befristung-input');
+  public bisSchuljahresendeRadio: Locator = this.form.locator('input[type="radio"][aria-label*="Schuljahresende"]');
+  public unbefristetRadio: Locator = this.form.getByTestId('unbefristet-radio-button');
+  // Inputfelder für die Dateneingabe
+  public vornameTextInputfield: Locator = this.formVornameInput.locator('input');
+  public nachnameTextInputfield: Locator = this.formNachnameInput.locator('input');
+  public kopersnrTextInputfield: Locator = this.kopersnrInput.locator('input');
+  public befristungDateInputfield: Locator = this.befristungInput.locator('input');
+  public organisationSelect: Locator = this.form.getByTestId('personenkontext-create-organisation-select');
+  public organisationOeffnenButton: Locator = this.page.locator('[data-testid="personenkontext-create-organisation-select"] i[aria-label="Öffnen"]');
+  public organisationDropdown: Locator = this.organisationSelect.locator('.v-list-item, [role="option"]');
+  public rollenSelect: Locator = this.form.getByTestId('rollen-select');
+  public rolleOeffnenButton: Locator = this.page.locator('[data-testid="rollen-select"] i[aria-label="Öffnen"]');
+  public organisationAutocomplete: Autocomplete = new Autocomplete(this.page, this.page.getByTestId('personenkontext-create-organisation-select'));
+  public rolleAutocomplete: Autocomplete = new Autocomplete(this.page, this.page.getByTestId('rollen-select'));
+  // Buttons
+  public abbrechenButton: Locator = this.form.getByTestId('person-creation-form-discard-button');
+  public landesbedienstetenHinzufuegenButton: Locator = this.form.getByTestId('person-creation-form-submit-button');
+  // Headline-Abschnitte im Formular
+  public personalInfoHeadline: Locator = this.form.locator('h3', { hasText: '1. Persönliche Informationen' });
+  public organisationHeadline: Locator = this.form.locator('h3', { hasText: '2. Organisationsebene zuordnen' });
+  public rolleHeadline: Locator = this.form.locator('h3', { hasText: '3. Rolle zuordnen' });
+  public befristungHeadline: Locator = this.form.locator('h3', { hasText: '4. Befristung zuordnen' });
+
+  /* Landesbediensteten hinzufügen Nachfrage-Popup */
+  public nachfragetextImBestaetigungsPopup: Locator = this.page.getByTestId('add-person-confirmation-text');
+  public abbrechenButtonImBestaetigungsPopup: Locator = this.page.getByTestId('cancel-add-person-confirmation-button');
+  public landesbedienstetenHinzufuegenButtonImBestaetigungsPopup: Locator = this.page.getByTestId('confirm-add-person-button');
 
 
   public async waitForPageLoad(): Promise<void> {
@@ -73,8 +119,18 @@ export class LandesbedienstetenSuchenUndHinzufuegenPage extends AbstractAdminPag
     await expect(this.buttonZuruecksetzen).toBeEnabled();
     await expect(this.buttonLandesbedienstetenSuchen).toBeDisabled();
   }
+  
+  public async checkForBestaetigungspopupCompleteness(): Promise<void> {
+    await expect(this.headline).toBeVisible();
+    await expect(this.headline).toHaveText('Landesbediensteten hinzufügen');
+    await expect(this.nachfragetextImBestaetigungsPopup).toBeVisible(); //Text ist individuell, wird im Test geprüft
+    await expect(this.abbrechenButtonImBestaetigungsPopup).toBeVisible();
+    await expect(this.abbrechenButtonImBestaetigungsPopup).toHaveText('Abbrechen');
+    await expect(this.landesbedienstetenHinzufuegenButtonImBestaetigungsPopup).toBeVisible();
+    await expect(this.landesbedienstetenHinzufuegenButtonImBestaetigungsPopup).toHaveText('Landesbediensteten hinzufügen');
+  }
 
-  // Formular ausfüllen
+  // Landesbediensteten hinzufügen Suche Formular ausfüllen
   public async fillKopersNr(kopersNr: string): Promise<void> {
     if (!(await this.kopersRadioButton.isChecked())) {
       await this.kopersRadioButton.check();

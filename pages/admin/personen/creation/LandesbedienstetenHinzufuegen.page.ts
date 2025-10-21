@@ -12,12 +12,13 @@ export class LandesbedienstetenHinzufuegenPage extends AbstractAdminPage {
     await this.personalInfoHeadline.waitFor({ state: 'visible' });
   }
 
+  /*Landesbediensteten Hinzufügen*/
   // Card Elemente
   public card: Locator = this.page.getByTestId('person-creation-card');
   public headline: Locator = this.card.getByTestId('layout-card-headline');
   public closeButtonX: Locator = this.card.getByTestId('close-layout-card-button');
   public erfolgsText: Locator = this.card.getByTestId('landesbediensteter-success-text');
-
+  // Buttons nach erfolgreichem Hinzufügen auf Bestätigungscard
   public zurGesamtuebersichtButton: Locator = this.card.getByTestId('to-details-button');
   public zurueckZurErgebnislisteButton: Locator = this.card.getByTestId('back-to-list-button');
   public weiterenLandesbedienstetenSuchenButton: Locator = this.card.getByTestId('search-another-landesbediensteter-button');
@@ -25,24 +26,21 @@ export class LandesbedienstetenHinzufuegenPage extends AbstractAdminPage {
   // Formular
   public form: Locator = this.card.getByTestId('person-creation-form');
   public pflichtfelderHinweisText: Locator = this.page.getByTestId('person-creation-form').locator('label.subtitle-2');
-
-  public vornameInput: Locator = this.form.getByTestId('vorname-input');
-  public nachnameInput: Locator = this.form.getByTestId('familienname-input');
+  public formVornameInput: Locator = this.form.getByTestId('vorname-input');
+  public formNachnameInput: Locator = this.form.getByTestId('familienname-input');
   public kopersnrInput: Locator = this.form.getByTestId('kopersnr-input');
   public hasNoKopersnrCheckbox: Locator = this.form.getByTestId('has-no-kopersnr-checkbox');
   public befristungInput: Locator = this.form.getByTestId('befristung-input');
-
   public bisSchuljahresendeRadio: Locator = this.form.locator('input[type="radio"][aria-label*="Schuljahresende"]');
   public unbefristetRadio: Locator = this.form.getByTestId('unbefristet-radio-button');
     // Inputfelder für die Dateneingabe
-  public vornameTextInputfield: Locator = this.vornameInput.locator('input');
-  public nachnameTextInputfield: Locator = this.nachnameInput.locator('input');
+  public vornameTextInputfield: Locator = this.formVornameInput.locator('input');
+  public nachnameTextInputfield: Locator = this.formNachnameInput.locator('input');
   public kopersnrTextInputfield: Locator = this.kopersnrInput.locator('input');
   public befristungDateInputfield: Locator = this.befristungInput.locator('input');
   public organisationSelect: Locator = this.form.getByTestId('personenkontext-create-organisation-select');
   public organisationOeffnenButton: Locator = this.page.locator('[data-testid="personenkontext-create-organisation-select"] i[aria-label="Öffnen"]');
   public organisationDropdown: Locator = this.organisationSelect.locator('.v-list-item, [role="option"]');
-  
   public rollenSelect: Locator = this.form.getByTestId('rollen-select');
   public rolleOeffnenButton: Locator = this.page.locator('[data-testid="rollen-select"] i[aria-label="Öffnen"]');
   public organisationAutocomplete: Autocomplete = new Autocomplete(this.page, this.page.getByTestId('personenkontext-create-organisation-select'));
@@ -50,15 +48,13 @@ export class LandesbedienstetenHinzufuegenPage extends AbstractAdminPage {
     // Buttons
   public abbrechenButton: Locator = this.form.getByTestId('person-creation-form-discard-button');
   public landesbedienstetenHinzufuegenButton: Locator = this.form.getByTestId('person-creation-form-submit-button');
-
     // Headline-Abschnitte im Formular
   public personalInfoHeadline: Locator = this.form.locator('h3', { hasText: '1. Persönliche Informationen' });
   public organisationHeadline: Locator = this.form.locator('h3', { hasText: '2. Organisationsebene zuordnen' });
   public rolleHeadline: Locator = this.form.locator('h3', { hasText: '3. Rolle zuordnen' });
   public befristungHeadline: Locator = this.form.locator('h3', { hasText: '4. Befristung zuordnen' });
 
-  // Popups & Fehlermeldungen
-  // Landesbediensteten hinzufügen Nachfrage-Popup
+  /* Landesbediensteten hinzufügen Nachfrage-Popup */
   public nachfragetextImBestaetigungsPopup: Locator = this.page.getByTestId('add-person-confirmation-text');
   public abbrechenButtonImBestaetigungsPopup: Locator = this.page.getByTestId('cancel-add-person-confirmation-button');
   public landesbedienstetenHinzufuegenButtonImBestaetigungsPopup: Locator = this.page.getByTestId('confirm-add-person-button');
@@ -73,7 +69,4 @@ export class LandesbedienstetenHinzufuegenPage extends AbstractAdminPage {
     await expect(this.landesbedienstetenHinzufuegenButtonImBestaetigungsPopup).toHaveText('Landesbediensteten hinzufügen');
   }
 
-  // Card nach dem Hinzufügen eines Landesbediensteten
-  
-  
 }

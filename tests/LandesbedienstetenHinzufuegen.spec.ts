@@ -65,8 +65,8 @@ test.describe('Testfälle für Landesbediensteten hinzufügen, Funktion und UI-V
   await expect(landesbedienstetenHinzufuegenPage.headline).toHaveText('Landesbediensteten hinzufügen');
   await expect(landesbedienstetenHinzufuegenPage.pflichtfelderHinweisText).toHaveText('Mit * markierte Felder sind Pflichtangaben.');
   await expect(landesbedienstetenHinzufuegenPage.closeButtonX).toBeVisible();
-  await expect(landesbedienstetenHinzufuegenPage.vornameInput).toBeVisible();
-  await expect(landesbedienstetenHinzufuegenPage.nachnameInput).toBeVisible();
+  await expect(landesbedienstetenHinzufuegenPage.formVornameInput).toBeVisible();
+  await expect(landesbedienstetenHinzufuegenPage.formNachnameInput).toBeVisible();
   await expect(landesbedienstetenHinzufuegenPage.kopersnrInput).toBeVisible();
   await expect(landesbedienstetenHinzufuegenPage.hasNoKopersnrCheckbox).toBeVisible();
   await expect(landesbedienstetenHinzufuegenPage.organisationSelect).toBeVisible();
@@ -128,8 +128,8 @@ test.describe('Testfälle für Landesbediensteten hinzufügen, Funktion und UI-V
       await expect(landesbedienstetenHinzufuegenPage.headline).toHaveText('Landesbediensteten hinzufügen');
       await expect(landesbedienstetenHinzufuegenPage.pflichtfelderHinweisText).toHaveText('Mit * markierte Felder sind Pflichtangaben.');
       await expect(landesbedienstetenHinzufuegenPage.closeButtonX).toBeVisible();
-      await expect(landesbedienstetenHinzufuegenPage.vornameInput).toBeVisible();
-      await expect(landesbedienstetenHinzufuegenPage.nachnameInput).toBeVisible();
+      await expect(landesbedienstetenHinzufuegenPage.formVornameInput).toBeVisible();
+      await expect(landesbedienstetenHinzufuegenPage.formNachnameInput).toBeVisible();
       await expect(landesbedienstetenHinzufuegenPage.kopersnrInput).toBeVisible();
       await expect(landesbedienstetenHinzufuegenPage.hasNoKopersnrCheckbox).toBeVisible();
       await expect(landesbedienstetenHinzufuegenPage.organisationSelect).toBeVisible();
