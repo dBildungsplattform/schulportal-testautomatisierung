@@ -69,7 +69,7 @@ test.describe('Testfälle für die Funktion Landesbediensteten suchen und hinzuf
   });
 
   //SPSH-2660 Step 3
-  test('Landesbediensteten ohne Schulzuordnung suchen per Benutzername und erfolgreich hinzufügen', { tag: [LONG, SHORT, STAGE] }, async ({ page }) => {
+  test('Landesbediensteten ohne Schulzuordnung suchen per Benutzername und erfolgreich hinzufügen', { tag: [LONG, SHORT, STAGE] }, async ({ page }: PlaywrightTestArgs) => {
     await removeAllPersonenkontexte(page, lehrkraftOhneSchulzuordnung.personId);
     await landesbedienstetenSuchenUndHinzufuegenPage.fillBenutzername(lehrkraftOhneSchulzuordnung.username);
     await landesbedienstetenHinzufuegenAlsLehrkraft(landesbedienstetenSuchenUndHinzufuegenPage, landesbedienstetenHinzufuegenPage);
