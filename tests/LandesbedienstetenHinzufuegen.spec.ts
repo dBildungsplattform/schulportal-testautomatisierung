@@ -16,7 +16,6 @@ import { getRolleId } from "../base/api/testHelperRolle.page";
 import { generateKopersNr } from "../base/utils/generateTestdata";
 import { LONG, SHORT, STAGE } from "../base/tags";
 
-
 let loginPage: LoginViewPage;
 let landingPage: LandingViewPage;
 let landesbedienstetenSuchenUndHinzufuegenPage: LandesbedienstetenSuchenUndHinzufuegenPage;

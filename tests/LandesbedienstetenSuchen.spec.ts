@@ -42,7 +42,7 @@ test.describe('Testfälle für Landesbediensteten suchen, Funktion und UI-Vollst
     lehrkraftDoppel2 = await createPersonWithPersonenkontext(page, testschuleName, lehrkraftOeffentlichRolle, "TAutoMax", "TAutoMustermann", "3219875");
     ersatzschulLehrkraft = await createPersonWithPersonenkontext(page, ersatzTestschuleName, ersatzschulLehrkraftRolle);
             
-    // 1. Anmelden im Schulportal SH
+    // Anmelden im Schulportal SH
     landingPage = await header.logout();
     landingPage.navigateToLogin();
     
@@ -50,7 +50,7 @@ test.describe('Testfälle für Landesbediensteten suchen, Funktion und UI-Vollst
     const startPage: StartViewPage = await loginPage.loginNewUserWithPasswordChange(schuladminUsername, schuladminPassword);
     await startPage.waitForPageLoad();
   
-    // 2. Zur Seite navigieren
+    // Zur Seite navigieren
     personManagementViewPage = await startPage.goToAdministration();
     landesbedienstetenSuchenUndHinzufuegenPage = await personManagementViewPage.menu.navigateToLandesbedienstetenSuchenUndHinzufuegen();
     await landesbedienstetenSuchenUndHinzufuegenPage.waitForPageLoad();

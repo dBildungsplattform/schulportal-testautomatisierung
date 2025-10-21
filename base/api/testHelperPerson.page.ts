@@ -32,6 +32,25 @@ export async function createPersonWithPersonenkontext(
   const userInfo: UserInfo = await createPerson(page, organisationId, rolleId, familienname, vorname, koPersNr);
   return userInfo;
 }
+//Personencontexte entfernen
+export async function removeAllPersonenkontexte(
+  page: Page,
+  personId: string
+): Promise<void> {
+  const response: APIResponse = await page.request.put(
+    FRONTEND_URL + 'api/personenkontext-workflow/' + personId,
+    {
+      data: {
+        lastModified: new Date().toISOString(),
+        count: 1,
+        personenkontexte: [], // Leeres Array entfernt alle Kontexte
+      },
+      failOnStatusCode: false,
+      maxRetries: 3,
+    }
+  );
+  expect(response.status()).toBe(200);
+}
 // Personen anlegen mit neuer Rolle
 export async function createRolleAndPersonWithUserContext(
   page: Page,
