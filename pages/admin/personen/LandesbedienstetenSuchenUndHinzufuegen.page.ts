@@ -101,23 +101,28 @@ export class LandesbedienstetenSuchenUndHinzufuegenPage extends AbstractAdminPag
   }
 
   /* actions */
-  public async checkForPageCompleteness(): Promise<void> {
-    await expect(this.page.getByTestId('admin-headline')).toHaveText('Landesbediensteten (suchen und hinzufügen)');
-    await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Landesbediensteten suchen');
-    await expect(this.page.getByTestId('close-layout-card-button')).toBeVisible();
-    await expect(this.page.getByText('Bitte wählen Sie, wie Sie nach dem Landesbediensteten suchen möchten.', { exact: false })).toBeVisible();
-    //  Es gibt 4 Möglichkeiten zu suchen:
-    await expect(this.kopersRadioButton).toBeChecked();
-    await expect(this.kopersInputField).toBeVisible();
-    await expect(this.emailRadioButton).toBeVisible();
-    await expect(this.emailInputField).toBeHidden();
-    await expect(this.usernameRadioButton).toBeVisible();
-    await expect(this.usernameInputField).toBeHidden();
-    await expect(this.nameRadioButton).toBeVisible();
-    await expect(this.vornameInputField).toBeHidden();
-    await expect(this.nachnameInputField).toBeHidden();
-    await expect(this.buttonZuruecksetzen).toBeEnabled();
-    await expect(this.buttonLandesbedienstetenSuchen).toBeDisabled();
+  public async checkForPageCompleteness(): Promise<boolean> {
+    try {
+      await expect(this.page.getByTestId('admin-headline')).toHaveText('Landesbediensteten (suchen und hinzufügen)');
+      await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Landesbediensteten suchen');
+      await expect(this.page.getByTestId('close-layout-card-button')).toBeVisible();
+      await expect(this.page.getByText('Bitte wählen Sie, wie Sie nach dem Landesbediensteten suchen möchten.', { exact: false })).toBeVisible();
+      //  Es gibt 4 Möglichkeiten zu suchen:
+      await expect(this.kopersRadioButton).toBeChecked();
+      await expect(this.kopersInputField).toBeVisible();
+      await expect(this.emailRadioButton).toBeVisible();
+      await expect(this.emailInputField).toBeHidden();
+      await expect(this.usernameRadioButton).toBeVisible();
+      await expect(this.usernameInputField).toBeHidden();
+      await expect(this.nameRadioButton).toBeVisible();
+      await expect(this.vornameInputField).toBeHidden();
+      await expect(this.nachnameInputField).toBeHidden();
+      await expect(this.buttonZuruecksetzen).toBeEnabled();
+      await expect(this.buttonLandesbedienstetenSuchen).toBeDisabled();
+      return true;
+    } catch {
+      return false;
+    }
   }
   
   public async checkForBestaetigungspopupCompleteness(): Promise<void> {

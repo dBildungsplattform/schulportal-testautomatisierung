@@ -62,14 +62,16 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
     const kopers3: string = await generateKopersNr();
     const kopers4: string = await generateKopersNr();
     const kopers5: string = await generateKopersNr();
+    const kopers6: string = await generateKopersNr();
+    const kopers7: string = await generateKopersNr();
     lehrkraft1 = await createPersonWithPersonenkontext(page, testschuleName, lehrkraftOeffentlichRolle, undefined, undefined, kopers1);
     lehrkraftMitSchulzuordnung = await createPersonWithPersonenkontext(page, testschuleName, lehrkraftOeffentlichRolle, undefined, undefined, kopers2);
     lehrkraftOhneSchulzuordnung = await createPersonWithPersonenkontext(page, testschuleName, lehrkraftOeffentlichRolle, undefined, undefined, kopers3);
     lehrkraft = await createPersonWithPersonenkontext(page, testschuleName, lehrkraftOeffentlichRolle, undefined, undefined, kopers4);
     lockedLehrkraft = await createPersonWithPersonenkontext(page, testschuleName, lehrkraftOeffentlichRolle, undefined, undefined, kopers5);
     await lockPerson(page, lockedLehrkraft.personId, testschuleDstNr);
-    lehrkraftDoppel1 = await createPersonWithPersonenkontext(page, testschuleName, lehrkraftOeffentlichRolle, "TAutoMax", "TAutoMustermann", "3219876");
-    lehrkraftDoppel2 = await createPersonWithPersonenkontext(page, testschuleName, lehrkraftOeffentlichRolle, "TAutoMax", "TAutoMustermann", "3219875");
+    lehrkraftDoppel1 = await createPersonWithPersonenkontext(page, testschuleName, lehrkraftOeffentlichRolle, "TAutoMax", "TAutoMustermann", kopers6);
+    lehrkraftDoppel2 = await createPersonWithPersonenkontext(page, testschuleName, lehrkraftOeffentlichRolle, "TAutoMax", "TAutoMustermann", kopers7);
     ersatzschulLehrkraft = await createPersonWithPersonenkontext(page, ersatzTestschuleName, ersatzschulLehrkraftRolle);
     
     // Anmelden im Schulportal SH
@@ -90,7 +92,6 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
  //SPSH-2634 Step 7
   test('Schuladmin 1 Schule, Landesbediensteten hinzufügen: UI-Vollständigkeit und vorausgefüllte Daten', { tag: [LONG, SHORT, STAGE] }, async () => {
     await landesbedienstetenSuchenUndHinzufuegenPage.landesbedienstetenSuchen(lehrkraft1.username);
-    await landesbedienstetenSuchenUndHinzufuegenPage.waitForPageLoad();
     await expect(landesbedienstetenSuchenUndHinzufuegenPage.headline).toHaveText('Landesbediensteten hinzufügen');
     await expect(landesbedienstetenSuchenUndHinzufuegenPage.pflichtfelderHinweisText).toHaveText('Mit * markierte Felder sind Pflichtangaben.');
     await expect(landesbedienstetenSuchenUndHinzufuegenPage.closeButtonX).toBeVisible();
@@ -115,7 +116,7 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
   });
   //SPSH-2630
   test('Seiteninhalte werden angezeigt', { tag: [LONG, SHORT, STAGE] }, async () => {
-    expect(await landesbedienstetenSuchenUndHinzufuegenPage.checkForPageCompleteness()).toBeTruthy();
+    expect(await landesbedienstetenSuchenUndHinzufuegenPage.checkForPageCompleteness()).toBe(true);
   });
   //SPSH-2631 Step 1
   //Das Feld Nachname wird rot umrandet und es steht darunter die Aufforderung: Der Nachname ist erforderlich.
@@ -285,11 +286,10 @@ test.describe('Testfälle für Landesbediensteten hinzufügen, Funktion und UI-V
   personManagementViewPage = await startPage.goToAdministration();
   landesbedienstetenSuchenUndHinzufuegenPage = await personManagementViewPage.menu.navigateToLandesbedienstetenSuchenUndHinzufuegen();
   await landesbedienstetenSuchenUndHinzufuegenPage.landesbedienstetenSuchen(lehrkraft2.username);
-  await landesbedienstetenSuchenUndHinzufuegenPage.waitForPageLoad();
   });
   
   //SPSH-2634 Step 1
-  test('Schuladmin 2 Schulen', { tag: [LONG, SHORT, STAGE] }, async () => {
+  test('Seite wird vollständig angezeigt: Schuladmin 2 Schulen', { tag: [LONG, SHORT, STAGE] }, async () => {
     await test.step('Organisation nur aus zugewiesenen Organisationen auswählbar, UI Elemente werden angezeigt', async () => {
       await expect(landesbedienstetenSuchenUndHinzufuegenPage.headline).toHaveText('Landesbediensteten hinzufügen');
       await expect(landesbedienstetenSuchenUndHinzufuegenPage.pflichtfelderHinweisText).toHaveText('Mit * markierte Felder sind Pflichtangaben.');
