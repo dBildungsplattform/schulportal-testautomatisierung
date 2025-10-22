@@ -25,7 +25,6 @@ export class LoginViewPage {
 
     await expect(this.page.getByTestId('login-page-title')).toHaveText('Anmeldung');
     await expect(this.page.getByTestId('login-prompt-text')).toHaveText('Bitte geben Sie Ihre persönlichen Zugangsdaten ein.');
-    console.log(`Logging in with username: ${username}`);
     await usernameInput.waitFor({ state: 'visible' });
     await usernameInput.fill(username);
     
