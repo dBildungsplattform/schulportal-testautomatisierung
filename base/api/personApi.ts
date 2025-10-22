@@ -109,7 +109,7 @@ export async function createPerson(
   function normalize(str: string): string {
     return str.toLowerCase();
   }
-
+  // TODO Ä,Ü Ö, ß müssen noch geändert werden
   const email: string = normalize(json.person.name.vorname) + '.' + normalize(json.person.name.familienname) + '@schule-sh.de';
 
   return {

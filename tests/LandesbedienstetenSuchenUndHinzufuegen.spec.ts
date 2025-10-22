@@ -4,7 +4,7 @@ import { LONG, SHORT, STAGE } from "../base/tags";
 import { addSecondOrganisationToPerson, createPersonWithPersonenkontext, removeAllPersonenkontexte } from "../base/api/testHelperPerson.page";
 import { ersatzTestschuleName, testschule665DstNrUndName, testschule665Name, testschuleDstNr, testschuleDstNrUndName, testschuleName } from "../base/organisation";
 import { ersatzschulLehrkraftRolle, lehrkraftOeffentlichRolle, schuladminOeffentlichRolle } from "../base/rollen";
-import { generateKopersNr } from "../base/utils/generateTestdata";
+import { generateKopersNr, generateNachname, generateVorname } from "../base/utils/generateTestdata";
 import { LandesbedienstetenSuchenUndHinzufuegenPage } from "../pages/admin/personen/LandesbedienstetenSuchenUndHinzufuegen.page";
 import { LoginViewPage } from "../pages/LoginView.neu.page";
 import { LandingViewPage } from "../pages/LandingView.neu.page";
@@ -14,7 +14,6 @@ import { PersonManagementViewPage } from "../pages/admin/personen/PersonManageme
 import { SuchergebnisPopup } from "../pages/components/PersonSearchErrorPopup.page";
 import { getOrganisationId } from "../base/api/testHelperOrganisation.page";
 import { getRolleId } from "../base/api/testHelperRolle.page";
-
 
 let loginPage: LoginViewPage;
 let landingPage: LandingViewPage;
@@ -33,7 +32,6 @@ let lehrkraftDoppel2: UserInfo;
 let ersatzschulLehrkraft: UserInfo;
 let schuladmin1Schule: UserInfo;
 let schuladmin2Schulen: UserInfo;
-
 
 async function landesbedienstetenHinzufuegenAlsLehrkraft(
   landesbedienstetenSuchenUndHinzufuegenPage: LandesbedienstetenSuchenUndHinzufuegenPage): Promise<void> {
@@ -58,20 +56,22 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
     schuladmin1Schule = await createPersonWithPersonenkontext(page, testschuleName, schuladminOeffentlichRolle);
 
     const kopers1: string = await generateKopersNr();
-    const kopers2: string = await generateKopersNr();
-    const kopers3: string = await generateKopersNr();
-    const kopers4: string = await generateKopersNr();
-    const kopers5: string = await generateKopersNr();
-    const kopers6: string = await generateKopersNr();
-    const kopers7: string = await generateKopersNr();
     lehrkraft1 = await createPersonWithPersonenkontext(page, testschuleName, lehrkraftOeffentlichRolle, undefined, undefined, kopers1);
+    const kopers2: string = await generateKopersNr();
     lehrkraftMitSchulzuordnung = await createPersonWithPersonenkontext(page, testschuleName, lehrkraftOeffentlichRolle, undefined, undefined, kopers2);
+    const kopers3: string = await generateKopersNr();
     lehrkraftOhneSchulzuordnung = await createPersonWithPersonenkontext(page, testschuleName, lehrkraftOeffentlichRolle, undefined, undefined, kopers3);
+    const kopers4: string = await generateKopersNr();
     lehrkraft = await createPersonWithPersonenkontext(page, testschuleName, lehrkraftOeffentlichRolle, undefined, undefined, kopers4);
+    const kopers5: string = await generateKopersNr();
     lockedLehrkraft = await createPersonWithPersonenkontext(page, testschuleName, lehrkraftOeffentlichRolle, undefined, undefined, kopers5);
     await lockPerson(page, lockedLehrkraft.personId, testschuleDstNr);
-    lehrkraftDoppel1 = await createPersonWithPersonenkontext(page, testschuleName, lehrkraftOeffentlichRolle, "TAutoMax", "TAutoMustermann", kopers6);
-    lehrkraftDoppel2 = await createPersonWithPersonenkontext(page, testschuleName, lehrkraftOeffentlichRolle, "TAutoMax", "TAutoMustermann", kopers7);
+    const kopers6: string = await generateKopersNr();
+    const vornameDoppelt: string = await generateVorname();
+    const nachnameDoppelt: string = await generateNachname();
+    lehrkraftDoppel1 = await createPersonWithPersonenkontext(page, testschuleName, lehrkraftOeffentlichRolle, vornameDoppelt, nachnameDoppelt, kopers6);
+    const kopers7: string = await generateKopersNr();
+    lehrkraftDoppel2 = await createPersonWithPersonenkontext(page, testschuleName, lehrkraftOeffentlichRolle, vornameDoppelt, nachnameDoppelt, kopers7);
     ersatzschulLehrkraft = await createPersonWithPersonenkontext(page, ersatzTestschuleName, ersatzschulLehrkraftRolle);
     
     // Anmelden im Schulportal SH
@@ -85,7 +85,6 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
     landesbedienstetenSuchenUndHinzufuegenPage = await personManagementViewPage.menu.navigateToLandesbedienstetenSuchenUndHinzufuegen();
     await landesbedienstetenSuchenUndHinzufuegenPage.waitForPageLoad();
   });
-
   /* 
     ---------------------------------- UI Testfälle ----------------------------------
   */
