@@ -37,7 +37,7 @@ async function landesbedienstetenHinzufuegenAlsLehrkraft(
   landesbedienstetenSuchenUndHinzufuegenPage: LandesbedienstetenSuchenUndHinzufuegenPage): Promise<void> {
   await landesbedienstetenSuchenUndHinzufuegenPage.buttonLandesbedienstetenSuchen.click();
   await landesbedienstetenSuchenUndHinzufuegenPage.buttonLandesbedienstetenHinzufuegen.click();
-  await landesbedienstetenSuchenUndHinzufuegenPage.rolleOeffnenButton.click();
+  //await landesbedienstetenSuchenUndHinzufuegenPage.rolleOeffnenButton.click();
   await landesbedienstetenSuchenUndHinzufuegenPage.rolleAutocomplete.selectByTitle('LiV');
   await landesbedienstetenSuchenUndHinzufuegenPage.landesbedienstetenHinzufuegenButton.click();
   await landesbedienstetenSuchenUndHinzufuegenPage.landesbedienstetenHinzufuegenButtonImBestaetigungsPopup.click();

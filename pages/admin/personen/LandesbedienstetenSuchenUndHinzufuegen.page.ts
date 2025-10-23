@@ -1,11 +1,9 @@
 import { expect } from '@playwright/test';
 import { Locator, Page } from "@playwright/test";
-import { AbstractAdminPage } from "../../abstracts/AbstractAdminPage.page";
 import { Autocomplete } from '../../../elements/Autocomplete';
 
-export class LandesbedienstetenSuchenUndHinzufuegenPage extends AbstractAdminPage {
-  constructor(protected readonly page: Page) {
-    super(page);
+export class LandesbedienstetenSuchenUndHinzufuegenPage {
+  constructor(private readonly page: Page) {
   }
 
   /* Locators */

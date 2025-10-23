@@ -6,14 +6,14 @@ import { SearchFilter } from '../../../elements/SearchFilter';
 import { HeaderPage } from '../../components/Header.neu.page';
 import { MenuBarPage } from '../../components/MenuBar.neu.page';
 
-export class PersonManagementViewPage extends AbstractManagementViewPage {
+export class PersonManagementViewPage {
   readonly menu: MenuBarPage;
   readonly header: HeaderPage;
   private readonly personTable: DataTable;
   private readonly searchFilter: SearchFilter;
 
-  constructor(page: Page) {
-    super(page);
+
+  constructor(private readonly page: Page) {
     this.menu = new MenuBarPage(page);
     this.header = new HeaderPage(page);
     this.personTable = new DataTable(this.page, this.page.getByTestId('person-table'));
