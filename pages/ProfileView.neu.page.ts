@@ -39,7 +39,7 @@ export class ProfileViewPage {
     await this.page.getByTestId('open-change-password-dialog-button').click();
     await this.page.getByTestId('change-password-button').click();
 
-    await expect(this.page.locator('#kc-attempted-username')).toHaveText(username);
+    await expect(this.page.getByTestId('attempted-username')).toHaveText(username);
     await expect(this.page.getByTestId('login-prompt-text')).toHaveText('Bitte geben Sie Ihr aktuelles Passwort ein.');
     
     await passwordInput.waitFor({ state: 'visible' });
@@ -121,8 +121,8 @@ export class ProfileViewPage {
       Nach dem Schließen des Dialogs wird das Passwort nicht mehr angezeigt.
       Sie benötigen dieses Passwort ausschließlich zur erstmaligen Anmeldung an Ihrem neuen LK-Endgerät.
     `);
-    await expect(this.page.locator('[data-testid="password-output-field"] input')).toBeVisible();
-    await expect(this.page.locator('[data-testid="password-output-field"] input')).toHaveAttribute('readonly');
+    await expect(this.page.getByTestId('password-output-field').locator('input')).toBeVisible();
+    await expect(this.page.getByTestId('password-output-field').locator('input')).toHaveAttribute('readonly');
     await expect(this.page.getByTestId('show-password-icon')).toBeVisible();
     await expect(this.page.getByTestId('copy-password-icon')).toBeVisible()
     await this.page.getByTestId('close-password-reset-dialog-button').click();

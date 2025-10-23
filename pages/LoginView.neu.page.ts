@@ -43,7 +43,7 @@ export class LoginViewPage {
     const setPasswordButton: Locator = this.page.getByTestId('set-password-button');
 
     await expect(this.page.getByTestId('update-password-title')).toHaveText('Passwort festlegen');
-    await expect(this.page.locator('.password-update-prompt')).toHaveText('Bitte legen Sie ein neues, selbstgewähltes Passwort fest.');
+    await expect(this.page.getByTestId('password-update-prompt')).toHaveText('Bitte legen Sie ein neues, selbstgewähltes Passwort fest.');
 
     await newPasswordInput.waitFor({ state: 'visible' });
     await newPasswordInput.fill(newPassword);

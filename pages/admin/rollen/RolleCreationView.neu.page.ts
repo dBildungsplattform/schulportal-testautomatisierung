@@ -1,5 +1,4 @@
 import { expect, Page } from '@playwright/test';
-import { AbstractAdminPage } from '../../abstracts/AbstractAdminPage.page';
 import { RolleCreationSuccessPage } from './RolleCreationSuccess.page';
 import { RolleCreationWorkflow } from './RolleCreationWorkflow.page';
 
@@ -12,10 +11,8 @@ export interface RolleCreationParams {
   serviceProviders: string[];
 }
 
-export class RolleCreationViewPage extends AbstractAdminPage {
-  constructor(page: Page) {
-    super(page);
-  }
+export class RolleCreationViewPage {
+  constructor(protected readonly page: Page) {}
 
   /* actions */
   public async waitForPageLoad(): Promise<void> {

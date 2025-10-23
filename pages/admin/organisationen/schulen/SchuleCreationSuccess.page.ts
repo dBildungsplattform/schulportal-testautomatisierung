@@ -1,14 +1,11 @@
 import { expect, Page } from '@playwright/test';
-import { AbstractAdminPage } from '../../../abstracts/AbstractAdminPage.page';
 import { SchuleCreationViewPage, type SchuleCreationParams } from './SchuleCreationView.neu.page';
 import { SchuleManagementViewPage } from './SchuleManagementView.neu.page';
 
-export class SchuleCreationSuccessPage extends AbstractAdminPage {
+export class SchuleCreationSuccessPage {
   /* add global locators here */
 
-  constructor(page: Page) {
-    super(page);
-  }
+  constructor(protected readonly page: Page) {}
 
   /* actions */
   public async waitForPageLoad(): Promise<void> {

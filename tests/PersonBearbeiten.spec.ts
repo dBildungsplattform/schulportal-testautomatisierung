@@ -497,8 +497,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     }
   );
 
-  // TODO: we skip this test because it fails, as ldap is currently unreachable in CI
-  test.skip(
+  test(
     'Inbetriebnahme-Passwort über die Gesamtübersicht erzeugen',
     { tag: [LONG] },
     async ({ page }: PlaywrightTestArgs) => {
@@ -765,7 +764,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         );
         await page.getByTestId('confirm-change-klasse-button').click();
         await page.getByTestId('zuordnung-changes-save-button').click();
-        await page.getByTestId('change-klasse-success-close').click();
+        await page.getByTestId('change-klasse-success-dialog-close-button').click();
       });
 
       await test.step('In der Gesamtübersicht prüfen, dass der Schüler in die neue Klasse versetzt worden ist', async () => {

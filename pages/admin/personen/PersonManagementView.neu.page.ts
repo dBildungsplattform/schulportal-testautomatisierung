@@ -2,7 +2,6 @@ import { expect, Page } from '@playwright/test';
 import { Autocomplete } from '../../../elements/Autocomplete';
 import { DataTable } from '../../components/DataTable.neu.page';
 import { PersonDetailsViewPage } from './details/PersonDetailsView.neu.page';
-import { AbstractManagementViewPage } from '../../abstracts/AbstractManagementView.page';
 import { SearchFilter } from '../../../elements/SearchFilter';
 import { HeaderPage } from '../../components/Header.neu.page';
 import { MenuBarPage } from '../../components/MenuBar.neu.page';
