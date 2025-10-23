@@ -3,10 +3,9 @@ import { getOrganisationId } from './testHelperOrganisation.page';
 import { createRolle } from './rolleApi'
 import { addSPToRolle, getRolleId } from './testHelperRolle.page';
 import { getSPId } from './testHelperServiceprovider.page';
-import { UserInfo } from './testHelper.page';
 import { HeaderPage } from '../../pages/components/Header.page';
 import { LoginPage } from '../../pages/LoginView.page';
-import { createPerson } from './personApi';
+import { createPerson, UserInfo } from './personApi';
 import {
   generateNachname,
   generateVorname,
@@ -18,13 +17,13 @@ import { email, kalender, adressbuch } from '../sp';
 import { typeLehrer } from '../rollentypen';
 
 const FRONTEND_URL: string | undefined = process.env.FRONTEND_URL || '';
-
-export async function createPersonWithUserContext(
+// Person anlegen mit existierender Rolle
+export async function createPersonWithPersonenkontext(
   page: Page,
   organisationName: string,
-  familienname: string,
-  vorname: string,
   rolleName: string,
+  familienname?: string,
+  vorname?: string,
   koPersNr?: string
 ): Promise<UserInfo> {
   // Organisation wird nicht angelegt, da diese zur Zeit nicht gelöscht werden kann
@@ -33,7 +32,26 @@ export async function createPersonWithUserContext(
   const userInfo: UserInfo = await createPerson(page, organisationId, rolleId, familienname, vorname, koPersNr);
   return userInfo;
 }
-
+//Personencontexte entfernen
+export async function removeAllPersonenkontexte(
+  page: Page,
+  personId: string
+): Promise<void> {
+  const response: APIResponse = await page.request.put(
+    FRONTEND_URL + 'api/personenkontext-workflow/' + personId,
+    {
+      data: {
+        lastModified: new Date().toISOString(),
+        count: 1,
+        personenkontexte: [], // Leeres Array entfernt alle Kontexte
+      },
+      failOnStatusCode: false,
+      maxRetries: 3,
+    }
+  );
+  expect(response.status()).toBe(200);
+}
+// Personen anlegen mit neuer Rolle
 export async function createRolleAndPersonWithUserContext(
   page: Page,
   organisationName: string,

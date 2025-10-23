@@ -3,12 +3,22 @@ import { Autocomplete } from '../../../elements/Autocomplete';
 import { DataTable } from '../../components/DataTable.neu.page';
 import { PersonDetailsViewPage } from './details/PersonDetailsView.neu.page';
 import { SearchFilter } from '../../../elements/SearchFilter';
+import { HeaderPage } from '../../components/Header.neu.page';
+import { MenuBarPage } from '../../components/MenuBar.neu.page';
 
 export class PersonManagementViewPage {
-  private readonly personTable: DataTable = new DataTable(this.page, this.page.getByTestId('person-table'));
-  private readonly searchFilter: SearchFilter = new SearchFilter(this.page);
+  readonly menu: MenuBarPage;
+  readonly header: HeaderPage;
+  private readonly personTable: DataTable;
+  private readonly searchFilter: SearchFilter;
 
-  constructor(protected readonly page: Page) {}
+
+  constructor(private readonly page: Page) {
+    this.menu = new MenuBarPage(page);
+    this.header = new HeaderPage(page);
+    this.personTable = new DataTable(this.page, this.page.getByTestId('person-table'));
+    this.searchFilter = new SearchFilter(this.page);
+  }
 
   /* actions */
   public async waitForPageLoad(): Promise<void> {
@@ -51,5 +61,4 @@ export class PersonManagementViewPage {
   public async checkHeaders(expectedHeaders: string[]): Promise<void> {
     await this.personTable.checkHeaders(expectedHeaders);
   }
-
 }
