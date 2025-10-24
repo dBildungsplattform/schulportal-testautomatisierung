@@ -3,7 +3,7 @@ import { LoginPage } from '../pages/LoginView.page';
 import { LandingPage } from '../pages/LandingView.page';
 import { StartPage } from '../pages/StartView.page';
 import { HeaderPage } from '../pages/components/Header.page';
-import { LONG, SHORT, SMOKE, STAGE, BROWSER } from '../base/tags';
+import { LONG, SHORT, SMOKE, STAGE, BROWSER, DEV } from '../base/tags';
 import { createRolleAndPersonWithUserContext } from '../base/api/testHelperPerson.page';
 import { lockPerson } from '../base/api/personApi';
 import { getSPId } from '../base/api/testHelperServiceprovider.page';
@@ -65,7 +65,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
 
   test(
     'Erfolgreicher Standard Login Landesadmin',
-    { tag: [LONG, SMOKE, STAGE, BROWSER] },
+    { tag: [LONG, SMOKE, STAGE, BROWSER, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const login: LoginPage = new LoginPage(page);
       const landing: LandingPage = new LandingPage(page);
