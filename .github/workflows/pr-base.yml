@@ -82,7 +82,7 @@ jobs:
   run_playwright_tests:
       uses: ./.github/workflows/run-tests.yml
       with:
-        frontendHostname: ${{ jobs.determine_frontend_hostname.outputs.fe_host }}
+        frontendHostname: ${{ steps.determine_frontend_hostname.outputs.fe_host }}
         tag: dev
         browser: chromium
         playwright_branch: main
