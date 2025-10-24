@@ -75,7 +75,7 @@ jobs:
         else
           echo "No branch to ticket found, using main FE and BE infrastructure"
           FRONTEND_HOST="main.dev.spsh.dbildungsplattform.de"
-          echo "FRONTEND_HOST=$FRONTEND_host"
+          echo "FRONTEND_HOST=$FRONTEND_HOST"
           echo "fe_host=${FRONTEND_HOST}" >> "$GITHUB_OUTPUT" 
         fi
 
