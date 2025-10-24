@@ -80,11 +80,12 @@ jobs:
         fi
 
   run_playwright_tests:
+      name: Testing ${{ needs.determine_frontend_hostname.outputs.fe_host }} with ${{ github.head_ref }}
       uses: ./.github/workflows/run-tests.yml
       needs: determine_frontend_hostname
       with:
         frontendHostname: ${{ needs.determine_frontend_hostname.outputs.fe_host }}
         tag: dev
         browser: chromium
-        playwright_branch: main
+        playwright_branch: ${{ github.head_ref }}
       secrets: inherit
