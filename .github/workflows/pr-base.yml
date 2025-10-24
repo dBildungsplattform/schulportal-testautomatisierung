@@ -8,7 +8,7 @@ jobs:
   determine_frontend_hostname:
     runs-on: ubuntu-latest
     outputs:
-      fe_host: ${{ steps.determine-fe-url.outputs.fe_host }}
+      fe_host: ${{ steps.determine-fe-host.outputs.fe_host }}
     steps:
     - uses: actions/checkout@v3
     # --------------------------
