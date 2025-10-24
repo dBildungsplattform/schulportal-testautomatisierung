@@ -87,3 +87,4 @@ jobs:
         tag: dev
         browser: chromium
         playwright_branch: main
+      secrets: inherit
