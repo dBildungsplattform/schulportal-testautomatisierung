@@ -57,7 +57,6 @@ jobs:
     # --------------------------
     # Checkout & Node setup
     # --------------------------
-
     - uses: actions/checkout@v3
       with:
         repository: 'dBildungsplattform/schulportal-testautomatisierung'
@@ -74,8 +73,6 @@ jobs:
       run: npm ci
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
-    
-
 
     # --------------------------
     # Setup SSH agent for LDAP tunnel
@@ -83,7 +80,6 @@ jobs:
     - name: Setup SSH agent
       if: ${{ inputs.tag == 'dev' }}
       uses: webfactory/ssh-agent@dc588b651fe13675774614f8e6a936a468676387 # v0.9.0
-
       with:
         ssh-private-key: ${{ secrets.TUNNEL_USER_SSHKEY }}
 
@@ -114,8 +110,9 @@ jobs:
     - name: Get LDAP admin password from Kubernetes
       if: ${{ inputs.tag == 'dev' }}
       run: |
-        LDAP_PASS=$(kubectl -n main get secret dbildungs-iam-ldap -o jsonpath='{.data.LDAP_ADMIN_PASSWORD}' | base64 -d)
-        echo "LDAP_ADMIN_PASSWORD=$LDAP_PASS" >> $GITHUB_ENV
+        LDAP_ADMIN_PASSWORD=$(kubectl -n main get secret dbildungs-iam-ldap -o jsonpath='{.data.LDAP_ADMIN_PASSWORD}' | base64 -d)
+        echo "::add-mask::$LDAP_ADMIN_PASSWORD"
+        echo "LDAP_ADMIN_PASSWORD=$LDAP_ADMIN_PASSWORD" >> $GITHUB_ENV
 
     # --------------------------
     # Create SSH tunnel to LDAP
