@@ -147,11 +147,13 @@ jobs:
     # Run Playwright tests
     # --------------------------
     - name: Run Playwright tests
-      run: npx playwright test --config=playwright.config.ts --grep "@${{inputs.tag}}" --project "${{inputs.browser}}"
       env:
         FRONTEND_URL: 'https://${{ inputs.frontendHostname }}/'
+        TAG: ${{ inputs.tag }}
+        BROWSER: ${{ inputs.browser }}
         USER: '${{ secrets.USER }}'
         PW: '${{ secrets.PW }}'
+      run: npx playwright test --config=playwright.config.ts --grep @"$TAG" --project "$BROWSER"
 
     # --------------------------
     # Post test
