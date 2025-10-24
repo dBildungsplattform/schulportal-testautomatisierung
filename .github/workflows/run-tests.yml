@@ -82,7 +82,8 @@ jobs:
     # --------------------------
     - name: Setup SSH agent
       if: ${{ inputs.tag == 'dev' }}
-      uses: webfactory/ssh-agent@v0.9.0
+      uses: webfactory/ssh-agent@dc588b651fe13675774614f8e6a936a468676387 # v0.9.0
+
       with:
         ssh-private-key: ${{ secrets.TUNNEL_USER_SSHKEY }}
 
@@ -165,7 +166,7 @@ jobs:
         path: playwright-report/
         retention-days: 30
 
-    - uses: RocketChat/Rocket.Chat.GitHub.Action.Notification@1.1.1
+    - uses: RocketChat/Rocket.Chat.GitHub.Action.Notification@2966f5f2e0313a94f965a51c08700cfecf0b6572  # 1.1.1
       if: failure()
       with:
         type: ${{ job.status }} 
