@@ -1,0 +1,87 @@
+name: On PR to base
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  determine_frontend_hostname:
+    outputs:
+      fe_host: ${{ steps.determine-fe-url.outputs.fe_host }}
+    steps:
+    - uses: actions/checkout@v3
+    # --------------------------
+    # Determine Branch Tag
+    # --------------------------
+    - name: Determine Branch Tag
+      id: determine-tag
+      run: |
+        regex_long='^([[:alpha:]]+?-[[:digit:]]+-[[:digit:]]+)'
+        regex_short='^([[:alpha:]]+?-[[:digit:]]+)'
+        if [[ "${{ github.head_ref }}" =~ $regex_long ]]; then
+          tag="$(echo ${BASH_REMATCH[1]})"
+        elif [[ "${{ github.head_ref }}" =~ $regex_short ]]; then
+          tag="${BASH_REMATCH[1]}"
+        elif [[ "${{ github.head_ref }}" == 'main' ]]; then
+          tag=""
+        else
+        echo "::error::Couldn't extract ticket from branch" ${{ github.head_ref }} ". If not main the branch name should begin alpha-digit or alpha-digit-digit blocks (e.g. SPSH-1234-test-name or release-1-1-optional-text)"
+        exit 1
+        fi
+        echo "tag=${tag}" >> "$GITHUB_OUTPUT"
+        echo "branch to merge from tag=${tag}"
+
+    # --------------------------
+    # Determine Branch Count
+    # --------------------------
+    - name: Determine Branch Count
+      id: branch-count
+      env:
+        TAG: ${{ steps.determine-tag.outputs.tag }}
+      run: |
+        REPOS=(
+          "https://github.com/dBildungsplattform/dbildungs-iam-server.git"
+          "https://github.com/dbildungsplattform/schulportal-client.git"
+          "https://github.com/dbildungsplattform/dbildungs-iam-keycloak.git"
+          "https://github.com/dbildungsplattform/dbildungs-iam-ldap.git"
+        )
+        MATCH_COUNT=0
+        for REPO in "${REPOS[@]}"; do
+          echo "🔍 Checking $REPO for branch '$TAG'"
+          BRANCH_EXISTS=$(git ls-remote --heads "$REPO" "refs/heads/$TAG")
+          if [[ -n "$BRANCH_EXISTS" ]]; then
+            echo "✅ Branch '$TAG' exists in $REPO"
+            MATCH_COUNT=$((MATCH_COUNT + 1))
+          else
+            echo "Branch '$TAG' does NOT exist in $REPO"
+          fi
+        done
+        echo "Total matches found: $MATCH_COUNT"
+        echo "count=$MATCH_COUNT" >> "$GITHUB_OUTPUT"
+
+    # --------------------------
+    # Determine Frontend Host
+    # --------------------------
+    - name: Determine Frontend Host
+      id: determine-fe-host
+      run: |
+        if [ ${{ steps.branch-count.outputs.count }} -ge 1 ]; then
+          echo "At least one branch for ticket was found, using branch FE and BE infrastructure"
+          FRONTEND_HOST_PREFIX=$(echo "${{ steps.determine-tag.outputs.tag }}" | tr '[:upper:]' '[:lower:]')
+          FRONTEND_HOST="${FRONTEND_host_PREFIX}.dev.spsh.dbildungsplattform.de"
+          echo "FRONTEND_HOST=$FRONTEND_HOST"
+          echo "fe_host=${FRONTEND_HOST}" >> "$GITHUB_OUTPUT"
+        else
+          echo "No branch to ticket found, using main FE and BE infrastructure"
+          FRONTEND_HOST="main.dev.spsh.dbildungsplattform.de"
+          echo "FRONTEND_HOST=$FRONTEND_host"
+          echo "fe_host=${FRONTEND_HOST}" >> "$GITHUB_OUTPUT" 
+        fi
+
+  run_playwright_tests:
+      uses: ./.github/workflows/run-tests.yml
+      with:
+        frontendHostname: ${{ jobs.determine_frontend_hostname.outputs.fe_host }}
+        tag: dev
+        browser: chromium
+        playwright_branch: main
