@@ -1,0 +1,37 @@
+name: Scheduled runs
+
+on:
+  schedule:
+    # - cron: '15 5 * * 1-5'
+    # - cron: '45 6 * * *'
+    - cron: '*/15 * * * *' # for testing purposes only
+
+jobs:
+  browser_tests:
+    if: github.event.schedule == '15 5 * * 1-5'
+    strategy:
+      matrix:
+        browser: [chromium, firefox, webkit, msedge]
+    uses: ./.github/workflows/run-tests.yml
+    with:
+      frontendHostname: main.dev.spsh.dbildungsplattform.de
+      tag: dev
+      browser: ${{ matrix.browser }}
+      playwright_branch: main
+
+  stage_smoke_test:
+    if: github.event.schedule == '45 6 * * *'
+    uses: ./.github/workflows/run-tests.yml
+    with:
+      frontendHostname: spsh.staging.spsh.dbildungsplattform.de
+      tag: smoke
+      browser: chromium
+      playwright_branch: main
+
+  test_scheduling:
+    uses: ./.github/workflows/run-tests.yml
+    with:
+      frontendHostname: main.dev.spsh.dbildungsplattform.de
+      tag: smoke
+      browser: chromium
+      playwright_branch: main
