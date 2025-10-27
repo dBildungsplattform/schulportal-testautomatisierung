@@ -1,0 +1,15 @@
+name: After Push to base
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  run_playwright_tests:
+      uses: ./.github/workflows/run-tests.yml
+      with:
+        frontendHostname: main.dev.spsh.dbildungsplattform.de
+        tag: dev
+        browser: chromium
+        playwright_branch: main
