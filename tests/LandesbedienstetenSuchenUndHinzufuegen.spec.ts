@@ -1,7 +1,7 @@
 import test, { PlaywrightTestArgs, expect } from "@playwright/test";
 import { freshLoginPage, lockPerson, UserInfo } from "../base/api/personApi";
 import { LONG, SHORT, STAGE } from "../base/tags";
-import { addSecondOrganisationToPerson, createPersonWithPersonenkontext, removeAllPersonenkontexte } from "../base/api/testHelperPerson.page";
+import { addSecondOrganisationToPerson, createPersonWithPersonenkontext, removeAllPersonenkontexte } from "../base/api/personApi";
 import { ersatzTestschuleName, testschule665DstNrUndName, testschule665Name, testschuleDstNr, testschuleDstNrUndName, testschuleName } from "../base/organisation";
 import { ersatzschulLehrkraftRolle, lehrkraftOeffentlichRolle, schuladminOeffentlichRolle } from "../base/rollen";
 import { generateKopersNr, generateNachname, generateVorname } from "../base/utils/generateTestdata";
@@ -309,9 +309,8 @@ test.describe('Testfälle für Landesbediensteten hinzufügen, Funktion und UI-V
       await expect(landesbedienstetenSuchenUndHinzufuegenPage.kopersnrTextInputfield).toHaveValue(lehrkraft2.kopersnummer);
       // Organisationen sind eingeschränkt auswählbar
       await landesbedienstetenSuchenUndHinzufuegenPage.organisationOeffnenButton.click();
-      const optionTexts: string[] = await landesbedienstetenSuchenUndHinzufuegenPage.organisationAutocomplete.allTextContents();
       const erwarteteOrganisationen: string[] = [testschuleDstNrUndName, testschule665DstNrUndName];
-      expect(optionTexts).toEqual(expect.arrayContaining(erwarteteOrganisationen));
+      await landesbedienstetenSuchenUndHinzufuegenPage.organisationAutocomplete.assertAllMenuItems(erwarteteOrganisationen);
     });
     //SPSH-2634 Step 2
     await test.step('Nach Organisationsauswahl werden Rollenfelder angezeigt, Auswahl 2. Organisation im Dropdown', async () => {
