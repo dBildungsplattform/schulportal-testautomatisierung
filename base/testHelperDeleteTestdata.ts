@@ -1,6 +1,6 @@
-import { deleteRolle, getRolleId } from './api/testHelperRolle.page';
-import { deletePerson, getPersonId } from './api/testHelperPerson.page';
-import { getKlasseId, deleteKlasse } from './api/testHelperOrganisation.page';
+import { deleteRolle, getRolleId } from './api/rolleApi';
+import { deletePerson, getPersonId } from './api/personApi';
+import { getKlasseId, deleteKlasse } from './api/organisationApi';
 import { type Page } from '@playwright/test';
 
 export async function deletePersonById(personId: string[], page: Page): Promise<void> {
@@ -10,18 +10,18 @@ export async function deletePersonById(personId: string[], page: Page): Promise<
   }
 }
 
-export async function deleteRolleById(roleId: string[], page: Page): Promise<void> {
-  // roleId ist ein array mit allen zu löschenden Rollen
-  for (const item in roleId) {
-    await deleteRolle(page, roleId[item]);
+export async function deleteRolleById(rolleId: string[], page: Page): Promise<void> {
+  // rolleId ist ein array mit allen zu löschenden Rollen
+  for (const item in rolleId) {
+    await deleteRolle(page, rolleId[item]);
   }
 }
 
-export async function deleteRolleByName(roleName: string[], page: Page): Promise<void> {
-  // roleName ist ein array mit allen zu löschenden Rollen
-  for (const item in roleName) {
-    const roleId: string = await getRolleId(page, roleName[item]);
-    await deleteRolle(page, roleId);
+export async function deleteRolleByName(rolleName: string[], page: Page): Promise<void> {
+  // rolleName ist ein array mit allen zu löschenden Rollen
+  for (const item in rolleName) {
+    const rolleId: string = await getRolleId(page, rolleName[item]);
+    await deleteRolle(page, rolleId);
   }
 }
 
