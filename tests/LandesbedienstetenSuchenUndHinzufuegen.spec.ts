@@ -12,8 +12,8 @@ import { HeaderPage } from "../pages/components/Header.neu.page";
 import { StartViewPage } from "../pages/StartView.neu.page";
 import { PersonManagementViewPage } from "../pages/admin/personen/PersonManagementView.neu.page";
 import { SuchergebnisPopup } from "../pages/components/PersonSearchErrorPopup.page";
-import { getOrganisationId } from "../base/api/testHelperOrganisation.page";
-import { getRolleId } from "../base/api/testHelperRolle.page";
+import { getOrganisationId } from "../base/api/organisationApi";
+import { getRolleId } from "../base/api/rolleApi";
 
 let loginPage: LoginViewPage;
 let landingPage: LandingViewPage;

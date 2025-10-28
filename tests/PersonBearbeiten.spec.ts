@@ -1,14 +1,14 @@
 import { expect, PlaywrightTestArgs, test } from '@playwright/test';
-import { UserInfo, waitForAPIResponse } from '../base/api/testHelper.page';
-import { createKlasse, getOrganisationId } from '../base/api/testHelperOrganisation.page';
+import { createPerson, UserInfo } from '../base/api/personApi';
+import { waitForAPIResponse } from '../base/api/baseApi';
+import { createKlasse, getOrganisationId } from '../base/api/organisationApi';
 import {
-  createRolleAndPersonWithUserContext,
+  createRolleAndPersonWithPersonenkontext,
   setTimeLimitPersonenkontext,
-} from '../base/api/testHelperPerson.page';
-import { createPerson } from '../base/api/personApi';
-import { addSPToRolle, addSystemrechtToRolle } from '../base/api/testHelperRolle.page';
+} from '../base/api/personApi';
+import { addServiceProvidersToRolle, addSystemrechtToRolle, RollenArt, RollenMerkmal } from '../base/api/rolleApi';
 import { createRolle } from '../base/api/rolleApi';
-import { getSPId } from '../base/api/testHelperServiceprovider.page';
+import { getServiceProviderId } from '../base/api/serviceProviderApi';
 import { klasse1Testschule } from '../base/klassen';
 import { befristungPflicht, kopersNrPflicht } from '../base/merkmale';
 import { landSH, testschule665Name, testschuleDstNr, testschuleName } from '../base/organisation';
@@ -27,6 +27,7 @@ import {
   generateVorname,
   generateRolleName,
   generateKopersNr,
+  formatDateDMY,
 } from '../base/utils/generateTestdata';
 import { gotoTargetURL } from '../base/testHelperUtils';
 import { generateCurrentDate } from '../base/utils/generateTestdata';
@@ -114,13 +115,13 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     logoutViaStartPage = true;
 
     await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) und SP(email) über die api anlegen ${ADMIN}`, async () => {
-      userInfoLehrer = await createRolleAndPersonWithUserContext(
+      userInfoLehrer = await createRolleAndPersonWithPersonenkontext(
         page,
         testschuleName,
         typeLehrer,
         await generateNachname(),
         await generateVorname(),
-        [await getSPId(page, email)],
+        [await getServiceProviderId(page, email)],
         await generateRolleName()
       );
       usernames.push(userInfoLehrer.username);
@@ -157,17 +158,17 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     { tag: [LONG, STAGE, BROWSER] },
     async ({ page }: PlaywrightTestArgs) => {
       let userInfoLehrer: UserInfo;
-      const sperrDatumAbHeute: string = await generateCurrentDate({ days: 0, months: 0, formatDMY: true });
+      const sperrDatumAbHeute: string = formatDateDMY(generateCurrentDate({ days: 0, months: 0 }));
       logoutViaStartPage = true;
 
       await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) und SP(email) über die api anlegen ${ADMIN}`, async () => {
-        userInfoLehrer = await createRolleAndPersonWithUserContext(
+        userInfoLehrer = await createRolleAndPersonWithPersonenkontext(
           page,
           testschuleName,
           typeLehrer,
           await generateNachname(),
           await generateVorname(),
-          [await getSPId(page, email)],
+          [await getServiceProviderId(page, email)],
           await generateRolleName()
         );
         usernames.push(userInfoLehrer.username);
@@ -193,18 +194,18 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test('Einen Benutzer über das FE befristet sperren', { tag: [LONG, STAGE] }, async ({ page }: PlaywrightTestArgs) => {
     let userInfoLehrer: UserInfo;
-    const sperrDatumAbHeute: string = await generateCurrentDate({ days: 0, months: 0, formatDMY: true });
-    const sperrDatumBis: string = await generateCurrentDate({ days: 5, months: 2, formatDMY: true });
+    const sperrDatumAbHeute: string = formatDateDMY(generateCurrentDate({ days: 0, months: 0 }));
+    const sperrDatumBis: string = formatDateDMY(generateCurrentDate({ days: 5, months: 2 }));
     logoutViaStartPage = true;
 
     await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) und SP(email) über die api anlegen ${ADMIN}`, async () => {
-      userInfoLehrer = await createRolleAndPersonWithUserContext(
+      userInfoLehrer = await createRolleAndPersonWithPersonenkontext(
         page,
         testschuleName,
         typeLehrer,
         await generateNachname(),
         await generateVorname(),
-        [await getSPId(page, email)],
+        [await getServiceProviderId(page, email)],
         await generateRolleName()
       );
       usernames.push(userInfoLehrer.username);
@@ -240,7 +241,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         const klasseId: string = await getOrganisationId(page, klasse1Testschule);
         const rollenname: string = await generateRolleName();
         const rolleId: string = await createRolle(page, 'LERN', schuleId, rollenname);
-        await addSPToRolle(page, rolleId, [await getSPId(page, 'itslearning')]);
+        await addServiceProvidersToRolle(page, rolleId, [await getServiceProviderId(page, 'itslearning')]);
         userInfoSchueler = await createPerson(
           page,
           schuleId,
@@ -287,13 +288,13 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       logoutViaStartPage = true;
 
       await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) über die api anlegen ${ADMIN}`, async () => {
-        userInfoLehrer = await createRolleAndPersonWithUserContext(
+        userInfoLehrer = await createRolleAndPersonWithPersonenkontext(
           page,
           testschuleName,
           typeLehrer,
           await generateNachname(),
           await generateVorname(),
-          [await getSPId(page, email)],
+          [await getServiceProviderId(page, email)],
           await generateRolleName()
         );
         usernames.push(userInfoLehrer.username);
@@ -321,19 +322,19 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     async ({ page }: PlaywrightTestArgs) => {
       const addminVorname: string = await generateVorname();
       const adminNachname: string = await generateNachname();
-      const adminRollenart: string = typeSchuladmin;
+      const adminRollenart: RollenArt = typeSchuladmin;
       const adminOrganisation: string = testschule665Name;
       let userInfoAdmin: UserInfo;
       logoutViaStartPage = true;
 
       await test.step(`Testdaten: Schuladmin mit einer Rolle(LEIT) über die api anlegen ${ADMIN}`, async () => {
-        userInfoAdmin = await createRolleAndPersonWithUserContext(
+        userInfoAdmin = await createRolleAndPersonWithPersonenkontext(
           page,
           adminOrganisation,
           adminRollenart,
           addminVorname,
           adminNachname,
-          [await getSPId(page, 'Schulportal-Administration')],
+          [await getServiceProviderId(page, 'Schulportal-Administration')],
           await generateRolleName()
         );
         await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'PERSONEN_VERWALTEN');
@@ -363,19 +364,19 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const addminVorname: string = await generateVorname();
       const adminNachname: string = await generateNachname();
       const organisation: string = landSH;
-      const rollenart: string = 'SYSADMIN';
+      const rollenart: RollenArt = 'SYSADMIN';
 
       let userInfoAdmin: UserInfo;
       logoutViaStartPage = true;
 
       await test.step(`Testdaten: Landesadmin mit einer Rolle(SYSADMIN) über die api anlegen ${ADMIN}`, async () => {
-        userInfoAdmin = await createRolleAndPersonWithUserContext(
+        userInfoAdmin = await createRolleAndPersonWithPersonenkontext(
           page,
           organisation,
           rollenart,
           addminVorname,
           adminNachname,
-          [await getSPId(page, 'Schulportal-Administration')],
+          [await getServiceProviderId(page, 'Schulportal-Administration')],
           await generateRolleName()
         );
         await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'ROLLEN_VERWALTEN');
@@ -414,19 +415,19 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     'Gesamtübersicht für einen Benutzer als Schuladmin öffnen, 2FA Token einrichten und 2FA Status prüfen dass ein Token eingerichtet ist',
     { tag: [LONG, STAGE, BROWSER] },
     async ({ page }: PlaywrightTestArgs) => {
-      const adminRollenart: string = typeSchuladmin;
+      const adminRollenart: RollenArt = typeSchuladmin;
       const adminOrganisation: string = testschule665Name;
       let userInfoAdmin: UserInfo;
       logoutViaStartPage = true;
 
       await test.step(`Testdaten: Schuladmin mit einer Rolle(LEIT) über die api anlegen ${ADMIN}`, async () => {
-        userInfoAdmin = await createRolleAndPersonWithUserContext(
+        userInfoAdmin = await createRolleAndPersonWithPersonenkontext(
           page,
           adminOrganisation,
           adminRollenart,
           await generateNachname(),
           await generateVorname(),
-          [await getSPId(page, 'Schulportal-Administration')],
+          [await getServiceProviderId(page, 'Schulportal-Administration')],
           await generateRolleName()
         );
         await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'PERSONEN_VERWALTEN');
@@ -460,13 +461,13 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     async ({ page }: PlaywrightTestArgs) => {
       let userInfoLehrer: UserInfo;
       await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) über die api anlegen ${ADMIN}`, async () => {
-        userInfoLehrer = await createRolleAndPersonWithUserContext(
+        userInfoLehrer = await createRolleAndPersonWithPersonenkontext(
           page,
           testschuleName,
           typeLehrer,
           await generateNachname(),
           await generateVorname(),
-          [await getSPId(page, email)],
+          [await getServiceProviderId(page, email)],
           await generateRolleName()
         );
         usernames.push(userInfoLehrer.username);
@@ -504,13 +505,13 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       let userInfoLehrer: UserInfo;
 
       await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) über die api anlegen`, async () => {
-        userInfoLehrer = await createRolleAndPersonWithUserContext(
+        userInfoLehrer = await createRolleAndPersonWithPersonenkontext(
           page,
           testschuleName,
           typeLehrer,
           await generateNachname(),
           await generateVorname(),
-          [await getSPId(page, email)],
+          [await getServiceProviderId(page, email)],
           await generateRolleName()
         );
         usernames.push(userInfoLehrer.username);
@@ -540,19 +541,19 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     { tag: [LONG, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
       let userInfoLehrer: UserInfo;
-      const timeLimitTeacherRolle: string = await generateCurrentDate({ days: 3, months: 5, formatDMY: true });
+      const timeLimitTeacherRolle: string = formatDateDMY(generateCurrentDate({ days: 3, months: 5 }));
       let timeLimitTeacherRolleNew: string;
       const nameRolle: string = await generateRolleName();
       let colorTextEntireNameSchulzuordnung: string = '';
 
       await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) und einer Schulzuordnung über die api anlegen`, async () => {
-        userInfoLehrer = await createRolleAndPersonWithUserContext(
+        userInfoLehrer = await createRolleAndPersonWithPersonenkontext(
           page,
           testschuleName,
           typeLehrer,
           await generateNachname(),
           await generateVorname(),
-          [await getSPId(page, email)],
+          [await getServiceProviderId(page, email)],
           nameRolle
         );
         usernames.push(userInfoLehrer.username);
@@ -563,7 +564,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
           userInfoLehrer.personId,
           userInfoLehrer.organisationId,
           userInfoLehrer.rolleId,
-          await generateCurrentDate({ days: 3, months: 5, formatDMY: false })
+          generateCurrentDate({ days: 3, months: 5 })
         );
       });
 
@@ -588,23 +589,23 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await test.step(`Ungültige und gültige Befristungen eingeben`, async () => {
         // enter invalid date
         await personDetailsView.inputBefristung.fill(
-          await generateCurrentDate({ days: 0, months: 0, formatDMY: true })
+          formatDateDMY(generateCurrentDate({ days: 0, months: 0 }))
         );
         await personDetailsView.errorTextInputBefristung.isVisible();
 
         // enter invalid date
         await personDetailsView.inputBefristung.fill(
-          await generateCurrentDate({ days: 0, months: -3, formatDMY: true })
+          formatDateDMY(generateCurrentDate({ days: 0, months: -3 }))
         );
         await personDetailsView.errorTextInputBefristung.isVisible();
 
         // enter valid date
         await personDetailsView.inputBefristung.fill(
-          await generateCurrentDate({ days: 22, months: 6, formatDMY: true })
+          formatDateDMY(generateCurrentDate({ days: 22, months: 6 }))
         );
         await personDetailsView.errorTextInputBefristung.isHidden();
 
-        timeLimitTeacherRolleNew = await generateCurrentDate({ days: 0, months: 8, formatDMY: true });
+        timeLimitTeacherRolleNew = formatDateDMY(generateCurrentDate({ days: 0, months: 8 }));
         await personDetailsView.inputBefristung.fill(timeLimitTeacherRolleNew);
         await personDetailsView.errorTextInputBefristung.isHidden();
       });
@@ -671,17 +672,17 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const nameRolle: string = await generateRolleName();
 
       await test.step(`Testdaten: Lehrer mit einer Rolle(LiV) mit den Merkmalen 'BefristungsPflicht', 'KopersPflicht' und einer Schulzuordnung über die api anlegen`, async () => {
-        userInfoLehrer = await createRolleAndPersonWithUserContext(
+        userInfoLehrer = await createRolleAndPersonWithPersonenkontext(
           page,
           testschuleName,
           typeLehrer,
           await generateNachname(),
           await generateVorname(),
-          [await getSPId(page, email)],
+          [await getServiceProviderId(page, email)],
           nameRolle,
           await generateKopersNr(),
           undefined,
-          [befristungPflicht, kopersNrPflicht]
+          new Set<RollenMerkmal>([befristungPflicht, kopersNrPflicht])
         );
         usernames.push(userInfoLehrer.username);
         rolleIds.push(userInfoLehrer.rolleId);
@@ -724,13 +725,13 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         const idSchule: string = await getOrganisationId(page, testschuleName);
         const klasseIdCurrent: string = await createKlasse(page, idSchule, klasseNameCurrent);
         await createKlasse(page, idSchule, klasseNameNew);
-        const userInfoSchueler: UserInfo = await createRolleAndPersonWithUserContext(
+        const userInfoSchueler: UserInfo = await createRolleAndPersonWithPersonenkontext(
           page,
           testschuleName,
           typeSchueler,
           await generateNachname(),
           await generateVorname(),
-          [await getSPId(page, itslearning)],
+          [await getServiceProviderId(page, itslearning)],
           rolleName,
           undefined,
           klasseIdCurrent

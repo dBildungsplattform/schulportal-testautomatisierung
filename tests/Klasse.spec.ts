@@ -1,9 +1,8 @@
 import { expect, PlaywrightTestArgs, test } from '@playwright/test';
-import { UserInfo } from '../base/api/testHelper.page';
-import { createKlasse, getOrganisationId } from '../base/api/testHelperOrganisation.page';
-import { createRolleAndPersonWithUserContext } from '../base/api/testHelperPerson.page';
-import { addSystemrechtToRolle } from '../base/api/testHelperRolle.page';
-import { getSPId } from '../base/api/testHelperServiceprovider.page';
+import { createRolleAndPersonWithPersonenkontext, UserInfo } from '../base/api/personApi';
+import { createKlasse, getOrganisationId } from '../base/api/organisationApi';
+import { addSystemrechtToRolle, RollenArt } from '../base/api/rolleApi';
+import { getServiceProviderId } from '../base/api/serviceProviderApi';
 import { klasse1Testschule } from '../base/klassen';
 import { landSH, testschuleDstNr, testschuleName } from '../base/organisation';
 import { typeLandesadmin, typeSchueler, typeSchuladmin } from '../base/rollentypen';
@@ -257,11 +256,11 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       const adminVorname: string = await generateVorname();
       const adminNachname: string = await generateNachname();
       const adminRolle: string = await generateRolleName();
-      const adminRollenart: string = typeLandesadmin;
+      const adminRollenart: RollenArt = typeLandesadmin;
       const adminOrganisation: string = landSH;
-      const adminIdSPs: string[] = [await getSPId(page, 'Schulportal-Administration')];
+      const adminIdSPs: string[] = [await getServiceProviderId(page, 'Schulportal-Administration')];
 
-      userInfoAdmin = await createRolleAndPersonWithUserContext(
+      userInfoAdmin = await createRolleAndPersonWithPersonenkontext(
         page,
         adminOrganisation,
         adminRollenart,
@@ -329,11 +328,11 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       const adminVorname: string = await generateVorname();
       const adminNachname: string = await generateNachname();
       const adminRolle: string = await generateRolleName();
-      const adminRollenart: string = typeSchuladmin;
+      const adminRollenart: RollenArt = typeSchuladmin;
       const adminOrganisation: string = testschuleName;
-      const adminIdSPs: string[] = [await getSPId(page, 'Schulportal-Administration')];
+      const adminIdSPs: string[] = [await getServiceProviderId(page, 'Schulportal-Administration')];
 
-      userInfoAdmin = await createRolleAndPersonWithUserContext(
+      userInfoAdmin = await createRolleAndPersonWithPersonenkontext(
         page,
         adminOrganisation,
         adminRollenart,
@@ -448,11 +447,11 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
         const adminVorname: string = await generateVorname();
         const adminNachname: string = await generateNachname();
         const adminRolleName: string = await generateRolleName();
-        const adminRollenart: string = typeSchuladmin;
+        const adminRollenart: RollenArt = typeSchuladmin;
         const adminOrganisation: string = testschuleName;
-        const adminIdSPs: string[] = [await getSPId(page, 'Schulportal-Administration')];
+        const adminIdSPs: string[] = [await getServiceProviderId(page, 'Schulportal-Administration')];
 
-        userInfoAdmin = await createRolleAndPersonWithUserContext(
+        userInfoAdmin = await createRolleAndPersonWithPersonenkontext(
           page,
           adminOrganisation,
           adminRollenart,
@@ -527,10 +526,10 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
         const schuelerVorname: string = await generateVorname();
         const schuelerNachname: string = await generateNachname();
         const schuelerRolleName: string = await generateRolleName();
-        const schuelerRollenart: string = typeSchueler;
-        const schuelerIdSPs: string[] = [await getSPId(page, 'itslearning')];
+        const schuelerRollenart: RollenArt = typeSchueler;
+        const schuelerIdSPs: string[] = [await getServiceProviderId(page, 'itslearning')];
 
-        userInfoSchueler = await createRolleAndPersonWithUserContext(
+        userInfoSchueler = await createRolleAndPersonWithPersonenkontext(
           page,
           testschuleName,
           schuelerRollenart,
@@ -643,11 +642,11 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
         const adminVorname: string = await generateVorname();
         const adminNachname: string = await generateNachname();
         const adminRolleName: string = await generateRolleName();
-        const adminRollenart: string = typeSchuladmin;
+        const adminRollenart: RollenArt = typeSchuladmin;
         const adminOrganisation: string = testschuleName;
-        const adminIdSPs: string[] = [await getSPId(page, 'Schulportal-Administration')];
+        const adminIdSPs: string[] = [await getServiceProviderId(page, 'Schulportal-Administration')];
 
-        userInfoAdmin = await createRolleAndPersonWithUserContext(
+        userInfoAdmin = await createRolleAndPersonWithPersonenkontext(
           page,
           adminOrganisation,
           adminRollenart,
@@ -722,10 +721,10 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
         const schuelerVorname: string = await generateVorname();
         const schuelerNachname: string = await generateNachname();
         const schuelerRolleName: string = await generateRolleName();
-        const schuelerRollenart: string = typeSchueler;
-        const schuelerIdSPs: string[] = [await getSPId(page, 'itslearning')];
+        const schuelerRollenart: RollenArt = typeSchueler;
+        const schuelerIdSPs: string[] = [await getServiceProviderId(page, 'itslearning')];
 
-        userInfoSchueler = await createRolleAndPersonWithUserContext(
+        userInfoSchueler = await createRolleAndPersonWithPersonenkontext(
           page,
           testschuleName,
           schuelerRollenart,
