@@ -4,6 +4,7 @@ on:
   schedule:
     # - cron: '15 5 * * 1-5'
     # - cron: '45 6 * * *'
+    - cron: '5 */1 * * 1-5'
 
 jobs:
   browser_tests:
