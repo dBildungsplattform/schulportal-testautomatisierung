@@ -15,7 +15,7 @@ import {
 } from '../base/organisation';
 import { landesadminRolle, schuelerRolle, schuladminOeffentlichRolle } from '../base/rollen';
 import { typeLehrer, typeSchueler } from '../base/rollentypen';
-import { BROWSER, LONG, SHORT, STAGE } from '../base/tags';
+import { BROWSER, LONG, SHORT, STAGE, DEV } from '../base/tags';
 import { deletePersonenBySearchStrings, deleteRolleById, deleteRolleByName } from '../base/testHelperDeleteTestdata';
 import {
   generateKopersNr,
@@ -107,7 +107,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     'Einen Benutzer mit der Rolle Lehrkraft anlegen als Landesadmin und anschließend mit diesem Benutzer anmelden',
-    { tag: [LONG, SHORT, STAGE] },
+    { tag: [LONG, SHORT, STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const landing: LandingPage = new LandingPage(page);
       const startseite: StartPage = new StartPage(page);
@@ -171,7 +171,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     'Einen Benutzer mit der Rolle Landesadmin anlegen',
-    { tag: [LONG, SHORT, STAGE] },
+    { tag: [LONG, SHORT, STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const vorname: string = await generateVorname();
       const nachname: string = await generateNachname();
@@ -211,7 +211,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     'Einen Benutzer mit der Rolle LiV anlegen als Landesadmin',
-    { tag: [LONG, SHORT, STAGE] },
+    { tag: [LONG, SHORT, STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const startseite: StartPage = new StartPage(page);
       const menue: MenuPage = new MenuPage(page);
@@ -249,7 +249,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     'Einen Benutzer mit der Rolle Schuladmin anlegen als Landesadmin und anschließend mit diesem Benutzer anmelden und einen weiteren Benutzer anlegen',
-    { tag: [LONG, SHORT, STAGE] },
+    { tag: [LONG, SHORT, STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const startseite: StartPage = new StartPage(page);
       const login: LoginPage = new LoginPage(page);
@@ -314,7 +314,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     'Einen Benutzer mit der Rolle Schueler anlegen als Landesadmin',
-    { tag: [LONG, SHORT, STAGE, BROWSER] },
+    { tag: [LONG, SHORT, STAGE, DEV, BROWSER] },
     async ({ page }: PlaywrightTestArgs) => {
       const startseite: StartPage = new StartPage(page);
       const menue: MenuPage = new MenuPage(page);
@@ -358,7 +358,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     'Ergebnisliste Benutzer auf Vollständigkeit prüfen als Landesadmin',
-    { tag: [LONG, SHORT, STAGE, BROWSER] },
+    { tag: [LONG, SHORT, STAGE, DEV, BROWSER] },
     async ({ page }: PlaywrightTestArgs) => {
       const startseite: StartPage = new StartPage(page);
       const menue: MenuPage = new MenuPage(page);
@@ -390,7 +390,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     "Prüfung auf korrekte Rollen in dem Dropdown 'Rolle' nach Auswahl der Organisation bei Anlage eines Benutzer in der Rolle Landesadmin",
-    { tag: [LONG, STAGE] },
+    { tag: [LONG, STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
 
       const OrganisationLand: string = landSH;
@@ -450,7 +450,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     'In der Ergebnisliste die Suchfunktion ausführen als Landesadmin',
-    { tag: [LONG, SHORT, STAGE] },
+    { tag: [LONG, SHORT, STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const startseite: StartPage = new StartPage(page);
       const menu: MenuPage = await startseite.goToAdministration();
@@ -513,7 +513,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     'In der Ergebnisliste die Filterfunktion der Schulen benutzen als Landesadmin',
-    { tag: [LONG, SHORT, STAGE] },
+    { tag: [LONG, SHORT, STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const startseite: StartPage = new StartPage(page);
       const menu: MenuPage = await startseite.goToAdministration();
@@ -540,7 +540,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     'Eine Lehrkraft anlegen und Ihren Kontext entfernen dann wieder hinzufügen und den LDAP Inhalt vollständig prüfen',
-    { tag: [LONG] },
+    { tag: [LONG, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
       let personDetailsView: PersonDetailsViewPage = new PersonDetailsViewPage(page);
@@ -638,7 +638,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     'Eine Lehrkraft anlegen in der Rolle Landesadmin und die Bestätigungsseite sowie den LDAP Inhalt vollständig prüfen',
-    { tag: [LONG] },
+    { tag: [LONG, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
       const rolleNames: string[] = ['Lehrkraft'];
@@ -716,7 +716,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     'Mehrere Benutzer hintereinander anlegen in der Rolle Landesadmin für die Rollenarten LERN und LEHR und die Bestätigungsseiten vollständig prüfen',
-    { tag: [LONG, SHORT, STAGE] },
+    { tag: [LONG, SHORT, STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const landing: LandingPage = new LandingPage(page);
       const startseite: StartPage = new StartPage(page);
@@ -908,7 +908,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     'Einen Benutzer über das FE löschen',
-    { tag: [LONG, SHORT, STAGE, BROWSER] },
+    { tag: [LONG, SHORT, STAGE, DEV, BROWSER] },
     async ({ page }: PlaywrightTestArgs) => {
       const startseite: StartPage = new StartPage(page);
       await startseite.goToAdministration();
@@ -957,7 +957,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     `Bei Nutzerneuanlage prüfen, dass die combobox 'Rolle' nach Auswahl einer Rolle, nur noch Rollen der gleichen Rollenart angeboten werden`,
-    { tag: [LONG, STAGE] },
+    { tag: [LONG, STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const rolleNames: string[] = [];
 
@@ -994,7 +994,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     }
   );
 
-  test(`Neuen Benutzer mit mehreren Rollen anlegen`, { tag: [LONG, STAGE] }, async ({ page }: PlaywrightTestArgs) => {
+  test(`Neuen Benutzer mit mehreren Rollen anlegen`, { tag: [LONG, STAGE, DEV] }, async ({ page }: PlaywrightTestArgs) => {
     const rolleNames: string[] = [];
     const vorname: string = await generateVorname();
     const nachname: string = await generateNachname();

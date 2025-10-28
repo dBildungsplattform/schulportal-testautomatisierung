@@ -89,7 +89,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
 
   test(
     'Erfolgloser Login mit falschem Passwort und gültigem Benutzernamen in der Rolle Landesadmin',
-    { tag: [LONG, SHORT, STAGE] },
+    { tag: [LONG, SHORT, STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const login: LoginPage = new LoginPage(page);
       const landing: LandingPage = new LandingPage(page);
@@ -108,7 +108,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
 
   test(
     'Erfolgloser Login mit einem gesperrten Benutzer Rolle Lehrer',
-    { tag: [LONG, STAGE] },
+    { tag: [LONG, STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const login: LoginPage = new LoginPage(page);
       const landing: LandingPage = new LandingPage(page);
@@ -160,7 +160,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
 
   test(
     'Erfolgloser Login mit falschem Benutzernamen und gültigem Passwort in der Rolle Landesadmin',
-    { tag: [LONG, STAGE] },
+    { tag: [LONG, STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const login: LoginPage = new LoginPage(page);
       const landing: LandingPage = new LandingPage(page);

@@ -1,6 +1,6 @@
 import { test, expect, Download, PlaywrightTestArgs } from '@playwright/test';
 import { HeaderPage } from '../pages/components/Header.page';
-import { LONG, STAGE, BROWSER } from '../base/tags';
+import { LONG, STAGE, BROWSER, DEV } from '../base/tags';
 import { schuelerRolle } from '../base/rollen';
 import FromAnywhere from '../pages/FromAnywhere';
 import { PersonImportViewPage } from '../pages/admin/personen/PersonImportView.page';
@@ -63,7 +63,7 @@ test.describe(`Testfälle für den Benutzerimport": Umgebung: ${process.env.ENV}
 
   test(
     'Als Landesadmin eine CSV-Datei mit Benutzerdaten hochladen und importieren',
-    { tag: [LONG, STAGE, BROWSER] },
+    { tag: [LONG, STAGE, BROWSER, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       await test.step('CSV-Datei hochladen, importieren und importierte Daten downloaden', async () => {
         // select schule

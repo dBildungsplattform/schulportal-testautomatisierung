@@ -6,7 +6,7 @@ import { Email } from '../pages/components/service-provider-cards/Email.page';
 import { PersonManagementViewPage } from '../pages/admin/personen/PersonManagementView.page';
 import { PersonDetailsViewPage } from '../pages/admin/personen/PersonDetailsView.page';
 import { HeaderPage } from '../pages/components/Header.page';
-import { LONG, SHORT, STAGE, BROWSER } from '../base/tags';
+import { LONG, SHORT, STAGE, DEV, BROWSER } from '../base/tags';
 import { CalendarPage } from '../pages/components/service-provider-cards/Calendar.page';
 import { DirectoryPage } from '../pages/components/service-provider-cards/Directory.page';
 import { createTeacherAndLogin } from '../base/api/testHelperPerson.page';
@@ -77,7 +77,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
     });
   });
 
-  test('Angebote per Link öffnen als Lehrer', { tag: [LONG, SHORT, STAGE] }, async ({ page }: PlaywrightTestArgs) => {
+  test('Angebote per Link öffnen als Lehrer', { tag: [LONG, SHORT, STAGE, DEV] }, async ({ page }: PlaywrightTestArgs) => {
     const startseite: StartPage = new StartPage(page);
 
     let userInfoAdmin: UserInfo;
@@ -90,8 +90,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
     });
 
     await test.step(`Kacheln Email für Lehrkräfte und Itslearning öffnen, danach beide Kacheln wieder schließen`, async () => {
-      // email
-      // Die Schnittstelle email für Lehrkräfte(ox) gibt es nur auf stage
+      // TODO: Die Schnittstelle email für Lehrkräfte(ox) gibt es nur auf stage
       // Auf dev wird nur getestet, dass die url für ox aufgerufen wird wenn man die Kachel email anklickt
       // Wenn SPSH-1043 auf stage deployed ist, muss der Test erweitert werden. Hier muss dann das erwartete Verhalten getestet werden, wenn man auf stage auf die Kachel(email, Adressbuch, Kalender)  klickt
       await expect(startseite.cardItemEmail).toBeVisible(); // warten bis die Seite geladen ist
@@ -143,7 +142,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
 
   test(
     'Passwort Reset für einen Lehrer als Landesadmin',
-    { tag: [LONG, SHORT, STAGE, BROWSER] },
+    { tag: [LONG, SHORT, STAGE, DEV, BROWSER] },
     async ({ page }: PlaywrightTestArgs) => {
       const landing: LandingPage = new LandingPage(page);
       const login: LoginPage = new LoginPage(page);

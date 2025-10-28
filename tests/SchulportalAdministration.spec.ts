@@ -27,7 +27,7 @@ import {
   schulrechtAZ,
   webUntis,
 } from '../base/sp';
-import { LONG, SHORT, STAGE } from '../base/tags';
+import { LONG, SHORT, STAGE, DEV } from '../base/tags';
 import { deletePersonById, deleteRolleById } from '../base/testHelperDeleteTestdata';
 import {
   generateKopersNr,
@@ -107,7 +107,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
 
   test(
     'Prüfen, dass die Schulportal-Administration Kachel nicht sichtbar ist für Lehrkräfte',
-    { tag: [LONG, STAGE] },
+    { tag: [LONG, STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const landing: LandingPage = new LandingPage(page);
       const login: LoginPage = new LoginPage(page);
@@ -146,7 +146,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
 
   test(
     'Prüfen, dass die Schulportal-Administration Kachel nicht sichtbar ist für Schüler',
-    { tag: [LONG, SHORT, STAGE] },
+    { tag: [LONG, SHORT, STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const landing: LandingPage = new LandingPage(page);
       const login: LoginPage = new LoginPage(page);
@@ -192,7 +192,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
 
   test(
     'Prüfen, dass die Schulportal-Administration Kachel sichtbar ist für Schuladmins',
-    { tag: [LONG, STAGE] },
+    { tag: [LONG, STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const landing: LandingPage = new LandingPage(page);
       const login: LoginPage = new LoginPage(page);
@@ -233,7 +233,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
     }
   );
 
-  test('News-Box bei befristeten Schulzuordnungen testen', { tag: [LONG] }, async ({ page }: PlaywrightTestArgs) => {
+  test('News-Box bei befristeten Schulzuordnungen testen', { tag: [LONG, STAGE, DEV] }, async ({ page }: PlaywrightTestArgs) => {
     let userInfoLehrer1: UserInfo;
     let userInfoLehrer2: UserInfo;
     const rollenNameLehrer1: string = await generateRolleName();
@@ -325,7 +325,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
 
   test(
     'Für ReligionsLehrkraft prüfen, dass die korrekten Service Provider auf der Startseite angezeigt werden',
-    { tag: [LONG, STAGE] },
+    { tag: [LONG, STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const expectedSps: string[] = [
         adressbuch,
@@ -372,7 +372,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
 
   test(
     'Für Itslearning-Lehrkraft prüfen, dass die korrekten Service Provider auf der Startseite angezeigt werden',
-    { tag: [LONG, STAGE] },
+    { tag: [LONG, STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const userInfo: UserInfo = await test.step('Testdaten anlegen', async () => {
         const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
@@ -405,7 +405,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
 
   test(
     'Für Lehrkraft prüfen, dass die korrekten Service Provider auf der Startseite angezeigt werden',
-    { tag: [LONG, STAGE] },
+    { tag: [LONG, STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const expected: string[] = [
         email,
@@ -452,7 +452,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
 
   test(
     'Für PilotProjektSchulverwaltungskraft prüfen, dass die korrekten Service Provider auf der Startseite angezeigt werden',
-    { tag: [LONG, STAGE] },
+    { tag: [LONG, STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const expected: string[] = [
         email,
@@ -499,7 +499,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
 
   test(
     'Für iQSH-Mitarbeiter prüfen, dass die korrekten Service Provider auf der Startseite angezeigt werden',
-    { tag: [LONG, STAGE] },
+    { tag: [LONG, STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const expected: string[] = [
         email,
@@ -548,7 +548,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
 
   test(
     'Für Student im Praxissemester prüfen, dass die korrekten Service Provider auf der Startseite angezeigt werden',
-    { tag: [LONG, STAGE] },
+    { tag: [LONG, STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const expected: string[] = [
         email,
@@ -597,7 +597,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
 
   test(
     'Für LehrerLiV prüfen, dass die korrekten Service Provider auf der Startseite angezeigt werden',
-    { tag: [LONG, STAGE] },
+    { tag: [LONG, STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const expected: string[] = [
         email,
@@ -645,7 +645,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
 
   test(
     'Für Vertretungslehrkraft prüfen, dass die korrekten Service Provider auf der Startseite angezeigt werden',
-    { tag: [LONG, STAGE] },
+    { tag: [LONG, STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const expected: string[] = [
         email,
