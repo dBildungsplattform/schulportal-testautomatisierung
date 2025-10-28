@@ -5,32 +5,17 @@ on:
       - main
 
 jobs:
+  branch_meta:
+    uses: dBildungsplattform/spsh-app-deploy/.github/workflows/get-branch-meta.yml@7
+
   determine_frontend_hostname:
     runs-on: ubuntu-latest
+    needs:
+      - branch_meta
     outputs:
       fe_host: ${{ steps.determine-fe-host.outputs.fe_host }}
     steps:
     - uses: actions/checkout@v3
-    # --------------------------
-    # Determine Branch Tag
-    # --------------------------
-    - name: Determine Branch Tag
-      id: determine-tag
-      run: |
-        regex_long='^([[:alpha:]]+?-[[:digit:]]+-[[:digit:]]+)'
-        regex_short='^([[:alpha:]]+?-[[:digit:]]+)'
-        if [[ "${{ github.head_ref }}" =~ $regex_long ]]; then
-          tag="$(echo ${BASH_REMATCH[1]})"
-        elif [[ "${{ github.head_ref }}" =~ $regex_short ]]; then
-          tag="${BASH_REMATCH[1]}"
-        elif [[ "${{ github.head_ref }}" == 'main' ]]; then
-          tag=""
-        else
-        echo "::error::Couldn't extract ticket from branch" ${{ github.head_ref }} ". If not main the branch name should begin alpha-digit or alpha-digit-digit blocks (e.g. SPSH-1234-test-name or release-1-1-optional-text)"
-        exit 1
-        fi
-        echo "tag=${tag}" >> "$GITHUB_OUTPUT"
-        echo "branch to merge from tag=${tag}"
 
     # --------------------------
     # Determine Branch Count
@@ -38,7 +23,8 @@ jobs:
     - name: Determine Branch Count
       id: branch-count
       env:
-        TAG: ${{ steps.determine-tag.outputs.tag }}
+        TAG: ${{ needs.branch_meta.outputs.ticket }}
+      
       run: |
         REPOS=(
           "https://github.com/dBildungsplattform/dbildungs-iam-server.git"
@@ -65,10 +51,12 @@ jobs:
     # --------------------------
     - name: Determine Frontend Host
       id: determine-fe-host
+      env:
+        TAG: ${{ needs.branch_meta.outputs.ticket }}
       run: |
         if [ ${{ steps.branch-count.outputs.count }} -ge 1 ]; then
           echo "At least one branch for ticket was found, using branch FE and BE infrastructure"
-          FRONTEND_HOST_PREFIX=$(echo "${{ steps.determine-tag.outputs.tag }}" | tr '[:upper:]' '[:lower:]')
+          FRONTEND_HOST_PREFIX=$(echo "$TAG" | tr '[:upper:]' '[:lower:]')
           FRONTEND_HOST="${FRONTEND_host_PREFIX}.dev.spsh.dbildungsplattform.de"
           echo "FRONTEND_HOST=$FRONTEND_HOST"
           echo "fe_host=${FRONTEND_HOST}" >> "$GITHUB_OUTPUT"
