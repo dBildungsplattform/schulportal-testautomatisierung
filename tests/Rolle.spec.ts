@@ -1,22 +1,21 @@
 import { expect, Locator, PlaywrightTestArgs, test } from '@playwright/test';
-import { deleteRolle, getRolleId } from '../base/api/testHelperRolle.page';
 import { ersatzLandSH, landSH } from '../base/organisation';
 import { landesadminRolle } from '../base/rollen';
 import { email, itslearning, kalender, schulportaladmin } from '../base/sp';
-import { BROWSER, LONG, SHORT, STAGE, DEV } from '../base/tags';
+import { BROWSER, DEV, LONG, SHORT, STAGE } from '../base/tags';
 import { deleteRolleByName } from '../base/testHelperDeleteTestdata';
 import { generateRolleName } from '../base/utils/generateTestdata';
 import { RolleCreationConfirmPage } from '../pages/admin/rollen/RolleCreationConfirm.page';
 import { RolleCreationViewPage } from '../pages/admin/rollen/RolleCreationView.page';
 import { RolleDetailsViewPage } from '../pages/admin/rollen/RolleDetailsView.page';
 import { RoleTableRow, RolleManagementViewPage } from '../pages/admin/rollen/RolleManagementView.page';
-import FromAnywhere from '../pages/FromAnywhere';
+import { FooterDataTablePage } from '../pages/components/FooterDataTable.page';
 import { HeaderPage } from '../pages/components/Header.page';
+import { MenuPage } from '../pages/components/MenuBar.page';
+import FromAnywhere from '../pages/FromAnywhere';
 import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
-import { MenuPage } from '../pages/components/MenuBar.page';
 import { StartPage } from '../pages/StartView.page';
-import { FooterDataTablePage } from '../pages/components/FooterDataTable.page';
 
 let startseite: StartPage;
 let loggedIn: boolean = false;
@@ -392,12 +391,5 @@ test.describe('Testet die Anlage einer neuen Rolle', () => {
     // sometimes logout breaks the test because of interrupting requests
     // logoutViaStartPage = true is a workaround
     logoutViaStartPage = true;
-  });
-
-  test.afterEach(async ({ page }: PlaywrightTestArgs) => {
-    if (rolleNames) {
-      const rolleIds: string = await getRolleId(page, rolleNames);
-      await deleteRolle(page, rolleIds);
-    }
   });
 });

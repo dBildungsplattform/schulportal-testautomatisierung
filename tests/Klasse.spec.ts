@@ -1,14 +1,13 @@
 import { expect, PlaywrightTestArgs, test } from '@playwright/test';
-import { UserInfo } from '../base/api/testHelper.page';
-import { createKlasse, getOrganisationId } from '../base/api/testHelperOrganisation.page';
-import { createRolleAndPersonWithUserContext } from '../base/api/testHelperPerson.page';
-import { addSystemrechtToRolle } from '../base/api/testHelperRolle.page';
-import { getSPId } from '../base/api/testHelperServiceprovider.page';
+import { createKlasse, getOrganisationId } from '../base/api/organisationApi';
+import { createRolleAndPersonWithUserContext, UserInfo } from '../base/api/personApi';
+import { addSystemrechtToRolle, RollenArt } from '../base/api/rolleApi';
+import { getServiceProviderId } from '../base/api/serviceProviderApi';
 import { klasse1Testschule } from '../base/klassen';
 import { landSH, testschuleDstNr, testschuleName } from '../base/organisation';
 import { typeLandesadmin, typeSchueler, typeSchuladmin } from '../base/rollentypen';
 import { schulportaladmin } from '../base/sp';
-import { BROWSER, LONG, SHORT, STAGE, DEV } from '../base/tags';
+import { BROWSER, DEV, LONG, SHORT, STAGE } from '../base/tags';
 import {
   deleteKlasseByName,
   deletePersonenBySearchStrings,
@@ -20,14 +19,14 @@ import {
   generateRolleName,
   generateVorname,
 } from '../base/utils/generateTestdata';
-import { KlasseCreationViewPage } from '../pages/admin/organisationen/klassen/KlasseCreationView.page';
 import { KlasseDetailsViewPage } from '../pages/admin/organisationen/klassen/details/KlasseDetailsView.page';
+import { KlasseCreationViewPage } from '../pages/admin/organisationen/klassen/KlasseCreationView.page';
 import { KlasseManagementViewPage } from '../pages/admin/organisationen/klassen/KlasseManagementView.page';
-import FromAnywhere from '../pages/FromAnywhere';
 import { HeaderPage } from '../pages/components/Header.page';
+import { MenuPage } from '../pages/components/MenuBar.page';
+import FromAnywhere from '../pages/FromAnywhere';
 import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
-import { MenuPage } from '../pages/components/MenuBar.page';
 import { StartPage } from '../pages/StartView.page';
 
 const PW: string | undefined = process.env.PW;
@@ -257,9 +256,9 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       const adminVorname: string = await generateVorname();
       const adminNachname: string = await generateNachname();
       const adminRolle: string = await generateRolleName();
-      const adminRollenart: string = typeLandesadmin;
+      const adminRollenart: RollenArt = typeLandesadmin;
       const adminOrganisation: string = landSH;
-      const adminIdSPs: string[] = [await getSPId(page, 'Schulportal-Administration')];
+      const adminIdSPs: string[] = [await getServiceProviderId(page, 'Schulportal-Administration')];
 
       userInfoAdmin = await createRolleAndPersonWithUserContext(
         page,
@@ -329,9 +328,9 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       const adminVorname: string = await generateVorname();
       const adminNachname: string = await generateNachname();
       const adminRolle: string = await generateRolleName();
-      const adminRollenart: string = typeSchuladmin;
+      const adminRollenart: RollenArt = typeSchuladmin;
       const adminOrganisation: string = testschuleName;
-      const adminIdSPs: string[] = [await getSPId(page, 'Schulportal-Administration')];
+      const adminIdSPs: string[] = [await getServiceProviderId(page, 'Schulportal-Administration')];
 
       userInfoAdmin = await createRolleAndPersonWithUserContext(
         page,
@@ -448,9 +447,9 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
         const adminVorname: string = await generateVorname();
         const adminNachname: string = await generateNachname();
         const adminRolleName: string = await generateRolleName();
-        const adminRollenart: string = typeSchuladmin;
+        const adminRollenart: RollenArt = typeSchuladmin;
         const adminOrganisation: string = testschuleName;
-        const adminIdSPs: string[] = [await getSPId(page, 'Schulportal-Administration')];
+        const adminIdSPs: string[] = [await getServiceProviderId(page, 'Schulportal-Administration')];
 
         userInfoAdmin = await createRolleAndPersonWithUserContext(
           page,
@@ -527,8 +526,8 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
         const schuelerVorname: string = await generateVorname();
         const schuelerNachname: string = await generateNachname();
         const schuelerRolleName: string = await generateRolleName();
-        const schuelerRollenart: string = typeSchueler;
-        const schuelerIdSPs: string[] = [await getSPId(page, 'itslearning')];
+        const schuelerRollenart: RollenArt = typeSchueler;
+        const schuelerIdSPs: string[] = [await getServiceProviderId(page, 'itslearning')];
 
         userInfoSchueler = await createRolleAndPersonWithUserContext(
           page,
@@ -643,9 +642,9 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
         const adminVorname: string = await generateVorname();
         const adminNachname: string = await generateNachname();
         const adminRolleName: string = await generateRolleName();
-        const adminRollenart: string = typeSchuladmin;
+        const adminRollenart: RollenArt = typeSchuladmin;
         const adminOrganisation: string = testschuleName;
-        const adminIdSPs: string[] = [await getSPId(page, 'Schulportal-Administration')];
+        const adminIdSPs: string[] = [await getServiceProviderId(page, 'Schulportal-Administration')];
 
         userInfoAdmin = await createRolleAndPersonWithUserContext(
           page,
@@ -722,8 +721,8 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
         const schuelerVorname: string = await generateVorname();
         const schuelerNachname: string = await generateNachname();
         const schuelerRolleName: string = await generateRolleName();
-        const schuelerRollenart: string = typeSchueler;
-        const schuelerIdSPs: string[] = [await getSPId(page, 'itslearning')];
+        const schuelerRollenart: RollenArt = typeSchueler;
+        const schuelerIdSPs: string[] = [await getServiceProviderId(page, 'itslearning')];
 
         userInfoSchueler = await createRolleAndPersonWithUserContext(
           page,

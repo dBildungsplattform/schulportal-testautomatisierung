@@ -1,18 +1,17 @@
-import { test, expect, PlaywrightTestArgs, Page } from '@playwright/test';
+import { expect, Page, PlaywrightTestArgs, test } from '@playwright/test';
+import { createTeacherAndLogin, UserInfo } from '../base/api/personApi';
+import { BROWSER, DEV, LONG, SHORT, STAGE } from '../base/tags';
+import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata';
+import FromAnywhere from '../pages/FromAnywhere';
 import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
 import { StartPage } from '../pages/StartView.page';
-import { Email } from '../pages/components/service-provider-cards/Email.page';
-import { PersonManagementViewPage } from '../pages/admin/personen/PersonManagementView.page';
 import { PersonDetailsViewPage } from '../pages/admin/personen/PersonDetailsView.page';
+import { PersonManagementViewPage } from '../pages/admin/personen/PersonManagementView.page';
 import { HeaderPage } from '../pages/components/Header.page';
-import { LONG, SHORT, STAGE, DEV, BROWSER } from '../base/tags';
 import { CalendarPage } from '../pages/components/service-provider-cards/Calendar.page';
 import { DirectoryPage } from '../pages/components/service-provider-cards/Directory.page';
-import { createTeacherAndLogin } from '../base/api/testHelperPerson.page';
-import { UserInfo } from '../base/api/testHelper.page';
-import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata';
-import FromAnywhere from '../pages/FromAnywhere';
+import { Email } from '../pages/components/service-provider-cards/Email.page';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;

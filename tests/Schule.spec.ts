@@ -1,15 +1,15 @@
-import { test, expect, PlaywrightTestArgs } from '@playwright/test';
-import { StartPage } from '../pages/StartView.page';
-import { MenuPage } from '../pages/components/MenuBar.page';
-import { SchuleCreationViewPage } from '../pages/admin/organisationen/schulen/SchuleCreationView.page';
-import { SchuleManagementViewPage } from '../pages/admin/organisationen/schulen/SchuleManagementView.page';
-import { HeaderPage } from '../pages/components/Header.page';
-import { FooterDataTablePage } from '../pages/components/FooterDataTable.page';
-import { LONG, SHORT, STAGE, DEV, BROWSER } from '../base/tags';
-import { generateSchulname, generateDienststellenNr } from '../base/utils/generateTestdata';
+import { expect, PlaywrightTestArgs, test } from '@playwright/test';
+import { BROWSER, DEV, LONG, SHORT, STAGE } from '../base/tags';
+import { generateDienststellenNr, generateSchulname } from '../base/utils/generateTestdata';
 import FromAnywhere from '../pages/FromAnywhere';
 import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
+import { StartPage } from '../pages/StartView.page';
+import { SchuleCreationViewPage } from '../pages/admin/organisationen/schulen/SchuleCreationView.page';
+import { SchuleManagementViewPage } from '../pages/admin/organisationen/schulen/SchuleManagementView.page';
+import { FooterDataTablePage } from '../pages/components/FooterDataTable.page';
+import { HeaderPage } from '../pages/components/Header.page';
+import { MenuPage } from '../pages/components/MenuBar.page';
 
 let logoutViaStartPage: boolean = false;
 

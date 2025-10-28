@@ -1,21 +1,20 @@
-import { test, expect, PlaywrightTestArgs } from '@playwright/test';
-import { UserInfo } from '../base/api/testHelper.page';
-import { createRolleAndPersonWithUserContext } from '../base/api/testHelperPerson.page';
-import { getSPId } from '../base/api/testHelperServiceprovider.page';
-import { LONG, STAGE, DEV, BROWSER } from '../base/tags';
-import { generateNachname, generateVorname, generateRolleName } from '../base/utils/generateTestdata';
+import { expect, PlaywrightTestArgs, test } from '@playwright/test';
+import { createRolleAndPersonWithUserContext, UserInfo } from '../base/api/personApi';
+import { getServiceProviderId } from '../base/api/serviceProviderApi';
 import { testschuleName } from '../base/organisation';
 import { typeLehrer } from '../base/rollentypen';
 import { email } from '../base/sp';
+import { BROWSER, DEV, LONG, STAGE } from '../base/tags';
+import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata';
 import { gotoTargetURL } from '../base/testHelperUtils';
+import { generateNachname, generateRolleName, generateVorname } from '../base/utils/generateTestdata';
 import { PersonDetailsViewPage } from '../pages/admin/personen/PersonDetailsView.page';
 import { PersonManagementViewPage } from '../pages/admin/personen/PersonManagementView.page';
 import { HeaderPage } from '../pages/components/Header.page';
-import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata';
 import FromAnywhere from '../pages/FromAnywhere';
-import { StartPage } from '../pages/StartView.page';
 import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
+import { StartPage } from '../pages/StartView.page';
 
 // The created test data will be deleted in the afterEach block
 let usernames: string[] = [];
@@ -70,7 +69,7 @@ test.describe(`Testfälle für TwoFactorAuthentication": Umgebung: ${process.env
           typeLehrer,
           await generateNachname(),
           await generateVorname(),
-          [await getSPId(page, email)],
+          [await getServiceProviderId(page, email)],
           await generateRolleName()
         );
         usernames.push(userInfoLehrer.username);

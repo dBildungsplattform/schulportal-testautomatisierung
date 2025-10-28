@@ -1,10 +1,8 @@
 import { expect, PlaywrightTestArgs, test } from '@playwright/test';
-import { UserInfo } from '../base/api/testHelper.page';
-import { getOrganisationId } from '../base/api/testHelperOrganisation.page';
-import { createRolleAndPersonWithUserContext } from '../base/api/testHelperPerson.page';
-import { addSystemrechtToRolle } from '../base/api/testHelperRolle.page';
-import { createRolle } from '../base/api/rolleApi';
-import { getSPId } from '../base/api/testHelperServiceprovider.page';
+import { getOrganisationId } from '../base/api/organisationApi';
+import { createRolleAndPersonWithUserContext, UserInfo } from '../base/api/personApi';
+import { addSystemrechtToRolle, createRolle, RollenArt } from '../base/api/rolleApi';
+import { getServiceProviderId } from '../base/api/serviceProviderApi';
 import {
   ersatzLandSH,
   landSH,
@@ -15,8 +13,10 @@ import {
 } from '../base/organisation';
 import { landesadminRolle, schuelerRolle, schuladminOeffentlichRolle } from '../base/rollen';
 import { typeLehrer, typeSchueler } from '../base/rollentypen';
-import { BROWSER, LONG, SHORT, STAGE, DEV } from '../base/tags';
+import { schulportaladmin } from '../base/sp';
+import { BROWSER, DEV, LONG, SHORT, STAGE } from '../base/tags';
 import { deletePersonenBySearchStrings, deleteRolleById, deleteRolleByName } from '../base/testHelperDeleteTestdata';
+import { TestHelperLdap } from '../base/testHelperLdap';
 import {
   generateKopersNr,
   generateNachname,
@@ -26,14 +26,12 @@ import {
 import { PersonCreationViewPage } from '../pages/admin/personen/PersonCreationView.page';
 import { PersonDetailsViewPage } from '../pages/admin/personen/PersonDetailsView.page';
 import { PersonManagementViewPage } from '../pages/admin/personen/PersonManagementView.page';
-import FromAnywhere from '../pages/FromAnywhere';
 import { HeaderPage } from '../pages/components/Header.page';
+import { MenuPage } from '../pages/components/MenuBar.page';
+import FromAnywhere from '../pages/FromAnywhere';
 import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
-import { MenuPage } from '../pages/components/MenuBar.page';
 import { StartPage } from '../pages/StartView.page';
-import { TestHelperLdap } from '../base/testHelperLdap';
-import { schulportaladmin } from '../base/sp';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -263,7 +261,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       let userInfo: UserInfo;
 
       await test.step(`Schuladmin anlegen und mit diesem anmelden`, async () => {
-        const idSPs: string[] = [await getSPId(page, 'Schulportal-Administration')];
+        const idSPs: string[] = [await getServiceProviderId(page, 'Schulportal-Administration')];
         userInfo = await createRolleAndPersonWithUserContext(
           page,
           schulstrukturknoten,
@@ -726,7 +724,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       let userInfo: UserInfo;
 
       await test.step(`Testdaten: Landesadmin anlegen und mit diesem anmelden`, async () => {
-        const idSPs: string[] = [await getSPId(page, 'Schulportal-Administration')];
+        const idSPs: string[] = [await getServiceProviderId(page, 'Schulportal-Administration')];
         userInfo = await createRolleAndPersonWithUserContext(
           page,
           landSH,
@@ -918,8 +916,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const vorname: string = await generateVorname();
       const nachname: string = await generateNachname();
       const rolle: string = await generateRolleName();
-      const berechtigung: string = 'SYSADMIN';
-      const idSPs: string[] = [await getSPId(page, 'Schulportal-Administration')];
+      const berechtigung: RollenArt = 'SYSADMIN';
+      const idSPs: string[] = [await getServiceProviderId(page, 'Schulportal-Administration')];
 
       await test.step(`Neuen Benutzer über die api anlegen`, async () => {
         await createRolleAndPersonWithUserContext(page, landSH, berechtigung, vorname, nachname, idSPs, rolle);
