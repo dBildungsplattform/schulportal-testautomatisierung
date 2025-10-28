@@ -161,6 +161,8 @@ jobs:
           BROWSER: ${{ inputs.browser }}
           USER: '${{ secrets.USER }}'
           PW: '${{ secrets.PW }}'
+          LDAP_URL: ldap://localhost:1389
+          LDAP_ADMIN_PASSWORD: ${{ env.LDAP_ADMIN_PASSWORD }}
         run: npx playwright test --config=playwright.config.ts --grep @"$TAG" --project "$BROWSER"
 
       # --------------------------
