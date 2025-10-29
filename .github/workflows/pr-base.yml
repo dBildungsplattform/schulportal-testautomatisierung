@@ -31,7 +31,7 @@ jobs:
     - name: Determine Branch Count
       id: branch-count
       env:
-        TAG: ${{ needs.create_branch_identifier.outputs.namespace }}
+        TAG: ${{ needs.create_branch_identifier.outputs.namespace_from_branch }}
       run: |
         REPOS=(
           "https://github.com/dBildungsplattform/dbildungs-iam-server.git"
@@ -59,7 +59,7 @@ jobs:
     - name: Determine Frontend Host
       id: determine-fe-host
       env:
-        TAG: ${{ needs.create_branch_identifier.outputs.namespace }}
+        TAG: ${{ needs.create_branch_identifier.outputs.namespace_from_branch }}
       run: |
         if [ ${{ steps.branch-count.outputs.count }} -ge 1 ]; then
           echo "At least one branch for ticket was found, using branch FE and BE infrastructure"
