@@ -15,7 +15,6 @@ import { Email } from '../pages/components/service-provider-cards/Email.page';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
-const ENV: string | undefined = process.env.ENV;
 
 // The created test data will be deleted in the afterEach block
 let usernames: string[] = [];
@@ -23,6 +22,8 @@ let rolleIds: string[] = [];
 // This variable must be set to false in the testcase when the logged in user is changed
 let currentUserIsLandesadministrator: boolean = true;
 let logoutViaStartPage: boolean = false;
+
+const isStageTest = (): boolean => process.env.ENV === 'stage' || process.env.TAG === 'stage';
 
 test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
@@ -78,7 +79,6 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
 
   test('Angebote per Link öffnen als Lehrer', { tag: [LONG, SHORT, STAGE, DEV] }, async ({ page }: PlaywrightTestArgs) => {
     const startseite: StartPage = new StartPage(page);
-
     let userInfoAdmin: UserInfo;
 
     await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
@@ -98,10 +98,10 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
       await startseite.cardItemEmail.click();
       const emailPage: Page = await emailPagePromise;
       const email: Email = new Email(emailPage);
-      switch (ENV) {
-        case 'dev':
+      if (isStageTest()) {
+        // TODO: implement assertion
+      } else {
           await expect(email.textH1).toBeVisible(); // dummy Seite email wikipedia
-          break;
       }
       await emailPage.close();
 
@@ -110,10 +110,10 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
       await startseite.cardItemKalender.click();
       const pageKalender: Page = await pageKalenderPromise;
       const kalender: CalendarPage = new CalendarPage(pageKalender);
-      switch (ENV) {
-        case 'dev':
-          await expect(kalender.textH1).toBeVisible(); // dummy Seite Kalender wikipedia
-          break;
+      if (isStageTest()) {
+        // TODO: implement assertion
+      } else {
+        await expect(kalender.textH1).toBeVisible(); // dummy Seite Kalender wikipedia
       }
       await pageKalender.close();
 
@@ -122,10 +122,10 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
       await startseite.cardItemAdressbuch.click();
       const directoryPage: Page = await directoryPagePromise;
       const adressbuch: DirectoryPage = new DirectoryPage(directoryPage);
-      switch (ENV) {
-        case 'dev':
-          await expect(adressbuch.textH1).toBeVisible(); // dummy Seite Adressbuch wikipedia
-          break;
+      if (isStageTest()) {
+        // TODO: implement assertion
+      } else {
+        await expect(adressbuch.textH1).toBeVisible(); // dummy Seite Adressbuch wikipedia
       }
       await directoryPage.close();
     });
