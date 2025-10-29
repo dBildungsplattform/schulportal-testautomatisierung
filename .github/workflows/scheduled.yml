@@ -21,6 +21,15 @@ jobs:
       tag: dev
       browser: ${{ matrix.browser }}
       playwright_branch: main
+    secrets:
+      TUNNEL_USER_SSHKEY: ${{ secrets.TUNNEL_USER_SSHKEY }}
+      SPSH_DEV_KUBECONFIG: ${{ secrets.SPSH_DEV_KUBECONFIG }}
+      TUNNEL_USER: ${{ secrets.TUNNEL_USER }}
+      TUNNELHOST: ${{ secrets.TUNNELHOST }}
+      TUNNEL_PORT: ${{ secrets.TUNNEL_PORT }}
+      USER: ${{ secrets.USER }}
+      PW: ${{ secrets.PW }}
+      RC_WEBHOOK: ${{ secrets.RC_WEBHOOK }}
 
   stage_smoke_test:
     if: github.event.schedule == '45 6 * * *'
@@ -30,3 +39,7 @@ jobs:
       tag: smoke
       browser: chromium
       playwright_branch: main
+    secrets:
+      USER: ${{ secrets.USER }}
+      PW: ${{ secrets.PW }}
+      RC_WEBHOOK: ${{ secrets.RC_WEBHOOK }}

@@ -13,3 +13,12 @@ jobs:
         tag: dev
         browser: chromium
         playwright_branch: main
+      secrets:
+        TUNNEL_USER_SSHKEY: ${{ secrets.TUNNEL_USER_SSHKEY }}
+        SPSH_DEV_KUBECONFIG: ${{ secrets.SPSH_DEV_KUBECONFIG }}
+        TUNNEL_USER: ${{ secrets.TUNNEL_USER }}
+        TUNNELHOST: ${{ secrets.TUNNELHOST }}
+        TUNNEL_PORT: ${{ secrets.TUNNEL_PORT }}
+        USER: ${{ secrets.USER }}
+        PW: ${{ secrets.PW }}
+        RC_WEBHOOK: ${{ secrets.RC_WEBHOOK }}
