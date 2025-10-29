@@ -23,6 +23,14 @@ Empfohlen wird VS-Code
 
 #### npx playwright codegen https://localhost:8099/ --ignore-https-errors
 
+### API generieren
+Grundlage für die API-Generierung sind die Swagger Docs aus dem Backend. Das aktuellste Doc befindet sich auf main und kann über https://main.dev.spsh.dbildungsplattform.de/docs-json abgerufen werden.
+
+Das doc dann in die Datei base/api/openapispec.json einfügen (alles kopieren und alles überschreiben) und mit dem folgenden Befehl die Generierung ausführen:
+
+`npm run generate-api`
+
+
 ### Tests lokal ausführen:
 
 #### Alle Tests mit einer beliebigen URL ausführen
