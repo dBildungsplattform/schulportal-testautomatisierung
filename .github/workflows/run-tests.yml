@@ -5,19 +5,19 @@ on:
   workflow_call:
     secrets:
       TUNNEL_USER_SSHKEY:
-        description: 'SSH Key for Tunnel User to access LDAP tunnel'
+        description: 'SSH Key for Tunnel User to access LDAP tunnel (required for dev tests)'
         required: false
       SPSH_DEV_KUBECONFIG:
-        description: 'Kubeconfig for SPSH development environment'
+        description: 'Kubeconfig for SPSH development environment (required for dev tests)'
         required: false
       TUNNEL_USER:
-        description: 'Username for SSH tunnel'
+        description: 'Username for SSH tunnel (required for dev tests)'
         required: false
       TUNNELHOST:
-        description: 'Hostname of the SSH tunnel'
+        description: 'Hostname of the SSH tunnel (required for dev tests)'
         required: false
       TUNNEL_PORT:
-        description: 'Port of the SSH tunnel'
+        description: 'Port of the SSH tunnel (required for dev tests)'
         required: false
       USER:
         description: 'Username for the application'
