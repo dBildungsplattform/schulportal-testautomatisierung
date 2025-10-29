@@ -2,20 +2,20 @@ import { expect, Locator, PlaywrightTestArgs, test } from '@playwright/test';
 import { ersatzLandSH, landSH } from '../base/organisation';
 import { landesadminRolle } from '../base/rollen';
 import { email, itslearning, kalender, schulportaladmin } from '../base/sp';
-import { BROWSER, LONG, SHORT, STAGE } from '../base/tags';
+import { BROWSER, DEV, LONG, SHORT, STAGE } from '../base/tags';
 import { deleteRolleByName } from '../base/testHelperDeleteTestdata';
 import { generateRolleName } from '../base/utils/generateTestdata';
 import { RolleCreationConfirmPage } from '../pages/admin/rollen/RolleCreationConfirm.page';
 import { RolleCreationViewPage } from '../pages/admin/rollen/RolleCreationView.page';
 import { RolleDetailsViewPage } from '../pages/admin/rollen/RolleDetailsView.page';
 import { RoleTableRow, RolleManagementViewPage } from '../pages/admin/rollen/RolleManagementView.page';
-import FromAnywhere from '../pages/FromAnywhere';
+import { FooterDataTablePage } from '../pages/components/FooterDataTable.page';
 import { HeaderPage } from '../pages/components/Header.page';
+import { MenuPage } from '../pages/components/MenuBar.page';
+import FromAnywhere from '../pages/FromAnywhere';
 import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
-import { MenuPage } from '../pages/components/MenuBar.page';
 import { StartPage } from '../pages/StartView.page';
-import { FooterDataTablePage } from '../pages/components/FooterDataTable.page';
 
 let startseite: StartPage;
 let loggedIn: boolean = false;
@@ -60,7 +60,7 @@ test.afterEach(async ({ page }: PlaywrightTestArgs) => {
 test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test(
     '2 Rollen nacheinander anlegen mit Rollenarten LERN und LEHR als Landesadmin',
-    { tag: [LONG, SHORT, STAGE] },
+    { tag: [LONG, SHORT, STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const rollenname1: string = await generateRolleName();
       const rollenname2: string = await generateRolleName();
@@ -131,7 +131,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
   // We re-implement this test as soon as the rollen list includes sorting and searching
   test.skip(
     'Ergebnisliste Rollen auf Vollständigkeit prüfen als Landesadmin',
-    { tag: [LONG, SHORT, STAGE] },
+    { tag: [LONG, SHORT, STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       await test.step(`Rollenverwaltung öffnen und alle Elemente in der Ergebnisliste auf Existenz prüfen`, async () => {
         const menu: MenuPage = await startseite.goToAdministration();
@@ -153,7 +153,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
 
   test(
     'Eine Rolle anlegen und die Bestätigungsseite vollständig prüfen als Landesadmin',
-    { tag: [LONG, SHORT, STAGE, BROWSER] },
+    { tag: [LONG, SHORT, STAGE, DEV, BROWSER] },
     async () => {
       const rollenname: string = await generateRolleName();
       const administrationsebene: string = landSH;
@@ -218,7 +218,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     }
   );
 
-  test('Falsche Eingaben bei Bearbeitung überprüfen', { tag: [LONG] }, async () => {
+  test('Falsche Eingaben bei Bearbeitung überprüfen', { tag: [LONG, STAGE, DEV] }, async () => {
     const roleName: string = 'a'.repeat(201);
     const rolleDetailsView: RolleDetailsViewPage = await test.step('Rolle bearbeiten aufrufen', async () => {
       const menu: MenuPage = await startseite.goToAdministration();
@@ -260,7 +260,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     logoutViaStartPage = true;
   });
 
-  test('Versuch eine zugewiesene Rolle zu löschen', { tag: [LONG] }, async () => {
+  test('Versuch eine zugewiesene Rolle zu löschen', { tag: [LONG, STAGE, DEV] }, async () => {
     const rolleDetailsView: RolleDetailsViewPage = await test.step('Rolle bearbeiten aufrufen', async () => {
       const menu: MenuPage = await startseite.goToAdministration();
       const rolleManagementView: RolleManagementViewPage = await menu.alleRollenAnzeigen();
@@ -284,11 +284,11 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
 });
 
 test.describe('Testet die Anlage einer neuen Rolle', () => {
-  let rolleNames: string | undefined = undefined;
+  let rolleName: string | undefined = undefined;
 
   test(
     'Eine neue Rolle anlegen und sicherstellen, dass alle Serviceprovider angezeigt werden und verfügbar sind',
-    { tag: [LONG] },
+    { tag: [LONG, STAGE, DEV] },
     async () => {
       const rolleCreationView: RolleCreationViewPage = await test.step('Rolle anlegen aufrufen', async () => {
         return await startseite.goToAdministration().then((menu: MenuPage) => menu.rolleAnlegen());
@@ -300,8 +300,9 @@ test.describe('Testet die Anlage einer neuen Rolle', () => {
       } = await test.step('Rolle mit mehr als 5 SPs anlegen', async () => {
         await rolleCreationView.rolleForm.adminstrationsebene.inputElement.selectByTitle('Land Schleswig-Holstein');
         await rolleCreationView.rolleForm.rollenart.inputElement.selectByTitle('Lehr');
-        rolleNames = 'Neue Rolle aus Test';
-        await rolleCreationView.enterRollenname(rolleNames);
+        rolleName = await generateRolleName();
+        rolleNames.push(rolleName);
+        await rolleCreationView.enterRollenname(rolleName);
         const theFirstSeven: number[] = Array.from({ length: 7 }, (_: unknown, key: number) => key);
         const selectedItems: string[] = await rolleCreationView.rolleForm.angebote.inputElement.selectByPosition(
           theFirstSeven
@@ -321,8 +322,8 @@ test.describe('Testet die Anlage einer neuen Rolle', () => {
       });
 
       await test.step('Rollentabelle prüfen', async () => {
-        expect(rolleNames).toBeDefined();
-        const row: RoleTableRow = rolleManagementPage.rowByRoleName(rolleNames!);
+        expect(rolleName).toBeDefined();
+        const row: RoleTableRow = rolleManagementPage.rowByRoleName(rolleName!);
         await expect(row.locator).toBeVisible();
 
         const spCell: Locator = row.spCell();
@@ -337,7 +338,7 @@ test.describe('Testet die Anlage einer neuen Rolle', () => {
     }
   );
 
-  test('Falsche Eingaben überprüfen', { tag: [LONG] }, async ({}: PlaywrightTestArgs) => {
+  test('Falsche Eingaben überprüfen', { tag: [LONG, STAGE, DEV] }, async ({}: PlaywrightTestArgs) => {
     const rolleNames: string = 'a'.repeat(201);
     const rolleCreationView: RolleCreationViewPage = await test.step('Rolle anlegen aufrufen', async () => {
       return await startseite.goToAdministration().then((menu: MenuPage) => menu.rolleAnlegen());

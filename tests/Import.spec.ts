@@ -1,14 +1,14 @@
-import { test, expect, Download, PlaywrightTestArgs } from '@playwright/test';
-import { HeaderPage } from '../pages/components/Header.page';
-import { LONG, STAGE, BROWSER } from '../base/tags';
+import { Download, expect, PlaywrightTestArgs, test } from '@playwright/test';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { schuelerRolle } from '../base/rollen';
+import { BROWSER, DEV, LONG, STAGE } from '../base/tags';
+import { deletePersonBySearchString } from '../base/testHelperDeleteTestdata';
 import FromAnywhere from '../pages/FromAnywhere';
 import { PersonImportViewPage } from '../pages/admin/personen/PersonImportView.page';
 import { PersonManagementViewPage } from '../pages/admin/personen/PersonManagementView.page';
-import path from 'path';
-import fs from 'fs';
-import { fileURLToPath } from 'url';
-import { deletePersonBySearchString } from '../base/testHelperDeleteTestdata';
+import { HeaderPage } from '../pages/components/Header.page';
 
 // schulen cannot be deleted yet, so we use this testschule, which should already exist
 import { testschule665Name } from '../base/organisation';
@@ -63,7 +63,7 @@ test.describe(`Testfälle für den Benutzerimport": Umgebung: ${process.env.ENV}
 
   test(
     'Als Landesadmin eine CSV-Datei mit Benutzerdaten hochladen und importieren',
-    { tag: [LONG, STAGE, BROWSER] },
+    { tag: [LONG, STAGE, BROWSER, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       await test.step('CSV-Datei hochladen, importieren und importierte Daten downloaden', async () => {
         // select schule
