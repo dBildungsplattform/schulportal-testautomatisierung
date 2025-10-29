@@ -1,3 +1,6 @@
+# If you merge changes to this file, you will become the actor for the scheduled runs.
+# Execution can only happen while the account of the actor is active.
+# If possible use a service account for this.
 name: Scheduled runs
 
 on:
