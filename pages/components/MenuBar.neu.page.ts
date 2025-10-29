@@ -63,7 +63,10 @@ export class MenuBarPage {
   }
 
   public async navigateToRolleCreation(): Promise<RolleCreationViewPage> {
-    return this.navigateTo('rolle-creation-menu-item', RolleCreationViewPage, p => p.waitForPageLoad());
+    await this.page.getByTestId('rolle-creation-menu-item').click();
+    const rolleCreationViewPage: RolleCreationViewPage = new RolleCreationViewPage(this.page);
+    await rolleCreationViewPage.waitForPageLoad();
+    return rolleCreationViewPage;
   }
 
   public async navigateToSchuleManagement(): Promise<SchuleManagementViewPage> {

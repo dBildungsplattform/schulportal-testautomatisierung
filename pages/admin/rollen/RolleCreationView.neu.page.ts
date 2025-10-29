@@ -2,10 +2,12 @@ import { expect, Page } from '@playwright/test';
 import { RolleCreationSuccessPage } from './RolleCreationSuccess.page';
 import { RolleCreationWorkflow } from './RolleCreationWorkflow.page';
 
+/* these rolle creation params are not the same as the API params,
+    here we use the displayed texts to select from input elements */
 export interface RolleCreationParams {
   name: string;
-  ssk: string;
-  art: string;
+  schulname: string;
+  rollenart: string;
   merkmale: string[];
   systemrechte: string[];
   serviceProviders: string[];
@@ -26,8 +28,8 @@ export class RolleCreationViewPage {
 
   public async createRolle(params: RolleCreationParams): Promise<RolleCreationSuccessPage> {
     const workflow: RolleCreationWorkflow = this.startRolleCreationWorkflow();
-    await workflow.selectAdministrationsebene(params.ssk);
-    await workflow.selectArt(params.art);
+    await workflow.selectAdministrationsebene(params.schulname);
+    await workflow.selectArt(params.rollenart);
     await workflow.selectName(params.name);
     await workflow.selectMerkmale(params.merkmale);
     await workflow.selectSystemrechte(params.systemrechte);

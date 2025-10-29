@@ -28,9 +28,9 @@ export class RolleCreationSuccessPage {
     await expect(this.rolleForm.rollenname.label).toBeVisible();
     await expect(this.rolleForm.rollenname.data).toHaveText(params.name);
     await expect(this.rolleForm.adminstrationsebene.label).toBeVisible();
-    await expect(this.rolleForm.adminstrationsebene.data).toHaveText(params.ssk);
+    await expect(this.rolleForm.adminstrationsebene.data).toHaveText(params.schulname);
     await expect(this.rolleForm.rollenart.label).toBeVisible();
-    await expect(this.rolleForm.rollenart.data).toHaveText(params.art);
+    await expect(this.rolleForm.rollenart.data).toHaveText(params.rollenart);
     await expect(this.rolleForm.merkmale.label).toBeVisible();
     for (const merkmal of params.merkmale) {
       await expect(this.rolleForm.merkmale.data).toContainText(merkmal);

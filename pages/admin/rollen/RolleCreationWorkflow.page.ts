@@ -15,16 +15,16 @@ export class RolleCreationWorkflow {
     await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Neue Rolle hinzufügen');
   }
 
-  public async selectAdministrationsebene(ssk: RolleCreationParams['ssk']): Promise<void> {
-    await this.rolleForm.adminstrationsebene.inputElement.selectByTitle(ssk);
+  public async selectAdministrationsebene(schulname: RolleCreationParams['schulname']): Promise<void> {
+    await this.rolleForm.adminstrationsebene.inputElement.selectByTitle(schulname);
   }
 
   public async selectName(name: RolleCreationParams['name']): Promise<void> {
     await this.rolleForm.enterRollenname(name);
   }
 
-  public async selectArt(art: RolleCreationParams['art']): Promise<void> {
-    await this.rolleForm.rollenart.inputElement.selectByTitle(art);
+  public async selectArt(rollenart: RolleCreationParams['rollenart']): Promise<void> {
+    await this.rolleForm.rollenart.inputElement.selectByTitle(rollenart);
   }
 
   public async selectMerkmale(merkmale: RolleCreationParams['merkmale']): Promise<void> {
@@ -61,10 +61,10 @@ export class RolleCreationWorkflow {
   /* assertions */
   public async checkMessage(label: keyof RolleCreationParams, value: string): Promise<void> {
     switch (label) {
-      case 'ssk':
+      case 'schulname':
         await expect(this.rolleForm.adminstrationsebene.messages).toHaveText(value);
         break;
-      case 'art':
+      case 'rollenart':
         await expect(this.rolleForm.rollenart.messages).toHaveText(value);
         break;
       case 'name':
