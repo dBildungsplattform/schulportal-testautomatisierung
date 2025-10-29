@@ -5,6 +5,7 @@ name: Scheduled runs
 
 on:
   schedule:
+    # enable these with the account that should become the actor
     # - cron: '15 5 * * 1-5'
     # - cron: '45 6 * * *'
     - cron: '5 */1 * * 1-5'
