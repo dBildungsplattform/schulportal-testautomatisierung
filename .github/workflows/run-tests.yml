@@ -38,6 +38,7 @@ on:
         default: 'dev'
         type: choice
         options:
+          - smoke
           - dev
           - stage
       browser:
