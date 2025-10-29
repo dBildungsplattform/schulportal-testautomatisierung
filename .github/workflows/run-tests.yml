@@ -3,6 +3,32 @@ run-name: Test ${{ inputs.frontendHostname }} with ${{ inputs.browser }} and ${{
 
 on:
   workflow_call:
+    secrets:
+      TUNNEL_USER_SSHKEY:
+        description: 'SSH Key for Tunnel User to access LDAP tunnel'
+        required: false
+      SPSH_DEV_KUBECONFIG:
+        description: 'Kubeconfig for SPSH development environment'
+        required: false
+      TUNNEL_USER:
+        description: 'Username for SSH tunnel'
+        required: false
+      TUNNELHOST:
+        description: 'Hostname of the SSH tunnel'
+        required: false
+      TUNNEL_PORT:
+        description: 'Port of the SSH tunnel'
+        required: false
+      USER:
+        description: 'Username for the application'
+        required: true
+      PW:
+        description: 'Password for the application'
+        required: true
+      RC_WEBHOOK:
+        description: 'Webhook URL for notifications'
+        required: true
+
     inputs:
       frontendHostname:
         type: string
@@ -27,7 +53,7 @@ on:
 
   workflow_dispatch:
     inputs:
-      frontendHostname: 
+      frontendHostname:
         type: string
         description: 'Hostname of the frontend server'
         required: true
@@ -52,12 +78,11 @@ on:
           - firefox
           - webkit
           - msedge
-      playwright_branch: 
+      playwright_branch:
         type: string
         description: 'The branch to take Playwright-tests from.'
         required: false
         default: main
-
 
 jobs:
   run_playwright_tests:

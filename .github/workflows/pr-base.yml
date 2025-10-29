@@ -6,12 +6,12 @@ on:
 
 jobs:
   branch_meta:
-    uses: dBildungsplattform/spsh-app-deploy/.github/workflows/get-branch-meta.yml@7
+    uses: dBildungsplattform/spsh-app-deploy/.github/workflows/get-branch-meta.yml@9f0f68050d0997b8b34a375da4fb2366f40074c4 # 7.0.4
 
   create_branch_identifier:
     needs:
       - branch_meta
-    uses: dBildungsplattform/spsh-app-deploy/.github/workflows/convert-branch-name.yml@7
+    uses: dBildungsplattform/spsh-app-deploy/.github/workflows/convert-branch-name.yml@9f0f68050d0997b8b34a375da4fb2366f40074c4 # 7.0.4
     with:
       branch: ${{ needs.branch_meta.outputs.branch }}
 
@@ -83,4 +83,12 @@ jobs:
         tag: dev
         browser: chromium
         playwright_branch: ${{ github.head_ref }}
-      secrets: inherit
+      secrets:
+        TUNNEL_USER_SSHKEY: ${{ secrets.TUNNEL_USER_SSHKEY }}
+        SPSH_DEV_KUBECONFIG: ${{ secrets.SPSH_DEV_KUBECONFIG }}
+        TUNNEL_USER: ${{ secrets.TUNNEL_USER }}
+        TUNNELHOST: ${{ secrets.TUNNELHOST }}
+        TUNNEL_PORT: ${{ secrets.TUNNEL_PORT }}
+        USER: ${{ secrets.USER }}
+        PW: ${{ secrets.PW }}
+        RC_WEBHOOK: ${{ secrets.RC_WEBHOOK }}
