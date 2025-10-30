@@ -139,9 +139,9 @@ export async function createPerson(
 export async function createPersonWithPersonenkontext(
   page: Page,
   organisationName: string,
-  familienname: string,
-  vorname: string,
   rolleName: string,
+  vorname?: string,
+  familienname?: string,
   koPersNr?: string
 ): Promise<UserInfo> {
   // Organisation wird nicht angelegt, da diese zur Zeit nicht gelöscht werden kann

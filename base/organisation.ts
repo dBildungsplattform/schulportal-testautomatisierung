@@ -8,4 +8,4 @@ export const ersatzTestschuleName: string = 'Duborg-Skolen';
 export const ersatzTestschuleDstNr: string = '0799801';
 export const landSH: string = 'Land Schleswig-Holstein';
 export const ersatzLandSH: string = 'Ersatzschulen Land Schleswig-Holstein';
-export const oeffentlichLandSH:string = 'Öffentliche Schulen Land Schleswig-Holstein';
+export const oeffentlichLandSH: string = 'Öffentliche Schulen Land Schleswig-Holstein';

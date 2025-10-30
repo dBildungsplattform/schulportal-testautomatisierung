@@ -8,7 +8,6 @@ export class Autocomplete {
   private readonly modalToggle: Locator;
   private readonly inputLocator: Locator;
   private readonly loadingLocator: Locator;
-  private readonly root: Locator // Das Autocomplete-Element
 
   constructor(private readonly page: Page, private readonly locator: Locator) {
     this.overlayLocator = this.page.locator('div.v-overlay.v-menu');
@@ -100,7 +99,15 @@ export class Autocomplete {
     await item.click();
     await this.closeModal();
   }
+  
+  public async selectByName(name: string): Promise<void> {
+    const option: Locator = this.page.locator('.v-list-item, [role="option"]').filter({
+      hasText: name,
+    });
+    await option.click();
+  }
 
+  /* assertions */
   public async validateItemNotExists(searchString: string, exactMatch: boolean): Promise<void> {
     await this.inputLocator.click();
     await this.inputLocator.fill(searchString);
@@ -145,22 +152,12 @@ export class Autocomplete {
     await expect(this.locator).toHaveText(text);
   }
 
-  // Gibt alle sichtbaren Optionen als Array von Strings zurück
-  public async allTextContents(): Promise<string[]> {
-    // Öffne ggf. das Dropdown, falls nötig
-    //await this.root.click();
-
-    // Locator für die Dropdown-Optionen
+  public async assertAllMenuItems(expectedTexts: string[]): Promise<void> {
     const options: Locator = this.page.locator('.v-list-item, [role="option"]');
-    return await options.allTextContents();
+    await expect(options).toHaveText(expectedTexts);
   }
-  
-  public async selectByName(name: string): Promise<void> {
-    const option: Locator = this.page.locator('.v-list-item, [role="option"]').filter({
-      hasText: name,
-    });
-    //await option.waitFor({ state: 'visible' });
-    await option.click();
-  }
-  
+
+  public async isVisible(): Promise<void> {
+    await expect(this.locator).toBeVisible();
+  }  
 }
