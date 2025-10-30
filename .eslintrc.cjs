@@ -16,6 +16,7 @@ module.exports = {
     ecmaVersion: 'latest',
     parser: '@typescript-eslint/parser'
   },
+  ignorePatterns: ['base/api/generated/*'],
   rules: {
     // 'prettier/prettier': ['warn'],
     // 'import/no-extraneous-dependencies': ['error', { devDependencies: false }],

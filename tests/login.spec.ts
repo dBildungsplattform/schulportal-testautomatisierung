@@ -4,7 +4,7 @@ import { LandingPage } from '../pages/LandingView.page';
 import { StartPage } from '../pages/StartView.page';
 import { HeaderPage } from '../pages/components/Header.page';
 import { LONG, SHORT, SMOKE, STAGE, BROWSER } from '../base/tags';
-import { createRolleAndPersonWithUserContext, lockPerson, UserInfo } from '../base/api/personApi';
+import { createRolleAndPersonWithPersonenkontext, lockPerson, UserInfo } from '../base/api/personApi';
 import { getServiceProviderId } from '../base/api/serviceProviderApi';
 import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata';
 import { getOrganisationId } from '../base/api/organisationApi';
@@ -127,7 +127,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
         await login.login(ADMIN, PW);
         const lehrerIdSPs: string[] = [await getServiceProviderId(page, 'E-Mail')];
         organisationIDLandSh = await getOrganisationId(page, 'Land Schleswig-Holstein');
-        userInfoLehrer = await createRolleAndPersonWithUserContext(
+        userInfoLehrer = await createRolleAndPersonWithPersonenkontext(
           page,
           lehrerOrganisation,
           lehrerRollenart,

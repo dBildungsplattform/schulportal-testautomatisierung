@@ -4,7 +4,7 @@ import {
   createPerson,
   UserInfo,
   addSecondOrganisationToPerson,
-  createRolleAndPersonWithUserContext,
+  createRolleAndPersonWithPersonenkontext,
 } from '../base/api/personApi';
 import { addServiceProvidersToRolle, addSystemrechtToRolle, createRolle, RollenArt } from '../base/api/rolleApi';
 import { getServiceProviderId } from '../base/api/serviceProviderApi';
@@ -118,7 +118,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
       await test.step(`Landesadmin via api anlegen und mit diesem anmelden`, async () => {
         const idSPs: string[] = [await getServiceProviderId(page, 'Schulportal-Administration')];
-        const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
+        const userInfo: UserInfo = await createRolleAndPersonWithPersonenkontext(
           page,
           organisation,
           rollenart,
@@ -194,7 +194,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
       await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
         const idSPs: string[] = [await getServiceProviderId(page, email)];
-        const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
+        const userInfo: UserInfo = await createRolleAndPersonWithPersonenkontext(
           page,
           organisation,
           rollenart,
@@ -322,7 +322,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
       await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
         const idSPs: string[] = [await getServiceProviderId(page, 'Schulportal-Administration')];
-        const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
+        const userInfo: UserInfo = await createRolleAndPersonWithPersonenkontext(
           page,
           organisation,
           rollenart,
@@ -390,7 +390,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
       await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
         const idSPs: string[] = [await getServiceProviderId(page, itslearning), await getServiceProviderId(page, email)];
-        const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
+        const userInfo: UserInfo = await createRolleAndPersonWithPersonenkontext(
           page,
           organisation1,
           rollenart,
@@ -497,7 +497,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
       await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
         const idSPs: string[] = [await getServiceProviderId(page, itslearning)];
-        const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
+        const userInfo: UserInfo = await createRolleAndPersonWithPersonenkontext(
           page,
           organisation,
           rollenart,
@@ -558,7 +558,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
       await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
         const idSPs: string[] = [await getServiceProviderId(page, email)];
-        const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
+        const userInfo: UserInfo = await createRolleAndPersonWithPersonenkontext(
           page,
           organisation,
           rollenart,
@@ -658,7 +658,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       let userInfoSchueler: UserInfo;
 
       await test.step(`Lehrer und Schüler via api anlegen`, async () => {
-        userInfoLehrer = await createRolleAndPersonWithUserContext(
+        userInfoLehrer = await createRolleAndPersonWithPersonenkontext(
           page,
           testschuleName,
           typeLehrer,
@@ -744,7 +744,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       let userInfoLehrer: UserInfo;
 
       await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) über die api anlegen und mit diesem anmelden`, async () => {
-        userInfoLehrer = await createRolleAndPersonWithUserContext(
+        userInfoLehrer = await createRolleAndPersonWithPersonenkontext(
           page,
           testschuleName,
           typeLehrer,

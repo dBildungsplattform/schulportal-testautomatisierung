@@ -3,7 +3,7 @@ import { createPerson, UserInfo } from '../base/api/personApi';
 import { waitForAPIResponse } from '../base/api/baseApi';
 import { createKlasse, getOrganisationId } from '../base/api/organisationApi';
 import {
-  createRolleAndPersonWithUserContext,
+  createRolleAndPersonWithPersonenkontext,
   setTimeLimitPersonenkontext,
 } from '../base/api/personApi';
 import { addServiceProvidersToRolle, addSystemrechtToRolle, RollenArt, RollenMerkmal } from '../base/api/rolleApi';
@@ -115,7 +115,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     logoutViaStartPage = true;
 
     await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) und SP(email) über die api anlegen ${ADMIN}`, async () => {
-      userInfoLehrer = await createRolleAndPersonWithUserContext(
+      userInfoLehrer = await createRolleAndPersonWithPersonenkontext(
         page,
         testschuleName,
         typeLehrer,
@@ -162,7 +162,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       logoutViaStartPage = true;
 
       await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) und SP(email) über die api anlegen ${ADMIN}`, async () => {
-        userInfoLehrer = await createRolleAndPersonWithUserContext(
+        userInfoLehrer = await createRolleAndPersonWithPersonenkontext(
           page,
           testschuleName,
           typeLehrer,
@@ -199,7 +199,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     logoutViaStartPage = true;
 
     await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) und SP(email) über die api anlegen ${ADMIN}`, async () => {
-      userInfoLehrer = await createRolleAndPersonWithUserContext(
+      userInfoLehrer = await createRolleAndPersonWithPersonenkontext(
         page,
         testschuleName,
         typeLehrer,
@@ -288,7 +288,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       logoutViaStartPage = true;
 
       await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) über die api anlegen ${ADMIN}`, async () => {
-        userInfoLehrer = await createRolleAndPersonWithUserContext(
+        userInfoLehrer = await createRolleAndPersonWithPersonenkontext(
           page,
           testschuleName,
           typeLehrer,
@@ -328,7 +328,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       logoutViaStartPage = true;
 
       await test.step(`Testdaten: Schuladmin mit einer Rolle(LEIT) über die api anlegen ${ADMIN}`, async () => {
-        userInfoAdmin = await createRolleAndPersonWithUserContext(
+        userInfoAdmin = await createRolleAndPersonWithPersonenkontext(
           page,
           adminOrganisation,
           adminRollenart,
@@ -370,7 +370,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       logoutViaStartPage = true;
 
       await test.step(`Testdaten: Landesadmin mit einer Rolle(SYSADMIN) über die api anlegen ${ADMIN}`, async () => {
-        userInfoAdmin = await createRolleAndPersonWithUserContext(
+        userInfoAdmin = await createRolleAndPersonWithPersonenkontext(
           page,
           organisation,
           rollenart,
@@ -421,7 +421,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       logoutViaStartPage = true;
 
       await test.step(`Testdaten: Schuladmin mit einer Rolle(LEIT) über die api anlegen ${ADMIN}`, async () => {
-        userInfoAdmin = await createRolleAndPersonWithUserContext(
+        userInfoAdmin = await createRolleAndPersonWithPersonenkontext(
           page,
           adminOrganisation,
           adminRollenart,
@@ -461,7 +461,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     async ({ page }: PlaywrightTestArgs) => {
       let userInfoLehrer: UserInfo;
       await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) über die api anlegen ${ADMIN}`, async () => {
-        userInfoLehrer = await createRolleAndPersonWithUserContext(
+        userInfoLehrer = await createRolleAndPersonWithPersonenkontext(
           page,
           testschuleName,
           typeLehrer,
@@ -505,7 +505,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       let userInfoLehrer: UserInfo;
 
       await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) über die api anlegen`, async () => {
-        userInfoLehrer = await createRolleAndPersonWithUserContext(
+        userInfoLehrer = await createRolleAndPersonWithPersonenkontext(
           page,
           testschuleName,
           typeLehrer,
@@ -547,7 +547,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       let colorTextEntireNameSchulzuordnung: string = '';
 
       await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) und einer Schulzuordnung über die api anlegen`, async () => {
-        userInfoLehrer = await createRolleAndPersonWithUserContext(
+        userInfoLehrer = await createRolleAndPersonWithPersonenkontext(
           page,
           testschuleName,
           typeLehrer,
@@ -672,7 +672,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const nameRolle: string = await generateRolleName();
 
       await test.step(`Testdaten: Lehrer mit einer Rolle(LiV) mit den Merkmalen 'BefristungsPflicht', 'KopersPflicht' und einer Schulzuordnung über die api anlegen`, async () => {
-        userInfoLehrer = await createRolleAndPersonWithUserContext(
+        userInfoLehrer = await createRolleAndPersonWithPersonenkontext(
           page,
           testschuleName,
           typeLehrer,
@@ -725,7 +725,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         const idSchule: string = await getOrganisationId(page, testschuleName);
         const klasseIdCurrent: string = await createKlasse(page, idSchule, klasseNameCurrent);
         await createKlasse(page, idSchule, klasseNameNew);
-        const userInfoSchueler: UserInfo = await createRolleAndPersonWithUserContext(
+        const userInfoSchueler: UserInfo = await createRolleAndPersonWithPersonenkontext(
           page,
           testschuleName,
           typeSchueler,

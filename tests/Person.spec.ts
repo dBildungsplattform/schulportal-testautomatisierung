@@ -1,6 +1,6 @@
 import { expect, PlaywrightTestArgs, test } from '@playwright/test';
 import { getOrganisationId } from '../base/api/organisationApi';
-import { createRolleAndPersonWithUserContext, UserInfo } from '../base/api/personApi';
+import { createRolleAndPersonWithPersonenkontext, UserInfo } from '../base/api/personApi';
 import { addSystemrechtToRolle, RollenArt } from '../base/api/rolleApi';
 import { createRolle } from '../base/api/rolleApi';
 import { getServiceProviderId } from '../base/api/serviceProviderApi';
@@ -263,7 +263,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
       await test.step(`Schuladmin anlegen und mit diesem anmelden`, async () => {
         const idSPs: string[] = [await getServiceProviderId(page, 'Schulportal-Administration')];
-        userInfo = await createRolleAndPersonWithUserContext(
+        userInfo = await createRolleAndPersonWithPersonenkontext(
           page,
           schulstrukturknoten,
           'LEIT',
@@ -726,7 +726,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
       await test.step(`Testdaten: Landesadmin anlegen und mit diesem anmelden`, async () => {
         const idSPs: string[] = [await getServiceProviderId(page, 'Schulportal-Administration')];
-        userInfo = await createRolleAndPersonWithUserContext(
+        userInfo = await createRolleAndPersonWithPersonenkontext(
           page,
           landSH,
           'SYSADMIN',
@@ -921,7 +921,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const idSPs: string[] = [await getServiceProviderId(page, 'Schulportal-Administration')];
 
       await test.step(`Neuen Benutzer über die api anlegen`, async () => {
-        await createRolleAndPersonWithUserContext(page, landSH, berechtigung, vorname, nachname, idSPs, rolle);
+        await createRolleAndPersonWithPersonenkontext(page, landSH, berechtigung, vorname, nachname, idSPs, rolle);
         rolleNames.push(rolle);
       });
 

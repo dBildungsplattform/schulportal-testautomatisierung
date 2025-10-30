@@ -18,16 +18,13 @@ export class LoginViewPage {
   }
 
   public async login(
-    username: string = process.env.USER as string,
-    password: string = process.env.PW as string
-  ): Promise<StartViewPage> {
+    username: string, password: string): Promise<StartViewPage> {
     const usernameInput: Locator = this.page.getByTestId('username-input');
     const passwordInput: Locator = this.page.getByTestId('password-input');
     const loginButton: Locator = this.page.getByTestId('login-button');
 
     await expect(this.page.getByTestId('login-page-title')).toHaveText('Anmeldung');
     await expect(this.page.getByTestId('login-prompt-text')).toHaveText('Bitte geben Sie Ihre persönlichen Zugangsdaten ein.');
-    
     await usernameInput.waitFor({ state: 'visible' });
     await usernameInput.fill(username);
     
@@ -43,7 +40,7 @@ export class LoginViewPage {
     const newPassword: string = this.generateSecurePassword();
     const newPasswordInput: Locator = this.page.getByTestId('new-password-input');
     const newPasswordConfirmInput: Locator = this.page.getByTestId('new-password-confirm-input');
-    const setPasswordButton: Locator = this.page.getByTestId('update-password-button');
+    const setPasswordButton: Locator = this.page.getByTestId('set-password-button');
 
     await expect(this.page.getByTestId('update-password-title')).toHaveText('Passwort festlegen');
     await expect(this.page.getByTestId('password-update-prompt')).toHaveText('Bitte legen Sie ein neues, selbstgewähltes Passwort fest.');
@@ -57,6 +54,12 @@ export class LoginViewPage {
     await setPasswordButton.waitFor({ state: 'visible' });
     await setPasswordButton.click();
     return newPassword;
+  }
+  
+  public async loginNewUserWithPasswordChange(givenUsername: string, givenPassword: string) : Promise<StartViewPage> {
+    const startPage: StartViewPage = await this.login(givenUsername, givenPassword);
+    await this.updatePassword();
+    return startPage;
   }
 
   /* assertions */
