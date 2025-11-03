@@ -1,3 +1,4 @@
+/* tslint:disable */
 /* eslint-disable */
 /**
  * dBildungs IAM
@@ -12,84 +13,60 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { OrganisationResponseLegacy } from './OrganisationResponseLegacy';
+import type { RollenSystemRechtEnum } from './RollenSystemRechtEnum';
 import {
-    OrganisationResponseLegacyFromJSON,
-    OrganisationResponseLegacyFromJSONTyped,
-    OrganisationResponseLegacyToJSON,
-} from './OrganisationResponseLegacy';
+    RollenSystemRechtEnumFromJSON,
+    RollenSystemRechtEnumFromJSONTyped,
+    RollenSystemRechtEnumToJSON,
+} from './RollenSystemRechtEnum';
 
 /**
  * 
  * @export
- * @interface SystemrechtResponse
+ * @interface SystemRechtResponse
  */
-export interface SystemrechtResponse {
+export interface SystemRechtResponse {
     /**
      * 
-     * @type {Array<OrganisationResponseLegacy>}
-     * @memberof SystemrechtResponse
+     * @type {RollenSystemRechtEnum}
+     * @memberof SystemRechtResponse
      */
-    rOLLENVERWALTEN: Array<OrganisationResponseLegacy>;
+    name: RollenSystemRechtEnum;
     /**
-     * 
-     * @type {Array<OrganisationResponseLegacy>}
-     * @memberof SystemrechtResponse
+     * Indicates if the system right is an internal right
+     * @type {boolean}
+     * @memberof SystemRechtResponse
      */
-    kLASSENVERWALTEN: Array<OrganisationResponseLegacy>;
-    /**
-     * 
-     * @type {Array<OrganisationResponseLegacy>}
-     * @memberof SystemrechtResponse
-     */
-    sCHULENVERWALTEN: Array<OrganisationResponseLegacy>;
-    /**
-     * 
-     * @type {Array<OrganisationResponseLegacy>}
-     * @memberof SystemrechtResponse
-     */
-    pERSONENVERWALTEN: Array<OrganisationResponseLegacy>;
-    /**
-     * 
-     * @type {Array<OrganisationResponseLegacy>}
-     * @memberof SystemrechtResponse
-     */
-    sCHULTRAEGERVERWALTEN: Array<OrganisationResponseLegacy>;
+    isTechnical: boolean;
 }
 
 /**
- * Check if a given object implements the SystemrechtResponse interface.
+ * Check if a given object implements the SystemRechtResponse interface.
  */
-export function instanceOfSystemrechtResponse(value: object): boolean {
+export function instanceOfSystemRechtResponse(value: object): boolean {
     let isInstance = true;
-    isInstance = isInstance && "rOLLENVERWALTEN" in value;
-    isInstance = isInstance && "kLASSENVERWALTEN" in value;
-    isInstance = isInstance && "sCHULENVERWALTEN" in value;
-    isInstance = isInstance && "pERSONENVERWALTEN" in value;
-    isInstance = isInstance && "sCHULTRAEGERVERWALTEN" in value;
+    isInstance = isInstance && "name" in value;
+    isInstance = isInstance && "isTechnical" in value;
 
     return isInstance;
 }
 
-export function SystemrechtResponseFromJSON(json: any): SystemrechtResponse {
-    return SystemrechtResponseFromJSONTyped(json, false);
+export function SystemRechtResponseFromJSON(json: any): SystemRechtResponse {
+    return SystemRechtResponseFromJSONTyped(json, false);
 }
 
-export function SystemrechtResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): SystemrechtResponse {
+export function SystemRechtResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): SystemRechtResponse {
     if ((json === undefined) || (json === null)) {
         return json;
     }
     return {
         
-        'rOLLENVERWALTEN': ((json['ROLLEN_VERWALTEN'] as Array<any>).map(OrganisationResponseLegacyFromJSON)),
-        'kLASSENVERWALTEN': ((json['KLASSEN_VERWALTEN'] as Array<any>).map(OrganisationResponseLegacyFromJSON)),
-        'sCHULENVERWALTEN': ((json['SCHULEN_VERWALTEN'] as Array<any>).map(OrganisationResponseLegacyFromJSON)),
-        'pERSONENVERWALTEN': ((json['PERSONEN_VERWALTEN'] as Array<any>).map(OrganisationResponseLegacyFromJSON)),
-        'sCHULTRAEGERVERWALTEN': ((json['SCHULTRAEGER_VERWALTEN'] as Array<any>).map(OrganisationResponseLegacyFromJSON)),
+        'name': RollenSystemRechtEnumFromJSON(json['name']),
+        'isTechnical': json['isTechnical'],
     };
 }
 
-export function SystemrechtResponseToJSON(value?: SystemrechtResponse | null): any {
+export function SystemRechtResponseToJSON(value?: SystemRechtResponse | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -98,11 +75,8 @@ export function SystemrechtResponseToJSON(value?: SystemrechtResponse | null): a
     }
     return {
         
-        'ROLLEN_VERWALTEN': ((value.rOLLENVERWALTEN as Array<any>).map(OrganisationResponseLegacyToJSON)),
-        'KLASSEN_VERWALTEN': ((value.kLASSENVERWALTEN as Array<any>).map(OrganisationResponseLegacyToJSON)),
-        'SCHULEN_VERWALTEN': ((value.sCHULENVERWALTEN as Array<any>).map(OrganisationResponseLegacyToJSON)),
-        'PERSONEN_VERWALTEN': ((value.pERSONENVERWALTEN as Array<any>).map(OrganisationResponseLegacyToJSON)),
-        'SCHULTRAEGER_VERWALTEN': ((value.sCHULTRAEGERVERWALTEN as Array<any>).map(OrganisationResponseLegacyToJSON)),
+        'name': RollenSystemRechtEnumToJSON(value.name),
+        'isTechnical': value.isTechnical,
     };
 }
 

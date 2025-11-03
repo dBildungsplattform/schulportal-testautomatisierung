@@ -1,11 +1,12 @@
 import { PlaywrightTestArgs, test } from '@playwright/test';
 import { freshLoginPage } from '../../base/api/personApi';
+import { testschuleName } from '../../base/organisation';
+import { deleteRolleByName } from '../../base/testHelperDeleteTestdata';
 import { LoginViewPage } from '../../pages/LoginView.neu.page';
 import { StartViewPage } from '../../pages/StartView.neu.page';
 import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.neu.page';
-import { RolleCreationParams, RolleCreationViewPage } from '../../pages/admin/rollen/RolleCreationView.neu.page';
-import { testschuleName } from '../../base/organisation';
 import { RolleCreationSuccessPage } from '../../pages/admin/rollen/RolleCreationSuccess.page';
+import { RolleCreationParams, RolleCreationViewPage } from '../../pages/admin/rollen/RolleCreationView.neu.page';
 
 const ADMIN: string | undefined = process.env.USER;
 const PASSWORD: string | undefined = process.env.PW;
@@ -13,6 +14,7 @@ const PASSWORD: string | undefined = process.env.PW;
 test.describe(`Testfälle für die Rollenanlage: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   let loginPage: LoginViewPage;
   let rolleCreationPage: RolleCreationViewPage;
+  const rollenNamesToDelete: string[] = [];
 
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
     loginPage = await freshLoginPage(page);
@@ -20,6 +22,10 @@ test.describe(`Testfälle für die Rollenanlage: Umgebung: ${process.env.ENV}: U
     await startPage.waitForPageLoad();
     const personManagementView: PersonManagementViewPage = await startPage.navigateToAdministration();
     rolleCreationPage = await personManagementView.menu.navigateToRolleCreation();
+  });
+
+  test.afterEach(async ({ page }: PlaywrightTestArgs) => {
+    await deleteRolleByName(rollenNamesToDelete, page);
   });
 
   test('Rolle erfolgreich als Landesadmin anlegen', async () => {
@@ -34,6 +40,7 @@ test.describe(`Testfälle für die Rollenanlage: Umgebung: ${process.env.ENV}: U
 
     const rolleCreationSuccessPage: RolleCreationSuccessPage = await rolleCreationPage.createRolle(rolleCreationParams);
     await rolleCreationSuccessPage.checkSuccessPage(rolleCreationParams);
+    rollenNamesToDelete.push(rolleCreationParams.name);
   });
 
   test('Rolle erfolgreich als Schuladmin anlegen', async () => {
@@ -50,6 +57,7 @@ test.describe(`Testfälle für die Rollenanlage: Umgebung: ${process.env.ENV}: U
 
     const rolleCreationSuccessPage: RolleCreationSuccessPage = await rolleCreationPage.createRolle(rolleCreationParams);
     await rolleCreationSuccessPage.checkSuccessPage(rolleCreationParams);
+    rollenNamesToDelete.push(rolleCreationParams.name);
   });
 
   // TODO: angelegte rolle in ergebnisliste prüfen

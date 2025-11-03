@@ -16,7 +16,7 @@ export class RolleCreationWorkflow {
   }
 
   public async selectAdministrationsebene(schulname: RolleCreationParams['schulname']): Promise<void> {
-    await this.rolleForm.adminstrationsebene.inputElement.selectByTitle(schulname);
+    await this.rolleForm.adminstrationsebene.inputElement.searchByTitle(schulname, false);
   }
 
   public async selectName(name: RolleCreationParams['name']): Promise<void> {
@@ -28,21 +28,21 @@ export class RolleCreationWorkflow {
   }
 
   public async selectMerkmale(merkmale: RolleCreationParams['merkmale']): Promise<void> {
-    await Promise.all(
-      merkmale.map((merkmal: string) => this.rolleForm.merkmale.inputElement.selectByTitle(merkmal))
-    );
+    for (const merkmal of merkmale) {
+      await this.rolleForm.merkmale.inputElement.selectByTitle(merkmal);
+    }
   }
 
   public async selectSystemrechte(systemrechte: RolleCreationParams['systemrechte']): Promise<void> {
-    await Promise.all(
-      systemrechte.map((systemrecht: string) => this.rolleForm.systemrechte.inputElement.selectByTitle(systemrecht))
-    );
+    for (const systemrecht of systemrechte) {
+      await this.rolleForm.systemrechte.inputElement.selectByTitle(systemrecht);
+    }
   }
 
   public async selectServiceProviders(serviceProviders: RolleCreationParams['serviceProviders']): Promise<void> {
-    await Promise.all(
-      serviceProviders.map((provider: string) => this.rolleForm.angebote.inputElement.selectByTitle(provider))
-    );
+    for (const provider of serviceProviders) {
+      await this.rolleForm.angebote.inputElement.selectByTitle(provider);
+    }
   }
 
   public async selectServiceProvidersByPosition(positions: number[]): Promise<void> {
