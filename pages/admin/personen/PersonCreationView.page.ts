@@ -49,7 +49,7 @@ export class PersonCreationViewPage {
     // Anlage Person
     this.page = page;
     this.body = page.locator('body');
-    this.textH2PersonAnlegen = page.getByTestId('layout-card-headline');
+    this.textH2PersonAnlegen = page.getByTestId('create-person-headline');
     this.buttonSchliessen = page.getByTestId('close-layout-card-button');
     this.comboboxRolle = page.getByTestId('rollen-select').locator('.v-field__input');
     this.comboboxRolleClear = page.getByTestId('rollen-select').getByLabel('leeren');
