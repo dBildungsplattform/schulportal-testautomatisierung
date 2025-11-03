@@ -16,7 +16,7 @@ jobs:
     strategy:
       matrix:
         browser: [chrome, firefox, webkit, msedge]
-    uses: ./.github/workflows/run-tests.yml
+    uses: ./.github/workflows/run-playwright.yml
     with:
       frontendHostname: main.dev.spsh.dbildungsplattform.de
       tag: dev
@@ -34,7 +34,7 @@ jobs:
 
   stage_smoke_test:
     if: github.event.schedule == '45 6 * * *'
-    uses: ./.github/workflows/run-tests.yml
+    uses: ./.github/workflows/run-playwright.yml
     with:
       frontendHostname: spsh.staging.spsh.dbildungsplattform.de
       tag: smoke

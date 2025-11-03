@@ -7,7 +7,7 @@ on:
 
 jobs:
   run_playwright_tests:
-      uses: ./.github/workflows/run-tests.yml
+      uses: ./.github/workflows/run-playwright.yml
       with:
         frontendHostname: main.dev.spsh.dbildungsplattform.de
         tag: dev
