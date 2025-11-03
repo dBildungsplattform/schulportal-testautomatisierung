@@ -566,7 +566,7 @@ test(
   }
  );
 
-  test.only(
+  test(
     'Im Profil das eigene Passwort ändern als Lehrer und Schüler (Schüler meldet sich anschließend mit dem neuen PW an)',
     { tag: [LONG, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
@@ -574,6 +574,7 @@ test(
       const loginView: LoginPage = new LoginPage(page);
       let userInfoLehrer: UserInfo;
       let userInfoSchueler: UserInfo;
+      let newPassword: string = '';
 
       await test.step(`Lehrer und Schüler via api anlegen`, async () => {
         userInfoLehrer = await createRolleAndPersonWithUserContext(
@@ -626,13 +627,13 @@ test(
 
       await test.step(`Passwortänderung Schüler durchführen`, async () => {
         await header.goToProfile();
-        await profileView.changePassword(userInfoSchueler.username, userInfoSchueler.password);
+         newPassword = await profileView.changePassword(userInfoSchueler.username, userInfoSchueler.password);
       });
 
       await test.step(`Schüler meldet sich mit dem neuen Passwort am Portal an`, async () => {
         await header.logout({ logoutViaStartPage: true });
         await header.goToLogin();
-        const startView: StartPage = await loginView.login(userInfoSchueler.username, userInfoSchueler.password);
+        const startView: StartPage = await loginView.login(userInfoSchueler.username, newPassword);
         await startView.checkSpIsVisible([itslearning]);
       });
       // #TODO: wait for the last request in the test

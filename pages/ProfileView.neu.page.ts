@@ -36,7 +36,7 @@ export class ProfileViewPage {
   return this.page.getByTestId('schule-value-1').innerText();
 }
 
-  public async changePassword(username: string, password: string): Promise<void> {
+  public async changePassword(username: string, password: string): Promise<string> {
     const passwordInput: Locator = this.page.getByTestId('password-input');
     const loginButton: Locator = this.page.getByTestId('login-button');
 
@@ -52,10 +52,11 @@ export class ProfileViewPage {
     await loginButton.waitFor({ state: 'visible' });
     await loginButton.click();
 
-    await this.loginViewPage.updatePassword();
+    const newPassword: string = await this.loginViewPage.updatePassword();
     await this.page.getByTestId('close-password-changed-dialog-button').click();
 
     await expect(this.page.getByTestId('profile-headline')).toHaveText('Mein Profil');
+    return newPassword;
   }
 
   public async resetDevicePassword (): Promise<void> {
