@@ -1,9 +1,8 @@
-import { expect, PlaywrightTestArgs, test } from '@playwright/test';
+import { PlaywrightTestArgs, test } from '@playwright/test';
 import { getOrganisationId } from '../base/api/organisationApi';
 import {
   createPerson,
   UserInfo,
-  addSecondOrganisationToPerson,
   createRolleAndPersonWithUserContext,
 } from '../base/api/personApi';
 import { addServiceProvidersToRolle, addSystemrechtToRolle, createRolle, RollenArt } from '../base/api/rolleApi';
@@ -18,11 +17,10 @@ import {
   schultraegerVerwalten,
 } from '../base/berechtigungen';
 import { klasse1Testschule } from '../base/klassen';
-import { landSH, testschule665Name, testschuleDstNr, testschuleName } from '../base/organisation';
+import { landSH, testschuleDstNr, testschuleName } from '../base/organisation';
 import { typeLandesadmin, typeLehrer, typeSchuladmin } from '../base/rollentypen';
 import { email, itslearning, schulportaladmin } from '../base/sp';
 import { BROWSER, LONG, SHORT, STAGE } from '../base/tags';
-import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata';
 import {
   generateKopersNr,
   generateNachname,
@@ -33,15 +31,12 @@ import FromAnywhere from '../pages/FromAnywhere';
 import { HeaderPage } from '../pages/components/Header.page';
 import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
-import { ProfilePage } from '../pages/ProfileView.page';
 import { StartPage } from '../pages/StartView.page';
+import { PersoenlicheDaten, ProfileViewPage, Zuordnung } from '../pages/ProfileView.neu.page';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
 
-// The created test data will be deleted in the afterEach block
-let usernames: string[] = [];
-let rolleIds: string[] = [];
 // This variable must be set to false in the testcase when the logged in user is changed
 let currentUserIsLandesadministrator: boolean = true;
 let logoutViaStartPage: boolean = false;
@@ -80,18 +75,6 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       await startseite.validateStartPageIsLoaded();
     }
 
-    await test.step(`Testdaten löschen via API`, async () => {
-      if (usernames.length > 0) {
-        await deletePersonenBySearchStrings(page, usernames);
-        usernames = [];
-      }
-
-      if (rolleIds.length > 0) {
-        deleteRolleById(rolleIds, page);
-        rolleIds = [];
-      }
-    });
-
     await test.step(`Abmelden`, async () => {
       const header: HeaderPage = new HeaderPage(page);
       if (logoutViaStartPage) {
@@ -106,7 +89,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
     'Das eigene Profil öffnen und auf Vollständigkeit prüfen als Landesadmin',
     { tag: [LONG, STAGE, BROWSER] },
     async ({ page }: PlaywrightTestArgs) => {
-      const profileView: ProfilePage = new ProfilePage(page);
+      const profileView: ProfileViewPage = new ProfileViewPage(page);
       const header: HeaderPage = new HeaderPage(page);
       const login: LoginPage = new LoginPage(page);
 
@@ -115,6 +98,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       const organisation: string = landSH;
       const rollenname: string = await generateRolleName();
       const rollenart: RollenArt = typeLandesadmin;
+      let username: string = '';
 
       await test.step(`Landesadmin via api anlegen und mit diesem anmelden`, async () => {
         const idSPs: string[] = [await getServiceProviderId(page, 'Schulportal-Administration')];
@@ -127,8 +111,8 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
           idSPs,
           rollenname
         );
-        rolleIds.push(userInfo.rolleId);
-        usernames.push(userInfo.username);
+
+        username = userInfo.username;
 
         await addSystemrechtToRolle(page, userInfo.rolleId, rollenVerwalten);
         await addSystemrechtToRolle(page, userInfo.rolleId, personenSofortLoeschen);
@@ -152,335 +136,314 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       });
 
       await test.step(`Profil auf Vollständigkeit prüfen`, async () => {
-        await expect(profileView.buttonZurueckVorherigeSeite).toBeVisible();
-        await expect(profileView.titleMeinProfil).toHaveText('Mein Profil');
-        // Persönliche Daten
-        await profileView.checkSectionPersoenlicheDaten(vorname, nachname, usernames);
-        // Schulzuordnung
-        await expect(profileView.cardHeadlineSchulzuordnung1).toHaveText('Schulzuordnung');
-        await expect(profileView.labelSchule1).toHaveText('Schule:');
-        await expect(profileView.dataSchule1).toHaveText(organisation);
-        await expect(profileView.labelRolle1).toHaveText('Rolle:');
-        await expect(profileView.dataRolle1).toHaveText(rollenname);
-        await expect(profileView.labelDienststellennummer1).toBeHidden();
-        await expect(profileView.dataDienststellennummer1).toBeHidden();
-        // Passwort
-        await expect(profileView.cardHeadlinePasswort).toHaveText('Passwort');
-        await expect(profileView.buttonStartPWChangeDialog).toBeEnabled();
-        // 2FA
-        await expect(profileView.cardHeadline2FA).toHaveText('Zwei-Faktor-Authentifizierung');
-        await expect(profileView.textNo2FA).toHaveText('Es wurde noch kein zweiter Faktor für Sie eingerichtet.');
-        await expect(profileView.button2FAEinrichten).toBeEnabled();
+
+        const personalData: PersoenlicheDaten = {
+          vorname: vorname,
+          nachname: nachname,
+          username: username,
+          rollenart: rollenart
+        };
+
+        const zuordnungen: Zuordnung[] = [
+          {
+            dienststellennummer: testschuleDstNr,
+            organisationsname: organisation,
+            rollenart: rollenart,
+            rollenname: rollenname
+          }
+        ];
+
+        await profileView.waitForPageLoad();
+        await profileView.assertPersonalData(personalData);
+        await profileView.assertZuordnungen(zuordnungen);
+        await profileView.assertPasswordCard();
+        await profileView.assert2FACard();
       });
-      // #TODO: wait for the last request in the test
-      // sometimes logout breaks the test because of interrupting requests
-      // logoutViaStartPage = true is a workaround
       logoutViaStartPage = true;
-    }
-  );
+  });
+
+test(
+  'Das eigene Profil öffnen und auf Vollständigkeit prüfen als Lehrer mit einer Schulzuordnung',
+  { tag: [LONG, SHORT, STAGE] },
+  async ({ page }: PlaywrightTestArgs) => {
+    const header: HeaderPage = new HeaderPage(page);
+    const login: LoginPage = new LoginPage(page);
+    const profileView: ProfileViewPage = new ProfileViewPage(page);
+
+    const vorname: string = await generateVorname();
+    const nachname: string = await generateNachname();
+    const organisation: string = testschuleName;
+    const rollenname: string = await generateRolleName();
+    const rollenart: RollenArt = typeLehrer;
+    let username: string = '';
+    const kopersnummer: string = await generateKopersNr();
+
+    // Setup: Lehrer anlegen & anmelden
+    await test.step('Lehrer via API anlegen und mit diesem anmelden', async () => {
+      const idSPs: string[] = [await getServiceProviderId(page, email)];
+
+      const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
+        page,
+        organisation,
+        rollenart,
+        nachname,
+        vorname,
+        idSPs,
+        rollenname,
+        kopersnummer
+      );
+
+      username = userInfo.username;
+
+      await header.logout({ logoutViaStartPage: true });
+      await header.buttonLogin.click();
+
+      const startPage: StartPage = await login.login(userInfo.username, userInfo.password);
+      await login.updatePW();
+
+      await startPage.checkSpIsVisible([email]);
+      currentUserIsLandesadministrator = false;
+    });
+
+    await test.step('Profil öffnen', async () => {
+      await header.goToProfile();
+      await profileView.waitForPageLoad();
+    });
+
+    await test.step('Profil auf Vollständigkeit prüfen', async () => {
+      const personalData: PersoenlicheDaten = {
+        vorname,
+        nachname,
+        username,
+        rollenart,
+      };
+
+      const zuordnungen: Zuordnung[] = [
+        {
+          dienststellennummer: testschuleDstNr,
+          organisationsname: organisation,
+          rollenart,
+          rollenname,
+        },
+      ];
+
+      await profileView.assertPersonalData(personalData);
+      await profileView.assertZuordnungen(zuordnungen);
+      await profileView.assertPasswordCard();
+      await profileView.assert2FACard();
+    });
+
+    logoutViaStartPage = true;
+  }
+);
+
+
+test(
+  'Das eigene Profil öffnen und auf Vollständigkeit prüfen als Schüler mit einer Schulzuordnung',
+  { tag: [LONG, STAGE] },
+  async ({ page }: PlaywrightTestArgs) => {
+    const header: HeaderPage = new HeaderPage(page);
+    const login: LoginPage = new LoginPage(page);
+    const profileView: ProfileViewPage = new ProfileViewPage(page);
+
+    const vorname: string = await generateVorname();
+    const nachname: string = await generateNachname();
+    const organisation: string = testschuleName;
+    const rollenname: string = await generateRolleName();
+    const rollenart: RollenArt = 'LERN';
+    let username: string = '';
+
+    // Setup: Schüler via API anlegen & anmelden
+    await test.step('Schüler via API anlegen und mit diesem anmelden', async () => {
+      const schuleId: string = await getOrganisationId(page, testschuleName);
+      const klasseId: string = await getOrganisationId(page, klasse1Testschule);
+      const idSPs: string[] = [await getServiceProviderId(page, 'itslearning')];
+
+      const rolleId: string = await createRolle(page, rollenart, schuleId, rollenname);
+      await addServiceProvidersToRolle(page, rolleId, idSPs);
+
+      const userInfo: UserInfo = await createPerson(
+        page,
+        schuleId,
+        rolleId,
+        nachname,
+        vorname,
+        '',
+        klasseId
+      );
+
+      username = userInfo.username;
+
+      await header.logout({ logoutViaStartPage: true });
+      await header.buttonLogin.click();
+      await login.login(userInfo.username, userInfo.password);
+      await login.updatePW();
+
+      currentUserIsLandesadministrator = false;
+    });
+
+    // Navigation: Profil öffnen
+    await test.step('Profil öffnen', async () => {
+      await header.goToProfile();
+      await profileView.waitForPageLoad();
+    });
+
+    // 🧪 Assertions: Profil auf Vollständigkeit prüfen
+    await test.step('Profil auf Vollständigkeit prüfen', async () => {
+      const personalData: PersoenlicheDaten = {
+        vorname,
+        nachname,
+        username,
+        rollenart,
+      };
+
+      const zuordnungen: Zuordnung[] = [
+        {
+          dienststellennummer: testschuleDstNr,
+          organisationsname: organisation,
+          rollenart,
+          rollenname,
+        },
+      ];
+
+      await profileView.assertPersonalData(personalData);
+      await profileView.assertZuordnungen(zuordnungen);
+
+      await profileView.assertPasswordCard();
+      // Schüler has no visible 2FA section
+      await profileView.assertNo2FACard();
+    });
+
+    logoutViaStartPage = true;
+  }
+);
 
   test(
-    'Das eigene Profil öffnen und auf Vollständigkeit prüfen als Lehrer mit einer Schulzuordnung',
-    { tag: [LONG, SHORT, STAGE] },
+  'Das eigene Profil öffnen und auf Vollständigkeit prüfen als Schuladmin mit einer Schulzuordnung',
+  { tag: [LONG, STAGE] },
+  async ({ page }: PlaywrightTestArgs) => {
+    const header: HeaderPage = new HeaderPage(page);
+    const login: LoginPage = new LoginPage(page);
+    const profileView: ProfileViewPage = new ProfileViewPage(page);
+
+    const vorname: string = await generateVorname();
+    const nachname: string = await generateNachname();
+    const organisation: string = testschuleName;
+    const rollenname: string = await generateRolleName();
+    const rollenart: RollenArt = typeSchuladmin;
+    let username: string = '';
+
+    // 🧩 Setup: Schuladmin via API anlegen & anmelden
+    await test.step('Schuladmin via API anlegen und mit diesem anmelden', async () => {
+      const idSPs: string[] = [await getServiceProviderId(page, 'Schulportal-Administration')];
+
+      const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
+        page,
+        organisation,
+        rollenart,
+        nachname,
+        vorname,
+        idSPs,
+        rollenname
+      );
+
+      username = userInfo.username;
+
+      await header.logout({ logoutViaStartPage: false });
+      await header.buttonLogin.click();
+
+      await login.login(userInfo.username, userInfo.password);
+      await login.updatePW();
+
+      currentUserIsLandesadministrator = false;
+    });
+
+    await test.step('Profil öffnen', async () => {
+      await header.goToProfile();
+      await profileView.waitForPageLoad();
+    });
+
+    await test.step('Profil auf Vollständigkeit prüfen', async () => {
+      const personalData: PersoenlicheDaten = {
+        vorname,
+        nachname,
+        username,
+        rollenart,
+      };
+
+      const zuordnungen: Zuordnung[] = [
+        {
+          dienststellennummer: testschuleDstNr,
+          organisationsname: organisation,
+          rollenart,
+          rollenname,
+        },
+      ];
+
+      await profileView.assertPersonalData(personalData);
+      await profileView.assertZuordnungen(zuordnungen);
+      await profileView.assertPasswordCard();
+      await profileView.assert2FACard(); // Schuladmin *has* 2FA card
+    });
+
+    logoutViaStartPage = true;
+  }
+);
+
+
+  test(
+    'Das eigene Profil öffnen als Lehrer, Passwort-Ändern öffnen (Passwortänderung nicht durchführen), und Status des Benutzernamenfelds prüfen',
+    { tag: [LONG, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
       const header: HeaderPage = new HeaderPage(page);
       const login: LoginPage = new LoginPage(page);
+      const profileView: ProfileViewPage = new ProfileViewPage(page);
 
-      const vorname: string = await generateVorname();
-      const nachname: string = await generateNachname();
       const organisation: string = testschuleName;
-      const rollenname: string = await generateRolleName();
       const rollenart: RollenArt = typeLehrer;
+      let username: string = '';
+      const kopersnummer: string = await generateKopersNr();
 
-      await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
-        const idSPs: string[] = [await getServiceProviderId(page, email)];
+      await test.step('Lehrer via API anlegen und mit diesem anmelden', async () => {
+        const idSPs: string[] = [await getServiceProviderId(page, itslearning)];
         const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
           page,
           organisation,
           rollenart,
-          nachname,
-          vorname,
+          await generateNachname(),
+          await generateVorname(),
           idSPs,
-          rollenname
+          await generateRolleName(),
+          kopersnummer
         );
-        rolleIds.push(userInfo.rolleId);
-        usernames.push(userInfo.username);
 
-        await header.logout({ logoutViaStartPage: true });
-        await header.buttonLogin.click();
-        const startPage: StartPage = await login.login(userInfo.username, userInfo.password);
-        await login.updatePW();
-        await startPage.checkSpIsVisible([email]);
-        currentUserIsLandesadministrator = false;
-      });
-
-      const profileView: ProfilePage = await test.step(`Profil öffnen`, async () => {
-        return await header.goToProfile();
-      });
-
-      await test.step(`Profil auf Vollständigkeit prüfen`, async () => {
-        await expect(profileView.buttonZurueckVorherigeSeite).toBeVisible();
-        await expect(profileView.titleMeinProfil).toHaveText('Mein Profil');
-        // Persönliche Daten
-        await profileView.checkSectionPersoenlicheDaten(vorname, nachname, usernames);
-        // Schulzuordnung
-        await expect(profileView.cardHeadlineSchulzuordnung1).toHaveText('Schulzuordnung');
-        await expect(profileView.labelSchule1).toHaveText('Schule:');
-        await expect(profileView.dataSchule1).toHaveText(organisation);
-        await expect(profileView.labelRolle1).toHaveText('Rolle:');
-        await expect(profileView.dataRolle1).toHaveText(rollenname);
-        await expect(profileView.labelDienststellennummer1).toHaveText('DStNr.:');
-        await expect(profileView.dataDienststellennummer1).toHaveText(testschuleDstNr);
-        // Passwort
-        await expect(profileView.cardHeadlinePasswort).toHaveText('Passwort');
-        await expect(profileView.buttonStartPWChangeDialog).toBeEnabled();
-        // 2FA
-        await expect(profileView.cardHeadline2FA).toHaveText('Zwei-Faktor-Authentifizierung');
-        await expect(profileView.button2FAEinrichten).toBeEnabled();
-      });
-      // #TODO: wait for the last request in the test
-      // sometimes logout breaks the test because of interrupting requests
-      // logoutViaStartPage = true is a workaround
-      logoutViaStartPage = true;
-    }
-  );
-
-  test(
-    'Das eigene Profil öffnen und auf Vollständigkeit prüfen als Schüler mit einer Schulzuordnung',
-    { tag: [LONG, STAGE] },
-    async ({ page }: PlaywrightTestArgs) => {
-      const profileView: ProfilePage = new ProfilePage(page);
-      const header: HeaderPage = new HeaderPage(page);
-      const login: LoginPage = new LoginPage(page);
-
-      const vorname: string = await generateVorname();
-      const nachname: string = await generateNachname();
-      const organisation: string = testschuleName;
-      const rollenname: string = await generateRolleName();
-
-      await test.step(`Schüler via api anlegen und mit diesem anmelden`, async () => {
-        const schuleId: string = await getOrganisationId(page, testschuleName);
-        const klasseId: string = await getOrganisationId(page, klasse1Testschule);
-        const idSPs: string[] = [await getServiceProviderId(page, 'itslearning')];
-        const rolleId: string = await createRolle(page, 'LERN', schuleId, rollenname);
-        await addServiceProvidersToRolle(page, rolleId, idSPs);
-        const userInfo: UserInfo = await createPerson(page, schuleId, rolleId, nachname, vorname, '', klasseId);
-        rolleIds.push(userInfo.rolleId);
-        usernames.push(userInfo.username);
+        username = userInfo.username;
 
         await header.logout({ logoutViaStartPage: true });
         await header.buttonLogin.click();
         await login.login(userInfo.username, userInfo.password);
         await login.updatePW();
+
         currentUserIsLandesadministrator = false;
       });
 
-      await test.step(`Profil öffnen`, async () => {
+      await test.step('Profil öffnen', async () => {
         await header.goToProfile();
+        await profileView.waitForPageLoad();
       });
 
-      await test.step(`Profil auf Vollständigkeit prüfen`, async () => {
-        await expect(profileView.buttonZurueckVorherigeSeite).toBeVisible();
-        await expect(profileView.titleMeinProfil).toHaveText('Mein Profil');
-        // Persönliche Daten
-        await profileView.checkSectionPersoenlicheDaten(vorname, nachname, usernames);
-        // Schulzuordnung
-        await expect(profileView.cardHeadlineSchulzuordnung1).toHaveText('Schulzuordnung');
-        await expect(profileView.labelSchule1).toHaveText('Schule:');
-        await expect(profileView.dataSchule1).toHaveText(organisation);
-        await expect(profileView.labelRolle1).toHaveText('Rolle:');
-        await expect(profileView.dataRolle1).toHaveText(rollenname);
-        await expect(profileView.labelDienststellennummer1).toHaveText('DStNr.:');
-        await expect(profileView.dataDienststellennummer1).toHaveText(testschuleDstNr);
-        // Passwort
-        await expect(profileView.cardHeadlinePasswort).toHaveText('Passwort');
-        await expect(profileView.buttonStartPWChangeDialog).toBeEnabled();
-        // 2FA
-        await expect(profileView.cardHeadline2FA).toBeHidden();
-        await expect(profileView.button2FAEinrichten).toBeHidden();
+      await test.step('Passwort ändern öffnen', async () => {
+        await profileView.assertPasswordCard();
+        await profileView.openChangePasswordDialog();
       });
-      // #TODO: wait for the last request in the test
-      // sometimes logout breaks the test because of interrupting requests
-      // logoutViaStartPage = true is a workaround
+
+      await test.step('Status des Benutzernamenfelds prüfen', async () => {
+        await profileView.assertPasswordDialogUsernamePrompt(username);
+        await profileView.navigateBackToProfile();
+        await profileView.assertPasswordCardVisible();
+      });
+
       logoutViaStartPage = true;
-    }
-  );
-
-  test(
-    'Das eigene Profil öffnen und auf Vollständigkeit prüfen als Schuladmin mit einer Schulzuordnung',
-    { tag: [LONG, STAGE] },
-    async ({ page }: PlaywrightTestArgs) => {
-      const profileView: ProfilePage = new ProfilePage(page);
-      const header: HeaderPage = new HeaderPage(page);
-      const login: LoginPage = new LoginPage(page);
-
-      const vorname: string = await generateVorname();
-      const nachname: string = await generateNachname();
-      const organisation: string = testschuleName;
-      const rollenname: string = await generateRolleName();
-      const rollenart: RollenArt = typeSchuladmin;
-
-      await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
-        const idSPs: string[] = [await getServiceProviderId(page, 'Schulportal-Administration')];
-        const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
-          page,
-          organisation,
-          rollenart,
-          nachname,
-          vorname,
-          idSPs,
-          rollenname
-        );
-        rolleIds.push(userInfo.rolleId);
-        usernames.push(userInfo.username);
-
-        await header.logout({ logoutViaStartPage: false });
-        await header.buttonLogin.click();
-        await login.login(userInfo.username, userInfo.password);
-        await login.updatePW();
-        currentUserIsLandesadministrator = false;
-      });
-
-      await test.step(`Profil öffnen`, async () => {
-        await header.goToProfile();
-      });
-
-      await test.step(`Profil auf Vollständigkeit prüfen`, async () => {
-        await expect(profileView.buttonZurueckVorherigeSeite).toBeVisible();
-        await expect(profileView.titleMeinProfil).toHaveText('Mein Profil');
-        // Persönliche Daten
-        await profileView.checkSectionPersoenlicheDaten(vorname, nachname, usernames);
-        // Schulzuordnung
-        await expect(profileView.cardHeadlineSchulzuordnung1).toHaveText('Schulzuordnung');
-        await expect(profileView.labelSchule1).toHaveText('Schule:');
-        await expect(profileView.dataSchule1).toHaveText(organisation);
-        await expect(profileView.labelRolle1).toHaveText('Rolle:');
-        await expect(profileView.dataRolle1).toHaveText(rollenname);
-        await expect(profileView.labelDienststellennummer1).toHaveText('DStNr.:');
-        await expect(profileView.dataDienststellennummer1).toHaveText(testschuleDstNr);
-        // Passwort
-        await expect(profileView.cardHeadlinePasswort).toHaveText('Passwort');
-        await expect(profileView.buttonStartPWChangeDialog).toBeEnabled();
-        // 2FA
-        await expect(profileView.cardHeadline2FA).toHaveText('Zwei-Faktor-Authentifizierung');
-        await expect(profileView.button2FAEinrichten).toBeEnabled();
-      });
-      // #TODO: wait for the last request in the test
-      // sometimes logout breaks the test because of interrupting requests
-      // logoutViaStartPage = true is a workaround
-      logoutViaStartPage = true;
-    }
-  );
-
-  test(
-    'Das eigene Profil öffnen und auf Vollständigkeit prüfen als Lehrkraft mit 2 Schulzuordnungen',
-    { tag: [LONG, STAGE] },
-    async ({ page }: PlaywrightTestArgs) => {
-      const profileView: ProfilePage = new ProfilePage(page);
-      const header: HeaderPage = new HeaderPage(page);
-      const login: LoginPage = new LoginPage(page);
-
-      const vorname: string = await generateVorname();
-      const nachname: string = await generateNachname();
-      const organisation1: string = testschuleName;
-      const organisation2: string = testschule665Name;
-      const dienststellenNr2: string = '1111165';
-      const rollenname: string = await generateRolleName();
-      const rollenart: RollenArt = typeLehrer;
-
-      await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
-        const idSPs: string[] = [await getServiceProviderId(page, itslearning), await getServiceProviderId(page, email)];
-        const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
-          page,
-          organisation1,
-          rollenart,
-          nachname,
-          vorname,
-          idSPs,
-          rollenname
-        );
-        rolleIds.push(userInfo.rolleId);
-        usernames.push(userInfo.username);
-
-        await addSecondOrganisationToPerson(
-          page,
-          userInfo.personId,
-          await getOrganisationId(page, organisation1),
-          await getOrganisationId(page, organisation2),
-          rolleIds[0]
-        );
-        await header.logout({ logoutViaStartPage: true });
-        await header.buttonLogin.click();
-        await login.login(userInfo.username, userInfo.password);
-        await login.updatePW();
-        currentUserIsLandesadministrator = false;
-      });
-
-      await test.step(`Profil öffnen`, async () => {
-        await header.goToProfile();
-      });
-
-      await test.step(`Profil auf Vollständigkeit prüfen`, async () => {
-        await expect(profileView.buttonZurueckVorherigeSeite).toBeVisible();
-        await expect(profileView.titleMeinProfil).toHaveText('Mein Profil');
-        // Persönliche Daten
-        await profileView.checkSectionPersoenlicheDaten(vorname, nachname, usernames);
-        // prüfen, welche von den beiden Schulen zuerst angezeigt wird in der Tabelle
-        if ((await profileView.dataSchule1.innerText()) == organisation1) {
-          // Schulzuordnung 1
-          await expect(profileView.cardHeadlineSchulzuordnung1).toHaveText('Schulzuordnung 1');
-          await expect(profileView.labelSchule1).toHaveText('Schule:');
-          await expect(profileView.dataSchule1).toHaveText(organisation1);
-          await expect(profileView.labelRolle1).toHaveText('Rolle:');
-          await expect(profileView.dataRolle1).toHaveText(rollenname);
-          await expect(profileView.labelDienststellennummer1).toHaveText('DStNr.:');
-          await expect(profileView.dataDienststellennummer1).toHaveText(testschuleDstNr);
-
-          // Schulzuordnung 2
-          await expect(profileView.cardHeadlineSchulzuordnung2).toHaveText('Schulzuordnung 2');
-          await expect(profileView.labelSchule2).toHaveText('Schule:');
-          await expect(profileView.dataSchule2).toHaveText(organisation2);
-          await expect(profileView.labelRolle2).toHaveText('Rolle:');
-          await expect(profileView.dataRolle2).toHaveText(rollenname);
-          await expect(profileView.labelDienststellennummer2).toHaveText('DStNr.:');
-          await expect(profileView.dataDienststellennummer2).toHaveText(dienststellenNr2);
-          // Passwort
-          await expect(profileView.cardHeadlinePasswort).toHaveText('Passwort');
-          await expect(profileView.buttonStartPWChangeDialog).toBeEnabled();
-          // 2FA
-          await expect(profileView.cardHeadline2FA).toHaveText('Zwei-Faktor-Authentifizierung');
-          await expect(profileView.button2FAEinrichten).toBeEnabled();
-        } else {
-          // Schulzuordnung 1
-          await expect(profileView.cardHeadlineSchulzuordnung2).toHaveText('Schulzuordnung 2');
-          await expect(profileView.labelSchule2).toHaveText('Schule:');
-          await expect(profileView.dataSchule2).toHaveText(organisation1);
-          await expect(profileView.labelRolle2).toHaveText('Rolle:');
-          await expect(profileView.dataRolle2).toHaveText(rollenname);
-          await expect(profileView.labelDienststellennummer2).toHaveText('DStNr.:');
-          await expect(profileView.dataDienststellennummer2).toHaveText(testschuleDstNr);
-
-          // Schulzuordnung 2
-          await expect(profileView.cardHeadlineSchulzuordnung1).toHaveText('Schulzuordnung 1');
-          await expect(profileView.labelSchule1).toHaveText('Schule:');
-          await expect(profileView.dataSchule1).toHaveText(organisation2);
-          await expect(profileView.labelRolle1).toHaveText('Rolle:');
-          await expect(profileView.dataRolle1).toHaveText(rollenname);
-          await expect(profileView.labelDienststellennummer1).toHaveText('DStNr.:');
-          await expect(profileView.dataDienststellennummer1).toHaveText(dienststellenNr2);
-
-          // Passwort
-          await expect(profileView.cardHeadlinePasswort).toHaveText('Passwort');
-          await expect(profileView.buttonStartPWChangeDialog).toBeEnabled();
-          // 2FA
-          await expect(profileView.cardHeadline2FA).toHaveText('Zwei-Faktor-Authentifizierung');
-          await expect(profileView.button2FAEinrichten).toBeEnabled();
-        }
-        // #TODO: wait for the last request in the test
-        // sometimes logout breaks the test because of interrupting requests
-        // logoutViaStartPage = true is a workaround
-        logoutViaStartPage = true;
-      });
     }
   );
 
@@ -488,12 +451,13 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
     'Das eigene Profil öffnen als Lehrer, Passwort-Ändern öffnen(Passwortänderung nicht durchführen), und Status des Benutzernamenfelds prüfen',
     { tag: [LONG, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
-      const profileView: ProfilePage = new ProfilePage(page);
+      const profileView: ProfileViewPage = new ProfileViewPage(page);
       const header: HeaderPage = new HeaderPage(page);
       const login: LoginPage = new LoginPage(page);
 
       const organisation: string = testschuleName;
       const rollenart: RollenArt = typeLehrer;
+      let username: string = '';
 
       await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
         const idSPs: string[] = [await getServiceProviderId(page, itslearning)];
@@ -506,8 +470,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
           idSPs,
           await generateRolleName()
         );
-        rolleIds.push(userInfo.rolleId);
-        usernames.push(userInfo.username);
+        username = userInfo.username;
 
         await header.logout({ logoutViaStartPage: true });
         await header.buttonLogin.click();
@@ -520,24 +483,15 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await header.goToProfile();
       });
 
-      await test.step(`Passwort Ändern öffnen`, async () => {
-        await expect(profileView.buttonZurueckVorherigeSeite).toBeVisible();
-        await expect(profileView.titleMeinProfil).toHaveText('Mein Profil');
-        // Passwort
-        await expect(profileView.cardHeadlinePasswort).toHaveText('Passwort');
-        await expect(profileView.buttonStartPWChangeDialog).toBeEnabled();
-
-        await profileView.buttonStartPWChangeDialog.click();
-        await profileView.buttonChangePW.click();
+      await test.step('Passwort ändern öffnen', async () => {
+        await profileView.openChangePasswordDialog();
       });
 
-      await test.step(`Status des Benutzernamenfelds prüfen`, async () => {
-        await expect(profileView.labelUsername).toHaveText(usernames[0]);
-        await expect(profileView.textLoginPrompt).toHaveText('Bitte geben Sie Ihr aktuelles Passwort ein.');
-        await expect(profileView.inputPassword).toBeEnabled();
-        await page.goBack();
-        await expect(profileView.cardHeadlinePasswort).toBeVisible();
+      await test.step('Status des Benutzernamenfelds prüfen', async () => {
+        await profileView.assertPasswordDialogState(username);
+        await profileView.navigateBackToProfile();
       });
+
       // #TODO: wait for the last request in the test
       // sometimes logout breaks the test because of interrupting requests
       // logoutViaStartPage = true is a workaround
@@ -545,110 +499,74 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
     }
   );
 
-  test(
-    'Das eigene Profil öffnen, 2FA Einrichten öffnen und Einrichtung soweit möglich',
-    { tag: [LONG, STAGE] },
-    async ({ page }: PlaywrightTestArgs) => {
-      const profileView: ProfilePage = new ProfilePage(page);
-      const header: HeaderPage = new HeaderPage(page);
-      const login: LoginPage = new LoginPage(page);
+test(
+  'Das eigene Profil öffnen, 2FA Einrichten öffnen und Einrichtung soweit möglich',
+  { tag: [LONG, STAGE] },
+  async ({ page }: PlaywrightTestArgs) => {
+    const header: HeaderPage = new HeaderPage(page);
+    const login: LoginPage = new LoginPage(page);
+    const profileView: ProfileViewPage = new ProfileViewPage(page);
 
-      const organisation: string = testschuleName;
-      const rollenart: RollenArt = typeLehrer;
+    const organisation: string = testschuleName;
+    const rollenart: RollenArt = typeLehrer;
+    let username: string = '';
+    const kopersnummer: string = await generateKopersNr();
 
-      await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
-        const idSPs: string[] = [await getServiceProviderId(page, email)];
-        const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
-          page,
-          organisation,
-          rollenart,
-          await generateNachname(),
-          await generateVorname(),
-          idSPs,
-          await generateRolleName()
-        );
-        rolleIds.push(userInfo.rolleId);
-        usernames.push(userInfo.username);
+    await test.step('Lehrer via API anlegen und mit diesem anmelden', async () => {
+      const idSPs: string[] = [await getServiceProviderId(page, email)];
+      const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
+        page,
+        organisation,
+        rollenart,
+        await generateNachname(),
+        await generateVorname(),
+        idSPs,
+        await generateRolleName(),
+        kopersnummer
+      );
+      username = userInfo.username;
 
-        await header.logout({ logoutViaStartPage: true });
-        await header.buttonLogin.click();
-        await login.login(userInfo.username, userInfo.password);
-        await login.updatePW();
-        currentUserIsLandesadministrator = false;
-      });
+      await header.logout({ logoutViaStartPage: true });
+      await header.buttonLogin.click();
+      await login.login(username, userInfo.password);
+      await login.updatePW();
+      currentUserIsLandesadministrator = false;
+    });
 
-      await test.step(`Profil öffnen`, async () => {
-        await header.goToProfile();
-      });
+    await test.step('Profil öffnen', async () => {
+      await header.goToProfile();
+      await profileView.waitForPageLoad();
+    });
 
-      await test.step(`2FA öffnen`, async () => {
-        await expect(profileView.buttonZurueckVorherigeSeite).toBeVisible();
-        await expect(profileView.titleMeinProfil).toHaveText('Mein Profil');
+    await test.step('2FA öffnen', async () => {
+      await profileView.open2FADialog();
+    });
 
-        await expect(profileView.cardHeadline2FA).toHaveText('Zwei-Faktor-Authentifizierung');
-        await expect(profileView.textNo2FA).toBeVisible();
-        await expect(profileView.button2FAEinrichten).toHaveText('2FA einrichten');
-        await expect(profileView.button2FAEinrichten).toBeEnabled();
+    await test.step('2FA Texte prüfen und QR-Code generieren', async () => {
+      await profileView.assert2FADialogIntro();
+      await profileView.proceedTo2FAQrCode();
+    });
 
-        profileView.button2FAEinrichten.click();
-      });
+    await test.step('QR-Code-Display prüfen', async () => {
+      await profileView.assert2FAQrCodeDisplayed();
+      await profileView.proceedToOtpEntry();
+    });
 
-      await test.step(`2FA Texte prüfen und QR-Code generieren`, async () => {
-        await expect(profileView.textLayoutCardHeadline).toHaveText('2FA einrichten');
-        await expect(profileView.text2FASelfServiceInfo).toHaveText(
-          'Im Folgenden wird ein QR-Code generiert, mit dem Sie auf Ihrem Endgerät eine Zwei-Faktor-Authentifizierung einrichten können.'
-        );
-        await expect(profileView.text2FASelfServiceWarning).toHaveText(
-          'Bitte stellen Sie vor dem Fortfahren sicher, dass eine entsprechende App auf Ihrem Endgerät installiert ist. Für Ihr Lehrkräfte-Endgerät finden Sie entsprechend genehmigte Anwendungen im Software-Hub.'
-        );
-        await expect(profileView.button2FAWeiter).toHaveText('Weiter');
-        await expect(profileView.button2FAAbbrechen).toHaveText('Abbrechen');
-        profileView.button2FAWeiter.click();
-      });
+    await test.step('OTP-Dialog prüfen und Fehler anzeigen', async () => {
+      await profileView.assert2FAOtpEntryPrompt();
+      await profileView.submitEmptyOtpAndCheckError();
+    });
 
-      await test.step(`QR-Code-Display prüfen`, async () => {
-        await expect(profileView.textLayoutCardHeadline).toHaveText('Software-Token einrichten');
-        await expect(profileView.text2FASelfServiceQRInfo).toHaveText(
-          'Bitte scannen Sie den QR-Code mit Ihrer 2FA-App (z.B. FreeOTP).'
-        );
-        await expect(profileView.data2FAQRCode).toBeVisible();
-        await expect(profileView.button2FAWeiter).toHaveText('Weiter');
-        await expect(profileView.button2FAAbbrechen).toHaveText('Abbrechen');
-      });
+    await test.step('Dialog schließen', async () => {
+      await profileView.close2FADialog();
+      await profileView.assert2FACard();
+    });
 
-      await test.step(`Einrichtung abschließen`, async () => {
-        await profileView.button2FAWeiter.click();
+    logoutViaStartPage = true;
+  }
+ );
 
-        await expect(profileView.textLayoutCardHeadline).toHaveText('Zwei-Faktor-Authentifizierung (2FA)');
-        await expect(profileView.textOTPEntryInfo).toHaveText(
-          'Bitte geben Sie das angezeigte Einmalpasswort ein, um die Einrichtung abzuschließen.'
-        );
-        await expect(profileView.text2FASelfServiceError).toHaveText('Einmalpasswort');
-        await expect(profileView.textOTPInput).toBeVisible();
-
-        await expect(profileView.button2FAWeiter).toHaveText('Weiter');
-        await expect(profileView.button2FAAbbrechen).toHaveText('Abbrechen');
-      });
-
-      await test.step(`Fehlertext prüfen`, async () => {
-        await profileView.button2FAWeiter.click();
-        await expect(profileView.textOTPEntryError).toHaveText('Das Einmalpasswort muss angegeben werden.');
-
-        await expect(profileView.button2FAWeiter).toHaveText('Weiter');
-        await expect(profileView.button2FAAbbrechen).toHaveText('Abbrechen');
-      });
-
-      await test.step(`Dialog schließen`, async () => {
-        await profileView.button2FAAbbrechen.click();
-      });
-      // #TODO: wait for the last request in the test
-      // sometimes logout breaks the test because of interrupting requests
-      // logoutViaStartPage = true is a workaround
-      logoutViaStartPage = true;
-    }
-  );
-
-  test(
+  test.only(
     'Im Profil das eigene Passwort ändern als Lehrer und Schüler (Schüler meldet sich anschließend mit dem neuen PW an)',
     { tag: [LONG, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
@@ -668,8 +586,6 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
           await generateRolleName(),
           await generateKopersNr()
         );
-        rolleIds.push(userInfoLehrer.rolleId);
-        usernames.push(userInfoLehrer.username);
 
         const schuleId: string = await getOrganisationId(page, testschuleName);
         const klasseId: string = await getOrganisationId(page, klasse1Testschule);
@@ -685,8 +601,6 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
           '',
           klasseId
         );
-        rolleIds.push(userInfoSchueler.rolleId);
-        usernames.push(userInfoSchueler.username);
       });
 
       await test.step(`Mit dem Lehrer am Portal anmelden`, async () => {
@@ -697,14 +611,10 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         userInfoLehrer.password = await loginView.updatePW();
       });
 
-      const profileView: ProfilePage = await header.goToProfile();
+      const profileView: ProfileViewPage = await header.goToProfile();
 
-      await test.step(`Passwortänderung Lehrer durchführen`, async () => {
-        await profileView.buttonStartPWChangeDialog.click();
-        await profileView.buttonChangePW.click();
-        await loginView.loginCurrentUser(userInfoLehrer.username, userInfoLehrer.password);
-        await loginView.updatePW(true);
-        await expect(profileView.titleMeinProfil).toHaveText('Mein Profil');
+      await test.step('Passwortänderung Lehrer durchführen', async () => {
+        await profileView.changePassword(userInfoLehrer.username, userInfoLehrer.password);
       });
 
       await test.step(`Mit dem Schüler am Portal anmelden`, async () => {
@@ -716,11 +626,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
       await test.step(`Passwortänderung Schüler durchführen`, async () => {
         await header.goToProfile();
-        await profileView.buttonStartPWChangeDialog.click();
-        await profileView.buttonChangePW.click();
-        await loginView.loginCurrentUser(userInfoSchueler.username, userInfoSchueler.password);
-        userInfoSchueler.password = await loginView.updatePW(true);
-        await expect(profileView.titleMeinProfil).toHaveText('Mein Profil');
+        await profileView.changePassword(userInfoSchueler.username, userInfoSchueler.password);
       });
 
       await test.step(`Schüler meldet sich mit dem neuen Passwort am Portal an`, async () => {
@@ -736,64 +642,44 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
     }
   );
 
-  test(
-    'Inbetriebnahme-Passwort als Lehrer über das eigene Profil erzeugen',
-    { tag: [LONG, STAGE] },
-    async ({ page }: PlaywrightTestArgs) => {
-      const header: HeaderPage = new HeaderPage(page);
-      let userInfoLehrer: UserInfo;
+test(
+  'Inbetriebnahme-Passwort als Lehrer über das eigene Profil erzeugen',
+  { tag: [LONG, STAGE] },
+  async ({ page }: PlaywrightTestArgs) => {
+    const header: HeaderPage = new HeaderPage(page);
+    const login: LoginPage = new LoginPage(page);
+    const profileView: ProfileViewPage = new ProfileViewPage(page);
+    let userInfoLehrer: UserInfo;
 
-      await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) über die api anlegen und mit diesem anmelden`, async () => {
-        userInfoLehrer = await createRolleAndPersonWithUserContext(
-          page,
-          testschuleName,
-          typeLehrer,
-          await generateNachname(),
-          await generateVorname(),
-          [await getServiceProviderId(page, email)],
-          await generateRolleName(),
-          await generateKopersNr()
-        );
-        usernames.push(userInfoLehrer.username);
-        rolleIds.push(userInfoLehrer.rolleId);
+    await test.step('Testdaten: Lehrer mit einer Rolle (LEHR) über die API anlegen und mit diesem anmelden', async () => {
+      userInfoLehrer = await createRolleAndPersonWithUserContext(
+        page,
+        testschuleName,
+        typeLehrer,
+        await generateNachname(),
+        await generateVorname(),
+        [await getServiceProviderId(page, email)],
+        await generateRolleName(),
+        await generateKopersNr()
+      );
 
-        await header.logout({ logoutViaStartPage: true });
-        await header.buttonLogin.click();
-        const login: LoginPage = new LoginPage(page);
-        await login.login(userInfoLehrer.username, userInfoLehrer.password);
-        await login.updatePW();
-        currentUserIsLandesadministrator = false;
-      });
+      await header.logout({ logoutViaStartPage: true });
+      await header.buttonLogin.click();
+      await login.login(userInfoLehrer.username, userInfoLehrer.password);
+      await login.updatePW();
+      currentUserIsLandesadministrator = false;
+    });
 
-      const profileView: ProfilePage = new ProfilePage(page);
+    await test.step('Profil öffnen', async () => {
+      await header.goToProfile();
+      await profileView.waitForPageLoad();
+    });
 
-      await test.step(`Profil öffnen`, async () => {
-        await header.buttonProfil.click();
-        await expect(profileView.titleMeinProfil).toHaveText('Mein Profil');
-      });
+    await test.step('Inbetriebnahme-Passwort für LK-Endgerät erzeugen', async () => {
+      await profileView.resetDevicePassword();
+    });
 
-      await test.step(`Inbetriebnahme-Passwort für LK-Endgerät erzeugen`, async () => {
-        // Section Inbetriebnahme-Passwort für LK-Endgerät
-        await expect(profileView.cardHeadlinePasswordLKEndgeraet).toBeVisible();
-        await expect(profileView.infoTextSectionPasswordLKEndgeraet).toBeVisible();
-        await profileView.buttonCreatePasswordSectionLKEndgeraet.click();
-
-        // Dialog Inbetriebnahme-Passwort für LK-Endgeräte
-        await expect(profileView.passwordResetDialogHeadline).toHaveText('Inbetriebnahme-Passwort erzeugen');
-        await expect(profileView.infoTextDialogPasswordLKEndgeraet).toHaveText(
-          'Bitte notieren Sie sich das Passwort oder drucken Sie es aus. Nach dem Schließen des Dialogs wird das Passwort' +
-            ' nicht mehr angezeigt. Sie benötigen dieses Passwort ausschließlich zur erstmaligen Anmeldung an Ihrem neuen LK-Endgerät.'
-        );
-        await profileView.buttonCreatePasswordDialogLKEndgeraet.click();
-
-        // Dialog Inbetriebnahme-Passwort erzeugen
-        await profileView.validatePasswordResetDialog();
-        await expect(profileView.titleMeinProfil).toBeVisible();
-      });
-      // #TODO: wait for the last request in the test
-      // sometimes logout breaks the test because of interrupting requests
-      // logoutViaStartPage = true is a workaround
-      logoutViaStartPage = true;
-    }
-  );
+    logoutViaStartPage = true;
+  }
+);
 });

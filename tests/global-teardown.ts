@@ -20,19 +20,19 @@ teardown('delete database', async ({ page }: PlaywrightTestArgs) => {
     const response: APIResponse = await page.request.get(
       FRONTEND_URL + `api/personen-frontend?suchFilter=${searchString}`
     );
-    const personsJson = await response.json();
+    const personenJson: { items: { person: { id: string } }[] } = await response.json();
 
-    for (const person of personsJson.items) {
+    for (const person of personenJson.items) {
       await page.request.delete(FRONTEND_URL + `api/personen/${person.person.id}`);
     }
   });
 
   await test.step(`Rollen löschen`, async () => {
     const response: APIResponse = await page.request.get(FRONTEND_URL + `api/rolle?searchStr=${searchString}`);
-    const rolesJson = await response.json();
+    const rollenJson: { id: string }[] = await response.json();
 
-    for (const role of rolesJson) {
-      await page.request.delete(FRONTEND_URL + `api/rolle/${role.id}`);
+    for (const rolle of rollenJson) {
+      await page.request.delete(FRONTEND_URL + `api/rolle/${rolle.id}`);
     }
   });
 
@@ -40,10 +40,10 @@ teardown('delete database', async ({ page }: PlaywrightTestArgs) => {
     const response: APIResponse = await page.request.get(
       FRONTEND_URL + `api/organisationen?searchString=${searchString}&typ=KLASSE`
     );
-    const schoolClassJson = await response.json();
+    const klassenJson: { id: string }[] = await response.json();
 
-    for (const schoolClass of schoolClassJson) {
-      await page.request.delete(FRONTEND_URL + `api/organisationen/${schoolClass.id}/klasse`);
+    for (const klasse of klassenJson) {
+      await page.request.delete(FRONTEND_URL + `api/organisationen/${klasse.id}/klasse`);
     }
   });
 });
