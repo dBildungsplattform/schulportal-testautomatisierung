@@ -39,7 +39,6 @@ const ADMIN: string | undefined = process.env.USER;
 
 // This variable must be set to false in the testcase when the logged in user is changed
 let currentUserIsLandesadministrator: boolean = true;
-let logoutViaStartPage: boolean = false;
 
 test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
@@ -52,36 +51,40 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
     });
   });
 
-  test.afterEach(async ({ page }: PlaywrightTestArgs) => {
-    await test.step(`Offene Dialoge schließen`, async () => {
-      page.keyboard.press('Escape');
-    });
-
-    if (!currentUserIsLandesadministrator) {
+    test.afterEach(async ({ page }: PlaywrightTestArgs) => {
       const header: HeaderPage = new HeaderPage(page);
       const landing: LandingViewPage = new LandingViewPage(page);
       const login: LoginViewPage = new LoginViewPage(page);
       const startseite: StartViewPage = new StartViewPage(page);
 
-      if (logoutViaStartPage) {
-        await header.logout();
-      } else {
-        await header.logout();
-      }
-      await landing.navigateToLogin();
-      await login.login(ADMIN, PW);
-      await startseite.serviceProvidersAreLoaded();
-    }
+      // Always: Close open dialogs if present
+      await test.step('Offene Dialoge schließen', async () => {
+        try {
+          await page.keyboard.press('Escape');
+        } catch {
+          // ignore if no dialog open
+        }
+      });
 
-    await test.step(`Abmelden`, async () => {
-      const header: HeaderPage = new HeaderPage(page);
-      if (logoutViaStartPage) {
-        await header.logout();
-      } else {
-        await header.logout();
+      // If not logged in as Landesadministrator, reset to admin session
+      if (!currentUserIsLandesadministrator) {
+        await test.step('Zurück zum Admin wechseln', async () => {
+          await header.logout();
+          await landing.navigateToLogin();
+          await login.login(ADMIN, PW);
+          await startseite.serviceProvidersAreLoaded();
+        });
       }
+
+      // Final cleanup: ensure logged out (safety net)
+      await test.step('Endgültig abmelden', async () => {
+        try {
+          await header.logout();
+        } catch {
+          // ignore if already logged out
+        }
+      });
     });
-  });
 
   test(
     'Das eigene Profil öffnen und auf Vollständigkeit prüfen als Landesadmin',
@@ -157,7 +160,6 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await profileView.assertPasswordCard();
         await profileView.assert2FACard();
       });
-      logoutViaStartPage = true;
   });
 
 test(
@@ -230,8 +232,6 @@ test(
       await profileView.assertPasswordCard();
       await profileView.assert2FACard();
     });
-
-    logoutViaStartPage = true;
   }
 );
 
@@ -308,8 +308,6 @@ test(
       // Schüler has no visible 2FA section
       await profileView.assertNo2FACard();
     });
-
-    logoutViaStartPage = true;
   }
 );
 
@@ -328,7 +326,7 @@ test(
     const rollenart: RollenArt = typeSchuladmin;
     let username: string = '';
 
-    // 🧩 Setup: Schuladmin via API anlegen & anmelden
+    // Setup: Schuladmin via API anlegen & anmelden
     await test.step('Schuladmin via API anlegen und mit diesem anmelden', async () => {
       const idSPs: string[] = [await getServiceProviderId(page, 'Schulportal-Administration')];
 
@@ -380,11 +378,81 @@ test(
       await profileView.assertPasswordCard();
       await profileView.assert2FACard(); // Schuladmin *has* 2FA card
     });
-
-    logoutViaStartPage = true;
   }
 );
 
+  test(
+    'Im Profil das eigene Passwort ändern als Lehrer und Schüler (Schüler meldet sich anschließend mit dem neuen PW an)',
+    { tag: [LONG, STAGE] },
+    async ({ page }: PlaywrightTestArgs) => {
+      const header: HeaderPage = new HeaderPage(page);
+      const loginView: LoginViewPage = new LoginViewPage(page);
+      let userInfoLehrer: UserInfo;
+      let userInfoSchueler: UserInfo;
+      let newPassword: string = '';
+
+      await test.step(`Lehrer und Schüler via api anlegen`, async () => {
+        userInfoLehrer = await createRolleAndPersonWithUserContext(
+          page,
+          testschuleName,
+          typeLehrer,
+          await generateNachname(),
+          await generateVorname(),
+          [await getServiceProviderId(page, email)],
+          await generateRolleName(),
+          await generateKopersNr()
+        );
+
+        const schuleId: string = await getOrganisationId(page, testschuleName);
+        const klasseId: string = await getOrganisationId(page, klasse1Testschule);
+        const idSPs: string[] = [await getServiceProviderId(page, 'itslearning')];
+        const rolleId: string = await createRolle(page, 'LERN', schuleId, await generateRolleName());
+        await addServiceProvidersToRolle(page, rolleId, idSPs);
+        userInfoSchueler = await createPerson(
+          page,
+          schuleId,
+          rolleId,
+          await generateNachname(),
+          await generateVorname(),
+          '',
+          klasseId
+        );
+      });
+
+      await test.step(`Mit dem Lehrer am Portal anmelden`, async () => {
+        await header.logout();
+        await header.navigateToLogin();
+        await loginView.login(userInfoLehrer.username, userInfoLehrer.password);
+        currentUserIsLandesadministrator = false;
+        userInfoLehrer.password = await loginView.updatePassword();
+      });
+
+      const profileView: ProfileViewPage = await header.navigateToProfile();
+
+      await test.step('Passwortänderung Lehrer durchführen', async () => {
+        await profileView.changePassword(userInfoLehrer.username, userInfoLehrer.password);
+      });
+
+      await test.step(`Mit dem Schüler am Portal anmelden`, async () => {
+        await header.logout();
+        await header.navigateToLogin();
+        await loginView.login(userInfoSchueler.username, userInfoSchueler.password);
+        userInfoSchueler.password = await loginView.updatePassword();
+      });
+
+      await test.step(`Passwortänderung Schüler durchführen`, async () => {
+        await header.navigateToProfile();
+        newPassword = await profileView.changePassword(userInfoSchueler.username, userInfoSchueler.password);
+      });
+
+      await test.step(`Schüler meldet sich mit dem neuen Passwort am Portal an`, async () => {
+        await header.logout();
+        await header.navigateToLogin();
+        const startView: StartViewPage = await loginView.login(userInfoSchueler.username, newPassword);
+        await startView.serviceProviderIsVisible([itslearning]);
+      });
+    }
+  );
 
   test(
     'Das eigene Profil öffnen als Lehrer, Passwort-Ändern öffnen (Passwortänderung nicht durchführen), und Status des Benutzernamenfelds prüfen',
@@ -437,8 +505,6 @@ test(
         await profileView.navigateBackToProfile();
         await profileView.assertPasswordCardVisible();
       });
-
-      logoutViaStartPage = true;
     }
   );
 
@@ -486,11 +552,6 @@ test(
         await profileView.assertPasswordDialogState(username);
         await profileView.navigateBackToProfile();
       });
-
-      // #TODO: wait for the last request in the test
-      // sometimes logout breaks the test because of interrupting requests
-      // logoutViaStartPage = true is a workaround
-      logoutViaStartPage = true;
     }
   );
 
@@ -556,87 +617,8 @@ test(
       await profileView.close2FADialog();
       await profileView.assert2FACard();
     });
-
-    logoutViaStartPage = true;
   }
  );
-
-  test(
-    'Im Profil das eigene Passwort ändern als Lehrer und Schüler (Schüler meldet sich anschließend mit dem neuen PW an)',
-    { tag: [LONG, STAGE] },
-    async ({ page }: PlaywrightTestArgs) => {
-      const header: HeaderPage = new HeaderPage(page);
-      const loginView: LoginViewPage = new LoginViewPage(page);
-      let userInfoLehrer: UserInfo;
-      let userInfoSchueler: UserInfo;
-      let newPassword: string = '';
-
-      await test.step(`Lehrer und Schüler via api anlegen`, async () => {
-        userInfoLehrer = await createRolleAndPersonWithUserContext(
-          page,
-          testschuleName,
-          typeLehrer,
-          await generateNachname(),
-          await generateVorname(),
-          [await getServiceProviderId(page, email)],
-          await generateRolleName(),
-          await generateKopersNr()
-        );
-
-        const schuleId: string = await getOrganisationId(page, testschuleName);
-        const klasseId: string = await getOrganisationId(page, klasse1Testschule);
-        const idSPs: string[] = [await getServiceProviderId(page, 'itslearning')];
-        const rolleId: string = await createRolle(page, 'LERN', schuleId, await generateRolleName());
-        await addServiceProvidersToRolle(page, rolleId, idSPs);
-        userInfoSchueler = await createPerson(
-          page,
-          schuleId,
-          rolleId,
-          await generateNachname(),
-          await generateVorname(),
-          '',
-          klasseId
-        );
-      });
-
-      await test.step(`Mit dem Lehrer am Portal anmelden`, async () => {
-        await header.logout();
-        await header.navigateToLogin();
-        await loginView.login(userInfoLehrer.username, userInfoLehrer.password);
-        currentUserIsLandesadministrator = false;
-        userInfoLehrer.password = await loginView.updatePassword();
-      });
-
-      const profileView: ProfileViewPage = await header.navigateToProfile();
-
-      await test.step('Passwortänderung Lehrer durchführen', async () => {
-        await profileView.changePassword(userInfoLehrer.username, userInfoLehrer.password);
-      });
-
-      await test.step(`Mit dem Schüler am Portal anmelden`, async () => {
-        await header.logout();
-        await header.navigateToLogin();
-        await loginView.login(userInfoSchueler.username, userInfoSchueler.password);
-        userInfoSchueler.password = await loginView.updatePassword();
-      });
-
-      await test.step(`Passwortänderung Schüler durchführen`, async () => {
-        await header.navigateToProfile();
-         newPassword = await profileView.changePassword(userInfoSchueler.username, userInfoSchueler.password);
-      });
-
-      await test.step(`Schüler meldet sich mit dem neuen Passwort am Portal an`, async () => {
-        await header.logout();
-        await header.navigateToLogin();
-        const startView: StartViewPage = await loginView.login(userInfoSchueler.username, newPassword);
-        await startView.serviceProviderIsVisible([itslearning]);
-      });
-      // #TODO: wait for the last request in the test
-      // sometimes logout breaks the test because of interrupting requests
-      // logoutViaStartPage = true is a workaround
-      logoutViaStartPage = true;
-    }
-  );
 
 test(
   'Inbetriebnahme-Passwort als Lehrer über das eigene Profil erzeugen',
@@ -674,8 +656,6 @@ test(
     await test.step('Inbetriebnahme-Passwort für LK-Endgerät erzeugen', async () => {
       await profileView.resetDevicePassword();
     });
-
-    logoutViaStartPage = true;
   }
 );
 });
