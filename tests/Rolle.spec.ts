@@ -300,7 +300,7 @@ test.describe('Testet die Anlage einer neuen Rolle', () => {
       } = await test.step('Rolle mit mehr als 5 SPs anlegen', async () => {
         await rolleCreationView.rolleForm.adminstrationsebene.inputElement.selectByTitle('Land Schleswig-Holstein');
         await rolleCreationView.rolleForm.rollenart.inputElement.selectByTitle('Lehr');
-        rolleNames = 'Neue Rolle aus Test';
+        rolleNames = await generateRolleName();
         await rolleCreationView.enterRollenname(rolleNames);
         const theFirstSeven: number[] = Array.from({ length: 7 }, (_: unknown, key: number) => key);
         const selectedItems: string[] = await rolleCreationView.rolleForm.angebote.inputElement.selectByPosition(
