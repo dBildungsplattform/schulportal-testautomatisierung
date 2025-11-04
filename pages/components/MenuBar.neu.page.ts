@@ -18,7 +18,7 @@ export class MenuBarPage {
   private personManagement: Locator = this.page.getByTestId('person-management-menu-item');
   private personCreation: Locator = this.page.getByTestId('person-creation-menu-item');
   private personImport: Locator = this.page.getByTestId('person-import-menu-item');
-  private anderePersonNeuAnlegen: Locator = this.page.getByTestId('person-add-menu-item');
+  private limitedPersonCreation: Locator = this.page.getByTestId('person-add-menu-item');
   private klasseManagement: Locator = this.page.getByTestId('klasse-management-menu-item');
   private klasseCreation: Locator = this.page.getByTestId('klasse-creation-menu-item');
   private rolleManagement: Locator = this.page.getByTestId('rolle-management-menu-item');
@@ -29,78 +29,89 @@ export class MenuBarPage {
   constructor(protected readonly page: Page) {}
 
   /* actions */
-  public async navigateToLandesbedienstetenSuchenUndHinzufuegen(): Promise<LandesbedienstetenSuchenUndHinzufuegenPage> {
-    await this.landesbedienstetenSuchenUndHinzufuegen.click();
-    const newPage: LandesbedienstetenSuchenUndHinzufuegenPage = new LandesbedienstetenSuchenUndHinzufuegenPage(this.page);
-    await newPage.waitForPageLoad();
-    return newPage;
-  }
   public async navigateToStartPage(): Promise<StartViewPage> {
     await this.startPage.click();
     const newPage: StartViewPage = new StartViewPage(this.page);
     await newPage.waitForPageLoad();
     return newPage;
   }
+
   public async navigateToPersonManagement(): Promise<PersonManagementViewPage> {
     await this.personManagement.click();
     const newPage: PersonManagementViewPage = new PersonManagementViewPage(this.page);
     await newPage.waitForPageLoad();
     return newPage;
   }
+
   public async navigateToPersonCreation(): Promise<PersonCreationViewPage> {
     await this.personCreation.click();
     const personCreationViewPage: PersonCreationViewPage = new PersonCreationViewPage(this.page);
     await personCreationViewPage.waitForPageLoad();
     return personCreationViewPage;
   }
+
   public async navigateToPersonImport(): Promise<PersonImportViewPage> {
     await this.personImport.click();
     const personImportViewPage: PersonImportViewPage = new PersonImportViewPage(this.page);
     await personImportViewPage.waitForPageLoad();
     return personImportViewPage;
   }
-  // TODO: da ist eine andere Seite als bei Neuer Benutzer anlegen (Dort wird weniger angezeigt)
-  // public async navigateToPersonAdd(): Promise<PersonCreationViewPage> {
-  //   await this.anderePersonNeuAnlegen.click();
-  //   const personCreationViewPage: PersonCreationViewPage = new PersonCreationViewPage(this.page);
-  //   await personCreationViewPage.waitForPageLoad();
-  //   return personCreationViewPage;
-  // }
+
+  public async navigateToLimitedPersonCreation(): Promise<PersonCreationViewPage> {
+    await this.limitedPersonCreation.click();
+    const personCreationViewPage: PersonCreationViewPage = new PersonCreationViewPage(this.page);
+    await personCreationViewPage.waitForPageLoad();
+    return personCreationViewPage;
+  }
+
+  public async navigateToLandesbedienstetenSuchenUndHinzufuegen(): Promise<LandesbedienstetenSuchenUndHinzufuegenPage> {
+    await this.landesbedienstetenSuchenUndHinzufuegen.click();
+    const newPage: LandesbedienstetenSuchenUndHinzufuegenPage = new LandesbedienstetenSuchenUndHinzufuegenPage(this.page);
+    await newPage.waitForPageLoad();
+    return newPage;
+  }
+
   public async navigateToKlasseManagement(): Promise<KlasseManagementViewPage> {  
     await this.klasseManagement.click();
     const klasseManagementViewPage: KlasseManagementViewPage = new KlasseManagementViewPage(this.page);
     await klasseManagementViewPage.waitForPageLoad();
     return klasseManagementViewPage;
   }
+
   public async navigateToKlasseCreation(): Promise<KlasseCreationViewPage> {
     await this.klasseCreation.click();
     const klasseCreationViewPage: KlasseCreationViewPage = new KlasseCreationViewPage(this.page);
     await klasseCreationViewPage.waitForPageLoad();
     return klasseCreationViewPage;
   }
+
   public async navigateToRolleManagement(): Promise<RolleManagementViewPage> {
     await this.rolleManagement.click();
     const rolleManagementViewPage: RolleManagementViewPage = new RolleManagementViewPage(this.page);
     await rolleManagementViewPage.waitForPageLoad();
     return rolleManagementViewPage;
   }
+
   public async navigateToRolleCreation(): Promise<RolleCreationViewPage> {
     await this.rolleCreation.click();
     const rolleCreationViewPage: RolleCreationViewPage = new RolleCreationViewPage(this.page);
     await rolleCreationViewPage.waitForPageLoad();
     return rolleCreationViewPage;
   }
+
   public async navigateToSchuleManagement(): Promise<SchuleManagementViewPage> {
     await this.schuleManagement.click();
     const schuleManagementViewPage: SchuleManagementViewPage = new SchuleManagementViewPage(this.page);
     await schuleManagementViewPage.waitForPageLoad();
     return schuleManagementViewPage;
   }
+
   public async navigateToSchuleCreation(): Promise<SchuleCreationViewPage> {
     await this.schuleCreation.click();
     const schuleCreationViewPage: SchuleCreationViewPage = new SchuleCreationViewPage(this.page);
     await schuleCreationViewPage.waitForPageLoad();
     return schuleCreationViewPage;
   }
+
   /* assertions */
 }

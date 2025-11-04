@@ -40,7 +40,7 @@ test.describe(`Testfälle für den Login: Umgebung: ${process.env.ENV}: URL: ${p
 
     /* create locked user */
     const testSchuleId: string = await getOrganisationId(page, testschuleName)
-    const rolleName: string = await generateRolleName();
+    const rolleName: string = generateRolleName();
     const rolleId: string = await createRolle(page, 'LEHR', testSchuleId, rolleName);
     const userinfo: UserInfo = await createPerson(page, testSchuleId, rolleId)
     await lockPerson(page, userinfo.personId, testSchuleId);

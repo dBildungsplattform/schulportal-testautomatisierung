@@ -67,10 +67,10 @@ test.describe(`Testfälle für TwoFactorAuthentication": Umgebung: ${process.env
           page,
           testschuleName,
           typeLehrer,
-          await generateNachname(),
-          await generateVorname(),
+          generateNachname(),
+          generateVorname(),
           [await getServiceProviderId(page, email)],
-          await generateRolleName()
+          generateRolleName()
         );
         usernames.push(userInfoLehrer.username);
         rolleIds.push(userInfoLehrer.rolleId);

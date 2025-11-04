@@ -117,9 +117,9 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const header: HeaderPage = new HeaderPage(page);
 
       const rolle: string = 'Lehrkraft';
-      const vorname: string = await generateVorname();
-      const nachname: string = await generateNachname();
-      const kopersnr: string = await generateKopersNr();
+      const vorname: string = generateVorname();
+      const nachname: string = generateNachname();
+      const kopersnr: string = generateKopersNr();
       const schulstrukturknoten: string = testschuleName;
       let einstiegspasswort: string = '';
 
@@ -172,8 +172,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     'Einen Benutzer mit der Rolle Landesadmin anlegen',
     { tag: [LONG, SHORT, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
-      const vorname: string = await generateVorname();
-      const nachname: string = await generateNachname();
+      const vorname: string = generateVorname();
+      const nachname: string = generateNachname();
       const schulstrukturknoten: string = 'Öffentliche Schulen Land Schleswig-Holstein';
 
       const personCreationView: PersonCreationViewPage = await test.step(`Dialog Person anlegen öffnen`, async () => {
@@ -217,9 +217,9 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
 
       const rolle: string = 'LiV';
-      const vorname: string = await generateVorname();
-      const nachname: string = await generateNachname();
-      const kopersnr: string = await generateKopersNr();
+      const vorname: string = generateVorname();
+      const nachname: string = generateNachname();
+      const kopersnr: string = generateKopersNr();
       const schulstrukturknoten: string = testschuleName;
 
       await test.step(`Dialog Person anlegen öffnen`, async () => {
@@ -255,8 +255,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const header: HeaderPage = new HeaderPage(page);
       const landing: LandingPage = new LandingPage(page);
 
-      const vorname: string = await generateVorname();
-      const nachname: string = await generateNachname();
+      const vorname: string = generateVorname();
+      const nachname: string = generateNachname();
       const schulstrukturknoten: string = testschuleName;
       const rolle: string = 'Lehrkraft';
       let userInfo: UserInfo;
@@ -270,7 +270,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
           nachname,
           vorname,
           idSPs,
-          await generateRolleName()
+          generateRolleName()
         );
         await addSystemrechtToRolle(page, userInfo.rolleId, 'PERSONEN_VERWALTEN');
         await addSystemrechtToRolle(page, userInfo.rolleId, 'PERSONEN_ANLEGEN');
@@ -287,9 +287,9 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       });
 
       await test.step(`Weiteren Nutzer anlegen`, async () => {
-        const newVorname: string = await generateVorname();
-        const newNachname: string = await generateNachname();
-        const newKopersnr: string = await generateKopersNr();
+        const newVorname: string = generateVorname();
+        const newNachname: string = generateNachname();
+        const newKopersnr: string = generateKopersNr();
         const menu: MenuPage = await startseite.goToAdministration();
         const personCreationView: PersonCreationViewPage = await menu.personAnlegen();
         await expect(personCreationView.textH2PersonAnlegen).toHaveText('Neuen Benutzer hinzufügen');
@@ -319,8 +319,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const menue: MenuPage = new MenuPage(page);
       const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
 
-      const vorname: string = await generateVorname();
-      const nachname: string = await generateNachname();
+      const vorname: string = generateVorname();
+      const nachname: string = generateNachname();
       const schulstrukturknoten: string = testschuleName;
       const klasse: string = 'Playwright3a';
 
@@ -455,9 +455,9 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const menu: MenuPage = await startseite.goToAdministration();
 
       const rolle: string = 'Lehrkraft';
-      const vorname: string = await generateVorname();
-      const nachname: string = await generateNachname();
-      const kopersnr: string = await generateKopersNr();
+      const vorname: string = generateVorname();
+      const nachname: string = generateNachname();
+      const kopersnr: string = generateKopersNr();
       const schulstrukturknoten: string = testschuleName;
 
       await test.step(`Benutzer Lehrkraft anlegen`, async () => {
@@ -544,9 +544,9 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
       let personDetailsView: PersonDetailsViewPage = new PersonDetailsViewPage(page);
       const rolle: string = 'Lehrkraft';
-      const vorname: string = await generateVorname();
-      const nachname: string = await generateNachname();
-      const kopersnr: string = await generateKopersNr();
+      const vorname: string = generateVorname();
+      const nachname: string = generateNachname();
+      const kopersnr: string = generateKopersNr();
       const schulstrukturknoten: string = testschuleName;
       const dienststellenNr: string = '1111111';
       const testHelperLdap: TestHelperLdap = new TestHelperLdap(LDAP_URL, LDAP_ADMIN_PASSWORD);
@@ -641,9 +641,9 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     async ({ page }: PlaywrightTestArgs) => {
       const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
       const rolleNames: string[] = ['Lehrkraft'];
-      const vorname: string = await generateVorname();
-      const nachname: string = await generateNachname();
-      const kopersnr: string = await generateKopersNr();
+      const vorname: string = generateVorname();
+      const nachname: string = generateNachname();
+      const kopersnr: string = generateKopersNr();
       const schulstrukturknoten: string = testschuleName;
       const dienststellenNr: string = '1111111';
       const testHelperLdap: TestHelperLdap = new TestHelperLdap(LDAP_URL, LDAP_ADMIN_PASSWORD);
@@ -730,10 +730,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
           page,
           landSH,
           'SYSADMIN',
-          await generateNachname(),
-          await generateVorname(),
+          generateNachname(),
+          generateVorname(),
           idSPs,
-          await generateRolleName()
+          generateRolleName()
         );
         await addSystemrechtToRolle(page, userInfo.rolleId, 'ROLLEN_VERWALTEN');
         await addSystemrechtToRolle(page, userInfo.rolleId, 'PERSONEN_SOFORT_LOESCHEN');
@@ -757,19 +757,19 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
       // Testdaten
       const schulstrukturknoten: string = testschuleName;
-      const vorname1: string = await generateVorname();
-      const nachname1: string = await generateNachname();
+      const vorname1: string = generateVorname();
+      const nachname1: string = generateNachname();
       const klassenname: string = 'Playwright3a';
 
       const rolle2: string = 'Lehrkraft';
-      const vorname2: string = await generateVorname();
-      const nachname2: string = await generateNachname();
-      const kopersnr2: string = await generateKopersNr();
+      const vorname2: string = generateVorname();
+      const nachname2: string = generateNachname();
+      const kopersnr2: string = generateKopersNr();
 
       const rolle3: string = 'Lehrkraft';
-      const vorname3: string = await generateVorname();
-      const nachname3: string = await generateNachname();
-      const kopersnr3: string = await generateKopersNr();
+      const vorname3: string = generateVorname();
+      const nachname3: string = generateNachname();
+      const kopersnr3: string = generateKopersNr();
 
       await test.step(`Dialog Person anlegen öffnen`, async () => {
         await page.goto('/' + 'admin/personen/new');
@@ -914,9 +914,9 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
       const header: HeaderPage = new HeaderPage(page);
 
-      const vorname: string = await generateVorname();
-      const nachname: string = await generateNachname();
-      const rolle: string = await generateRolleName();
+      const vorname: string = generateVorname();
+      const nachname: string = generateNachname();
+      const rolle: string = generateRolleName();
       const berechtigung: RollenArt = 'SYSADMIN';
       const idSPs: string[] = [await getServiceProviderId(page, 'Schulportal-Administration')];
 
@@ -964,7 +964,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         const idSchule: string = await getOrganisationId(page, testschuleName);
 
         for (let i: number = 0; i <= 4; i++) {
-          rolleNames.push(await generateRolleName());
+          rolleNames.push(generateRolleName());
         }
 
         rolleIds.push(await createRolle(page, typeLehrer, idSchule, rolleNames[0]));
@@ -995,14 +995,14 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(`Neuen Benutzer mit mehreren Rollen anlegen`, { tag: [LONG, STAGE] }, async ({ page }: PlaywrightTestArgs) => {
     const rolleNames: string[] = [];
-    const vorname: string = await generateVorname();
-    const nachname: string = await generateNachname();
+    const vorname: string = generateVorname();
+    const nachname: string = generateNachname();
 
     await test.step(`Testdaten: 3 Rollen mit Rollenarten LEHR über die api anlegen`, async () => {
       const idLandSH: string = await getOrganisationId(page, landSH);
 
       for (let i: number = 0; i <= 2; i++) {
-        rolleNames.push(await generateRolleName());
+        rolleNames.push(generateRolleName());
       }
 
       rolleIds.push(await createRolle(page, typeLehrer, idLandSH, rolleNames[0]));

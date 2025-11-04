@@ -62,8 +62,8 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     '2 Rollen nacheinander anlegen mit Rollenarten LERN und LEHR als Landesadmin',
     { tag: [LONG, SHORT, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
-      const rollenname1: string = await generateRolleName();
-      const rollenname2: string = await generateRolleName();
+      const rollenname1: string = generateRolleName();
+      const rollenname2: string = generateRolleName();
       const schulstrukturknoten1: string = landSH;
       const schulstrukturknoten2: string = ersatzLandSH;
       const rollenart1: string = 'Lern';
@@ -155,7 +155,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     'Eine Rolle anlegen und die Bestätigungsseite vollständig prüfen als Landesadmin',
     { tag: [LONG, SHORT, STAGE, BROWSER] },
     async () => {
-      const rollenname: string = await generateRolleName();
+      const rollenname: string = generateRolleName();
       const administrationsebene: string = landSH;
       const rollenart: string = 'Leit';
       const merkmal: string = 'KoPers.-Nr. ist Pflichtangabe';

@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker/locale/de';
 import { generateRandomString, CharacterSetType } from 'ts-randomstring/lib/index.js';
 import { format, addDays, addMonths } from 'date-fns';
 
-export async function generateVorname(): Promise<string> {
+export function generateVorname(): string {
   return (
     'TAuto-PW-V-' +
     faker.person.firstName() +
@@ -10,7 +10,7 @@ export async function generateVorname(): Promise<string> {
   );
 }
 
-export async function generateNachname(): Promise<string> {
+export function generateNachname(): string {
   return (
     'TAuto-PW-N-' +
     faker.person.lastName() +
@@ -18,7 +18,7 @@ export async function generateNachname(): Promise<string> {
   );
 }
 
-export async function generateRolleName(): Promise<string> {
+export function generateRolleName(): string {
   return (
     'TAuto-PW-R-' +
     faker.lorem.word({ length: { min: 7, max: 7 } }) +
@@ -26,11 +26,11 @@ export async function generateRolleName(): Promise<string> {
   );
 }
 
-export async function generateKopersNr(): Promise<string> {
+export function generateKopersNr(): string {
   return '0815' + faker.string.numeric({ length: 7 });
 }
 
-export async function generateKlassenname(): Promise<string> {
+export function generateKlassenname(): string {
   return (
     'TAuto-PW-K-12a ' +
     faker.lorem.word({ length: { min: 8, max: 8 } }) +
@@ -38,7 +38,7 @@ export async function generateKlassenname(): Promise<string> {
   );
 }
 
-export async function generateSchulname(): Promise<string> {
+export function generateSchulname(): string {
   return (
     'TAuto-PW-S-' +
     faker.lorem.word({ length: { min: 8, max: 8 } }) +
@@ -46,7 +46,7 @@ export async function generateSchulname(): Promise<string> {
   );
 }
 
-export async function generateDienststellenNr(): Promise<string> {
+export function generateDienststellenNr(): string {
   return '0' + faker.number.bigInt({ min: 10000000, max: 100000000 });
 }
 

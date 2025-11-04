@@ -122,10 +122,10 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         page,
         testschuleName,
         'LEHR',
-        await generateNachname(),
-        await generateVorname(),
+        generateNachname(),
+        generateVorname(),
         idSPs,
-        await generateRolleName()
+        generateRolleName()
       );
 
       personIds.push(userInfo.personId);
@@ -158,14 +158,14 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
       const schuleId: string = await getOrganisationId(page, testschuleName);
       const klasseId: string = await getOrganisationId(page, klasse1Testschule);
       const idSPs: string[] = [await getServiceProviderId(page, 'itslearning')];
-      const rolleId: string = await createRolle(page, 'LERN', schuleId, await generateRolleName());
+      const rolleId: string = await createRolle(page, 'LERN', schuleId, generateRolleName());
       await addServiceProvidersToRolle(page, rolleId, idSPs);
       const userInfo: UserInfo = await createPerson(
         page,
         schuleId,
         rolleId,
-        await generateNachname(),
-        await generateVorname(),
+        generateNachname(),
+        generateVorname(),
         '',
         klasseId
       );
@@ -206,10 +206,10 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         page,
         testschuleName,
         'LEIT',
-        await generateNachname(),
-        await generateVorname(),
+        generateNachname(),
+        generateVorname(),
         idSPs,
-        await generateRolleName()
+        generateRolleName()
       );
       personIds.push(userInfo.personId);
       rolleIds.push(userInfo.rolleId);
@@ -237,8 +237,8 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
   test('News-Box bei befristeten Schulzuordnungen testen', { tag: [LONG] }, async ({ page }: PlaywrightTestArgs) => {
     let userInfoLehrer1: UserInfo;
     let userInfoLehrer2: UserInfo;
-    const rollenNameLehrer1: string = await generateRolleName();
-    const rollenNameLehrer2: string = await generateRolleName();
+    const rollenNameLehrer1: string = generateRolleName();
+    const rollenNameLehrer2: string = generateRolleName();
     const colorOrange: string = 'rgb(255, 152, 37)';
     const colorRed: string = 'rgb(255, 85, 85)';
 
@@ -251,8 +251,8 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         page,
         testschuleName,
         typeLehrer,
-        await generateNachname(),
-        await generateVorname(),
+        generateNachname(),
+        generateVorname(),
         [await getServiceProviderId(page, email)],
         rollenNameLehrer1
       );
@@ -272,8 +272,8 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         page,
         testschuleName,
         typeLehrer,
-        await generateNachname(),
-        await generateVorname(),
+        generateNachname(),
+        generateVorname(),
         [await getServiceProviderId(page, email)],
         rollenNameLehrer2
       );
@@ -347,10 +347,10 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
           page,
           testschuleName,
           typeLehrer,
-          await generateNachname(),
-          await generateVorname(),
+          generateNachname(),
+          generateVorname(),
           await Promise.all(expectedSps.map((sp: string) => getServiceProviderId(page, sp))),
-          await generateRolleName()
+          generateRolleName()
         );
         personIds.push(userInfo.personId);
         rolleIds.push(userInfo.rolleId);
@@ -380,10 +380,10 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
           page,
           testschuleName,
           typeLehrer,
-          await generateNachname(),
-          await generateVorname(),
+          generateNachname(),
+          generateVorname(),
           [await getServiceProviderId(page, itslearning)],
-          await generateRolleName()
+          generateRolleName()
         );
         personIds.push(userInfo.personId);
         rolleIds.push(userInfo.rolleId);
@@ -425,11 +425,11 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
           page,
           testschuleName,
           typeLehrer,
-          await generateNachname(),
-          await generateVorname(),
+          generateNachname(),
+          generateVorname(),
           await Promise.all(expected.map((sp: string) => getServiceProviderId(page, sp))),
-          await generateRolleName(),
-          await generateKopersNr(),
+          generateRolleName(),
+          generateKopersNr(),
           undefined,
           new Set<RollenMerkmal>([kopersNrPflicht])
         );
@@ -471,11 +471,11 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
           page,
           testschuleName,
           typeLehrer,
-          await generateNachname(),
-          await generateVorname(),
+          generateNachname(),
+          generateVorname(),
           await Promise.all(expected.map((sp: string) => getServiceProviderId(page, sp))),
-          await generateRolleName(),
-          await generateKopersNr(),
+          generateRolleName(),
+          generateKopersNr(),
           undefined,
           new Set<RollenMerkmal>([kopersNrPflicht])
         );
@@ -520,11 +520,11 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
           page,
           testschuleName,
           typeLehrer,
-          await generateNachname(),
-          await generateVorname(),
+          generateNachname(),
+          generateVorname(),
           await Promise.all(expected.map((sp: string) => getServiceProviderId(page, sp))),
-          await generateRolleName(),
-          await generateKopersNr(),
+          generateRolleName(),
+          generateKopersNr(),
           undefined,
           new Set<RollenMerkmal>([kopersNrPflicht])
         );
@@ -569,10 +569,10 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
           page,
           testschuleName,
           typeLehrer,
-          await generateNachname(),
-          await generateVorname(),
+          generateNachname(),
+          generateVorname(),
           await Promise.all(expected.map((sp: string) => getServiceProviderId(page, sp))),
-          await generateRolleName(),
+          generateRolleName(),
           undefined,
           undefined,
           new Set<RollenMerkmal>([kopersNrPflicht])
@@ -617,11 +617,11 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
           page,
           testschuleName,
           typeLehrer,
-          await generateNachname(),
-          await generateVorname(),
+          generateNachname(),
+          generateVorname(),
           await Promise.all(expected.map((sp: string) => getServiceProviderId(page, sp))),
-          await generateRolleName(),
-          await generateKopersNr(),
+          generateRolleName(),
+          generateKopersNr(),
           undefined,
           new Set<RollenMerkmal>([kopersNrPflicht])
         );
@@ -665,11 +665,11 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
           page,
           testschuleName,
           typeLehrer,
-          await generateNachname(),
-          await generateVorname(),
+          generateNachname(),
+          generateVorname(),
           await Promise.all(expected.map((sp: string) => getServiceProviderId(page, sp))),
-          await generateRolleName(),
-          await generateKopersNr(),
+          generateRolleName(),
+          generateKopersNr(),
           undefined,
           new Set<RollenMerkmal>([kopersNrPflicht])
         );

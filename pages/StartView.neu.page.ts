@@ -1,4 +1,4 @@
-import { expect, Locator, Page } from '@playwright/test';
+import { expect, Locator, Page, Response } from '@playwright/test';
 import { PersonManagementViewPage } from './admin/personen/PersonManagementView.neu.page';
 export class StartViewPage {
   /* add global locators here */
@@ -14,9 +14,16 @@ export class StartViewPage {
     await expect(this.startCardHeadline).toHaveText('Startseite');
   }
 
+  public async goToAdministration(): Promise<PersonManagementViewPage> {
+    await this.page.locator('[data-testid^="service-provider-card"]').filter({ hasText: 'Schulportal-Administration' }).click();
+    const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(this.page);
+    await personManagementView.waitForPageLoad();
+    return personManagementView;
+  }
+
   /* assertions */
   public async serviceProvidersAreLoaded(): Promise<void> {
-    await this.page.waitForResponse((response: import('@playwright/test').Response) => response.url().includes('/api/provider') && response.status() === 200);
+    await this.page.waitForResponse((response: Response) => response.url().includes('/api/provider') && response.status() === 200);
     await this.page.waitForResponse('/api/provider/**/logo');
     await expect(this.page.getByTestId('all-service-provider-title')).toBeVisible();
   }
@@ -30,11 +37,4 @@ export class StartViewPage {
       }),
     ]);
   }
-
-  public async goToAdministration(): Promise<PersonManagementViewPage> {
-      await this.page.locator('[data-testid^="service-provider-card"]').filter({ hasText: 'Schulportal-Administration' }).click();
-      const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(this.page);
-      await personManagementView.waitForPageLoad();
-      return personManagementView;
-    }
 }

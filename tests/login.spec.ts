@@ -113,9 +113,9 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
       const landing: LandingPage = new LandingPage(page);
       const header: HeaderPage = new HeaderPage(page);
 
-      const lehrerVorname: string = await generateVorname();
-      const lehrerNachname: string = await generateNachname();
-      const lehrerRolle: string = await generateRolleName();
+      const lehrerVorname: string = generateVorname();
+      const lehrerNachname: string = generateNachname();
+      const lehrerRolle: string = generateRolleName();
       const lehrerRollenart: RollenArt = 'LEHR';
       const lehrerOrganisation: string = testschuleName;
       let userInfoLehrer: UserInfo;

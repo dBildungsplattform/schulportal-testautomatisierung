@@ -80,8 +80,8 @@ export async function createPerson(
 ): Promise<UserInfo> {
   try {
     const createPersonBodyParams: DbiamCreatePersonWithPersonenkontexteBodyParams = {
-      familienname: familienname || await generateNachname(),
-      vorname: vorname || await generateVorname(),
+      familienname: familienname || generateNachname(),
+      vorname: vorname || generateVorname(),
       createPersonenkontexte: [
         {
           organisationId: organisationId,
@@ -316,11 +316,11 @@ export async function createTeacherAndLogin(page: Page): Promise<UserInfo> {
     page,
     testschuleName,
     typeLehrer,
-    await generateNachname(),
-    await generateVorname(),
+     generateNachname(),
+     generateVorname(),
     [await getServiceProviderId(page, email), await getServiceProviderId(page, kalender), await getServiceProviderId(page, adressbuch)],
-    await generateRolleName(),
-    await generateKopersNr()
+     generateRolleName(),
+     generateKopersNr()
   );
 
   await header.logout({ logoutViaStartPage: true });

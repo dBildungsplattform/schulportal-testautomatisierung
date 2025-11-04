@@ -3,19 +3,16 @@ import { Autocomplete } from '../../../elements/Autocomplete';
 import { DataTable } from '../../components/DataTable.neu.page';
 import { PersonDetailsViewPage } from './details/PersonDetailsView.neu.page';
 import { SearchFilter } from '../../../elements/SearchFilter';
-import { HeaderPage } from '../../components/Header.neu.page';
 import { MenuBarPage } from '../../components/MenuBar.neu.page';
 
 export class PersonManagementViewPage {
-  readonly menu: MenuBarPage;
-  readonly header: HeaderPage;
   private readonly personTable: DataTable;
   private readonly searchFilter: SearchFilter;
-
+  /* since this page is the entry point for the admin area, the menu has to be public here, so other pages and tests can access it */
+  public readonly menu: MenuBarPage;
 
   constructor(private readonly page: Page) {
     this.menu = new MenuBarPage(page);
-    this.header = new HeaderPage(page);
     this.personTable = new DataTable(this.page, this.page.getByTestId('person-table'));
     this.searchFilter = new SearchFilter(this.page);
   }
