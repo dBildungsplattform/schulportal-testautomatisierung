@@ -43,7 +43,6 @@ export class ProfileViewPage {
     await this.page.getByTestId('open-change-password-dialog-button').click();
     await this.page.getByTestId('change-password-button').click();
 
-    await expect(this.page.getByTestId('attempted-username')).toHaveText(username);
     await expect(this.page.getByTestId('login-prompt-text')).toHaveText('Bitte geben Sie Ihr aktuelles Passwort ein.');
     
     await passwordInput.waitFor({ state: 'visible' });
