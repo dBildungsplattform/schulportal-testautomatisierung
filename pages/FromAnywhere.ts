@@ -1,7 +1,7 @@
 import { Page } from '@playwright/test';
 import { LandingPage } from './LandingView.page';
 
-function FromAnywhere(page: Page): { start: () => Promise<LandingPage> } {
+function FromAnywhereNeu(page: Page): { start: () => Promise<LandingPage> } {
   return {
     async start(): Promise<LandingPage> {
       return page.goto('/').then(() => new LandingPage(page));
@@ -9,4 +9,4 @@ function FromAnywhere(page: Page): { start: () => Promise<LandingPage> } {
   };
 }
 
-export default FromAnywhere;
+export default FromAnywhereNeu;

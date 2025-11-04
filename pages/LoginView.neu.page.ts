@@ -39,11 +39,13 @@ export class LoginViewPage {
     return new StartViewPage(this.page);
   }
 
-  public async updatePassword(): Promise<string> {
+  public async updatePassword(isEntryFromProfileView?: boolean): Promise<string> {
     const newPassword: string = this.generateSecurePassword();
     const newPasswordInput: Locator = this.page.getByTestId('new-password-input');
     const newPasswordConfirmInput: Locator = this.page.getByTestId('new-password-confirm-input');
     const setPasswordButton: Locator = this.page.getByRole('button', { name: 'Passwort ändern' });
+    const buttonClosePWChangeDialogFromProfilView: Locator = this.page.getByTestId('close-password-changed-dialog-button');
+    const buttonSubmitPWChange: Locator = this.page.getByTestId('set-password-button');
 
     await expect(this.page.getByTestId('update-password-title')).toHaveText('Passwort festlegen');
     await expect(this.page.getByTestId('password-update-prompt')).toHaveText('Bitte legen Sie ein neues, selbstgewähltes Passwort fest.');
@@ -54,8 +56,12 @@ export class LoginViewPage {
     await newPasswordConfirmInput.waitFor({ state: 'visible' });
     await newPasswordConfirmInput.fill(newPassword);
 
-    await setPasswordButton.waitFor({ state: 'visible' });
-    await setPasswordButton.click();
+    if (!isEntryFromProfileView) {
+      await buttonSubmitPWChange.click();
+    } else {
+      await setPasswordButton.click();
+      await buttonClosePWChangeDialogFromProfilView.click();
+    }
     return newPassword;
   }
 

@@ -27,12 +27,12 @@ import {
   generateRolleName,
   generateVorname,
 } from '../base/utils/generateTestdata';
-import FromAnywhere from '../pages/FromAnywhere';
-import { HeaderPage } from '../pages/components/Header.page';
-import { LandingPage } from '../pages/LandingView.page';
-import { LoginPage } from '../pages/LoginView.page';
-import { StartPage } from '../pages/StartView.page';
 import { PersoenlicheDaten, ProfileViewPage, Zuordnung } from '../pages/ProfileView.neu.page';
+import { LoginViewPage } from '../pages/LoginView.neu.page';
+import { StartViewPage } from '../pages/StartView.neu.page';
+import { LandingViewPage } from '../pages/LandingView.neu.page';
+import { HeaderPage } from '../pages/components/Header.neu.page';
+import FromAnywhereNeu from '../pages/FromAnywhere.neu';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -44,13 +44,11 @@ let logoutViaStartPage: boolean = false;
 test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
     await test.step(`Login`, async () => {
-      const startPage: StartPage = await FromAnywhere(page)
+       await FromAnywhereNeu(page)
         .start()
-        .then((landing: LandingPage) => landing.goToLogin())
-        .then((login: LoginPage) => login.login())
-        .then((startseite: StartPage) => startseite.validateStartPageIsLoaded());
-
-      return startPage;
+        .then((landing: LandingViewPage) => landing.navigateToLogin())
+        .then((login: LoginViewPage) => login.login())
+        .then((startseite: StartViewPage) => startseite.serviceProvidersAreLoaded());
     });
   });
 
@@ -61,26 +59,26 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
     if (!currentUserIsLandesadministrator) {
       const header: HeaderPage = new HeaderPage(page);
-      const landing: LandingPage = new LandingPage(page);
-      const login: LoginPage = new LoginPage(page);
-      const startseite: StartPage = new StartPage(page);
+      const landing: LandingViewPage = new LandingViewPage(page);
+      const login: LoginViewPage = new LoginViewPage(page);
+      const startseite: StartViewPage = new StartViewPage(page);
 
       if (logoutViaStartPage) {
-        await header.logout({ logoutViaStartPage: true });
+        await header.logout();
       } else {
-        await header.logout({ logoutViaStartPage: false });
+        await header.logout();
       }
-      await landing.buttonAnmelden.click();
+      await landing.navigateToLogin();
       await login.login(ADMIN, PW);
-      await startseite.validateStartPageIsLoaded();
+      await startseite.serviceProvidersAreLoaded();
     }
 
     await test.step(`Abmelden`, async () => {
       const header: HeaderPage = new HeaderPage(page);
       if (logoutViaStartPage) {
-        await header.logout({ logoutViaStartPage: true });
+        await header.logout();
       } else {
-        await header.logout({ logoutViaStartPage: false });
+        await header.logout();
       }
     });
   });
@@ -91,7 +89,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
     async ({ page }: PlaywrightTestArgs) => {
       const profileView: ProfileViewPage = new ProfileViewPage(page);
       const header: HeaderPage = new HeaderPage(page);
-      const login: LoginPage = new LoginPage(page);
+      const login: LoginViewPage = new LoginViewPage(page);
 
       const vorname: string = await generateVorname();
       const nachname: string = await generateNachname();
@@ -122,17 +120,17 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await addSystemrechtToRolle(page, userInfo.rolleId, schultraegerVerwalten);
         await addSystemrechtToRolle(page, userInfo.rolleId, personenAnlegen);
 
-        await header.logout({ logoutViaStartPage: true });
-        await header.buttonLogin.click();
+        await header.logout();
+        await header.navigateToLogin();
         await login.login(userInfo.username, userInfo.password);
         currentUserIsLandesadministrator = false;
-        await login.updatePW();
+        await login.updatePassword();
       });
 
       await test.step(`Profil öffnen`, async () => {
-        const startView: StartPage = new StartPage(page);
-        await startView.checkSpIsVisible([schulportaladmin]);
-        await header.goToProfile();
+        const startView: StartViewPage = new StartViewPage(page);
+        await startView.serviceProviderIsVisible([schulportaladmin]);
+        await header.navigateToProfile();
       });
 
       await test.step(`Profil auf Vollständigkeit prüfen`, async () => {
@@ -167,7 +165,7 @@ test(
   { tag: [LONG, SHORT, STAGE] },
   async ({ page }: PlaywrightTestArgs) => {
     const header: HeaderPage = new HeaderPage(page);
-    const login: LoginPage = new LoginPage(page);
+    const login: LoginViewPage = new LoginViewPage(page);
     const profileView: ProfileViewPage = new ProfileViewPage(page);
 
     const vorname: string = await generateVorname();
@@ -195,18 +193,18 @@ test(
 
       username = userInfo.username;
 
-      await header.logout({ logoutViaStartPage: true });
-      await header.buttonLogin.click();
+      await header.logout();
+      await header.navigateToLogin();
 
-      const startPage: StartPage = await login.login(userInfo.username, userInfo.password);
-      await login.updatePW();
+      const startPage: StartViewPage = await login.login(userInfo.username, userInfo.password);
+      await login.updatePassword();
 
-      await startPage.checkSpIsVisible([email]);
+      await startPage.serviceProviderIsVisible([email]);
       currentUserIsLandesadministrator = false;
     });
 
     await test.step('Profil öffnen', async () => {
-      await header.goToProfile();
+      await header.navigateToProfile();
       await profileView.waitForPageLoad();
     });
 
@@ -243,7 +241,7 @@ test(
   { tag: [LONG, STAGE] },
   async ({ page }: PlaywrightTestArgs) => {
     const header: HeaderPage = new HeaderPage(page);
-    const login: LoginPage = new LoginPage(page);
+    const login: LoginViewPage = new LoginViewPage(page);
     const profileView: ProfileViewPage = new ProfileViewPage(page);
 
     const vorname: string = await generateVorname();
@@ -253,7 +251,6 @@ test(
     const rollenart: RollenArt = 'LERN';
     let username: string = '';
 
-    // Setup: Schüler via API anlegen & anmelden
     await test.step('Schüler via API anlegen und mit diesem anmelden', async () => {
       const schuleId: string = await getOrganisationId(page, testschuleName);
       const klasseId: string = await getOrganisationId(page, klasse1Testschule);
@@ -274,21 +271,19 @@ test(
 
       username = userInfo.username;
 
-      await header.logout({ logoutViaStartPage: true });
-      await header.buttonLogin.click();
+      await header.logout();
+      await header.navigateToLogin();
       await login.login(userInfo.username, userInfo.password);
-      await login.updatePW();
+      await login.updatePassword();
 
       currentUserIsLandesadministrator = false;
     });
 
-    // Navigation: Profil öffnen
     await test.step('Profil öffnen', async () => {
-      await header.goToProfile();
+      await header.navigateToProfile();
       await profileView.waitForPageLoad();
     });
 
-    // 🧪 Assertions: Profil auf Vollständigkeit prüfen
     await test.step('Profil auf Vollständigkeit prüfen', async () => {
       const personalData: PersoenlicheDaten = {
         vorname,
@@ -323,7 +318,7 @@ test(
   { tag: [LONG, STAGE] },
   async ({ page }: PlaywrightTestArgs) => {
     const header: HeaderPage = new HeaderPage(page);
-    const login: LoginPage = new LoginPage(page);
+    const login: LoginViewPage = new LoginViewPage(page);
     const profileView: ProfileViewPage = new ProfileViewPage(page);
 
     const vorname: string = await generateVorname();
@@ -349,17 +344,17 @@ test(
 
       username = userInfo.username;
 
-      await header.logout({ logoutViaStartPage: false });
-      await header.buttonLogin.click();
+      await header.logout();
+      await header.navigateToLogin();
 
       await login.login(userInfo.username, userInfo.password);
-      await login.updatePW();
+      await login.updatePassword();
 
       currentUserIsLandesadministrator = false;
     });
 
     await test.step('Profil öffnen', async () => {
-      await header.goToProfile();
+      await header.navigateToProfile();
       await profileView.waitForPageLoad();
     });
 
@@ -396,7 +391,7 @@ test(
     { tag: [LONG, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
       const header: HeaderPage = new HeaderPage(page);
-      const login: LoginPage = new LoginPage(page);
+      const login: LoginViewPage = new LoginViewPage(page);
       const profileView: ProfileViewPage = new ProfileViewPage(page);
 
       const organisation: string = testschuleName;
@@ -419,16 +414,16 @@ test(
 
         username = userInfo.username;
 
-        await header.logout({ logoutViaStartPage: true });
-        await header.buttonLogin.click();
+        await header.logout();
+        await header.navigateToLogin();
         await login.login(userInfo.username, userInfo.password);
-        await login.updatePW();
+        await login.updatePassword();
 
         currentUserIsLandesadministrator = false;
       });
 
       await test.step('Profil öffnen', async () => {
-        await header.goToProfile();
+        await header.navigateToProfile();
         await profileView.waitForPageLoad();
       });
 
@@ -453,7 +448,7 @@ test(
     async ({ page }: PlaywrightTestArgs) => {
       const profileView: ProfileViewPage = new ProfileViewPage(page);
       const header: HeaderPage = new HeaderPage(page);
-      const login: LoginPage = new LoginPage(page);
+      const login: LoginViewPage = new LoginViewPage(page);
 
       const organisation: string = testschuleName;
       const rollenart: RollenArt = typeLehrer;
@@ -472,15 +467,15 @@ test(
         );
         username = userInfo.username;
 
-        await header.logout({ logoutViaStartPage: true });
-        await header.buttonLogin.click();
+        await header.logout();
+        await header.navigateToLogin();
         await login.login(userInfo.username, userInfo.password);
-        await login.updatePW();
+        await login.updatePassword();
         currentUserIsLandesadministrator = false;
       });
 
       await test.step(`Profil öffnen`, async () => {
-        await header.goToProfile();
+        await header.navigateToProfile();
       });
 
       await test.step('Passwort ändern öffnen', async () => {
@@ -504,7 +499,7 @@ test(
   { tag: [LONG, STAGE] },
   async ({ page }: PlaywrightTestArgs) => {
     const header: HeaderPage = new HeaderPage(page);
-    const login: LoginPage = new LoginPage(page);
+    const login: LoginViewPage = new LoginViewPage(page);
     const profileView: ProfileViewPage = new ProfileViewPage(page);
 
     const organisation: string = testschuleName;
@@ -526,15 +521,15 @@ test(
       );
       username = userInfo.username;
 
-      await header.logout({ logoutViaStartPage: true });
-      await header.buttonLogin.click();
+      await header.logout();
+      await header.navigateToLogin();
       await login.login(username, userInfo.password);
-      await login.updatePW();
+      await login.updatePassword();
       currentUserIsLandesadministrator = false;
     });
 
     await test.step('Profil öffnen', async () => {
-      await header.goToProfile();
+      await header.navigateToProfile();
       await profileView.waitForPageLoad();
     });
 
@@ -571,7 +566,7 @@ test(
     { tag: [LONG, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
       const header: HeaderPage = new HeaderPage(page);
-      const loginView: LoginPage = new LoginPage(page);
+      const loginView: LoginViewPage = new LoginViewPage(page);
       let userInfoLehrer: UserInfo;
       let userInfoSchueler: UserInfo;
       let newPassword: string = '';
@@ -605,36 +600,36 @@ test(
       });
 
       await test.step(`Mit dem Lehrer am Portal anmelden`, async () => {
-        await header.logout({ logoutViaStartPage: true });
-        await header.goToLogin();
+        await header.logout();
+        await header.navigateToLogin();
         await loginView.login(userInfoLehrer.username, userInfoLehrer.password);
         currentUserIsLandesadministrator = false;
-        userInfoLehrer.password = await loginView.updatePW();
+        userInfoLehrer.password = await loginView.updatePassword();
       });
 
-      const profileView: ProfileViewPage = await header.goToProfile();
+      const profileView: ProfileViewPage = await header.navigateToProfile();
 
       await test.step('Passwortänderung Lehrer durchführen', async () => {
         await profileView.changePassword(userInfoLehrer.username, userInfoLehrer.password);
       });
 
       await test.step(`Mit dem Schüler am Portal anmelden`, async () => {
-        await header.logout({ logoutViaStartPage: true });
-        await header.goToLogin();
+        await header.logout();
+        await header.navigateToLogin();
         await loginView.login(userInfoSchueler.username, userInfoSchueler.password);
-        userInfoSchueler.password = await loginView.updatePW();
+        userInfoSchueler.password = await loginView.updatePassword();
       });
 
       await test.step(`Passwortänderung Schüler durchführen`, async () => {
-        await header.goToProfile();
+        await header.navigateToProfile();
          newPassword = await profileView.changePassword(userInfoSchueler.username, userInfoSchueler.password);
       });
 
       await test.step(`Schüler meldet sich mit dem neuen Passwort am Portal an`, async () => {
-        await header.logout({ logoutViaStartPage: true });
-        await header.goToLogin();
-        const startView: StartPage = await loginView.login(userInfoSchueler.username, newPassword);
-        await startView.checkSpIsVisible([itslearning]);
+        await header.logout();
+        await header.navigateToLogin();
+        const startView: StartViewPage = await loginView.login(userInfoSchueler.username, newPassword);
+        await startView.serviceProviderIsVisible([itslearning]);
       });
       // #TODO: wait for the last request in the test
       // sometimes logout breaks the test because of interrupting requests
@@ -648,7 +643,7 @@ test(
   { tag: [LONG, STAGE] },
   async ({ page }: PlaywrightTestArgs) => {
     const header: HeaderPage = new HeaderPage(page);
-    const login: LoginPage = new LoginPage(page);
+    const login: LoginViewPage = new LoginViewPage(page);
     const profileView: ProfileViewPage = new ProfileViewPage(page);
     let userInfoLehrer: UserInfo;
 
@@ -664,15 +659,15 @@ test(
         await generateKopersNr()
       );
 
-      await header.logout({ logoutViaStartPage: true });
-      await header.buttonLogin.click();
+      await header.logout();
+      await header.navigateToLogin();
       await login.login(userInfoLehrer.username, userInfoLehrer.password);
-      await login.updatePW();
+      await login.updatePassword();
       currentUserIsLandesadministrator = false;
     });
 
     await test.step('Profil öffnen', async () => {
-      await header.goToProfile();
+      await header.navigateToProfile();
       await profileView.waitForPageLoad();
     });
 
