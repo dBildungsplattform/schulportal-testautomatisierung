@@ -8,9 +8,21 @@ export class HeaderPage {
 
   constructor(protected readonly page: Page) {}
 
-  /* actions */
+
+  // Clearing cookies here to ensure logout works reliably because of observed issues with Playwright still keeping the session ID even keycloak has deleted the session.
+  // Because of that the app shows a keycloak error on login.
   public async logout(): Promise<LandingViewPage> {
     await this.page.getByTestId('nav-logout-button').click();
+    
+    // Wait for page to finish loading
+    await this.page.waitForLoadState('load', { timeout: 15000 });
+    
+    // Clear any storage/cookies that might be causing issues
+    await this.page.context().clearCookies();
+    
+    // Navigate to root with a clean slate
+    await this.page.goto('/', { waitUntil: 'load' });
+    
     const landingPage: LandingViewPage = new LandingViewPage(this.page);
     await landingPage.waitForPageLoad();
     return landingPage;
