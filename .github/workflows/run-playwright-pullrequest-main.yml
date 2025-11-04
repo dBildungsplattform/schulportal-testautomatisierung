@@ -43,7 +43,7 @@ jobs:
         MATCH_COUNT=0
         for REPO in "${REPOS[@]}"; do
           echo "🔍 Checking $REPO for branch '$TAG'"
-          BRANCH_EXISTS=$(git ls-remote --heads "$REPO" "refs/heads/$TAG")
+          BRANCH_EXISTS=$(git ls-remote --heads "$REPO" | grep -i "refs/heads/$TAG")
           if [[ -n "$BRANCH_EXISTS" ]]; then
             echo "✅ Branch '$TAG' exists in $REPO"
             MATCH_COUNT=$((MATCH_COUNT + 1))
