@@ -4,19 +4,19 @@ run-name: Test ${{ inputs.frontendHostname }} with ${{ inputs.browser }} and ${{
 on:
   workflow_call:
     secrets:
-      TUNNEL_USER_SSHKEY:
+      SPSH_DEV_USER_SSHKEY:
         description: 'SSH Key for Tunnel User to access LDAP tunnel (required for dev tests)'
         required: false
       SPSH_DEV_KUBECONFIG:
         description: 'Kubeconfig for SPSH development environment (required for dev tests)'
         required: false
-      TUNNEL_USER:
+      SPSH_DEV_TUNNEL_USERNAME:
         description: 'Username for SSH tunnel (required for dev tests)'
         required: false
-      TUNNELHOST:
+      SPSH_DEV_TUNNEL_HOST:
         description: 'Hostname of the SSH tunnel (required for dev tests)'
         required: false
-      TUNNEL_PORT:
+      SPSH_DEV_TUNNEL_PORT:
         description: 'Port of the SSH tunnel (required for dev tests)'
         required: false
       USER:
@@ -127,7 +127,7 @@ jobs:
         if: ${{ inputs.tag == 'dev' }}
         uses: webfactory/ssh-agent@dc588b651fe13675774614f8e6a936a468676387 # v0.9.0
         with:
-          ssh-private-key: ${{ secrets.TUNNEL_USER_SSHKEY }}
+          ssh-private-key: ${{ secrets.SPSH_DEV_USER_SSHKEY }}
 
       # --------------------------
       # Add kubeconfig (main namespace only)
@@ -170,13 +170,13 @@ jobs:
       - name: Create SSH tunnel to LDAP
         if: ${{ inputs.tag == 'dev' }}
         env:
-          TUNNEL_USER: ${{ secrets.TUNNEL_USER }}
-          TUNNELHOST: ${{ secrets.TUNNELHOST }}
-          TUNNEL_PORT: ${{ secrets.TUNNEL_PORT }}
+          SPSH_DEV_TUNNEL_USERNAME: ${{ secrets.SPSH_DEV_TUNNEL_USERNAME }}
+          SPSH_DEV_TUNNEL_HOST: ${{ secrets.SPSH_DEV_TUNNEL_HOST }}
+          SPSH_DEV_TUNNEL_PORT: ${{ secrets.SPSH_DEV_TUNNEL_PORT }}
         run: |
           ssh -o StrictHostKeyChecking=no \
-              -L 1389:$LDAP_POD_IP:1389 $TUNNEL_USER@$TUNNELHOST \
-              -p $TUNNEL_PORT \
+              -L 1389:$LDAP_POD_IP:1389 $SPSH_DEV_TUNNEL_USERNAME@$SPSH_DEV_TUNNEL_HOST \
+              -p $SPSH_DEV_TUNNEL_PORT \
               -N -o ServerAliveInterval=15 -o ExitOnForwardFailure=yes &
           disown
 

@@ -14,11 +14,11 @@ jobs:
         browser: chromium
         playwright_branch: main
       secrets:
-        TUNNEL_USER_SSHKEY: ${{ secrets.TUNNEL_USER_SSHKEY }}
+        SPSH_DEV_USER_SSHKEY: ${{ secrets.SPSH_DEV_USER_SSHKEY }}
         SPSH_DEV_KUBECONFIG: ${{ secrets.SPSH_DEV_KUBECONFIG }}
-        TUNNEL_USER: ${{ secrets.TUNNEL_USER }}
-        TUNNELHOST: ${{ secrets.TUNNELHOST }}
-        TUNNEL_PORT: ${{ secrets.TUNNEL_PORT }}
+        SPSH_DEV_TUNNEL_USERNAME: ${{ secrets.SPSH_DEV_TUNNEL_USERNAME }}
+        SPSH_DEV_TUNNEL_HOST: ${{ secrets.SPSH_DEV_TUNNEL_HOST }}
+        SPSH_DEV_TUNNEL_PORT: ${{ secrets.SPSH_DEV_TUNNEL_PORT }}
         USER: ${{ secrets.USER }}
         PW: ${{ secrets.PW }}
         RC_WEBHOOK: ${{ secrets.RC_WEBHOOK }}
