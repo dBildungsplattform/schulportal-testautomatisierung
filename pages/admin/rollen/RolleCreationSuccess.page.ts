@@ -1,7 +1,7 @@
 import { expect, Page } from '@playwright/test';
 import { RolleForm } from '../../../components/RolleForm';
 import { RolleCreationParams } from './RolleCreationView.neu.page';
-import { RolleManagementViewPage } from './RolleManagementView.page';
+import { RolleManagementViewPage } from './RolleManagementView.neu.page';
 
 export class RolleCreationSuccessPage {
   private readonly rolleForm: RolleForm;
@@ -13,11 +13,16 @@ export class RolleCreationSuccessPage {
   /* actions */
   public async waitForPageLoad(): Promise<void> {
     await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Neue Rolle hinzufügen');
+    await expect(this.page.getByText('Folgende Daten wurden gespeichert:')).toBeVisible();
+    await expect(this.page.getByTestId('rolle-success-text')).toBeVisible();
+    await expect(this.page.getByTestId('rolle-success-icon')).toBeVisible();
   }
 
   public async backToResultList(): Promise<RolleManagementViewPage> {
     await this.page.getByTestId('back-to-list-button').click();
-    return new RolleManagementViewPage(this.page);
+    const rolleManagementViewPage: RolleManagementViewPage = new RolleManagementViewPage(this.page);
+    await rolleManagementViewPage.waitForPageLoad();
+    return rolleManagementViewPage;
   }
 
   /* assertions */

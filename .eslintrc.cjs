@@ -57,6 +57,12 @@ module.exports = {
     ],
 
     // currently disabled rules - TODO: fix them
-    'playwright/no-conditional-in-test': 'off'
+    'playwright/no-conditional-in-test': 'off',
+    'playwright/expect-expect': [
+      'error',
+      {
+        assertFunctionNames: ['checkSuccessPage']
+      }
+    ]
   }
 }

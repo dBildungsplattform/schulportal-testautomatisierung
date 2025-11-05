@@ -1,6 +1,7 @@
 import { expect, Page } from '@playwright/test';
 import { RolleCreationSuccessPage } from './RolleCreationSuccess.page';
 import { RolleCreationWorkflow } from './RolleCreationWorkflow.page';
+import { MenuBarPage } from '../../components/MenuBar.neu.page';
 
 /* these rolle creation params are not the same as the API params,
     here we use the displayed texts to select from input elements */
@@ -14,7 +15,11 @@ export interface RolleCreationParams {
 }
 
 export class RolleCreationViewPage {
-  constructor(protected readonly page: Page) {}
+  public readonly menu: MenuBarPage;
+
+  constructor(protected readonly page: Page) {
+    this.menu = new MenuBarPage(this.page);
+  }
 
   /* actions */
   public async waitForPageLoad(): Promise<void> {

@@ -15,7 +15,8 @@ export class DataTable {
     }
 
     public async setItemsPerPage(value: string): Promise<void> {
-      await this.page.locator('.v-data-table-footer__items-per-page .v-select').selectOption(value);
+      await this.page.locator('.v-data-table-footer__items-per-page .v-input').click();
+      await this.page.getByText(value, { exact: true }).click();
     }
 
     public async goToFirstPage(): Promise<void> {

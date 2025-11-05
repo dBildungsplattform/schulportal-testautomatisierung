@@ -59,7 +59,12 @@ export class MenuBarPage {
   }
 
   public async navigateToRolleManagement(): Promise<RolleManagementViewPage> {
-    return this.navigateTo('rolle-management-menu-item', RolleManagementViewPage, p => p.waitForPageLoad());
+    // return this.navigateTo('rolle-management-menu-item', RolleManagementViewPage, p => p.waitForPageLoad());
+
+    await this.page.getByTestId('rolle-management-menu-item').click();
+    const newPage: any = new RolleManagementViewPage(this.page);
+    await newPage.waitForPageLoad();
+    return newPage;
   }
 
   public async navigateToRolleCreation(): Promise<RolleCreationViewPage> {

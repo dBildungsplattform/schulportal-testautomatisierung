@@ -13,7 +13,9 @@ export class HeaderPage {
     await this.page.getByTestId('nav-logout-button').click();
     // TODO: this hopefully redirects to landing, even if we get 'stuck' on keycloak login, because of trailing requests during logout
     await this.page.goto('/');
-    return new LandingViewPage(this.page);
+    const landingViewPage: LandingViewPage = new LandingViewPage(this.page);
+    await landingViewPage.waitForPageLoad();
+    return landingViewPage;
   }
 
   public async navigateToLogin(): Promise<LoginViewPage> {
