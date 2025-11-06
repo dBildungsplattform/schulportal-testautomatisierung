@@ -71,7 +71,7 @@ export class RolleCreationWorkflow {
   /* assertions */
   public async checkMessage(label: keyof RolleCreationParams, value: string): Promise<void> {
     switch (label) {
-      case 'schulname':
+      case 'administrationsebene':
         await expect(this.rolleForm.adminstrationsebene.messages).toHaveText(value);
         break;
       case 'rollenart':
