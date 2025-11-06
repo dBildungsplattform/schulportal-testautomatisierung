@@ -2,6 +2,7 @@ import { expect, Page } from '@playwright/test';
 import { RolleForm } from '../../../components/RolleForm';
 import { RolleCreationSuccessPage } from './RolleCreationSuccess.page';
 import { RolleCreationParams } from './RolleCreationView.neu.page';
+import { RolleCreationErrorPage } from './RolleCreationError.page';
 
 export class RolleCreationWorkflow {
   private readonly rolleForm: RolleForm;
@@ -15,7 +16,7 @@ export class RolleCreationWorkflow {
     await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Neue Rolle hinzufügen');
   }
 
-  public async selectAdministrationsebene(schulname: RolleCreationParams['schulname']): Promise<void> {
+  public async selectAdministrationsebene(schulname: RolleCreationParams['administrationsebene']): Promise<void> {
     await this.rolleForm.adminstrationsebene.inputElement.searchByTitle(schulname, false);
   }
 
@@ -56,6 +57,15 @@ export class RolleCreationWorkflow {
     await rolleCreationSuccessPage.waitForPageLoad();
 
     return rolleCreationSuccessPage;
+  }
+
+  public async submitWithError(): Promise<RolleCreationErrorPage> {
+    await this.page.getByTestId('rolle-form-submit-button').click();
+
+    const rolleCreationErrorPage: RolleCreationErrorPage = new RolleCreationErrorPage(this.page);
+    await rolleCreationErrorPage.waitForPageLoad();
+
+    return rolleCreationErrorPage;
   }
 
   /* assertions */

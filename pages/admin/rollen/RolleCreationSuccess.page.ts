@@ -1,6 +1,6 @@
 import { expect, Page } from '@playwright/test';
 import { RolleForm } from '../../../components/RolleForm';
-import { RolleCreationParams } from './RolleCreationView.neu.page';
+import { RolleCreationParams, RolleCreationViewPage } from './RolleCreationView.neu.page';
 import { RolleManagementViewPage } from './RolleManagementView.neu.page';
 
 export class RolleCreationSuccessPage {
@@ -25,6 +25,13 @@ export class RolleCreationSuccessPage {
     return rolleManagementViewPage;
   }
 
+  public async createAnother(): Promise<RolleCreationViewPage> {
+    await this.page.getByTestId('create-another-rolle-button').click();
+    const rolleCreationViewPage: RolleCreationViewPage = new RolleCreationViewPage(this.page);
+    await rolleCreationViewPage.waitForPageLoad();
+    return rolleCreationViewPage;
+  }
+
   /* assertions */
   public async checkSuccessPage(params: RolleCreationParams): Promise<void> {
     await expect(this.page.getByText('Folgende Daten wurden gespeichert:')).toBeVisible();
@@ -33,7 +40,7 @@ export class RolleCreationSuccessPage {
     await expect(this.rolleForm.rollenname.label).toBeVisible();
     await expect(this.rolleForm.rollenname.data).toHaveText(params.name);
     await expect(this.rolleForm.adminstrationsebene.label).toBeVisible();
-    await expect(this.rolleForm.adminstrationsebene.data).toContainText(params.schulname);
+    await expect(this.rolleForm.adminstrationsebene.data).toContainText(params.administrationsebene);
     await expect(this.rolleForm.rollenart.label).toBeVisible();
     await expect(this.rolleForm.rollenart.data).toHaveText(params.rollenart);
     await expect(this.rolleForm.merkmale.label).toBeVisible();

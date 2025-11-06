@@ -1,8 +1,8 @@
-import { expect, PlaywrightTestArgs, test } from '@playwright/test';
-import { createPersonWithUserContext, freshLoginPage, UserInfo } from '../../base/api/personApi';
+import { PlaywrightTestArgs, test } from '@playwright/test';
+import { freshLoginPage } from '../../base/api/personApi';
 import { systemrechtLabel } from '../../base/berechtigungen';
 import { rollenMerkmalLabel } from '../../base/merkmale';
-import { landSH, testschuleName } from '../../base/organisation';
+import { testschuleName } from '../../base/organisation';
 import { landesadminRolle } from '../../base/rollen';
 import {
   adressbuch,
@@ -18,12 +18,13 @@ import {
   webUntis,
 } from '../../base/sp';
 import { deleteRolleByName } from '../../base/testHelperDeleteTestdata';
-import { generateNachname, generateRolleName, generateVorname } from '../../base/utils/generateTestdata';
+import { generateRolleName } from '../../base/utils/generateTestdata';
 import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.neu.page';
+import { RolleCreationErrorPage } from '../../pages/admin/rollen/RolleCreationError.page';
 import { RolleCreationSuccessPage } from '../../pages/admin/rollen/RolleCreationSuccess.page';
 import { RolleCreationParams, RolleCreationViewPage } from '../../pages/admin/rollen/RolleCreationView.neu.page';
+import { RolleDetailsViewPage } from '../../pages/admin/rollen/RolleDetailsView.neu.page';
 import { RolleManagementViewPage } from '../../pages/admin/rollen/RolleManagementView.neu.page';
-import { HeaderPage } from '../../pages/components/Header.neu.page';
 import { LoginViewPage } from '../../pages/LoginView.neu.page';
 import { StartViewPage } from '../../pages/StartView.neu.page';
 
@@ -33,7 +34,7 @@ const PASSWORD: string | undefined = process.env.PW;
 const rolleCreationParams: RolleCreationParams[] = [
   {
     name: generateRolleName(),
-    schulname: testschuleName,
+    administrationsebene: testschuleName,
     rollenart: 'Lehr',
     merkmale: [rollenMerkmalLabel.BEFRISTUNG_PFLICHT, rollenMerkmalLabel.KOPERS_PFLICHT],
     systemrechte: [],
@@ -53,7 +54,7 @@ const rolleCreationParams: RolleCreationParams[] = [
   },
   {
     name: generateRolleName(),
-    schulname: testschuleName,
+    administrationsebene: testschuleName,
     rollenart: 'Lern',
     merkmale: [],
     systemrechte: [],
@@ -61,7 +62,7 @@ const rolleCreationParams: RolleCreationParams[] = [
   },
   {
     name: generateRolleName(),
-    schulname: testschuleName,
+    administrationsebene: testschuleName,
     rollenart: 'Leit',
     merkmale: [],
     systemrechte: [
@@ -107,6 +108,25 @@ test.describe(`Testfälle für die Rollenanlage: Umgebung: ${process.env.ENV}: U
           });
         });
 
+        test('Gesamtübersicht prüfen', async ({ page}: PlaywrightTestArgs) => {
+          const rolleCreationPage: RolleCreationViewPage = await setupAndGoToRolleCreationPage(page);
+          const rolleCreationSuccessPage: RolleCreationSuccessPage = await test.step('Rolle anlegen', async () => {
+            const rolleCreationSuccessPage: RolleCreationSuccessPage = await rolleCreationPage.createRolle(rolleParams);
+            rollenNamesToDelete.push(rolleParams.name);
+            return rolleCreationSuccessPage;
+          });
+          const rolleDetailsView: RolleDetailsViewPage = await test.step('Zur Gesamtübersicht navigieren', async () => {
+          await rolleCreationSuccessPage.checkSuccessPage(rolleParams);
+          const rolleManagementViewPage: RolleManagementViewPage = await rolleCreationSuccessPage.backToResultList();
+          await rolleManagementViewPage.setPageSize('300');
+          return await rolleManagementViewPage.openGesamtuebersicht(rolleParams.name);
+          });
+
+          await test.step('Gesamtübersicht prüfen', async () => {
+            await rolleDetailsView.checkGesamtuebersicht(rolleParams);
+          });
+        });
+
         test('In der Ergebnisliste prüfen', async ({ page }) => {
           const rolleCreationPage: RolleCreationViewPage = await setupAndGoToRolleCreationPage(page);
           const rolleCreationSuccessPage: RolleCreationSuccessPage = await rolleCreationPage.createRolle(rolleParams);
@@ -118,15 +138,33 @@ test.describe(`Testfälle für die Rollenanlage: Umgebung: ${process.env.ENV}: U
         });
       });
     }
-  });
 
-  // TODO: angelegte rolle in ergebnisliste prüfen
+    test.describe('Fehler bei Anlage', () => {
+      test('Rolle doppelt anlegen', async ({ page }) => {
+        let rolleCreationPage: RolleCreationViewPage = await setupAndGoToRolleCreationPage(page);
+        const rolleCreationSuccessPage: RolleCreationSuccessPage = await test.step('Rolle anlegen', async () => {
+          const rolleCreationSuccessPage: RolleCreationSuccessPage = await rolleCreationPage.createRolle(rolleCreationParams[0]);
+          rollenNamesToDelete.push(rolleCreationParams[0].name);
+          return rolleCreationSuccessPage;
+        });
+        await test.step('Erneut zur Rollenanlage navigieren', async () => {
+          rolleCreationPage = await rolleCreationSuccessPage.createAnother();
+        });
+
+        const errorPage: RolleCreationErrorPage = await test.step('Erneut Rolle mit gleichem Namen anlegen', async () => {
+          return  rolleCreationPage.createRolleWithError(rolleCreationParams[0]);
+        });
+
+        await test.step('Fehlermeldung prüfen', async () => {
+          await errorPage.checkErrorPage('Der Rollenname ist bereits vergeben. Bitte korrigieren Sie Ihre Eingabe.');
+        });
+    });
+  });
+  });
 
   // TODO: angelegte rolle in gesamtübersicht prüfen
 
   // TODO: rolle mit ungültigen daten anlegen
-
-  // TODO: rolle doppelt anlegen
 
   // TODO: login mit user und prüfen auf systemrechte und serviceprovider
 });
