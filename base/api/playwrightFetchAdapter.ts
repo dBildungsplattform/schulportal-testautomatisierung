@@ -1,4 +1,5 @@
 import { APIResponse, Page } from '@playwright/test';
+import { Headers } from 'node-fetch';
 
 /**
  * makeFetchWithPlaywright
