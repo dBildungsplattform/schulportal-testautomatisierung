@@ -155,7 +155,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     'Eine Rolle anlegen und die Bestätigungsseite vollständig prüfen als Landesadmin',
     { tag: [LONG, SHORT, STAGE, BROWSER] },
     async () => {
-      const rollenname: string = await generateRolleName();
+      const rollenname: string = generateRolleName();
       const administrationsebene: string = landSH;
       const rollenart: string = 'Leit';
       const merkmal: string = 'KoPers.-Nr. ist Pflichtangabe';
@@ -284,7 +284,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
 });
 
 test.describe('Testet die Anlage einer neuen Rolle', () => {
-  let rolleNames: string | undefined = undefined;
+  let rolleName: string | undefined = undefined;
 
   test(
     'Eine neue Rolle anlegen und sicherstellen, dass alle Serviceprovider angezeigt werden und verfügbar sind',
@@ -300,8 +300,8 @@ test.describe('Testet die Anlage einer neuen Rolle', () => {
       } = await test.step('Rolle mit mehr als 5 SPs anlegen', async () => {
         await rolleCreationView.rolleForm.adminstrationsebene.inputElement.selectByTitle('Land Schleswig-Holstein');
         await rolleCreationView.rolleForm.rollenart.inputElement.selectByTitle('Lehr');
-        rolleNames = 'Neue Rolle aus Test';
-        await rolleCreationView.enterRollenname(rolleNames);
+        rolleName = generateRolleName();
+        await rolleCreationView.enterRollenname(rolleName);
         const theFirstSeven: number[] = Array.from({ length: 7 }, (_: unknown, key: number) => key);
         const selectedItems: string[] = await rolleCreationView.rolleForm.angebote.inputElement.selectByPosition(
           theFirstSeven
@@ -321,8 +321,8 @@ test.describe('Testet die Anlage einer neuen Rolle', () => {
       });
 
       await test.step('Rollentabelle prüfen', async () => {
-        expect(rolleNames).toBeDefined();
-        const row: RoleTableRow = rolleManagementPage.rowByRoleName(rolleNames!);
+        expect(rolleName).toBeDefined();
+        const row: RoleTableRow = rolleManagementPage.rowByRoleName(rolleName);
         await expect(row.locator).toBeVisible();
 
         const spCell: Locator = row.spCell();

@@ -30,7 +30,7 @@ import { StartViewPage } from '../../pages/StartView.neu.page';
 const ADMIN: string | undefined = process.env.USER;
 const PASSWORD: string | undefined = process.env.PW;
 
-const rolleCreationParams: Array<RolleCreationParams> = [
+const rolleCreationParams: RolleCreationParams[] = [
   {
     name: generateRolleName(),
     schulname: testschuleName,
@@ -76,7 +76,7 @@ const rolleCreationParams: Array<RolleCreationParams> = [
 
 async function setupAndGoToRolleCreationPage(page: PlaywrightTestArgs['page']): Promise<RolleCreationViewPage> {
   return test.step('Anmelden und zur Rollenanlage navigieren', async () => {
-  let loginPage: LoginViewPage = await freshLoginPage(page);
+  const loginPage: LoginViewPage = await freshLoginPage(page);
   const startPage: StartViewPage = await loginPage.login(ADMIN, PASSWORD);
   await startPage.waitForPageLoad();
   const personManagementView: PersonManagementViewPage = await startPage.navigateToAdministration();
