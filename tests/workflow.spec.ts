@@ -1,21 +1,20 @@
-import { test, expect, PlaywrightTestArgs, Page } from '@playwright/test';
+import { expect, Page, PlaywrightTestArgs, test } from '@playwright/test';
+import { createTeacherAndLogin, UserInfo } from '../base/api/personApi';
+import { BROWSER, DEV, LONG, SHORT, STAGE } from '../base/tags';
+import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata';
+import FromAnywhere from '../pages/FromAnywhere';
 import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
 import { StartPage } from '../pages/StartView.page';
-import { Email } from '../pages/components/service-provider-cards/Email.page';
-import { PersonManagementViewPage } from '../pages/admin/personen/PersonManagementView.page';
 import { PersonDetailsViewPage } from '../pages/admin/personen/PersonDetailsView.page';
+import { PersonManagementViewPage } from '../pages/admin/personen/PersonManagementView.page';
 import { HeaderPage } from '../pages/components/Header.page';
-import { LONG, SHORT, STAGE, BROWSER } from '../base/tags';
 import { CalendarPage } from '../pages/components/service-provider-cards/Calendar.page';
 import { DirectoryPage } from '../pages/components/service-provider-cards/Directory.page';
-import { createTeacherAndLogin, UserInfo } from '../base/api/personApi';
-import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata';
-import FromAnywhere from '../pages/FromAnywhere';
+import { Email } from '../pages/components/service-provider-cards/Email.page';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
-const ENV: string | undefined = process.env.ENV;
 
 // The created test data will be deleted in the afterEach block
 let usernames: string[] = [];
@@ -23,6 +22,8 @@ let rolleIds: string[] = [];
 // This variable must be set to false in the testcase when the logged in user is changed
 let currentUserIsLandesadministrator: boolean = true;
 let logoutViaStartPage: boolean = false;
+
+const isStageTest = (): boolean => process.env.ENV === 'stage' || process.env.TAG === 'stage';
 
 test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
@@ -76,9 +77,8 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
     });
   });
 
-  test('Angebote per Link öffnen als Lehrer', { tag: [LONG, SHORT, STAGE] }, async ({ page }: PlaywrightTestArgs) => {
+  test('Angebote per Link öffnen als Lehrer', { tag: [LONG, SHORT, STAGE, DEV] }, async ({ page }: PlaywrightTestArgs) => {
     const startseite: StartPage = new StartPage(page);
-
     let userInfoAdmin: UserInfo;
 
     await test.step(`Lehrer via api anlegen und mit diesem anmelden`, async () => {
@@ -89,8 +89,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
     });
 
     await test.step(`Kacheln Email für Lehrkräfte und Itslearning öffnen, danach beide Kacheln wieder schließen`, async () => {
-      // email
-      // Die Schnittstelle email für Lehrkräfte(ox) gibt es nur auf stage
+      // TODO: Die Schnittstelle email für Lehrkräfte(ox) gibt es nur auf stage
       // Auf dev wird nur getestet, dass die url für ox aufgerufen wird wenn man die Kachel email anklickt
       // Wenn SPSH-1043 auf stage deployed ist, muss der Test erweitert werden. Hier muss dann das erwartete Verhalten getestet werden, wenn man auf stage auf die Kachel(email, Adressbuch, Kalender)  klickt
       await expect(startseite.cardItemEmail).toBeVisible(); // warten bis die Seite geladen ist
@@ -99,10 +98,10 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
       await startseite.cardItemEmail.click();
       const emailPage: Page = await emailPagePromise;
       const email: Email = new Email(emailPage);
-      switch (ENV) {
-        case 'dev':
+      if (isStageTest()) {
+        // TODO: implement assertion
+      } else {
           await expect(email.textH1).toBeVisible(); // dummy Seite email wikipedia
-          break;
       }
       await emailPage.close();
 
@@ -111,10 +110,10 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
       await startseite.cardItemKalender.click();
       const pageKalender: Page = await pageKalenderPromise;
       const kalender: CalendarPage = new CalendarPage(pageKalender);
-      switch (ENV) {
-        case 'dev':
-          await expect(kalender.textH1).toBeVisible(); // dummy Seite Kalender wikipedia
-          break;
+      if (isStageTest()) {
+        // TODO: implement assertion
+      } else {
+        await expect(kalender.textH1).toBeVisible(); // dummy Seite Kalender wikipedia
       }
       await pageKalender.close();
 
@@ -123,10 +122,10 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
       await startseite.cardItemAdressbuch.click();
       const directoryPage: Page = await directoryPagePromise;
       const adressbuch: DirectoryPage = new DirectoryPage(directoryPage);
-      switch (ENV) {
-        case 'dev':
-          await expect(adressbuch.textH1).toBeVisible(); // dummy Seite Adressbuch wikipedia
-          break;
+      if (isStageTest()) {
+        // TODO: implement assertion
+      } else {
+        await expect(adressbuch.textH1).toBeVisible(); // dummy Seite Adressbuch wikipedia
       }
       await directoryPage.close();
     });
@@ -142,7 +141,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
 
   test(
     'Passwort Reset für einen Lehrer als Landesadmin',
-    { tag: [LONG, SHORT, STAGE, BROWSER] },
+    { tag: [LONG, SHORT, STAGE, DEV, BROWSER] },
     async ({ page }: PlaywrightTestArgs) => {
       const landing: LandingPage = new LandingPage(page);
       const login: LoginPage = new LoginPage(page);
