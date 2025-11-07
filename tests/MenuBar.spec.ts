@@ -2,7 +2,7 @@ import { test, expect, PlaywrightTestArgs } from '@playwright/test';
 import { StartPage } from '../pages/StartView.page';
 import { MenuPage } from '../pages/components/MenuBar.page';
 import { HeaderPage } from '../pages/components/Header.page';
-import { LONG, SHORT, STAGE, BROWSER } from '../base/tags';
+import { LONG, SHORT, STAGE, DEV, BROWSER } from '../base/tags';
 import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
 import FromAnywhere from '../pages/FromAnywhere';
@@ -35,7 +35,7 @@ test.describe(`Testfälle für die Hauptmenue-Leiste: Umgebung: ${process.env.EN
 
   test(
     'Test der Hauptmenue-Leiste und Untermenues auf Vollständigkeit',
-    { tag: [LONG, SHORT, STAGE, BROWSER] },
+    { tag: [LONG, SHORT, STAGE, DEV, BROWSER] },
     async ({ page }: PlaywrightTestArgs) => {
       const startseite: StartPage = new StartPage(page);
       const menuBar: MenuPage = new MenuPage(page);
@@ -63,7 +63,7 @@ test.describe(`Testfälle für die Hauptmenue-Leiste: Umgebung: ${process.env.EN
 
   test(
     'Test der Funktion "Zurueck zur Startseite"',
-    { tag: [LONG, SHORT, STAGE] },
+    { tag: [LONG, SHORT, STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const startseite: StartPage = new StartPage(page);
       const menuBar: MenuPage = new MenuPage(page);

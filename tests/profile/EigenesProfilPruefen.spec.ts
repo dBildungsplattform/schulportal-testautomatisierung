@@ -7,7 +7,7 @@ import { klasse1Testschule } from '../../base/klassen';
 import { landSH, testschuleDstNr, testschuleName } from '../../base/organisation';
 import { RollenArt, typeLandesadmin, typeLehrer, typeSchuladmin } from '../../base/rollentypen';
 import { email, schulportaladmin } from '../../base/sp';
-import { BROWSER, LONG, SHORT, STAGE } from '../../base/tags';
+import { BROWSER, DEV, LONG, SHORT, STAGE } from '../../base/tags';
 import { generateKopersNr, generateNachname, generateRolleName, generateVorname } from '../../base/utils/generateTestdata';
 import { HeaderPage } from '../../pages/components/Header.neu.page';
 import FromAnywhere from '../../pages/FromAnywhere.neu';
@@ -71,7 +71,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
   test(
     'Das eigene Profil öffnen und auf Vollständigkeit prüfen als Landesadmin',
-    { tag: [LONG, STAGE, BROWSER] },
+    { tag: [LONG, STAGE, DEV, BROWSER] },
     async ({ page }: PlaywrightTestArgs) => {
       const profileView: ProfileViewPage = new ProfileViewPage(page);
       const header: HeaderPage = new HeaderPage(page);
@@ -147,7 +147,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
 test(
   'Das eigene Profil öffnen und auf Vollständigkeit prüfen als Lehrer mit einer Schulzuordnung',
-  { tag: [LONG, SHORT, STAGE] },
+  { tag: [LONG, SHORT, DEV, STAGE] },
   async ({ page }: PlaywrightTestArgs) => {
     const header: HeaderPage = new HeaderPage(page);
     const login: LoginViewPage = new LoginViewPage(page);
@@ -221,7 +221,7 @@ test(
 
 test(
   'Das eigene Profil öffnen und auf Vollständigkeit prüfen als Schüler mit einer Schulzuordnung',
-  { tag: [LONG, STAGE] },
+  { tag: [LONG, STAGE, DEV] },
   async ({ page }: PlaywrightTestArgs) => {
     const header: HeaderPage = new HeaderPage(page);
     const login: LoginViewPage = new LoginViewPage(page);
@@ -296,7 +296,7 @@ test(
 
   test(
   'Das eigene Profil öffnen und auf Vollständigkeit prüfen als Schuladmin mit einer Schulzuordnung',
-  { tag: [LONG, STAGE] },
+  { tag: [LONG, STAGE, DEV] },
   async ({ page }: PlaywrightTestArgs) => {
     const header: HeaderPage = new HeaderPage(page);
     const login: LoginViewPage = new LoginViewPage(page);

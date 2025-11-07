@@ -7,7 +7,7 @@ import { klasse1Testschule } from '../../base/klassen';
 import { testschuleName } from '../../base/organisation';
 import { RollenArt, typeLehrer } from '../../base/rollentypen';
 import { email, itslearning } from '../../base/sp';
-import { LONG, STAGE } from '../../base/tags';
+import { DEV, LONG, STAGE } from '../../base/tags';
 import { generateKopersNr, generateNachname, generateRolleName, generateVorname } from '../../base/utils/generateTestdata';
 import { HeaderPage } from '../../pages/components/Header.neu.page';
 import FromAnywhere from '../../pages/FromAnywhere.neu';
@@ -70,7 +70,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
   test(
     'Im Profil das eigene Passwort ändern als Lehrer und Schüler (Schüler meldet sich anschließend mit dem neuen PW an)',
-    { tag: [LONG, STAGE] },
+    { tag: [LONG, STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const header: HeaderPage = new HeaderPage(page);
       const loginView: LoginViewPage = new LoginViewPage(page);
@@ -143,7 +143,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
   test(
     'Das eigene Profil öffnen als Lehrer, Passwort-Ändern öffnen (Passwortänderung nicht durchführen), und Status des Benutzernamenfelds prüfen',
-    { tag: [LONG, STAGE] },
+    { tag: [LONG, STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const header: HeaderPage = new HeaderPage(page);
       const login: LoginViewPage = new LoginViewPage(page);
