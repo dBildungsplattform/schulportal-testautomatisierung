@@ -17,6 +17,7 @@ import {
   opSH,
   psychosozialesBeratungsangebot,
   schoolSH,
+  schulportaladmin,
   schulrechtAZ,
   webUntis,
 } from '../../base/sp';
@@ -39,7 +40,7 @@ const rolleCreationParams: RolleCreationParams[] = [
   {
     name: generateRolleName(),
     administrationsebene: testschuleName,
-    rollenart: 'Lehr',
+    rollenart: rollenArtLabel.LEHR,
     merkmale: [rollenMerkmalLabel.BEFRISTUNG_PFLICHT, rollenMerkmalLabel.KOPERS_PFLICHT],
     systemrechte: [],
     serviceProviders: [
@@ -59,7 +60,7 @@ const rolleCreationParams: RolleCreationParams[] = [
   {
     name: generateRolleName(),
     administrationsebene: testschuleName,
-    rollenart: 'Lern',
+    rollenart: rollenArtLabel.LERN,
     merkmale: [],
     systemrechte: [],
     serviceProviders: [itslearning, webUntis],
@@ -67,7 +68,7 @@ const rolleCreationParams: RolleCreationParams[] = [
   {
     name: generateRolleName(),
     administrationsebene: testschuleName,
-    rollenart: 'Leit',
+    rollenart: rollenArtLabel.LEIT,
     merkmale: [],
     systemrechte: [
       systemrechtLabel.LANDESBEDIENSTETE_SUCHEN_UND_HINZUFUEGEN,
@@ -75,7 +76,7 @@ const rolleCreationParams: RolleCreationParams[] = [
       systemrechtLabel.EINGESCHRAENKT_NEUE_BENUTZER_ERSTELLEN,
       systemrechtLabel.PERSONEN_VERWALTEN,
     ],
-    serviceProviders: [itslearning, webUntis],
+    serviceProviders: [schulportaladmin],
   },
 ];
 
