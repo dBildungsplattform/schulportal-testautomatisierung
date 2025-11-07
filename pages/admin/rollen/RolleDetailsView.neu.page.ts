@@ -1,19 +1,22 @@
 import { expect, type Locator, Page } from '@playwright/test';
 import { RolleCreationParams } from './RolleCreationView.neu.page';
 import { RolleForm } from '../../../components/RolleForm';
+import { deleteRolle } from '../../../base/api/rolleApi';
+import { RolleManagementViewPage } from './RolleManagementView.neu.page';
 
 export class RolleDetailsViewPage {
 
   constructor(protected readonly page: Page) { }
 
   /* actions */
-  public async waitForPageLoad(): Promise<void> {
+  public async waitForPageLoad(): Promise<RolleDetailsViewPage> {
     await this.page.getByTestId('rolle-details-card').waitFor({ state: 'visible' });
     await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Rolle bearbeiten');
+    return this;
   }
 
   public async editRolle(rollenname: string): Promise<void> {
-    const rolleNameInput: Locator = this.page.getByTestId('rollenname-input');
+    const rolleNameInput: Locator = this.page.getByTestId('rollenname-input').getByRole('textbox');
     const editRolleButton: Locator = this.page.getByTestId('rolle-edit-button');
     const editRolleSubmitButton: Locator = this.page.getByTestId('rolle-changes-save-button');
 
@@ -25,6 +28,25 @@ export class RolleDetailsViewPage {
 
     await editRolleSubmitButton.waitFor({ state: 'visible' });
     await editRolleSubmitButton.click();
+  }
+
+  public async deleteRolle(): Promise<RolleManagementViewPage> {
+    await this.clickDeleteAndConfirm();
+    await this.page.getByTestId('close-rolle-delete-success-dialog-button').click();
+    return new RolleManagementViewPage(this.page).waitForPageLoad();  
+  }
+
+  public async attemptDeletionOfAssignedRolleAndConfirmError(): Promise<RolleManagementViewPage> {
+    await this.clickDeleteAndConfirm();
+    await expect(this.page.getByTestId('rolle-details-error-alert-title')).toContainText('Löschen nicht möglich');
+    await expect(this.page.getByTestId('rolle-details-error-alert-text')).toContainText('Die Rolle kann nicht gelöscht werden, da die sie noch Benutzern zugeordnet ist. Nehmen Sie bitte zunächst alle Zuordnungen zurück.');
+    await this.page.getByTestId('rolle-details-error-alert-button').click();
+    return new RolleManagementViewPage(this.page).waitForPageLoad();  
+  }
+
+  private async clickDeleteAndConfirm(): Promise<void> {
+    await this.page.getByTestId('open-rolle-delete-dialog-button').click();
+    await this.page.getByTestId('rolle-delete-button').click();
   }
 
   /* assertions */

@@ -9,9 +9,10 @@ export class RolleManagementViewPage {
   constructor(protected readonly page: Page) {}
 
   /* actions */
-  public async waitForPageLoad(): Promise<void> {
+  public async waitForPageLoad(): Promise<RolleManagementViewPage> {
     await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Rollenverwaltung');
     await expect(this.page.getByTestId('rolle-table')).not.toContainText('Keine Daten');
+    return this;
   }
 
   public async openGesamtuebersicht(rollenname: string): Promise<RolleDetailsViewPage> {
@@ -28,6 +29,10 @@ export class RolleManagementViewPage {
   /* assertions */
   public async checkIfRolleExists(rollenname: string): Promise<void> {
     await this.rolleTable.checkIfItemIsVisible(rollenname);
+  }
+
+  public async checkIfRolleDoesNotExist(rollenname: string): Promise<void> {
+    await this.rolleTable.checkIfItemIsNotVisible(rollenname);
   }
 
   public async checkIfRolleHasServiceProviders(rollenname: string, serviceProviders: string[]): Promise<void> {
