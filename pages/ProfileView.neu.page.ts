@@ -32,9 +32,9 @@ export class ProfileViewPage {
     await expect(this.page.getByTestId('profile-headline')).toHaveText('Mein Profil');
   }
 
-  public async getFirstSchoolName(): Promise<string> {
-  return this.page.getByTestId('schule-value-1').innerText();
-}
+  public async getFirstSchuleName(): Promise<string> {
+    return this.page.getByTestId('schule-value-1').innerText();
+  }
 
   public async changePassword(username: string, password: string): Promise<string> {
     const passwordInput: Locator = this.page.getByTestId('password-input');
@@ -44,7 +44,7 @@ export class ProfileViewPage {
     await this.page.getByTestId('change-password-button').click();
 
     await expect(this.page.getByTestId('login-prompt-text')).toHaveText('Bitte geben Sie Ihr aktuelles Passwort ein.');
-    
+
     await passwordInput.waitFor({ state: 'visible' });
     await passwordInput.fill(password);
 
@@ -58,7 +58,7 @@ export class ProfileViewPage {
     return newPassword;
   }
 
-  public async resetDevicePassword (): Promise<void> {
+  public async resetDevicePassword(): Promise<void> {
     /* zuordnung card for password reset */
     await expect(this.page.getByTestId('reset-device-password-card-headline')).toBeVisible();
     await expect(this.page.getByTestId('device-password-info-text')).toBeVisible();
@@ -76,11 +76,53 @@ export class ProfileViewPage {
     await expect(this.page.getByTestId('profile-headline')).toBeVisible();
   }
 
+  public async openChangePasswordDialog(): Promise<void> {
+    const changeButton: Locator = this.page.getByTestId('open-change-password-dialog-button');
+    await expect(changeButton).toBeEnabled();
+    await changeButton.click();
+
+    const confirmButton: Locator = this.page.getByTestId('change-password-button');
+    await expect(confirmButton).toBeVisible();
+    await confirmButton.click();
+  }
+
+  public async navigateBackToProfile(): Promise<void> {
+    await this.page.goBack();
+    await this.waitForPageLoad();
+  }
+
+  public async open2FADialog(): Promise<void> {
+    await expect(this.page.getByTestId('two-factor-card')).toBeVisible();
+    await expect(this.page.getByTestId('open-2FA-self-service-dialog-icon')).toBeEnabled();
+    await this.page.getByTestId('open-2FA-self-service-dialog-icon').click();
+  }
+
+  public async proceedTo2FAQrCode(): Promise<void> {
+    await this.page.getByTestId('proceed-two-factor-authentication-dialog').click();
+  }
+
+  public async proceedToOtpEntry(): Promise<void> {
+    await this.page.getByTestId('proceed-two-factor-authentication-dialog').click();
+  }
+
+  public async close2FADialog(): Promise<void> {
+    await this.page.getByTestId('close-two-factor-authentication-dialog').click();
+  }
+
   /* assertions */
+  public async submitEmptyOtpAndCheckError(): Promise<void> {
+    await this.page.getByTestId('proceed-two-factor-authentication-dialog').click();
+    await expect(this.page.getByTestId('self-service-otp-error-text')).toHaveText(
+      'Das Einmalpasswort muss angegeben werden.'
+    );
+  }
+
   public async assertPersonalData(persoenlicheDaten: PersoenlicheDaten): Promise<void> {
     await expect(this.page.getByTestId('layout-card-headline-persoenliche-daten')).toHaveText('Persönliche Daten');
     await expect(this.page.getByTestId('fullname-label')).toHaveText('Vor- und Nachname:');
-    await expect(this.page.getByTestId('fullname-value')).toHaveText(persoenlicheDaten.vorname + ' ' + persoenlicheDaten.nachname);
+    await expect(this.page.getByTestId('fullname-value')).toHaveText(
+      persoenlicheDaten.vorname + ' ' + persoenlicheDaten.nachname
+    );
     await expect(this.page.getByTestId('username-label')).toHaveText('Benutzername:');
     await expect(this.page.getByTestId('username-value')).toHaveText(persoenlicheDaten.username);
 
@@ -94,33 +136,35 @@ export class ProfileViewPage {
     await expect(this.page.getByTestId('info-icon')).toBeVisible();
   }
 
-    // For each zuordnung, check if card is visible and contains the correct data
+  // For each zuordnung, check if card is visible and contains the correct data
   public async assertZuordnungen(zuordnungen: Zuordnung[]): Promise<void> {
     for (let i: number = 0; i < zuordnungen.length; i++) {
       const index: number = i + 1;
       const zuordnung: Zuordnung = zuordnungen[i];
 
       await Promise.all([
-        expect(this.page.getByTestId(`zuordnung-card-${index}-headline`))
-          .toHaveText(zuordnungen.length === 1 ? 'Schulzuordnung' : `Schulzuordnung ${index}`),
+        expect(this.page.getByTestId(`zuordnung-card-${index}-headline`)).toHaveText(
+          zuordnungen.length === 1 ? 'Schulzuordnung' : `Schulzuordnung ${index}`
+        ),
         expect(this.page.getByTestId(`schule-label-${index}`)).toHaveText('Schule:'),
         expect(this.page.getByTestId(`schule-value-${index}`)).toHaveText(zuordnung.organisationsname),
         expect(this.page.getByTestId(`rolle-label-${index}`)).toHaveText('Rolle:'),
-        expect(this.page.getByTestId(`rolle-value-${index}`)).toHaveText(zuordnung.rollenname)
+        expect(this.page.getByTestId(`rolle-value-${index}`)).toHaveText(zuordnung.rollenname),
       ]);
 
       if (zuordnung.rollenart === 'SYSADMIN') {
         await Promise.all([
           expect(this.page.getByTestId(`dienststellennummer-label-${index}`)).toBeHidden(),
-          expect(this.page.getByTestId(`dienststellennummer-value-${index}`)).toBeHidden()
+          expect(this.page.getByTestId(`dienststellennummer-value-${index}`)).toBeHidden(),
         ]);
       }
 
       if (['LEIT', 'LEHR', 'LERN', 'SCHULADMIN'].includes(zuordnung.rollenart)) {
         await Promise.all([
           expect(this.page.getByTestId(`dienststellennummer-label-${index}`)).toHaveText('DStNr.:'),
-          expect(this.page.getByTestId(`dienststellennummer-value-${index}`))
-            .toHaveText(zuordnung.dienststellennummer!)
+          expect(this.page.getByTestId(`dienststellennummer-value-${index}`)).toHaveText(
+            zuordnung.dienststellennummer
+          ),
         ]);
       }
     }
@@ -137,8 +181,8 @@ export class ProfileViewPage {
   }
 
   public async assertNo2FACard(): Promise<void> {
-  await expect(this.page.getByTestId('two-factor-card')).toBeHidden();
-  await expect(this.page.getByTestId('open-2FA-self-service-dialog-icon')).toBeHidden();
+    await expect(this.page.getByTestId('two-factor-card')).toBeHidden();
+    await expect(this.page.getByTestId('open-2FA-self-service-dialog-icon')).toBeHidden();
   }
 
   public async validatePasswordResetDialog(): Promise<void> {
@@ -150,30 +194,14 @@ export class ProfileViewPage {
     await expect(this.page.getByTestId('password-output-field').locator('input')).toBeVisible();
     await expect(this.page.getByTestId('password-output-field').locator('input')).toHaveAttribute('readonly');
     await expect(this.page.getByTestId('show-password-icon')).toBeVisible();
-    await expect(this.page.getByTestId('copy-password-icon')).toBeVisible()
+    await expect(this.page.getByTestId('copy-password-icon')).toBeVisible();
     await this.page.getByTestId('close-password-reset-dialog-button').click();
-  }
-
-  public async openChangePasswordDialog(): Promise<void> {
-  const changeButton: Locator = this.page.getByTestId('open-change-password-dialog-button');
-  await expect(changeButton).toBeEnabled();
-  await changeButton.click();
-
-  const confirmButton: Locator = this.page.getByTestId('change-password-button');
-  await expect(confirmButton).toBeVisible();
-  await confirmButton.click();
   }
 
   public async assertPasswordDialogUsernamePrompt(username: string): Promise<void> {
     await expect(this.page.getByTestId('attempted-username')).toHaveText(username);
-    await expect(this.page.getByTestId('login-prompt-text'))
-      .toHaveText('Bitte geben Sie Ihr aktuelles Passwort ein.');
+    await expect(this.page.getByTestId('login-prompt-text')).toHaveText('Bitte geben Sie Ihr aktuelles Passwort ein.');
     await expect(this.page.getByTestId('password-input')).toBeEnabled();
-  }
-
-  public async navigateBackToProfile(): Promise<void> {
-    await this.page.goBack();
-    await this.waitForPageLoad();
   }
 
   public async assertPasswordCardVisible(): Promise<void> {
@@ -181,59 +209,38 @@ export class ProfileViewPage {
   }
 
   public async assertPasswordDialogState(username: string): Promise<void> {
-  const usernameField: Locator = this.page.getByTestId('attempted-username');
-  const loginPrompt: Locator = this.page.getByTestId('login-prompt-text');
-  const passwordInput: Locator = this.page.getByTestId('password-input');
+    const usernameField: Locator = this.page.getByTestId('attempted-username');
+    const loginPrompt: Locator = this.page.getByTestId('login-prompt-text');
+    const passwordInput: Locator = this.page.getByTestId('password-input');
 
-  await expect(usernameField).toHaveText(username);
-  await expect(loginPrompt).toHaveText('Bitte geben Sie Ihr aktuelles Passwort ein.');
-  await expect(passwordInput).toBeEnabled();
-}
-
-  public async open2FADialog(): Promise<void> {
-    await expect(this.page.getByTestId('two-factor-card')).toBeVisible();
-    await expect(this.page.getByTestId('open-2FA-self-service-dialog-icon')).toBeEnabled();
-    await this.page.getByTestId('open-2FA-self-service-dialog-icon').click();
+    await expect(usernameField).toHaveText(username);
+    await expect(loginPrompt).toHaveText('Bitte geben Sie Ihr aktuelles Passwort ein.');
+    await expect(passwordInput).toBeEnabled();
   }
 
   public async assert2FADialogIntro(): Promise<void> {
     await expect(this.page.getByTestId('layout-card-headline')).toHaveText('2FA einrichten');
     await expect(this.page.getByTestId('self-service-dialog-info-text')).toContainText('QR-Code generiert');
-    await expect(this.page.getByTestId('self-service-dialog-warning-text')).toContainText('App auf Ihrem Endgerät installiert');
+    await expect(this.page.getByTestId('self-service-dialog-warning-text')).toContainText(
+      'App auf Ihrem Endgerät installiert'
+    );
     await expect(this.page.getByTestId('proceed-two-factor-authentication-dialog')).toHaveText('Weiter');
     await expect(this.page.getByTestId('close-two-factor-authentication-dialog')).toHaveText('Abbrechen');
   }
 
-  public async proceedTo2FAQrCode(): Promise<void> {
-    await this.page.getByTestId('proceed-two-factor-authentication-dialog').click();
-  }
-
   public async assert2FAQrCodeDisplayed(): Promise<void> {
     await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Software-Token einrichten');
-    await expect(this.page.getByTestId('self-service-dialog-qr-info-text'))
-      .toHaveText('Bitte scannen Sie den QR-Code mit Ihrer 2FA-App (z.B. FreeOTP).');
+    await expect(this.page.getByTestId('self-service-dialog-qr-info-text')).toHaveText(
+      'Bitte scannen Sie den QR-Code mit Ihrer 2FA-App (z.B. FreeOTP).'
+    );
     await expect(this.page.getByTestId('software-token-dialog-qr-code')).toBeVisible();
-  }
-
-  public async proceedToOtpEntry(): Promise<void> {
-    await this.page.getByTestId('proceed-two-factor-authentication-dialog').click();
   }
 
   public async assert2FAOtpEntryPrompt(): Promise<void> {
     await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Zwei-Faktor-Authentifizierung (2FA)');
-    await expect(this.page.getByTestId('self-service-otp-entry-info-text'))
-      .toHaveText('Bitte geben Sie das angezeigte Einmalpasswort ein, um die Einrichtung abzuschließen.');
+    await expect(this.page.getByTestId('self-service-otp-entry-info-text')).toHaveText(
+      'Bitte geben Sie das angezeigte Einmalpasswort ein, um die Einrichtung abzuschließen.'
+    );
     await expect(this.page.getByTestId('self-service-otp-input')).toBeVisible();
   }
-
-  public async submitEmptyOtpAndCheckError(): Promise<void> {
-    await this.page.getByTestId('proceed-two-factor-authentication-dialog').click();
-    await expect(this.page.getByTestId('self-service-otp-error-text'))
-      .toHaveText('Das Einmalpasswort muss angegeben werden.');
-  }
-
-  public async close2FADialog(): Promise<void> {
-    await this.page.getByTestId('close-two-factor-authentication-dialog').click();
-  }
-
 }
