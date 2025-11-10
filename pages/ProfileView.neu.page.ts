@@ -1,11 +1,12 @@
 import { expect, type Locator, Page } from '@playwright/test';
 import { LoginViewPage } from './LoginView.neu.page';
-import { RollenArt } from '../base/rollentypen';
+import { RollenArt } from '../base/api/generated';
 
 export interface Zuordnung {
   dienststellennummer?: string;
   kopersnummer?: string;
   organisationsname: string;
+  klassenName?: string;
   rollenart: RollenArt;
   rollenname: string;
 }
@@ -153,7 +154,12 @@ export class ProfileViewPage {
         expect(this.page.getByTestId(`rolle-value-${index}`)).toHaveText(zuordnung.rollenname),
       ]);
 
-      if (zuordnung.rollenart === 'SYSADMIN') {
+      if (zuordnung.klassenName) {
+        await expect(this.page.getByTestId(`klasse-label-${index}`)).toHaveText('Klasse:');
+        await expect(this.page.getByTestId(`klasse-value-${index}`)).toHaveText(zuordnung.klassenName);
+      }
+
+      if (zuordnung.rollenart === RollenArt.Sysadmin) {
         await Promise.all([
           expect(this.page.getByTestId(`dienststellennummer-label-${index}`)).toBeHidden(),
           expect(this.page.getByTestId(`dienststellennummer-value-${index}`)).toBeHidden(),

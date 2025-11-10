@@ -103,10 +103,10 @@ const testData: TestData[] = [
         {
           organisationsname: testschuleName,
           dienststellennummer: testschuleDstNr,
+          klassenName: klasse1Testschule,
           rollenname,
           rollenart: RollenArt.Lern,
         },
-        // klasse zuordnung is generated
       ];
     })(),
     serviceProviders: [itslearning],
@@ -169,7 +169,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
             serviceProviders.map(async (sp: string) => getServiceProviderId(page, sp))
           );
           const klasseId: string | undefined =
-            personalData.rollenart === RollenArt.Lern ? await getOrganisationId(page, klasse1Testschule) : undefined;
+            zuordnungen[0].klassenName ? await getOrganisationId(page, zuordnungen[0].klassenName) : undefined;
           const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
             page,
             zuordnungen[0].organisationsname,
