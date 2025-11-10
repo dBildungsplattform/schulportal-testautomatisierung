@@ -30,6 +30,7 @@ export class ProfileViewPage {
   public async waitForPageLoad(): Promise<void> {
     await this.page.getByTestId('profile-headline').waitFor({ state: 'visible' });
     await expect(this.page.getByTestId('profile-headline')).toHaveText('Mein Profil');
+    await expect(this.page.getByTestId('loading-spinner')).toBeHidden();
   }
 
   public async getFirstSchuleName(): Promise<string> {

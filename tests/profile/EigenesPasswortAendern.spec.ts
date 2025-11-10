@@ -136,7 +136,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await header.logout();
         await header.navigateToLogin();
         const startView: StartViewPage = await loginView.login(userInfoSchueler.username, newPassword);
-        await startView.serviceProviderIsVisible([itslearning]);
+        await startView.serviceProvidersAreVisible([itslearning]);
       });
     }
   );
