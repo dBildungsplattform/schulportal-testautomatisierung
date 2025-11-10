@@ -162,9 +162,7 @@ export class ProfileViewPage {
       if (['LEIT', 'LEHR', 'LERN', 'SCHULADMIN'].includes(zuordnung.rollenart)) {
         await Promise.all([
           expect(this.page.getByTestId(`dienststellennummer-label-${index}`)).toHaveText('DStNr.:'),
-          expect(this.page.getByTestId(`dienststellennummer-value-${index}`)).toHaveText(
-            zuordnung.dienststellennummer
-          ),
+          expect(this.page.getByTestId(`dienststellennummer-value-${index}`)).toHaveText(zuordnung.dienststellennummer),
         ]);
       }
     }
