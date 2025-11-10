@@ -1,8 +1,8 @@
 import { expect, Page } from '@playwright/test';
-import { RolleCreationSuccessPage } from './RolleCreationSuccess.page';
-import { RolleCreationWorkflow } from './RolleCreationWorkflow.page';
 import { MenuBarPage } from '../../components/MenuBar.neu.page';
 import { RolleCreationErrorPage } from './RolleCreationError.page';
+import { RolleCreationSuccessPage } from './RolleCreationSuccess.page';
+import { RolleCreationWorkflow } from './RolleCreationWorkflow.page';
 
 /* these rolle creation params are not the same as the API params,
     here we use the displayed texts to select from input elements */

@@ -1,34 +1,12 @@
 import { PlaywrightTestArgs, test } from '@playwright/test';
 import { getOrganisationId } from '../../base/api/organisationApi';
-import { createPerson, freshLoginPage, UserInfo } from '../../base/api/personApi';
-import { createRolle, getRolleId, RollenArt, RollenMerkmal } from '../../base/api/rolleApi';
-import { systemrechtLabel } from '../../base/berechtigungen';
-import { klasse1Testschule } from '../../base/klassen';
-import { rollenMerkmalLabel } from '../../base/merkmale';
+import { freshLoginPage } from '../../base/api/personApi';
+import { createRolle, RollenArt } from '../../base/api/rolleApi';
 import { testschuleName } from '../../base/organisation';
-import { rollenArtLabel } from '../../base/rollentypen';
-import {
-  adressbuch,
-  anleitungen,
-  email,
-  helpdeskKontaktieren,
-  itslearning,
-  kalender,
-  opSH,
-  psychosozialesBeratungsangebot,
-  schoolSH,
-  schulrechtAZ,
-  webUntis,
-} from '../../base/sp';
-import { generateNachname, generateRolleName, generateVorname } from '../../base/utils/generateTestdata';
+import { generateRolleName } from '../../base/utils/generateTestdata';
 import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.neu.page';
-import { RolleCreationErrorPage } from '../../pages/admin/rollen/RolleCreationError.page';
-import { RolleCreationSuccessPage } from '../../pages/admin/rollen/RolleCreationSuccess.page';
-import { RolleCreationParams, RolleCreationViewPage } from '../../pages/admin/rollen/RolleCreationView.neu.page';
-import { RolleCreationWorkflow } from '../../pages/admin/rollen/RolleCreationWorkflow.page';
 import { RolleDetailsViewPage } from '../../pages/admin/rollen/RolleDetailsView.neu.page';
 import { RolleManagementViewPage } from '../../pages/admin/rollen/RolleManagementView.neu.page';
-import { HeaderPage } from '../../pages/components/Header.neu.page';
 import { LoginViewPage } from '../../pages/LoginView.neu.page';
 import { StartViewPage } from '../../pages/StartView.neu.page';
 

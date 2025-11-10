@@ -1,7 +1,5 @@
 import { expect, type Locator, Page } from '@playwright/test';
 import { RolleCreationParams } from './RolleCreationView.neu.page';
-import { RolleForm } from '../../../components/RolleForm';
-import { deleteRolle } from '../../../base/api/rolleApi';
 import { RolleManagementViewPage } from './RolleManagementView.neu.page';
 
 export class RolleDetailsViewPage {
