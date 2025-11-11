@@ -1,0 +1,46 @@
+# If you merge changes to this file, you will become the actor for the scheduled runs.
+# Execution can only happen while the account of the actor is active.
+# If possible use a service account for this.
+name: Scheduled runs
+
+on:
+  schedule:
+    # enable these with the account that should become the actor
+    # - cron: '15 5 * * 1-5'
+    # - cron: '45 6 * * *'
+    - cron: '5 */1 * * 1-5'
+
+jobs:
+  browser_tests:
+    if: github.event.schedule == '15 5 * * 1-5'
+    strategy:
+      matrix:
+        browser: [chrome, firefox, webkit, msedge]
+    uses: ./.github/workflows/run-playwright.yml
+    with:
+      frontendHostname: main.dev.spsh.dbildungsplattform.de
+      tag: dev
+      browser: ${{ matrix.browser }}
+      playwright_branch: main
+    secrets:
+      SPSH_DEV_USER_SSHKEY: ${{ secrets.SPSH_DEV_USER_SSHKEY }}
+      SPSH_DEV_KUBECONFIG: ${{ secrets.SPSH_DEV_KUBECONFIG }}
+      SPSH_DEV_TUNNEL_USERNAME: ${{ secrets.SPSH_DEV_TUNNEL_USERNAME }}
+      SPSH_DEV_TUNNEL_HOST: ${{ secrets.SPSH_DEV_TUNNEL_HOST }}
+      SPSH_DEV_TUNNEL_PORT: ${{ secrets.SPSH_DEV_TUNNEL_PORT }}
+      USER: ${{ secrets.USER }}
+      PW: ${{ secrets.PW }}
+      RC_WEBHOOK: ${{ secrets.RC_WEBHOOK }}
+
+  stage_smoke_test:
+    if: github.event.schedule == '45 6 * * *'
+    uses: ./.github/workflows/run-playwright.yml
+    with:
+      frontendHostname: spsh.staging.spsh.dbildungsplattform.de
+      tag: smoke
+      browser: chromium
+      playwright_branch: main
+    secrets:
+      USER: ${{ secrets.USER }}
+      PW: ${{ secrets.PW }}
+      RC_WEBHOOK: ${{ secrets.RC_WEBHOOK }}

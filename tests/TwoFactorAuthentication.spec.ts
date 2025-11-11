@@ -1,20 +1,20 @@
-import { test, expect, PlaywrightTestArgs } from '@playwright/test';
+import { expect, PlaywrightTestArgs, test } from '@playwright/test';
 import { createRolleAndPersonWithPersonenkontext, UserInfo } from '../base/api/personApi';
 import { getServiceProviderId } from '../base/api/serviceProviderApi';
-import { LONG, STAGE, BROWSER } from '../base/tags';
-import { generateNachname, generateVorname, generateRolleName } from '../base/utils/generateTestdata';
 import { testschuleName } from '../base/organisation';
 import { typeLehrer } from '../base/rollentypen';
 import { email } from '../base/sp';
+import { BROWSER, DEV, LONG, STAGE } from '../base/tags';
+import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata';
 import { gotoTargetURL } from '../base/testHelperUtils';
+import { generateNachname, generateRolleName, generateVorname } from '../base/utils/generateTestdata';
 import { PersonDetailsViewPage } from '../pages/admin/personen/PersonDetailsView.page';
 import { PersonManagementViewPage } from '../pages/admin/personen/PersonManagementView.page';
 import { HeaderPage } from '../pages/components/Header.page';
-import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata';
 import FromAnywhere from '../pages/FromAnywhere';
-import { StartPage } from '../pages/StartView.page';
 import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
+import { StartPage } from '../pages/StartView.page';
 
 // The created test data will be deleted in the afterEach block
 let usernames: string[] = [];
@@ -58,7 +58,7 @@ test.describe(`Testfälle für TwoFactorAuthentication": Umgebung: ${process.env
 
   test(
     'Prüfen, ob es möglich ist einen Token zurückzusetzen',
-    { tag: [LONG, STAGE, BROWSER] },
+    { tag: [LONG, STAGE, DEV, BROWSER] },
     async ({ page }: PlaywrightTestArgs) => {
       let userInfoLehrer: UserInfo;
 
