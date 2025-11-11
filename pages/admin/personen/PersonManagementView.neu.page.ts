@@ -19,8 +19,8 @@ export class PersonManagementViewPage {
 
   /* actions */
   public async waitForPageLoad(): Promise<void> {
-    await this.page.getByTestId('admin-headline').waitFor({ state: 'visible' });
-    await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Benutzerverwaltung');
+    await this.page.getByTestId('person-management-headline').waitFor({ state: 'visible' });
+    await expect(this.page.getByTestId('person-management-headline')).toHaveText('Benutzerverwaltung');
     await expect(this.page.getByTestId('person-table')).not.toContainText('Keine Daten');
   }
 

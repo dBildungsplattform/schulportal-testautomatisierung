@@ -7,8 +7,8 @@ export class RolleDetailsViewPage {
 
   /* actions */
   public async waitForPageLoad(): Promise<void> {
-    await this.page.getByTestId('rolle-details-card').waitFor({ state: 'visible' });
-    await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Rolle bearbeiten');
+    await this.page.getByTestId('rolle-details-headline').waitFor({ state: 'visible' });
+    await expect(this.page.getByTestId('rolle-details-headline')).toHaveText('Rolle bearbeiten');
   }
 
   public async editRolle(rollenname: string): Promise<void> {

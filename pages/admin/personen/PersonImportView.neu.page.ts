@@ -7,8 +7,8 @@ export class PersonImportViewPage {
 
   /* actions */
   public async waitForPageLoad(): Promise<void> {
-    await this.page.getByTestId('person-import-card').waitFor({ state: 'visible' });
-    await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Benutzer importieren');
+    await this.page.getByTestId('person-import-headline').waitFor({ state: 'visible' });
+    await expect(this.page.getByTestId('person-import-headline')).toHaveText('Benutzer importieren');
   }
 
   public async selectSchule(schule: string): Promise<void> {

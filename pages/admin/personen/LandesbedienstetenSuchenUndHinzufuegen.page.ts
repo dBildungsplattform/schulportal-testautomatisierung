@@ -10,10 +10,10 @@ export class LandesbedienstetenSuchenUndHinzufuegenPage {
   private readonly adminHeadline: Locator = this.page.getByTestId('admin-headline');
   
   /* Landesbediensteten Suchen - Suche und Suchergebnis */
-  private readonly kopersRadioButton : Locator = this.page.getByTestId('kopers-radio-button');
-  private readonly emailRadioButton : Locator = this.page.getByTestId('email-radio-button');
-  private readonly usernameRadioButton : Locator = this.page.getByTestId('username-radio-button');
-  private readonly nameRadioButton : Locator = this.page.getByTestId('name-radio-button');
+  private readonly kopersRadioButton : Locator = this.page.getByTestId('kopers-radio-button').locator('input');
+  private readonly emailRadioButton : Locator = this.page.getByTestId('email-radio-button').locator('input');
+  private readonly usernameRadioButton : Locator = this.page.getByTestId('username-radio-button').locator('input');
+  private readonly nameRadioButton : Locator = this.page.getByTestId('name-radio-button').locator('input');
   private readonly kopersInput : Locator = this.page.getByTestId('kopers-input').locator('input');
   private readonly emailInput : Locator = this.page.getByTestId('email-input').locator('input');
   private readonly usernameInput : Locator = this.page.getByTestId('username-input').locator('input');
@@ -60,6 +60,7 @@ export class LandesbedienstetenSuchenUndHinzufuegenPage {
 
   /* actions */
   public async waitForPageLoad(): Promise<void> {
+    await expect(this.adminHeadline).toHaveText('Landesbediensteten (suchen und hinzufügen)');
     await this.kopersInput.waitFor({ state: 'visible' });
   }
 
@@ -95,11 +96,11 @@ export class LandesbedienstetenSuchenUndHinzufuegenPage {
   public async checkMandatoryFieldsForNameSearch(vorname: string, nachname: string): Promise<void> {
     await this.fillName(vorname, nachname);
     await this.clickSearch();
-    if (vorname === "") {
-      await expect(this.page.getByTestId('vorname-input').locator('.v-messages__message')).toHaveText("Der Vorname ist erforderlich.");
+    if (vorname === '') {
+      await expect(this.page.getByTestId('vorname-input').locator('.v-messages__message')).toHaveText('Der Vorname ist erforderlich.');
     }
-    if (nachname === "") {
-      await expect(this.page.getByTestId('nachname-input').locator('.v-messages__message')).toHaveText("Der Nachname ist erforderlich.");
+    if (nachname === '') {
+      await expect(this.page.getByTestId('nachname-input').locator('.v-messages__message')).toHaveText('Der Nachname ist erforderlich.');
     }
   }
 
@@ -133,9 +134,30 @@ export class LandesbedienstetenSuchenUndHinzufuegenPage {
     await expect(this.nachnameInput).toBeEmpty();
   }
 
-  public async landesbedienstetenSuchen(benutzername: string): Promise<void> {
+  public async searchLandesbedienstetenViaKopers(kopers: string): Promise<void> {
+    await this.waitForPageLoad();
+    await this.fillKopersNr(kopers);
+    await this.clickSearch();
+    await this.landesbedienstetenHinzufuegenButton.click();
+  }
+
+  public async searchLandesbedienstetenViaEmail(email: string): Promise<void> {
+    await this.waitForPageLoad();
+    await this.fillEmail(email);
+    await this.clickSearch();
+    await this.landesbedienstetenHinzufuegenButton.click();
+  }
+
+  public async searchLandesbedienstetenViaUsername(benutzername: string): Promise<void> {
     await this.waitForPageLoad();
     await this.fillBenutzername(benutzername);
+    await this.clickSearch();
+    await this.landesbedienstetenHinzufuegenButton.click();
+  }
+
+  public async searchLandesbedienstetenViaName(vorname: string, nachname: string): Promise<void> {
+    await this.waitForPageLoad();
+    await this.fillName(vorname, nachname);
     await this.clickSearch();
     await this.landesbedienstetenHinzufuegenButton.click();
   }
@@ -236,27 +258,28 @@ export class LandesbedienstetenSuchenUndHinzufuegenPage {
     await expect(this.confirmationDialogConfirmButton).toHaveText('Landesbediensteten hinzufügen');
   }
 
-  public async checkCreationForm(vorname: string, nachname: string, kopersnummer: string, organisationText?: string): Promise<void> {
+  public async checkMinimalCreationForm(vorname: string, nachname: string, kopersnummer: string, organisationText?: string): Promise<void> {
     await expect(this.landesbedienstetenHinzufuegenHeadline).toHaveText('Landesbediensteten hinzufügen');
     await expect(this.mandatoryFieldsNotice).toHaveText('Mit * markierte Felder sind Pflichtangaben.');
     await expect(this.closeButton).toBeVisible();
-    await expect(this.formVornameInput).toBeVisible();
-    await expect(this.formNachnameInput).toBeVisible();
-    await expect(this.formKopersInput).toBeVisible();
-    await expect(this.hasNoKopersnrCheckbox).toBeVisible();
-    await expect(this.organisationAutocomplete.isVisible()).toBeTruthy();
-    await expect(this.rolleAutocomplete.isVisible()).toBeTruthy();
-    await expect(this.discardFormButton).toBeVisible();
+
     await expect(this.personalInfoHeadline).toBeVisible();
+    await expect(this.formVornameInput).toHaveValue(vorname);
+    await expect(this.formNachnameInput).toHaveValue(nachname);
+    await expect(this.formKopersInput).toHaveValue(kopersnummer);
+    await expect(this.hasNoKopersnrCheckbox).toBeVisible();
+
     await expect(this.organisationHeadline).toBeVisible();
-    await expect(this.rolleHeadline).toBeVisible();
-    await expect(this.submitLandesbedienstetenHinzufuegenButton).toBeDisabled();
-    // Persönliche Daten sind vorausgefüllt
-    await expect(this.formVornameInput).toHaveText(vorname);
-    await expect(this.formNachnameInput).toHaveText(nachname);
-    await expect(this.formKopersInput).toHaveText(kopersnummer);
-    // Organisation ist vorausgewählt
     await this.organisationAutocomplete.checkText(organisationText);
+
+    await expect(this.discardFormButton).toBeVisible();
+    await expect(this.submitLandesbedienstetenHinzufuegenButton).toBeDisabled();
+  }
+
+  public async checkFullCreationForm(vorname: string, nachname: string, kopersnummer: string, organisationText: string, rolleText: string): Promise<void> {
+    await this.checkMinimalCreationForm(vorname, nachname, kopersnummer, organisationText);
+    await expect(this.rolleHeadline).toBeVisible();
+    await this.rolleAutocomplete.checkText(rolleText);
   }
 
   public async checkSelectableOrganisationen(expectedOrganisationen: string[]): Promise<void> {

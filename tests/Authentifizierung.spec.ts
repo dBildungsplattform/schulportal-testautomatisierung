@@ -25,7 +25,7 @@ test.describe(`Testfälle für den Login: Umgebung: ${process.env.ENV}: URL: ${p
 
   test('Erfolgreicher Login', async () => {
     const startPage: StartViewPage = await loginPage.login(ADMIN, PASSWORD);
-    await expect(startPage.waitForPageLoad()).toBeTruthy();
+    await startPage.waitForPageLoad();
     await startPage.serviceProvidersAreLoaded();
   });
 

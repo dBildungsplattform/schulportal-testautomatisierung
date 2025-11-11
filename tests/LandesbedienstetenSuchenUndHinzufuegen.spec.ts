@@ -24,7 +24,6 @@ let searchResultDialog: SearchResultDialog;
 let lehrkraftMitSchulzuordnung: UserInfo;
 let lehrkraftOhneSchulzuordnung: UserInfo;
 let lehrkraft: UserInfo;
-let lehrkraft1: UserInfo;
 let lehrkraft2: UserInfo;
 let lockedLehrkraft: UserInfo;
 let lehrkraftDoppel1: UserInfo;
@@ -32,20 +31,21 @@ let lehrkraftDoppel2: UserInfo;
 let ersatzschulLehrkraft: UserInfo;
 let schuladmin1Schule: UserInfo;
 let schuladmin2Schulen: UserInfo;
+
 /*
 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx Schuladmin mit einer Schule xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 */
+
 test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hinzufügen', () => {
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
     landesbedienstetenSuchenUndHinzufuegenPage = new LandesbedienstetenSuchenUndHinzufuegenPage(page);
     header = new HeaderPage(page);
     searchResultDialog = new SearchResultDialog(page, page.getByTestId('person-search-error-dialog'));
-    // Testdaten anlegen
     loginPage = await freshLoginPage(page);
     await loginPage.login(process.env.USER, process.env.PW);
     schuladmin1Schule = await createPersonWithPersonenkontext(page, testschuleName, schuladminOeffentlichRolle);
 
-    lehrkraft1 = await createPersonWithPersonenkontext(page, testschuleName, lehrkraftOeffentlichRolle, undefined, undefined, generateKopersNr());
+    lehrkraft2 = await createPersonWithPersonenkontext(page, testschuleName, lehrkraftOeffentlichRolle, undefined, undefined, generateKopersNr());
     lehrkraftMitSchulzuordnung = await createPersonWithPersonenkontext(page, testschuleName, lehrkraftOeffentlichRolle, undefined, undefined, generateKopersNr());
     lehrkraftOhneSchulzuordnung = await createPersonWithPersonenkontext(page, testschuleName, lehrkraftOeffentlichRolle, undefined, undefined, generateKopersNr());
     lehrkraft = await createPersonWithPersonenkontext(page, testschuleName, lehrkraftOeffentlichRolle, undefined, undefined, generateKopersNr());
@@ -57,40 +57,21 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
     lehrkraftDoppel2 = await createPersonWithPersonenkontext(page, testschuleName, lehrkraftOeffentlichRolle, vornameDoppelt, nachnameDoppelt, generateKopersNr());
     ersatzschulLehrkraft = await createPersonWithPersonenkontext(page, ersatzTestschuleName, ersatzschulLehrkraftRolle);
     
-    // Anmelden im Schulportal SH
     landingPage = await header.logout();
     landingPage.navigateToLogin();
-    // Erstmalige Anmeldung mit Passwortänderung  
     const startPage: StartViewPage = await loginPage.loginNewUserWithPasswordChange(schuladmin1Schule.username, schuladmin1Schule.password);
     await startPage.waitForPageLoad();
-    // Zur Seite navigieren
     personManagementViewPage = await startPage.goToAdministration();
     landesbedienstetenSuchenUndHinzufuegenPage = await personManagementViewPage.menu.navigateToLandesbedienstetenSuchenUndHinzufuegen();
     await landesbedienstetenSuchenUndHinzufuegenPage.waitForPageLoad();
   });
-  /* 
-    ---------------------------------- UI Testfälle ----------------------------------
-  */
- //SPSH-2634 Step 7
-  test('Schuladmin 1 Schule, Landesbediensteten hinzufügen: UI-Vollständigkeit und vorausgefüllte Daten', { tag: [LONG, SHORT, STAGE] }, async () => {
-    await landesbedienstetenSuchenUndHinzufuegenPage.landesbedienstetenSuchen(lehrkraft1.username);
-    await landesbedienstetenSuchenUndHinzufuegenPage.checkCreationForm(lehrkraft1.vorname, lehrkraft1.familienname, lehrkraft1.kopersnummer, testschuleDstNrUndName);
-  });
 
-  //SPSH-2630
   test('Seiteninhalte werden angezeigt', { tag: [LONG, SHORT, STAGE] }, async () => {
-    expect(await landesbedienstetenSuchenUndHinzufuegenPage.checkSearchForm()).toBe(true);
+    await landesbedienstetenSuchenUndHinzufuegenPage.checkSearchForm();
+    await landesbedienstetenSuchenUndHinzufuegenPage.searchLandesbedienstetenViaUsername(lehrkraft2.username);
+    await landesbedienstetenSuchenUndHinzufuegenPage.checkFullCreationForm(lehrkraft2.vorname, lehrkraft2.familienname, lehrkraft2.kopersnummer, testschuleDstNrUndName, lehrkraftOeffentlichRolle);
   });
 
-  //SPSH-2631 Step 1
-  test('Vorname ist ein Pflichtfeld', { tag: [LONG, SHORT, STAGE] }, async () => {
-    landesbedienstetenSuchenUndHinzufuegenPage.checkMandatoryFieldsForNameSearch('', 'zzzzz');
-  });
-  test('Nachname ist ein Pflichtfeld', { tag: [LONG, SHORT, STAGE] }, async () => {
-    landesbedienstetenSuchenUndHinzufuegenPage.checkMandatoryFieldsForNameSearch('zzzzz', '');
-  });
-
-  //SPSH-2631 Step 2
   //Suchergebnis Popup wird angezeigt, wenn kein Treffer gefunden wurde: falsche Namen 
   //Es wird das Popup Suchergebnis angezeigt, mit Text und Abbrechen Button
   test('Kein Treffer wegen falschen Namen: Popup wird angezeigt und ist vollständig', { tag: [LONG, SHORT, STAGE] }, async () => {
@@ -101,7 +82,6 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
     await expect(searchResultDialog.cancelButton).toHaveText('Abbrechen');
   });
 
-  //SPSH-2631 Step 3 - 5
   // Suchergebnis Popup wird angezeigt, wenn kein Treffer gefunden wurde
   test('Kein Treffer: Popup wird angezeigt und kann geschlossen werden (KoPersNr, Email, Benutzername)', { tag: [LONG, SHORT, STAGE] }, async () => {
     await test.step('Suchen per KoPers.-Nr.', async () => {
@@ -119,6 +99,9 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
     });
 
     await test.step('Suchen per Benutzername', async () => {
+      /* Vorname and Nachname are mandatory fields */
+      await landesbedienstetenSuchenUndHinzufuegenPage.checkMandatoryFieldsForNameSearch('', 'zzzzz');
+      await landesbedienstetenSuchenUndHinzufuegenPage.checkMandatoryFieldsForNameSearch('zzzzz', '');
       await landesbedienstetenSuchenUndHinzufuegenPage.fillBenutzername("unbekannt123");
       await landesbedienstetenSuchenUndHinzufuegenPage.clickSearch();
       await searchResultDialog.checkContent();
@@ -202,64 +185,45 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx Schuladmin mit 2 Schulen xxxxxxxxxxxxxxxxxxxxx
 */
 
 test.describe('Testfälle für Landesbediensteten hinzufügen, Funktion und UI-Vollständigkeit - Schuladmin 2 Schulen', () => {
-  // alles speziell für Schuladmin mit 2 Schulen
+  let lehrkraft: UserInfo;
+  
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
-  header = new HeaderPage(page);
-  
-  loginPage = await freshLoginPage(page);
-  await loginPage.login(process.env.USER, process.env.PW);
-  // Testdaten anlegen
-  schuladmin2Schulen = await createPersonWithPersonenkontext(page, testschuleName, schuladminOeffentlichRolle);
-  const testschuleID: string = await getOrganisationId(page, testschuleName);
-  const testschule665ID: string = await getOrganisationId(page, testschule665Name);
-  const schuladminRolleId: string = await getRolleId(page, schuladminOeffentlichRolle);
-  await addSecondOrganisationToPerson(page, schuladmin2Schulen.personId, testschuleID, testschule665ID, schuladminRolleId);
-  
-  const kopers2 : string = generateKopersNr();
-  lehrkraft2 = await createPersonWithPersonenkontext(page, testschuleName, lehrkraftOeffentlichRolle, undefined, undefined, kopers2);
+    header = new HeaderPage(page);
+    
+    loginPage = await freshLoginPage(page);
+    await loginPage.login(process.env.USER, process.env.PW);
 
-  // Anmelden im Schulportal SH
-  landingPage = await header.logout();
-  landingPage.navigateToLogin();
-  
-  // Erstmalige Anmeldung mit Passwortänderung
-  const startPage: StartViewPage = await loginPage.loginNewUserWithPasswordChange(schuladmin2Schulen.username, schuladmin2Schulen.password);
-  await startPage.waitForPageLoad();
+    schuladmin2Schulen = await createPersonWithPersonenkontext(page, testschuleName, schuladminOeffentlichRolle);
+    const testschuleID: string = await getOrganisationId(page, testschuleName);
+    const testschule665ID: string = await getOrganisationId(page, testschule665Name);
+    const schuladminRolleId: string = await getRolleId(page, schuladminOeffentlichRolle);
+    await addSecondOrganisationToPerson(page, schuladmin2Schulen.personId, testschuleID, testschule665ID, schuladminRolleId);
+    
+    lehrkraft = await createPersonWithPersonenkontext(page, testschuleName, lehrkraftOeffentlichRolle, undefined, undefined, generateKopersNr());
 
-  // Zur Seite navigieren und LB suchen
-  personManagementViewPage = await startPage.goToAdministration();
-  landesbedienstetenSuchenUndHinzufuegenPage = await personManagementViewPage.menu.navigateToLandesbedienstetenSuchenUndHinzufuegen();
-  await landesbedienstetenSuchenUndHinzufuegenPage.landesbedienstetenSuchen(lehrkraft2.username);
+    landingPage = await header.logout();
+    landingPage.navigateToLogin();
+    
+    const startPage: StartViewPage = await loginPage.loginNewUserWithPasswordChange(schuladmin2Schulen.username, schuladmin2Schulen.password);
+    await startPage.waitForPageLoad();
+
+    personManagementViewPage = await startPage.goToAdministration();
+    landesbedienstetenSuchenUndHinzufuegenPage = await personManagementViewPage.menu.navigateToLandesbedienstetenSuchenUndHinzufuegen();
+    await landesbedienstetenSuchenUndHinzufuegenPage.searchLandesbedienstetenViaUsername(lehrkraft.username);
   });
   
-  //SPSH-2634 Step 1
-  test('Seite wird vollständig angezeigt: Schuladmin 2 Schulen', { tag: [LONG, SHORT, STAGE] }, async () => {
+  test('Seite wird vollständig angezeigt: Schuladmin mit 2 Schulen', { tag: [LONG, SHORT, STAGE] }, async () => {
     await test.step('Organisation nur aus zugewiesenen Organisationen auswählbar, UI Elemente werden angezeigt', async () => {
-      await landesbedienstetenSuchenUndHinzufuegenPage.checkCreationForm(lehrkraft2.vorname, lehrkraft2.familienname, lehrkraft2.kopersnummer, testschuleDstNrUndName);
+      await landesbedienstetenSuchenUndHinzufuegenPage.checkMinimalCreationForm(lehrkraft.vorname, lehrkraft.familienname, lehrkraft.kopersnummer, testschuleDstNrUndName);
       await landesbedienstetenSuchenUndHinzufuegenPage.checkSelectableOrganisationen([testschuleDstNrUndName, testschule665DstNrUndName]);
-    });
-    //SPSH-2634 Step 2
-    await test.step('Nach Organisationsauswahl werden Rollenfelder angezeigt, Auswahl 2. Organisation im Dropdown', async () => {
-      // Auswahl der zweiten Organisation
       await landesbedienstetenSuchenUndHinzufuegenPage.selectOrganisation(testschule665DstNrUndName);
-    });
-    //SPSH-2634 Step 3
-    await test.step('Befristung wird angezeigt bei Auswahl LiV', async () => {
+      await landesbedienstetenSuchenUndHinzufuegenPage.checkFullCreationForm(lehrkraft.vorname, lehrkraft.familienname, lehrkraft.kopersnummer, testschule665DstNrUndName, 'LiV');
       await landesbedienstetenSuchenUndHinzufuegenPage.selectRolleWithBefristung('LiV');
-    });
-    //SPSH-2634 Step 4
-    await test.step('Bestätigungs-Popup wird angezeigt mit korrektem Text', async () => {
-      await landesbedienstetenSuchenUndHinzufuegenPage.confirmLandesbedienstetenHinzufuegen(lehrkraft2.username, 'LiV');
-    });
-    //SPSH-2634 Step 5
-    await test.step('Abbrechen im Bestätigungs-Popup funktioniert', async () => {
-      landesbedienstetenSuchenUndHinzufuegenPage.cancelConfirmationDialog();
-    });
-    //SPSH-2634 Step 6
-    await test.step('Nach Bestätigung auf Popup wird das Success Template vollständig angezeigt', async () =>{
-      await landesbedienstetenSuchenUndHinzufuegenPage.confirmLandesbedienstetenHinzufuegen(lehrkraft2.username, 'LiV');
-      await landesbedienstetenSuchenUndHinzufuegenPage.checkCreationForm(lehrkraft2.vorname, lehrkraft2.familienname, lehrkraft2.kopersnummer, testschuleDstNrUndName);
-      await landesbedienstetenSuchenUndHinzufuegenPage.checkSuccessPage(lehrkraft2.vorname, lehrkraft2.familienname, lehrkraft2.kopersnummer, lehrkraft2.username, testschuleDstNrUndName);
+      await landesbedienstetenSuchenUndHinzufuegenPage.confirmLandesbedienstetenHinzufuegen(lehrkraft.username, 'LiV');
+      await landesbedienstetenSuchenUndHinzufuegenPage.cancelConfirmationDialog();
+      await landesbedienstetenSuchenUndHinzufuegenPage.confirmLandesbedienstetenHinzufuegen(lehrkraft.username, 'LiV');
+      await landesbedienstetenSuchenUndHinzufuegenPage.checkFullCreationForm(lehrkraft.vorname, lehrkraft.familienname, lehrkraft.kopersnummer, testschuleDstNrUndName, 'LiV');
+      await landesbedienstetenSuchenUndHinzufuegenPage.checkSuccessPage(lehrkraft.vorname, lehrkraft.familienname, lehrkraft.kopersnummer, lehrkraft.username, testschuleDstNrUndName);
     });
   });
 });

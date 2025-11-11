@@ -12,7 +12,7 @@ export class RolleCreationSuccessPage {
 
   /* actions */
   public async waitForPageLoad(): Promise<void> {
-    await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Neue Rolle hinzufügen');
+    await this.page.getByTestId('rolle-success-text').waitFor({ state: 'visible' });
   }
 
   public async backToResultList(): Promise<RolleManagementViewPage> {
