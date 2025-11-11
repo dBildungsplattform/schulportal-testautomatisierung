@@ -37,7 +37,7 @@ test.describe(`Testfälle für den Benutzerimport": Umgebung: ${process.env.ENV}
         await (await (await (await FromAnywhere(page).start()).goToLogin()).login(ADMIN, PW)).goToAdministration()
       ).goToBenutzerImport();
 
-      await expect(personImportPage.personImportCard).toBeVisible();
+      await expect(personImportPage.headlineBenutzerImport).toBeVisible();
     });
   });
 
