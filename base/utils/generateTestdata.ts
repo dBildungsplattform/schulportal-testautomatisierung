@@ -27,7 +27,7 @@ export function generateRolleName(): string {
 }
 
 export function generateKopersNr(): string {
-  return '0815' + faker.string.numeric({ length: 7 });
+  return '0815' + faker.string.numeric({ length: 8 });
 }
 
 export function generateKlassenname(): string {

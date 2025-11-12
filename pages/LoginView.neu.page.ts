@@ -24,10 +24,13 @@ export class LoginViewPage {
     const loginButton: Locator = this.page.getByTestId('login-button');
 
     await expect(this.page.getByTestId('login-page-title')).toHaveText('Anmeldung');
-    await expect(this.page.getByTestId('login-prompt-text')).toHaveText('Bitte geben Sie Ihre persönlichen Zugangsdaten ein.');
+    await expect(this.page.getByTestId('login-prompt-text')).toHaveText(
+      'Bitte geben Sie Ihre persönlichen Zugangsdaten ein.'
+    );
+
     await usernameInput.waitFor({ state: 'visible' });
     await usernameInput.fill(username);
-    
+
     await passwordInput.waitFor({ state: 'visible' });
     await passwordInput.fill(password);
 
@@ -36,14 +39,19 @@ export class LoginViewPage {
     return new StartViewPage(this.page);
   }
 
-  public async updatePassword(): Promise<string> {
+  public async updatePassword(isEntryFromProfileView?: boolean): Promise<string> {
     const newPassword: string = this.generateSecurePassword();
     const newPasswordInput: Locator = this.page.getByTestId('new-password-input');
     const newPasswordConfirmInput: Locator = this.page.getByTestId('new-password-confirm-input');
-    const setPasswordButton: Locator = this.page.getByTestId('set-password-button');
+    const buttonClosePWChangeDialogFromProfilView: Locator = this.page.getByTestId(
+      'close-password-changed-dialog-button'
+    );
+    const buttonSubmitPWChange: Locator = this.page.getByTestId('set-password-button');
 
     await expect(this.page.getByTestId('update-password-title')).toHaveText('Passwort festlegen');
-    await expect(this.page.getByTestId('password-update-prompt')).toHaveText('Bitte legen Sie ein neues, selbstgewähltes Passwort fest.');
+    await expect(this.page.getByTestId('password-update-prompt')).toHaveText(
+      'Bitte legen Sie ein neues, selbstgewähltes Passwort fest.'
+    );
 
     await newPasswordInput.waitFor({ state: 'visible' });
     await newPasswordInput.fill(newPassword);
@@ -51,8 +59,10 @@ export class LoginViewPage {
     await newPasswordConfirmInput.waitFor({ state: 'visible' });
     await newPasswordConfirmInput.fill(newPassword);
 
-    await setPasswordButton.waitFor({ state: 'visible' });
-    await setPasswordButton.click();
+    await buttonSubmitPWChange.click();
+    if (isEntryFromProfileView) {
+      await buttonClosePWChangeDialogFromProfilView.click();
+    }
     return newPassword;
   }
   
@@ -74,6 +84,8 @@ export class LoginViewPage {
     const loginErrorSpan: Locator = this.page.getByTestId('login-error-message');
 
     await expect(loginErrorSpan).toBeVisible();
-    await expect(loginErrorSpan).toHaveText('Ihr Benutzerkonto ist gesperrt. Bitte wenden Sie sich an Ihre schulischen Administratorinnen und Administratoren.');
+    await expect(loginErrorSpan).toHaveText(
+      'Ihr Benutzerkonto ist gesperrt. Bitte wenden Sie sich an Ihre schulischen Administratorinnen und Administratoren.'
+    );
   }
 }
