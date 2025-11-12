@@ -25,7 +25,7 @@ export class RolleCreationConfirmPage {
 
   constructor(private page: Page) {
     this.confirmationMessage = this.page.getByText('Folgende Daten wurden gespeichert:');
-    this.textH2RolleAnlegen = this.page.getByTestId('layout-card-headline');
+    this.textH2RolleAnlegen = this.page.getByTestId('rolle-creation-headline');
     this.buttonSchliessen = this.page.getByTestId('close-layout-card-button');
     this.textSuccess = this.page.getByTestId('rolle-success-text');
     this.iconSuccess = this.page.locator('.mdi-check-circle');

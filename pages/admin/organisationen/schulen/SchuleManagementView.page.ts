@@ -10,7 +10,7 @@ export class SchuleManagementViewPage{
     constructor(page: Page){
         this.page = page;  
         this.textH1Administrationsbereich = page.getByTestId('admin-headline');
-        this.textH2Schulverwaltung = page.getByTestId('layout-card-headline');
+        this.textH2Schulverwaltung = page.getByTestId('schule-management-headline');
         this.tableHeaderDienststellennummer = page.getByText('Dienststellennummer');
         this.tableHeaderSchulname = page.getByText('Schulname');
     }

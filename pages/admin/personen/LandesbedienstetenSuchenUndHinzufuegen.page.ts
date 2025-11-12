@@ -208,7 +208,7 @@ export class LandesbedienstetenSuchenUndHinzufuegenPage {
   /* assertions */
   public async checkSearchForm(): Promise<void> {
     await expect(this.adminHeadline).toHaveText('Landesbediensteten (suchen und hinzufügen)');
-    await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Landesbediensteten suchen');
+    await expect(this.page.getByTestId('search-state-employee-headline')).toHaveText('Landesbediensteten suchen');
     await expect(this.page.getByTestId('close-layout-card-button')).toBeVisible();
     await expect(this.page.getByText('Bitte wählen Sie, wie Sie nach dem Landesbediensteten suchen möchten.', { exact: false })).toBeVisible();
     await expect(this.kopersRadioButton).toBeChecked();
