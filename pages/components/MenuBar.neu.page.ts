@@ -18,9 +18,9 @@ export class MenuBarPage {
   constructor(protected readonly page: Page) {}
 
   /* actions */
-  private async navigateTo(testId: string, pageClass: any, waitForPageLoad: (page: any) => Promise<void>): Promise<any> {
+  private async navigateTo<T>(testId: string, pageClass: new (page: Page) => T, waitForPageLoad: (page: T) => Promise<void>): Promise<T> {
     await this.page.getByTestId(testId).click();
-    const newPage: any = new pageClass(this.page);
+    const newPage: T = new pageClass(this.page);
     await waitForPageLoad.call(newPage);
     return newPage;
   }

@@ -301,7 +301,6 @@ test.describe('Testet die Anlage einer neuen Rolle', () => {
         await rolleCreationView.rolleForm.adminstrationsebene.inputElement.selectByTitle('Land Schleswig-Holstein');
         await rolleCreationView.rolleForm.rollenart.inputElement.selectByTitle('Lehr');
         rolleName = await generateRolleName();
-        rolleNames.push(rolleName);
         await rolleCreationView.enterRollenname(rolleName);
         const theFirstSeven: number[] = Array.from({ length: 7 }, (_: unknown, key: number) => key);
         const selectedItems: string[] = await rolleCreationView.rolleForm.angebote.inputElement.selectByPosition(
@@ -323,7 +322,7 @@ test.describe('Testet die Anlage einer neuen Rolle', () => {
 
       await test.step('Rollentabelle prüfen', async () => {
         expect(rolleName).toBeDefined();
-        const row: RoleTableRow = rolleManagementPage.rowByRoleName(rolleName!);
+        const row: RoleTableRow = rolleManagementPage.rowByRoleName(rolleName);
         await expect(row.locator).toBeVisible();
 
         const spCell: Locator = row.spCell();
