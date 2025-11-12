@@ -44,7 +44,8 @@ export function makeFetchWithPlaywright(page: Page) {
     const playwrightInit: Parameters<APIRequestContext['fetch']>[1] = {
       ...init,
       data: init?.body,
-      timeout: 60000 // 1 minute
+      timeout: 60000, // 1 minute
+      maxRetries: 3,
     };
 
     const resp: APIResponse = await page.request.fetch(url, playwrightInit);
