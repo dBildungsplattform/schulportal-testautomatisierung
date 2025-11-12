@@ -2,83 +2,25 @@ import { PlaywrightTestArgs, test } from '@playwright/test';
 import { getOrganisationId } from '../../base/api/organisationApi';
 import { createPerson, freshLoginPage, UserInfo } from '../../base/api/personApi';
 import { getRolleId, RollenMerkmal } from '../../base/api/rolleApi';
-import { systemrechtLabel } from '../../base/berechtigungen';
 import { klasse1Testschule } from '../../base/klassen';
 import { rollenMerkmalLabel } from '../../base/merkmale';
 import { testschuleName } from '../../base/organisation';
 import { rollenArtLabel } from '../../base/rollentypen';
-import {
-  adressbuch,
-  anleitungen,
-  email,
-  helpdeskKontaktieren,
-  itslearning,
-  kalender,
-  opSH,
-  psychosozialesBeratungsangebot,
-  schoolSH,
-  schulportaladmin,
-  schulrechtAZ,
-  webUntis,
-} from '../../base/sp';
-import { generateNachname, generateRolleName, generateVorname } from '../../base/utils/generateTestdata';
+import { generateNachname, generateVorname } from '../../base/utils/generateTestdata';
 import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.neu.page';
 import { RolleCreationErrorPage } from '../../pages/admin/rollen/RolleCreationError.page';
 import { RolleCreationSuccessPage } from '../../pages/admin/rollen/RolleCreationSuccess.page';
-import { RolleCreationParams, RolleCreationViewPage } from '../../pages/admin/rollen/RolleCreationView.neu.page';
+import { RolleCreationViewPage } from '../../pages/admin/rollen/RolleCreationView.neu.page';
 import { RolleCreationWorkflow } from '../../pages/admin/rollen/RolleCreationWorkflow.page';
 import { RolleDetailsViewPage } from '../../pages/admin/rollen/RolleDetailsView.neu.page';
 import { RolleManagementViewPage } from '../../pages/admin/rollen/RolleManagementView.neu.page';
 import { HeaderPage } from '../../pages/components/Header.neu.page';
 import { LoginViewPage } from '../../pages/LoginView.neu.page';
 import { StartViewPage } from '../../pages/StartView.neu.page';
+import { rolleCreationParams } from './RolleAnlegen.data';
 
 const ADMIN: string | undefined = process.env.USER;
 const PASSWORD: string | undefined = process.env.PW;
-
-const rolleCreationParams: RolleCreationParams[] = [
-  {
-    name: generateRolleName(),
-    administrationsebene: testschuleName,
-    rollenart: rollenArtLabel.LEHR,
-    merkmale: [rollenMerkmalLabel.BEFRISTUNG_PFLICHT, rollenMerkmalLabel.KOPERS_PFLICHT],
-    systemrechte: [],
-    serviceProviders: [
-      email,
-      itslearning,
-      kalender,
-      adressbuch,
-      opSH,
-      schoolSH,
-      webUntis,
-      anleitungen,
-      helpdeskKontaktieren,
-      psychosozialesBeratungsangebot,
-      schulrechtAZ,
-    ],
-  },
-  {
-    name: generateRolleName(),
-    administrationsebene: testschuleName,
-    rollenart: rollenArtLabel.LERN,
-    merkmale: [],
-    systemrechte: [],
-    serviceProviders: [itslearning, webUntis],
-  },
-  {
-    name: generateRolleName(),
-    administrationsebene: testschuleName,
-    rollenart: rollenArtLabel.LEIT,
-    merkmale: [],
-    systemrechte: [
-      systemrechtLabel.LANDESBEDIENSTETE_SUCHEN_UND_HINZUFUEGEN,
-      systemrechtLabel.KLASSEN_VERWALTEN,
-      systemrechtLabel.EINGESCHRAENKT_NEUE_BENUTZER_ERSTELLEN,
-      systemrechtLabel.PERSONEN_VERWALTEN,
-    ],
-    serviceProviders: [schulportaladmin],
-  },
-];
 
 async function setupAndGoToRolleCreationPage(page: PlaywrightTestArgs['page']): Promise<RolleCreationViewPage> {
   return test.step('Anmelden und zur Rollenanlage navigieren', async () => {
