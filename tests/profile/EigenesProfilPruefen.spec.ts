@@ -3,115 +3,20 @@ import { getOrganisationId } from '../../base/api/organisationApi';
 import { createRolleAndPersonWithUserContext, UserInfo } from '../../base/api/personApi';
 import { RollenArt } from '../../base/api/rolleApi';
 import { getServiceProviderId } from '../../base/api/serviceProviderApi';
-import { klasse1Testschule } from '../../base/klassen';
-import { landSH, testschuleDstNr, testschuleName } from '../../base/organisation';
-import { typeLandesadmin, typeLehrer, typeSchuladmin } from '../../base/rollentypen';
-import { email, itslearning, schulportaladmin } from '../../base/sp';
 import { BROWSER, DEV, LONG, STAGE } from '../../base/tags';
-import {
-  generateKopersNr,
-  generateNachname,
-  generateRolleName,
-  generateVorname,
-} from '../../base/utils/generateTestdata';
 import { HeaderPage } from '../../pages/components/Header.neu.page';
 import FromAnywhere from '../../pages/FromAnywhere.neu';
 import { LandingViewPage } from '../../pages/LandingView.neu.page';
 import { LoginViewPage } from '../../pages/LoginView.neu.page';
-import { PersoenlicheDaten, ProfileViewPage, Zuordnung } from '../../pages/ProfileView.neu.page';
+import { ProfileViewPage } from '../../pages/ProfileView.neu.page';
 import { StartViewPage } from '../../pages/StartView.neu.page';
+import { testData } from './EigenesProfilPruefen.data';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
 
 // This variable must be set to false in the testcase when the logged in user is changed
 let currentUserIsLandesadministrator: boolean = true;
-
-interface TestData {
-  actor: string;
-  personalData: PersoenlicheDaten;
-  zuordnungen: Zuordnung[];
-  serviceProviders: string[];
-}
-
-const testData: TestData[] = [
-  {
-    actor: 'Landesadmin',
-    personalData: {
-      vorname: generateVorname(),
-      nachname: generateNachname(),
-      username: '', // set in test
-      rollenart: typeLandesadmin,
-    },
-    zuordnungen: [
-      {
-        organisationsname: landSH,
-        rollenname: generateRolleName(),
-        rollenart: typeLandesadmin,
-      },
-    ],
-    serviceProviders: [schulportaladmin],
-  },
-  {
-    actor: 'Lehrer mit einer Schulzuordnung',
-    personalData: {
-      vorname: generateVorname(),
-      nachname: generateNachname(),
-      kopersnummer: generateKopersNr(),
-      username: '', // set in test
-      rollenart: typeLehrer,
-    },
-    zuordnungen: [
-      {
-        organisationsname: testschuleName,
-        dienststellennummer: testschuleDstNr,
-        rollenname: generateRolleName(),
-        rollenart: typeLehrer,
-      },
-    ],
-    serviceProviders: [email],
-  },
-  {
-    actor: 'Schuladmin mit einer Schulzuordnung',
-    personalData: {
-      vorname: generateVorname(),
-      nachname: generateNachname(),
-      username: '', // set in test
-      rollenart: typeSchuladmin,
-    },
-    zuordnungen: [
-      {
-        organisationsname: testschuleName,
-        dienststellennummer: testschuleDstNr,
-        rollenname: generateRolleName(),
-        rollenart: typeSchuladmin,
-      },
-    ],
-    serviceProviders: [schulportaladmin],
-  },
-  {
-    actor: 'Schüler mit einer Schulzuordnung',
-    personalData: {
-      vorname: generateVorname(),
-      nachname: generateNachname(),
-      username: '', // set in test
-      rollenart: RollenArt.Lern,
-    },
-    zuordnungen: ((): Zuordnung[] => {
-      const rollenname: string = generateRolleName();
-      return [
-        {
-          organisationsname: testschuleName,
-          dienststellennummer: testschuleDstNr,
-          klassenName: klasse1Testschule,
-          rollenname,
-          rollenart: RollenArt.Lern,
-        },
-      ];
-    })(),
-    serviceProviders: [itslearning],
-  },
-];
 
 test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
