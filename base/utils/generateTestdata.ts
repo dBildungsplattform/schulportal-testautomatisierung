@@ -26,11 +26,11 @@ export function generateRolleName(): string {
   );
 }
 
-export async function generateKopersNr(): Promise<string> {
+export function generateKopersNr(): string {
   return '0815' + faker.string.numeric({ length: 8 });
 }
 
-export async function generateKlassenname(): Promise<string> {
+export function generateKlassenname(): string {
   return (
     'TAuto-PW-K-12a ' +
     faker.lorem.word({ length: { min: 8, max: 8 } }) +
@@ -38,7 +38,7 @@ export async function generateKlassenname(): Promise<string> {
   );
 }
 
-export async function generateSchulname(): Promise<string> {
+export function generateSchulname(): string {
   return (
     'TAuto-PW-S-' +
     faker.lorem.word({ length: { min: 8, max: 8 } }) +
@@ -46,7 +46,7 @@ export async function generateSchulname(): Promise<string> {
   );
 }
 
-export async function generateDienststellenNr(): Promise<string> {
+export function generateDienststellenNr(): string {
   return '0' + faker.number.bigInt({ min: 10000000, max: 100000000 });
 }
 

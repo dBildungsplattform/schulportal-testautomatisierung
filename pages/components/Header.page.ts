@@ -2,8 +2,8 @@ import { type Locator, Page, expect } from '@playwright/test';
 import { LandingPage } from '../LandingView.page';
 import FromAnywhere from '../FromAnywhere';
 import { LoginPage } from '../LoginView.page';
-import { ProfilePage } from '../ProfileView.page';
 import { StartPage } from '../StartView.page';
+import { ProfileViewPage } from '../ProfileView.neu.page';
 
 export class HeaderPage {
   readonly page: Page;
@@ -45,8 +45,8 @@ export class HeaderPage {
     return new LoginPage(this.page);
   }
 
-  public async goToProfile(): Promise<ProfilePage> {
+  public async goToProfile(): Promise<ProfileViewPage> {
     await this.buttonProfil.click();
-    return new ProfilePage(this.page);
+    return new ProfileViewPage(this.page);
   }
 }

@@ -1,4 +1,4 @@
-import { expect, Locator, Page } from '@playwright/test';
+import { expect, Locator, Page, Response } from '@playwright/test';
 import { PersonManagementViewPage } from './admin/personen/PersonManagementView.neu.page';
 
 export class StartViewPage {
@@ -24,18 +24,22 @@ export class StartViewPage {
 
   /* assertions */
   public async serviceProvidersAreLoaded(): Promise<void> {
-    await this.page.waitForResponse((response) => response.url().includes('/api/provider') && response.status() === 200);
+    await this.page.waitForResponse(
+      (response: Response) => response.url().includes('/api/provider') && response.status() === 200
+    );
     await this.page.waitForResponse('/api/provider/**/logo');
     await expect(this.page.getByTestId('all-service-provider-title')).toBeVisible();
   }
 
-  public async serviceProviderIsVisible(serviceProviderNames: string[]): Promise<void> {
-    await Promise.all([
-      ...serviceProviderNames.map(async (serviceProviderName: string) => {
-        const serviceProviderCard: Locator = this.page.locator(`[data-testid^="service-provider-card"]`, { hasText: serviceProviderName });
+  public async serviceProvidersAreVisible(serviceProviderNames: string[]): Promise<void> {
+    await Promise.all(
+      serviceProviderNames.map(async (serviceProviderName: string) => {
+        const serviceProviderCard: Locator = this.page.locator(`[data-testid^="service-provider-card"]`, {
+          hasText: serviceProviderName,
+        });
         await expect(serviceProviderCard).toBeVisible();
         await expect(serviceProviderCard.locator('img')).toBeVisible();
-      }),
-    ]);
+      })
+    );
   }
 }
