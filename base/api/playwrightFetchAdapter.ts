@@ -48,31 +48,37 @@ export function makeFetchWithPlaywright(page: Page) {
       maxRetries: 3,
     };
 
-    const resp: APIResponse = await page.request.fetch(url, playwrightInit);
+    try {
+      const resp: APIResponse = await page.request.fetch(url, playwrightInit);
+      const headers: Headers = new Headers(resp.headers());
 
-    const headers: Headers = new Headers(resp.headers());
+      return {
+        ok: resp.ok(),
+        status: resp.status(),
+        statusText: resp.statusText(),
+        url: resp.url(),
+        headers,
 
-    return {
-      ok: resp.ok(),
-      status: resp.status(),
-      statusText: resp.statusText(),
-      url: resp.url(),
-      headers,
+        text: () => resp.text(),
+        json: () => resp.json(),
+        arrayBuffer: async () => {
+          const buf: Buffer<ArrayBufferLike> = await resp.body();
+          return buf;
+        },
+        blob: async () => {
+          const buf: Buffer<ArrayBufferLike> = await resp.body();
+          return new Blob([new Uint8Array(buf)]);
+        },
 
-      text: () => resp.text(),
-      json: () => resp.json(),
-      arrayBuffer: async () => {
-        const buf: Buffer<ArrayBufferLike> = await resp.body();
-        return buf;
-      },
-      blob: async () => {
-        const buf: Buffer<ArrayBufferLike> = await resp.body();
-        return new Blob([new Uint8Array(buf)]);
-      },
-
-      clone: () => {
-        throw new Error('clone not implemented');
-      },
-    } as unknown as Response;
+        clone: () => {
+          throw new Error('clone not implemented');
+        },
+      } as unknown as Response;
+    } catch (e) {
+      console.error(e);
+      console.log(url);
+      console.log(playwrightInit);
+      throw e;
+    }
   };
 }
