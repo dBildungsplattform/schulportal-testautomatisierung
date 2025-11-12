@@ -101,7 +101,7 @@ export class Autocomplete {
   }
   
   public async selectByName(name: string): Promise<void> {
-    const option: Locator = this.page.locator('.v-list-item, [role="option"]').filter({
+    const option: Locator = this.itemsLocator.filter({
       hasText: name,
     });
     await option.click();
@@ -153,8 +153,7 @@ export class Autocomplete {
   }
 
   public async assertAllMenuItems(expectedTexts: string[]): Promise<void> {
-    const options: Locator = this.page.locator('.v-list-item, [role="option"]');
-    await expect(options).toHaveText(expectedTexts);
+    await expect(this.itemsLocator).toHaveText(expectedTexts);
   }
 
   public async isVisible(): Promise<void> {

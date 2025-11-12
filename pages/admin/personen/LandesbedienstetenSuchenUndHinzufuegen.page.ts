@@ -34,10 +34,10 @@ export class LandesbedienstetenSuchenUndHinzufuegenPage {
   private readonly personCreationForm: Locator = this.page.getByTestId('person-creation-form');
   private readonly mandatoryFieldsNotice: Locator = this.personCreationForm.getByTestId('mandatory-fields-notice');
   private readonly personalInfoHeadline: Locator = this.personCreationForm.getByTestId('personal-info-headline');
-  private readonly formVornameInput: Locator = this.personCreationForm.getByTestId('vorname-input');
-  private readonly formNachnameInput: Locator = this.personCreationForm.getByTestId('familienname-input');
+  private readonly formVornameInput: Locator = this.personCreationForm.getByTestId('vorname-input').locator('input');
+  private readonly formNachnameInput: Locator = this.personCreationForm.getByTestId('familienname-input').locator('input');
   private readonly hasNoKopersnrCheckbox: Locator = this.personCreationForm.getByTestId('has-no-kopersnr-checkbox');
-  private readonly formKopersInput: Locator = this.personCreationForm.getByTestId('kopersnr-input');
+  private readonly formKopersInput: Locator = this.personCreationForm.getByTestId('kopersnr-input').locator('input');
   private readonly organisationHeadline: Locator = this.personCreationForm.getByTestId('organisation-assign-headline');
   private readonly organisationAutocomplete: Autocomplete = new Autocomplete(this.page, this.personCreationForm.getByTestId('personenkontext-create-organisation-select'));
   private readonly rolleHeadline: Locator = this.personCreationForm.getByTestId('rolle-assign-headline');

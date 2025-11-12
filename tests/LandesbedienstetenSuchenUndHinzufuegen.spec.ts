@@ -69,7 +69,7 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
   test('Seiteninhalte werden angezeigt', { tag: [LONG, SHORT, STAGE] }, async () => {
     await landesbedienstetenSuchenUndHinzufuegenPage.checkSearchForm();
     await landesbedienstetenSuchenUndHinzufuegenPage.searchLandesbedienstetenViaUsername(lehrkraft2.username);
-    await landesbedienstetenSuchenUndHinzufuegenPage.checkFullCreationForm(lehrkraft2.vorname, lehrkraft2.familienname, lehrkraft2.kopersnummer, testschuleDstNrUndName, lehrkraftOeffentlichRolle);
+    await landesbedienstetenSuchenUndHinzufuegenPage.checkMinimalCreationForm(lehrkraft2.vorname, lehrkraft2.familienname, lehrkraft2.kopersnummer);
   });
 
   //Suchergebnis Popup wird angezeigt, wenn kein Treffer gefunden wurde: falsche Namen 
@@ -217,7 +217,6 @@ test.describe('Testfälle für Landesbediensteten hinzufügen, Funktion und UI-V
       await landesbedienstetenSuchenUndHinzufuegenPage.checkMinimalCreationForm(lehrkraft.vorname, lehrkraft.familienname, lehrkraft.kopersnummer, testschuleDstNrUndName);
       await landesbedienstetenSuchenUndHinzufuegenPage.checkSelectableOrganisationen([testschuleDstNrUndName, testschule665DstNrUndName]);
       await landesbedienstetenSuchenUndHinzufuegenPage.selectOrganisation(testschule665DstNrUndName);
-      await landesbedienstetenSuchenUndHinzufuegenPage.checkFullCreationForm(lehrkraft.vorname, lehrkraft.familienname, lehrkraft.kopersnummer, testschule665DstNrUndName, 'LiV');
       await landesbedienstetenSuchenUndHinzufuegenPage.selectRolleWithBefristung('LiV');
       await landesbedienstetenSuchenUndHinzufuegenPage.confirmLandesbedienstetenHinzufuegen(lehrkraft.username, 'LiV');
       await landesbedienstetenSuchenUndHinzufuegenPage.cancelConfirmationDialog();
