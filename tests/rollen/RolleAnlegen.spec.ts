@@ -118,7 +118,7 @@ test.describe(`Testfälle für die Rollenanlage: Umgebung: ${process.env.ENV}: U
         const startViewPage: StartViewPage = await loginPage.login(user.username, user.password);
         await loginPage.updatePassword();
         await startViewPage.waitForPageLoad();
-        startViewPage.serviceProviderIsVisible(rolleParams.serviceProviders);
+        startViewPage.serviceProvidersAreVisible(rolleParams.serviceProviders);
       });
     });
   }

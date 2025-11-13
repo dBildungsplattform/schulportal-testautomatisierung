@@ -52,20 +52,12 @@ export class RolleCreationWorkflow {
 
   public async submit(): Promise<RolleCreationSuccessPage> {
     await this.page.getByTestId('rolle-form-submit-button').click();
-
-    const rolleCreationSuccessPage: RolleCreationSuccessPage = new RolleCreationSuccessPage(this.page);
-    await rolleCreationSuccessPage.waitForPageLoad();
-
-    return rolleCreationSuccessPage;
+    return new RolleCreationSuccessPage(this.page).waitForPageLoad();
   }
 
   public async submitWithError(): Promise<RolleCreationErrorPage> {
     await this.page.getByTestId('rolle-form-submit-button').click();
-
-    const rolleCreationErrorPage: RolleCreationErrorPage = new RolleCreationErrorPage(this.page);
-    await rolleCreationErrorPage.waitForPageLoad();
-
-    return rolleCreationErrorPage;
+    return new RolleCreationErrorPage(this.page).waitForPageLoad();
   }
 
   /* assertions */

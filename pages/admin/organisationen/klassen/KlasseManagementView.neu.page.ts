@@ -15,10 +15,11 @@ export class KlasseManagementViewPage {
   }
 
   /* actions */
-  public async waitForPageLoad(): Promise<void> {
+  public async waitForPageLoad(): Promise<KlasseManagementViewPage> {
     await this.page.getByTestId('klasse-management-card').waitFor({ state: 'visible' });
     await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Klassenverwaltung');
     await expect(this.page.getByTestId('klasse-table')).not.toContainText('Keine Daten');
+    return this;
   }
 
   private async filterByText(text: string, testId: string): Promise<void> {

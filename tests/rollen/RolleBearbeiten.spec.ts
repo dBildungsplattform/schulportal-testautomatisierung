@@ -31,7 +31,6 @@ async function setupAndGoToRolleDetailsPage(page: PlaywrightTestArgs['page']): P
 test.describe(`Testfälle für die Rollenbearbeitung: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test('Rollennamen ändern', async ({ page }: PlaywrightTestArgs) => {
     const rolleDetailsView: RolleDetailsViewPage = await setupAndGoToRolleDetailsPage(page);
-    await rolleDetailsView.waitForPageLoad();
     const newRolleName: string = generateRolleName();
     await rolleDetailsView.editRolle(newRolleName);
     await rolleDetailsView.rolleSuccessfullyEdited(newRolleName);

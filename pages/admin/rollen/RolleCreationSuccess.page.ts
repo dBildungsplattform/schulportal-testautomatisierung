@@ -11,25 +11,22 @@ export class RolleCreationSuccessPage {
   }
 
   /* actions */
-  public async waitForPageLoad(): Promise<void> {
+  public async waitForPageLoad(): Promise<RolleCreationSuccessPage> {
     await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Neue Rolle hinzufügen');
     await expect(this.page.getByText('Folgende Daten wurden gespeichert:')).toBeVisible();
     await expect(this.page.getByTestId('rolle-success-text')).toBeVisible();
     await expect(this.page.getByTestId('rolle-success-icon')).toBeVisible();
+    return this;
   }
 
   public async backToResultList(): Promise<RolleManagementViewPage> {
     await this.page.getByTestId('back-to-list-button').click();
-    const rolleManagementViewPage: RolleManagementViewPage = new RolleManagementViewPage(this.page);
-    await rolleManagementViewPage.waitForPageLoad();
-    return rolleManagementViewPage;
+    return new RolleManagementViewPage(this.page).waitForPageLoad();
   }
 
   public async createAnother(): Promise<RolleCreationViewPage> {
     await this.page.getByTestId('create-another-rolle-button').click();
-    const rolleCreationViewPage: RolleCreationViewPage = new RolleCreationViewPage(this.page);
-    await rolleCreationViewPage.waitForPageLoad();
-    return rolleCreationViewPage;
+    return new RolleCreationViewPage(this.page).waitForPageLoad();
   }
 
   /* assertions */

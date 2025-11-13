@@ -10,16 +10,15 @@ export class RolleCreationErrorPage {
   }
 
   /* actions */
-  public async waitForPageLoad(): Promise<void> {
+  public async waitForPageLoad(): Promise<RolleCreationErrorPage> {
     await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Neue Rolle hinzufügen');
     await expect(this.page.getByTestId('spsh-alert-title')).toHaveText('Fehler beim Anlegen der Rolle');
+    return this;
   }
 
   public async backToCreation(): Promise<RolleCreationViewPage> {
     await this.page.getByTestId('spsh-alert-button').click();
-    const rolleCreationViewPage: RolleCreationViewPage = new RolleCreationViewPage(this.page);
-    await rolleCreationViewPage.waitForPageLoad();
-    return rolleCreationViewPage;
+    return new RolleCreationViewPage(this.page).waitForPageLoad();
   }
 
   /* assertions */

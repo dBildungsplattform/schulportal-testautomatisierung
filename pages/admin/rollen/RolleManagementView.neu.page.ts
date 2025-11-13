@@ -17,9 +17,7 @@ export class RolleManagementViewPage {
 
   public async openGesamtuebersicht(rollenname: string): Promise<RolleDetailsViewPage> {
     await this.rolleTable.getItemByText(rollenname).click();
-    const rolleDetailsViewPage: RolleDetailsViewPage = new RolleDetailsViewPage(this.page);
-    await rolleDetailsViewPage.waitForPageLoad();
-    return rolleDetailsViewPage;
+    return new RolleDetailsViewPage(this.page).waitForPageLoad();
   }
 
   public async setPageSize(size: '5' | '30' | '50' | '100' | '300'): Promise<void> {
