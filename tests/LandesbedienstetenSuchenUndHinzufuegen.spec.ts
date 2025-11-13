@@ -1,6 +1,6 @@
 import test, { PlaywrightTestArgs, expect } from "@playwright/test";
 import { freshLoginPage, lockPerson, UserInfo } from "../base/api/personApi";
-import { LONG, SHORT, STAGE } from "../base/tags";
+import { LONG, SHORT, STAGE, DEV, BROWSER } from "../base/tags";
 import { addSecondOrganisationToPerson, createPersonWithPersonenkontext, removeAllPersonenkontexte } from "../base/api/personApi";
 import { ersatzTestschuleName, testschule665DstNrUndName, testschule665Name, testschuleDstNr, testschuleDstNrUndName, testschuleName } from "../base/organisation";
 import { ersatzschulLehrkraftRolle, lehrkraftOeffentlichRolle, schuladminOeffentlichRolle } from "../base/rollen";
@@ -66,7 +66,7 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
     await landesbedienstetenSuchenUndHinzufuegenPage.waitForPageLoad();
   });
 
-  test('Seiteninhalte werden angezeigt', { tag: [LONG, SHORT, STAGE] }, async () => {
+  test('Seiteninhalte werden angezeigt', { tag: [LONG, SHORT, STAGE, DEV, BROWSER] }, async () => {
     await landesbedienstetenSuchenUndHinzufuegenPage.checkSearchForm();
     await landesbedienstetenSuchenUndHinzufuegenPage.searchLandesbedienstetenViaUsername(lehrkraft2.username);
     await landesbedienstetenSuchenUndHinzufuegenPage.checkMinimalCreationForm(lehrkraft2.vorname, lehrkraft2.familienname, lehrkraft2.kopersnummer);
@@ -74,7 +74,7 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
 
   //Suchergebnis Popup wird angezeigt, wenn kein Treffer gefunden wurde: falsche Namen 
   //Es wird das Popup Suchergebnis angezeigt, mit Text und Abbrechen Button
-  test('Kein Treffer wegen falschen Namen: Popup wird angezeigt und ist vollständig', { tag: [LONG, SHORT, STAGE] }, async () => {
+  test('Kein Treffer wegen falschen Namen: Popup wird angezeigt und ist vollständig', { tag: [LONG, SHORT, STAGE, DEV, BROWSER] }, async () => {
     await landesbedienstetenSuchenUndHinzufuegenPage.fillName("zzzzz", "yyyyy");
     await landesbedienstetenSuchenUndHinzufuegenPage.clickSearch();
     await searchResultDialog.checkContent();
@@ -83,7 +83,7 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
   });
 
   // Suchergebnis Popup wird angezeigt, wenn kein Treffer gefunden wurde
-  test('Kein Treffer: Popup wird angezeigt und kann geschlossen werden (KoPersNr, Email, Benutzername)', { tag: [LONG, SHORT, STAGE] }, async () => {
+  test('Kein Treffer: Popup wird angezeigt und kann geschlossen werden (KoPersNr, Email, Benutzername)', { tag: [LONG, SHORT, STAGE, DEV, BROWSER] }, async () => {
     await test.step('Suchen per KoPers.-Nr.', async () => {
       await landesbedienstetenSuchenUndHinzufuegenPage.fillKopersNr("abc9999");
       await landesbedienstetenSuchenUndHinzufuegenPage.clickSearch();
@@ -116,7 +116,7 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
 
   // Doppelter Name Fehlermeldung (!) Wir verwenden absichtlich die Namen der 2 Lehrkräfte, 
   // damit wir keinen Eslint Fehler bekommen, weil die 2. Lehrkraft nie benutzt wird.
-  test('Doppelter Name: Fehlermeldung wird angezeigt', { tag: [LONG, SHORT, STAGE] }, async () => {
+  test('Doppelter Name: Fehlermeldung wird angezeigt', { tag: [LONG, SHORT, STAGE, DEV, BROWSER] }, async () => {
     await landesbedienstetenSuchenUndHinzufuegenPage.fillName(lehrkraftDoppel1.vorname, lehrkraftDoppel2.familienname);
     await landesbedienstetenSuchenUndHinzufuegenPage.clickSearch();
     await searchResultDialog.checkContent();
@@ -125,7 +125,7 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
   });
 
   //SPSH-2632 - Suchergebnis UI Test Landesbediensteten suchen (per Namen)
-  test('Persönliche Daten und Zuordnung werden korrekt angezeigt', { tag: [LONG, SHORT, STAGE] }, async () => {
+  test('Persönliche Daten und Zuordnung werden korrekt angezeigt', { tag: [LONG, SHORT, STAGE, DEV, BROWSER] }, async () => {
     await landesbedienstetenSuchenUndHinzufuegenPage.fillName(lehrkraft.vorname, lehrkraft.familienname);
     await landesbedienstetenSuchenUndHinzufuegenPage.clickSearch();
 
@@ -140,7 +140,7 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
     ----------------------------- Funktionale Testfälle ------------------------------
   */
   //SPSH-2633
-  test('Buttons zum Zurücksetzen funktionieren', { tag: [LONG, SHORT, STAGE] }, async () => {
+  test('Buttons zum Zurücksetzen funktionieren', { tag: [LONG, SHORT, STAGE, DEV, BROWSER] }, async () => {
     await test.step ('Button Zurück zur Suche funktioniert', async () => {
       await landesbedienstetenSuchenUndHinzufuegenPage.searchByName(lehrkraft.vorname, lehrkraft.familienname);
       await landesbedienstetenSuchenUndHinzufuegenPage.goBackToSearchForm(lehrkraft.vorname, lehrkraft.familienname);      
@@ -151,21 +151,21 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
   });
 
   // Gesperrte Person kann nicht gefunden werden
-  test('Gesperrte Person kann nicht gefunden werden', { tag: [LONG, SHORT, STAGE] }, async () => {
+  test('Gesperrte Person kann nicht gefunden werden', { tag: [LONG, SHORT, STAGE, DEV, BROWSER] }, async () => {
     await landesbedienstetenSuchenUndHinzufuegenPage.fillKopersNr(lockedLehrkraft.kopersnummer);
     await landesbedienstetenSuchenUndHinzufuegenPage.clickSearch();
     await expect(searchResultDialog.headline).toBeVisible();
   });
 
   // SPSH-2660 Step 1
-  test('Landesbediensteten per KoPers suchen und erfolgreich hinzufügen', { tag: [LONG, SHORT, STAGE] }, async () => {
+  test('Landesbediensteten per KoPers suchen und erfolgreich hinzufügen', { tag: [LONG, SHORT, STAGE, DEV, BROWSER] }, async () => {
     await landesbedienstetenSuchenUndHinzufuegenPage.fillKopersNr(lehrkraftMitSchulzuordnung.kopersnummer);
     await landesbedienstetenSuchenUndHinzufuegenPage.landesbedienstetenHinzufuegenAlsLehrkraft();
     await landesbedienstetenSuchenUndHinzufuegenPage.checkSuccessPage(lehrkraftMitSchulzuordnung.vorname, lehrkraftMitSchulzuordnung.familienname, lehrkraftMitSchulzuordnung.kopersnummer, lehrkraftMitSchulzuordnung.username, `${testschuleDstNr} (${testschuleName})`);
   });
 
   //SPSH-2660 Step 3
-  test('Landesbediensteten ohne Schulzuordnung suchen per Benutzername und erfolgreich hinzufügen', { tag: [LONG, SHORT, STAGE] }, async ({ page }: PlaywrightTestArgs) => {
+  test('Landesbediensteten ohne Schulzuordnung suchen per Benutzername und erfolgreich hinzufügen', { tag: [LONG, SHORT, STAGE, DEV, BROWSER] }, async ({ page }: PlaywrightTestArgs) => {
     await removeAllPersonenkontexte(page, lehrkraftOhneSchulzuordnung.personId);
     await landesbedienstetenSuchenUndHinzufuegenPage.fillBenutzername(lehrkraftOhneSchulzuordnung.username);
     await landesbedienstetenSuchenUndHinzufuegenPage.landesbedienstetenHinzufuegenAlsLehrkraft();
@@ -173,7 +173,7 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
   });
 
   // // SPSH-2660 Step 4
-  test('Landesbediensteten suchen per Vorname und Nachname und erfolgreich hinzufügen', { tag: [LONG, SHORT, STAGE] }, async () => {
+  test('Landesbediensteten suchen per Vorname und Nachname und erfolgreich hinzufügen', { tag: [LONG, SHORT, STAGE, DEV, BROWSER] }, async () => {
     await landesbedienstetenSuchenUndHinzufuegenPage.fillName(lehrkraftMitSchulzuordnung.vorname, lehrkraftMitSchulzuordnung.familienname);
     await landesbedienstetenSuchenUndHinzufuegenPage.landesbedienstetenHinzufuegenAlsLehrkraft();
     await landesbedienstetenSuchenUndHinzufuegenPage.checkSuccessPage(lehrkraftMitSchulzuordnung.vorname, lehrkraftMitSchulzuordnung.familienname, lehrkraftMitSchulzuordnung.kopersnummer, lehrkraftMitSchulzuordnung.username, `${testschuleDstNr} (${testschuleName})`);
@@ -212,7 +212,7 @@ test.describe('Testfälle für Landesbediensteten hinzufügen, Funktion und UI-V
     await landesbedienstetenSuchenUndHinzufuegenPage.searchLandesbedienstetenViaUsername(lehrkraft.username);
   });
   
-  test('Seite wird vollständig angezeigt: Schuladmin mit 2 Schulen', { tag: [LONG, SHORT, STAGE] }, async () => {
+  test('Seite wird vollständig angezeigt: Schuladmin mit 2 Schulen', { tag: [LONG, SHORT, STAGE, DEV, BROWSER] }, async () => {
     await test.step('Organisation nur aus zugewiesenen Organisationen auswählbar, UI Elemente werden angezeigt', async () => {
       await landesbedienstetenSuchenUndHinzufuegenPage.checkMinimalCreationForm(lehrkraft.vorname, lehrkraft.familienname, lehrkraft.kopersnummer, testschuleDstNrUndName);
       await landesbedienstetenSuchenUndHinzufuegenPage.checkSelectableOrganisationen([testschuleDstNrUndName, testschule665DstNrUndName]);
