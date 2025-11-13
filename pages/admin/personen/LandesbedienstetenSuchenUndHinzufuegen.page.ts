@@ -34,8 +34,8 @@ export class LandesbedienstetenSuchenUndHinzufuegenPage {
   private readonly personCreationForm: Locator = this.page.getByTestId('person-creation-form');
   private readonly mandatoryFieldsNotice: Locator = this.personCreationForm.getByTestId('mandatory-fields-notice');
   private readonly personalInfoHeadline: Locator = this.personCreationForm.getByTestId('personal-info-headline');
-  private readonly formVornameInput: Locator = this.personCreationForm.getByTestId('vorname-input').locator('input');
-  private readonly formNachnameInput: Locator = this.personCreationForm.getByTestId('familienname-input').locator('input');
+  private readonly formVornameInput: Locator = this.personCreationForm.getByTestId('add-person-vorname-input').locator('input');
+  private readonly formNachnameInput: Locator = this.personCreationForm.getByTestId('add-person-familienname-input').locator('input');
   private readonly hasNoKopersnrCheckbox: Locator = this.personCreationForm.getByTestId('has-no-kopersnr-checkbox');
   private readonly formKopersInput: Locator = this.personCreationForm.getByTestId('kopersnr-input').locator('input');
   private readonly organisationHeadline: Locator = this.personCreationForm.getByTestId('organisation-assign-headline');
@@ -258,7 +258,7 @@ export class LandesbedienstetenSuchenUndHinzufuegenPage {
     await expect(this.confirmationDialogConfirmButton).toHaveText('Landesbediensteten hinzufügen');
   }
 
-  public async checkMinimalCreationForm(vorname: string, nachname: string, kopersnummer: string, organisationText?: string): Promise<void> {
+  public async checkMinimalCreationForm(vorname: string, nachname: string, kopersnummer: string, organisationText: string): Promise<void> {
     await expect(this.landesbedienstetenHinzufuegenHeadline).toHaveText('Landesbediensteten hinzufügen');
     await expect(this.mandatoryFieldsNotice).toHaveText('Mit * markierte Felder sind Pflichtangaben.');
     await expect(this.closeButton).toBeVisible();

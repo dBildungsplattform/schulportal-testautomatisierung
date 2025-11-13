@@ -69,7 +69,7 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
   test('Seiteninhalte werden angezeigt', { tag: [LONG, SHORT, STAGE, DEV, BROWSER] }, async () => {
     await landesbedienstetenSuchenUndHinzufuegenPage.checkSearchForm();
     await landesbedienstetenSuchenUndHinzufuegenPage.searchLandesbedienstetenViaUsername(lehrkraft2.username);
-    await landesbedienstetenSuchenUndHinzufuegenPage.checkMinimalCreationForm(lehrkraft2.vorname, lehrkraft2.familienname, lehrkraft2.kopersnummer);
+    await landesbedienstetenSuchenUndHinzufuegenPage.checkMinimalCreationForm(lehrkraft2.vorname, lehrkraft2.familienname, lehrkraft2.kopersnummer, testschuleDstNrUndName);
   });
 
   //Suchergebnis Popup wird angezeigt, wenn kein Treffer gefunden wurde: falsche Namen 
