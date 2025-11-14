@@ -1,14 +1,6 @@
-import { RollenSystemRecht } from './api/generated/models/RollenSystemRecht';
+import { RollenSystemRechtEnum } from './api/generated';
 
-export const rollenVerwalten: RollenSystemRecht = 'ROLLEN_VERWALTEN';
-export const personenSofortLoeschen: RollenSystemRecht = 'PERSONEN_SOFORT_LOESCHEN';
-export const personenVerwalten: RollenSystemRecht = 'PERSONEN_VERWALTEN';
-export const schulenVerwalten: RollenSystemRecht = 'SCHULEN_VERWALTEN';
-export const klassenVerwalten: RollenSystemRecht = 'KLASSEN_VERWALTEN';
-export const schultraegerVerwalten: RollenSystemRecht = 'SCHULTRAEGER_VERWALTEN';
-export const personenAnlegen: RollenSystemRecht = 'PERSONEN_ANLEGEN';
-
-export const systemrechtLabel: Record<RollenSystemRecht, string> = {
+export const systemrechtLabel: Record<RollenSystemRechtEnum, string> = {
   IMPORT_DURCHFUEHREN: 'Darf Import durchführen',
   ROLLEN_VERWALTEN: 'Darf Rollen verwalten',
   PERSONEN_SOFORT_LOESCHEN: 'Darf Benutzer sofort löschen',
@@ -23,8 +15,8 @@ export const systemrechtLabel: Record<RollenSystemRecht, string> = {
   HINWEISE_BEARBEITEN: 'Darf Hinweise bearbeiten',
   LANDESBEDIENSTETE_SUCHEN_UND_HINZUFUEGEN: 'Darf Landesbedienstete suchen und hinzufügen',
   EINGESCHRAENKT_NEUE_BENUTZER_ERSTELLEN: 'Darf eingeschränkt neue Benutzer erstellen',
-  //   "ROLLEN_ERWEITERN": "Darf Rollen schulspezifisch erweitern",
-  //   "ANGEBOTE_VERWALTEN": "Darf Angebote verwalten"
+  ROLLEN_ERWEITERN: 'Darf Rollen schulspezifisch erweitern',
+  ANGEBOTE_VERWALTEN: 'Darf Angebote verwalten',
   CRON_DURCHFUEHREN: '', // no label in UI
   PERSONEN_LESEN: '', // no label in UI
 };
