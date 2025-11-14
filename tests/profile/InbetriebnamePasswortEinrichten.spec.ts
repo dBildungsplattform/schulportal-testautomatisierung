@@ -1,5 +1,5 @@
 import { PlaywrightTestArgs, test } from '@playwright/test';
-import { createRolleAndPersonWithUserContext, UserInfo } from '../../base/api/personApi';
+import { createRolleAndPersonWithPersonenkontext, UserInfo } from '../../base/api/personApi';
 import { getServiceProviderId } from '../../base/api/serviceProviderApi';
 import { testschuleName } from '../../base/organisation';
 import { typeLehrer } from '../../base/rollentypen';
@@ -25,7 +25,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
        await FromAnywhere(page)
         .start()
         .then((landing: LandingViewPage) => landing.navigateToLogin())
-        .then((login: LoginViewPage) => login.login())
+        .then((login: LoginViewPage) => login.login(ADMIN, PW))
         .then((startseite: StartViewPage) => startseite.serviceProvidersAreLoaded());
     });
   });
@@ -76,7 +76,7 @@ test(
     let userInfoLehrer: UserInfo;
 
     await test.step('Testdaten: Lehrer mit einer Rolle (LEHR) über die API anlegen und mit diesem anmelden', async () => {
-      userInfoLehrer = await createRolleAndPersonWithUserContext(
+      userInfoLehrer = await createRolleAndPersonWithPersonenkontext(
         page,
         testschuleName,
         typeLehrer,

@@ -15,8 +15,8 @@ export class KlasseCreationViewPage {
 
   /* actions */
   public async waitForPageLoad(): Promise<void> {
-    await this.page.getByTestId('klasse-creation-card').waitFor({ state: 'visible' });
-    await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Klasse anlegen');
+    await this.page.getByTestId('klasse-creation-headline').waitFor({ state: 'visible' });
+    await expect(this.page.getByTestId('klasse-creation-headline')).toHaveText('Klasse anlegen');
   }
 
   public async createKlasse(params: KlasseCreationParams): Promise<KlasseCreationSuccessPage> {

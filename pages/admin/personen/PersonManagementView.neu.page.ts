@@ -3,17 +3,24 @@ import { Autocomplete } from '../../../elements/Autocomplete';
 import { DataTable } from '../../components/DataTable.neu.page';
 import { PersonDetailsViewPage } from './details/PersonDetailsView.neu.page';
 import { SearchFilter } from '../../../elements/SearchFilter';
+import { MenuBarPage } from '../../components/MenuBar.neu.page';
 
 export class PersonManagementViewPage {
-  private readonly personTable: DataTable = new DataTable(this.page, this.page.getByTestId('person-table'));
-  private readonly searchFilter: SearchFilter = new SearchFilter(this.page);
+  private readonly personTable: DataTable;
+  private readonly searchFilter: SearchFilter;
+  /* since this page is the entry point for the admin area, the menu has to be public here, so other pages and tests can access it */
+  public readonly menu: MenuBarPage;
 
-  constructor(protected readonly page: Page) {}
+  constructor(private readonly page: Page) {
+    this.menu = new MenuBarPage(page);
+    this.personTable = new DataTable(this.page, this.page.getByTestId('person-table'));
+    this.searchFilter = new SearchFilter(this.page);
+  }
 
   /* actions */
   public async waitForPageLoad(): Promise<void> {
-    await this.page.getByTestId('admin-headline').waitFor({ state: 'visible' });
-    await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Benutzerverwaltung');
+    await this.page.getByTestId('person-management-headline').waitFor({ state: 'visible' });
+    await expect(this.page.getByTestId('person-management-headline')).toHaveText('Benutzerverwaltung');
     await expect(this.page.getByTestId('person-table')).not.toContainText('Keine Daten');
   }
 
@@ -51,5 +58,4 @@ export class PersonManagementViewPage {
   public async checkHeaders(expectedHeaders: string[]): Promise<void> {
     await this.personTable.checkHeaders(expectedHeaders);
   }
-
 }

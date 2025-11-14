@@ -97,7 +97,7 @@ export class PersonDetailsViewPage {
 
   constructor(page: Page) {
     this.page = page;
-    this.textH2BenutzerBearbeiten = page.getByTestId('person-details-card').getByTestId('layout-card-headline');
+    this.textH2BenutzerBearbeiten = page.getByTestId('person-details-headline');
 
     // Persoenliche Daten
     this.username = page.getByTestId('person-username');

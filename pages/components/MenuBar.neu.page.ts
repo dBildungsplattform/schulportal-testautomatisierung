@@ -1,9 +1,7 @@
-import { Page } from '@playwright/test';
+import { Locator, Page } from '@playwright/test';
 import { KlasseCreationViewPage } from '../admin/organisationen/klassen/KlasseCreationView.neu.page';
 import { KlasseManagementViewPage } from '../admin/organisationen/klassen/KlasseManagementView.neu.page';
 import { PersonCreationViewPage } from '../admin/personen/creation/PersonCreationView.neu.page';
-// TODO: implement PersonSearchViewPage
-// import { PersonSearchViewPage } from '../admin/personen/creation/PersonSearchView.neu.page';
 import { PersonImportViewPage } from '../admin/personen/PersonImportView.neu.page';
 import { PersonManagementViewPage } from '../admin/personen/PersonManagementView.neu.page';
 import { RolleCreationViewPage } from '../admin/rollen/RolleCreationView.neu.page';
@@ -11,67 +9,108 @@ import { RolleManagementViewPage } from '../admin/rollen/RolleManagementView.neu
 import { SchuleCreationViewPage } from '../admin/organisationen/schulen/SchuleCreationView.neu.page';
 import { SchuleManagementViewPage } from '../admin/organisationen/schulen/SchuleManagementView.neu.page';
 import { StartViewPage } from '../StartView.neu.page';
+import { LandesbedienstetenSuchenUndHinzufuegenPage } from '../admin/personen/LandesbedienstetenSuchenUndHinzufuegen.page';
 
 export class MenuBarPage {
-  /* add global locators here */
+  /* add locators here */
+  private landesbedienstetenSuchenUndHinzufuegen: Locator = this.page.getByTestId('person-search-menu-item');
+  private startPage: Locator = this.page.getByTestId('back-to-start-link');
+  private personManagement: Locator = this.page.getByTestId('person-management-menu-item');
+  private personCreation: Locator = this.page.getByTestId('person-creation-menu-item');
+  private personImport: Locator = this.page.getByTestId('person-import-menu-item');
+  private limitedPersonCreation: Locator = this.page.getByTestId('person-add-menu-item');
+  private klasseManagement: Locator = this.page.getByTestId('klasse-management-menu-item');
+  private klasseCreation: Locator = this.page.getByTestId('klasse-creation-menu-item');
+  private rolleManagement: Locator = this.page.getByTestId('rolle-management-menu-item');
+  private rolleCreation: Locator = this.page.getByTestId('rolle-creation-menu-item');
+  private schuleManagement: Locator = this.page.getByTestId('schule-management-menu-item');
+  private schuleCreation: Locator = this.page.getByTestId('schule-creation-menu-item');
 
   constructor(protected readonly page: Page) {}
 
   /* actions */
-  private async navigateTo<T>(testId: string, pageClass: new (page: Page) => T, waitForPageLoad: (page: T) => Promise<void>): Promise<T> {
-    await this.page.getByTestId(testId).click();
-    const newPage: T = new pageClass(this.page);
-    await waitForPageLoad.call(newPage);
+  public async navigateToStartPage(): Promise<StartViewPage> {
+    await this.startPage.click();
+    const newPage: StartViewPage = new StartViewPage(this.page);
+    await newPage.waitForPageLoad();
     return newPage;
   }
 
-  public async navigateToStartPage(): Promise<StartViewPage> {
-    return this.navigateTo('back-to-start-link', StartViewPage, p => p.waitForPageLoad());
-  }
-
   public async navigateToPersonManagement(): Promise<PersonManagementViewPage> {
-    return this.navigateTo('person-management-menu-item', PersonManagementViewPage, p => p.waitForPageLoad());
+    await this.personManagement.click();
+    const newPage: PersonManagementViewPage = new PersonManagementViewPage(this.page);
+    await newPage.waitForPageLoad();
+    return newPage;
   }
 
   public async navigateToPersonCreation(): Promise<PersonCreationViewPage> {
-    return this.navigateTo('person-creation-menu-item', PersonCreationViewPage, p => p.waitForPageLoad('Neuen Benutzer hinzufügen'));
+    await this.personCreation.click();
+    const personCreationViewPage: PersonCreationViewPage = new PersonCreationViewPage(this.page);
+    await personCreationViewPage.waitForPageLoad();
+    return personCreationViewPage;
   }
 
   public async navigateToPersonImport(): Promise<PersonImportViewPage> {
-    return this.navigateTo('person-import-menu-item', PersonImportViewPage, p => p.waitForPageLoad());
+    await this.personImport.click();
+    const personImportViewPage: PersonImportViewPage = new PersonImportViewPage(this.page);
+    await personImportViewPage.waitForPageLoad();
+    return personImportViewPage;
   }
 
-  // TODO: implement PersonSearchViewPage
-  // public async navigateToPersonSearch(): Promise<PersonSearchViewPage> {
-  //   return this.navigateTo('person-search-menu-item', PersonSearchViewPage, PersonSearchViewPage.prototype.waitForPageLoad);
-  // }
-
-  public async navigateToPersonAdd(): Promise<PersonCreationViewPage> {
-    return this.navigateTo('person-add-menu-item', PersonCreationViewPage, p => p.waitForPageLoad('Andere Person (neu anlegen)'));
+  public async navigateToLimitedPersonCreation(): Promise<PersonCreationViewPage> {
+    await this.limitedPersonCreation.click();
+    const personCreationViewPage: PersonCreationViewPage = new PersonCreationViewPage(this.page);
+    await personCreationViewPage.waitForPageLoad();
+    return personCreationViewPage;
   }
 
-  public async navigateToKlasseManagement(): Promise<KlasseManagementViewPage> {
-    return this.navigateTo('klasse-management-menu-item', KlasseManagementViewPage, p => p.waitForPageLoad());
+  public async navigateToLandesbedienstetenSuchenUndHinzufuegen(): Promise<LandesbedienstetenSuchenUndHinzufuegenPage> {
+    await this.landesbedienstetenSuchenUndHinzufuegen.click();
+    const newPage: LandesbedienstetenSuchenUndHinzufuegenPage = new LandesbedienstetenSuchenUndHinzufuegenPage(this.page);
+    await newPage.waitForPageLoad();
+    return newPage;
+  }
+
+  public async navigateToKlasseManagement(): Promise<KlasseManagementViewPage> {  
+    await this.klasseManagement.click();
+    const klasseManagementViewPage: KlasseManagementViewPage = new KlasseManagementViewPage(this.page);
+    await klasseManagementViewPage.waitForPageLoad();
+    return klasseManagementViewPage;
   }
 
   public async navigateToKlasseCreation(): Promise<KlasseCreationViewPage> {
-    return this.navigateTo('klasse-creation-menu-item', KlasseCreationViewPage, p => p.waitForPageLoad());
+    await this.klasseCreation.click();
+    const klasseCreationViewPage: KlasseCreationViewPage = new KlasseCreationViewPage(this.page);
+    await klasseCreationViewPage.waitForPageLoad();
+    return klasseCreationViewPage;
   }
 
   public async navigateToRolleManagement(): Promise<RolleManagementViewPage> {
-    return this.navigateTo('rolle-management-menu-item', RolleManagementViewPage, p => p.waitForPageLoad());
+    await this.rolleManagement.click();
+    const rolleManagementViewPage: RolleManagementViewPage = new RolleManagementViewPage(this.page);
+    await rolleManagementViewPage.waitForPageLoad();
+    return rolleManagementViewPage;
   }
 
   public async navigateToRolleCreation(): Promise<RolleCreationViewPage> {
-    return this.navigateTo('rolle-creation-menu-item', RolleCreationViewPage, p => p.waitForPageLoad());
+    await this.rolleCreation.click();
+    const rolleCreationViewPage: RolleCreationViewPage = new RolleCreationViewPage(this.page);
+    await rolleCreationViewPage.waitForPageLoad();
+    return rolleCreationViewPage;
   }
 
   public async navigateToSchuleManagement(): Promise<SchuleManagementViewPage> {
-    return this.navigateTo('schule-management-menu-item', SchuleManagementViewPage, p => p.waitForPageLoad());
+    await this.schuleManagement.click();
+    const schuleManagementViewPage: SchuleManagementViewPage = new SchuleManagementViewPage(this.page);
+    await schuleManagementViewPage.waitForPageLoad();
+    return schuleManagementViewPage;
   }
 
   public async navigateToSchuleCreation(): Promise<SchuleCreationViewPage> {
-    return this.navigateTo('schule-creation-menu-item', SchuleCreationViewPage, p => p.waitForPageLoad());
+    await this.schuleCreation.click();
+    const schuleCreationViewPage: SchuleCreationViewPage = new SchuleCreationViewPage(this.page);
+    await schuleCreationViewPage.waitForPageLoad();
+    return schuleCreationViewPage;
   }
 
   /* assertions */

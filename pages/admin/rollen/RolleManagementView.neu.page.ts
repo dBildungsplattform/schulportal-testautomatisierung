@@ -10,8 +10,8 @@ export class RolleManagementViewPage {
 
   /* actions */
   public async waitForPageLoad(): Promise<void> {
-    await this.page.getByTestId('rolle-management-card').waitFor({ state: 'visible' });
-    await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Rollenverwaltung');
+    await this.page.getByTestId('rolle-management-headline').waitFor({ state: 'visible' });
+    await expect(this.page.getByTestId('rolle-management-headline')).toHaveText('Rollenverwaltung');
     await expect(this.page.getByTestId('rolle-table')).not.toContainText('Keine Daten');
   }
 

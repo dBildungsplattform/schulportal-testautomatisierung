@@ -24,7 +24,7 @@ export class KlasseCreationViewPage {
   constructor(page: Page) {
     // Anlage Klasse
     this.page = page;
-    this.textH2KlasseAnlegen = page.getByTestId('layout-card-headline');
+    this.textH2KlasseAnlegen = page.getByTestId('klasse-creation-headline');
     this.buttonSchliessen = page.getByTestId('close-layout-card-button');
     this.comboboxSchulstrukturknoten = page.getByTestId('klasse-form-schule-select').locator('.v-input__control');
     this.organisation = page.getByTestId('klasse-form-schule-select').locator('.v-field');

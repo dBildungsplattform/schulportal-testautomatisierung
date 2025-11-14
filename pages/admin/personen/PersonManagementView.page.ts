@@ -27,7 +27,7 @@ export class PersonManagementViewPage {
   constructor(page: Page) {
     this.page = page;
     this.textH1Administrationsbereich = page.getByTestId('admin-headline');
-    this.textH2Benutzerverwaltung = page.getByTestId('layout-card-headline');
+    this.textH2Benutzerverwaltung = page.getByTestId('person-management-headline');
     this.inputSuchfeld = page.locator('[data-testid="search-filter-input"] input');
     this.filterResetButton = page.locator('[data-testid="reset-filter-button"]');
     this.buttonSuchen = page.getByTestId('apply-search-filter-button');

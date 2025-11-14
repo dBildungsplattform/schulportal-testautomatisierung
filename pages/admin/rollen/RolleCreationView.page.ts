@@ -17,7 +17,7 @@ export class RolleCreationViewPage {
   constructor(public readonly page: Page) {
     // Anlage Rolle
     this.rolleForm = new RolleForm(page);
-    this.textH2RolleAnlegen = page.getByTestId('layout-card-headline');
+    this.textH2RolleAnlegen = page.getByTestId('rolle-creation-headline');
     this.buttonSchliessen = page.getByTestId('close-layout-card-button');
     this.buttonRolleAnlegen = page.getByTestId('rolle-form-submit-button');
     this.buttonWeitereRolleAnlegen = page.getByTestId('create-another-rolle-button');
