@@ -15,8 +15,9 @@ export class DataTable {
     }
 
     public async setItemsPerPage(value: string): Promise<void> {
-      await this.page.locator('.v-data-table-footer__items-per-page .v-input').click();
-      await this.page.getByText(value, { exact: true }).click();
+      await this.page.locator('.v-data-table-footer__items-per-page .v-field__append-inner').click();
+      await this.page.locator('.v-overlay').getByText(value, { exact: true }).click();
+      await expect(this.page.locator('.v-overlay')).toBeHidden();
     }
 
     public async goToFirstPage(): Promise<void> {

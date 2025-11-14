@@ -1,10 +1,10 @@
 import { expect, type Locator, Page } from '@playwright/test';
 import { RolleCreationParams } from './RolleCreationView.neu.page';
 import { RolleManagementViewPage } from './RolleManagementView.neu.page';
+import { Alert } from '../../../elements/Alert';
 
 export class RolleDetailsViewPage {
-
-  constructor(protected readonly page: Page) { }
+  constructor(protected readonly page: Page) {}
 
   /* actions */
   public async waitForPageLoad(): Promise<RolleDetailsViewPage> {
@@ -14,7 +14,7 @@ export class RolleDetailsViewPage {
   }
 
   public async editRolle(rollenname: string): Promise<void> {
-    const rolleNameInput: Locator = this.page.getByTestId('rollenname-input').getByRole('textbox');
+    const rolleNameInput: Locator = this.page.getByTestId('rollenname-input').locator('input');
     const editRolleButton: Locator = this.page.getByTestId('rolle-edit-button');
     const editRolleSubmitButton: Locator = this.page.getByTestId('rolle-changes-save-button');
 
@@ -31,15 +31,26 @@ export class RolleDetailsViewPage {
   public async deleteRolle(): Promise<RolleManagementViewPage> {
     await this.clickDeleteAndConfirm();
     await this.page.getByTestId('close-rolle-delete-success-dialog-button').click();
-    return new RolleManagementViewPage(this.page).waitForPageLoad();  
+    return new RolleManagementViewPage(this.page).waitForPageLoad();
   }
 
-  public async attemptDeletionOfAssignedRolleAndConfirmError(): Promise<RolleManagementViewPage> {
+  public async attemptDeletionOfAssignedRolle(): Promise<Alert<RolleManagementViewPage>> {
     await this.clickDeleteAndConfirm();
-    await expect(this.page.getByTestId('rolle-details-error-alert-title')).toContainText('Löschen nicht möglich');
-    await expect(this.page.getByTestId('rolle-details-error-alert-text')).toContainText('Die Rolle kann nicht gelöscht werden, da die sie noch Benutzern zugeordnet ist. Nehmen Sie bitte zunächst alle Zuordnungen zurück.');
-    await this.page.getByTestId('rolle-details-error-alert-button').click();
-    return new RolleManagementViewPage(this.page).waitForPageLoad();  
+    const alert: Alert<RolleManagementViewPage> = new Alert(
+      this.page,
+      {
+        title: 'Löschen nicht möglich',
+        text: 'Die Rolle kann nicht gelöscht werden, da die sie noch Benutzern zugeordnet ist. Nehmen Sie bitte zunächst alle Zuordnungen zurück.',
+        button: 'Zurück zur Ergebnisliste',
+      },
+      new RolleManagementViewPage(this.page),
+      {
+        title: 'rolle-details-error-alert-title',
+        text: 'rolle-details-error-alert-text',
+        button: 'rolle-details-error-alert-button',
+      }
+    );
+    return alert;
   }
 
   private async clickDeleteAndConfirm(): Promise<void> {

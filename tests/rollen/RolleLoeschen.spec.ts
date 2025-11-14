@@ -10,6 +10,7 @@ import { RolleManagementViewPage } from '../../pages/admin/rollen/RolleManagemen
 import { HeaderPage } from '../../pages/components/Header.neu.page';
 import { LoginViewPage } from '../../pages/LoginView.neu.page';
 import { StartViewPage } from '../../pages/StartView.neu.page';
+import { Alert } from '../../elements/Alert';
 
 const ADMIN: string | undefined = process.env.USER;
 const PASSWORD: string | undefined = process.env.PW;
@@ -53,8 +54,9 @@ test.describe(`Testfälle für die Rollenlöschung: Umgebung: ${process.env.ENV}
     await test.step('Rolle einer Person zuordnen', async () => {
       await createPersonWithUserContext(page, testschuleName, generateNachname(), generateVorname(), rolleName);
     });
-    const rolleManagementViewPage: RolleManagementViewPage =
-      await rolleDetailsView.attemptDeletionOfAssignedRolleAndConfirmError();
+    const alert: Alert<RolleManagementViewPage> = await rolleDetailsView.attemptDeletionOfAssignedRolle();
+    await alert.assertExpectedTexts();
+    const rolleManagementViewPage: RolleManagementViewPage = await (await alert.confirm()).waitForPageLoad();
     await rolleManagementViewPage.setPageSize('300');
     await rolleManagementViewPage.checkIfRolleExists(rolleName);
   });
