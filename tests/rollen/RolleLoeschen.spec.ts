@@ -15,42 +15,38 @@ import { Alert } from '../../elements/Alert';
 const ADMIN: string | undefined = process.env.USER;
 const PASSWORD: string | undefined = process.env.PW;
 
-type SetupResult = [RolleDetailsViewPage, string];
-/**
- *
- * @param page
- * @returns [RolleDetailsViewPage, string] - RolleDetailsViewPage und der Name der erstellten Rolle
- */
-async function setupAndGoToRolleDetailsPage(page: PlaywrightTestArgs['page']): Promise<SetupResult> {
-  return test.step('Anmelden und zur Rollenbearbeitung navigieren', async () => {
-    const loginPage: LoginViewPage = await freshLoginPage(page);
-    const startPage: StartViewPage = await loginPage.login(ADMIN, PASSWORD);
-    await startPage.waitForPageLoad();
-    const organisationId: string = await getOrganisationId(page, testschuleName);
-    const rolleName: string = generateRolleName();
-    await createRolle(page, RollenArt.Leit, organisationId, rolleName);
-    const personManagementView: PersonManagementViewPage = await startPage.navigateToAdministration();
-    const rolleManagementViewPage: RolleManagementViewPage =
-      await personManagementView.menu.navigateToRolleManagement();
-    rolleManagementViewPage.setPageSize('300');
-    return [await rolleManagementViewPage.openGesamtuebersicht(rolleName), rolleName];
-  });
-}
-
 test.describe(`Testfälle für die Rollenlöschung: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
+  let rolleDetailsView: RolleDetailsViewPage;
+  let rolleName: string;
+
+  test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
+    await test.step('Anmelden und zur Rollenbearbeitung navigieren', async () => {
+      const loginPage: LoginViewPage = await freshLoginPage(page);
+      const startPage: StartViewPage = await loginPage.login(ADMIN, PASSWORD);
+      await startPage.waitForPageLoad();
+      const organisationId: string = await getOrganisationId(page, testschuleName);
+      rolleName = generateRolleName();
+      await createRolle(page, RollenArt.Leit, organisationId, rolleName);
+      const personManagementView: PersonManagementViewPage = await startPage.navigateToAdministration();
+      const rolleManagementViewPage: RolleManagementViewPage =
+        await personManagementView.menu.navigateToRolleManagement();
+      rolleManagementViewPage.setPageSize('300');
+      rolleDetailsView = await rolleManagementViewPage.openGesamtuebersicht(rolleName);
+    });
+  });
+
   test.afterEach(async ({ page }: PlaywrightTestArgs) => {
     const header: HeaderPage = new HeaderPage(page);
     await header.logout();
   });
+
   test('Erfolgreich löschen', async ({ page }: PlaywrightTestArgs) => {
-    const [rolleDetailsView, rolleName]: SetupResult = await setupAndGoToRolleDetailsPage(page);
     const rolleManagementViewPage: RolleManagementViewPage = await rolleDetailsView.deleteRolle();
     await rolleManagementViewPage.setPageSize('300');
     await rolleManagementViewPage.checkIfRolleDoesNotExist(rolleName);
   });
 
   test('Vergebene Rolle löschen und Fehlermeldung prüfen', async ({ page }: PlaywrightTestArgs) => {
-    const [rolleDetailsView, rolleName]: SetupResult = await setupAndGoToRolleDetailsPage(page);
     await test.step('Rolle einer Person zuordnen', async () => {
       await createPersonWithUserContext(page, testschuleName, generateNachname(), generateVorname(), rolleName);
     });
