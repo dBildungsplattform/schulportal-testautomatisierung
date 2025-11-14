@@ -6,11 +6,11 @@ import { klasse1Testschule } from '../../base/klassen';
 import { rollenMerkmalLabel } from '../../base/merkmale';
 import { testschuleName } from '../../base/organisation';
 import { rollenArtLabel } from '../../base/rollentypen';
-import { generateNachname, generateVorname } from '../../base/utils/generateTestdata';
+import { generateNachname, generateRolleName, generateVorname } from '../../base/utils/generateTestdata';
 import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.neu.page';
 import { RolleCreationErrorPage } from '../../pages/admin/rollen/RolleCreationError.page';
 import { RolleCreationSuccessPage } from '../../pages/admin/rollen/RolleCreationSuccess.page';
-import { RolleCreationViewPage } from '../../pages/admin/rollen/RolleCreationView.neu.page';
+import { RolleCreationParams, RolleCreationViewPage } from '../../pages/admin/rollen/RolleCreationView.neu.page';
 import { RolleCreationWorkflow } from '../../pages/admin/rollen/RolleCreationWorkflow.page';
 import { RolleDetailsViewPage } from '../../pages/admin/rollen/RolleDetailsView.neu.page';
 import { RolleManagementViewPage } from '../../pages/admin/rollen/RolleManagementView.neu.page';
@@ -33,65 +33,68 @@ async function setupAndGoToRolleCreationPage(page: PlaywrightTestArgs['page']): 
 }
 
 test.describe(`Testfälle für die Rollenanlage: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
-  for (const rolleParams of rolleCreationParams) {
-    test.describe(`Rolle der Art ${rolleParams.rollenart} erfolgreich anlegen`, () => {
+  for (const baseRolleParams of rolleCreationParams) {
+    test.describe(`Rolle der Art ${baseRolleParams.rollenart} erfolgreich anlegen`, () => {
+      let rolleCreationPage: RolleCreationViewPage;
+
+      test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
+        rolleCreationPage = await setupAndGoToRolleCreationPage(page);
+      });
+
       test('Rolle anlegen und Zusammenfassung prüfen', async ({ page }: PlaywrightTestArgs) => {
-        const rolleCreationPage: RolleCreationViewPage = await setupAndGoToRolleCreationPage(page);
+        const params: RolleCreationParams = { ...baseRolleParams, name: generateRolleName() };
         const rolleCreationSuccessPage: RolleCreationSuccessPage = await test.step('Rolle anlegen', async () => {
-          const rolleCreationSuccessPage: RolleCreationSuccessPage = await rolleCreationPage.createRolle(rolleParams);
+          const rolleCreationSuccessPage: RolleCreationSuccessPage = await rolleCreationPage.createRolle(params);
           return rolleCreationSuccessPage;
         });
         await test.step('Erfolgsseite prüfen', async () => {
-          await rolleCreationSuccessPage.checkSuccessPage(rolleParams);
+          await rolleCreationSuccessPage.checkSuccessPage(params);
         });
       });
 
       test('Rolle anlegen und Gesamtübersicht prüfen', async ({ page }: PlaywrightTestArgs) => {
-        const rolleCreationPage: RolleCreationViewPage = await setupAndGoToRolleCreationPage(page);
+        const params: RolleCreationParams = { ...baseRolleParams, name: generateRolleName() };
         const rolleCreationSuccessPage: RolleCreationSuccessPage = await test.step('Rolle anlegen', async () => {
-          const rolleCreationSuccessPage: RolleCreationSuccessPage = await rolleCreationPage.createRolle(rolleParams);
+          const rolleCreationSuccessPage: RolleCreationSuccessPage = await rolleCreationPage.createRolle(params);
           return rolleCreationSuccessPage;
         });
         const rolleDetailsView: RolleDetailsViewPage = await test.step('Zur Gesamtübersicht navigieren', async () => {
-          await rolleCreationSuccessPage.checkSuccessPage(rolleParams);
+          await rolleCreationSuccessPage.checkSuccessPage(params);
           const rolleManagementViewPage: RolleManagementViewPage = await rolleCreationSuccessPage.backToResultList();
           await rolleManagementViewPage.setPageSize('300');
-          return await rolleManagementViewPage.openGesamtuebersicht(rolleParams.name);
+          return await rolleManagementViewPage.openGesamtuebersicht(params.name);
         });
 
         await test.step('Gesamtübersicht prüfen', async () => {
-          await rolleDetailsView.checkGesamtuebersicht(rolleParams);
+          await rolleDetailsView.checkGesamtuebersicht(params);
         });
       });
 
       test('Rolle anlegen und Ergebnisliste prüfen', async ({ page }: PlaywrightTestArgs) => {
-        const rolleCreationPage: RolleCreationViewPage = await setupAndGoToRolleCreationPage(page);
-        const rolleCreationSuccessPage: RolleCreationSuccessPage = await rolleCreationPage.createRolle(rolleParams);
-        await rolleCreationSuccessPage.checkSuccessPage(rolleParams);
+        const params: RolleCreationParams = { ...baseRolleParams, name: generateRolleName() };
+        const rolleCreationSuccessPage: RolleCreationSuccessPage = await rolleCreationPage.createRolle(params);
+        await rolleCreationSuccessPage.checkSuccessPage(params);
         const rolleManagementViewPage: RolleManagementViewPage = await rolleCreationSuccessPage.backToResultList();
         await rolleManagementViewPage.setPageSize('300');
-        await rolleManagementViewPage.checkIfRolleExists(rolleParams.name);
-        await rolleManagementViewPage.checkIfRolleHasServiceProviders(rolleParams.name, rolleParams.serviceProviders);
+        await rolleManagementViewPage.checkIfRolleExists(params.name);
+        await rolleManagementViewPage.checkIfRolleHasServiceProviders(params.name, params.serviceProviders);
       });
 
       test('Als Nutzer mit einer neu angelegten Rolle anmelden', async ({ page }: PlaywrightTestArgs) => {
-        const rolleCreationPage: RolleCreationViewPage = await setupAndGoToRolleCreationPage(page);
-        await rolleCreationPage.createRolle(rolleParams);
+        const params: RolleCreationParams = { ...baseRolleParams, name: generateRolleName() };
+        await rolleCreationPage.createRolle(params);
         const organisationId: string = await getOrganisationId(page, testschuleName);
-        const rolleId: string = await getRolleId(page, rolleParams.name);
-        let user: UserInfo;
-        user = await createPerson(
+        const rolleId: string = await getRolleId(page, params.name);
+        let user: UserInfo = await createPerson(
           page,
           organisationId,
           rolleId,
           generateNachname(),
           generateVorname(),
           undefined,
-          rolleParams.rollenart === rollenArtLabel.LERN ? await getOrganisationId(page, klasse1Testschule) : undefined,
+          params.rollenart === rollenArtLabel.LERN ? await getOrganisationId(page, klasse1Testschule) : undefined,
           new Set(
-            rolleParams.merkmale.includes(rollenMerkmalLabel.BEFRISTUNG_PFLICHT)
-              ? [RollenMerkmal.BefristungPflicht]
-              : []
+            params.merkmale.includes(rollenMerkmalLabel.BEFRISTUNG_PFLICHT) ? [RollenMerkmal.BefristungPflicht] : []
           )
         );
         const header: HeaderPage = new HeaderPage(page);
@@ -100,14 +103,19 @@ test.describe(`Testfälle für die Rollenanlage: Umgebung: ${process.env.ENV}: U
         const startViewPage: StartViewPage = await loginPage.login(user.username, user.password);
         await loginPage.updatePassword();
         await startViewPage.waitForPageLoad();
-        startViewPage.serviceProvidersAreVisible(rolleParams.serviceProviders);
+        startViewPage.serviceProvidersAreVisible(params.serviceProviders);
       });
     });
   }
 
   test.describe('Fehler bei Anlage', () => {
+    let rolleCreationPage: RolleCreationViewPage;
+
+    test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
+      rolleCreationPage = await setupAndGoToRolleCreationPage(page);
+    });
+
     test('Rolle doppelt anlegen', async ({ page }: PlaywrightTestArgs) => {
-      let rolleCreationPage: RolleCreationViewPage = await setupAndGoToRolleCreationPage(page);
       const rolleCreationSuccessPage: RolleCreationSuccessPage = await test.step('Rolle anlegen', async () => {
         const rolleCreationSuccessPage: RolleCreationSuccessPage = await rolleCreationPage.createRolle(
           rolleCreationParams[0]
@@ -128,7 +136,6 @@ test.describe(`Testfälle für die Rollenanlage: Umgebung: ${process.env.ENV}: U
     });
 
     test('Ungültige Eingaben', async ({ page }: PlaywrightTestArgs) => {
-      const rolleCreationPage: RolleCreationViewPage = await setupAndGoToRolleCreationPage(page);
       const rolleCreationWorkflow: RolleCreationWorkflow = rolleCreationPage.startRolleCreationWorkflow();
 
       await rolleCreationWorkflow.selectAdministrationsebene(testschuleName);
