@@ -153,6 +153,7 @@ export class Autocomplete {
   }
 
   public async assertAllMenuItems(expectedTexts: string[]): Promise<void> {
+    await this.inputLocator.click();
     await expect(this.itemsLocator).toHaveText(expectedTexts);
   }
 

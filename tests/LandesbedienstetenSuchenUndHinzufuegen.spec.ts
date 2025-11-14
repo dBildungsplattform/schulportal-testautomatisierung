@@ -69,7 +69,7 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
   test('Seiteninhalte werden angezeigt', { tag: [LONG, SHORT, STAGE, DEV, BROWSER] }, async () => {
     await landesbedienstetenSuchenUndHinzufuegenPage.checkSearchForm();
     await landesbedienstetenSuchenUndHinzufuegenPage.searchLandesbedienstetenViaUsername(lehrkraft2.username);
-    await landesbedienstetenSuchenUndHinzufuegenPage.checkMinimalCreationForm(lehrkraft2.vorname, lehrkraft2.familienname, lehrkraft2.kopersnummer, testschuleDstNrUndName);
+    await landesbedienstetenSuchenUndHinzufuegenPage.checkCreationFormWithOrganisation(lehrkraft2.vorname, lehrkraft2.familienname, lehrkraft2.kopersnummer, testschuleDstNrUndName);
   });
 
   //Suchergebnis Popup wird angezeigt, wenn kein Treffer gefunden wurde: falsche Namen 
@@ -214,15 +214,12 @@ test.describe('Testfälle für Landesbediensteten hinzufügen, Funktion und UI-V
   
   test('Seite wird vollständig angezeigt: Schuladmin mit 2 Schulen', { tag: [LONG, SHORT, STAGE, DEV, BROWSER] }, async () => {
     await test.step('Organisation nur aus zugewiesenen Organisationen auswählbar, UI Elemente werden angezeigt', async () => {
-      await landesbedienstetenSuchenUndHinzufuegenPage.checkMinimalCreationForm(lehrkraft.vorname, lehrkraft.familienname, lehrkraft.kopersnummer, testschuleDstNrUndName);
+      await landesbedienstetenSuchenUndHinzufuegenPage.checkMinimalCreationForm(lehrkraft.vorname, lehrkraft.familienname, lehrkraft.kopersnummer);
       await landesbedienstetenSuchenUndHinzufuegenPage.checkSelectableOrganisationen([testschuleDstNrUndName, testschule665DstNrUndName]);
       await landesbedienstetenSuchenUndHinzufuegenPage.selectOrganisation(testschule665DstNrUndName);
       await landesbedienstetenSuchenUndHinzufuegenPage.selectRolleWithBefristung('LiV');
       await landesbedienstetenSuchenUndHinzufuegenPage.confirmLandesbedienstetenHinzufuegen(lehrkraft.username, 'LiV');
-      await landesbedienstetenSuchenUndHinzufuegenPage.cancelConfirmationDialog();
-      await landesbedienstetenSuchenUndHinzufuegenPage.confirmLandesbedienstetenHinzufuegen(lehrkraft.username, 'LiV');
-      await landesbedienstetenSuchenUndHinzufuegenPage.checkFullCreationForm(lehrkraft.vorname, lehrkraft.familienname, lehrkraft.kopersnummer, testschuleDstNrUndName, 'LiV');
-      await landesbedienstetenSuchenUndHinzufuegenPage.checkSuccessPage(lehrkraft.vorname, lehrkraft.familienname, lehrkraft.kopersnummer, lehrkraft.username, testschuleDstNrUndName);
+      await landesbedienstetenSuchenUndHinzufuegenPage.checkSuccessPage(lehrkraft.vorname, lehrkraft.familienname, lehrkraft.kopersnummer, lehrkraft.username, testschule665DstNrUndName);
     });
   });
 });

@@ -56,7 +56,7 @@ test.describe(`Testfälle für den Login: Umgebung: ${process.env.ENV}: URL: ${p
     const startPage: StartViewPage = await loginPage.login(ADMIN, PASSWORD);
     await startPage.waitForPageLoad();
 
-    await header.logout();
-    await expect(landingPage.waitForPageLoad()).toBeTruthy();
+    landingPage = await header.logout();
+    await landingPage.waitForPageLoad();
   });
 });
