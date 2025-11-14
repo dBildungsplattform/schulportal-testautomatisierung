@@ -3,6 +3,7 @@ import { MenuBarPage } from '../../components/MenuBar.neu.page';
 import { RolleCreationErrorPage } from './RolleCreationError.page';
 import { RolleCreationSuccessPage } from './RolleCreationSuccess.page';
 import { RolleCreationWorkflow } from './RolleCreationWorkflow.page';
+import { Alert } from '../../../elements/Alert';
 
 /* these rolle creation params are not the same as the API params,
     here we use the displayed texts to select from input elements */
@@ -44,7 +45,7 @@ export class RolleCreationViewPage {
     return workflow.submit();
   }
 
-  public async createRolleWithError(params: RolleCreationParams): Promise<RolleCreationErrorPage> {
+  public async createRolleWithDuplicateNameError(params: RolleCreationParams): Promise<Alert<RolleCreationViewPage>> {
     const workflow: RolleCreationWorkflow = this.startRolleCreationWorkflow();
     await workflow.selectAdministrationsebene(params.administrationsebene);
     await workflow.selectArt(params.rollenart);
@@ -52,7 +53,7 @@ export class RolleCreationViewPage {
     await workflow.selectMerkmale(params.merkmale);
     await workflow.selectSystemrechte(params.systemrechte);
     await workflow.selectServiceProviders(params.serviceProviders);
-    return workflow.submitWithError();
+    return workflow.submitWithDuplicateNameError();
   }
 
   /* assertions */

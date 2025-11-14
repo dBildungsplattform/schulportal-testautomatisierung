@@ -18,6 +18,7 @@ import { HeaderPage } from '../../pages/components/Header.neu.page';
 import { LoginViewPage } from '../../pages/LoginView.neu.page';
 import { StartViewPage } from '../../pages/StartView.neu.page';
 import { rolleCreationParams } from './RolleAnlegen.data';
+import { Alert } from '../../elements/Alert';
 
 const ADMIN: string | undefined = process.env.USER;
 const PASSWORD: string | undefined = process.env.PW;
@@ -59,7 +60,7 @@ test.describe(`Testfälle für die Rollenanlage: Umgebung: ${process.env.ENV}: U
           return rolleCreationSuccessPage;
         });
         const rolleDetailsView: RolleDetailsViewPage = await test.step('Zur Gesamtübersicht navigieren', async () => {
-          await rolleCreationSuccessPage.checkSuccessPage(params);
+          await rolleCreationSuccessPage.waitForPageLoad();
           const rolleManagementViewPage: RolleManagementViewPage = await rolleCreationSuccessPage.backToResultList();
           await rolleManagementViewPage.setPageSize('300');
           return await rolleManagementViewPage.openGesamtuebersicht(params.name);
@@ -73,7 +74,7 @@ test.describe(`Testfälle für die Rollenanlage: Umgebung: ${process.env.ENV}: U
       test('Rolle anlegen und Ergebnisliste prüfen', async ({ page }: PlaywrightTestArgs) => {
         const params: RolleCreationParams = { ...baseRolleParams, name: generateRolleName() };
         const rolleCreationSuccessPage: RolleCreationSuccessPage = await rolleCreationPage.createRolle(params);
-        await rolleCreationSuccessPage.checkSuccessPage(params);
+        await rolleCreationSuccessPage.waitForPageLoad();
         const rolleManagementViewPage: RolleManagementViewPage = await rolleCreationSuccessPage.backToResultList();
         await rolleManagementViewPage.setPageSize('300');
         await rolleManagementViewPage.checkIfRolleExists(params.name);
@@ -126,12 +127,12 @@ test.describe(`Testfälle für die Rollenanlage: Umgebung: ${process.env.ENV}: U
         rolleCreationPage = await rolleCreationSuccessPage.createAnother();
       });
 
-      const errorPage: RolleCreationErrorPage = await test.step('Erneut Rolle mit gleichem Namen anlegen', async () => {
-        return rolleCreationPage.createRolleWithError(rolleCreationParams[0]);
+      const alert: Alert<RolleCreationViewPage> = await test.step('Erneut Rolle mit gleichem Namen anlegen', async () => {
+        return rolleCreationPage.createRolleWithDuplicateNameError(rolleCreationParams[0]);
       });
 
       await test.step('Fehlermeldung prüfen', async () => {
-        await errorPage.checkErrorPage('Der Rollenname ist bereits vergeben. Bitte korrigieren Sie Ihre Eingabe.');
+        await alert.assertExpectedTexts();
       });
     });
 

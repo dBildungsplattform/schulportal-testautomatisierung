@@ -1,8 +1,9 @@
 import { expect, Page } from '@playwright/test';
 import { RolleForm } from '../../../components/RolleForm';
 import { RolleCreationSuccessPage } from './RolleCreationSuccess.page';
-import { RolleCreationParams } from './RolleCreationView.neu.page';
+import { RolleCreationParams, RolleCreationViewPage } from './RolleCreationView.neu.page';
 import { RolleCreationErrorPage } from './RolleCreationError.page';
+import { Alert } from '../../../elements/Alert';
 
 export class RolleCreationWorkflow {
   private readonly rolleForm: RolleForm;
@@ -55,9 +56,13 @@ export class RolleCreationWorkflow {
     return new RolleCreationSuccessPage(this.page).waitForPageLoad();
   }
 
-  public async submitWithError(): Promise<RolleCreationErrorPage> {
+  public async submitWithDuplicateNameError(): Promise<Alert<RolleCreationViewPage>> {
     await this.page.getByTestId('rolle-form-submit-button').click();
-    return new RolleCreationErrorPage(this.page).waitForPageLoad();
+    return new Alert(this.page, {
+      title: 'Fehler beim Anlegen der Rolle',
+      button: 'Zurück zur Rollenanlage',
+      text: 'Der Rollenname ist bereits vergeben. Bitte korrigieren Sie Ihre Eingabe.'
+    }, new RolleCreationViewPage(this.page));
   }
 
   /* assertions */
