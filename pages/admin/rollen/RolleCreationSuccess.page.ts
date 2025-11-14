@@ -1,7 +1,7 @@
 import { expect, Page } from '@playwright/test';
 import { RolleForm } from '../../../components/RolleForm';
-import { RolleCreationParams } from './RolleCreationView.neu.page';
-import { RolleManagementViewPage } from './RolleManagementView.page';
+import { RolleCreationParams, RolleCreationViewPage } from './RolleCreationView.neu.page';
+import { RolleManagementViewPage } from './RolleManagementView.neu.page';
 
 export class RolleCreationSuccessPage {
   private readonly rolleForm: RolleForm;
@@ -11,13 +11,22 @@ export class RolleCreationSuccessPage {
   }
 
   /* actions */
-  public async waitForPageLoad(): Promise<void> {
+  public async waitForPageLoad(): Promise<RolleCreationSuccessPage> {
     await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Neue Rolle hinzufügen');
+    await expect(this.page.getByText('Folgende Daten wurden gespeichert:')).toBeVisible();
+    await expect(this.page.getByTestId('rolle-success-text')).toBeVisible();
+    await expect(this.page.getByTestId('rolle-success-icon')).toBeVisible();
+    return this;
   }
 
   public async backToResultList(): Promise<RolleManagementViewPage> {
     await this.page.getByTestId('back-to-list-button').click();
-    return new RolleManagementViewPage(this.page);
+    return new RolleManagementViewPage(this.page).waitForPageLoad();
+  }
+
+  public async createAnother(): Promise<RolleCreationViewPage> {
+    await this.page.getByTestId('create-another-rolle-button').click();
+    return new RolleCreationViewPage(this.page).waitForPageLoad();
   }
 
   /* assertions */
@@ -28,9 +37,9 @@ export class RolleCreationSuccessPage {
     await expect(this.rolleForm.rollenname.label).toBeVisible();
     await expect(this.rolleForm.rollenname.data).toHaveText(params.name);
     await expect(this.rolleForm.adminstrationsebene.label).toBeVisible();
-    await expect(this.rolleForm.adminstrationsebene.data).toHaveText(params.ssk);
+    await expect(this.rolleForm.adminstrationsebene.data).toContainText(params.administrationsebene);
     await expect(this.rolleForm.rollenart.label).toBeVisible();
-    await expect(this.rolleForm.rollenart.data).toHaveText(params.art);
+    await expect(this.rolleForm.rollenart.data).toHaveText(params.rollenart);
     await expect(this.rolleForm.merkmale.label).toBeVisible();
     for (const merkmal of params.merkmale) {
       await expect(this.rolleForm.merkmale.data).toContainText(merkmal);

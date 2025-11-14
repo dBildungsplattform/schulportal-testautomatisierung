@@ -6,9 +6,10 @@ export class PersonImportViewPage {
   constructor(protected readonly page: Page) {}
 
   /* actions */
-  public async waitForPageLoad(): Promise<void> {
+  public async waitForPageLoad(): Promise<PersonImportViewPage> {
     await this.page.getByTestId('person-import-card').waitFor({ state: 'visible' });
     await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Benutzer importieren');
+    return this;
   }
 
   public async selectSchule(schule: string): Promise<void> {

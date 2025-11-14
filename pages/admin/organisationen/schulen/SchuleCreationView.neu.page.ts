@@ -20,9 +20,10 @@ export class SchuleCreationViewPage {
   constructor(protected readonly page: Page) {}
 
   /* actions */
-  public async waitForPageLoad(): Promise<void> {
+  public async waitForPageLoad(): Promise<SchuleCreationViewPage> {
     await this.page.getByTestId('schule-creation-card').waitFor({ state: 'visible' });
     await expect(this.headline).toHaveText('Neue Schule hinzufügen');
+    return this;
   }
 
   public async createSchule(params: SchuleCreationParams): Promise<SchuleCreationSuccessPage> {

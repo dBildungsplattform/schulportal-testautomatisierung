@@ -1,23 +1,33 @@
 import { expect, Page } from '@playwright/test';
+import { MenuBarPage } from '../../components/MenuBar.neu.page';
+import { RolleCreationErrorPage } from './RolleCreationError.page';
 import { RolleCreationSuccessPage } from './RolleCreationSuccess.page';
 import { RolleCreationWorkflow } from './RolleCreationWorkflow.page';
+import { Alert } from '../../../elements/Alert';
 
+/* these rolle creation params are not the same as the API params,
+    here we use the displayed texts to select from input elements */
 export interface RolleCreationParams {
   name: string;
-  ssk: string;
-  art: string;
+  administrationsebene: string;
+  rollenart: string;
   merkmale: string[];
   systemrechte: string[];
   serviceProviders: string[];
 }
 
 export class RolleCreationViewPage {
-  constructor(protected readonly page: Page) {}
+  public readonly menu: MenuBarPage;
+
+  constructor(protected readonly page: Page) {
+    this.menu = new MenuBarPage(this.page);
+  }
 
   /* actions */
-  public async waitForPageLoad(): Promise<void> {
+  public async waitForPageLoad(): Promise<RolleCreationViewPage> {
     await this.page.getByTestId('rolle-creation-card').waitFor({ state: 'visible' });
     await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Neue Rolle hinzufügen');
+    return this;
   }
 
   public startRolleCreationWorkflow(): RolleCreationWorkflow {
@@ -26,13 +36,24 @@ export class RolleCreationViewPage {
 
   public async createRolle(params: RolleCreationParams): Promise<RolleCreationSuccessPage> {
     const workflow: RolleCreationWorkflow = this.startRolleCreationWorkflow();
-    await workflow.selectAdministrationsebene(params.ssk);
-    await workflow.selectArt(params.art);
+    await workflow.selectAdministrationsebene(params.administrationsebene);
+    await workflow.selectArt(params.rollenart);
     await workflow.selectName(params.name);
     await workflow.selectMerkmale(params.merkmale);
     await workflow.selectSystemrechte(params.systemrechte);
     await workflow.selectServiceProviders(params.serviceProviders);
     return workflow.submit();
+  }
+
+  public async createRolleWithDuplicateNameError(params: RolleCreationParams): Promise<Alert<RolleCreationViewPage>> {
+    const workflow: RolleCreationWorkflow = this.startRolleCreationWorkflow();
+    await workflow.selectAdministrationsebene(params.administrationsebene);
+    await workflow.selectArt(params.rollenart);
+    await workflow.selectName(params.name);
+    await workflow.selectMerkmale(params.merkmale);
+    await workflow.selectSystemrechte(params.systemrechte);
+    await workflow.selectServiceProviders(params.serviceProviders);
+    return workflow.submitWithDuplicateNameError();
   }
 
   /* assertions */
