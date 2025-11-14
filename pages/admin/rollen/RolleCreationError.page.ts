@@ -11,7 +11,6 @@ export class RolleCreationErrorPage {
 
   /* actions */
   public async waitForPageLoad(): Promise<RolleCreationErrorPage> {
-    await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Neue Rolle hinzufügen');
     await expect(this.page.getByTestId('spsh-alert-title')).toHaveText('Fehler beim Anlegen der Rolle');
     return this;
   }

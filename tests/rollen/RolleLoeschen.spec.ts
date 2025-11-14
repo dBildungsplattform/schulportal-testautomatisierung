@@ -48,7 +48,7 @@ test.describe(`Testfälle für die Rollenlöschung: Umgebung: ${process.env.ENV}
     await rolleManagementViewPage.checkIfRolleDoesNotExist(rolleName);
   });
 
-  test('Vergebene Rolle löschen', async ({ page }: PlaywrightTestArgs) => {
+  test('Vergebene Rolle löschen und Fehlermeldung prüfen', async ({ page }: PlaywrightTestArgs) => {
     const [rolleDetailsView, rolleName]: SetupResult = await setupAndGoToRolleDetailsPage(page);
     await test.step('Rolle einer Person zuordnen', async () => {
       await createPersonWithUserContext(page, testschuleName, generateNachname(), generateVorname(), rolleName);

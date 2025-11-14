@@ -35,7 +35,7 @@ async function setupAndGoToRolleCreationPage(page: PlaywrightTestArgs['page']): 
 test.describe(`Testfälle für die Rollenanlage: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   for (const rolleParams of rolleCreationParams) {
     test.describe(`Rolle der Art ${rolleParams.rollenart} erfolgreich anlegen`, () => {
-      test('Zusammenfassung prüfen', async ({ page }: PlaywrightTestArgs) => {
+      test('Rolle anlegen und Zusammenfassung prüfen', async ({ page }: PlaywrightTestArgs) => {
         const rolleCreationPage: RolleCreationViewPage = await setupAndGoToRolleCreationPage(page);
         const rolleCreationSuccessPage: RolleCreationSuccessPage = await test.step('Rolle anlegen', async () => {
           const rolleCreationSuccessPage: RolleCreationSuccessPage = await rolleCreationPage.createRolle(rolleParams);
@@ -46,7 +46,7 @@ test.describe(`Testfälle für die Rollenanlage: Umgebung: ${process.env.ENV}: U
         });
       });
 
-      test('Gesamtübersicht prüfen', async ({ page }: PlaywrightTestArgs) => {
+      test('Rolle anlegen und Gesamtübersicht prüfen', async ({ page }: PlaywrightTestArgs) => {
         const rolleCreationPage: RolleCreationViewPage = await setupAndGoToRolleCreationPage(page);
         const rolleCreationSuccessPage: RolleCreationSuccessPage = await test.step('Rolle anlegen', async () => {
           const rolleCreationSuccessPage: RolleCreationSuccessPage = await rolleCreationPage.createRolle(rolleParams);
@@ -64,7 +64,7 @@ test.describe(`Testfälle für die Rollenanlage: Umgebung: ${process.env.ENV}: U
         });
       });
 
-      test('In der Ergebnisliste prüfen', async ({ page }: PlaywrightTestArgs) => {
+      test('Rolle anlegen und Ergebnisliste prüfen', async ({ page }: PlaywrightTestArgs) => {
         const rolleCreationPage: RolleCreationViewPage = await setupAndGoToRolleCreationPage(page);
         const rolleCreationSuccessPage: RolleCreationSuccessPage = await rolleCreationPage.createRolle(rolleParams);
         await rolleCreationSuccessPage.checkSuccessPage(rolleParams);
@@ -74,44 +74,26 @@ test.describe(`Testfälle für die Rollenanlage: Umgebung: ${process.env.ENV}: U
         await rolleManagementViewPage.checkIfRolleHasServiceProviders(rolleParams.name, rolleParams.serviceProviders);
       });
 
-      test('Als Nutzer mit der neuen Rolle anmelden', async ({ page }: PlaywrightTestArgs) => {
+      test('Als Nutzer mit einer neu angelegten Rolle anmelden', async ({ page }: PlaywrightTestArgs) => {
         const rolleCreationPage: RolleCreationViewPage = await setupAndGoToRolleCreationPage(page);
         await rolleCreationPage.createRolle(rolleParams);
         const organisationId: string = await getOrganisationId(page, testschuleName);
         const rolleId: string = await getRolleId(page, rolleParams.name);
         let user: UserInfo;
-        if (rolleParams.rollenart === rollenArtLabel.LERN) {
-          const klasseId: string = await getOrganisationId(page, klasse1Testschule);
-          user = await createPerson(
-            page,
-            organisationId,
-            rolleId,
-            generateNachname(),
-            generateVorname(),
-            undefined,
-            klasseId,
-            new Set(
-              rolleParams.merkmale.includes(rollenMerkmalLabel.BEFRISTUNG_PFLICHT)
-                ? [RollenMerkmal.BefristungPflicht]
-                : []
-            )
-          );
-        } else {
-          user = await createPerson(
-            page,
-            organisationId,
-            rolleId,
-            generateNachname(),
-            generateVorname(),
-            undefined,
-            undefined,
-            new Set(
-              rolleParams.merkmale.includes(rollenMerkmalLabel.BEFRISTUNG_PFLICHT)
-                ? [RollenMerkmal.BefristungPflicht]
-                : []
-            )
-          );
-        }
+        user = await createPerson(
+          page,
+          organisationId,
+          rolleId,
+          generateNachname(),
+          generateVorname(),
+          undefined,
+          rolleParams.rollenart === rollenArtLabel.LERN ? await getOrganisationId(page, klasse1Testschule) : undefined,
+          new Set(
+            rolleParams.merkmale.includes(rollenMerkmalLabel.BEFRISTUNG_PFLICHT)
+              ? [RollenMerkmal.BefristungPflicht]
+              : []
+          )
+        );
         const header: HeaderPage = new HeaderPage(page);
         await header.logout();
         const loginPage: LoginViewPage = await freshLoginPage(page);
