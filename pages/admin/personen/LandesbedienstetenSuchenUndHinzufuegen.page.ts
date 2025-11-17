@@ -9,11 +9,11 @@ export class LandesbedienstetenSuchenUndHinzufuegenPage {
 
   private readonly adminHeadline: Locator = this.page.getByTestId('admin-headline');
   
-  /* Landesbediensteten Suchen - Suche und Suchergebnis */
-  private readonly kopersRadioButton : Locator = this.page.getByTestId('kopers-radio-button').locator('input');
-  private readonly emailRadioButton : Locator = this.page.getByTestId('email-radio-button').locator('input');
-  private readonly usernameRadioButton : Locator = this.page.getByTestId('username-radio-button').locator('input');
-  private readonly nameRadioButton : Locator = this.page.getByTestId('name-radio-button').locator('input');
+  /* Landesbediensteten Suchen und Suchergebnis */
+  private readonly kopersRadioInput : Locator = this.page.getByTestId('kopers-radio-button').locator('input');
+  private readonly emailRadioInput : Locator = this.page.getByTestId('email-radio-button').locator('input');
+  private readonly usernameRadioInput : Locator = this.page.getByTestId('username-radio-button').locator('input');
+  private readonly nameRadioInput : Locator = this.page.getByTestId('name-radio-button').locator('input');
   private readonly kopersInput : Locator = this.page.getByTestId('kopers-input').locator('input');
   private readonly emailInput : Locator = this.page.getByTestId('email-input').locator('input');
   private readonly usernameInput : Locator = this.page.getByTestId('username-input').locator('input');
@@ -24,40 +24,45 @@ export class LandesbedienstetenSuchenUndHinzufuegenPage {
   private readonly resetSearchButton : Locator = this.page.getByTestId('person-search-form-discard-button');
   private readonly submitSearchButton : Locator = this.page.getByTestId('person-search-form-submit-button');  
   private readonly personalDataCardFullname: Locator = this.page.getByTestId('fullname-value');
+// TODO: Schulzuordnung fehlt
   private readonly zurueckZurSucheButton: Locator = this.page.getByTestId('back-to-search-button');
   private readonly landesbedienstetenHinzufuegenButton: Locator = this.page.getByTestId('add-state-employee-button');
 
-  /* Landesbediensteten Hinzufügen - Formular zum Hinzufügen */
+  /* Landesbediensteten Hinzufügen */
   private readonly landesbedienstetenHinzufuegenHeadline: Locator = this.page.getByTestId('add-state-employee-headline');
   private readonly closeButton: Locator = this.page.getByTestId('close-layout-card-button');
-
+  // Formular
   private readonly personCreationForm: Locator = this.page.getByTestId('person-creation-form');
   private readonly mandatoryFieldsNotice: Locator = this.personCreationForm.getByTestId('mandatory-fields-notice');
   private readonly personalInfoHeadline: Locator = this.personCreationForm.getByTestId('personal-info-headline');
-  private readonly formVornameInput: Locator = this.personCreationForm.getByTestId('add-person-vorname-input').locator('input');
-  private readonly formNachnameInput: Locator = this.personCreationForm.getByTestId('add-person-familienname-input').locator('input');
+  private readonly personCreationFormVornameInput: Locator = this.personCreationForm.getByTestId('add-person-vorname-input').locator('input');
+  private readonly personCreationFormNachnameInput: Locator = this.personCreationForm.getByTestId('add-person-familienname-input').locator('input');
   private readonly hasNoKopersnrCheckbox: Locator = this.personCreationForm.getByTestId('has-no-kopersnr-checkbox');
-  private readonly formKopersInput: Locator = this.personCreationForm.getByTestId('kopersnr-input').locator('input');
+  private readonly personCreationFormKopersInput: Locator = this.personCreationForm.getByTestId('kopersnr-input').locator('input');
   private readonly organisationHeadline: Locator = this.personCreationForm.getByTestId('organisation-assign-headline');
   private readonly organisationAutocomplete: Autocomplete = new Autocomplete(this.page, this.personCreationForm.getByTestId('personenkontext-create-organisation-select'));
   private readonly rolleHeadline: Locator = this.personCreationForm.getByTestId('rolle-assign-headline');
   private readonly rolleAutocomplete: Autocomplete = new Autocomplete(this.page, this.personCreationForm.getByTestId('rollen-select'));
   private readonly befristungHeadline: Locator = this.personCreationForm.getByTestId('befristung-assign-headline');
-  private readonly befristungInput: Locator = this.personCreationForm.getByTestId('befristung-input');
+  private readonly personCreationFormBefristungInput: Locator = this.personCreationForm.getByTestId('befristung-input');
   private readonly schuljahresendeRadioButton: Locator = this.personCreationForm.getByTestId('schuljahresende-radio-button').locator('input');
   private readonly unbefristetRadioButton: Locator = this.personCreationForm.getByTestId('unbefristet-radio-button').locator('input');
 
-  private readonly discardFormButton: Locator = this.personCreationForm.getByTestId('person-creation-form-discard-button');
-  private readonly submitLandesbedienstetenHinzufuegenButton: Locator = this.personCreationForm.getByTestId('person-creation-form-submit-button');
+  private readonly personCreationFormAbbrechenButton: Locator = this.personCreationForm.getByTestId('person-creation-form-discard-button');
+  private readonly personCreationFormLandesbedienstetenHinzufuegenButton: Locator = this.personCreationForm.getByTestId('person-creation-form-submit-button');
 
-  /* Confirmation dialog */
-  private readonly dialogHeadline: Locator = this.page.getByTestId('add-person-confirmation-dialog-headline');
-  private readonly confirmationDialogText: Locator = this.page.getByTestId('add-person-confirmation-text');
-  private readonly confirmationDialogCancelButton: Locator = this.page.getByTestId('cancel-add-person-confirmation-button');
-  private readonly confirmationDialogConfirmButton: Locator = this.page.getByTestId('confirm-add-person-button');
-
-  private readonly successText: Locator = this.page.getByTestId('state-employee-success-text');
-
+  /* Bestaetigungspopup */
+  private readonly bestaetigungspopupHeadline: Locator = this.page.getByTestId('add-person-confirmation-dialog-headline');
+  private readonly bestaetigungspopupText: Locator = this.page.getByTestId('add-person-confirmation-text');
+  private readonly bestaetigungspopupAbbrechenButton: Locator = this.page.getByTestId('cancel-add-person-confirmation-button');
+  private readonly bestaetigungspopupLandesbedienstetenHinzufuegenButton: Locator = this.page.getByTestId('confirm-add-person-button');
+  // Erfolgseite
+  private readonly erfolgsseiteErfolgsText: Locator = this.page.getByTestId('state-employee-success-text');
+  /*TODO Buttons für spätere Tests
+  private readonly erfolgsseiteZurGesamtuebersichtButton: Locator = this.page.getByTestId('to-details-button')
+  private readonly erfolgsseiteZurueckZurEgebnislisteButton: Locator = this.page.getByTestId('back-to-list-button')
+  private readonly erfolgsseiteWeiterenLandesbedienstetenSuchenButton: Locator = this.page.getByTestId('search-another-landesbediensteter-button')
+  */
   /* actions */
   public async waitForPageLoad(): Promise<void> {
     await expect(this.adminHeadline).toHaveText('Landesbediensteten (suchen und hinzufügen)');
@@ -65,29 +70,29 @@ export class LandesbedienstetenSuchenUndHinzufuegenPage {
   }
 
   public async fillKopersNr(kopersNr: string): Promise<void> {
-    if (!(await this.kopersRadioButton.isChecked())) {
-      await this.kopersRadioButton.check();
+    if (!(await this.kopersRadioInput.isChecked())) {
+      await this.kopersRadioInput.check();
     }
     await this.kopersInput.fill(kopersNr);
   }
 
   public async fillEmail(email: string): Promise<void> {
-    if (!(await this.emailRadioButton.isChecked())) {
-      await this.emailRadioButton.check();
+    if (!(await this.emailRadioInput.isChecked())) {
+      await this.emailRadioInput.check();
     }
     await this.emailInput.fill(email);
   }
 
   public async fillBenutzername(benutzername: string): Promise<void> {
-    if (!(await this.usernameRadioButton.isChecked())) {
-      await this.usernameRadioButton.click();
+    if (!(await this.usernameRadioInput.isChecked())) {
+      await this.usernameRadioInput.click();
     }
     await this.usernameInput.fill(benutzername);
   }
 
   public async fillName(vorname: string, nachname: string): Promise<void> {
-    if (!(await this.nameRadioButton.isChecked())) {
-      await this.nameRadioButton.check();
+    if (!(await this.nameRadioInput.isChecked())) {
+      await this.nameRadioInput.check();
     }
     await this.vornameInput.fill(vorname);
     await this.nachnameInput.fill(nachname);
@@ -121,7 +126,7 @@ export class LandesbedienstetenSuchenUndHinzufuegenPage {
   public async goBackToSearchForm(vorname: string, familienname: string): Promise<void> {
     await this.zurueckZurSucheButton.click();
     await expect(this.personalDataCardFullname).toBeHidden();
-    await expect(this.nameRadioButton).toBeChecked();
+    await expect(this.nameRadioInput).toBeChecked();
     await expect(this.vornameInput).toHaveValue(vorname);
     await expect(this.nachnameInput).toHaveValue(familienname);
   }
@@ -129,7 +134,7 @@ export class LandesbedienstetenSuchenUndHinzufuegenPage {
   public async resetSearchForm(): Promise<void> {
     await this.resetSearchButton.click();
     await expect(this.personalDataCardFullname).toBeHidden();
-    await expect(this.nameRadioButton).toBeChecked();
+    await expect(this.nameRadioInput).toBeChecked();
     await expect(this.vornameInput).toBeEmpty();
     await expect(this.nachnameInput).toBeEmpty();
   }
@@ -166,8 +171,8 @@ export class LandesbedienstetenSuchenUndHinzufuegenPage {
     await this.submitSearchButton.click();
     await this.landesbedienstetenHinzufuegenButton.click();
     await this.rolleAutocomplete.selectByTitle('LiV');
-    await this.submitLandesbedienstetenHinzufuegenButton.click();
-    await this.confirmationDialogConfirmButton.click();
+    await this.personCreationFormLandesbedienstetenHinzufuegenButton.click();
+    await this.bestaetigungspopupLandesbedienstetenHinzufuegenButton.click();
   }
 
   public async selectOrganisation(organisation: string): Promise<void> {
@@ -185,25 +190,25 @@ export class LandesbedienstetenSuchenUndHinzufuegenPage {
     await this.rolleAutocomplete.selectByTitle(rolle);
     /* after selecting a rolle with a befristung, the befristung elements should become visible */
     await expect(this.befristungHeadline).toBeVisible();
-    await expect(this.befristungInput).toBeVisible();
+    await expect(this.personCreationFormBefristungInput).toBeVisible();
     await expect(this.schuljahresendeRadioButton).toBeVisible();
     await expect(this.unbefristetRadioButton).toBeVisible();
     await expect(this.schuljahresendeRadioButton).toBeChecked();
-    await expect(this.submitLandesbedienstetenHinzufuegenButton).toBeEnabled();
+    await expect(this.personCreationFormLandesbedienstetenHinzufuegenButton).toBeEnabled();
   }
 
   // TODO: this is not used yet, implement a test case for it
   public async cancelConfirmationDialog(): Promise<void> {
-    await this.confirmationDialogCancelButton.click();
-    await expect(this.dialogHeadline).toHaveText('Landesbediensteten hinzufügen');
-    await expect(this.submitLandesbedienstetenHinzufuegenButton).toBeEnabled();
+    await this.bestaetigungspopupAbbrechenButton.click();
+    await expect(this.bestaetigungspopupHeadline).toHaveText('Landesbediensteten hinzufügen');
+    await expect(this.personCreationFormLandesbedienstetenHinzufuegenButton).toBeEnabled();
   }
 
   public async confirmLandesbedienstetenHinzufuegen(username: string, rolle: string): Promise<void> {
-    await this.submitLandesbedienstetenHinzufuegenButton.click();
+    await this.personCreationFormLandesbedienstetenHinzufuegenButton.click();
     await this.checkConfirmationDialog();
-    await expect(this.confirmationDialogText).toHaveText(`Wollen Sie ${username} als ${rolle} hinzufügen?`);
-    await this.confirmationDialogConfirmButton.click();
+    await expect(this.bestaetigungspopupText).toHaveText(`Wollen Sie ${username} als ${rolle} hinzufügen?`);
+    await this.bestaetigungspopupLandesbedienstetenHinzufuegenButton.click();
   }
 
   /* assertions */
@@ -212,13 +217,13 @@ export class LandesbedienstetenSuchenUndHinzufuegenPage {
     await expect(this.page.getByTestId('search-state-employee-headline')).toHaveText('Landesbediensteten suchen');
     await expect(this.page.getByTestId('close-layout-card-button')).toBeVisible();
     await expect(this.page.getByText('Bitte wählen Sie, wie Sie nach dem Landesbediensteten suchen möchten.', { exact: false })).toBeVisible();
-    await expect(this.kopersRadioButton).toBeChecked();
+    await expect(this.kopersRadioInput).toBeChecked();
     await expect(this.kopersInput).toBeVisible();
-    await expect(this.emailRadioButton).toBeVisible();
+    await expect(this.emailRadioInput).toBeVisible();
     await expect(this.emailInput).toBeHidden();
-    await expect(this.usernameRadioButton).toBeVisible();
+    await expect(this.usernameRadioInput).toBeVisible();
     await expect(this.usernameInput).toBeHidden();
-    await expect(this.nameRadioButton).toBeVisible();
+    await expect(this.nameRadioInput).toBeVisible();
     await expect(this.vornameInput).toBeHidden();
     await expect(this.nachnameInput).toBeHidden();
     await expect(this.resetSearchButton).toBeEnabled();
@@ -253,26 +258,28 @@ export class LandesbedienstetenSuchenUndHinzufuegenPage {
   public async checkConfirmationDialog(): Promise<void> {
     await expect(this.landesbedienstetenHinzufuegenHeadline).toBeVisible();
     await expect(this.landesbedienstetenHinzufuegenHeadline).toHaveText('Landesbediensteten hinzufügen');
-    await expect(this.confirmationDialogText).toBeVisible();
-    await expect(this.confirmationDialogCancelButton).toBeVisible();
-    await expect(this.confirmationDialogCancelButton).toHaveText('Abbrechen');
-    await expect(this.confirmationDialogConfirmButton).toBeVisible();
-    await expect(this.confirmationDialogConfirmButton).toHaveText('Landesbediensteten hinzufügen');
+    await expect(this.bestaetigungspopupText).toBeVisible();
+    await expect(this.bestaetigungspopupAbbrechenButton).toBeVisible();
+    await expect(this.bestaetigungspopupAbbrechenButton).toHaveText('Abbrechen');
+    await expect(this.bestaetigungspopupLandesbedienstetenHinzufuegenButton).toBeVisible();
+    await expect(this.bestaetigungspopupLandesbedienstetenHinzufuegenButton).toHaveText('Landesbediensteten hinzufügen');
   }
-
+  /*
+  TODO: Hier ist er auf der falschen Seite
+  */
   public async checkMinimalCreationForm(vorname: string, nachname: string, kopersnummer: string): Promise<void> {
     await expect(this.landesbedienstetenHinzufuegenHeadline).toHaveText('Landesbediensteten hinzufügen');
     await expect(this.mandatoryFieldsNotice).toHaveText('Mit * markierte Felder sind Pflichtangaben.');
     await expect(this.closeButton).toBeVisible();
 
     await expect(this.personalInfoHeadline).toBeVisible();
-    await expect(this.formVornameInput).toHaveValue(vorname);
-    await expect(this.formNachnameInput).toHaveValue(nachname);
-    await expect(this.formKopersInput).toHaveValue(kopersnummer);
+    await expect(this.personCreationFormVornameInput).toHaveValue(vorname);
+    await expect(this.personCreationFormNachnameInput).toHaveValue(nachname);
+    await expect(this.personCreationFormKopersInput).toHaveValue(kopersnummer);
     await expect(this.hasNoKopersnrCheckbox).toBeVisible();
 
-    await expect(this.discardFormButton).toBeVisible();
-    await expect(this.submitLandesbedienstetenHinzufuegenButton).toBeDisabled();
+    await expect(this.personCreationFormAbbrechenButton).toBeVisible();
+    await expect(this.personCreationFormLandesbedienstetenHinzufuegenButton).toBeDisabled();
   }
 
   public async checkCreationFormWithOrganisation(vorname: string, nachname: string, kopersnummer: string, organisationText: string): Promise<void> {
@@ -294,7 +301,7 @@ export class LandesbedienstetenSuchenUndHinzufuegenPage {
   public async checkSuccessPage(vorname: string, nachname: string, kopersnummer: string, username: string, organisation: string): Promise<void> {
     await expect(this.adminHeadline).toHaveText('Landesbediensteten (suchen und hinzufügen)');
     await expect(this.landesbedienstetenHinzufuegenHeadline).toHaveText('Landesbediensteten hinzufügen');
-    await expect(this.successText).toHaveText(`${vorname} ${nachname} wurde erfolgreich hinzugefügt.`);
+    await expect(this.erfolgsseiteErfolgsText).toHaveText(`${vorname} ${nachname} wurde erfolgreich hinzugefügt.`);
     await expect(this.page.getByTestId('following-data-added-text')).toHaveText('Folgende Daten wurden gespeichert:');
     await expect(this.page.getByTestId('added-state-employee-vorname-label')).toBeVisible();
     await expect(this.page.getByTestId('added-state-employee-vorname')).toHaveText(vorname);

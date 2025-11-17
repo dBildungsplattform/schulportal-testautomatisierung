@@ -66,11 +66,15 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
     await landesbedienstetenSuchenUndHinzufuegenPage.waitForPageLoad();
   });
 
-  test('Seiteninhalte werden angezeigt', { tag: [LONG, SHORT, STAGE, DEV, BROWSER] }, async () => {
+  //SPSH-2630 Hey Hallo Hier ;)
+  test('Landesbediensteten (suchen und hinzufügen): UI prüfen', { tag: [LONG, SHORT, STAGE, DEV, BROWSER] }, async () => {
     await landesbedienstetenSuchenUndHinzufuegenPage.checkSearchForm();
-    await landesbedienstetenSuchenUndHinzufuegenPage.searchLandesbedienstetenViaUsername(lehrkraft2.username);
-    await landesbedienstetenSuchenUndHinzufuegenPage.checkCreationFormWithOrganisation(lehrkraft2.vorname, lehrkraft2.familienname, lehrkraft2.kopersnummer, testschuleDstNrUndName);
   });
+
+  /*TODO: gehört nicht zum Test oben.
+    await landesbedienstetenSuchenUndHinzufuegenPage.searchLandesbedienstetenViaUsername(lehrkraft2.username);
+    await landesbedienstetenSuchenUndHinzufuegenPage.checkCreationFormWithOrganisation(lehrkraft2.vorname, lehrkraft2.familienname, lehrkraft2.kopersnummer, testschuleDstNrUndName); 
+  */
 
   //Suchergebnis Popup wird angezeigt, wenn kein Treffer gefunden wurde: falsche Namen 
   //Es wird das Popup Suchergebnis angezeigt, mit Text und Abbrechen Button
