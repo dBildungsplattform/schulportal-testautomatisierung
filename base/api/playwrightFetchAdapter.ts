@@ -1,4 +1,4 @@
-import { APIResponse, Page } from '@playwright/test';
+import { APIRequestContext, APIResponse, Page } from '@playwright/test';
 
 /**
  * makeFetchWithPlaywright
@@ -41,7 +41,7 @@ import { APIResponse, Page } from '@playwright/test';
  */
 export function makeFetchWithPlaywright(page: Page) {
   return async (url: string, init?): Promise<Response> => {
-    const playwrightInit = {
+    const playwrightInit: Parameters<APIRequestContext['fetch']>[1] = {
       ...init,
       data: init?.body,
       maxRetries: 3,
