@@ -40,7 +40,7 @@ export class RolleDetailsViewPage {
       this.page,
       {
         title: 'Löschen nicht möglich',
-        text: 'Die Rolle kann nicht gelöscht werden, da die sie noch Benutzern zugeordnet ist. Nehmen Sie bitte zunächst alle Zuordnungen zurück.',
+        text: 'Die Rolle kann nicht gelöscht werden, da sie noch Benutzern zugeordnet ist. Nehmen Sie bitte zunächst alle Zuordnungen zurück.',
         button: 'Zurück zur Ergebnisliste',
       },
       new RolleManagementViewPage(this.page),
