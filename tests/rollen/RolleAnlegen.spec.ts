@@ -19,6 +19,7 @@ import { LoginViewPage } from '../../pages/LoginView.neu.page';
 import { StartViewPage } from '../../pages/StartView.neu.page';
 import { rolleCreationParams } from './RolleAnlegen.data';
 import { Alert } from '../../elements/Alert';
+import { PersonCreationParams } from '../../pages/admin/personen/creation/PersonCreationView.neu.page';
 
 const ADMIN: string | undefined = process.env.USER;
 const PASSWORD: string | undefined = process.env.PW;
@@ -42,6 +43,7 @@ test.describe(`Testfälle für die Rollenanlage: Umgebung: ${process.env.ENV}: U
         rolleCreationPage = await setupAndGoToRolleCreationPage(page);
       });
 
+      // SPSH-2947
       test('Rolle anlegen und Zusammenfassung prüfen', async ({ page }: PlaywrightTestArgs) => {
         const params: RolleCreationParams = { ...baseRolleParams, name: generateRolleName() };
         const rolleCreationSuccessPage: RolleCreationSuccessPage = await test.step('Rolle anlegen', async () => {
@@ -71,6 +73,7 @@ test.describe(`Testfälle für die Rollenanlage: Umgebung: ${process.env.ENV}: U
         });
       });
 
+      // SPSH-2950
       test('Rolle anlegen und Ergebnisliste prüfen', async ({ page }: PlaywrightTestArgs) => {
         const params: RolleCreationParams = { ...baseRolleParams, name: generateRolleName() };
         const rolleCreationSuccessPage: RolleCreationSuccessPage = await rolleCreationPage.createRolle(params);
@@ -109,6 +112,33 @@ test.describe(`Testfälle für die Rollenanlage: Umgebung: ${process.env.ENV}: U
     });
   }
 
+  // SPSH-2946
+  test('Mehrere Rollen nacheinander anlegen', async ({ page }: PlaywrightTestArgs) => {
+    let rolleCreationPage = await setupAndGoToRolleCreationPage(page);
+    const rollen: RolleCreationParams[] = rolleCreationParams.slice(0, 2).map((baseParams: RolleCreationParams) => ({
+      ...baseParams,
+      name: generateRolleName(),
+    }));
+    let rolleCreationSuccessPage: RolleCreationSuccessPage =
+      await test.step(`Rolle vom Typ ${rollen[0].rollenart} anlegen`, async () => {
+        const rolleCreationSuccessPage: RolleCreationSuccessPage = await rolleCreationPage.createRolle(rollen[0]);
+        return rolleCreationSuccessPage;
+      });
+    rolleCreationPage = await test.step('Zurück zur Rollenanlage navigieren', async () => {
+      return rolleCreationSuccessPage.createAnother();
+    });
+    await test.step(`Rolle vom Typ ${rollen[1].rollenart} anlegen`, async () => {
+      rolleCreationSuccessPage = await rolleCreationPage.createRolle(rollen[1]);
+      await rolleCreationSuccessPage.waitForPageLoad();
+    });
+    await test.step('Ergebnisliste prüfen', async () => {
+      const rolleManagementViewPage: RolleManagementViewPage = await rolleCreationSuccessPage.backToResultList();
+      await rolleManagementViewPage.setPageSize('300');
+      await rolleManagementViewPage.checkIfRolleExists(rollen[0].name);
+      await rolleManagementViewPage.checkIfRolleExists(rollen[1].name);
+    });
+  });
+
   test.describe('Fehler bei Anlage', () => {
     let rolleCreationPage: RolleCreationViewPage;
 
@@ -127,15 +157,17 @@ test.describe(`Testfälle für die Rollenanlage: Umgebung: ${process.env.ENV}: U
         rolleCreationPage = await rolleCreationSuccessPage.createAnother();
       });
 
-      const alert: Alert<RolleCreationViewPage> = await test.step('Erneut Rolle mit gleichem Namen anlegen', async () => {
-        return rolleCreationPage.createRolleWithDuplicateNameError(rolleCreationParams[0]);
-      });
+      const alert: Alert<RolleCreationViewPage> =
+        await test.step('Erneut Rolle mit gleichem Namen anlegen', async () => {
+          return rolleCreationPage.createRolleWithDuplicateNameError(rolleCreationParams[0]);
+        });
 
       await test.step('Fehlermeldung prüfen', async () => {
         await alert.assertExpectedTexts();
       });
     });
 
+    // SPSH-2951
     test('Ungültige Eingaben', async ({ page }: PlaywrightTestArgs) => {
       const rolleCreationWorkflow: RolleCreationWorkflow = rolleCreationPage.startRolleCreationWorkflow();
 

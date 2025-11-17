@@ -46,6 +46,7 @@ test.describe(`Testfälle für die Rollenlöschung: Umgebung: ${process.env.ENV}
     await rolleManagementViewPage.checkIfRolleDoesNotExist(rolleName);
   });
 
+  // SPSH-2949
   test('Vergebene Rolle löschen und Fehlermeldung prüfen', async ({ page }: PlaywrightTestArgs) => {
     await test.step('Rolle einer Person zuordnen', async () => {
       await createPersonWithUserContext(page, testschuleName, generateNachname(), generateVorname(), rolleName);
