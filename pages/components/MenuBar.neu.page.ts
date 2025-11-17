@@ -9,7 +9,7 @@ import { RolleManagementViewPage } from '../admin/rollen/RolleManagementView.neu
 import { SchuleCreationViewPage } from '../admin/organisationen/schulen/SchuleCreationView.neu.page';
 import { SchuleManagementViewPage } from '../admin/organisationen/schulen/SchuleManagementView.neu.page';
 import { StartViewPage } from '../StartView.neu.page';
-import { LandesbedienstetenSuchenUndHinzufuegenPage } from '../admin/personen/LandesbedienstetenSuchenUndHinzufuegen.page';
+import { LandesbedienstetenSearchFormPage } from '../admin/personen/search/LandesbedienstetenSearchForm.page';
 
 export class MenuBarPage {
   /* add locators here */
@@ -64,9 +64,9 @@ export class MenuBarPage {
     return personCreationViewPage;
   }
 
-  public async navigateToLandesbedienstetenSuchenUndHinzufuegen(): Promise<LandesbedienstetenSuchenUndHinzufuegenPage> {
+  public async navigateToLandesbedienstetenSuchenUndHinzufuegen(): Promise<LandesbedienstetenSearchFormPage> {
     await this.landesbedienstetenSuchenUndHinzufuegen.click();
-    const newPage: LandesbedienstetenSuchenUndHinzufuegenPage = new LandesbedienstetenSuchenUndHinzufuegenPage(this.page);
+    const newPage: LandesbedienstetenSearchFormPage = new LandesbedienstetenSearchFormPage(this.page);
     await newPage.waitForPageLoad();
     return newPage;
   }

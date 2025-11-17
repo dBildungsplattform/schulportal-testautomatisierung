@@ -1,15 +1,15 @@
 import { expect } from '@playwright/test';
 import { Locator, Page } from "@playwright/test";
-import { Autocomplete } from '../../../elements/Autocomplete';
+import { Autocomplete } from '../../../../elements/Autocomplete';
 
-export class LandesbedienstetenSuchenUndHinzufuegenPage {
+export class LandesbedienstetenSearchFormPage {
   /* add global locators here */
 
   constructor(protected readonly page: Page) {}
 
   private readonly adminHeadline: Locator = this.page.getByTestId('admin-headline');
   
-  /* Landesbediensteten Suchen und Suchergebnis */
+  /* Landesbediensteten Suchen  */
   private readonly kopersRadioInput : Locator = this.page.getByTestId('kopers-radio-button').locator('input');
   private readonly emailRadioInput : Locator = this.page.getByTestId('email-radio-button').locator('input');
   private readonly usernameRadioInput : Locator = this.page.getByTestId('username-radio-button').locator('input');
@@ -21,10 +21,13 @@ export class LandesbedienstetenSuchenUndHinzufuegenPage {
   private readonly nachnameInput : Locator = this.page.getByTestId('nachname-input').locator('input');
   /* the reset search button's id is not properly named due to automated name generation in forms,
      and a different usage of that button in the search form */
-  private readonly resetSearchButton : Locator = this.page.getByTestId('person-search-form-discard-button');
-  private readonly submitSearchButton : Locator = this.page.getByTestId('person-search-form-submit-button');  
+  private readonly zuruecksetzenButton : Locator = this.page.getByTestId('person-search-form-discard-button');
+  private readonly landesbedienstetenSuchenButton : Locator = this.page.getByTestId('person-search-form-submit-button');
+
+  //------------------------------ Aktueller Stand bis hier ------------------------------
+  //und Suchergebnis
   private readonly personalDataCardFullname: Locator = this.page.getByTestId('fullname-value');
-// TODO: Schulzuordnung fehlt
+  // TODO: Schulzuordnung fehlt
   private readonly zurueckZurSucheButton: Locator = this.page.getByTestId('back-to-search-button');
   private readonly landesbedienstetenHinzufuegenButton: Locator = this.page.getByTestId('add-state-employee-button');
 
@@ -100,7 +103,7 @@ export class LandesbedienstetenSuchenUndHinzufuegenPage {
 
   public async checkMandatoryFieldsForNameSearch(vorname: string, nachname: string): Promise<void> {
     await this.fillVornameNachname(vorname, nachname);
-    await this.clickSearch();
+    await this.clickLandesbedienstetenSuchen();
     if (vorname === '') {
       await expect(this.page.getByTestId('vorname-input').locator('.v-messages__message')).toHaveText('Der Vorname ist erforderlich.');
     }
@@ -109,17 +112,17 @@ export class LandesbedienstetenSuchenUndHinzufuegenPage {
     }
   }
 
-  public async clickReset(): Promise<void> {
-    await this.resetSearchButton.click();
+  public async clickZuruecksetzen(): Promise<void> {
+    await this.zuruecksetzenButton.click();
   }
 
-  public async clickSearch(): Promise<void> {
-    await this.submitSearchButton.click();
+  public async clickLandesbedienstetenSuchen(): Promise<void> {
+    await this.landesbedienstetenSuchenButton.click();
   }
 
   public async searchByName(vorname: string, familienname: string): Promise<void> {
     await this.fillVornameNachname(vorname, familienname);
-    await this.clickSearch();
+    await this.clickLandesbedienstetenSuchen();
     await expect(this.personalDataCardFullname).toHaveText(`${vorname} ${familienname}`);
   }
 
@@ -132,7 +135,7 @@ export class LandesbedienstetenSuchenUndHinzufuegenPage {
   }
 
   public async resetSearchForm(): Promise<void> {
-    await this.resetSearchButton.click();
+    await this.zuruecksetzenButton.click();
     await expect(this.personalDataCardFullname).toBeHidden();
     await expect(this.nameRadioInput).toBeChecked();
     await expect(this.vornameInput).toBeEmpty();
@@ -142,33 +145,33 @@ export class LandesbedienstetenSuchenUndHinzufuegenPage {
   public async searchLandesbedienstetenViaKopers(kopers: string): Promise<void> {
     await this.waitForPageLoad();
     await this.fillKopersNr(kopers);
-    await this.clickSearch();
+    await this.clickLandesbedienstetenSuchen();
     await this.landesbedienstetenHinzufuegenButton.click();
   }
 
   public async searchLandesbedienstetenViaEmail(email: string): Promise<void> {
     await this.waitForPageLoad();
     await this.fillEmail(email);
-    await this.clickSearch();
+    await this.clickLandesbedienstetenSuchen();
     await this.landesbedienstetenHinzufuegenButton.click();
   }
 
   public async searchLandesbedienstetenViaUsername(benutzername: string): Promise<void> {
     await this.waitForPageLoad();
     await this.fillBenutzername(benutzername);
-    await this.clickSearch();
+    await this.clickLandesbedienstetenSuchen();
     await this.landesbedienstetenHinzufuegenButton.click();
   }
 
   public async searchLandesbedienstetenViaName(vorname: string, nachname: string): Promise<void> {
     await this.waitForPageLoad();
     await this.fillVornameNachname(vorname, nachname);
-    await this.clickSearch();
+    await this.clickLandesbedienstetenSuchen();
     await this.landesbedienstetenHinzufuegenButton.click();
   }
 
   public async landesbedienstetenHinzufuegenAlsLehrkraft(): Promise<void> {
-    await this.submitSearchButton.click();
+    await this.landesbedienstetenSuchenButton.click();
     await this.landesbedienstetenHinzufuegenButton.click();
     await this.rolleAutocomplete.selectByTitle('LiV');
     await this.personCreationFormLandesbedienstetenHinzufuegenButton.click();
@@ -226,8 +229,8 @@ export class LandesbedienstetenSuchenUndHinzufuegenPage {
     await expect(this.nameRadioInput).toBeVisible();
     await expect(this.vornameInput).toBeHidden();
     await expect(this.nachnameInput).toBeHidden();
-    await expect(this.resetSearchButton).toBeEnabled();
-    await expect(this.submitSearchButton).toBeDisabled();
+    await expect(this.zuruecksetzenButton).toBeEnabled();
+    await expect(this.landesbedienstetenSuchenButton).toBeDisabled();
   }
 
   public async checkSearchResultCard(): Promise<void> {

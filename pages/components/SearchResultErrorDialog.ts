@@ -1,6 +1,6 @@
 import { expect, Locator, Page } from '@playwright/test';
 
-export class SuchergebnisPopup {
+export class SearchResultErrorDialog {
   constructor(protected readonly page: Page, private readonly locator: Locator) {}
 
   readonly headline: Locator = this.locator.getByTestId('layout-card-headline');
