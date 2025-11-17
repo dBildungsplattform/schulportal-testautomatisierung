@@ -90,7 +90,7 @@ export class LandesbedienstetenSuchenUndHinzufuegenPage {
     await this.usernameInput.fill(benutzername);
   }
 
-  public async fillName(vorname: string, nachname: string): Promise<void> {
+  public async fillVornameNachname(vorname: string, nachname: string): Promise<void> {
     if (!(await this.nameRadioInput.isChecked())) {
       await this.nameRadioInput.check();
     }
@@ -99,7 +99,7 @@ export class LandesbedienstetenSuchenUndHinzufuegenPage {
   }
 
   public async checkMandatoryFieldsForNameSearch(vorname: string, nachname: string): Promise<void> {
-    await this.fillName(vorname, nachname);
+    await this.fillVornameNachname(vorname, nachname);
     await this.clickSearch();
     if (vorname === '') {
       await expect(this.page.getByTestId('vorname-input').locator('.v-messages__message')).toHaveText('Der Vorname ist erforderlich.');
@@ -118,7 +118,7 @@ export class LandesbedienstetenSuchenUndHinzufuegenPage {
   }
 
   public async searchByName(vorname: string, familienname: string): Promise<void> {
-    await this.fillName(vorname, familienname);
+    await this.fillVornameNachname(vorname, familienname);
     await this.clickSearch();
     await expect(this.personalDataCardFullname).toHaveText(`${vorname} ${familienname}`);
   }
@@ -162,7 +162,7 @@ export class LandesbedienstetenSuchenUndHinzufuegenPage {
 
   public async searchLandesbedienstetenViaName(vorname: string, nachname: string): Promise<void> {
     await this.waitForPageLoad();
-    await this.fillName(vorname, nachname);
+    await this.fillVornameNachname(vorname, nachname);
     await this.clickSearch();
     await this.landesbedienstetenHinzufuegenButton.click();
   }

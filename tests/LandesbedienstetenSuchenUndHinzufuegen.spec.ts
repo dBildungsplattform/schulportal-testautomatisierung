@@ -11,7 +11,7 @@ import { LandingViewPage } from "../pages/LandingView.neu.page";
 import { HeaderPage } from "../pages/components/Header.neu.page";
 import { StartViewPage } from "../pages/StartView.neu.page";
 import { PersonManagementViewPage } from "../pages/admin/personen/PersonManagementView.neu.page";
-import { SearchResultDialog } from "../pages/components/SearchResultDialog.page";
+import { SuchergebnisPopup } from "../pages/components/SuchergebnisPopup.page";
 import { getOrganisationId } from "../base/api/organisationApi";
 import { getRolleId } from "../base/api/rolleApi";
 
@@ -20,7 +20,7 @@ let landingPage: LandingViewPage;
 let personManagementViewPage: PersonManagementViewPage;
 let landesbedienstetenSuchenUndHinzufuegenPage: LandesbedienstetenSuchenUndHinzufuegenPage;
 let header: HeaderPage;
-let searchResultDialog: SearchResultDialog;
+let suchergebnisPopup: SuchergebnisPopup;
 let lehrkraftMitSchulzuordnung: UserInfo;
 let lehrkraftOhneSchulzuordnung: UserInfo;
 let lehrkraft: UserInfo;
@@ -40,7 +40,7 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
     landesbedienstetenSuchenUndHinzufuegenPage = new LandesbedienstetenSuchenUndHinzufuegenPage(page);
     header = new HeaderPage(page);
-    searchResultDialog = new SearchResultDialog(page, page.getByTestId('person-search-error-dialog'));
+    suchergebnisPopup = new SuchergebnisPopup(page, page.getByTestId('person-search-error-dialog'));
     loginPage = await freshLoginPage(page);
     await loginPage.login(process.env.USER, process.env.PW);
     schuladmin1Schule = await createPersonWithPersonenkontext(page, testschuleName, schuladminOeffentlichRolle);
@@ -66,7 +66,7 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
     await landesbedienstetenSuchenUndHinzufuegenPage.waitForPageLoad();
   });
 
-  //SPSH-2630 Hey Hallo Hier ;)
+  //SPSH-2630
   test('Landesbediensteten (suchen und hinzufügen): UI prüfen', { tag: [LONG, SHORT, STAGE, DEV, BROWSER] }, async () => {
     await landesbedienstetenSuchenUndHinzufuegenPage.checkSearchForm();
   });
@@ -76,14 +76,15 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
     await landesbedienstetenSuchenUndHinzufuegenPage.checkCreationFormWithOrganisation(lehrkraft2.vorname, lehrkraft2.familienname, lehrkraft2.kopersnummer, testschuleDstNrUndName); 
   */
 
+  //SPSH-2631 Step 2  Hey Hallo Hier ;)
   //Suchergebnis Popup wird angezeigt, wenn kein Treffer gefunden wurde: falsche Namen 
-  //Es wird das Popup Suchergebnis angezeigt, mit Text und Abbrechen Button
+  //Es wird das Popup Suchergebnis angezeigt, mit korrektem Text und Abbrechen Button
   test('Kein Treffer wegen falschen Namen: Popup wird angezeigt und ist vollständig', { tag: [LONG, SHORT, STAGE, DEV, BROWSER] }, async () => {
-    await landesbedienstetenSuchenUndHinzufuegenPage.fillName("zzzzz", "yyyyy");
+    await landesbedienstetenSuchenUndHinzufuegenPage.fillVornameNachname("zzzzz", "yyyyy");
     await landesbedienstetenSuchenUndHinzufuegenPage.clickSearch();
-    await searchResultDialog.checkContent();
-    await expect(searchResultDialog.noPersonFoundText).toHaveText('Es wurde leider kein Treffer gefunden. Bitte prüfen Sie Ihre Eingabe. Sollten Sie Hilfe benötigen, eröffnen Sie ein Störungsticket über den IQSH-Helpdesk.');
-    await expect(searchResultDialog.cancelButton).toHaveText('Abbrechen');
+    await suchergebnisPopup.checkPopupCompleteness();
+    await expect(suchergebnisPopup.noPersonFoundText).toHaveText('Es wurde leider kein Treffer gefunden. Bitte prüfen Sie Ihre Eingabe. Sollten Sie Hilfe benötigen, eröffnen Sie ein Störungsticket über den IQSH-Helpdesk.');
+    await expect(suchergebnisPopup.abbrechenButton).toHaveText('Abbrechen');
   });
 
   // Suchergebnis Popup wird angezeigt, wenn kein Treffer gefunden wurde
@@ -91,15 +92,15 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
     await test.step('Suchen per KoPers.-Nr.', async () => {
       await landesbedienstetenSuchenUndHinzufuegenPage.fillKopersNr("abc9999");
       await landesbedienstetenSuchenUndHinzufuegenPage.clickSearch();
-      await searchResultDialog.checkContent();
-      await searchResultDialog.cancelButton.click();
+      await suchergebnisPopup.checkPopupCompleteness();
+      await suchergebnisPopup.abbrechenButton.click();
     });
 
     await test.step('Suchen per E-Mail', async () => {
       await landesbedienstetenSuchenUndHinzufuegenPage.fillEmail("nicht@existiert.de");
       await landesbedienstetenSuchenUndHinzufuegenPage.clickSearch();
-      await searchResultDialog.checkContent();
-      await searchResultDialog.cancelButton.click();
+      await suchergebnisPopup.checkPopupCompleteness();
+      await suchergebnisPopup.abbrechenButton.click();
     });
 
     await test.step('Suchen per Benutzername', async () => {
@@ -108,29 +109,29 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
       await landesbedienstetenSuchenUndHinzufuegenPage.checkMandatoryFieldsForNameSearch('zzzzz', '');
       await landesbedienstetenSuchenUndHinzufuegenPage.fillBenutzername("unbekannt123");
       await landesbedienstetenSuchenUndHinzufuegenPage.clickSearch();
-      await searchResultDialog.checkContent();
-      await searchResultDialog.cancelButton.click();
+      await suchergebnisPopup.checkPopupCompleteness();
+      await suchergebnisPopup.abbrechenButton.click();
     });
     await test.step('Suchen per Namen der Ersatzschullehrkraft', async () => {
-      await landesbedienstetenSuchenUndHinzufuegenPage.fillName(ersatzschulLehrkraft.vorname, ersatzschulLehrkraft.familienname);
+      await landesbedienstetenSuchenUndHinzufuegenPage.fillVornameNachname(ersatzschulLehrkraft.vorname, ersatzschulLehrkraft.familienname);
       await landesbedienstetenSuchenUndHinzufuegenPage.clickSearch();
-      await searchResultDialog.checkContent();
+      await suchergebnisPopup.checkPopupCompleteness();
     });
   });
 
   // Doppelter Name Fehlermeldung (!) Wir verwenden absichtlich die Namen der 2 Lehrkräfte, 
   // damit wir keinen Eslint Fehler bekommen, weil die 2. Lehrkraft nie benutzt wird.
   test('Doppelter Name: Fehlermeldung wird angezeigt', { tag: [LONG, SHORT, STAGE, DEV, BROWSER] }, async () => {
-    await landesbedienstetenSuchenUndHinzufuegenPage.fillName(lehrkraftDoppel1.vorname, lehrkraftDoppel2.familienname);
+    await landesbedienstetenSuchenUndHinzufuegenPage.fillVornameNachname(lehrkraftDoppel1.vorname, lehrkraftDoppel2.familienname);
     await landesbedienstetenSuchenUndHinzufuegenPage.clickSearch();
-    await searchResultDialog.checkContent();
-    await expect(searchResultDialog.noPersonFoundText).toHaveText('Es wurde mehr als ein Treffer gefunden. Bitte verwenden Sie zur Suche die KoPers.-Nr., die Landes-Mailadresse oder den Benutzernamen. Sollten Sie Hilfe benötigen, eröffnen Sie ein Störungsticket über den IQSH-Helpdesk.');
-    await expect(searchResultDialog.cancelButton).toHaveText('Abbrechen');
+    await suchergebnisPopup.checkPopupCompleteness();
+    await expect(suchergebnisPopup.noPersonFoundText).toHaveText('Es wurde mehr als ein Treffer gefunden. Bitte verwenden Sie zur Suche die KoPers.-Nr., die Landes-Mailadresse oder den Benutzernamen. Sollten Sie Hilfe benötigen, eröffnen Sie ein Störungsticket über den IQSH-Helpdesk.');
+    await expect(suchergebnisPopup.abbrechenButton).toHaveText('Abbrechen');
   });
 
   //SPSH-2632 - Suchergebnis UI Test Landesbediensteten suchen (per Namen)
   test('Persönliche Daten und Zuordnung werden korrekt angezeigt', { tag: [LONG, SHORT, STAGE, DEV, BROWSER] }, async () => {
-    await landesbedienstetenSuchenUndHinzufuegenPage.fillName(lehrkraft.vorname, lehrkraft.familienname);
+    await landesbedienstetenSuchenUndHinzufuegenPage.fillVornameNachname(lehrkraft.vorname, lehrkraft.familienname);
     await landesbedienstetenSuchenUndHinzufuegenPage.clickSearch();
 
     const lehrkraftFullName: string = `${lehrkraft.vorname} ${lehrkraft.familienname}`;
@@ -158,7 +159,7 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
   test('Gesperrte Person kann nicht gefunden werden', { tag: [LONG, SHORT, STAGE, DEV, BROWSER] }, async () => {
     await landesbedienstetenSuchenUndHinzufuegenPage.fillKopersNr(lockedLehrkraft.kopersnummer);
     await landesbedienstetenSuchenUndHinzufuegenPage.clickSearch();
-    await expect(searchResultDialog.headline).toBeVisible();
+    await expect(suchergebnisPopup.headline).toBeVisible();
   });
 
   // SPSH-2660 Step 1
@@ -178,7 +179,7 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
 
   // // SPSH-2660 Step 4
   test('Landesbediensteten suchen per Vorname und Nachname und erfolgreich hinzufügen', { tag: [LONG, SHORT, STAGE, DEV, BROWSER] }, async () => {
-    await landesbedienstetenSuchenUndHinzufuegenPage.fillName(lehrkraftMitSchulzuordnung.vorname, lehrkraftMitSchulzuordnung.familienname);
+    await landesbedienstetenSuchenUndHinzufuegenPage.fillVornameNachname(lehrkraftMitSchulzuordnung.vorname, lehrkraftMitSchulzuordnung.familienname);
     await landesbedienstetenSuchenUndHinzufuegenPage.landesbedienstetenHinzufuegenAlsLehrkraft();
     await landesbedienstetenSuchenUndHinzufuegenPage.checkSuccessPage(lehrkraftMitSchulzuordnung.vorname, lehrkraftMitSchulzuordnung.familienname, lehrkraftMitSchulzuordnung.kopersnummer, lehrkraftMitSchulzuordnung.username, `${testschuleDstNr} (${testschuleName})`);
   });
