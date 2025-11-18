@@ -33,7 +33,7 @@ test.describe(`Testfälle für die Rollenbearbeitung: Umgebung: ${process.env.EN
   });
 
   // SPSH-2948
-  test('Rollennamen ändern', async ({ page }: PlaywrightTestArgs) => {
+  test('Rollennamen ändern', async () => {
     const newRolleName: string = generateRolleName();
     await rolleDetailsView.editRolle(newRolleName);
     await rolleDetailsView.rolleSuccessfullyEdited(newRolleName);

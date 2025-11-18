@@ -1,9 +1,8 @@
 import { expect, Page } from '@playwright/test';
 import { RolleForm } from '../../../components/RolleForm';
+import { Alert } from '../../../elements/Alert';
 import { RolleCreationSuccessPage } from './RolleCreationSuccess.page';
 import { RolleCreationParams, RolleCreationViewPage } from './RolleCreationView.neu.page';
-import { RolleCreationErrorPage } from './RolleCreationError.page';
-import { Alert } from '../../../elements/Alert';
 
 export class RolleCreationWorkflow {
   private readonly rolleForm: RolleForm;

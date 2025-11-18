@@ -7,8 +7,8 @@ import { rollenMerkmalLabel } from '../../base/merkmale';
 import { testschuleName } from '../../base/organisation';
 import { rollenArtLabel } from '../../base/rollentypen';
 import { generateNachname, generateRolleName, generateVorname } from '../../base/utils/generateTestdata';
+import { Alert } from '../../elements/Alert';
 import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.neu.page';
-import { RolleCreationErrorPage } from '../../pages/admin/rollen/RolleCreationError.page';
 import { RolleCreationSuccessPage } from '../../pages/admin/rollen/RolleCreationSuccess.page';
 import { RolleCreationParams, RolleCreationViewPage } from '../../pages/admin/rollen/RolleCreationView.neu.page';
 import { RolleCreationWorkflow } from '../../pages/admin/rollen/RolleCreationWorkflow.page';
@@ -18,8 +18,6 @@ import { HeaderPage } from '../../pages/components/Header.neu.page';
 import { LoginViewPage } from '../../pages/LoginView.neu.page';
 import { StartViewPage } from '../../pages/StartView.neu.page';
 import { rolleCreationParams } from './RolleAnlegen.data';
-import { Alert } from '../../elements/Alert';
-import { PersonCreationParams } from '../../pages/admin/personen/creation/PersonCreationView.neu.page';
 
 const ADMIN: string | undefined = process.env.USER;
 const PASSWORD: string | undefined = process.env.PW;
@@ -44,7 +42,7 @@ test.describe(`Testfälle für die Rollenanlage: Umgebung: ${process.env.ENV}: U
       });
 
       // SPSH-2947
-      test('Rolle anlegen und Zusammenfassung prüfen', async ({ page }: PlaywrightTestArgs) => {
+      test('Rolle anlegen und Zusammenfassung prüfen', async () => {
         const params: RolleCreationParams = { ...baseRolleParams, name: generateRolleName() };
         const rolleCreationSuccessPage: RolleCreationSuccessPage = await test.step('Rolle anlegen', async () => {
           const rolleCreationSuccessPage: RolleCreationSuccessPage = await rolleCreationPage.createRolle(params);
@@ -55,7 +53,7 @@ test.describe(`Testfälle für die Rollenanlage: Umgebung: ${process.env.ENV}: U
         });
       });
 
-      test('Rolle anlegen und Gesamtübersicht prüfen', async ({ page }: PlaywrightTestArgs) => {
+      test('Rolle anlegen und Gesamtübersicht prüfen', async () => {
         const params: RolleCreationParams = { ...baseRolleParams, name: generateRolleName() };
         const rolleCreationSuccessPage: RolleCreationSuccessPage = await test.step('Rolle anlegen', async () => {
           const rolleCreationSuccessPage: RolleCreationSuccessPage = await rolleCreationPage.createRolle(params);
@@ -74,7 +72,7 @@ test.describe(`Testfälle für die Rollenanlage: Umgebung: ${process.env.ENV}: U
       });
 
       // SPSH-2950
-      test('Rolle anlegen und Ergebnisliste prüfen', async ({ page }: PlaywrightTestArgs) => {
+      test('Rolle anlegen und Ergebnisliste prüfen', async () => {
         const params: RolleCreationParams = { ...baseRolleParams, name: generateRolleName() };
         const rolleCreationSuccessPage: RolleCreationSuccessPage = await rolleCreationPage.createRolle(params);
         await rolleCreationSuccessPage.waitForPageLoad();
@@ -89,7 +87,7 @@ test.describe(`Testfälle für die Rollenanlage: Umgebung: ${process.env.ENV}: U
         await rolleCreationPage.createRolle(params);
         const organisationId: string = await getOrganisationId(page, testschuleName);
         const rolleId: string = await getRolleId(page, params.name);
-        let user: UserInfo = await createPerson(
+        const user: UserInfo = await createPerson(
           page,
           organisationId,
           rolleId,
@@ -114,7 +112,7 @@ test.describe(`Testfälle für die Rollenanlage: Umgebung: ${process.env.ENV}: U
 
   // SPSH-2946
   test('Mehrere Rollen nacheinander anlegen', async ({ page }: PlaywrightTestArgs) => {
-    let rolleCreationPage = await setupAndGoToRolleCreationPage(page);
+    let rolleCreationPage: RolleCreationViewPage = await setupAndGoToRolleCreationPage(page);
     const rollen: RolleCreationParams[] = rolleCreationParams.slice(0, 2).map((baseParams: RolleCreationParams) => ({
       ...baseParams,
       name: generateRolleName(),
@@ -146,7 +144,7 @@ test.describe(`Testfälle für die Rollenanlage: Umgebung: ${process.env.ENV}: U
       rolleCreationPage = await setupAndGoToRolleCreationPage(page);
     });
 
-    test('Rolle doppelt anlegen', async ({ page }: PlaywrightTestArgs) => {
+    test('Rolle doppelt anlegen', async () => {
       const rolleCreationSuccessPage: RolleCreationSuccessPage = await test.step('Rolle anlegen', async () => {
         const rolleCreationSuccessPage: RolleCreationSuccessPage = await rolleCreationPage.createRolle(
           rolleCreationParams[0]
@@ -168,7 +166,7 @@ test.describe(`Testfälle für die Rollenanlage: Umgebung: ${process.env.ENV}: U
     });
 
     // SPSH-2951
-    test('Ungültige Eingaben', async ({ page }: PlaywrightTestArgs) => {
+    test('Ungültige Eingaben', async () => {
       const rolleCreationWorkflow: RolleCreationWorkflow = rolleCreationPage.startRolleCreationWorkflow();
 
       await rolleCreationWorkflow.selectAdministrationsebene(testschuleName);

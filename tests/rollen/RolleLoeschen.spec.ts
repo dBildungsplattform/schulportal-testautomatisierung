@@ -40,7 +40,7 @@ test.describe(`Testfälle für die Rollenlöschung: Umgebung: ${process.env.ENV}
     await header.logout();
   });
 
-  test('Erfolgreich löschen', async ({ page }: PlaywrightTestArgs) => {
+  test('Erfolgreich löschen', async () => {
     const rolleManagementViewPage: RolleManagementViewPage = await rolleDetailsView.deleteRolle();
     await rolleManagementViewPage.setPageSize('300');
     await rolleManagementViewPage.checkIfRolleDoesNotExist(rolleName);

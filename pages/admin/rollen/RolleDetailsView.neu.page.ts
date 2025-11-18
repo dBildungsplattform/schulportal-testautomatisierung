@@ -36,7 +36,7 @@ export class RolleDetailsViewPage {
 
   public async attemptDeletionOfAssignedRolle(): Promise<Alert<RolleManagementViewPage>> {
     await this.clickDeleteAndConfirm();
-    const alert: Alert<RolleManagementViewPage> = new Alert(
+    const alert = new Alert<RolleManagementViewPage>(
       this.page,
       {
         title: 'Löschen nicht möglich',
