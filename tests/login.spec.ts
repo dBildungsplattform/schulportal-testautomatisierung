@@ -4,7 +4,7 @@ import { createRolleAndPersonWithUserContext, lockPerson, UserInfo } from '../ba
 import { RollenArt } from '../base/api/rolleApi';
 import { getServiceProviderId } from '../base/api/serviceProviderApi';
 import { testschuleName } from '../base/organisation';
-import { BROWSER, DEV, LONG, SHORT, SMOKE, STAGE } from '../base/tags';
+import { DEV, SMOKE, STAGE } from '../base/tags';
 import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata';
 import { generateNachname, generateRolleName, generateVorname } from '../base/utils/generateTestdata';
 import { LandingPage } from '../pages/LandingView.page';
@@ -64,7 +64,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
 
   test(
     'Erfolgreicher Standard Login Landesadmin',
-    { tag: [LONG, SMOKE, STAGE, BROWSER, DEV] },
+    { tag: [SMOKE, STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const login: LoginPage = new LoginPage(page);
       const landing: LandingPage = new LandingPage(page);
@@ -88,7 +88,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
 
   test(
     'Erfolgloser Login mit falschem Passwort und gültigem Benutzernamen in der Rolle Landesadmin',
-    { tag: [LONG, SHORT, STAGE, DEV] },
+    { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const login: LoginPage = new LoginPage(page);
       const landing: LandingPage = new LandingPage(page);
@@ -107,7 +107,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
 
   test(
     'Erfolgloser Login mit einem gesperrten Benutzer Rolle Lehrer',
-    { tag: [LONG, STAGE, DEV] },
+    { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const login: LoginPage = new LoginPage(page);
       const landing: LandingPage = new LandingPage(page);
@@ -159,7 +159,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
 
   test(
     'Erfolgloser Login mit falschem Benutzernamen und gültigem Passwort in der Rolle Landesadmin',
-    { tag: [LONG, STAGE, DEV] },
+    { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const login: LoginPage = new LoginPage(page);
       const landing: LandingPage = new LandingPage(page);

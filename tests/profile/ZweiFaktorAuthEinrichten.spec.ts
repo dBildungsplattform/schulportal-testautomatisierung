@@ -4,7 +4,7 @@ import { getServiceProviderId } from '../../base/api/serviceProviderApi';
 import { testschuleName } from '../../base/organisation';
 import { RollenArt, typeLehrer } from '../../base/rollentypen';
 import { email } from '../../base/sp';
-import { DEV, LONG, STAGE } from '../../base/tags';
+import { DEV, STAGE } from '../../base/tags';
 import {
   generateKopersNr,
   generateNachname,
@@ -72,7 +72,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
   test(
     'Das eigene Profil öffnen, 2FA Einrichten öffnen und Einrichtung soweit möglich',
-    { tag: [LONG, STAGE, DEV] },
+    { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const header: HeaderPage = new HeaderPage(page);
       const login: LoginViewPage = new LoginViewPage(page);
