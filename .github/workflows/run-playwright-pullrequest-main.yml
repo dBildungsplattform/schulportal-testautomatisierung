@@ -78,7 +78,6 @@ jobs:
         fi
 
   run_playwright_tests:
-      name: Testing ${{ needs.determine_frontend_hostname.outputs.fe_host }} with ${{ github.head_ref }}
       uses: ./.github/workflows/run-playwright.yml
       needs: determine_frontend_hostname
       with:
