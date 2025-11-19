@@ -27,7 +27,7 @@ export interface UserInfo {
   organisationId: string;
   personId: string;
   vorname: string;
-  familienname: string;
+  nachname: string;
   kopersnummer: string;
   email: string;
 }
@@ -126,7 +126,7 @@ export async function createPerson(
       organisationId: organisationId,
       personId: createdPerson.person.id,
       vorname: createdPerson.person.name.vorname,
-      familienname: createdPerson.person.name.familienname,
+      nachname: createdPerson.person.name.familienname,
       kopersnummer: koPersNr,
       email: generateEmailFromName(createdPerson.person.name.vorname, createdPerson.person.name.familienname),
     };

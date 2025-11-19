@@ -2,6 +2,7 @@ import { expect } from '@playwright/test';
 import { Locator, Page } from "@playwright/test";
 import { Autocomplete } from '../../../../elements/Autocomplete';
 import { SearchResultErrorDialog } from '../../../components/SearchResultErrorDialog';
+import { LandesbedienstetenSearchResultPage } from './LandesbedienstetenSearchResult.page';
 
 export class LandesbedienstetenSearchFormPage {
   /* add global locators here */
@@ -9,6 +10,8 @@ export class LandesbedienstetenSearchFormPage {
   constructor(protected readonly page: Page) {}
 
   private readonly adminHeadline: Locator = this.page.getByTestId('admin-headline');
+  private readonly searchCardHeadline: Locator = this.page.getByTestId('search-state-employee-headline');
+  
   
   /* Landesbediensteten Suchen  */
   private readonly kopersRadioInput : Locator = this.page.getByTestId('kopers-radio-button').locator('input');
@@ -26,8 +29,7 @@ export class LandesbedienstetenSearchFormPage {
   private readonly landesbedienstetenSuchenButton : Locator = this.page.getByTestId('person-search-form-submit-button');
 
   //------------------------------ Aktueller Stand bis hier ------------------------------
-  //und Suchergebnis
- 
+   
   // /* Landesbediensteten Hinzufügen */
   // private readonly landesbedienstetenHinzufuegenHeadline: Locator = this.page.getByTestId('add-state-employee-headline');
   // private readonly closeButton: Locator = this.page.getByTestId('close-layout-card-button');
@@ -70,7 +72,8 @@ export class LandesbedienstetenSearchFormPage {
   /* actions */
   public async waitForPageLoad(): Promise<void> {
     await expect(this.adminHeadline).toHaveText('Landesbediensteten (suchen und hinzufügen)');
-    await this.kopersInput.waitFor({ state: 'visible' });
+    await this.searchCardHeadline.waitFor({ state: 'visible' });
+    await expect(this.searchCardHeadline).toHaveText('Landesbediensteten suchen');
   }
 
   public async fillKopersNr(kopersNr: string): Promise<void> {
@@ -151,11 +154,33 @@ export class LandesbedienstetenSearchFormPage {
     return new SearchResultErrorDialog(this.page, this.page.getByTestId('person-search-error-dialog'), this.searchResultErrorDialogKeineTrefferText);
   }
 
-  // public async searchByName(vorname: string, familienname: string): Promise<void> {
-  //   await this.fillVornameNachname(vorname, familienname);
-  //   await this.clickLandesbedienstetenSuchen();
-  //   await expect(this.personalDataCardFullname).toHaveText(`${vorname} ${familienname}`);
-  // }
+  public async searchLandesbedienstetenViaKopers(kopers: string): Promise<LandesbedienstetenSearchResultPage> {
+    await this.fillKopersNr(kopers);
+    const landesbedienstetenSearchResultPage: LandesbedienstetenSearchResultPage = new LandesbedienstetenSearchResultPage(this.page);
+    await this.clickLandesbedienstetenSuchen();
+    return landesbedienstetenSearchResultPage;
+  }
+
+  public async searchLandesbedienstetenViaEmail(email: string): Promise<LandesbedienstetenSearchResultPage> {
+    await this.fillEmail(email);
+    await this.clickLandesbedienstetenSuchen();
+    const landesbedienstetenSearchResultPage: LandesbedienstetenSearchResultPage = new LandesbedienstetenSearchResultPage(this.page);
+    return landesbedienstetenSearchResultPage;
+  }
+
+  public async searchLandesbedienstetenViaUsername(benutzername: string): Promise<LandesbedienstetenSearchResultPage> {
+    await this.fillBenutzername(benutzername);
+    await this.clickLandesbedienstetenSuchen();
+    const landesbedienstetenSearchResultPage: LandesbedienstetenSearchResultPage = new LandesbedienstetenSearchResultPage(this.page);
+    return landesbedienstetenSearchResultPage;
+  }
+
+  public async searchLandesbedienstetenViaName(vorname: string, nachname: string): Promise<LandesbedienstetenSearchResultPage> {
+    await this.fillVornameNachname(vorname, nachname);
+    await this.clickLandesbedienstetenSuchen();
+    const landesbedienstetenSearchResultPage: LandesbedienstetenSearchResultPage = new LandesbedienstetenSearchResultPage(this.page);
+    return landesbedienstetenSearchResultPage;
+  }
 
   // public async goBackToSearchForm(vorname: string, familienname: string): Promise<void> {
   //   await this.zurueckZurSucheButton.click();
@@ -165,6 +190,29 @@ export class LandesbedienstetenSearchFormPage {
   //   await expect(this.nachnameInput).toHaveValue(familienname);
   // }
 
+  public async testZuruecksetzenButtonAlleSuchtypen(): Promise<void> {
+    interface ResetTestCase {
+      fill: () => Promise<void> | void;
+      expect: () => Promise<void> | void;
+    }
+    const testCases: ResetTestCase[] = [
+      { fill: () => this.fillKopersNr('123456'), expect: () => expect(this.kopersInput).toBeEmpty() },
+      { fill: () => this.fillEmail('test@example.com'), expect: () => expect(this.emailInput).toBeEmpty() },
+      { fill: () => this.fillBenutzername('testuser'), expect: () => expect(this.usernameInput).toBeEmpty() },
+      { fill: () => this.fillVornameNachname('Max', 'Mustermann'), expect: async (): Promise<void> => {
+          await expect(this.vornameInput).toBeEmpty();
+          await expect(this.nachnameInput).toBeEmpty();
+        }
+      }
+    ];
+    for (const test of testCases) {
+      await test.fill();
+      await this.zuruecksetzenButton.click();
+      await test.expect();
+    }
+  }
+
+
   // public async resetSearchForm(): Promise<void> {
   //   await this.zuruecksetzenButton.click();
   //   await expect(this.personalDataCardFullname).toBeHidden();
@@ -173,33 +221,7 @@ export class LandesbedienstetenSearchFormPage {
   //   await expect(this.nachnameInput).toBeEmpty();
   // }
 
-  // public async searchLandesbedienstetenViaKopers(kopers: string): Promise<void> {
-  //   await this.waitForPageLoad();
-  //   await this.fillKopersNr(kopers);
-  //   await this.clickLandesbedienstetenSuchen();
-  //   await this.landesbedienstetenHinzufuegenButton.click();
-  // }
-
-  // public async searchLandesbedienstetenViaEmail(email: string): Promise<void> {
-  //   await this.waitForPageLoad();
-  //   await this.fillEmail(email);
-  //   await this.clickLandesbedienstetenSuchen();
-  //   await this.landesbedienstetenHinzufuegenButton.click();
-  // }
-
-  // public async searchLandesbedienstetenViaUsername(benutzername: string): Promise<void> {
-  //   await this.waitForPageLoad();
-  //   await this.fillBenutzername(benutzername);
-  //   await this.clickLandesbedienstetenSuchen();
-  //   await this.landesbedienstetenHinzufuegenButton.click();
-  // }
-
-  // public async searchLandesbedienstetenViaName(vorname: string, nachname: string): Promise<void> {
-  //   await this.waitForPageLoad();
-  //   await this.fillVornameNachname(vorname, nachname);
-  //   await this.clickLandesbedienstetenSuchen();
-  //   await this.landesbedienstetenHinzufuegenButton.click();
-  // }
+  
 
   // public async landesbedienstetenHinzufuegenAlsLehrkraft(): Promise<void> {
   //   await this.landesbedienstetenSuchenButton.click();
@@ -268,30 +290,7 @@ export class LandesbedienstetenSearchFormPage {
     await expect(this.nameRadioInput).toBeChecked();
   }
 
-  // public async checkSearchResultCard(): Promise<void> {
-  //   await expect(this.page.getByTestId('layout-card-headline-search-result')).toHaveText('Suchergebnis');
-  //   await expect(this.landesbedienstetenHinzufuegenButton).toBeVisible();
-  //   await expect(this.zurueckZurSucheButton).toBeVisible();
-  // }
-
-  // public async checkPersonalDataCard(
-  //   fullName: string, username: string, kopersnummer: string, email: string
-  // ): Promise<void> {
-  //   await expect(this.page.getByTestId('layout-card-headline-personal-data')).toHaveText('Persönliche Daten');
-  //   await expect(this.personalDataCardFullname).toHaveText(fullName);
-  //   await expect(this.page.getByTestId('username-value')).toHaveText(username);
-  //   // TODO: email and kopers have to be optional
-  //   // await expect(this.page.getByTestId('kopersnummer-value')).toHaveText(kopersnummer);
-  //   // await expect(this.page.getByTestId('person-email-value')).toHaveText(email);
-  // }
-
-  // // TODO: rewrite this function to iterate all zuordnungen
-  // public async checkZuordnungCards(organisation: string, rolle: string, dienststellennummer: string): Promise<void> {
-  //   await expect(this.page.getByTestId('zuordnung-card-1-headline')).toHaveText('Schulzuordnung');
-  //   await expect(this.page.getByTestId('organisation-value-1')).toHaveText(organisation);
-  //   await expect(this.page.getByTestId('rolle-value-1')).toHaveText(rolle);
-  //   await expect(this.page.getByTestId('dienststellennummer-value-1')).toHaveText(dienststellennummer);
-  // }
+  
 
   // public async checkConfirmationDialog(): Promise<void> {
   //   await expect(this.landesbedienstetenHinzufuegenHeadline).toBeVisible();
@@ -359,4 +358,36 @@ export class LandesbedienstetenSearchFormPage {
   //   await expect(this.page.getByTestId('back-to-list-button')).toHaveText('Zurück zur Ergebnisliste');
   //   await expect(this.page.getByTestId('search-another-state-employee-button')).toHaveText('Weiteren Landesbediensteten suchen');
   // }
+
+  public async expectKopersRadioChecked(): Promise<void> {
+    await expect(this.kopersRadioInput).toBeChecked();
+  }
+
+  public async expectEmailRadioChecked(): Promise<void> {
+    await expect(this.emailRadioInput).toBeChecked();
+  }
+
+  public async expectUsernameRadioChecked(): Promise<void> {
+    await expect(this.usernameRadioInput).toBeChecked();
+  }
+
+  public async expectNameRadioChecked(): Promise<void> {
+    await expect(this.nameRadioInput).toBeChecked();
+  }
+  public async expectKopersInputValue(value: string): Promise<void> {
+    await expect(this.kopersInput).toHaveValue(value);
+  }
+
+  public async expectEmailInputValue(value: string): Promise<void> {
+    await expect(this.emailInput).toHaveValue(value);
+  }
+
+  public async expectUsernameInputValue(value: string): Promise<void> {
+    await expect(this.usernameInput).toHaveValue(value);
+  }
+
+  public async expectNameInputValues(vorname: string, nachname: string): Promise<void> {
+    await expect(this.vornameInput).toHaveValue(vorname);
+    await expect(this.nachnameInput).toHaveValue(nachname);
+  }
 }

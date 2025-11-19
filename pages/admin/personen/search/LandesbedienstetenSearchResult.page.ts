@@ -1,26 +1,62 @@
-import { Locator, Page } from "@playwright/test";
+import { expect, Locator, Page } from "@playwright/test";
+import { LandesbedienstetenSearchFormPage } from "./LandesbedienstetenSearchForm.page";
 
 export class LandesbedienstetenSearchResultPage {
   /* add global locators here */
 
   constructor(protected readonly page: Page) {}
 
-  public headline: Locator = this.page.getByRole('heading', { name: 'Suchergebnis' });
+  private readonly headline: Locator = this.page.getByTestId('layout-card-headline-search-result');
   // Persönliche Daten
-  public personalDataCard: Locator = this.page.getByTestId('personal-data-card').nth(1);
-  public personalDataHeadline: Locator = this.personalDataCard.getByRole('heading', { name: 'Persönliche Daten' });
-  public pCardFullname: Locator = this.personalDataCard.getByTestId('fullname-value');
-  public pCardUsername: Locator = this.personalDataCard.getByTestId('username-value');
-  public pCardKopersnummer: Locator = this.personalDataCard.getByTestId('kopersnummer-value');
-  public pCardEmail: Locator = this.personalDataCard.getByTestId('person-email-value');
+ // private readonly personalDataCard: Locator = this.page.getByTestId('personal-data-card').nth(1);
+  private readonly personalDataHeadline: Locator = this.page.getByTestId('layout-card-headline-personal-data');
+  private readonly pCardFullname: Locator = this.page.getByTestId('fullname-value');
+  private readonly pCardUsername: Locator = this.page.getByTestId('username-value');
+  private readonly pCardKopersnummer: Locator = this.page.getByTestId('kopersnummer-value');
+  private readonly pCardEmail: Locator = this.page.getByTestId('person-email-value');
 
   // Schulzuordnung
-  public zuordnungCard: Locator = this.page.getByTestId('zuordnung-card-1');
-  public zuordnungHeadline: Locator = this.zuordnungCard.getByTestId('zuordnung-card-1-headline');
-  public zCardOrganisation: Locator = this.zuordnungCard.getByTestId('organisation-value-1');
-  public zCardRolle: Locator = this.zuordnungCard.getByTestId('rolle-value-1');
-  public zCardDienststellennummer: Locator = this.zuordnungCard.getByTestId('dienststellennummer-value-1');
+  //private readonly zuordnungCard: Locator = this.page.getByTestId('zuordnung-card-1');
+  private readonly zuordnungHeadline: Locator = this.page.getByTestId('zuordnung-card-1-headline');
+  private readonly zCardOrganisation: Locator = this.page.getByTestId('organisation-value-1');
+  private readonly zCardRolle: Locator = this.page.getByTestId('rolle-value-1');
+  private readonly zCardDienststellennummer: Locator = this.page.getByTestId('dienststellennummer-value-1');
   // Buttons
-  public zurueckZurSucheButton: Locator = this.page.getByTestId('back-to-search-button');
-  public landesbedienstetenHinzufuegenButton: Locator = this.page.getByTestId('add-state-employee-button');
+  private readonly zurueckZurSucheButton: Locator = this.page.getByTestId('back-to-search-button');
+  private readonly landesbedienstetenHinzufuegenButton: Locator = this.page.getByTestId('add-state-employee-button');
+
+  /* actions */
+  public async waitForPageLoad(): Promise<void> {
+    await expect(this.headline).toHaveText('Suchergebnis');
+  }
+  public async checkSearchResultCard(): Promise<void> {
+    await this.waitForPageLoad();
+    await expect(this.landesbedienstetenHinzufuegenButton).toBeVisible();
+    await expect(this.zurueckZurSucheButton).toBeVisible();
+  }
+  //Es können nur Lehrkräfte gesucht werden, die eine Kopersnummer haben. Und alle Lehrkräfte haben eMail. Daher sind das KEINE optionalen Felder.
+  public async checkPersonalDataCard(
+    fullName: string, username: string, kopersnummer: string, email: string
+  ): Promise<void> {
+    await expect(this.personalDataHeadline).toHaveText('Persönliche Daten');
+    await expect(this.pCardFullname).toHaveText(fullName);
+    await expect(this.pCardUsername).toHaveText(username);
+    await expect(this.pCardKopersnummer).toHaveText(kopersnummer);
+    await expect(this.pCardEmail).toHaveText(email);
+  }
+
+  public async checkZuordnungCard(organisation: string, rolle: string, dienststellennummer: string): Promise<void> {
+    await expect(this.zuordnungHeadline).toHaveText('Schulzuordnung');
+    await expect(this.zCardOrganisation).toHaveText(organisation);
+    await expect(this.zCardRolle).toHaveText(rolle);
+    await expect(this.zCardDienststellennummer).toHaveText(dienststellennummer);
+  }
+
+  public async clickZurueckZurSuche(): Promise<LandesbedienstetenSearchFormPage> {
+    await this.zurueckZurSucheButton.click();
+    const landesbedienstetenSearchFormPage: LandesbedienstetenSearchFormPage = new LandesbedienstetenSearchFormPage(this.page);
+    await landesbedienstetenSearchFormPage.waitForPageLoad();
+    await expect(this.headline).toBeHidden();
+    return landesbedienstetenSearchFormPage;
+  }
 }
