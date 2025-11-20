@@ -4,7 +4,7 @@ import {
   createPerson,
   createRolleAndPersonWithUserContext,
   setTimeLimitPersonenkontext,
-  UserInfo
+  UserInfo,
 } from '../base/api/personApi';
 import { addServiceProvidersToRolle, addSystemrechtToRolle, createRolle, RollenMerkmal } from '../base/api/rolleApi';
 import { getServiceProviderId } from '../base/api/serviceProviderApi';
@@ -26,7 +26,7 @@ import {
   schulrechtAZ,
   webUntis,
 } from '../base/sp';
-import { DEV, LONG, SHORT, STAGE } from '../base/tags';
+import { DEV, STAGE } from '../base/tags';
 import { deletePersonById, deleteRolleById } from '../base/testHelperDeleteTestdata';
 import {
   formatDateDMY,
@@ -107,7 +107,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
 
   test(
     'Prüfen, dass die Schulportal-Administration Kachel nicht sichtbar ist für Lehrkräfte',
-    { tag: [LONG, STAGE, DEV] },
+    { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const landing: LandingPage = new LandingPage(page);
       const login: LoginPage = new LoginPage(page);
@@ -146,7 +146,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
 
   test(
     'Prüfen, dass die Schulportal-Administration Kachel nicht sichtbar ist für Schüler',
-    { tag: [LONG, SHORT, STAGE, DEV] },
+    { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const landing: LandingPage = new LandingPage(page);
       const login: LoginPage = new LoginPage(page);
@@ -192,7 +192,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
 
   test(
     'Prüfen, dass die Schulportal-Administration Kachel sichtbar ist für Schuladmins',
-    { tag: [LONG, STAGE, DEV] },
+    { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const landing: LandingPage = new LandingPage(page);
       const login: LoginPage = new LoginPage(page);
@@ -233,99 +233,103 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
     }
   );
 
-  test('News-Box bei befristeten Schulzuordnungen testen', { tag: [LONG, STAGE, DEV] }, async ({ page }: PlaywrightTestArgs) => {
-    let userInfoLehrer1: UserInfo;
-    let userInfoLehrer2: UserInfo;
-    const rollenNameLehrer1: string = await generateRolleName();
-    const rollenNameLehrer2: string = await generateRolleName();
-    const colorOrange: string = 'rgb(255, 152, 37)';
-    const colorRed: string = 'rgb(255, 85, 85)';
+  test(
+    'News-Box bei befristeten Schulzuordnungen testen',
+    { tag: [STAGE, DEV] },
+    async ({ page }: PlaywrightTestArgs) => {
+      let userInfoLehrer1: UserInfo;
+      let userInfoLehrer2: UserInfo;
+      const rollenNameLehrer1: string = await generateRolleName();
+      const rollenNameLehrer2: string = await generateRolleName();
+      const colorOrange: string = 'rgb(255, 152, 37)';
+      const colorRed: string = 'rgb(255, 85, 85)';
 
-    const headerPage: HeaderPage = new HeaderPage(page);
-    const loginPage: LoginPage = new LoginPage(page);
+      const headerPage: HeaderPage = new HeaderPage(page);
+      const loginPage: LoginPage = new LoginPage(page);
 
-    await test.step(`Testdaten: Lehrer1 mit einer befristeten Schulzuordnung(noch 50 Tage gültig) und Lehrer2 mit einer befristeten Schulzuordnung(noch 12 Tage gültig) über die api anlegen`, async () => {
-      // Lehrer1: Schulzuordnung noch 50 Tage gültig
-      userInfoLehrer1 = await createRolleAndPersonWithUserContext(
-        page,
-        testschuleName,
-        typeLehrer,
-        await generateNachname(),
-        await generateVorname(),
-        [await getServiceProviderId(page, email)],
-        rollenNameLehrer1
-      );
-      personIds.push(userInfoLehrer1.personId);
-      rolleIds.push(userInfoLehrer1.rolleId);
+      await test.step(`Testdaten: Lehrer1 mit einer befristeten Schulzuordnung(noch 50 Tage gültig) und Lehrer2 mit einer befristeten Schulzuordnung(noch 12 Tage gültig) über die api anlegen`, async () => {
+        // Lehrer1: Schulzuordnung noch 50 Tage gültig
+        userInfoLehrer1 = await createRolleAndPersonWithUserContext(
+          page,
+          testschuleName,
+          typeLehrer,
+          await generateNachname(),
+          await generateVorname(),
+          [await getServiceProviderId(page, email)],
+          rollenNameLehrer1
+        );
+        personIds.push(userInfoLehrer1.personId);
+        rolleIds.push(userInfoLehrer1.rolleId);
 
-      await setTimeLimitPersonenkontext(
-        page,
-        userInfoLehrer1.personId,
-        userInfoLehrer1.organisationId,
-        userInfoLehrer1.rolleId,
-        generateCurrentDate({ days: 50, months: 0 })
-      );
+        await setTimeLimitPersonenkontext(
+          page,
+          userInfoLehrer1.personId,
+          userInfoLehrer1.organisationId,
+          userInfoLehrer1.rolleId,
+          generateCurrentDate({ days: 50, months: 0 })
+        );
 
-      // Lehrer2: Schulzuordnung noch 12 Tage gültig
-      userInfoLehrer2 = await createRolleAndPersonWithUserContext(
-        page,
-        testschuleName,
-        typeLehrer,
-        await generateNachname(),
-        await generateVorname(),
-        [await getServiceProviderId(page, email)],
-        rollenNameLehrer2
-      );
-      personIds.push(userInfoLehrer2.personId);
-      rolleIds.push(userInfoLehrer2.rolleId);
+        // Lehrer2: Schulzuordnung noch 12 Tage gültig
+        userInfoLehrer2 = await createRolleAndPersonWithUserContext(
+          page,
+          testschuleName,
+          typeLehrer,
+          await generateNachname(),
+          await generateVorname(),
+          [await getServiceProviderId(page, email)],
+          rollenNameLehrer2
+        );
+        personIds.push(userInfoLehrer2.personId);
+        rolleIds.push(userInfoLehrer2.rolleId);
 
-      await setTimeLimitPersonenkontext(
-        page,
-        userInfoLehrer2.personId,
-        userInfoLehrer2.organisationId,
-        userInfoLehrer2.rolleId,
-        generateCurrentDate({ days: 12, months: 0 })
-      );
-    });
+        await setTimeLimitPersonenkontext(
+          page,
+          userInfoLehrer2.personId,
+          userInfoLehrer2.organisationId,
+          userInfoLehrer2.rolleId,
+          generateCurrentDate({ days: 12, months: 0 })
+        );
+      });
 
-    await test.step(`Lehrer1 meldet sich an und die orangene News-Box wird geprüft`, async () => {
-      const timeLimitTeacherRolle1: string = formatDateDMY(generateCurrentDate({ days: 50, months: 0 }));
-      const alertText: string =
-        `Hinweis: Die Zuordnung dieses Benutzerkontos zu der Schule "${testschuleName}" mit der Rolle "${rollenNameLehrer1}" ist bis zum ${timeLimitTeacherRolle1} befristet. ` +
-        `Sollte dies nicht zutreffen, wenden Sie sich bitte an Ihre Schulleitung. Nach Ende der Zuordnung sind Funktionalitäten, die im Bezug zu dieser Schule und Rolle stehen, nicht mehr verfügbar.`;
+      await test.step(`Lehrer1 meldet sich an und die orangene News-Box wird geprüft`, async () => {
+        const timeLimitTeacherRolle1: string = formatDateDMY(generateCurrentDate({ days: 50, months: 0 }));
+        const alertText: string =
+          `Hinweis: Die Zuordnung dieses Benutzerkontos zu der Schule "${testschuleName}" mit der Rolle "${rollenNameLehrer1}" ist bis zum ${timeLimitTeacherRolle1} befristet. ` +
+          `Sollte dies nicht zutreffen, wenden Sie sich bitte an Ihre Schulleitung. Nach Ende der Zuordnung sind Funktionalitäten, die im Bezug zu dieser Schule und Rolle stehen, nicht mehr verfügbar.`;
 
-      const landingPage: LandingPage = await headerPage.logout({ logoutViaStartPage: true });
-      await landingPage.buttonAnmelden.click();
-      const startView: StartPage = await loginPage.login(userInfoLehrer1.username, userInfoLehrer1.password);
-      await loginPage.updatePW();
-      await startView.validateStartPageIsLoaded();
-      currentUserIsLandesadministrator = false;
+        const landingPage: LandingPage = await headerPage.logout({ logoutViaStartPage: true });
+        await landingPage.buttonAnmelden.click();
+        const startView: StartPage = await loginPage.login(userInfoLehrer1.username, userInfoLehrer1.password);
+        await loginPage.updatePW();
+        await startView.validateStartPageIsLoaded();
+        currentUserIsLandesadministrator = false;
 
-      await expect(page.getByText(alertText)).toBeVisible();
-      await expect(page.getByRole('alert')).toHaveCSS('background-color', colorOrange);
-    });
+        await expect(page.getByText(alertText)).toBeVisible();
+        await expect(page.getByRole('alert')).toHaveCSS('background-color', colorOrange);
+      });
 
-    await test.step(`Lehrer2 meldet sich an und die rote News-Box wird geprüft`, async () => {
-      const timeLimitTeacherRolle2: string = formatDateDMY(generateCurrentDate({ days: 12, months: 0 }));
-      const alertText: string =
-        `Hinweis: Die Zuordnung dieses Benutzerkontos zu der Schule "${testschuleName}" mit der Rolle "${rollenNameLehrer2}" ist bis zum ${timeLimitTeacherRolle2} befristet. ` +
-        `Sollte dies nicht zutreffen, wenden Sie sich bitte an Ihre Schulleitung. Nach Ende der Zuordnung sind Funktionalitäten, die im Bezug zu dieser Schule und Rolle stehen, nicht mehr verfügbar.`;
+      await test.step(`Lehrer2 meldet sich an und die rote News-Box wird geprüft`, async () => {
+        const timeLimitTeacherRolle2: string = formatDateDMY(generateCurrentDate({ days: 12, months: 0 }));
+        const alertText: string =
+          `Hinweis: Die Zuordnung dieses Benutzerkontos zu der Schule "${testschuleName}" mit der Rolle "${rollenNameLehrer2}" ist bis zum ${timeLimitTeacherRolle2} befristet. ` +
+          `Sollte dies nicht zutreffen, wenden Sie sich bitte an Ihre Schulleitung. Nach Ende der Zuordnung sind Funktionalitäten, die im Bezug zu dieser Schule und Rolle stehen, nicht mehr verfügbar.`;
 
-      const landingPage: LandingPage = await headerPage.logout({ logoutViaStartPage: true });
-      await landingPage.buttonAnmelden.click();
-      const startView: StartPage = await loginPage.login(userInfoLehrer2.username, userInfoLehrer2.password);
-      await loginPage.updatePW();
-      await startView.validateStartPageIsLoaded();
-      currentUserIsLandesadministrator = false;
+        const landingPage: LandingPage = await headerPage.logout({ logoutViaStartPage: true });
+        await landingPage.buttonAnmelden.click();
+        const startView: StartPage = await loginPage.login(userInfoLehrer2.username, userInfoLehrer2.password);
+        await loginPage.updatePW();
+        await startView.validateStartPageIsLoaded();
+        currentUserIsLandesadministrator = false;
 
-      await expect(page.getByText(alertText)).toBeVisible();
-      await expect(page.getByRole('alert')).toHaveCSS('background-color', colorRed);
-    });
-  });
+        await expect(page.getByText(alertText)).toBeVisible();
+        await expect(page.getByRole('alert')).toHaveCSS('background-color', colorRed);
+      });
+    }
+  );
 
   test(
     'Für ReligionsLehrkraft prüfen, dass die korrekten Service Provider auf der Startseite angezeigt werden',
-    { tag: [LONG, STAGE, DEV] },
+    { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const expectedSps: string[] = [
         adressbuch,
@@ -372,7 +376,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
 
   test(
     'Für Itslearning-Lehrkraft prüfen, dass die korrekten Service Provider auf der Startseite angezeigt werden',
-    { tag: [LONG, STAGE, DEV] },
+    { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const userInfo: UserInfo = await test.step('Testdaten anlegen', async () => {
         const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
@@ -405,7 +409,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
 
   test(
     'Für Lehrkraft prüfen, dass die korrekten Service Provider auf der Startseite angezeigt werden',
-    { tag: [LONG, STAGE, DEV] },
+    { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const expected: string[] = [
         email,
@@ -452,7 +456,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
 
   test(
     'Für PilotProjektSchulverwaltungskraft prüfen, dass die korrekten Service Provider auf der Startseite angezeigt werden',
-    { tag: [LONG, STAGE, DEV] },
+    { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const expected: string[] = [
         email,
@@ -499,7 +503,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
 
   test(
     'Für iQSH-Mitarbeiter prüfen, dass die korrekten Service Provider auf der Startseite angezeigt werden',
-    { tag: [LONG, STAGE, DEV] },
+    { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const expected: string[] = [
         email,
@@ -548,7 +552,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
 
   test(
     'Für Student im Praxissemester prüfen, dass die korrekten Service Provider auf der Startseite angezeigt werden',
-    { tag: [LONG, STAGE, DEV] },
+    { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const expected: string[] = [
         email,
@@ -597,7 +601,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
 
   test(
     'Für LehrerLiV prüfen, dass die korrekten Service Provider auf der Startseite angezeigt werden',
-    { tag: [LONG, STAGE, DEV] },
+    { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const expected: string[] = [
         email,
@@ -645,7 +649,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
 
   test(
     'Für Vertretungslehrkraft prüfen, dass die korrekten Service Provider auf der Startseite angezeigt werden',
-    { tag: [LONG, STAGE, DEV] },
+    { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const expected: string[] = [
         email,

@@ -4,7 +4,7 @@ import { getServiceProviderId } from '../../base/api/serviceProviderApi';
 import { testschuleName } from '../../base/organisation';
 import { typeLehrer } from '../../base/rollentypen';
 import { email } from '../../base/sp';
-import { DEV, LONG, STAGE } from '../../base/tags';
+import { DEV, STAGE } from '../../base/tags';
 import { generateKopersNr, generateNachname, generateRolleName, generateVorname } from '../../base/utils/generateTestdata';
 import { HeaderPage } from '../../pages/components/Header.neu.page';
 import FromAnywhere from '../../pages/FromAnywhere.neu';
@@ -68,7 +68,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
 test(
   'Inbetriebnahme-Passwort als Lehrer über das eigene Profil erzeugen',
-  { tag: [LONG, STAGE, DEV] },
+  { tag: [STAGE, DEV] },
   async ({ page }: PlaywrightTestArgs) => {
     const header: HeaderPage = new HeaderPage(page);
     const login: LoginViewPage = new LoginViewPage(page);

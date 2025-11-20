@@ -1,11 +1,11 @@
-import { test, expect, PlaywrightTestArgs } from '@playwright/test';
-import { StartPage } from '../pages/StartView.page';
-import { MenuPage } from '../pages/components/MenuBar.page';
-import { HeaderPage } from '../pages/components/Header.page';
-import { LONG, SHORT, STAGE, DEV, BROWSER } from '../base/tags';
+import { expect, PlaywrightTestArgs, test } from '@playwright/test';
+import { DEV, STAGE } from '../base/tags';
+import FromAnywhere from '../pages/FromAnywhere';
 import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
-import FromAnywhere from '../pages/FromAnywhere';
+import { StartPage } from '../pages/StartView.page';
+import { HeaderPage } from '../pages/components/Header.page';
+import { MenuPage } from '../pages/components/MenuBar.page';
 
 let logoutViaStartPage: boolean = false;
 
@@ -35,7 +35,7 @@ test.describe(`Testfälle für die Hauptmenue-Leiste: Umgebung: ${process.env.EN
 
   test(
     'Test der Hauptmenue-Leiste und Untermenues auf Vollständigkeit',
-    { tag: [LONG, SHORT, STAGE, DEV, BROWSER] },
+    { tag: [STAGE, DEV ] },
     async ({ page }: PlaywrightTestArgs) => {
       const startseite: StartPage = new StartPage(page);
       const menuBar: MenuPage = new MenuPage(page);
@@ -63,7 +63,7 @@ test.describe(`Testfälle für die Hauptmenue-Leiste: Umgebung: ${process.env.EN
 
   test(
     'Test der Funktion "Zurueck zur Startseite"',
-    { tag: [LONG, SHORT, STAGE, DEV] },
+    { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const startseite: StartPage = new StartPage(page);
       const menuBar: MenuPage = new MenuPage(page);

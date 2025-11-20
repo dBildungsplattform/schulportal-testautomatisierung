@@ -3,7 +3,7 @@ import { getOrganisationId } from '../../base/api/organisationApi';
 import { createRolleAndPersonWithUserContext, UserInfo } from '../../base/api/personApi';
 import { RollenArt } from '../../base/api/rolleApi';
 import { getServiceProviderId } from '../../base/api/serviceProviderApi';
-import { BROWSER, DEV, LONG, STAGE } from '../../base/tags';
+import { DEV, STAGE } from '../../base/tags';
 import { HeaderPage } from '../../pages/components/Header.neu.page';
 import FromAnywhere from '../../pages/FromAnywhere.neu';
 import { LandingViewPage } from '../../pages/LandingView.neu.page';
@@ -67,7 +67,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
   for (const { actor, personalData, zuordnungen, serviceProviders } of testData) {
     test(
       `Als ${actor} das eigene Profil öffnen und auf Vollständigkeit prüfen`,
-      { tag: [LONG, STAGE, DEV, BROWSER] },
+      { tag: [STAGE, DEV, ] },
       async ({ page }: PlaywrightTestArgs) => {
         await test.step('Rolle und Nutzer anlegen und anmelden', async () => {
           const idSPs: string[] = await Promise.all(

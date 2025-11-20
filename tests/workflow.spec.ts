@@ -1,6 +1,6 @@
 import { expect, Page, PlaywrightTestArgs, test } from '@playwright/test';
 import { createTeacherAndLogin, UserInfo } from '../base/api/personApi';
-import { BROWSER, DEV, LONG, SHORT, STAGE } from '../base/tags';
+import { DEV, STAGE } from '../base/tags';
 import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata';
 import FromAnywhere from '../pages/FromAnywhere';
 import { LandingPage } from '../pages/LandingView.page';
@@ -77,7 +77,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
     });
   });
 
-  test('Angebote per Link öffnen als Lehrer', { tag: [LONG, SHORT, STAGE, DEV] }, async ({ page }: PlaywrightTestArgs) => {
+  test('Angebote per Link öffnen als Lehrer', { tag: [STAGE, DEV] }, async ({ page }: PlaywrightTestArgs) => {
     const startseite: StartPage = new StartPage(page);
     let userInfoAdmin: UserInfo;
 
@@ -101,7 +101,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
       if (isStageTest()) {
         // TODO: implement assertion
       } else {
-          await expect(email.textH1).toBeVisible(); // dummy Seite email wikipedia
+        await expect(email.textH1).toBeVisible(); // dummy Seite email wikipedia
       }
       await emailPage.close();
 
@@ -141,7 +141,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
 
   test(
     'Passwort Reset für einen Lehrer als Landesadmin',
-    { tag: [LONG, SHORT, STAGE, DEV, BROWSER] },
+    { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const landing: LandingPage = new LandingPage(page);
       const login: LoginPage = new LoginPage(page);

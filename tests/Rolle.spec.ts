@@ -2,7 +2,7 @@ import { expect, Locator, PlaywrightTestArgs, test } from '@playwright/test';
 import { ersatzLandSH, landSH } from '../base/organisation';
 import { landesadminRolle } from '../base/rollen';
 import { email, itslearning, kalender, schulportaladmin } from '../base/sp';
-import { BROWSER, DEV, LONG, SHORT, STAGE } from '../base/tags';
+import { DEV, STAGE } from '../base/tags';
 import { deleteRolleByName } from '../base/testHelperDeleteTestdata';
 import { generateRolleName } from '../base/utils/generateTestdata';
 import { RolleCreationConfirmPage } from '../pages/admin/rollen/RolleCreationConfirm.page';
@@ -60,7 +60,7 @@ test.afterEach(async ({ page }: PlaywrightTestArgs) => {
 test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test(
     '2 Rollen nacheinander anlegen mit Rollenarten LERN und LEHR als Landesadmin',
-    { tag: [LONG, SHORT, STAGE, DEV] },
+    { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const rollenname1: string = await generateRolleName();
       const rollenname2: string = await generateRolleName();
@@ -131,7 +131,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
   // We re-implement this test as soon as the rollen list includes sorting and searching
   test.skip(
     'Ergebnisliste Rollen auf Vollständigkeit prüfen als Landesadmin',
-    { tag: [LONG, SHORT, STAGE, DEV] },
+    { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       await test.step(`Rollenverwaltung öffnen und alle Elemente in der Ergebnisliste auf Existenz prüfen`, async () => {
         const menu: MenuPage = await startseite.goToAdministration();
@@ -153,7 +153,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
 
   test(
     'Eine Rolle anlegen und die Bestätigungsseite vollständig prüfen als Landesadmin',
-    { tag: [LONG, SHORT, STAGE, DEV, BROWSER] },
+    { tag: [STAGE, DEV] },
     async () => {
       const rollenname: string = await generateRolleName();
       const administrationsebene: string = landSH;
@@ -218,7 +218,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     }
   );
 
-  test('Falsche Eingaben bei Bearbeitung überprüfen', { tag: [LONG, STAGE, DEV] }, async () => {
+  test('Falsche Eingaben bei Bearbeitung überprüfen', { tag: [STAGE, DEV] }, async () => {
     const roleName: string = 'a'.repeat(201);
     const rolleDetailsView: RolleDetailsViewPage = await test.step('Rolle bearbeiten aufrufen', async () => {
       const menu: MenuPage = await startseite.goToAdministration();
@@ -260,7 +260,7 @@ test.describe(`Testfälle für die Administration von Rollen: Umgebung: ${proces
     logoutViaStartPage = true;
   });
 
-  test('Versuch eine zugewiesene Rolle zu löschen', { tag: [LONG, STAGE, DEV] }, async () => {
+  test('Versuch eine zugewiesene Rolle zu löschen', { tag: [STAGE, DEV] }, async () => {
     const rolleDetailsView: RolleDetailsViewPage = await test.step('Rolle bearbeiten aufrufen', async () => {
       const menu: MenuPage = await startseite.goToAdministration();
       const rolleManagementView: RolleManagementViewPage = await menu.alleRollenAnzeigen();
@@ -288,7 +288,7 @@ test.describe('Testet die Anlage einer neuen Rolle', () => {
 
   test(
     'Eine neue Rolle anlegen und sicherstellen, dass alle Serviceprovider angezeigt werden und verfügbar sind',
-    { tag: [LONG, STAGE, DEV] },
+    { tag: [STAGE, DEV] },
     async () => {
       const rolleCreationView: RolleCreationViewPage = await test.step('Rolle anlegen aufrufen', async () => {
         return await startseite.goToAdministration().then((menu: MenuPage) => menu.rolleAnlegen());
@@ -337,7 +337,7 @@ test.describe('Testet die Anlage einer neuen Rolle', () => {
     }
   );
 
-  test('Falsche Eingaben überprüfen', { tag: [LONG, STAGE, DEV] }, async ({}: PlaywrightTestArgs) => {
+  test('Falsche Eingaben überprüfen', { tag: [STAGE, DEV] }, async ({}: PlaywrightTestArgs) => {
     const rolleNames: string = 'a'.repeat(201);
     const rolleCreationView: RolleCreationViewPage = await test.step('Rolle anlegen aufrufen', async () => {
       return await startseite.goToAdministration().then((menu: MenuPage) => menu.rolleAnlegen());
