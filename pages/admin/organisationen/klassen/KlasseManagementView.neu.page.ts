@@ -3,6 +3,7 @@ import { Autocomplete } from '../../../../elements/Autocomplete';
 import { DataTable } from '../../../components/DataTable.neu.page';
 import { KlasseDetailsViewPage } from './details/KlasseDetailsView.neu.page';
 import { SearchFilter } from '../../../../elements/SearchFilter';
+import { KlasseCreationParams } from './KlasseCreationView.neu.page';
 
 export class KlasseManagementViewPage {
   /* add global locators here */
@@ -67,6 +68,10 @@ export class KlasseManagementViewPage {
 
   public async checkRows(rowCount: number): Promise<void> {
     await this.klasseTable.checkRowCount(rowCount);
+  }
+
+  public async checkIfSchuleIsCorrect(params: KlasseCreationParams): Promise<void> {
+    await expect(this.page.getByTestId('klassen-management-schule-select')).toHaveText(params.schulNr + ' (' + params.schulname + ')');
   }
 
   public async checkIfKlasseExists(klassenname: string): Promise<void> {
