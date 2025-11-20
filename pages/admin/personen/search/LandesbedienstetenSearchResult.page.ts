@@ -1,5 +1,6 @@
 import { expect, Locator, Page } from "@playwright/test";
 import { LandesbedienstetenSearchFormPage } from "./LandesbedienstetenSearchForm.page";
+import { LandesbedienstetenHinzufuegenPage } from "./LandesbedienstetenHinzufuegen.page";
 
 export class LandesbedienstetenSearchResultPage {
   /* add global locators here */
@@ -58,5 +59,13 @@ export class LandesbedienstetenSearchResultPage {
     await landesbedienstetenSearchFormPage.waitForPageLoad();
     await expect(this.headline).toBeHidden();
     return landesbedienstetenSearchFormPage;
+  }
+
+  public async clickLandesbedienstetenHinzufuegen(): Promise<LandesbedienstetenHinzufuegenPage> {
+    await this.landesbedienstetenHinzufuegenButton.click();
+    const landesbedienstetenHinzufuegenPage: LandesbedienstetenHinzufuegenPage = new LandesbedienstetenHinzufuegenPage(this.page);
+    await landesbedienstetenHinzufuegenPage.waitForPageLoad();
+    await expect(this.headline).toBeHidden();
+    return landesbedienstetenHinzufuegenPage;
   }
 }

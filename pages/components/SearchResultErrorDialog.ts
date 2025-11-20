@@ -14,7 +14,7 @@ export class SearchResultErrorDialog {
     await expect(this.headline).toBeHidden();
     return new LandesbedienstetenSearchFormPage(this.page);
   }
-      /* assertions */
+  /* assertions */
   public async checkPopupCompleteness(): Promise<void> {
     await expect(this.headline).toHaveText('Suchergebnis');
     await expect(this.noPersonFoundText).toBeVisible();

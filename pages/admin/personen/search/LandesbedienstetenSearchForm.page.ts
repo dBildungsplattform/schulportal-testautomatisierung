@@ -5,13 +5,10 @@ import { SearchResultErrorDialog } from '../../../components/SearchResultErrorDi
 import { LandesbedienstetenSearchResultPage } from './LandesbedienstetenSearchResult.page';
 
 export class LandesbedienstetenSearchFormPage {
-  /* add global locators here */
-
   constructor(protected readonly page: Page) {}
-
-  private readonly adminHeadline: Locator = this.page.getByTestId('admin-headline');
+  /* add global locators here */
+  private readonly headline: Locator = this.page.getByTestId('admin-headline');
   private readonly searchCardHeadline: Locator = this.page.getByTestId('search-state-employee-headline');
-  
   
   /* Landesbediensteten Suchen  */
   private readonly kopersRadioInput : Locator = this.page.getByTestId('kopers-radio-button').locator('input');
@@ -31,28 +28,7 @@ export class LandesbedienstetenSearchFormPage {
   //------------------------------ Aktueller Stand bis hier ------------------------------
    
   // /* Landesbediensteten Hinzufügen */
-  // private readonly landesbedienstetenHinzufuegenHeadline: Locator = this.page.getByTestId('add-state-employee-headline');
-  // private readonly closeButton: Locator = this.page.getByTestId('close-layout-card-button');
-  // Formular
-  // private readonly personCreationForm: Locator = this.page.getByTestId('person-creation-form');
-  // private readonly mandatoryFieldsNotice: Locator = this.personCreationForm.getByTestId('mandatory-fields-notice');
-  // private readonly personalInfoHeadline: Locator = this.personCreationForm.getByTestId('personal-info-headline');
-  // private readonly personCreationFormVornameInput: Locator = this.personCreationForm.getByTestId('add-person-vorname-input').locator('input');
-  // private readonly personCreationFormNachnameInput: Locator = this.personCreationForm.getByTestId('add-person-familienname-input').locator('input');
-  // private readonly hasNoKopersnrCheckbox: Locator = this.personCreationForm.getByTestId('has-no-kopersnr-checkbox');
-  // private readonly personCreationFormKopersInput: Locator = this.personCreationForm.getByTestId('kopersnr-input').locator('input');
-  // private readonly organisationHeadline: Locator = this.personCreationForm.getByTestId('organisation-assign-headline');
-  // private readonly organisationAutocomplete: Autocomplete = new Autocomplete(this.page, this.personCreationForm.getByTestId('personenkontext-create-organisation-select'));
-  // private readonly rolleHeadline: Locator = this.personCreationForm.getByTestId('rolle-assign-headline');
-  // private readonly rolleAutocomplete: Autocomplete = new Autocomplete(this.page, this.personCreationForm.getByTestId('rollen-select'));
-  // private readonly befristungHeadline: Locator = this.personCreationForm.getByTestId('befristung-assign-headline');
-  // private readonly personCreationFormBefristungInput: Locator = this.personCreationForm.getByTestId('befristung-input');
-  // private readonly schuljahresendeRadioButton: Locator = this.personCreationForm.getByTestId('schuljahresende-radio-button').locator('input');
-  // private readonly unbefristetRadioButton: Locator = this.personCreationForm.getByTestId('unbefristet-radio-button').locator('input');
-
-  // private readonly personCreationFormAbbrechenButton: Locator = this.personCreationForm.getByTestId('person-creation-form-discard-button');
-  // private readonly personCreationFormLandesbedienstetenHinzufuegenButton: Locator = this.personCreationForm.getByTestId('person-creation-form-submit-button');
-
+  
   // /* Bestaetigungspopup */
   // private readonly bestaetigungspopupHeadline: Locator = this.page.getByTestId('add-person-confirmation-dialog-headline');
   // private readonly bestaetigungspopupText: Locator = this.page.getByTestId('add-person-confirmation-text');
@@ -71,7 +47,7 @@ export class LandesbedienstetenSearchFormPage {
  /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
   /* actions */
   public async waitForPageLoad(): Promise<void> {
-    await expect(this.adminHeadline).toHaveText('Landesbediensteten (suchen und hinzufügen)');
+    await expect(this.headline).toHaveText('Landesbediensteten (suchen und hinzufügen)');
     await this.searchCardHeadline.waitFor({ state: 'visible' });
     await expect(this.searchCardHeadline).toHaveText('Landesbediensteten suchen');
   }
@@ -269,7 +245,7 @@ export class LandesbedienstetenSearchFormPage {
 
   /* assertions */
   public async checkSearchForm(): Promise<void> {
-    await expect(this.adminHeadline).toHaveText('Landesbediensteten (suchen und hinzufügen)');
+    await expect(this.headline).toHaveText('Landesbediensteten (suchen und hinzufügen)');
     await expect(this.page.getByTestId('search-state-employee-headline')).toHaveText('Landesbediensteten suchen');
     await expect(this.page.getByTestId('close-layout-card-button')).toBeVisible();
     await expect(this.page.getByText('Bitte wählen Sie, wie Sie nach dem Landesbediensteten suchen möchten.', { exact: false })).toBeVisible();
