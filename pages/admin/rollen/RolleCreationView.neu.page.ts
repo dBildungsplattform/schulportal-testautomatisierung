@@ -34,17 +34,16 @@ export class RolleCreationViewPage {
   }
 
   public async createRolle(params: RolleCreationParams): Promise<RolleCreationSuccessPage> {
-    const workflow: RolleCreationWorkflow = this.startRolleCreationWorkflow();
-    await workflow.selectAdministrationsebene(params.administrationsebene);
-    await workflow.selectArt(params.rollenart);
-    await workflow.selectName(params.name);
-    await workflow.selectMerkmale(params.merkmale);
-    await workflow.selectSystemrechte(params.systemrechte);
-    await workflow.selectServiceProviders(params.serviceProviders);
+    const workflow: RolleCreationWorkflow = await this.fillRolleForm(params);
     return workflow.submit();
   }
 
   public async createRolleWithDuplicateNameError(params: RolleCreationParams): Promise<Alert<RolleCreationViewPage>> {
+    const workflow: RolleCreationWorkflow = await this.fillRolleForm(params);
+    return workflow.submitWithDuplicateNameError();
+  }
+
+  private async fillRolleForm(params: RolleCreationParams): Promise<RolleCreationWorkflow> {
     const workflow: RolleCreationWorkflow = this.startRolleCreationWorkflow();
     await workflow.selectAdministrationsebene(params.administrationsebene);
     await workflow.selectArt(params.rollenart);
@@ -52,8 +51,7 @@ export class RolleCreationViewPage {
     await workflow.selectMerkmale(params.merkmale);
     await workflow.selectSystemrechte(params.systemrechte);
     await workflow.selectServiceProviders(params.serviceProviders);
-    return workflow.submitWithDuplicateNameError();
+    return workflow;
   }
-
   /* assertions */
 }

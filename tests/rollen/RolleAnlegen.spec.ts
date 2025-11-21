@@ -32,6 +32,10 @@ async function setupAndGoToRolleCreationPage(page: PlaywrightTestArgs['page']): 
   });
 }
 
+async function createRolleStep(rolleCreationPage: RolleCreationViewPage, params: RolleCreationParams): Promise<RolleCreationSuccessPage> {
+  return test.step('Rolle anlegen', async () => rolleCreationPage.createRolle(params));
+}
+
 test.describe(`Testfälle für die Rollenanlage: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   for (const baseRolleParams of rolleCreationParams) {
     test.describe(`Rolle der Art ${baseRolleParams.rollenart} erfolgreich anlegen`, () => {
@@ -44,10 +48,7 @@ test.describe(`Testfälle für die Rollenanlage: Umgebung: ${process.env.ENV}: U
       // SPSH-2947
       test('Rolle anlegen und Zusammenfassung prüfen', async () => {
         const params: RolleCreationParams = { ...baseRolleParams, name: generateRolleName() };
-        const rolleCreationSuccessPage: RolleCreationSuccessPage = await test.step('Rolle anlegen', async () => {
-          const rolleCreationSuccessPage: RolleCreationSuccessPage = await rolleCreationPage.createRolle(params);
-          return rolleCreationSuccessPage;
-        });
+        const rolleCreationSuccessPage: RolleCreationSuccessPage = await createRolleStep(rolleCreationPage, params);
         await test.step('Erfolgsseite prüfen', async () => {
           await rolleCreationSuccessPage.checkSuccessPage(params);
         });
@@ -55,10 +56,7 @@ test.describe(`Testfälle für die Rollenanlage: Umgebung: ${process.env.ENV}: U
 
       test('Rolle anlegen und Gesamtübersicht prüfen', async () => {
         const params: RolleCreationParams = { ...baseRolleParams, name: generateRolleName() };
-        const rolleCreationSuccessPage: RolleCreationSuccessPage = await test.step('Rolle anlegen', async () => {
-          const rolleCreationSuccessPage: RolleCreationSuccessPage = await rolleCreationPage.createRolle(params);
-          return rolleCreationSuccessPage;
-        });
+        const rolleCreationSuccessPage: RolleCreationSuccessPage = await createRolleStep(rolleCreationPage, params);
         const rolleDetailsView: RolleDetailsViewPage = await test.step('Zur Gesamtübersicht navigieren', async () => {
           await rolleCreationSuccessPage.waitForPageLoad();
           const rolleManagementViewPage: RolleManagementViewPage = await rolleCreationSuccessPage.backToResultList();
@@ -74,7 +72,7 @@ test.describe(`Testfälle für die Rollenanlage: Umgebung: ${process.env.ENV}: U
       // SPSH-2950
       test('Rolle anlegen und Ergebnisliste prüfen', async () => {
         const params: RolleCreationParams = { ...baseRolleParams, name: generateRolleName() };
-        const rolleCreationSuccessPage: RolleCreationSuccessPage = await rolleCreationPage.createRolle(params);
+        const rolleCreationSuccessPage: RolleCreationSuccessPage = await createRolleStep(rolleCreationPage, params);
         await rolleCreationSuccessPage.waitForPageLoad();
         const rolleManagementViewPage: RolleManagementViewPage = await rolleCreationSuccessPage.backToResultList();
         await rolleManagementViewPage.setPageSize('300');
@@ -82,22 +80,28 @@ test.describe(`Testfälle für die Rollenanlage: Umgebung: ${process.env.ENV}: U
         await rolleManagementViewPage.checkIfRolleHasServiceProviders(params.name, params.serviceProviders);
       });
 
-      test('Als Nutzer mit einer neu angelegten Rolle anmelden', async ({ page }: PlaywrightTestArgs) => {
+      test(`Als Nutzer mit neu angelegter ${baseRolleParams.rollenart}-Rolle anmelden`, async ({ page }: PlaywrightTestArgs) => {
         const params: RolleCreationParams = { ...baseRolleParams, name: generateRolleName() };
-        await rolleCreationPage.createRolle(params);
+        await createRolleStep(rolleCreationPage, params);
         const organisationId: string = await getOrganisationId(page, testschuleName);
         const rolleId: string = await getRolleId(page, params.name);
+        const familienname: string = generateNachname();
+        const vorname: string = generateVorname();
+        const klasseId: string | undefined = 
+          params.rollenart === rollenArtLabel.LERN ? await getOrganisationId(page, klasse1Testschule) : undefined;
+          const merkmalNames: Set<RollenMerkmal> = new Set(
+            params.merkmale.includes(rollenMerkmalLabel.BEFRISTUNG_PFLICHT) ? [RollenMerkmal.BefristungPflicht] : []
+          );
+
         const user: UserInfo = await createPerson(
           page,
           organisationId,
           rolleId,
-          generateNachname(),
-          generateVorname(),
+          familienname,
+          vorname,
           undefined,
-          params.rollenart === rollenArtLabel.LERN ? await getOrganisationId(page, klasse1Testschule) : undefined,
-          new Set(
-            params.merkmale.includes(rollenMerkmalLabel.BEFRISTUNG_PFLICHT) ? [RollenMerkmal.BefristungPflicht] : []
-          )
+          klasseId,
+          merkmalNames,
         );
         const header: HeaderPage = new HeaderPage(page);
         await header.logout();
@@ -105,7 +109,7 @@ test.describe(`Testfälle für die Rollenanlage: Umgebung: ${process.env.ENV}: U
         const startViewPage: StartViewPage = await loginPage.login(user.username, user.password);
         await loginPage.updatePassword();
         await startViewPage.waitForPageLoad();
-        startViewPage.serviceProvidersAreVisible(params.serviceProviders);
+        await startViewPage.serviceProvidersAreVisible(params.serviceProviders);
       });
     });
   }
@@ -127,7 +131,6 @@ test.describe(`Testfälle für die Rollenanlage: Umgebung: ${process.env.ENV}: U
     });
     await test.step(`Rolle vom Typ ${rollen[1].rollenart} anlegen`, async () => {
       rolleCreationSuccessPage = await rolleCreationPage.createRolle(rollen[1]);
-      await rolleCreationSuccessPage.waitForPageLoad();
     });
     await test.step('Ergebnisliste prüfen', async () => {
       const rolleManagementViewPage: RolleManagementViewPage = await rolleCreationSuccessPage.backToResultList();

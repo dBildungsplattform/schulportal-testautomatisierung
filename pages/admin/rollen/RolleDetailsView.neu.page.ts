@@ -55,6 +55,7 @@ export class RolleDetailsViewPage {
 
   private async clickDeleteAndConfirm(): Promise<void> {
     await this.page.getByTestId('open-rolle-delete-dialog-button').click();
+    await expect(this.page.getByTestId('rolle-delete-confirmation-text')).toHaveText('Wollen Sie die Rolle sofort und endgültig löschen?');
     await this.page.getByTestId('rolle-delete-button').click();
   }
 

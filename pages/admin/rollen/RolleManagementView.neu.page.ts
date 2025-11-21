@@ -39,8 +39,6 @@ export class RolleManagementViewPage {
       .locator('td')
       .nth(4);
 
-    for (const serviceProvider of serviceProviders) {
-      await expect(serviceProviderCell).toContainText(serviceProvider);
-    }
+    await expect(serviceProviderCell).toContainText(serviceProviders);
   }
 }
