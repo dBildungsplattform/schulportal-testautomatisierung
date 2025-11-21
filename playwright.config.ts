@@ -39,11 +39,17 @@ export default defineConfig({
       testDir: './',
       testMatch: 'global-teardown.ts',
       teardown: 'teardown',
+      use: {
+        ignoreHTTPSErrors: !process.env.CI
+      }
     },
     {
       name: 'teardown',
       testDir: './',
       testMatch: 'global-teardown.ts',
+      use: {
+        ignoreHTTPSErrors: !process.env.CI
+      }
     },
     {
       name: 'chromium',

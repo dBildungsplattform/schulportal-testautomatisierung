@@ -1,4 +1,5 @@
 import { expect, Locator, Page, Response } from '@playwright/test';
+import { PersonManagementViewPage } from './admin/personen/PersonManagementView.neu.page';
 
 export class StartViewPage {
   /* add global locators here */
@@ -9,9 +10,15 @@ export class StartViewPage {
   }
 
   /* actions */
-  public async waitForPageLoad(): Promise<void> {
+  public async waitForPageLoad(): Promise<StartViewPage> {
     await this.startCardHeadline.waitFor({ state: 'visible' });
     await expect(this.startCardHeadline).toHaveText('Startseite');
+    return this;
+  }
+
+  public async navigateToAdministration(): Promise<PersonManagementViewPage> {
+    await this.page.locator('[data-testid^="service-provider-card"]').filter({ hasText: 'Schulportal-Administration' }).click();
+    return new PersonManagementViewPage(this.page).waitForPageLoad();
   }
 
   /* assertions */
