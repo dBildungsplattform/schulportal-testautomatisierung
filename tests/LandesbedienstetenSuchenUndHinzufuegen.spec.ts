@@ -1,4 +1,4 @@
-import test, { PlaywrightTestArgs, expect } from "@playwright/test";
+import test, { PlaywrightTestArgs} from "@playwright/test";
 import { freshLoginPage, lockPerson, UserInfo } from "../base/api/personApi";
 import { LONG, SHORT, STAGE, DEV, BROWSER } from "../base/tags";
 import { addSecondOrganisationToPerson, createPersonWithPersonenkontext, removeAllPersonenkontexte } from "../base/api/personApi";
@@ -16,25 +16,25 @@ import { getOrganisationId } from "../base/api/organisationApi";
 import { getRolleId } from "../base/api/rolleApi";
 import { LandesbedienstetenSearchResultPage } from "../pages/admin/personen/search/LandesbedienstetenSearchResult.page";
 import { LandesbedienstetenHinzufuegenPage } from "../pages/admin/personen/search/LandesbedienstetenHinzufuegen.page";
+import { LandesbedienstetenSuccessPage } from "../pages/admin/personen/search/LandesbedienstetenSucess.page";
 
 let loginPage: LoginViewPage;
 let landingPage: LandingViewPage;
 let personManagementViewPage: PersonManagementViewPage;
 let landesbedienstetenSearchFormPage: LandesbedienstetenSearchFormPage;
 let landesbedienstetenHinzufuegenPage: LandesbedienstetenHinzufuegenPage;
+let landesbedienstetenSearchResultPage: LandesbedienstetenSearchResultPage;
+let landesbedienstetenSuccessPage: LandesbedienstetenSuccessPage;
 let header: HeaderPage;
 let searchResultErrorDialog: SearchResultErrorDialog;
-let lehrkraftMitSchulzuordnung: UserInfo;
 let lehrkraftOhneSchulzuordnung: UserInfo;
 let lehrkraft: UserInfo;
-let lehrkraft2: UserInfo;
 let lockedLehrkraft: UserInfo;
 let lehrkraftDoppel1: UserInfo;
 let lehrkraftDoppel2: UserInfo;
 let ersatzschulLehrkraft: UserInfo;
 let schuladmin1Schule: UserInfo;
 let schuladmin2Schulen: UserInfo;
-let landesbedienstetenSearchResultPage: LandesbedienstetenSearchResultPage;
 
 /*
 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx Schuladmin mit einer Schule xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -65,14 +65,11 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
     landesbedienstetenSearchFormPage = new LandesbedienstetenSearchFormPage(page);
     header = new HeaderPage(page);
-    //searchResultErrorDialog = new SearchResultErrorDialog(page, page.getByTestId('person-search-error-dialog'));
     loginPage = await freshLoginPage(page);
     await loginPage.login(process.env.USER, process.env.PW);
     schuladmin1Schule = await createPersonWithPersonenkontext(page, testschuleName, schuladminOeffentlichRolle);
 
-    // lehrkraft2 = await createPersonWithPersonenkontext(page, testschuleName, lehrkraftOeffentlichRolle, undefined, undefined, generateKopersNr());
-
-    // lehrkraftOhneSchulzuordnung = await createPersonWithPersonenkontext(page, testschuleName, lehrkraftOeffentlichRolle, undefined, undefined, generateKopersNr());
+    lehrkraftOhneSchulzuordnung = await createPersonWithPersonenkontext(page, testschuleName, lehrkraftOeffentlichRolle, undefined, undefined, generateKopersNr());
     lehrkraft = await createPersonWithPersonenkontext(page, testschuleName, lehrkraftOeffentlichRolle, undefined, undefined, generateKopersNr());
     lockedLehrkraft = await createPersonWithPersonenkontext(page, testschuleName, lehrkraftOeffentlichRolle, undefined, undefined, generateKopersNr());
     await lockPerson(page, lockedLehrkraft.personId, testschuleDstNr);
@@ -89,14 +86,6 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
     personManagementViewPage = await startPage.goToAdministration();
     landesbedienstetenSearchFormPage = await personManagementViewPage.menu.navigateToLandesbedienstetenSuchenUndHinzufuegen();
   });
-
-  
-
-  /*TODO: gehört nicht zum Test oben.
-    await landesbedienstetenSuchenUndHinzufuegenPage.searchLandesbedienstetenViaUsername(lehrkraft2.username);
-    await landesbedienstetenSuchenUndHinzufuegenPage.checkCreationFormWithOrganisation(lehrkraft2.vorname, lehrkraft2.familienname, lehrkraft2.kopersnummer, testschuleDstNrUndName); 
-  */
-
 
   //SPSH-2631 Step 1
   test('Nachname ist ein Pflichtfeld', { tag: [LONG, SHORT, STAGE] }, async () => {
@@ -210,37 +199,43 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
       await variante.expectInputValue();
     }
   });
+
+  //SPSH-2634 Step 8
+  test('Schuladmin 1 Schule: Seite Landesbediensteten hinzufügen wird korrekt angezeigt', { tag: [LONG, SHORT, STAGE] }, async() => {
+    landesbedienstetenSearchResultPage = await landesbedienstetenSearchFormPage.searchLandesbedienstetenViaKopers(lehrkraft.kopersnummer); 
+    landesbedienstetenHinzufuegenPage = await landesbedienstetenSearchResultPage.clickLandesbedienstetenHinzufuegen();
+    await landesbedienstetenHinzufuegenPage.checkInitialFormState(lehrkraft.vorname, lehrkraft.nachname, lehrkraft.kopersnummer);
+    await landesbedienstetenHinzufuegenPage.additionalCheckInitialFormState(testschuleDstNrUndName);
+  });
+
+  // SPSH-2660 Step 1
+  test('Schuladmin 1 Schule: Landesbediensteten per KoPers suchen und erfolgreich hinzufügen', { tag: [LONG, SHORT, STAGE, DEV, BROWSER] }, async () => {
+    landesbedienstetenSearchResultPage = await landesbedienstetenSearchFormPage.searchLandesbedienstetenViaKopers(lehrkraft.kopersnummer); 
+    landesbedienstetenHinzufuegenPage = await landesbedienstetenSearchResultPage.clickLandesbedienstetenHinzufuegen();
+    await landesbedienstetenHinzufuegenPage.addLandesbedienstetenWithRolle('itslearning-Lehrkraft');
+    landesbedienstetenSuccessPage = await landesbedienstetenHinzufuegenPage.clickLandesbedienstetenHinzufügenOnConfirmationPopup();
+    await landesbedienstetenSuccessPage.waitForPageLoad();
+  });
+
+  //SPSH-2660 Step 3
+  test('Schuladmin 1 Schule: Landesbediensteten ohne Schulzuordnung suchen per Benutzername und erfolgreich hinzufügen', { tag: [LONG, SHORT, STAGE] }, async ({ page }: PlaywrightTestArgs) => {
+    await removeAllPersonenkontexte(page, lehrkraftOhneSchulzuordnung.personId);
+    landesbedienstetenSearchResultPage = await landesbedienstetenSearchFormPage.searchLandesbedienstetenViaUsername(lehrkraftOhneSchulzuordnung.username); 
+    landesbedienstetenHinzufuegenPage = await landesbedienstetenSearchResultPage.clickLandesbedienstetenHinzufuegen();
+    await landesbedienstetenHinzufuegenPage.addLandesbedienstetenWithRolle('itslearning-Lehrkraft');
+    landesbedienstetenSuccessPage = await landesbedienstetenHinzufuegenPage.clickLandesbedienstetenHinzufügenOnConfirmationPopup();
+    await landesbedienstetenSuccessPage.waitForPageLoad();
+  });
+
+  // // SPSH-2660 Step 4
+  test('Schuladmin 1 Schule: Landesbediensteten suchen per Vorname und Nachname und erfolgreich hinzufügen', { tag: [LONG, SHORT, STAGE, DEV, BROWSER] }, async () => {
+    landesbedienstetenSearchResultPage = await landesbedienstetenSearchFormPage.searchLandesbedienstetenViaName(lehrkraft.vorname, lehrkraft.nachname); 
+    landesbedienstetenHinzufuegenPage = await landesbedienstetenSearchResultPage.clickLandesbedienstetenHinzufuegen();
+    await landesbedienstetenHinzufuegenPage.addLandesbedienstetenWithRolle('itslearning-Lehrkraft');
+    landesbedienstetenSuccessPage = await landesbedienstetenHinzufuegenPage.clickLandesbedienstetenHinzufügenOnConfirmationPopup();
+    await landesbedienstetenSuccessPage.waitForPageLoad();
+  });
 });
-
-//   // Gesperrte Person kann nicht gefunden werden
-//   test('Gesperrte Person kann nicht gefunden werden', { tag: [LONG, SHORT, STAGE, DEV, BROWSER] }, async () => {
-//     await landesbedienstetenSearchPage.fillKopersNr(lockedLehrkraft.kopersnummer);
-//     await landesbedienstetenSearchPage.clickLandesbedienstetenSuchen();
-//     await expect(searchResultErrorDialog.headline).toBeVisible();
-//   });
-
-//   // SPSH-2660 Step 1
-//   test('Landesbediensteten per KoPers suchen und erfolgreich hinzufügen', { tag: [LONG, SHORT, STAGE, DEV, BROWSER] }, async () => {
-//     await landesbedienstetenSearchPage.fillKopersNr(lehrkraftMitSchulzuordnung.kopersnummer);
-//     await landesbedienstetenSearchPage.landesbedienstetenHinzufuegenAlsLehrkraft();
-//     await landesbedienstetenSearchPage.checkSuccessPage(lehrkraftMitSchulzuordnung.vorname, lehrkraftMitSchulzuordnung.familienname, lehrkraftMitSchulzuordnung.kopersnummer, lehrkraftMitSchulzuordnung.username, `${testschuleDstNr} (${testschuleName})`);
-//   });
-
-//   //SPSH-2660 Step 3
-//   test('Landesbediensteten ohne Schulzuordnung suchen per Benutzername und erfolgreich hinzufügen', { tag: [LONG, SHORT, STAGE, DEV, BROWSER] }, async ({ page }: PlaywrightTestArgs) => {
-//     await removeAllPersonenkontexte(page, lehrkraftOhneSchulzuordnung.personId);
-//     await landesbedienstetenSearchPage.fillBenutzername(lehrkraftOhneSchulzuordnung.username);
-//     await landesbedienstetenSearchPage.landesbedienstetenHinzufuegenAlsLehrkraft();
-//     await landesbedienstetenSearchPage.checkSuccessPage(lehrkraftOhneSchulzuordnung.vorname, lehrkraftOhneSchulzuordnung.familienname, lehrkraftOhneSchulzuordnung.kopersnummer, lehrkraftOhneSchulzuordnung.username, `${testschuleDstNr} (${testschuleName})`);
-//   });
-
-//   // // SPSH-2660 Step 4
-//   test('Landesbediensteten suchen per Vorname und Nachname und erfolgreich hinzufügen', { tag: [LONG, SHORT, STAGE, DEV, BROWSER] }, async () => {
-//     await landesbedienstetenSearchPage.fillVornameNachname(lehrkraftMitSchulzuordnung.vorname, lehrkraftMitSchulzuordnung.familienname);
-//     await landesbedienstetenSearchPage.landesbedienstetenHinzufuegenAlsLehrkraft();
-//     await landesbedienstetenSearchPage.checkSuccessPage(lehrkraftMitSchulzuordnung.vorname, lehrkraftMitSchulzuordnung.familienname, lehrkraftMitSchulzuordnung.kopersnummer, lehrkraftMitSchulzuordnung.username, `${testschuleDstNr} (${testschuleName})`);
-//   });
-// });
 
 /*
 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx Schuladmin mit 2 Schulen xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -295,64 +290,21 @@ test.describe('Testfälle für Landesbediensteten hinzufügen, Funktion und UI-V
     await landesbedienstetenHinzufuegenPage.showBefristungForLiv(testschule665DstNrUndName);
   });
   //SPSH-2634 Step 5
-  test.only('Schuladmin 2 Schulen: Bestätigungs-Popup wird angezeigt mit korrektem Text', { tag: [LONG, SHORT, STAGE] }, async() => {
-    await landesbedienstetenHinzufuegenPage;
+  test('Schuladmin 2 Schulen: Bestätigungs-Popup wird angezeigt mit korrektem Text', { tag: [LONG, SHORT, STAGE] }, async() => {
+    await landesbedienstetenHinzufuegenPage.verifyAddEmployeePopupIsShown(testschule665DstNrUndName, lehrkraftOeffentlichRolle, lehrkraft.username);
   });
 
-  //   await landesbedienstetenSuchenUndHinzufuegenPage.landesbedienstetenHinzufuegenButton.click();
-  //   await landesbedienstetenSuchenUndHinzufuegenPage.checkForBestaetigungspopupCompleteness();
-  //   const confirmationText: string = await landesbedienstetenSuchenUndHinzufuegenPage.nachfragetextImBestaetigungsPopup.textContent();
-  //   expect(confirmationText).toContain(`Wollen Sie ${lehrkraft2.username} als LiV hinzufügen?`);
-  //   });
+  //SPSH-2634 Step 6
+  test('Schuladmin 2 Schulen: Bestätigungspopup schließt nach klick auf Abbrechen', { tag: [LONG, SHORT, STAGE] }, async() => {
+    await landesbedienstetenHinzufuegenPage.addLandesbedienstetenWithOrgaAndRolle(testschule665DstNrUndName, lehrkraftOeffentlichRolle);
+    await landesbedienstetenHinzufuegenPage.clickAbbrechenOnConfirmationPopup();
+  });
 
-  // //SPSH-2634 Step 6
-  // test('Schuladmin 2 Schulen:', { tag: [LONG, SHORT, STAGE] }, async() => {
-  //   await landesbedienstetenHinzufuegenPage;
-  // });
-  // //SPSH-2634 Step 7
-  // test('Schuladmin 2 Schulen:', { tag: [LONG, SHORT, STAGE] }, async() => {
-  //   await landesbedienstetenHinzufuegenPage;
-  // });
-  // //SPSH-2634 Step 8
-  // test('Schuladmin 2 Schulen:', { tag: [LONG, SHORT, STAGE] }, async() => {
-  //   await landesbedienstetenHinzufuegenPage;
-  // });
-
-  
- 
- 
-  //   //SPSH-2634 Step 5
-  //   await test.step('Abbrechen im Bestätigungs-Popup funktioniert', async () => {
-  //   await landesbedienstetenSuchenUndHinzufuegenPage.abbrechenButtonImBestaetigungsPopup.click();
-  //   await expect(landesbedienstetenSuchenUndHinzufuegenPage.headline).toHaveText('Landesbediensteten hinzufügen');
-  //   await expect(landesbedienstetenSuchenUndHinzufuegenPage.landesbedienstetenHinzufuegenButton).toBeEnabled();
-  //   });
-  //   //SPSH-2634 Step 6
-  //   await test.step('Nach Bestätigung auf Popup wird die Card Landesbediensteten hinzufügen vollständig angezeigt', async () =>{
-  //   await landesbedienstetenSuchenUndHinzufuegenPage.landesbedienstetenHinzufuegenButton.click();
-  //   await landesbedienstetenSuchenUndHinzufuegenPage.landesbedienstetenHinzufuegenButtonImBestaetigungsPopup.click();
-
-  //   await expect(landesbedienstetenSuchenUndHinzufuegenPage.headline).toHaveText('Landesbediensteten hinzufügen');
-  //   await expect(landesbedienstetenSuchenUndHinzufuegenPage.erfolgsText).toBeVisible();
-  //   await expect(landesbedienstetenSuchenUndHinzufuegenPage.erfolgsText).toHaveText(`${lehrkraft2.vorname} ${lehrkraft2.familienname} wurde erfolgreich hinzugefügt.`);
-  //   await expect(landesbedienstetenSuchenUndHinzufuegenPage.card.locator('.subtitle-2')).toHaveText('Folgende Daten wurden gespeichert:');
-  //   await expect(landesbedienstetenSuchenUndHinzufuegenPage.zurGesamtuebersichtButton).toBeVisible();
-  //   await expect(landesbedienstetenSuchenUndHinzufuegenPage.zurGesamtuebersichtButton).toHaveText('Zur Gesamtübersicht');
-  //   await expect(landesbedienstetenSuchenUndHinzufuegenPage.zurueckZurErgebnislisteButton).toBeVisible();
-  //   await expect(landesbedienstetenSuchenUndHinzufuegenPage.zurueckZurErgebnislisteButton).toHaveText('Zurück zur Ergebnisliste');
-  //   await expect(landesbedienstetenSuchenUndHinzufuegenPage.weiterenLandesbedienstetenSuchenButton).toBeVisible();
-  //   await expect(landesbedienstetenSuchenUndHinzufuegenPage.weiterenLandesbedienstetenSuchenButton).toHaveText('Weiteren Landesbediensteten suchen');
-  //   });
-  // });
-  // //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  // //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  // test('Seite wird vollständig angezeigt: Schuladmin mit 2 Schulen', { tag: [LONG, SHORT, STAGE, DEV, BROWSER] }, async () => {
-  //   await test.step('Organisation nur aus zugewiesenen Organisationen auswählbar, UI Elemente werden angezeigt', async () => {
-  //     await landesbedienstetenSearchPage.checkMinimalCreationForm(lehrkraft.vorname, lehrkraft.familienname, lehrkraft.kopersnummer);
-  //     await landesbedienstetenSearchPage.checkSelectableOrganisationen([testschuleDstNrUndName, testschule665DstNrUndName]);
-  //     await landesbedienstetenSearchPage.selectOrganisation(testschule665DstNrUndName);
-  //     await landesbedienstetenSearchPage.selectRolleWithBefristung('LiV');
-  //     await landesbedienstetenSearchPage.confirmLandesbedienstetenHinzufuegen(lehrkraft.username, 'LiV');
-  //     await landesbedienstetenSearchPage.checkSuccessPage(lehrkraft.vorname, lehrkraft.familienname, lehrkraft.kopersnummer, lehrkraft.username, testschule665DstNrUndName);
-  //   });
+  //SPSH-2634 Step 7
+  test('Schuladmin 2 Schulen: UI: Bestätigungseite wird komplett angezeigt.', { tag: [LONG, SHORT, STAGE] }, async() => {
+    await landesbedienstetenHinzufuegenPage.addLandesbedienstetenWithOrgaAndRolle(testschule665DstNrUndName, lehrkraftOeffentlichRolle);
+    landesbedienstetenSuccessPage = await landesbedienstetenHinzufuegenPage.clickLandesbedienstetenHinzufügenOnConfirmationPopup();
+    const lehrFullname: string = lehrkraft.vorname + " " + lehrkraft.nachname;
+    await landesbedienstetenSuccessPage.assertAllElementsVisible(lehrFullname);
+  });
 });

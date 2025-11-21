@@ -25,26 +25,9 @@ export class LandesbedienstetenSearchFormPage {
   private readonly zuruecksetzenButton : Locator = this.page.getByTestId('person-search-form-discard-button');
   private readonly landesbedienstetenSuchenButton : Locator = this.page.getByTestId('person-search-form-submit-button');
 
-  //------------------------------ Aktueller Stand bis hier ------------------------------
-   
-  // /* Landesbediensteten Hinzufügen */
-  
-  // /* Bestaetigungspopup */
-  // private readonly bestaetigungspopupHeadline: Locator = this.page.getByTestId('add-person-confirmation-dialog-headline');
-  // private readonly bestaetigungspopupText: Locator = this.page.getByTestId('add-person-confirmation-text');
-  // private readonly bestaetigungspopupAbbrechenButton: Locator = this.page.getByTestId('cancel-add-person-confirmation-button');
-  // private readonly bestaetigungspopupLandesbedienstetenHinzufuegenButton: Locator = this.page.getByTestId('confirm-add-person-button');
-  // // Erfolgseite
-  // private readonly erfolgsseiteErfolgsText: Locator = this.page.getByTestId('state-employee-success-text');
-  /*TODO Buttons für spätere Tests
-  private readonly erfolgsseiteZurGesamtuebersichtButton: Locator = this.page.getByTestId('to-details-button')
-  private readonly erfolgsseiteZurueckZurEgebnislisteButton: Locator = this.page.getByTestId('back-to-list-button')
-  private readonly erfolgsseiteWeiterenLandesbedienstetenSuchenButton: Locator = this.page.getByTestId('search-another-landesbediensteter-button')
-  */
   private readonly searchResultErrorDialogKeineTrefferText: string = "Es wurde leider kein Treffer gefunden. Bitte prüfen Sie Ihre Eingabe. Sollten Sie Hilfe benötigen, eröffnen Sie ein Störungsticket über den IQSH-Helpdesk.";
   private readonly searchResultErrorDialogDoppelteTrefferText: string = "Es wurde mehr als ein Treffer gefunden. Bitte verwenden Sie zur Suche die KoPers.-Nr., die Landes-Mailadresse oder den Benutzernamen. Sollten Sie Hilfe benötigen, eröffnen Sie ein Störungsticket über den IQSH-Helpdesk.";
 
- /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
   /* actions */
   public async waitForPageLoad(): Promise<void> {
     await expect(this.headline).toHaveText('Landesbediensteten (suchen und hinzufügen)');
