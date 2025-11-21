@@ -99,7 +99,15 @@ export class Autocomplete {
     await item.click();
     await this.closeModal();
   }
+  
+  public async selectByName(name: string): Promise<void> {
+    const option: Locator = this.itemsLocator.filter({
+      hasText: name,
+    });
+    await option.click();
+  }
 
+  /* assertions */
   public async validateItemNotExists(searchString: string, exactMatch: boolean): Promise<void> {
     await this.inputLocator.click();
     await this.inputLocator.fill(searchString);
@@ -143,4 +151,13 @@ export class Autocomplete {
   public async checkText(text: string): Promise<void> {
     await expect(this.locator).toHaveText(text);
   }
+
+  public async assertAllMenuItems(expectedTexts: string[]): Promise<void> {
+    await this.inputLocator.click();
+    await expect(this.itemsLocator).toHaveText(expectedTexts);
+  }
+
+  public async isVisible(): Promise<void> {
+    await expect(this.locator).toBeVisible();
+  }  
 }

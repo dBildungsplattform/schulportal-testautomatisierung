@@ -31,7 +31,7 @@ export class KlasseManagementViewPage {
   constructor(page: Page, options?: KlasseManagementViewPageOptions) {
     this.page = page;
     this.textH1Administrationsbereich = page.getByTestId('admin-headline');
-    this.textH2Klassenverwaltung = page.getByTestId('layout-card-headline');
+    this.textH2Klassenverwaltung = page.getByTestId('klasse-management-headline');
     this.comboboxFilterSchule = page.getByPlaceholder('Schule');
     this.klasseInput = page.getByTestId('klassen-management-klasse-select');
     this.comboboxFilterKlasse = new Autocomplete(this.page, this.klasseInput);
@@ -77,8 +77,7 @@ export class KlasseManagementViewPage {
   }
 
   public async waitErgebnislisteIsLoaded(): Promise<void> {
-    // TODO: There are 2 elements found via this selector, one is the page header, the other is inside the dialog
-    // await expect(this.textH2Klassenverwaltung).toHaveText('Klassenverwaltung');
+    await expect(this.textH2Klassenverwaltung).toHaveText('Klassenverwaltung');
     await this.comboboxOrganisationInput.waitUntilLoadingIsDone();
     await this.checkTableRow(0);
   }

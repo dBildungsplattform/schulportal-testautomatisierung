@@ -11,10 +11,6 @@ export class RolleCreationWorkflow {
   }
 
   /* actions */
-  public async waitForPageLoad(): Promise<void> {
-    await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Neue Rolle hinzufügen');
-  }
-
   public async selectAdministrationsebene(ssk: RolleCreationParams['ssk']): Promise<void> {
     await this.rolleForm.adminstrationsebene.inputElement.selectByTitle(ssk);
   }

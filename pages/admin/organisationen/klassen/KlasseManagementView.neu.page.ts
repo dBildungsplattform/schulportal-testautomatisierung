@@ -16,8 +16,8 @@ export class KlasseManagementViewPage {
 
   /* actions */
   public async waitForPageLoad(): Promise<void> {
-    await this.page.getByTestId('klasse-management-card').waitFor({ state: 'visible' });
-    await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Klassenverwaltung');
+    await this.page.getByTestId('klasse-management-headline').waitFor({ state: 'visible' });
+    await expect(this.page.getByTestId('klasse-management-headline')).toHaveText('Klassenverwaltung');
     await expect(this.page.getByTestId('klasse-table')).not.toContainText('Keine Daten');
   }
 

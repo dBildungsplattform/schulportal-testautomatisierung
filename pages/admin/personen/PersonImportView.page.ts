@@ -5,7 +5,6 @@ import { Autocomplete } from '../../../elements/Autocomplete';
 export class PersonImportViewPage {
   readonly page: Page;
   readonly body: Locator;
-  readonly personImportCard: Locator;
   readonly headlineBenutzerImport: Locator;
   readonly schuleSelectInput: Locator;
   readonly schuleSelectCombobox: Autocomplete;
@@ -27,8 +26,7 @@ export class PersonImportViewPage {
     // Benutzerimport
     this.page = page;  
     this.body = page.locator('body');
-    this.personImportCard = page.getByTestId('person-import-card');
-    this.headlineBenutzerImport = page.getByTestId('layout-card-headline');
+    this.headlineBenutzerImport = page.getByTestId('person-import-headline');
     this.schuleSelectInput = page.getByTestId('schule-select').locator('input');
     this.schuleSelectCombobox = new Autocomplete(this.page, page.getByTestId('person-import-schule-select'));
     this.rolleSelectInput = page.getByTestId('rolle-select').locator('input');
