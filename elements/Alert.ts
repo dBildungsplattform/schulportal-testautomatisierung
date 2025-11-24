@@ -25,12 +25,12 @@ export class Alert<T> {
     };
   }
 
-  async confirm(): Promise<T> {
+  public async confirm(): Promise<T> {
     await this.locators.button.click();
     return this.nextPage;
   }
 
-  async assertExpectedTexts(): Promise<void> {
+  public async assertExpectedTexts(): Promise<void> {
     await Promise.all(
       Object.entries(this.expectedTexts).map(([key, expectedText]: [Keys, string]) =>
         expect(this.locators[key]).toHaveText(expectedText)
