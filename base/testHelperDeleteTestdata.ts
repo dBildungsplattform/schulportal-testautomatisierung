@@ -18,8 +18,8 @@ export async function deleteRolleById(rollenIds: string[], page: Page): Promise<
 
 export async function deleteRolleByName(rolleName: string[], page: Page): Promise<void> {
   // rolleName ist ein array mit allen zu löschenden Rollen
-  for (const id of rolleName) {
-    const rolleId: string = await getRolleId(page, id);
+  for (const name of rolleName) {
+    const rolleId: string = await getRolleId(page, name);
     await deleteRolle(page, rolleId);
   }
 }
