@@ -30,7 +30,7 @@ test.describe(`Testfälle für die Rollenlöschung: Umgebung: ${process.env.ENV}
       const personManagementView: PersonManagementViewPage = await startPage.navigateToAdministration();
       const rolleManagementViewPage: RolleManagementViewPage =
         await personManagementView.menu.navigateToRolleManagement();
-      rolleManagementViewPage.setPageSize('300');
+      await rolleManagementViewPage.setPageSize('300');
       rolleDetailsView = await rolleManagementViewPage.openGesamtuebersicht(rolleName);
     });
   });
