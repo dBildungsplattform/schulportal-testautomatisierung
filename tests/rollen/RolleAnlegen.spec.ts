@@ -10,10 +10,10 @@ import { generateNachname, generateRolleName, generateVorname } from '../../base
 import { Alert } from '../../elements/Alert';
 import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.neu.page';
 import { RolleCreationSuccessPage } from '../../pages/admin/rollen/RolleCreationSuccess.page';
-import { RolleCreationParams, RolleCreationViewPage } from '../../pages/admin/rollen/RolleCreationView.neu.page';
+import { RolleCreationParams, RolleCreationViewPage } from '../../pages/admin/rollen/RolleCreationView.page';
 import { RolleCreationWorkflow } from '../../pages/admin/rollen/RolleCreationWorkflow.page';
-import { RolleDetailsViewPage } from '../../pages/admin/rollen/RolleDetailsView.neu.page';
-import { RolleManagementViewPage } from '../../pages/admin/rollen/RolleManagementView.neu.page';
+import { RolleDetailsViewPage } from '../../pages/admin/rollen/RolleDetailsView.page';
+import { RolleManagementViewPage } from '../../pages/admin/rollen/RolleManagementView.page';
 import { HeaderPage } from '../../pages/components/Header.neu.page';
 import { LoginViewPage } from '../../pages/LoginView.neu.page';
 import { StartViewPage } from '../../pages/StartView.neu.page';

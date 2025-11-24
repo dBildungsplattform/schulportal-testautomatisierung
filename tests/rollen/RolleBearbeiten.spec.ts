@@ -5,8 +5,8 @@ import { createRolle, RollenArt } from '../../base/api/rolleApi';
 import { testschuleName } from '../../base/organisation';
 import { generateRolleName } from '../../base/utils/generateTestdata';
 import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.neu.page';
-import { RolleDetailsViewPage } from '../../pages/admin/rollen/RolleDetailsView.neu.page';
-import { RolleManagementViewPage } from '../../pages/admin/rollen/RolleManagementView.neu.page';
+import { RolleDetailsViewPage } from '../../pages/admin/rollen/RolleDetailsView.page';
+import { RolleManagementViewPage } from '../../pages/admin/rollen/RolleManagementView.page';
 import { LoginViewPage } from '../../pages/LoginView.neu.page';
 import { StartViewPage } from '../../pages/StartView.neu.page';
 

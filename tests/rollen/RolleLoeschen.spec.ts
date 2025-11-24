@@ -4,13 +4,13 @@ import { createPersonWithUserContext, freshLoginPage } from '../../base/api/pers
 import { createRolle, RollenArt } from '../../base/api/rolleApi';
 import { testschuleName } from '../../base/organisation';
 import { generateNachname, generateRolleName, generateVorname } from '../../base/utils/generateTestdata';
+import { Alert } from '../../elements/Alert';
 import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.neu.page';
-import { RolleDetailsViewPage } from '../../pages/admin/rollen/RolleDetailsView.neu.page';
-import { RolleManagementViewPage } from '../../pages/admin/rollen/RolleManagementView.neu.page';
+import { RolleDetailsViewPage } from '../../pages/admin/rollen/RolleDetailsView.page';
+import { RolleManagementViewPage } from '../../pages/admin/rollen/RolleManagementView.page';
 import { HeaderPage } from '../../pages/components/Header.neu.page';
 import { LoginViewPage } from '../../pages/LoginView.neu.page';
 import { StartViewPage } from '../../pages/StartView.neu.page';
-import { Alert } from '../../elements/Alert';
 
 const ADMIN: string | undefined = process.env.USER;
 const PASSWORD: string | undefined = process.env.PW;
