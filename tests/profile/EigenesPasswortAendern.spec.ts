@@ -1,11 +1,11 @@
 import { PlaywrightTestArgs, test } from '@playwright/test';
 import { getOrganisationId } from '../../base/api/organisationApi';
 import { createPerson, createRolleAndPersonWithUserContext, UserInfo } from '../../base/api/personApi';
-import { addServiceProvidersToRolle, createRolle } from '../../base/api/rolleApi';
+import { addServiceProvidersToRolle, createRolle, RollenArt } from '../../base/api/rolleApi';
 import { getServiceProviderId } from '../../base/api/serviceProviderApi';
 import { klasse1Testschule } from '../../base/klassen';
 import { testschuleName } from '../../base/organisation';
-import { RollenArt, typeLehrer } from '../../base/rollentypen';
+import { typeLehrer } from '../../base/rollentypen';
 import { email, itslearning } from '../../base/sp';
 import { DEV, LONG, STAGE } from '../../base/tags';
 import { generateKopersNr, generateNachname, generateRolleName, generateVorname } from '../../base/utils/generateTestdata';
