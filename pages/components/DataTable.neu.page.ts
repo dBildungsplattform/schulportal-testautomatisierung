@@ -15,7 +15,13 @@ export class DataTable {
     }
 
     public async setItemsPerPage(value: string): Promise<void> {
-      await this.page.locator('.v-data-table-footer__items-per-page .v-select').selectOption(value);
+      await this.page.locator('.v-data-table-footer__items-per-page .v-field__append-inner').click();
+      await expect(this.page.locator('.v-overlay')).toBeVisible();
+      await expect(this.page.locator('.v-overlay').getByText(value, { exact: true })).toBeVisible();
+      await this.page.locator('.v-overlay').getByText(value, { exact: true }).click({
+        force: true
+      });
+      await expect(this.page.locator('.v-overlay')).toBeHidden();
     }
 
     public async goToFirstPage(): Promise<void> {

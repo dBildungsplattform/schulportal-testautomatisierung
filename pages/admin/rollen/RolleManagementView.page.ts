@@ -1,46 +1,44 @@
-import { expect, type Locator, Page } from '@playwright/test';
+import { expect, Locator, type Page } from '@playwright/test';
 import { RolleDetailsViewPage } from './RolleDetailsView.page';
+import { DataTable } from '../../components/DataTable.neu.page';
 
 export class RolleManagementViewPage {
-  readonly page: Page;
-  readonly textH1Administrationsbereich: Locator;
-  readonly textH2Rollenverwaltung: Locator;
-  readonly tableHeaderRollenname: Locator;
-  readonly tableHeaderRollenart: Locator;
-  readonly tableHeaderMerkmale: Locator;
-  readonly tableHeaderAdministrationsebene: Locator;
-  private readonly rolleOverviewTable: Locator;
+  /* add global locators here */
+  private readonly rolleTable: DataTable = new DataTable(this.page, this.page.getByTestId('rolle-table'));
 
-  constructor(page: Page) {
-    this.page = page;
-    this.textH1Administrationsbereich = page.getByTestId('admin-headline');
-    this.textH2Rollenverwaltung = page.getByTestId('layout-card-headline');
-    this.tableHeaderRollenname = page.getByText('Rollenname');
-    this.tableHeaderRollenart = page.getByText('Rollenart');
-    this.tableHeaderMerkmale = page.getByText('Merkmale');
-    this.tableHeaderAdministrationsebene = page.getByText('Administrationsebene');
-    this.rolleOverviewTable = page.getByTestId('rolle-table');
+  constructor(protected readonly page: Page) {}
+
+  /* actions */
+  public async waitForPageLoad(): Promise<RolleManagementViewPage> {
+    await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Rollenverwaltung');
+    await expect(this.page.getByTestId('rolle-table')).not.toContainText('Keine Daten');
+    return this;
   }
 
-  public rowByRoleName(roleName: string): RoleTableRow {
-    return new RoleTableRow(this.rolleOverviewTable.locator(`tr:has-text('${roleName}')`));
+  public async openGesamtuebersicht(rollenname: string): Promise<RolleDetailsViewPage> {
+    await this.rolleTable.getItemByText(rollenname).click();
+    return new RolleDetailsViewPage(this.page).waitForPageLoad();
   }
 
-  public async rolleBearbeiten(roleName: string): Promise<RolleDetailsViewPage> {
-    await expect(this.page.getByText('Keine Daten')).not.toBeAttached();
-    this.rowByRoleName(roleName).locator.click();
-    return new RolleDetailsViewPage(this.page);
+  public async setPageSize(size: '5' | '30' | '50' | '100' | '300'): Promise<void> {
+    await this.rolleTable.setItemsPerPage(size);
   }
-}
 
-enum TableCells {
-  ServiceProvider = 4,
-}
+  /* assertions */
+  public async checkIfRolleExists(rollenname: string): Promise<void> {
+    await this.rolleTable.checkIfItemIsVisible(rollenname);
+  }
 
-export class RoleTableRow {
-  constructor(public readonly locator: Locator) {}
+  public async checkIfRolleDoesNotExist(rollenname: string): Promise<void> {
+    await this.rolleTable.checkIfItemIsNotVisible(rollenname);
+  }
 
-  public spCell(): Locator {
-    return this.locator.locator('td').nth(TableCells.ServiceProvider);
+  public async checkIfRolleHasServiceProviders(rollenname: string, serviceProviders: string[]): Promise<void> {
+    const serviceProviderCell: Locator = this.rolleTable.tableLocator
+      .locator(`tr:has-text("${rollenname}")`)
+      .locator('td')
+      .nth(4);
+
+    await expect(serviceProviderCell).toContainText(serviceProviders);
   }
 }

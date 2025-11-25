@@ -87,6 +87,12 @@ export interface ManageableServiceProviderResponse {
      */
     merkmale: Array<ServiceProviderMerkmal>;
     /**
+     * Can be undefined, if `target` is not equal to `URL`
+     * @type {string}
+     * @memberof ManageableServiceProviderResponse
+     */
+    url: string;
+    /**
      * 
      * @type {Array<RollenerweiterungForServiceProviderResponse>}
      * @memberof ManageableServiceProviderResponse
@@ -111,6 +117,7 @@ export function instanceOfManageableServiceProviderResponse(value: object): bool
     isInstance = isInstance && "kategorie" in value;
     isInstance = isInstance && "requires2fa" in value;
     isInstance = isInstance && "merkmale" in value;
+    isInstance = isInstance && "url" in value;
     isInstance = isInstance && "rollenerweiterungen" in value;
     isInstance = isInstance && "rollen" in value;
 
@@ -133,6 +140,7 @@ export function ManageableServiceProviderResponseFromJSONTyped(json: any, ignore
         'kategorie': ServiceProviderKategorieFromJSON(json['kategorie']),
         'requires2fa': json['requires2fa'],
         'merkmale': ((json['merkmale'] as Array<any>).map(ServiceProviderMerkmalFromJSON)),
+        'url': json['url'],
         'rollenerweiterungen': ((json['rollenerweiterungen'] as Array<any>).map(RollenerweiterungForServiceProviderResponseFromJSON)),
         'rollen': ((json['rollen'] as Array<any>).map(RolleRefResponseFromJSON)),
     };
@@ -153,6 +161,7 @@ export function ManageableServiceProviderResponseToJSON(value?: ManageableServic
         'kategorie': ServiceProviderKategorieToJSON(value.kategorie),
         'requires2fa': value.requires2fa,
         'merkmale': ((value.merkmale as Array<any>).map(ServiceProviderMerkmalToJSON)),
+        'url': value.url,
         'rollenerweiterungen': ((value.rollenerweiterungen as Array<any>).map(RollenerweiterungForServiceProviderResponseToJSON)),
         'rollen': ((value.rollen as Array<any>).map(RolleRefResponseToJSON)),
     };

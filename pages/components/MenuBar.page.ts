@@ -1,13 +1,11 @@
 import { expect, type Locator, Page } from '@playwright/test';
 import { KlasseCreationViewPage } from '../admin/organisationen/klassen/KlasseCreationView.page';
 import { KlasseManagementViewPage, KlasseManagementViewPageOptions } from '../admin/organisationen/klassen/KlasseManagementView.page';
+import { SchuleCreationViewPage } from '../admin/organisationen/schulen/SchuleCreationView.page';
+import { SchuleManagementViewPage } from '../admin/organisationen/schulen/SchuleManagementView.page';
 import { PersonCreationViewPage } from '../admin/personen/PersonCreationView.page';
 import { PersonImportViewPage } from '../admin/personen/PersonImportView.page';
 import { PersonManagementViewPage } from '../admin/personen/PersonManagementView.page';
-import { RolleCreationViewPage } from '../admin/rollen/RolleCreationView.page';
-import { RolleManagementViewPage } from '../admin/rollen/RolleManagementView.page';
-import { SchuleCreationViewPage } from '../admin/organisationen/schulen/SchuleCreationView.page';
-import { SchuleManagementViewPage } from '../admin/organisationen/schulen/SchuleManagementView.page';
 
 export class MenuPage {
   readonly page: Page;
@@ -51,17 +49,6 @@ export class MenuPage {
   public async alleBenutzerAnzeigen(): Promise<PersonManagementViewPage> {
     await this.menueItemAlleBenutzerAnzeigen.click();
     return new PersonManagementViewPage(this.page);
-  }
-
-  public async rolleAnlegen(): Promise<RolleCreationViewPage> {
-    await this.menueItemRolleAnlegen.click();
-    return new RolleCreationViewPage(this.page);
-  }
-
-  public async alleRollenAnzeigen(): Promise<RolleManagementViewPage> {
-    await this.menueItemAlleRollenAnzeigen.click();
-    await this.page.waitForURL('**/admin/rollen');
-    return new RolleManagementViewPage(this.page);
   }
 
   public async alleSchulenAnzeigen(): Promise<SchuleManagementViewPage> {

@@ -16,6 +16,15 @@ export function constructRolleApi(page: Page): RolleApi {
   return new RolleApi(config);
 }
 
+/**
+ * 
+ * @param page 
+ * @param rollenArt 
+ * @param organisationId 
+ * @param rolleName 
+ * @param merkmale 
+ * @returns id of created Rolle
+ */
 export async function createRolle(
   page: Page,
   rollenArt: RollenArt,

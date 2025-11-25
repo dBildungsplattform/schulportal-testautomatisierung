@@ -14,9 +14,10 @@ export class KlasseCreationViewPage {
   constructor(protected readonly page: Page) {}
 
   /* actions */
-  public async waitForPageLoad(): Promise<void> {
+  public async waitForPageLoad(): Promise<KlasseCreationViewPage> {
     await this.page.getByTestId('klasse-creation-card').waitFor({ state: 'visible' });
     await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Klasse anlegen');
+    return this;
   }
 
   public async createKlasse(params: KlasseCreationParams): Promise<KlasseCreationSuccessPage> {

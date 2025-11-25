@@ -1,8 +1,9 @@
 import { PlaywrightTestArgs, test } from '@playwright/test';
+import { RollenArt } from '../../base/api/generated';
 import { createRolleAndPersonWithUserContext, UserInfo } from '../../base/api/personApi';
 import { getServiceProviderId } from '../../base/api/serviceProviderApi';
 import { testschuleName } from '../../base/organisation';
-import { RollenArt, typeLehrer } from '../../base/rollentypen';
+import { typeLehrer } from '../../base/rollentypen';
 import { email } from '../../base/sp';
 import { DEV, LONG, STAGE } from '../../base/tags';
 import {

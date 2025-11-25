@@ -1,54 +1,91 @@
-import { type Locator, Page } from '@playwright/test';
-import { RolleForm } from '../../../components/RolleForm';
-import { MenuPage } from '../../components/MenuBar.page';
+import { expect, type Locator, Page } from '@playwright/test';
+import { Alert } from '../../../elements/Alert';
+import { RolleCreationParams } from './RolleCreationView.page';
+import { RolleManagementViewPage } from './RolleManagementView.page';
 
 export class RolleDetailsViewPage {
-  readonly rolleForm: RolleForm;
-  readonly textH2RolleAnlegen: Locator;
-  readonly buttonSchliessen: Locator;
-  readonly buttonRolleBearbeiten: Locator;
-  readonly buttonRolleBearbeitenAbbrechen: Locator;
-  readonly buttonRolleBearbeitenSpeichern: Locator;
-  readonly buttonRolleLoeschen: Locator;
-  readonly buttonRolleLoeschenConfirm: Locator;
-  readonly buttonRolleLoeschenCancel: Locator;
-  readonly buttonZurueckErgebnisliste: Locator;
-  readonly textSuccess: Locator;
-  readonly iconSuccess: Locator;
-  readonly alert: { title: Locator; text: Locator; button: Locator };
+  constructor(protected readonly page: Page) {}
 
-  constructor(public readonly page: Page) {
-    this.rolleForm = new RolleForm(page);
-    this.buttonRolleBearbeiten = page.getByTestId('rolle-edit-button');
-    this.buttonRolleLoeschen = page.getByTestId('open-rolle-delete-dialog-button');
-    this.buttonRolleLoeschenConfirm = page.getByTestId('rolle-delete-button');
-    this.buttonRolleLoeschenCancel = page.getByTestId('cancel-rolle-delete-button');
-    this.textSuccess = page.getByTestId('rolle-delete-success-text');
-    this.alert = {
-      title: page.getByTestId('rolle-details-error-alert-title'),
-      text: page.getByTestId('rolle-details-error-alert-text'),
-      button: page.getByTestId('rolle-details-error-alert-button'),
-    };
+  /* actions */
+  public async waitForPageLoad(): Promise<RolleDetailsViewPage> {
+    await this.page.getByTestId('rolle-details-card').waitFor({ state: 'visible' });
+    await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Rolle bearbeiten');
+    return this;
   }
 
-  public menu(): MenuPage {
-    return new MenuPage(this.page);
+  public async editRolle(rollenname: string): Promise<void> {
+    const rolleNameInput: Locator = this.page.getByTestId('rollenname-input').locator('input');
+    const editRolleButton: Locator = this.page.getByTestId('rolle-edit-button');
+    const editRolleSubmitButton: Locator = this.page.getByTestId('rolle-changes-save-button');
+
+    await editRolleButton.waitFor({ state: 'visible' });
+    await editRolleButton.click();
+
+    await rolleNameInput.waitFor({ state: 'visible' });
+    await rolleNameInput.fill(rollenname);
+
+    await editRolleSubmitButton.waitFor({ state: 'visible' });
+    await editRolleSubmitButton.click();
   }
 
-  public async startEdit(): Promise<void> {
-    await this.buttonRolleBearbeiten.click();
+  public async deleteRolle(): Promise<RolleManagementViewPage> {
+    await this.clickDeleteAndConfirm();
+    await this.page.getByTestId('close-rolle-delete-success-dialog-button').click();
+    return new RolleManagementViewPage(this.page).waitForPageLoad();
   }
 
-  public async saveEdit(): Promise<void> {
-    await this.buttonRolleBearbeitenSpeichern.click();
+  public async attemptDeletionOfAssignedRolle(): Promise<Alert<RolleManagementViewPage>> {
+    await this.clickDeleteAndConfirm();
+    const alert = new Alert<RolleManagementViewPage>(
+      this.page,
+      {
+        title: 'Löschen nicht möglich',
+        text: 'Die Rolle kann nicht gelöscht werden, da sie noch Benutzern zugeordnet ist. Nehmen Sie bitte zunächst alle Zuordnungen zurück.',
+        button: 'Zurück zur Ergebnisliste',
+      },
+      new RolleManagementViewPage(this.page),
+      {
+        title: 'rolle-details-error-alert-title',
+        text: 'rolle-details-error-alert-text',
+        button: 'rolle-details-error-alert-button',
+      }
+    );
+    return alert;
   }
 
-  public async cancelEdit(): Promise<void> {
-    await this.buttonRolleBearbeitenAbbrechen.click();
+  private async clickDeleteAndConfirm(): Promise<void> {
+    await this.page.getByTestId('open-rolle-delete-dialog-button').click();
+    await expect(this.page.getByTestId('rolle-delete-confirmation-text')).toHaveText('Wollen Sie die Rolle sofort und endgültig löschen?');
+    await this.page.getByTestId('rolle-delete-button').click();
   }
 
-  public async deleteRolle(): Promise<void> {
-    await this.buttonRolleLoeschen.click();
-    await this.buttonRolleLoeschenConfirm.click();
+  /* assertions */
+  public async rolleSuccessfullyEdited(rollenname: string): Promise<void> {
+    await expect(this.page.getByTestId('rolle-success-text')).toHaveText('Die Rolle wurde erfolgreich geändert.');
+    await expect(this.page.getByTestId('rolle-success-icon')).toBeVisible();
+    await expect(this.page.getByTestId('updated-rolle-name')).toHaveText(rollenname);
+  }
+
+  public async checkGesamtuebersicht(params: RolleCreationParams): Promise<void> {
+    await expect(this.page.getByTestId('rolle-form-organisation-select')).toContainText(params.administrationsebene);
+
+    await expect(this.page.getByTestId('rollenart-select')).toContainText(params.rollenart);
+
+    await expect(this.page.locator('#rollenname-input')).toHaveValue(params.name);
+
+    for (const merkmal of params.merkmale) {
+      await expect(this.page.getByTestId('merkmale-select')).toContainText(merkmal);
+    }
+
+    for (const systemrecht of params.systemrechte) {
+      await expect(this.page.getByTestId('systemrechte-select')).toContainText(systemrecht);
+    }
+
+    for (const provider of params.serviceProviders) {
+      await expect(this.page.getByTestId('service-provider-select')).toContainText(provider);
+    }
+
+    await expect(this.page.getByTestId('open-rolle-delete-dialog-button')).toBeVisible();
+    await expect(this.page.getByTestId('rolle-edit-button')).toBeVisible();
   }
 }

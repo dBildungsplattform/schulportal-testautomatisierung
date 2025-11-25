@@ -4,12 +4,12 @@ import { KlasseManagementViewPage } from '../admin/organisationen/klassen/Klasse
 import { PersonCreationViewPage } from '../admin/personen/creation/PersonCreationView.neu.page';
 // TODO: implement PersonSearchViewPage
 // import { PersonSearchViewPage } from '../admin/personen/creation/PersonSearchView.neu.page';
-import { PersonImportViewPage } from '../admin/personen/PersonImportView.neu.page';
-import { PersonManagementViewPage } from '../admin/personen/PersonManagementView.neu.page';
-import { RolleCreationViewPage } from '../admin/rollen/RolleCreationView.neu.page';
-import { RolleManagementViewPage } from '../admin/rollen/RolleManagementView.neu.page';
 import { SchuleCreationViewPage } from '../admin/organisationen/schulen/SchuleCreationView.neu.page';
 import { SchuleManagementViewPage } from '../admin/organisationen/schulen/SchuleManagementView.neu.page';
+import { PersonImportViewPage } from '../admin/personen/PersonImportView.neu.page';
+import { PersonManagementViewPage } from '../admin/personen/PersonManagementView.neu.page';
+import { RolleCreationViewPage } from '../admin/rollen/RolleCreationView.page';
+import { RolleManagementViewPage } from '../admin/rollen/RolleManagementView.page';
 import { StartViewPage } from '../StartView.neu.page';
 
 export class MenuBarPage {
@@ -18,27 +18,25 @@ export class MenuBarPage {
   constructor(protected readonly page: Page) {}
 
   /* actions */
-  private async navigateTo<T>(testId: string, pageClass: new (page: Page) => T, waitForPageLoad: (page: T) => Promise<void>): Promise<T> {
+  private async navigateTo<T>(testId: string, waitForPageLoad: Promise<T>): Promise<T> {
     await this.page.getByTestId(testId).click();
-    const newPage: T = new pageClass(this.page);
-    await waitForPageLoad.call(newPage);
-    return newPage;
+    return waitForPageLoad;
   }
 
   public async navigateToStartPage(): Promise<StartViewPage> {
-    return this.navigateTo('back-to-start-link', StartViewPage, p => p.waitForPageLoad());
+    return this.navigateTo('back-to-start-link', new StartViewPage(this.page).waitForPageLoad());
   }
 
   public async navigateToPersonManagement(): Promise<PersonManagementViewPage> {
-    return this.navigateTo('person-management-menu-item', PersonManagementViewPage, p => p.waitForPageLoad());
+    return this.navigateTo('person-management-menu-item', new PersonManagementViewPage(this.page).waitForPageLoad());
   }
 
   public async navigateToPersonCreation(): Promise<PersonCreationViewPage> {
-    return this.navigateTo('person-creation-menu-item', PersonCreationViewPage, p => p.waitForPageLoad('Neuen Benutzer hinzufügen'));
+    return this.navigateTo('person-creation-menu-item', new PersonCreationViewPage(this.page).waitForPageLoad('Neuen Benutzer hinzufügen'));
   }
 
   public async navigateToPersonImport(): Promise<PersonImportViewPage> {
-    return this.navigateTo('person-import-menu-item', PersonImportViewPage, p => p.waitForPageLoad());
+    return this.navigateTo('person-import-menu-item', new PersonImportViewPage(this.page).waitForPageLoad());
   }
 
   // TODO: implement PersonSearchViewPage
@@ -47,31 +45,31 @@ export class MenuBarPage {
   // }
 
   public async navigateToPersonAdd(): Promise<PersonCreationViewPage> {
-    return this.navigateTo('person-add-menu-item', PersonCreationViewPage, p => p.waitForPageLoad('Andere Person (neu anlegen)'));
+    return this.navigateTo('person-add-menu-item', new PersonCreationViewPage(this.page).waitForPageLoad('Andere Person (neu anlegen)'));
   }
 
   public async navigateToKlasseManagement(): Promise<KlasseManagementViewPage> {
-    return this.navigateTo('klasse-management-menu-item', KlasseManagementViewPage, p => p.waitForPageLoad());
+    return this.navigateTo('klasse-management-menu-item', new KlasseManagementViewPage(this.page).waitForPageLoad());
   }
 
   public async navigateToKlasseCreation(): Promise<KlasseCreationViewPage> {
-    return this.navigateTo('klasse-creation-menu-item', KlasseCreationViewPage, p => p.waitForPageLoad());
+    return this.navigateTo('klasse-creation-menu-item', new KlasseCreationViewPage(this.page).waitForPageLoad());
   }
 
   public async navigateToRolleManagement(): Promise<RolleManagementViewPage> {
-    return this.navigateTo('rolle-management-menu-item', RolleManagementViewPage, p => p.waitForPageLoad());
+    return this.navigateTo('rolle-management-menu-item', new RolleManagementViewPage(this.page).waitForPageLoad());
   }
 
   public async navigateToRolleCreation(): Promise<RolleCreationViewPage> {
-    return this.navigateTo('rolle-creation-menu-item', RolleCreationViewPage, p => p.waitForPageLoad());
+    return this.navigateTo('rolle-creation-menu-item', new RolleCreationViewPage(this.page).waitForPageLoad())
   }
 
   public async navigateToSchuleManagement(): Promise<SchuleManagementViewPage> {
-    return this.navigateTo('schule-management-menu-item', SchuleManagementViewPage, p => p.waitForPageLoad());
+    return this.navigateTo('schule-management-menu-item', new SchuleManagementViewPage(this.page).waitForPageLoad());
   }
 
   public async navigateToSchuleCreation(): Promise<SchuleCreationViewPage> {
-    return this.navigateTo('schule-creation-menu-item', SchuleCreationViewPage, p => p.waitForPageLoad());
+    return this.navigateTo('schule-creation-menu-item', new SchuleCreationViewPage(this.page).waitForPageLoad());
   }
 
   /* assertions */

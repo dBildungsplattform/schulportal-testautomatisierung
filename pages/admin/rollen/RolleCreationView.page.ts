@@ -1,43 +1,57 @@
-import { type Locator, Page } from '@playwright/test';
-import { RolleForm } from '../../../components/RolleForm';
-import { MenuPage } from '../../components/MenuBar.page';
-import { RolleCreationConfirmPage } from './RolleCreationConfirm.page';
+import { expect, Page } from '@playwright/test';
+import { Alert } from '../../../elements/Alert';
+import { MenuBarPage } from '../../components/MenuBar.neu.page';
+import { RolleCreationSuccessPage } from './RolleCreationSuccess.page';
+import { RolleCreationWorkflow } from './RolleCreationWorkflow.page';
+
+/* these rolle creation params are not the same as the API params,
+    here we use the displayed texts to select from input elements */
+export interface RolleCreationParams {
+  name: string;
+  administrationsebene: string;
+  rollenart: string;
+  merkmale: string[];
+  systemrechte: string[];
+  serviceProviders: string[];
+}
 
 export class RolleCreationViewPage {
-  readonly rolleForm: RolleForm;
-  readonly textH2RolleAnlegen: Locator;
-  readonly buttonSchliessen: Locator;
-  readonly buttonRolleAnlegen: Locator;
-  readonly buttonWeitereRolleAnlegen: Locator;
-  readonly buttonZurueckErgebnisliste: Locator;
-  readonly textSuccess: Locator;
-  readonly iconSuccess: Locator;
-  readonly textDatenGespeichert: Locator;
+  public readonly menu: MenuBarPage;
 
-  constructor(public readonly page: Page) {
-    // Anlage Rolle
-    this.rolleForm = new RolleForm(page);
-    this.textH2RolleAnlegen = page.getByTestId('layout-card-headline');
-    this.buttonSchliessen = page.getByTestId('close-layout-card-button');
-    this.buttonRolleAnlegen = page.getByTestId('rolle-form-submit-button');
-    this.buttonWeitereRolleAnlegen = page.getByTestId('create-another-rolle-button');
-    // Bestätigungsseite Rolle
-    this.buttonZurueckErgebnisliste = page.getByTestId('back-to-list-button');
-    this.textSuccess = page.getByTestId('rolle-success-text');
-    this.iconSuccess = page.locator('.mdi-check-circle');
-    this.textDatenGespeichert = page.getByText('Folgende Daten wurden gespeichert:');
+  constructor(protected readonly page: Page) {
+    this.menu = new MenuBarPage(this.page);
   }
 
-  public async enterRollenname(name: string): Promise<void> {
-    await this.rolleForm.enterRollenname(name);
+  /* actions */
+  public async waitForPageLoad(): Promise<RolleCreationViewPage> {
+    await this.page.getByTestId('rolle-creation-card').waitFor({ state: 'visible' });
+    await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Neue Rolle hinzufügen');
+    return this;
   }
 
-  public async createRolle(): Promise<RolleCreationConfirmPage> {
-    await this.buttonRolleAnlegen.click();
-    return new RolleCreationConfirmPage(this.page);
+  public startRolleCreationWorkflow(): RolleCreationWorkflow {
+    return new RolleCreationWorkflow(this.page);
   }
 
-  public menu(): MenuPage {
-    return new MenuPage(this.page);
+  public async createRolle(params: RolleCreationParams): Promise<RolleCreationSuccessPage> {
+    const workflow: RolleCreationWorkflow = await this.fillRolleForm(params);
+    return workflow.submit();
   }
+
+  public async createRolleWithDuplicateNameError(params: RolleCreationParams): Promise<Alert<RolleCreationViewPage>> {
+    const workflow: RolleCreationWorkflow = await this.fillRolleForm(params);
+    return workflow.submitWithDuplicateNameError();
+  }
+
+  private async fillRolleForm(params: RolleCreationParams): Promise<RolleCreationWorkflow> {
+    const workflow: RolleCreationWorkflow = this.startRolleCreationWorkflow();
+    await workflow.selectAdministrationsebene(params.administrationsebene);
+    await workflow.selectArt(params.rollenart);
+    await workflow.selectName(params.name);
+    await workflow.selectMerkmale(params.merkmale);
+    await workflow.selectSystemrechte(params.systemrechte);
+    await workflow.selectServiceProviders(params.serviceProviders);
+    return workflow;
+  }
+  /* assertions */
 }
