@@ -1,7 +1,7 @@
 import { expect, type Locator, Page } from '@playwright/test';
-import { RolleCreationParams } from './RolleCreationView.neu.page';
-import { RolleManagementViewPage } from './RolleManagementView.neu.page';
 import { Alert } from '../../../elements/Alert';
+import { RolleCreationParams } from './RolleCreationView.page';
+import { RolleManagementViewPage } from './RolleManagementView.page';
 
 export class RolleDetailsViewPage {
   constructor(protected readonly page: Page) {}

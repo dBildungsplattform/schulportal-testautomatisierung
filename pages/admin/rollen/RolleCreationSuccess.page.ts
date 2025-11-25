@@ -1,7 +1,7 @@
 import { expect, Page } from '@playwright/test';
 import { RolleForm } from '../../../components/RolleForm';
-import { RolleCreationParams, RolleCreationViewPage } from './RolleCreationView.neu.page';
-import { RolleManagementViewPage } from './RolleManagementView.neu.page';
+import { RolleCreationParams, RolleCreationViewPage } from './RolleCreationView.page';
+import { RolleManagementViewPage } from './RolleManagementView.page';
 
 export class RolleCreationSuccessPage {
   private readonly rolleForm: RolleForm;
