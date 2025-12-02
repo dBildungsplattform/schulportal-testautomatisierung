@@ -115,7 +115,7 @@ export async function createPerson(
 
     const personenkontextApi: PersonenkontextApi = constructPersonenkontextApi(page);
     const response: ApiResponse<DBiamPersonResponse> = await personenkontextApi.dbiamPersonenkontextWorkflowControllerCreatePersonWithPersonenkontexteRaw(requestParameters);
-    await expect(response.raw.status).toBe(201);
+    expect(response.raw.status).toBe(201);
 
     const createdPerson: DBiamPersonResponse = await response.value();
 
