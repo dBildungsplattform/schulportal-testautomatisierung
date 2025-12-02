@@ -61,7 +61,7 @@ export async function freshLoginPage(page: Page): Promise<LoginViewPage> {
 }
 
 function normalizeString(value: string): string {
-  return value.toLowerCase().replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue').replace(/ß/g, 'ss');
+  return value.toLowerCase().replaceAll('ä', 'ae').replaceAll('ö', 'oe').replaceAll('ü', 'ue').replaceAll('ß', 'ss');
 }
 
 function generateEmailFromName(vorname: string, familienname: string): string {
@@ -200,7 +200,7 @@ export async function removeAllPersonenkontexte(
 
     const personenkontextApi: PersonenkontextApi = constructPersonenkontextApi(page);
     const response: ApiResponse<PersonenkontexteUpdateResponse> = await personenkontextApi.dbiamPersonenkontextWorkflowControllerCommitRaw(requestParameters);
-    await expect(response.raw.status).toBe(200);
+    expect(response.raw.status).toBe(200);
   } catch (error) {
     console.error('[ERROR] removeAllPersonenkontexte failed:', error);
     throw error;

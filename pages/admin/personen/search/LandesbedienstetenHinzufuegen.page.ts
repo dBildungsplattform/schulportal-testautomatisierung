@@ -77,7 +77,7 @@ export class LandesbedienstetenHinzufuegenPage {
 
   public async additionalCheckInitialFormState(organisation : string): Promise<void> {
     await expect(this.rolleHeadline).toBeVisible();
-    await expect(this.rolleAutocomplete.isVisible()).toBeTruthy();
+    expect(this.rolleAutocomplete.isVisible()).toBeTruthy();
     await this.organisationIsFilledAndDisabled(organisation);
   }
 
@@ -96,7 +96,7 @@ export class LandesbedienstetenHinzufuegenPage {
     await this.organisationOeffnenButton.click();
     await this.organisationAutocomplete.selectByName(organisation);
     await expect(this.rolleHeadline).toBeVisible();
-    await expect(this.rolleAutocomplete.isVisible()).toBeTruthy();
+    expect(this.rolleAutocomplete.isVisible()).toBeTruthy();
   }
 
   public async assertAllMenuItemsForOrganisation(expectedOrganisations: string[]): Promise<void> {

@@ -1,5 +1,4 @@
-import { expect } from '@playwright/test';
-import { Locator, Page } from "@playwright/test";
+import { expect, Locator, Page } from "@playwright/test";
 import { SearchResultErrorDialog } from '../../../components/SearchResultErrorDialog';
 import { LandesbedienstetenSearchResultPage } from './LandesbedienstetenSearchResult.page';
 
@@ -75,10 +74,6 @@ export class LandesbedienstetenSearchFormPage {
     }
   }
 
-  // public async clickZuruecksetzen(): Promise<void> {
-  //   await this.zuruecksetzenButton.click();
-  // }
-
   public async clickLandesbedienstetenSuchen(): Promise<void> {
     await this.landesbedienstetenSuchenButton.click();
   }
@@ -141,14 +136,6 @@ export class LandesbedienstetenSearchFormPage {
     return landesbedienstetenSearchResultPage;
   }
 
-  // public async goBackToSearchForm(vorname: string, familienname: string): Promise<void> {
-  //   await this.zurueckZurSucheButton.click();
-  //   await expect(this.personalDataCardFullname).toBeHidden();
-  //   await expect(this.nameRadioInput).toBeChecked();
-  //   await expect(this.vornameInput).toHaveValue(vorname);
-  //   await expect(this.nachnameInput).toHaveValue(familienname);
-  // }
-
   public async testZuruecksetzenButtonAlleSuchtypen(): Promise<void> {
     interface ResetTestCase {
       fill: () => Promise<void> | void;
@@ -170,61 +157,6 @@ export class LandesbedienstetenSearchFormPage {
       await test.expect();
     }
   }
-
-
-  // public async resetSearchForm(): Promise<void> {
-  //   await this.zuruecksetzenButton.click();
-  //   await expect(this.personalDataCardFullname).toBeHidden();
-  //   await expect(this.nameRadioInput).toBeChecked();
-  //   await expect(this.vornameInput).toBeEmpty();
-  //   await expect(this.nachnameInput).toBeEmpty();
-  // }
-
-  
-
-  // public async landesbedienstetenHinzufuegenAlsLehrkraft(): Promise<void> {
-  //   await this.landesbedienstetenSuchenButton.click();
-  //   await this.landesbedienstetenHinzufuegenButton.click();
-  //   await this.rolleAutocomplete.selectByTitle('LiV');
-  //   await this.personCreationFormLandesbedienstetenHinzufuegenButton.click();
-  //   await this.bestaetigungspopupLandesbedienstetenHinzufuegenButton.click();
-  // }
-
-  // public async selectOrganisation(organisation: string): Promise<void> {
-  //   await this.organisationAutocomplete.selectByName(organisation);
-  //   /* after selecting an organisation, the rolle row should become visible */
-  //   await expect(this.rolleHeadline).toBeVisible();
-  //   await expect(this.rolleAutocomplete.isVisible()).toBeTruthy();
-  // }
-
-  // public async selectRolle(rolle: string): Promise<void> {
-  //   await this.rolleAutocomplete.selectByTitle(rolle);
-  // }
-
-  // public async selectRolleWithBefristung(rolle: string): Promise<void> {
-  //   await this.rolleAutocomplete.selectByTitle(rolle);
-  //   /* after selecting a rolle with a befristung, the befristung elements should become visible */
-  //   await expect(this.befristungHeadline).toBeVisible();
-  //   await expect(this.personCreationFormBefristungInput).toBeVisible();
-  //   await expect(this.schuljahresendeRadioButton).toBeVisible();
-  //   await expect(this.unbefristetRadioButton).toBeVisible();
-  //   await expect(this.schuljahresendeRadioButton).toBeChecked();
-  //   await expect(this.personCreationFormLandesbedienstetenHinzufuegenButton).toBeEnabled();
-  // }
-
-  // // TODO: this is not used yet, implement a test case for it
-  // public async cancelConfirmationDialog(): Promise<void> {
-  //   await this.bestaetigungspopupAbbrechenButton.click();
-  //   await expect(this.bestaetigungspopupHeadline).toHaveText('Landesbediensteten hinzufügen');
-  //   await expect(this.personCreationFormLandesbedienstetenHinzufuegenButton).toBeEnabled();
-  // }
-
-  // public async confirmLandesbedienstetenHinzufuegen(username: string, rolle: string): Promise<void> {
-  //   await this.personCreationFormLandesbedienstetenHinzufuegenButton.click();
-  //   await this.checkConfirmationDialog();
-  //   await expect(this.bestaetigungspopupText).toHaveText(`Wollen Sie ${username} als ${rolle} hinzufügen?`);
-  //   await this.bestaetigungspopupLandesbedienstetenHinzufuegenButton.click();
-  // }
 
   /* assertions */
   public async checkSearchForm(): Promise<void> {
@@ -248,75 +180,6 @@ export class LandesbedienstetenSearchFormPage {
   public async checkNameRadioIsChecked(): Promise<void> {
     await expect(this.nameRadioInput).toBeChecked();
   }
-
-  
-
-  // public async checkConfirmationDialog(): Promise<void> {
-  //   await expect(this.landesbedienstetenHinzufuegenHeadline).toBeVisible();
-  //   await expect(this.landesbedienstetenHinzufuegenHeadline).toHaveText('Landesbediensteten hinzufügen');
-  //   await expect(this.bestaetigungspopupText).toBeVisible();
-  //   await expect(this.bestaetigungspopupAbbrechenButton).toBeVisible();
-  //   await expect(this.bestaetigungspopupAbbrechenButton).toHaveText('Abbrechen');
-  //   await expect(this.bestaetigungspopupLandesbedienstetenHinzufuegenButton).toBeVisible();
-  //   await expect(this.bestaetigungspopupLandesbedienstetenHinzufuegenButton).toHaveText('Landesbediensteten hinzufügen');
-  // }
-  // /*
-  // TODO: Hier ist er auf der falschen Seite
-  // */
-  // public async checkMinimalCreationForm(vorname: string, nachname: string, kopersnummer: string): Promise<void> {
-  //   await expect(this.landesbedienstetenHinzufuegenHeadline).toHaveText('Landesbediensteten hinzufügen');
-  //   await expect(this.mandatoryFieldsNotice).toHaveText('Mit * markierte Felder sind Pflichtangaben.');
-  //   await expect(this.closeButton).toBeVisible();
-
-  //   await expect(this.personalInfoHeadline).toBeVisible();
-  //   await expect(this.personCreationFormVornameInput).toHaveValue(vorname);
-  //   await expect(this.personCreationFormNachnameInput).toHaveValue(nachname);
-  //   await expect(this.personCreationFormKopersInput).toHaveValue(kopersnummer);
-  //   await expect(this.hasNoKopersnrCheckbox).toBeVisible();
-
-  //   await expect(this.personCreationFormAbbrechenButton).toBeVisible();
-  //   await expect(this.personCreationFormLandesbedienstetenHinzufuegenButton).toBeDisabled();
-  // }
-
-  // public async checkCreationFormWithOrganisation(vorname: string, nachname: string, kopersnummer: string, organisationText: string): Promise<void> {
-  //   await this.checkMinimalCreationForm(vorname, nachname, kopersnummer);
-  //   await expect(this.organisationHeadline).toBeVisible();
-  //   await this.organisationAutocomplete.checkText(organisationText);
-  // }
-
-  // public async checkFullCreationForm(vorname: string, nachname: string, kopersnummer: string, organisationText: string, rolleText: string): Promise<void> {
-  //   await this.checkCreationFormWithOrganisation(vorname, nachname, kopersnummer, organisationText);
-  //   await expect(this.rolleHeadline).toBeVisible();
-  //   await this.rolleAutocomplete.checkText(rolleText);
-  // }
-
-  // public async checkSelectableOrganisationen(expectedOrganisationen: string[]): Promise<void> {
-  //   await this.organisationAutocomplete.assertAllMenuItems(expectedOrganisationen);
-  // }
-
-  // public async checkSuccessPage(vorname: string, nachname: string, kopersnummer: string, username: string, organisation: string): Promise<void> {
-  //   await expect(this.adminHeadline).toHaveText('Landesbediensteten (suchen und hinzufügen)');
-  //   await expect(this.landesbedienstetenHinzufuegenHeadline).toHaveText('Landesbediensteten hinzufügen');
-  //   await expect(this.erfolgsseiteErfolgsText).toHaveText(`${vorname} ${nachname} wurde erfolgreich hinzugefügt.`);
-  //   await expect(this.page.getByTestId('following-data-added-text')).toHaveText('Folgende Daten wurden gespeichert:');
-  //   await expect(this.page.getByTestId('added-state-employee-vorname-label')).toBeVisible();
-  //   await expect(this.page.getByTestId('added-state-employee-vorname')).toHaveText(vorname);
-  //   await expect(this.page.getByTestId('added-state-employee-familienname-label')).toBeVisible();
-  //   await expect(this.page.getByTestId('added-state-employee-familienname')).toHaveText(nachname);
-  //   await expect(this.page.getByTestId('added-state-employee-personalnummer-label')).toBeVisible();
-  //   await expect(this.page.getByTestId('added-state-employee-personalnummer')).toHaveText(kopersnummer);
-  //   await expect(this.page.getByTestId('added-state-employee-username-label')).toBeVisible();
-  //   await expect(this.page.getByTestId('added-state-employee-username')).toHaveText(username);
-  //   await expect(this.page.getByTestId('added-state-employee-organisation-label')).toBeVisible();
-  //   await expect(this.page.getByTestId('added-state-employee-organisation')).toHaveText(organisation);
-  //   await expect(this.page.getByTestId('added-state-employee-rolle-label')).toBeVisible();
-  //   await expect(this.page.getByTestId('added-state-employee-rolle')).toHaveText('LiV');
-  //   await expect(this.page.getByTestId('added-state-employee-befristung-label')).toBeVisible();
-  //   await expect(this.page.getByTestId('added-state-employee-befristung')).toBeVisible();
-  //   await expect(this.page.getByTestId('go-to-details-button')).toHaveText('Zur Gesamtübersicht');
-  //   await expect(this.page.getByTestId('back-to-list-button')).toHaveText('Zurück zur Ergebnisliste');
-  //   await expect(this.page.getByTestId('search-another-state-employee-button')).toHaveText('Weiteren Landesbediensteten suchen');
-  // }
 
   public async expectKopersRadioChecked(): Promise<void> {
     await expect(this.kopersRadioInput).toBeChecked();
