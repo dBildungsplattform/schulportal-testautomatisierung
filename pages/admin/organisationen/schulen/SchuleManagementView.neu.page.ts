@@ -10,10 +10,11 @@ export class SchuleManagementViewPage {
   constructor(protected readonly page: Page) {}
 
   /* actions */
-  public async waitForPageLoad(): Promise<void> {
+  public async waitForPageLoad(): Promise<SchuleManagementViewPage> {
     await this.page.getByTestId('schule-management-headline').waitFor({ state: 'visible' });
     await expect(this.page.getByTestId('schule-management-headline')).toHaveText('Schulverwaltung');
     await expect(this.page.getByTestId('schule-table')).not.toContainText('Keine Daten');
+    return this;
   }
 
   public async searchAndSyncItslearning(schulname: string): Promise<void> {

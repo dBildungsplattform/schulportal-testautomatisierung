@@ -1,6 +1,5 @@
 import { expect } from '@playwright/test';
 import { Locator, Page } from "@playwright/test";
-import { Autocomplete } from '../../../../elements/Autocomplete';
 import { SearchResultErrorDialog } from '../../../components/SearchResultErrorDialog';
 import { LandesbedienstetenSearchResultPage } from './LandesbedienstetenSearchResult.page';
 
@@ -29,10 +28,11 @@ export class LandesbedienstetenSearchFormPage {
   private readonly searchResultErrorDialogDoppelteTrefferText: string = "Es wurde mehr als ein Treffer gefunden. Bitte verwenden Sie zur Suche die KoPers.-Nr., die Landes-Mailadresse oder den Benutzernamen. Sollten Sie Hilfe benötigen, eröffnen Sie ein Störungsticket über den IQSH-Helpdesk.";
 
   /* actions */
-  public async waitForPageLoad(): Promise<void> {
+  public async waitForPageLoad(): Promise<LandesbedienstetenSearchFormPage> {
     await expect(this.headline).toHaveText('Landesbediensteten (suchen und hinzufügen)');
     await this.searchCardHeadline.waitFor({ state: 'visible' });
     await expect(this.searchCardHeadline).toHaveText('Landesbediensteten suchen');
+    return this;
   }
 
   public async fillKopersNr(kopersNr: string): Promise<void> {

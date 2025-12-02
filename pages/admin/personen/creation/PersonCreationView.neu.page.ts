@@ -21,9 +21,10 @@ export class PersonCreationViewPage {
   constructor(protected readonly page: Page) {}
 
   /* actions */
-  public async waitForPageLoad(expectedHeadline?: string): Promise<void> {
+  public async waitForPageLoad(expectedHeadline?: string): Promise<PersonCreationViewPage> {
     await this.page.getByTestId('create-person-headline').waitFor({ state: 'visible' });
     await expect(this.page.getByTestId('create-person-headline')).toHaveText(expectedHeadline || 'Neuen Benutzer hinzufügen');
+    return this;
   }
 
   public async fillForm(params: PersonCreationParams): Promise<void> {

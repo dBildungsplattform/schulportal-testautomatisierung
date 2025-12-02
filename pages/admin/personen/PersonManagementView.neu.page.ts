@@ -6,22 +6,19 @@ import { SearchFilter } from '../../../elements/SearchFilter';
 import { MenuBarPage } from '../../components/MenuBar.neu.page';
 
 export class PersonManagementViewPage {
-  private readonly personTable: DataTable;
-  private readonly searchFilter: SearchFilter;
-  /* since this page is the entry point for the admin area, the menu has to be public here, so other pages and tests can access it */
-  public readonly menu: MenuBarPage;
+  private readonly personTable: DataTable = new DataTable(this.page, this.page.getByTestId('person-table'));
+  private readonly searchFilter: SearchFilter = new SearchFilter(this.page);
+  public readonly menu: MenuBarPage = new MenuBarPage(this.page);
 
-  constructor(private readonly page: Page) {
-    this.menu = new MenuBarPage(page);
-    this.personTable = new DataTable(this.page, this.page.getByTestId('person-table'));
-    this.searchFilter = new SearchFilter(this.page);
+  constructor(protected readonly page: Page) {
   }
 
   /* actions */
-  public async waitForPageLoad(): Promise<void> {
+  public async waitForPageLoad(): Promise<PersonManagementViewPage> {
     await this.page.getByTestId('person-management-headline').waitFor({ state: 'visible' });
     await expect(this.page.getByTestId('person-management-headline')).toHaveText('Benutzerverwaltung');
     await expect(this.page.getByTestId('person-table')).not.toContainText('Keine Daten');
+    return this;
   }
 
   private async filterByText(text: string, testId: string, endpoint: string): Promise<void> {
