@@ -81,25 +81,15 @@ export class LandesbedienstetenHinzufuegenPage {
     await this.organisationIsFilledAndDisabled(organisation);
   }
 
-  public async vornameIsFilled(vorname: string): Promise<void> {
-    await expect(this.vornameTextInputfield).toHaveValue(vorname);
-  }
-  public async nachnameIsFilled(nachname: string): Promise<void> {
-    await expect(this.nachnameTextInputfield).toHaveValue(nachname);
-  }
-  public async kopersIsFilled(kopers: string): Promise<void> {
-    await expect(this.kopersTextInputfield).toHaveValue(kopers);
-  }
-
   public async organisationIsFilledAndDisabled(organisation: string): Promise<void> {
     await expect(this.organisationSelect.locator('.v-autocomplete__selection-text')).toHaveText(organisation);
     await expect(this.organisationSelect.locator('input')).toBeDisabled();
   }
 
   public async personalDataAreFilled(vorname: string, nachname: string, kopers: string): Promise<void> {
-    await this.vornameIsFilled(vorname);
-    await this.nachnameIsFilled(nachname);
-    await this.kopersIsFilled(kopers);
+    await expect(this.vornameTextInputfield).toHaveValue(vorname);
+    await expect(this.nachnameTextInputfield).toHaveValue(nachname);
+    await expect(this.kopersTextInputfield).toHaveValue(kopers);
   }
 
   public async selectOrganisation(organisation: string): Promise<void> {
@@ -162,6 +152,7 @@ export class LandesbedienstetenHinzufuegenPage {
   public async clickLandesbedienstetenHinzufügenOnConfirmationPopup(): Promise<LandesbedienstetenSuccessPage> {
     const landesbedienstetenSuccessPage : LandesbedienstetenSuccessPage = new LandesbedienstetenSuccessPage(this.page);
     await this.confirmPopupLandesbedienstetenHinzufuegenButton.click();
+    await landesbedienstetenSuccessPage.waitForPageLoad();
     return landesbedienstetenSuccessPage;
   }
 }

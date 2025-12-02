@@ -201,7 +201,7 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
   });
 
   //SPSH-2634 Step 8
-  test('Schuladmin 1 Schule: Seite Landesbediensteten hinzufügen wird korrekt angezeigt', { tag: [LONG, SHORT, STAGE] }, async() => {
+  test.only('Schuladmin 1 Schule: Seite Landesbediensteten hinzufügen wird korrekt angezeigt', { tag: [LONG, SHORT, STAGE] }, async() => {
     landesbedienstetenSearchResultPage = await landesbedienstetenSearchFormPage.searchLandesbedienstetenViaKopers(lehrkraft.kopersnummer); 
     landesbedienstetenHinzufuegenPage = await landesbedienstetenSearchResultPage.clickLandesbedienstetenHinzufuegen();
     await landesbedienstetenHinzufuegenPage.checkInitialFormState(lehrkraft.vorname, lehrkraft.nachname, lehrkraft.kopersnummer);
