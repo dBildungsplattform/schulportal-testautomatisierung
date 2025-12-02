@@ -28,21 +28,13 @@ export class KlasseCreationViewPage {
     return this;
   }
 
-  public async createKlasseAsLandesadmin(params: KlasseCreationParams): Promise<KlasseCreationSuccessPage> {
-    const schuleNameAutocomplete: Autocomplete = new Autocomplete(this.page, this.schuleName);
-    await schuleNameAutocomplete.searchByTitle(params.schulname, false);
-
-    await this.klasseNameInput.waitFor({ state: 'visible' });
-    await this.klasseNameInput.fill(params.klassenname);
-
-    await this.klasseAnlegenButton.waitFor({ state: 'visible' });
-    await this.klasseAnlegenButton.click();
-
-    return new KlasseCreationSuccessPage(this.page);
-  }
-
-  public async createKlasseAsSchuladmin(params: KlasseCreationParams): Promise<KlasseCreationSuccessPage> {
-    await expect(this.schuleName).toHaveText(params.schulNr + ' (' + params.schulname + ')');
+  public async createKlasse(landesadmin : boolean, params: KlasseCreationParams): Promise<KlasseCreationSuccessPage> {
+    if (landesadmin) {
+      const schuleNameAutocomplete: Autocomplete = new Autocomplete(this.page, this.schuleName);
+      await schuleNameAutocomplete.searchByTitle(params.schulname, false);
+    } else {
+      await expect(this.schuleName).toHaveText(params.schulNr + ' (' + params.schulname + ')');
+    }
 
     await this.klasseNameInput.waitFor({ state: 'visible' });
     await this.klasseNameInput.fill(params.klassenname);
