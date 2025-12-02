@@ -66,6 +66,7 @@ test.describe(`Testfälle für die Ergebnisliste von Klassen als Landesadmin: Um
 
     // letzte 100 Einträge
     await klasseErgebnislistePage.goToLastPage();
+    klasseErgebnislistePage = await klasseErgebnislistePage.waitForPageLoad();
     await klasseErgebnislistePage.checkTableData(true);
 
   });
@@ -123,16 +124,11 @@ test.describe(`Testfälle für die Ergebnisliste von Klassen als Schuladmin: Umg
     await klasseErgebnislistePage.checkUI(false);
   });
 
-  // SPSH-2855
-  test('Als Schuladmin: Jede Klasse hat eine Dienststellennummer neben dem Klassennamen (ersten und letzten 100 Einträge)', { tag: [LONG, SHORT, STAGE, BROWSER] },  async () => {
-    // erste 100 Einträge 
+  test('Als Schuladmin: Jede Klasse hat eine Dienststellennummer neben dem Klassennamen (erste 100 Einträge)', { tag: [LONG, SHORT, STAGE, BROWSER] },  async () => {
     await klasseErgebnislistePage.setItemsPerPage('100');
     await klasseErgebnislistePage.checkTableData(false);
 
-    // letzte 100 Einträge
-    await klasseErgebnislistePage.goToLastPage();
-    await klasseErgebnislistePage.checkTableData(false);
-
+    // letzte 100 Einträge macht hier keinen Sinn, da Schuladmins nicht so viele Schulen haben
   });
 
   test('Klasse als Schuladmin anlegen und Ergebnisliste prüfen', { tag: [LONG, SHORT, STAGE, BROWSER] },  async () => {
