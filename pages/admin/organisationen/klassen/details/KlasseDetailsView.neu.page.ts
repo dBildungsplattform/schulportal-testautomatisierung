@@ -12,8 +12,8 @@ export class KlasseDetailsViewPage {
 
   /* actions */
   public async waitForPageLoad(): Promise<void> {
-    await expect(this.page.getByTestId('klasse-details-card')).toBeVisible();
-    await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Klasse bearbeiten');
+    await expect(this.page.getByTestId('klasse-details-headline')).toBeVisible();
+    await expect(this.page.getByTestId('klasse-details-headline')).toHaveText('Klasse bearbeiten');
   }
 
   public async successfullyDeleteKlasse(schulname: string, klassenname: string): Promise<KlasseManagementViewPage> {

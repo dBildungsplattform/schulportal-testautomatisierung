@@ -8,16 +8,15 @@ import { MenuBarPage } from '../../components/MenuBar.neu.page';
 export class PersonManagementViewPage {
   private readonly personTable: DataTable = new DataTable(this.page, this.page.getByTestId('person-table'));
   private readonly searchFilter: SearchFilter = new SearchFilter(this.page);
-  public readonly menu: MenuBarPage;
+  public readonly menu: MenuBarPage = new MenuBarPage(this.page);
 
   constructor(protected readonly page: Page) {
-    this.menu = new MenuBarPage(this.page);
   }
 
   /* actions */
   public async waitForPageLoad(): Promise<PersonManagementViewPage> {
-    await this.page.getByTestId('admin-headline').waitFor({ state: 'visible' });
-    await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Benutzerverwaltung');
+    await this.page.getByTestId('person-management-headline').waitFor({ state: 'visible' });
+    await expect(this.page.getByTestId('person-management-headline')).toHaveText('Benutzerverwaltung');
     await expect(this.page.getByTestId('person-table')).not.toContainText('Keine Daten');
     return this;
   }
@@ -56,5 +55,4 @@ export class PersonManagementViewPage {
   public async checkHeaders(expectedHeaders: string[]): Promise<void> {
     await this.personTable.checkHeaders(expectedHeaders);
   }
-
 }

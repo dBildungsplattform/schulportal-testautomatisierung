@@ -12,7 +12,7 @@ export class RolleCreationSuccessPage {
 
   /* actions */
   public async waitForPageLoad(): Promise<RolleCreationSuccessPage> {
-    await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Neue Rolle hinzufügen');
+    await expect(this.page.getByTestId('rolle-creation-headline')).toHaveText('Neue Rolle hinzufügen');
     await expect(this.page.getByTestId('following-rolle-data-created-text')).toHaveText(
       'Folgende Daten wurden gespeichert:'
     );

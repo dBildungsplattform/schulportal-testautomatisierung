@@ -11,8 +11,8 @@ export class SchuleManagementViewPage {
 
   /* actions */
   public async waitForPageLoad(): Promise<SchuleManagementViewPage> {
-    await this.page.getByTestId('schule-management-card').waitFor({ state: 'visible' });
-    await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Schulverwaltung');
+    await this.page.getByTestId('schule-management-headline').waitFor({ state: 'visible' });
+    await expect(this.page.getByTestId('schule-management-headline')).toHaveText('Schulverwaltung');
     await expect(this.page.getByTestId('schule-table')).not.toContainText('Keine Daten');
     return this;
   }

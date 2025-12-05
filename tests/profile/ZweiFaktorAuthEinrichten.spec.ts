@@ -1,6 +1,6 @@
 import { PlaywrightTestArgs, test } from '@playwright/test';
 import { RollenArt } from '../../base/api/generated';
-import { createRolleAndPersonWithUserContext, UserInfo } from '../../base/api/personApi';
+import { createRolleAndPersonWithPersonenkontext, UserInfo } from '../../base/api/personApi';
 import { getServiceProviderId } from '../../base/api/serviceProviderApi';
 import { testschuleName } from '../../base/organisation';
 import { typeLehrer } from '../../base/rollentypen';
@@ -31,7 +31,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       await FromAnywhere(page)
         .start()
         .then((landing: LandingViewPage) => landing.navigateToLogin())
-        .then((login: LoginViewPage) => login.login())
+        .then((login: LoginViewPage) => login.login(ADMIN, PW))
         .then((startseite: StartViewPage) => startseite.serviceProvidersAreLoaded());
     });
   });
@@ -86,7 +86,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
 
       await test.step('Lehrer via API anlegen und mit diesem anmelden', async () => {
         const idSPs: string[] = [await getServiceProviderId(page, email)];
-        const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
+        const userInfo: UserInfo = await createRolleAndPersonWithPersonenkontext(
           page,
           organisation,
           rollenart,

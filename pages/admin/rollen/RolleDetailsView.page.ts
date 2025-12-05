@@ -3,40 +3,53 @@ import { Alert } from '../../../elements/Alert';
 import { RolleCreationParams } from './RolleCreationView.page';
 import { RolleManagementViewPage } from './RolleManagementView.page';
 
+
 export class RolleDetailsViewPage {
   constructor(protected readonly page: Page) {}
 
+  /* globale Lokatoren */
+  private readonly organisationSelect: Locator = this.page.getByTestId('rolle-form-organisation-select');
+  private readonly rollenartSelect: Locator = this.page.getByTestId('rollenart-select');
+  private readonly rollennameInput: Locator = this.page.getByTestId('rollenname-input').locator('input');
+  private readonly merkmaleSelect: Locator = this.page.getByTestId('merkmale-select');
+  private readonly serviceProviderSelect: Locator = this.page.getByTestId('service-provider-select');
+  private readonly systemrechteSelect: Locator = this.page.getByTestId('systemrechte-select');
+  private readonly deleteButton: Locator = this.page.getByTestId('open-rolle-delete-dialog-button');
+  private readonly editButton: Locator = this.page.getByTestId('rolle-edit-button');
+  private readonly editSubmitButton: Locator = this.page.getByTestId('rolle-changes-save-button');
+  private readonly deleteConfirmText: Locator = this.page.getByTestId('rolle-delete-confirmation-text');
+  private readonly deleteConfirmButton: Locator = this.page.getByTestId('rolle-delete-button');
+  private readonly deleteSuccessCloseButton: Locator = this.page.getByTestId('close-rolle-delete-success-dialog-button');
+  private readonly successText: Locator = this.page.getByTestId('rolle-success-text');
+  private readonly successIcon: Locator = this.page.getByTestId('rolle-success-icon');
+  private readonly updatedRolleName: Locator = this.page.getByTestId('updated-rolle-name');
+
   /* actions */
   public async waitForPageLoad(): Promise<RolleDetailsViewPage> {
-    await this.page.getByTestId('rolle-details-card').waitFor({ state: 'visible' });
-    await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Rolle bearbeiten');
+    await expect(this.page.getByTestId('rolle-details-headline')).toHaveText('Rolle bearbeiten');
     return this;
   }
 
   public async editRolle(rollenname: string): Promise<void> {
-    const rolleNameInput: Locator = this.page.getByTestId('rollenname-input').locator('input');
-    const editRolleButton: Locator = this.page.getByTestId('rolle-edit-button');
-    const editRolleSubmitButton: Locator = this.page.getByTestId('rolle-changes-save-button');
+    await this.editButton.waitFor({ state: 'visible' });
+    await this.editButton.click();
 
-    await editRolleButton.waitFor({ state: 'visible' });
-    await editRolleButton.click();
+    await this.rollennameInput.waitFor({ state: 'visible' });
+    await this.rollennameInput.fill(rollenname);
 
-    await rolleNameInput.waitFor({ state: 'visible' });
-    await rolleNameInput.fill(rollenname);
-
-    await editRolleSubmitButton.waitFor({ state: 'visible' });
-    await editRolleSubmitButton.click();
+    await this.editSubmitButton.waitFor({ state: 'visible' });
+    await this.editSubmitButton.click();
   }
 
   public async deleteRolle(): Promise<RolleManagementViewPage> {
     await this.clickDeleteAndConfirm();
-    await this.page.getByTestId('close-rolle-delete-success-dialog-button').click();
+    await this.deleteSuccessCloseButton.click();
     return new RolleManagementViewPage(this.page).waitForPageLoad();
   }
 
   public async attemptDeletionOfAssignedRolle(): Promise<Alert<RolleManagementViewPage>> {
     await this.clickDeleteAndConfirm();
-    const alert = new Alert<RolleManagementViewPage>(
+    const alert: Alert<RolleManagementViewPage> = new Alert<RolleManagementViewPage>(
       this.page,
       {
         title: 'Löschen nicht möglich',
@@ -54,38 +67,37 @@ export class RolleDetailsViewPage {
   }
 
   private async clickDeleteAndConfirm(): Promise<void> {
-    await this.page.getByTestId('open-rolle-delete-dialog-button').click();
-    await expect(this.page.getByTestId('rolle-delete-confirmation-text')).toHaveText('Wollen Sie die Rolle sofort und endgültig löschen?');
-    await this.page.getByTestId('rolle-delete-button').click();
+    await this.deleteButton.click();
+    await expect(this.deleteConfirmText).toHaveText('Wollen Sie die Rolle sofort und endgültig löschen?');
+    await this.deleteConfirmButton.click();
   }
 
   /* assertions */
   public async rolleSuccessfullyEdited(rollenname: string): Promise<void> {
-    await expect(this.page.getByTestId('rolle-success-text')).toHaveText('Die Rolle wurde erfolgreich geändert.');
-    await expect(this.page.getByTestId('rolle-success-icon')).toBeVisible();
-    await expect(this.page.getByTestId('updated-rolle-name')).toHaveText(rollenname);
+    await expect(this.successText).toHaveText('Die Rolle wurde erfolgreich geändert.');
+    await expect(this.successIcon).toBeVisible();
+    await expect(this.updatedRolleName).toHaveText(rollenname);
   }
 
   public async checkGesamtuebersicht(params: RolleCreationParams): Promise<void> {
-    await expect(this.page.getByTestId('rolle-form-organisation-select')).toContainText(params.administrationsebene);
+    await expect(this.organisationSelect).toContainText(params.administrationsebene);
 
-    await expect(this.page.getByTestId('rollenart-select')).toContainText(params.rollenart);
+    await expect(this.rollenartSelect).toContainText(params.rollenart);
 
-    await expect(this.page.locator('#rollenname-input')).toHaveValue(params.name);
-
+    await expect(this.rollennameInput).toHaveValue(params.name);
     for (const merkmal of params.merkmale) {
-      await expect(this.page.getByTestId('merkmale-select')).toContainText(merkmal);
+      await expect(this.merkmaleSelect).toContainText(merkmal);
     }
 
     for (const systemrecht of params.systemrechte) {
-      await expect(this.page.getByTestId('systemrechte-select')).toContainText(systemrecht);
+      await expect(this.systemrechteSelect).toContainText(systemrecht);
     }
 
     for (const provider of params.serviceProviders) {
-      await expect(this.page.getByTestId('service-provider-select')).toContainText(provider);
+      await expect(this.serviceProviderSelect).toContainText(provider);
     }
 
-    await expect(this.page.getByTestId('open-rolle-delete-dialog-button')).toBeVisible();
-    await expect(this.page.getByTestId('rolle-edit-button')).toBeVisible();
+    await expect(this.deleteButton).toBeVisible();
+    await expect(this.editButton).toBeVisible();
   }
 }

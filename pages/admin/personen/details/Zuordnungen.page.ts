@@ -26,7 +26,7 @@ export class ZuordnungenPage {
 
   public async selectZuordnungToEdit(params: ZuordnungValidationParams): Promise<void> {
     const expectedText: string = this.buildExpectedTextForZuordnung(params);
-    await this.page.getByTestId('person-details-card').getByText(expectedText).click();
+    await this.page.getByTestId('person-zuordnungen-section-edit').getByText(expectedText).click();
   }
 
   public async startAddZuordnungWorkflow(): Promise<AddZuordnungWorkflowPage> {

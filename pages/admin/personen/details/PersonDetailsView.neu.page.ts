@@ -22,10 +22,8 @@ export class PersonDetailsViewPage {
   }
 
   /* actions */
-
   public async waitForPageLoad(): Promise<void> {
-    await this.page.getByTestId('person-details-card').waitFor({ state: 'visible' });
-    await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Benutzer bearbeiten');
+    await expect(this.page.getByTestId('person-details-headline')).toHaveText('Benutzer bearbeiten');
   }
 
   public async changePassword(fullName: string): Promise<void> {

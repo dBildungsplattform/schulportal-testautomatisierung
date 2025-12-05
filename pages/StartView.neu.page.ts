@@ -1,6 +1,5 @@
 import { expect, Locator, Page, Response } from '@playwright/test';
 import { PersonManagementViewPage } from './admin/personen/PersonManagementView.neu.page';
-
 export class StartViewPage {
   /* add global locators here */
   readonly startCardHeadline: Locator;
@@ -19,6 +18,13 @@ export class StartViewPage {
   public async navigateToAdministration(): Promise<PersonManagementViewPage> {
     await this.page.locator('[data-testid^="service-provider-card"]').filter({ hasText: 'Schulportal-Administration' }).click();
     return new PersonManagementViewPage(this.page).waitForPageLoad();
+  }
+
+  public async goToAdministration(): Promise<PersonManagementViewPage> {
+    await this.page.locator('[data-testid^="service-provider-card"]').filter({ hasText: 'Schulportal-Administration' }).click();
+    const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(this.page);
+    await personManagementView.waitForPageLoad();
+    return personManagementView;
   }
 
   /* assertions */

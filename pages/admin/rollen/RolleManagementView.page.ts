@@ -3,15 +3,15 @@ import { RolleDetailsViewPage } from './RolleDetailsView.page';
 import { DataTable } from '../../components/DataTable.neu.page';
 
 export class RolleManagementViewPage {
-  /* add global locators here */
+  /* globale Lokatoren */
   private readonly rolleTable: DataTable = new DataTable(this.page, this.page.getByTestId('rolle-table'));
 
   constructor(protected readonly page: Page) {}
 
   /* actions */
   public async waitForPageLoad(): Promise<RolleManagementViewPage> {
-    await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Rollenverwaltung');
-    await expect(this.page.getByTestId('rolle-table')).not.toContainText('Keine Daten');
+    await expect(this.page.getByTestId('rolle-management-headline')).toHaveText('Rollenverwaltung');
+    await this.rolleTable.waitForPageLoad();
     return this;
   }
 
@@ -39,6 +39,6 @@ export class RolleManagementViewPage {
       .locator('td')
       .nth(4);
 
-    await expect(serviceProviderCell).toContainText(serviceProviders);
+    await Promise.all(serviceProviders.map((provider: string) => expect(serviceProviderCell).toContainText(provider)));
   }
 }

@@ -24,8 +24,7 @@ export class RolleCreationViewPage {
 
   /* actions */
   public async waitForPageLoad(): Promise<RolleCreationViewPage> {
-    await this.page.getByTestId('rolle-creation-card').waitFor({ state: 'visible' });
-    await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Neue Rolle hinzufügen');
+    await expect(this.page.getByTestId('rolle-creation-headline')).toHaveText('Neue Rolle hinzufügen');
     return this;
   }
 

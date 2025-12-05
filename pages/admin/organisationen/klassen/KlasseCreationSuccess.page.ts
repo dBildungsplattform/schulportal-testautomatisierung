@@ -4,7 +4,7 @@ import { KlasseManagementViewPage } from './KlasseManagementView.neu.page';
 
 export class KlasseCreationSuccessPage  {
   /* add global locators here */
-  private readonly headline: Locator = this.page.getByTestId('layout-card-headline');
+  private readonly headline: Locator = this.page.getByTestId('klasse-creation-headline');
 
   constructor(protected readonly page: Page) {}
 
