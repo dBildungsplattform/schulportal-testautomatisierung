@@ -49,7 +49,7 @@ test.describe(`Testfälle für die Rollenlöschung: Umgebung: ${process.env.ENV}
   // SPSH-2949
   test('Vergebene Rolle löschen und Fehlermeldung prüfen', async ({ page }: PlaywrightTestArgs) => {
     await test.step('Rolle einer Person zuordnen', async () => {
-      await createPersonWithPersonenkontext(page, testschuleName, generateNachname(), generateVorname(), rolleName);
+      await createPersonWithPersonenkontext(page, testschuleName, rolleName, generateVorname(), generateNachname());
     });
     const alert: Alert<RolleManagementViewPage> = await rolleDetailsView.attemptDeletionOfAssignedRolle();
     await alert.assertExpectedTexts();

@@ -77,6 +77,7 @@ test.describe(`Testfälle für die Rollenanlage: Umgebung: ${process.env.ENV}: U
         const params: RolleCreationParams = { ...baseRolleParams, name: generateRolleName() };
         const rolleCreationSuccessPage: RolleCreationSuccessPage = await createRolleStep(rolleCreationPage, params);
         await rolleCreationSuccessPage.waitForPageLoad();
+        await rolleCreationSuccessPage.checkSuccessPage(params);
         const rolleManagementViewPage: RolleManagementViewPage = await rolleCreationSuccessPage.backToResultList();
         await rolleManagementViewPage.setPageSize('300');
         await rolleManagementViewPage.checkIfRolleExists(params.name);

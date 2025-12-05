@@ -10,7 +10,7 @@ export class RolleManagementViewPage {
 
   /* actions */
   public async waitForPageLoad(): Promise<RolleManagementViewPage> {
-    await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Rollenverwaltung');
+    await expect(this.page.getByTestId('rolle-management-headline')).toHaveText('Rollenverwaltung');
     await expect(this.page.getByTestId('rolle-table')).not.toContainText('Keine Daten');
     return this;
   }
@@ -39,6 +39,6 @@ export class RolleManagementViewPage {
       .locator('td')
       .nth(4);
 
-    await expect(serviceProviderCell).toContainText(serviceProviders);
+    await Promise.all(serviceProviders.map((provider: string) => expect(serviceProviderCell).toContainText(provider)));
   }
 }
