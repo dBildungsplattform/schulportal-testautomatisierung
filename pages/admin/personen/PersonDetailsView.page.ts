@@ -266,11 +266,12 @@ export class PersonDetailsViewPage {
     testschuleName: string,
     nameRolle: string,
     textColor: string,
-    befristungLehrerRolle: string
+    befristungLehrerRolle: string,
+    sectionTestId: string
   ): Promise<void> {
     await expect(
       this.page
-        .getByTestId('person-details-card')
+        .getByTestId(sectionTestId)
         .getByText(dstNr + ' (' + testschuleName + '): ' + nameRolle + ' (befristet bis ' + befristungLehrerRolle + ')')
     ).toHaveCSS('color', textColor);
   }
