@@ -6,7 +6,7 @@ import { klasse1Testschule } from '../../base/klassen';
 import { rollenMerkmalLabel } from '../../base/merkmale';
 import { testschuleName } from '../../base/organisation';
 import { rollenArtLabel } from '../../base/rollentypen';
-import { generateNachname, generateRolleName, generateVorname } from '../../base/utils/generateTestdata';
+import { generateRolleName } from '../../base/utils/generateTestdata';
 import { Alert } from '../../elements/Alert';
 import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.neu.page';
 import { RolleCreationSuccessPage } from '../../pages/admin/rollen/RolleCreationSuccess.page';
@@ -61,7 +61,7 @@ test.describe(`Testfälle für die Rollenanlage: Umgebung: ${process.env.ENV}: U
         const params: RolleCreationParams = { ...baseRolleParams, name: generateRolleName() };
         const rolleCreationSuccessPage: RolleCreationSuccessPage = await createRolleStep(rolleCreationPage, params);
         const rolleDetailsView: RolleDetailsViewPage = await test.step('Zur Gesamtübersicht navigieren', async () => {
-          await rolleCreationSuccessPage.waitForPageLoad();
+          await rolleCreationSuccessPage.checkSuccessPage(params);
           const rolleManagementViewPage: RolleManagementViewPage = await rolleCreationSuccessPage.backToResultList();
           await rolleManagementViewPage.setPageSize('300');
           return await rolleManagementViewPage.openGesamtuebersicht(params.name);
@@ -88,11 +88,10 @@ test.describe(`Testfälle für die Rollenanlage: Umgebung: ${process.env.ENV}: U
         page,
       }: PlaywrightTestArgs) => {
         const params: RolleCreationParams = { ...baseRolleParams, name: generateRolleName() };
-        await createRolleStep(rolleCreationPage, params);
+        const rolleCreationSuccessPage: RolleCreationSuccessPage = await createRolleStep(rolleCreationPage, params);
+        await rolleCreationSuccessPage.checkSuccessPage(params);
         const organisationId: string = await getOrganisationId(page, testschuleName);
         const rolleId: string = await getRolleId(page, params.name);
-        const familienname: string = generateNachname();
-        const vorname: string = generateVorname();
         const klasseId: string | undefined =
           params.rollenart === rollenArtLabel.LERN ? await getOrganisationId(page, klasse1Testschule) : undefined;
         const merkmalNames: Set<RollenMerkmal> = new Set<RollenMerkmal>(
@@ -103,8 +102,8 @@ test.describe(`Testfälle für die Rollenanlage: Umgebung: ${process.env.ENV}: U
           page,
           organisationId,
           rolleId,
-          familienname,
-          vorname,
+          undefined,
+          undefined,
           undefined,
           klasseId,
           merkmalNames
