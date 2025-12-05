@@ -4,21 +4,28 @@ export class DataTable {
     /* since the table is within Vuetify's jurisdiction,
         we cannot specify test ids for Playwright and heavily rely on classes as locators */
     readonly tableLocator: Locator;
+    readonly footer: Locator
 
     constructor(protected readonly page: Page, locator: Locator) {
         this.tableLocator = locator;
+        this.footer = this.page.locator('.v-data-table-footer');
     }
 
     /* actions */
-    public getItemByText(expectedText: string): Locator {
-      return this.tableLocator.getByRole('cell', { name: expectedText, exact: true });
+
+    public async waitForPageLoad(): Promise<void> {
+      await expect(this.tableLocator).not.toContainText('Keine Daten');
     }
 
-    public async setItemsPerPageNew(value: string): Promise<void> {
-      const footer: Locator = this.page.locator('.v-data-table-footer');
-      await footer.locator('i.v-select__menu-icon').first().click();
+    public getItemByText(expectedText: string): Locator {
+      return this.tableLocator.locator(`tr:has-text("${expectedText}")`);
+    }
+
+    public async setItemsPerPage(value: string): Promise<void> {
+      await this.footer.locator('.v-data-table-footer__items-per-page .v-field__append-inner').click();
       await this.page.locator(`.v-list-item:has-text("${value}")`).click();
-      await expect(footer.locator('.v-select__selection-text')).toHaveText(value);
+      await expect(this.footer.locator('.v-select__selection-text')).toHaveText(value);
+      await expect(this.page.locator('.v-overlay')).toBeHidden();
     }
   
     public async goToFirstPage(): Promise<void> {
