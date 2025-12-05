@@ -8,13 +8,9 @@ export class RolleDetailsViewPage {
   constructor(protected readonly page: Page) {}
 
   /* globale Lokatoren */
-  private readonly detailsCard: Locator = this.page.getByTestId('rolle-details-card');
-  private readonly headline: Locator = this.page.getByTestId('rolle-details-headline');
-  private readonly closeButton: Locator = this.page.getByTestId('close-layout-card-button');
-  private readonly form: Locator = this.page.getByTestId('rolle-form');
   private readonly organisationSelect: Locator = this.page.getByTestId('rolle-form-organisation-select');
   private readonly rollenartSelect: Locator = this.page.getByTestId('rollenart-select');
-  private readonly rollennameInput: Locator = this.page.getByTestId('rollenname-input');
+  private readonly rollennameInput: Locator = this.page.getByTestId('rollenname-input').locator('input');
   private readonly merkmaleSelect: Locator = this.page.getByTestId('merkmale-select');
   private readonly serviceProviderSelect: Locator = this.page.getByTestId('service-provider-select');
   private readonly systemrechteSelect: Locator = this.page.getByTestId('systemrechte-select');
@@ -30,8 +26,7 @@ export class RolleDetailsViewPage {
 
   /* actions */
   public async waitForPageLoad(): Promise<RolleDetailsViewPage> {
-    await this.headline.waitFor({ state: 'visible' });
-    await expect(this.headline).toHaveText('Rolle bearbeiten');
+    await expect(this.page.getByTestId('rolle-details-headline')).toHaveText('Rolle bearbeiten');
     return this;
   }
 
@@ -39,9 +34,8 @@ export class RolleDetailsViewPage {
     await this.editButton.waitFor({ state: 'visible' });
     await this.editButton.click();
 
-    const rollennameInputField: Locator = this.rollennameInput.locator('input');
-    await rollennameInputField.waitFor({ state: 'visible' });
-    await rollennameInputField.fill(rollenname);
+    await this.rollennameInput.waitFor({ state: 'visible' });
+    await this.rollennameInput.fill(rollenname);
 
     await this.editSubmitButton.waitFor({ state: 'visible' });
     await this.editSubmitButton.click();

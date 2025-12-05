@@ -13,7 +13,7 @@ export class RolleCreationWorkflow {
 
   /* actions */
   public async waitForPageLoad(): Promise<void> {
-    await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Neue Rolle hinzufügen');
+    await expect(this.page.getByTestId('rolle-creation-headline')).toHaveText('Neue Rolle hinzufügen');
   }
 
   public async selectAdministrationsebene(schulname: RolleCreationParams['administrationsebene']): Promise<void> {

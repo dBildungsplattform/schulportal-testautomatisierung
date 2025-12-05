@@ -4,14 +4,13 @@ import { DataTable } from '../../components/DataTable.neu.page';
 
 export class RolleManagementViewPage {
   /* globale Lokatoren */
-  private readonly headline: Locator = this.page.getByTestId('rolle-management-headline');
   private readonly rolleTable: DataTable = new DataTable(this.page, this.page.getByTestId('rolle-table'));
 
   constructor(protected readonly page: Page) {}
 
   /* actions */
   public async waitForPageLoad(): Promise<RolleManagementViewPage> {
-    await expect(this.headline).toHaveText('Rollenverwaltung');
+    await expect(this.page.getByTestId('rolle-management-headline')).toHaveText('Rollenverwaltung');
     await this.rolleTable.waitForPageLoad();
     return this;
   }
@@ -40,6 +39,6 @@ export class RolleManagementViewPage {
       .locator('td')
       .nth(4);
 
-    await expect(serviceProviderCell).toContainText(serviceProviders);
+    await Promise.all(serviceProviders.map((provider: string) => expect(serviceProviderCell).toContainText(provider)));
   }
 }

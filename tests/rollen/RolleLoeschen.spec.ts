@@ -30,6 +30,7 @@ test.describe(`Testfälle für die Rollenlöschung: Umgebung: ${process.env.ENV}
     personManagementView = await startPage.goToAdministration();
     rolleManagementViewPage = await personManagementView.menu.navigateToRolleManagement();
     await rolleManagementViewPage.setPageSize('300');
+    rolleDetailsView = await rolleManagementViewPage.openGesamtuebersicht(rolleName);
   });
 
   test.afterEach(async ({ page }: PlaywrightTestArgs) => {
@@ -38,7 +39,6 @@ test.describe(`Testfälle für die Rollenlöschung: Umgebung: ${process.env.ENV}
   });
 
   test('Erfolgreich löschen', async () => {
-    rolleDetailsView = await rolleManagementViewPage.openGesamtuebersicht(rolleName);
     rolleManagementViewPage = await rolleDetailsView.deleteRolle();
     await rolleManagementViewPage.setPageSize('300');
     await rolleManagementViewPage.checkIfRolleDoesNotExist(rolleName);
@@ -46,8 +46,9 @@ test.describe(`Testfälle für die Rollenlöschung: Umgebung: ${process.env.ENV}
 
   // SPSH-2949
   test('Vergebene Rolle löschen und Fehlermeldung prüfen', async ({ page }: PlaywrightTestArgs) => {
-    await test.step('Person mit Rolle anlegen', async () => createPersonWithPersonenkontext(page, testschuleName, rolleName));
-    rolleDetailsView = await rolleManagementViewPage.openGesamtuebersicht(rolleName);
+    await test.step('Rolle einer Person zuordnen', async () => {
+      await createPersonWithPersonenkontext(page, testschuleName, rolleName);
+    });
     const alert: Alert<RolleManagementViewPage> = await rolleDetailsView.attemptDeletionOfAssignedRolle();
     await alert.assertExpectedTexts();
     rolleManagementViewPage = await (await alert.confirm()).waitForPageLoad();

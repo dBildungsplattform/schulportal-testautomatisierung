@@ -77,6 +77,7 @@ test.describe(`Testfälle für die Rollenanlage: Umgebung: ${process.env.ENV}: U
         const params: RolleCreationParams = { ...baseRolleParams, name: generateRolleName() };
         const rolleCreationSuccessPage: RolleCreationSuccessPage = await createRolleStep(rolleCreationPage, params);
         await rolleCreationSuccessPage.waitForPageLoad();
+        await rolleCreationSuccessPage.checkSuccessPage(params);
         const rolleManagementViewPage: RolleManagementViewPage = await rolleCreationSuccessPage.backToResultList();
         await rolleManagementViewPage.setPageSize('300');
         await rolleManagementViewPage.checkIfRolleExists(params.name);
@@ -132,6 +133,7 @@ test.describe(`Testfälle für die Rollenanlage: Umgebung: ${process.env.ENV}: U
     let rolleCreationSuccessPage: RolleCreationSuccessPage =
       await test.step(`Rolle vom Typ ${rolle1.rollenart} anlegen`, async () => {
         const rolleCreationSuccessPage: RolleCreationSuccessPage = await rolleCreationPage.createRolle(rolle1);
+        await rolleCreationSuccessPage.checkSuccessPage(rolle1);
         return rolleCreationSuccessPage;
       });
 
@@ -141,6 +143,7 @@ test.describe(`Testfälle für die Rollenanlage: Umgebung: ${process.env.ENV}: U
 
     await test.step(`Rolle vom Typ ${rolle2.rollenart} anlegen`, async () => {
       rolleCreationSuccessPage = await rolleCreationPage.createRolle(rolle2);
+      await rolleCreationSuccessPage.checkSuccessPage(rolle2);
     });
 
     await test.step('Ergebnisliste prüfen', async () => {
