@@ -16,7 +16,7 @@ dotenv.config({ path: path.resolve(dirname, '.env'), override: true });
 
 export default defineConfig({
   testDir: './tests',
-  timeout: 30 * 2000,
+  timeout: 60 * 1000,
   expect: { timeout: 10000 },
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
