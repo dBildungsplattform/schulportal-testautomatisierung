@@ -751,10 +751,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
       await test.step('Schüler versetzen', async () => {
         await personDetailsView.buttonEditSchulzuordnung.click();
-        await page
-          .getByTestId('person-details-card')
-          .getByText(testschuleDstNr + ' (' + testschuleName + '): ' + rolleName + ' ' + klasseNameCurrent)
-          .click();
+        const labelText : string = `${testschuleDstNr} (${testschuleName}): ${rolleName} ${klasseNameCurrent}`;
+        await page.locator(`label:has-text("${labelText}")`).click();
         await personDetailsView.buttonVersetzen.click();
         await personDetailsView.klassenVersetzen.searchByTitle(klasseNameNew, false);
         await page.getByTestId('klasse-change-submit-button').click();
@@ -767,13 +765,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       });
 
       await test.step('In der Gesamtübersicht prüfen, dass der Schüler in die neue Klasse versetzt worden ist', async () => {
-        await expect(
-          page
-            .getByTestId('person-details-card')
-            .getByText(testschuleDstNr + ' (' + testschuleName + '): ' + rolleName + ' ' + klasseNameNew)
-        ).toBeVisible();
+        const expectedText: string = `${testschuleDstNr} (${testschuleName}): ${rolleName} ${klasseNameNew}`;
+        await expect(page.locator('.text-body', { hasText: expectedText })).toBeVisible();
       });
-
+      
       logoutViaStartPage = true;
     }
   );

@@ -491,9 +491,9 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       });
 
       await test.step(`Suche nach Dienststellennummer `, async () => {
-        await personManagementView.inputSuchfeld.fill('0056357');
+        await personManagementView.inputSuchfeld.fill(kopersnr);
         await personManagementView.buttonSuchen.click();
-        await expect(page.getByRole('cell', { name: 'ssuperadmin', exact: true })).toBeVisible();
+        await expect(page.getByRole('cell', { name: nachname })).toBeVisible();
       });
 
       await test.step(`Suche mit leerer Ergebnisliste. Geprüft wird das der Text "Keine Daten gefunden." gefunden wird, danach wird gepüft dass die Tabelle 0 Zeilen hat.`, async () => {

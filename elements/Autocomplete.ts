@@ -11,7 +11,7 @@ export class Autocomplete {
 
   constructor(private readonly page: Page, private readonly locator: Locator) {
     this.overlayLocator = this.page.locator('div.v-overlay.v-menu');
-    this.itemsLocator = this.page.locator('div.v-overlay.v-menu div.v-list-item');
+    this.itemsLocator = this.page.locator('.v-overlay .v-list-item');
     this.modalToggle = this.locator.locator('.v-field__append-inner');
     this.inputLocator = this.locator.locator('input');
     this.loadingLocator = this.locator.locator('.v-field__loader');

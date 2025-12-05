@@ -14,16 +14,13 @@ export class DataTable {
       return this.tableLocator.getByRole('cell', { name: expectedText, exact: true });
     }
 
-    public async setItemsPerPage(value: string): Promise<void> {
-      await this.page.locator('.v-data-table-footer__items-per-page .v-field__append-inner').click();
-      await expect(this.page.locator('.v-overlay')).toBeVisible();
-      await expect(this.page.locator('.v-overlay').getByText(value, { exact: true })).toBeVisible();
-      await this.page.locator('.v-overlay').getByText(value, { exact: true }).click({
-        force: true
-      });
-      await expect(this.page.locator('.v-overlay')).toBeHidden();
+    public async setItemsPerPageNew(value: string): Promise<void> {
+      const footer: Locator = this.page.locator('.v-data-table-footer');
+      await footer.locator('i.v-select__menu-icon').first().click();
+      await this.page.locator(`.v-list-item:has-text("${value}")`).click();
+      await expect(footer.locator('.v-select__selection-text')).toHaveText(value);
     }
-
+  
     public async goToFirstPage(): Promise<void> {
       await this.page.locator('.v-pagination__first button:not(.v-btn--disabled)').click();
     }

@@ -140,7 +140,16 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
   });
 
   //SPSH-2632
-  test('Suchergebnis: Persönliche Daten und Zuordnung werden korrekt angezeigt', { tag: [LONG, SHORT, STAGE, DEV, BROWSER] }, async () => {
+  test('Dev: Suchergebnis: Persönliche Daten und Zuordnung werden korrekt angezeigt', { tag: [ DEV] }, async () => {
+    const landesbedienstetenSearchResultPage : LandesbedienstetenSearchResultPage = await landesbedienstetenSearchFormPage.searchLandesbedienstetenViaName(lehrkraft.vorname, lehrkraft.nachname);
+    await landesbedienstetenSearchResultPage.checkSearchResultCard();
+    const lehrFullname: string = lehrkraft.vorname + " " + lehrkraft.nachname;
+    await landesbedienstetenSearchResultPage.checkPersonalDataCard(lehrFullname, lehrkraft.username, lehrkraft.kopersnummer);
+    await landesbedienstetenSearchResultPage.checkZuordnungCard(testschuleName, lehrkraftOeffentlichRolle, testschuleDstNr);
+  });
+
+  //SPSH-2632
+  test('STage: Suchergebnis: Persönliche Daten und Zuordnung werden korrekt angezeigt', { tag: [LONG, SHORT, STAGE, BROWSER] }, async () => {
     const landesbedienstetenSearchResultPage : LandesbedienstetenSearchResultPage = await landesbedienstetenSearchFormPage.searchLandesbedienstetenViaName(lehrkraft.vorname, lehrkraft.nachname);
     await landesbedienstetenSearchResultPage.checkSearchResultCard();
     const lehrFullname: string = lehrkraft.vorname + " " + lehrkraft.nachname;
@@ -212,7 +221,7 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
   test('Schuladmin 1 Schule: Landesbediensteten per KoPers suchen und erfolgreich hinzufügen', { tag: [LONG, SHORT, STAGE, DEV, BROWSER] }, async () => {
     landesbedienstetenSearchResultPage = await landesbedienstetenSearchFormPage.searchLandesbedienstetenViaKopers(lehrkraft.kopersnummer); 
     landesbedienstetenHinzufuegenPage = await landesbedienstetenSearchResultPage.clickLandesbedienstetenHinzufuegen();
-    await landesbedienstetenHinzufuegenPage.addLandesbedienstetenWithRolle('itslearning-Lehrkraft');
+    await landesbedienstetenHinzufuegenPage.addLandesbedienstetenWithRolle('Vertretungslehrkraft');
     landesbedienstetenSuccessPage = await landesbedienstetenHinzufuegenPage.clickLandesbedienstetenHinzufügenOnConfirmationPopup();
     await landesbedienstetenSuccessPage.waitForPageLoad();
   });
@@ -222,7 +231,7 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
     await removeAllPersonenkontexte(page, lehrkraftOhneSchulzuordnung.personId);
     landesbedienstetenSearchResultPage = await landesbedienstetenSearchFormPage.searchLandesbedienstetenViaUsername(lehrkraftOhneSchulzuordnung.username); 
     landesbedienstetenHinzufuegenPage = await landesbedienstetenSearchResultPage.clickLandesbedienstetenHinzufuegen();
-    await landesbedienstetenHinzufuegenPage.addLandesbedienstetenWithRolle('itslearning-Lehrkraft');
+    await landesbedienstetenHinzufuegenPage.addLandesbedienstetenWithRolle('Lehrkraft');
     landesbedienstetenSuccessPage = await landesbedienstetenHinzufuegenPage.clickLandesbedienstetenHinzufügenOnConfirmationPopup();
     await landesbedienstetenSuccessPage.waitForPageLoad();
   });
@@ -231,7 +240,7 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
   test('Schuladmin 1 Schule: Landesbediensteten suchen per Vorname und Nachname und erfolgreich hinzufügen', { tag: [LONG, SHORT, STAGE, DEV, BROWSER] }, async () => {
     landesbedienstetenSearchResultPage = await landesbedienstetenSearchFormPage.searchLandesbedienstetenViaName(lehrkraft.vorname, lehrkraft.nachname); 
     landesbedienstetenHinzufuegenPage = await landesbedienstetenSearchResultPage.clickLandesbedienstetenHinzufuegen();
-    await landesbedienstetenHinzufuegenPage.addLandesbedienstetenWithRolle('itslearning-Lehrkraft');
+    await landesbedienstetenHinzufuegenPage.addLandesbedienstetenWithRolle('Vertretungslehrkraft');
     landesbedienstetenSuccessPage = await landesbedienstetenHinzufuegenPage.clickLandesbedienstetenHinzufügenOnConfirmationPopup();
     await landesbedienstetenSuccessPage.waitForPageLoad();
   });

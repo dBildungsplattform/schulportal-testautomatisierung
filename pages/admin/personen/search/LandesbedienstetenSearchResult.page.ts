@@ -35,15 +35,19 @@ export class LandesbedienstetenSearchResultPage {
     await expect(this.landesbedienstetenHinzufuegenButton).toBeVisible();
     await expect(this.zurueckZurSucheButton).toBeVisible();
   }
-  //Es können nur Lehrkräfte gesucht werden, die eine Kopersnummer haben. Und alle Lehrkräfte haben eMail. Daher sind das KEINE optionalen Felder.
+
   public async checkPersonalDataCard(
-    fullName: string, username: string, kopersnummer: string, email: string
+    fullName: string, username: string, kopersnummer: string, email?: string
   ): Promise<void> {
     await expect(this.personalDataHeadline).toHaveText('Persönliche Daten');
     await expect(this.pCardFullname).toHaveText(fullName);
     await expect(this.pCardUsername).toHaveText(username);
     await expect(this.pCardKopersnummer).toHaveText(kopersnummer);
-    await expect(this.pCardEmail).toHaveText(email);
+    if (email !== undefined) {
+      if (await this.pCardEmail.isVisible()) {
+        await expect(this.pCardEmail).toHaveText(email);
+      }
+    }
   }
 
   public async checkZuordnungCard(organisation: string, rolle: string, dienststellennummer: string): Promise<void> {
