@@ -540,8 +540,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     'Eine Lehrkraft anlegen und Ihren Kontext entfernen dann wieder hinzufügen und den LDAP Inhalt vollständig prüfen',
     { tag: [LONG, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
-      test.setTimeout(120 * 1000);
-
       const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
       let personDetailsView: PersonDetailsViewPage = new PersonDetailsViewPage(page);
       const rolle: string = 'Lehrkraft';
@@ -640,8 +638,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     'Eine Lehrkraft anlegen in der Rolle Landesadmin und die Bestätigungsseite sowie den LDAP Inhalt vollständig prüfen',
     { tag: [LONG, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
-      test.setTimeout(120 * 1000);
-
       const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
       const rolleNames: string[] = ['Lehrkraft'];
       const vorname: string = generateVorname();
