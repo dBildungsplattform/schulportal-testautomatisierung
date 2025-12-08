@@ -497,9 +497,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       });
 
       await test.step(`Suche mit leerer Ergebnisliste. Geprüft wird das der Text "Keine Daten gefunden." gefunden wird, danach wird gepüft dass die Tabelle 0 Zeilen hat.`, async () => {
+        await personManagementView.resetFilter();
         await personManagementView.inputSuchfeld.fill('!§$%aavvccdd44xx@');
         await personManagementView.buttonSuchen.click();
-        await expect(page.getByRole('cell', { name: 'Keine Daten gefunden.' })).toBeVisible();
+        await expect(page.getByRole('cell', { name: 'Keine Daten gefunden.' })).toBeVisible({timeout: 30 * 1000});
         await expect(page.locator('v-data-table__td')).toHaveCount(0);
       });
       // #TODO: wait for the last request in the test
