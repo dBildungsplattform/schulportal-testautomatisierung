@@ -86,7 +86,7 @@ export class PersonCreationViewPage {
     this.inputEinstiegsPasswort = page.locator('[data-testid="password-output-field"] input');
     this.buttonZurueckErgebnisliste = page.getByTestId('back-to-list-button');
     this.buttonWeiterenBenutzerAnlegen = page.getByTestId('create-another-person-button');
-    this.buttonOpenGesamtuebersicht = page.getByTestId('to-details-button');
+    this.buttonOpenGesamtuebersicht = page.getByTestId('go-to-details-button');
 
     this.listboxRolle = page.locator('.v-list');
   }
