@@ -33,7 +33,7 @@ export class KlasseCreationViewPage {
       const schuleNameAutocomplete: Autocomplete = new Autocomplete(this.page, this.schuleName);
       await schuleNameAutocomplete.searchByTitle(params.schulname, false);
     } else {
-      await expect(this.schuleName).toHaveText(params.schulNr + ' (' + params.schulname + ')');
+      await expect(this.schuleName).toHaveText(`${params.schulNr} (${params.schulname})`);
     }
 
     await this.klasseNameInput.waitFor({ state: 'visible' });
