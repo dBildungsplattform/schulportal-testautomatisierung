@@ -55,7 +55,7 @@ test.describe(`Testfälle für die Ergebnisliste von Klassen als Landesadmin: Um
 
   // SPSH-2853
   test('Als Landesadmin: Klasse Ergebnisliste: UI prüfen', { tag: [LONG, SHORT, STAGE, BROWSER] },  async () => {
-    await klasseErgebnislistePage.checkUI(true);
+    await klasseErgebnislistePage.checkManagementPage(true);
   });
 
   // SPSH-2855
@@ -121,7 +121,7 @@ test.describe(`Testfälle für die Ergebnisliste von Klassen als Schuladmin: Umg
   });
 
   test('Als Schuladmin: Klasse Ergebnisliste: UI prüfen', { tag: [LONG, SHORT, STAGE, BROWSER] },  async () => {
-    await klasseErgebnislistePage.checkUI(false);
+    await klasseErgebnislistePage.checkManagementPage(false);
   });
 
   test('Als Schuladmin: Jede Klasse hat eine Dienststellennummer neben dem Klassennamen (erste 100 Einträge)', { tag: [LONG, SHORT, STAGE, BROWSER] },  async () => {

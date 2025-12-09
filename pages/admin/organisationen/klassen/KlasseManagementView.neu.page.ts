@@ -79,7 +79,7 @@ export class KlasseManagementViewPage {
   }
 
   /* assertions */
-  public async checkUI(landesadmin: boolean): Promise<void> {
+  public async checkManagementPage(landesadmin: boolean): Promise<void> {
     await expect(this.page.getByTestId('admin-headline')).toHaveText('Administrationsbereich');
     await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Klassenverwaltung');
     await expect(this.page.getByTestId('klassen-management-schule-select')).toBeVisible();
