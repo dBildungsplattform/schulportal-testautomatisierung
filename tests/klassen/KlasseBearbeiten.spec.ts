@@ -14,7 +14,7 @@ import { landSH, testschuleDstNr, testschuleName } from '../../base/organisation
 import { generateKlassenname } from '../../base/utils/generateTestdata';
 import { landesadminRolle, schuladminOeffentlichRolle } from '../../base/rollen';
 
-let header:  HeaderPage;
+let header: HeaderPage;
 let landingPage: LandingViewPage;
 let loginPage: LoginViewPage;
 let personManagementViewPage: PersonManagementViewPage;

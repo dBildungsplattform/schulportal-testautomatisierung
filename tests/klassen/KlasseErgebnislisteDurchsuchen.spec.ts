@@ -13,7 +13,7 @@ import { landesadminRolle, schuladminOeffentlichRolle } from '../../base/rollen'
 import { generateKlassenname } from '../../base/utils/generateTestdata';
 import { createPersonWithPersonenkontext, freshLoginPage, UserInfo } from '../../base/api/personApi';
 
-let header:  HeaderPage;
+let header: HeaderPage;
 let landingPage: LandingViewPage;
 let loginPage: LoginViewPage;
 let personManagementViewPage: PersonManagementViewPage;
