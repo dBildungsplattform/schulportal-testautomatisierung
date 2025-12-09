@@ -3,19 +3,12 @@ import { Autocomplete } from '../../../elements/Autocomplete';
 import { DataTable } from '../../components/DataTable.neu.page';
 import { PersonDetailsViewPage } from './details/PersonDetailsView.neu.page';
 import { SearchFilter } from '../../../elements/SearchFilter';
-import { HeaderPage } from '../../components/Header.neu.page';
-import { MenuBarPage } from '../../components/MenuBar.neu.page';
 
 export class PersonManagementViewPage {
-  readonly menu: MenuBarPage;
-  readonly header: HeaderPage;
   private readonly personTable: DataTable = new DataTable(this.page, this.page.getByTestId('person-table'));
   private readonly searchFilter: SearchFilter = new SearchFilter(this.page);
 
-  constructor(protected readonly page: Page) {
-    this.menu = new MenuBarPage(page);
-    this.header = new HeaderPage(page);
-  }
+  constructor(protected readonly page: Page) {}
 
   /* actions */
   public async waitForPageLoad(): Promise<PersonManagementViewPage> {
