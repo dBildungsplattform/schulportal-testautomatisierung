@@ -50,20 +50,12 @@ export class MenuBarPage {
     return this.navigateTo('person-add-menu-item', new PersonCreationViewPage(this.page).waitForPageLoad('Andere Person (neu anlegen)'));
   }
 
-  //public async navigateToKlasseManagement(): Promise<KlasseManagementViewPage> {
-  //  return this.navigateTo('klasse-management-menu-item', KlasseManagementViewPage, p => p.waitForPageLoad());
-  //}
-
   public async navigateToKlasseManagement(): Promise<KlasseManagementViewPage> {  
     await this.klasseManagement.click();
     const klasseManagementViewPage: KlasseManagementViewPage = new KlasseManagementViewPage(this.page);
     await klasseManagementViewPage.waitForPageLoad();
     return klasseManagementViewPage;
   }
-
-  //public async navigateToKlasseCreation(): Promise<KlasseCreationViewPage> {
-  //  return this.navigateTo('klasse-creation-menu-item', KlasseCreationViewPage, p => p.waitForPageLoad());
-  //}
 
   public async navigateToKlasseCreation(): Promise<KlasseCreationViewPage> {
     await this.klasseCreation.click();
