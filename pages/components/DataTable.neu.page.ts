@@ -64,30 +64,6 @@ export class DataTable {
     await expect(tableRowsCount).toEqual(expectedRowCount);
   }
 
-  public async checkTableData(landesadmin: boolean): Promise<void> {
-    const tableRows: Locator = this.tableLocator.locator('tbody tr.v-data-table__tr');
-    const tableRowsCount: number = await tableRows.count();
-    for (let i: number = 0; i < tableRowsCount; i++) {
-      await this.checkTableRow(i, landesadmin);
-    }
-  } 
-
-  private async checkTableRow(i: number, landesadmin: boolean): Promise<void> {
-    const tableRows: Locator = this.tableLocator.locator('tbody tr.v-data-table__tr');
-    const klassennameCell: Locator = tableRows
-      .nth(i)
-      .locator('td')
-      .nth(landesadmin ? 2 : 1);
-    await expect(klassennameCell).toBeVisible();
-    await expect(klassennameCell).not.toBeEmpty();
-
-    if (!landesadmin) return;
-    const dienststellennummerCell: Locator = tableRows.nth(i).locator('td').nth(1);
-    await expect(dienststellennummerCell).toBeVisible();
-    await expect(dienststellennummerCell).not.toHaveText('---');
-    await expect(dienststellennummerCell).toHaveText(new RegExp(/\W+/));
-  }
-
   public async checkIfItemIsNotVisible(expectedText: string): Promise<void> {
     await expect(this.tableLocator.getByRole('cell', { name: expectedText, exact: true })).toBeHidden();
   }
