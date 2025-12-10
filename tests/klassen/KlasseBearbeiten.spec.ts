@@ -63,7 +63,7 @@ let admin: UserInfo;
       };
     });
 
-    // SPSH-2856
+    // SPSH-2856 & SPSH-2857
     test(`Klasse bearbeiten als ${bezeichnung}`, { tag: [LONG, SHORT, STAGE, BROWSER] },  async () => {
       await test.step(`Klasse anlegen`, async () => {
         klasseErfolgreichAngelegtPage = await klasseAnlegenPage.createKlasse(rolleName == landesadminRolle, klasseParams);
