@@ -20,99 +20,54 @@ let personManagementViewPage: PersonManagementViewPage;
 let klasseAnlegenPage : KlasseCreationViewPage;
 let klasseErfolgreichAngelegtPage : KlasseCreationSuccessPage;
 let klasseParams : KlasseCreationParams;
-let landesadmin: UserInfo;
-let schuladmin: UserInfo;
+let admin: UserInfo;
 
-/*
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx Landesadmin xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-*/
-test.describe(`Testfälle für das Anlegen von Klassen als Landesadmin: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
-  test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
+[
+  { organisationsName: landSH, rolleName: landesadminRolle, bezeichnung: 'Landesadmin' },
+  { organisationsName: testschuleName, rolleName: schuladminOeffentlichRolle, bezeichnung: 'Schuladmin' },
+].forEach(({ organisationsName, rolleName, bezeichnung }: { organisationsName: string; rolleName: string; bezeichnung: string }) => {
+  test.describe(`Testfälle für das Anlegen von Klassen als ${bezeichnung}: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
+    test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
 
-    header = new HeaderPage(page);
-    loginPage = await freshLoginPage(page);
-    await loginPage.login(process.env.USER, process.env.PW);
+      header = new HeaderPage(page);
+      loginPage = await freshLoginPage(page);
+      await loginPage.login(process.env.USER, process.env.PW);
 
-    landesadmin = await createPersonWithPersonenkontext(page, landSH, landesadminRolle);
+      admin = await createPersonWithPersonenkontext(page, organisationsName, rolleName);
 
-    landingPage = await header.logout();
-    landingPage.navigateToLogin();
+      landingPage = await header.logout();
+      landingPage.navigateToLogin();
 
-    // Erstmalige Anmeldung mit Passwortänderung
-    const startPage: StartViewPage = await loginPage.loginNewUserWithPasswordChange(landesadmin.username, landesadmin.password)
-    await startPage.waitForPageLoad();
+      // Erstmalige Anmeldung mit Passwortänderung
+      const startPage: StartViewPage = await loginPage.loginNewUserWithPasswordChange(admin.username, admin.password)
+      await startPage.waitForPageLoad();
 
-    // Navigation zur Klassenanlage
-    personManagementViewPage = await startPage.goToAdministration();
-    klasseAnlegenPage = await personManagementViewPage.menu.navigateToKlasseCreation();
+      // Navigation zur Klassenanlage
+      personManagementViewPage = await startPage.goToAdministration();
+      klasseAnlegenPage = await personManagementViewPage.menu.navigateToKlasseCreation();
 
-    // Testdaten vorbereiten
-    klasseParams = {
-      schulname: testschuleName,
-      klassenname: await generateKlassenname()
-    };
-  });
-
-  test('Klasse anlegen: UI prüfen', { tag: [LONG, SHORT, STAGE, BROWSER] }, async () => {
-    await klasseAnlegenPage.checkCreateForm();
-  });
-
-  // SPSH-2854
-  test('Klasse als Landesadmin anlegen und Bestätigungsseite prüfen', { tag: [LONG, SHORT, STAGE, BROWSER] },  async () => {
-    await test.step(`Klasse anlegen`, async () => {
-      klasseErfolgreichAngelegtPage = await klasseAnlegenPage.createKlasse(true, klasseParams);
+      // Testdaten vorbereiten
+      klasseParams = {
+        schulname: testschuleName,
+        klassenname: await generateKlassenname(),
+        schulNr: testschuleDstNr
+      };
     });
 
-    await test.step(`Bestätigungsseite prüfen`, async () => {
-      await klasseErfolgreichAngelegtPage.waitForPageLoad();
-      await klasseErfolgreichAngelegtPage.checkSuccessPage(klasseParams);
-    });
-  });
-});
-
-/*
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx Schuladmin xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-*/
-test.describe(`Testfälle für das Anlegen von Klassen als Schuladmin: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
-  test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
-
-    header = new HeaderPage(page);
-    loginPage = await freshLoginPage(page);
-    await loginPage.login(process.env.USER, process.env.PW);
-
-    schuladmin = await createPersonWithPersonenkontext(page, testschuleName, schuladminOeffentlichRolle);
-
-    landingPage = await header.logout();
-    landingPage.navigateToLogin();
-
-    // Erstmalige Anmeldung mit Passwortänderung
-    const startPage: StartViewPage = await loginPage.loginNewUserWithPasswordChange(schuladmin.username, schuladmin.password)
-    await startPage.waitForPageLoad();
-
-    // Navigation zur Klassenanlage
-    personManagementViewPage = await startPage.goToAdministration();
-    klasseAnlegenPage = await personManagementViewPage.menu.navigateToKlasseCreation(); 
-
-    // Testdaten vorbereiten
-    klasseParams = {
-      schulname: testschuleName,
-      klassenname: await generateKlassenname(),
-      schulNr: testschuleDstNr
-    };
-  });
-
-  test('Klasse anlegen: UI prüfen', { tag: [LONG, SHORT, STAGE, BROWSER] }, async () => {
-    await klasseAnlegenPage.checkCreateForm();
-  });
-
-  test('Klasse als Schuladmin anlegen und Bestätigungsseite prüfen', { tag: [LONG, SHORT, STAGE, BROWSER] },  async () => {
-    await test.step(`Klasse anlegen`, async () => {
-      klasseErfolgreichAngelegtPage = await klasseAnlegenPage.createKlasse(false, klasseParams);
+    test(`Klasse als ${bezeichnung} anlegen: UI prüfen`, { tag: [LONG, SHORT, STAGE, BROWSER] }, async () => {
+      await klasseAnlegenPage.checkCreateForm();
     });
 
-    await test.step(`Bestätigungsseite prüfen`, async () => {
-      await klasseErfolgreichAngelegtPage.waitForPageLoad();
-      await klasseErfolgreichAngelegtPage.checkSuccessPage(klasseParams);
+    // SPSH-2854
+    test(`Klasse als ${bezeichnung} anlegen und Bestätigungsseite prüfen`, { tag: [LONG, SHORT, STAGE, BROWSER] },  async () => {
+      await test.step(`Klasse anlegen`, async () => {
+        klasseErfolgreichAngelegtPage = await klasseAnlegenPage.createKlasse(rolleName == landesadminRolle, klasseParams);
+      });
+
+      await test.step(`Bestätigungsseite prüfen`, async () => {
+        await klasseErfolgreichAngelegtPage.waitForPageLoad();
+        await klasseErfolgreichAngelegtPage.checkSuccessPage(klasseParams);
+      });
     });
   });
 });
