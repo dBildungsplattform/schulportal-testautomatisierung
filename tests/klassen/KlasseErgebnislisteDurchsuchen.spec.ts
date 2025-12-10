@@ -23,9 +23,7 @@ let klasseErgebnislistePage : KlasseManagementViewPage;
 let klasseParams : KlasseCreationParams;
 let admin: UserInfo;
 
-/*
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx Landesadmin xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-*/
+
 [
   { organisationsName: landSH, rolleName: landesadminRolle, bezeichnung: 'Landesadmin' },
   { organisationsName: testschuleName, rolleName: schuladminOeffentlichRolle, bezeichnung: 'Schuladmin' },
