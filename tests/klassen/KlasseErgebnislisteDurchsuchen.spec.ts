@@ -21,131 +21,81 @@ let klasseAnlegenPage : KlasseCreationViewPage;
 let klasseErfolgreichAngelegtPage : KlasseCreationSuccessPage;
 let klasseErgebnislistePage : KlasseManagementViewPage;
 let klasseParams : KlasseCreationParams;
-let landesadmin: UserInfo;
-let schuladmin: UserInfo;
+let admin: UserInfo;
 
 /*
 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx Landesadmin xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 */
-test.describe(`Testfälle für die Ergebnisliste von Klassen als Landesadmin: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
-  test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
-    header = new HeaderPage(page);
-    loginPage = await freshLoginPage(page);
-    await loginPage.login(process.env.USER, process.env.PW);
+[
+  { organisationsName: landSH, rolleName: landesadminRolle, bezeichnung: 'Landesadmin' },
+  { organisationsName: testschuleName, rolleName: schuladminOeffentlichRolle, bezeichnung: 'Schuladmin' },
+].forEach(({ organisationsName, rolleName, bezeichnung }: { organisationsName: string; rolleName: string; bezeichnung: string }) => {
+  test.describe(`Testfälle für die Ergebnisliste von Klassen als ${bezeichnung}: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
+    test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
+      header = new HeaderPage(page);
+      loginPage = await freshLoginPage(page);
+      await loginPage.login(process.env.USER, process.env.PW);
 
-    landesadmin = await createPersonWithPersonenkontext(page, landSH, landesadminRolle);
+      admin = await createPersonWithPersonenkontext(page, organisationsName, rolleName);
 
-    landingPage = await header.logout();
-    landingPage.navigateToLogin();
+      landingPage = await header.logout();
+      landingPage.navigateToLogin();
 
-    // Erstmalige Anmeldung mit Passwortänderung
-    const startPage: StartViewPage = await loginPage.loginNewUserWithPasswordChange(landesadmin.username, landesadmin.password)
-    await startPage.waitForPageLoad();
+      // Erstmalige Anmeldung mit Passwortänderung
+      const startPage: StartViewPage = await loginPage.loginNewUserWithPasswordChange(admin.username, admin.password)
+      await startPage.waitForPageLoad();
 
-    // Navigation zur Ergebnisliste von Klassen
-    personManagementViewPage = await startPage.goToAdministration();  
-    klasseErgebnislistePage = await personManagementViewPage.menu.navigateToKlasseManagement();
+      // Navigation zur Ergebnisliste von Klassen
+      personManagementViewPage = await startPage.goToAdministration();  
+      klasseErgebnislistePage = await personManagementViewPage.menu.navigateToKlasseManagement();
 
-    // Testdaten vorbereiten
-    klasseParams = {
-      schulname: testschuleName,
-      klassenname: await generateKlassenname()
-    };
-  });
-
-  // SPSH-2853
-  test('Als Landesadmin: Klasse Ergebnisliste: UI prüfen', { tag: [LONG, SHORT, STAGE, BROWSER] },  async () => {
-    await klasseErgebnislistePage.checkManagementPage(true);
-  });
-
-  // SPSH-2855
-  test('Als Landesadmin: Jede Klasse hat eine Dienststellennummer neben dem Klassennamen (ersten und letzten 100 Einträge)', { tag: [LONG, SHORT, STAGE, BROWSER] },  async () => {
-    // erste 100 Einträge 
-    await klasseErgebnislistePage.setItemsPerPage('100');
-    await klasseErgebnislistePage.checkTableData(true);
-
-    // letzte 100 Einträge
-    await klasseErgebnislistePage.goToLastPage();
-    klasseErgebnislistePage = await klasseErgebnislistePage.waitForPageLoad();
-    await klasseErgebnislistePage.checkTableData(true);
-
-  });
-
-  test('Klasse als Landesadmin anlegen und Ergebnisliste prüfen', { tag: [LONG, SHORT, STAGE, BROWSER] },  async () => {
-    await test.step(`Klasse anlegen`, async () => {
-      klasseAnlegenPage = await personManagementViewPage.menu.navigateToKlasseCreation();
-      await klasseAnlegenPage.waitForPageLoad();
-      klasseErfolgreichAngelegtPage = await klasseAnlegenPage.createKlasse(true, klasseParams);
-      await klasseErfolgreichAngelegtPage.waitForPageLoad();
-      await klasseErfolgreichAngelegtPage.checkSuccessPage(klasseParams);
+      // Testdaten vorbereiten
+      klasseParams = {
+        schulname: testschuleName,
+        klassenname: await generateKlassenname(),
+        schulNr: testschuleDstNr
+      };
     });
 
-    await test.step(`In der Ergebnisliste prüfen, dass die neue Klasse angezeigt wird`, async () => {
-      klasseErgebnislistePage = await klasseErfolgreichAngelegtPage.goBackToList();
-      await klasseErgebnislistePage.waitForPageLoad();
-      await klasseErgebnislistePage.filterBySchule(klasseParams.schulname);
-      await klasseErgebnislistePage.filterByKlasse(klasseParams.klassenname);
-      await klasseErgebnislistePage.checkIfKlasseExists(klasseParams.klassenname);
-    });
-  });
-});
-
-/*
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx Schuladmin xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-*/
-test.describe(`Testfälle für die Ergebnisliste von Klassen als Schuladmin: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
-  test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
-    header = new HeaderPage(page);
-    loginPage = await freshLoginPage(page);
-    await loginPage.login(process.env.USER, process.env.PW);
-
-    schuladmin = await createPersonWithPersonenkontext(page, testschuleName, schuladminOeffentlichRolle);
-
-    landingPage = await header.logout();
-    landingPage.navigateToLogin();
-
-    // Erstmalige Anmeldung mit Passwortänderung
-    const startPage: StartViewPage = await loginPage.loginNewUserWithPasswordChange(schuladmin.username, schuladmin.password)
-    await startPage.waitForPageLoad();
-
-    // Navigation zur Ergebnisliste von Klassen
-    personManagementViewPage = await startPage.goToAdministration();  
-    klasseErgebnislistePage = await personManagementViewPage.menu.navigateToKlasseManagement();
-
-    // Testdaten vorbereiten
-    klasseParams = {
-      schulname: testschuleName,
-      klassenname: await generateKlassenname(),
-      schulNr: testschuleDstNr
-    };
-  });
-
-  test('Als Schuladmin: Klasse Ergebnisliste: UI prüfen', { tag: [LONG, SHORT, STAGE, BROWSER] },  async () => {
-    await klasseErgebnislistePage.checkManagementPage(false);
-  });
-
-  test('Als Schuladmin: Jede Klasse hat eine Dienststellennummer neben dem Klassennamen (erste 100 Einträge)', { tag: [LONG, SHORT, STAGE, BROWSER] },  async () => {
-    await klasseErgebnislistePage.setItemsPerPage('100');
-    await klasseErgebnislistePage.checkTableData(false);
-
-    // letzte 100 Einträge macht hier keinen Sinn, da Schuladmins nicht so viele Schulen haben
-  });
-
-  test('Klasse als Schuladmin anlegen und Ergebnisliste prüfen', { tag: [LONG, SHORT, STAGE, BROWSER] },  async () => {
-    await test.step(`Klasse anlegen`, async () => {
-      klasseAnlegenPage = await personManagementViewPage.menu.navigateToKlasseCreation();
-      await klasseAnlegenPage.waitForPageLoad();
-      klasseErfolgreichAngelegtPage = await klasseAnlegenPage.createKlasse(false, klasseParams);
-      await klasseErfolgreichAngelegtPage.waitForPageLoad();
-      await klasseErfolgreichAngelegtPage.checkSuccessPage(klasseParams);
+    // SPSH-2853
+    test(`Als ${bezeichnung}: Klasse Ergebnisliste: UI prüfen`, { tag: [LONG, SHORT, STAGE, BROWSER] },  async () => {
+      await klasseErgebnislistePage.checkManagementPage(rolleName == landesadminRolle);
     });
 
-    await test.step(`In der Ergebnisliste prüfen, dass die neue Klasse angezeigt wird`, async () => {
-      klasseErgebnislistePage = await klasseErfolgreichAngelegtPage.goBackToList();
-      await klasseErgebnislistePage.waitForPageLoad();
-      await klasseErgebnislistePage.checkIfSchuleIsCorrect(klasseParams);
-      await klasseErgebnislistePage.filterByKlasse(klasseParams.klassenname);
-      await klasseErgebnislistePage.checkIfKlasseExists(klasseParams.klassenname);
+    // SPSH-2855
+    test(`Als ${bezeichnung}: Jede Klasse hat eine Dienststellennummer neben dem Klassennamen (ersten und letzten 100 Einträge)`, { tag: [LONG, SHORT, STAGE, BROWSER] },  async () => {
+      // erste 100 Einträge 
+      await klasseErgebnislistePage.setItemsPerPage('100');
+      await klasseErgebnislistePage.checkTableData(rolleName == landesadminRolle);
+
+      // letzte 100 Einträge (nur für Landesadmin)
+      if (rolleName == landesadminRolle) {
+        await klasseErgebnislistePage.goToLastPage();
+        klasseErgebnislistePage = await klasseErgebnislistePage.waitForPageLoad();
+        await klasseErgebnislistePage.checkTableData(rolleName == landesadminRolle);
+      }
+    });
+
+    test(`Klasse als ${bezeichnung} anlegen und Ergebnisliste prüfen`, { tag: [LONG, SHORT, STAGE, BROWSER] },  async () => {
+      await test.step(`Klasse anlegen`, async () => {
+        klasseAnlegenPage = await personManagementViewPage.menu.navigateToKlasseCreation();
+        await klasseAnlegenPage.waitForPageLoad();
+        klasseErfolgreichAngelegtPage = await klasseAnlegenPage.createKlasse(rolleName == landesadminRolle, klasseParams);
+        await klasseErfolgreichAngelegtPage.waitForPageLoad();
+        await klasseErfolgreichAngelegtPage.checkSuccessPage(klasseParams);
+      });
+
+      await test.step(`In der Ergebnisliste prüfen, dass die neue Klasse angezeigt wird`, async () => {
+        klasseErgebnislistePage = await klasseErfolgreichAngelegtPage.goBackToList();
+        await klasseErgebnislistePage.waitForPageLoad();
+        if (rolleName == landesadminRolle) {
+          await klasseErgebnislistePage.filterBySchule(klasseParams.schulname);
+        } else {
+          await klasseErgebnislistePage.checkIfSchuleIsCorrect(klasseParams);
+        }
+        await klasseErgebnislistePage.filterByKlasse(klasseParams.klassenname);
+        await klasseErgebnislistePage.checkIfKlasseExists(klasseParams.klassenname);
+      });
     });
   });
 });
