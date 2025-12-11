@@ -110,9 +110,8 @@ export class LandesbedienstetenSearchFormPage {
 
   public async searchLandesbedienstetenViaKopers(kopers: string): Promise<LandesbedienstetenSearchResultPage> {
     await this.fillKopersNr(kopers);
-    const landesbedienstetenSearchResultPage: LandesbedienstetenSearchResultPage = new LandesbedienstetenSearchResultPage(this.page);
     await this.clickLandesbedienstetenSuchen();
-    return landesbedienstetenSearchResultPage;
+    return new LandesbedienstetenSearchResultPage(this.page);
   }
 
   public async searchLandesbedienstetenViaEmail(email: string): Promise<LandesbedienstetenSearchResultPage> {
