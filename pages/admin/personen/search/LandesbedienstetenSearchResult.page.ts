@@ -9,7 +9,6 @@ export class LandesbedienstetenSearchResultPage {
 
   private readonly headline: Locator = this.page.getByTestId('layout-card-headline-search-result');
   // Persönliche Daten
- // private readonly personalDataCard: Locator = this.page.getByTestId('personal-data-card').nth(1);
   private readonly personalDataHeadline: Locator = this.page.getByTestId('layout-card-headline-personal-data');
   private readonly pCardFullname: Locator = this.page.getByTestId('fullname-value');
   private readonly pCardUsername: Locator = this.page.getByTestId('username-value');
@@ -17,7 +16,6 @@ export class LandesbedienstetenSearchResultPage {
   private readonly pCardEmail: Locator = this.page.getByTestId('person-email-value');
 
   // Schulzuordnung
-  //private readonly zuordnungCard: Locator = this.page.getByTestId('zuordnung-card-1');
   private readonly zuordnungHeadline: Locator = this.page.getByTestId('zuordnung-card-1-headline');
   private readonly zCardOrganisation: Locator = this.page.getByTestId('organisation-value-1');
   private readonly zCardRolle: Locator = this.page.getByTestId('rolle-value-1');
