@@ -106,8 +106,7 @@ export class LandesbedienstetenHinzufuegenPage {
     await this.landesbedienstetenHinzufuegenButton.click();
   }
 
-  public async verifyAddEmployeePopupIsShown(organisation: string, rolle: string, username: string): Promise<void> {
-    await this.addLandesbedienstetenWithOrgaAndRolle(organisation, rolle);
+  public async verifyAddEmployeePopupIsShown(rolle: string, username: string): Promise<void> {
     await expect(this.confirmPopupHeadline).toHaveText('Landesbediensteten hinzufügen');
     await expect(this.confirmPopupText).toBeVisible();
     await expect(this.confirmPopupAbbrechenButton).toBeVisible();

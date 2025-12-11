@@ -302,7 +302,8 @@ test.describe('Testfälle für Landesbediensteten hinzufügen, Funktion und UI-V
   });
   //SPSH-2634 Step 5
   test('Schuladmin 2 Schulen: Bestätigungs-Popup wird angezeigt mit korrektem Text', { tag: [LONG, SHORT, STAGE] }, async() => {
-    await landesbedienstetenHinzufuegenPage.verifyAddEmployeePopupIsShown(testschule665DstNrUndName, lehrkraftOeffentlichRolle, lehrkraft.username);
+    await landesbedienstetenHinzufuegenPage.addLandesbedienstetenWithOrgaAndRolle(testschule665DstNrUndName, lehrkraftOeffentlichRolle);
+    await landesbedienstetenHinzufuegenPage.verifyAddEmployeePopupIsShown(lehrkraftOeffentlichRolle, lehrkraft.username);
   });
 
   //SPSH-2634 Step 6
