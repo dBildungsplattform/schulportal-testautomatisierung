@@ -63,7 +63,9 @@ export async function freshLoginPage(page: Page): Promise<LoginViewPage> {
 function normalizeString(value: string): string {
   return value.toLowerCase().replaceAll('ä', 'ae').replaceAll('ö', 'oe').replaceAll('ü', 'ue').replaceAll('ß', 'ss');
 }
-
+/** 
+ * Does not implement complete generation logic, but should work, if names are unique.
+ */
 function generateEmailFromName(vorname: string, familienname: string): string {
   return `${normalizeString(vorname)}.${normalizeString(familienname)}@schule-sh.de`;
 }
