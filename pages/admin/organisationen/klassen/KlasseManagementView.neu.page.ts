@@ -9,9 +9,11 @@ export class KlasseManagementViewPage {
   /* add global locators here */
   private readonly klasseTable: DataTable;
   private readonly searchFilter: SearchFilter;
+  private readonly table: Locator;
 
   constructor(protected readonly page: Page) {
-    this.klasseTable = new DataTable(this.page, this.page.getByTestId('klasse-table'));
+    this.table = this.page.getByTestId('klasse-table');
+    this.klasseTable = new DataTable(this.page, this.table);
     this.searchFilter = new SearchFilter(this.page);
   }
 
@@ -19,7 +21,7 @@ export class KlasseManagementViewPage {
   public async waitForPageLoad(): Promise<KlasseManagementViewPage> {
     await this.page.getByTestId('klasse-management-card').waitFor({ state: 'visible' });
     await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Klassenverwaltung');
-    await expect(this.page.getByTestId('klasse-table')).not.toContainText('Keine Daten');
+    await expect(this.table).not.toContainText('Keine Daten');
     return this;
   }
 
@@ -114,15 +116,11 @@ export class KlasseManagementViewPage {
   }
 
   public async checkTableData(landesadmin: boolean): Promise<void> {
-    const tableRows: Locator = this.page.getByTestId('klasse-table').locator('tbody tr.v-data-table__tr');
-    const tableRowsCount: number = await tableRows.count();
-    for (let i: number = 0; i < tableRowsCount; i++) {
-      await this.checkTableRow(i, landesadmin);
-    }
-  } 
+    await this.klasseTable.checkTableData(this.table, (i: number) => this.checkTableRow(i, landesadmin));
+  }
 
   private async checkTableRow(i: number, landesadmin: boolean): Promise<void> {
-    const tableRows: Locator = this.page.getByTestId('klasse-table').locator('tbody tr.v-data-table__tr');
+    const tableRows: Locator = this.table.locator('tbody tr.v-data-table__tr');
     const klassennameCell: Locator = tableRows
       .nth(i)
       .locator('td')

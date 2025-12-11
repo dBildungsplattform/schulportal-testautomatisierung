@@ -64,6 +64,14 @@ export class DataTable {
     await expect(tableRowsCount).toEqual(expectedRowCount);
   }
 
+  public async checkTableData(table: Locator, checkTableRow: (i: number) => Promise<void>): Promise<void> {
+    const tableRows: Locator = table.locator('tbody tr.v-data-table__tr');
+    const tableRowsCount: number = await tableRows.count();
+    for (let i: number = 0; i < tableRowsCount; i++) {
+      await checkTableRow(i);
+    }
+  }
+
   public async checkIfItemIsNotVisible(expectedText: string): Promise<void> {
     await expect(this.tableLocator.getByRole('cell', { name: expectedText, exact: true })).toBeHidden();
   }
