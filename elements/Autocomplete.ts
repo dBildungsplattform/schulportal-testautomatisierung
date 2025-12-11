@@ -160,4 +160,8 @@ export class Autocomplete {
   public async isVisible(): Promise<void> {
     await expect(this.locator).toBeVisible();
   }  
+
+  public async isDisabled(): Promise<void> {
+    await expect(this.inputLocator).toBeDisabled();
+  }
 }
