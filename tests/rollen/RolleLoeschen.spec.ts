@@ -1,6 +1,6 @@
 import { PlaywrightTestArgs, test } from '@playwright/test';
 import { getOrganisationId } from '../../base/api/organisationApi';
-import { createPersonWithUserContext, freshLoginPage } from '../../base/api/personApi';
+import { createPersonWithPersonenkontext, freshLoginPage } from '../../base/api/personApi';
 import { createRolle, RollenArt } from '../../base/api/rolleApi';
 import { testschuleName } from '../../base/organisation';
 import { generateNachname, generateRolleName, generateVorname } from '../../base/utils/generateTestdata';
@@ -49,7 +49,7 @@ test.describe(`Testfälle für die Rollenlöschung: Umgebung: ${process.env.ENV}
   // SPSH-2949
   test('Vergebene Rolle löschen und Fehlermeldung prüfen', async ({ page }: PlaywrightTestArgs) => {
     await test.step('Rolle einer Person zuordnen', async () => {
-      await createPersonWithUserContext(page, testschuleName, generateNachname(), generateVorname(), rolleName);
+      await createPersonWithPersonenkontext(page, testschuleName, generateNachname(), generateVorname(), rolleName);
     });
     const alert: Alert<RolleManagementViewPage> = await rolleDetailsView.attemptDeletionOfAssignedRolle();
     await alert.assertExpectedTexts();
