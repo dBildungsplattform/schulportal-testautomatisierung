@@ -81,7 +81,7 @@ export class LandesbedienstetenSearchFormPage {
   public async clickLandesbedienstetenSuchenWithduplicateName(vorname: string, nachname: string): Promise<SearchResultErrorDialog> {
     await this.fillVornameNachname(vorname, nachname);
     await this.landesbedienstetenSuchenButton.click();
-    return new SearchResultErrorDialog(this.page, this.page.getByTestId('person-search-error-dialog',), this.searchResultErrorDialogDoppelteTrefferText);
+    return new SearchResultErrorDialog(this.page, this.page.getByTestId('person-search-error-dialog'), this.searchResultErrorDialogDoppelteTrefferText);
   }
 
   public async clickLandesbedienstetenSuchenWithInvalidName(vorname: string, nachname: string): Promise<SearchResultErrorDialog> {
