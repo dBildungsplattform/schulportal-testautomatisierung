@@ -137,14 +137,14 @@ export class LandesbedienstetenSearchFormPage {
 
   public async testZuruecksetzenButtonAlleSuchtypen(): Promise<void> {
     interface ResetTestCase {
-      fill: () => Promise<void> | void;
-      expect: () => Promise<void> | void;
+      fill: () => Promise<void>;
+      expect: () => Promise<void>;
     }
     const testCases: ResetTestCase[] = [
-      { fill: () => this.fillKopersNr('123456'), expect: () => expect(this.kopersInput).toBeEmpty() },
-      { fill: () => this.fillEmail('test@example.com'), expect: () => expect(this.emailInput).toBeEmpty() },
-      { fill: () => this.fillBenutzername('testuser'), expect: () => expect(this.usernameInput).toBeEmpty() },
-      { fill: () => this.fillVornameNachname('Max', 'Mustermann'), expect: async (): Promise<void> => {
+      { fill: async () => await this.fillKopersNr('123456'), expect: async () => await expect(this.kopersInput).toBeEmpty() },
+      { fill: async () => await this.fillEmail('test@example.com'), expect: async () => await expect(this.emailInput).toBeEmpty() },
+      { fill: async () => await this.fillBenutzername('testuser'), expect: async () => await expect(this.usernameInput).toBeEmpty() },
+      { fill: async () => await this.fillVornameNachname('Max', 'Mustermann'), expect: async (): Promise<void> => {
           await expect(this.vornameInput).toBeEmpty();
           await expect(this.nachnameInput).toBeEmpty();
         }
