@@ -221,7 +221,7 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
   test('Schuladmin 1 Schule: Landesbediensteten per KoPers suchen und erfolgreich hinzufügen', { tag: [LONG, SHORT, STAGE, DEV, BROWSER] }, async () => {
     landesbedienstetenSearchResultPage = await landesbedienstetenSearchFormPage.searchLandesbedienstetenViaKopers(lehrkraft.kopersnummer); 
     landesbedienstetenHinzufuegenPage = await landesbedienstetenSearchResultPage.clickLandesbedienstetenHinzufuegen();
-    await landesbedienstetenHinzufuegenPage.addLandesbedienstetenWithRolle('Vertretungslehrkraft');
+    await landesbedienstetenHinzufuegenPage.selectRolleAndConfirm('Vertretungslehrkraft');
     landesbedienstetenSuccessPage = await landesbedienstetenHinzufuegenPage.clickLandesbedienstetenHinzufügenOnConfirmationPopup();
     await landesbedienstetenSuccessPage.waitForPageLoad();
   });
@@ -231,7 +231,7 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
     await removeAllPersonenkontexte(page, lehrkraftOhneSchulzuordnung.personId);
     landesbedienstetenSearchResultPage = await landesbedienstetenSearchFormPage.searchLandesbedienstetenViaUsername(lehrkraftOhneSchulzuordnung.username); 
     landesbedienstetenHinzufuegenPage = await landesbedienstetenSearchResultPage.clickLandesbedienstetenHinzufuegen();
-    await landesbedienstetenHinzufuegenPage.addLandesbedienstetenWithRolle('Lehrkraft');
+    await landesbedienstetenHinzufuegenPage.selectRolleAndConfirm('Lehrkraft');
     landesbedienstetenSuccessPage = await landesbedienstetenHinzufuegenPage.clickLandesbedienstetenHinzufügenOnConfirmationPopup();
     await landesbedienstetenSuccessPage.waitForPageLoad();
   });
@@ -240,7 +240,7 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
   test('Schuladmin 1 Schule: Landesbediensteten suchen per Vorname und Nachname und erfolgreich hinzufügen', { tag: [LONG, SHORT, STAGE, DEV, BROWSER] }, async () => {
     landesbedienstetenSearchResultPage = await landesbedienstetenSearchFormPage.searchLandesbedienstetenViaName(lehrkraft.vorname, lehrkraft.nachname); 
     landesbedienstetenHinzufuegenPage = await landesbedienstetenSearchResultPage.clickLandesbedienstetenHinzufuegen();
-    await landesbedienstetenHinzufuegenPage.addLandesbedienstetenWithRolle('Vertretungslehrkraft');
+    await landesbedienstetenHinzufuegenPage.selectRolleAndConfirm('Vertretungslehrkraft');
     landesbedienstetenSuccessPage = await landesbedienstetenHinzufuegenPage.clickLandesbedienstetenHinzufügenOnConfirmationPopup();
     await landesbedienstetenSuccessPage.waitForPageLoad();
   });
@@ -298,7 +298,7 @@ test.describe('Testfälle für Landesbediensteten hinzufügen, Funktion und UI-V
   test('Schuladmin 2 Schulen: Bei Auswahl Rolle LiV wird Befristung angezeigt', { tag: [LONG, SHORT, STAGE] }, async() => {
     await landesbedienstetenHinzufuegenPage.selectOrganisation(testschule665DstNrUndName);
     await landesbedienstetenHinzufuegenPage.selectRolle(lehrkraftInVertretungRolle);
-    await landesbedienstetenHinzufuegenPage.checkIfBefristungIsEnforced(testschule665DstNrUndName);
+    await landesbedienstetenHinzufuegenPage.checkIfBefristungIsEnforced();
   });
   //SPSH-2634 Step 5
   test('Schuladmin 2 Schulen: Bestätigungs-Popup wird angezeigt mit korrektem Text', { tag: [LONG, SHORT, STAGE] }, async() => {

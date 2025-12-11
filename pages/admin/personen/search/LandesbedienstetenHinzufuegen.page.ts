@@ -95,7 +95,7 @@ export class LandesbedienstetenHinzufuegenPage {
     await expect(this.befristungHeadline).toBeVisible();
   }
 
-  public async addLandesbedienstetenWithRolle(rolle: string): Promise<void> {
+  public async selectRolleAndConfirm(rolle: string): Promise<void> {
     await this.selectRolle(rolle);
     await this.landesbedienstetenHinzufuegenButton.click();
   }
