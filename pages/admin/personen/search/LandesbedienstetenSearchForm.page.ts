@@ -50,7 +50,7 @@ export class LandesbedienstetenSearchFormPage {
 
   public async fillBenutzername(benutzername: string): Promise<void> {
     if (!(await this.usernameRadioInput.isChecked())) {
-      await this.usernameRadioInput.click();
+      await this.usernameRadioInput.check();
     }
     await this.usernameInput.fill(benutzername);
   }
