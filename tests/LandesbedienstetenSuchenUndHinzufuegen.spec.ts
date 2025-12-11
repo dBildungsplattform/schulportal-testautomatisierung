@@ -16,9 +16,10 @@ import {
 } from '../base/organisation';
 import {
   ersatzschulLehrkraftRolle,
-  lehrkraftInVertretungRolle,
+  lehrerImVorbereitungsdienstRolle,
   lehrkraftOeffentlichRolle,
   schuladminOeffentlichRolle,
+  vertretungslehrkraftRolle,
 } from '../base/rollen';
 import { generateKopersNr, generateNachname, generateVorname } from '../base/utils/generateTestdata';
 import { LandesbedienstetenSearchFormPage } from '../pages/admin/personen/search/LandesbedienstetenSearchForm.page';
@@ -284,7 +285,7 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
 
   //SPSH-2632
   test(
-    'STage: Suchergebnis: Persönliche Daten und Zuordnung werden korrekt angezeigt',
+    'Stage: Suchergebnis: Persönliche Daten und Zuordnung werden korrekt angezeigt',
     { tag: [LONG, SHORT, STAGE, BROWSER] },
     async () => {
       const landesbedienstetenSearchResultPage: LandesbedienstetenSearchResultPage =
@@ -390,7 +391,7 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
         lehrkraft.kopersnummer
       );
       landesbedienstetenHinzufuegenPage = await landesbedienstetenSearchResultPage.clickLandesbedienstetenHinzufuegen();
-      await landesbedienstetenHinzufuegenPage.selectRolleAndConfirm('Vertretungslehrkraft');
+      await landesbedienstetenHinzufuegenPage.selectRolleAndConfirm(vertretungslehrkraftRolle);
       landesbedienstetenSuccessPage =
         await landesbedienstetenHinzufuegenPage.clickLandesbedienstetenHinzufügenOnConfirmationPopup();
       await landesbedienstetenSuccessPage.waitForPageLoad();
@@ -407,7 +408,7 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
         lehrkraftOhneSchulzuordnung.username
       );
       landesbedienstetenHinzufuegenPage = await landesbedienstetenSearchResultPage.clickLandesbedienstetenHinzufuegen();
-      await landesbedienstetenHinzufuegenPage.selectRolleAndConfirm('Lehrkraft');
+      await landesbedienstetenHinzufuegenPage.selectRolleAndConfirm(lehrkraftOeffentlichRolle);
       landesbedienstetenSuccessPage =
         await landesbedienstetenHinzufuegenPage.clickLandesbedienstetenHinzufügenOnConfirmationPopup();
       await landesbedienstetenSuccessPage.waitForPageLoad();
@@ -424,7 +425,7 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
         lehrkraft.nachname
       );
       landesbedienstetenHinzufuegenPage = await landesbedienstetenSearchResultPage.clickLandesbedienstetenHinzufuegen();
-      await landesbedienstetenHinzufuegenPage.selectRolleAndConfirm('Vertretungslehrkraft');
+      await landesbedienstetenHinzufuegenPage.selectRolleAndConfirm(vertretungslehrkraftRolle);
       landesbedienstetenSuccessPage =
         await landesbedienstetenHinzufuegenPage.clickLandesbedienstetenHinzufügenOnConfirmationPopup();
       await landesbedienstetenSuccessPage.waitForPageLoad();
@@ -490,7 +491,7 @@ test.describe('Testfälle für Landesbediensteten hinzufügen, Funktion und UI-V
     { tag: [LONG, SHORT, STAGE] },
     async () => {
       await landesbedienstetenHinzufuegenPage.selectOrganisation(testschule665DstNrUndName);
-      await landesbedienstetenHinzufuegenPage.selectRolle(lehrkraftInVertretungRolle);
+      await landesbedienstetenHinzufuegenPage.selectRolle(lehrerImVorbereitungsdienstRolle);
       await landesbedienstetenHinzufuegenPage.checkIfBefristungIsEnforced();
     }
   );

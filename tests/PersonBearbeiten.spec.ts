@@ -18,7 +18,7 @@ import { getServiceProviderId } from '../base/api/serviceProviderApi';
 import { klasse1Testschule } from '../base/klassen';
 import { befristungPflicht, kopersNrPflicht } from '../base/merkmale';
 import { landSH, testschule665Name, testschuleDstNr, testschuleName } from '../base/organisation';
-import { lehrkraftInVertretungRolle, lehrkraftOeffentlichRolle } from '../base/rollen';
+import { lehrerImVorbereitungsdienstRolle, lehrkraftOeffentlichRolle } from '../base/rollen';
 import { typeLehrer, typeSchueler, typeSchuladmin } from '../base/rollentypen';
 import { email, itslearning } from '../base/sp';
 import { BROWSER, DEV, LONG, SHORT, STAGE } from '../base/tags';
@@ -116,7 +116,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     async ({ page }: PlaywrightTestArgs) => {
       let userInfoLehrer: UserInfo;
       const unbefristeteRolle: string = lehrkraftOeffentlichRolle;
-      const befristeteRolle: string = lehrkraftInVertretungRolle;
+      const befristeteRolle: string = lehrerImVorbereitungsdienstRolle;
       logoutViaStartPage = true;
 
       await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) und SP(email) über die api anlegen ${ADMIN}`, async () => {
