@@ -10,22 +10,14 @@ export class LandesbedienstetenHinzufuegenPage {
   //Formular
   private readonly form: Locator = this.page.getByTestId('person-creation-form');
   private readonly mandatoryFieldsNotice: Locator = this.form.getByTestId('mandatory-fields-notice');
-  private readonly vornameInput: Locator = this.form.getByTestId('add-person-vorname-input');
-  private readonly nachnameInput: Locator = this.form.getByTestId('add-person-familienname-input');
-  private readonly kopersInput: Locator = this.form.getByTestId('kopersnr-input');
   private readonly hasNoKopersCheckbox: Locator = this.form.getByTestId('has-no-kopersnr-checkbox');
-  private readonly befristungInput: Locator = this.form.getByTestId('befristung-input');
-  private readonly bisSchuljahresendeRadio: Locator = this.form.locator('schuljahresende-radio-button');
   // Inputfelder für die Dateneingabe bzw. Überprüfung der Werte
-  private readonly vornameTextInputfield: Locator = this.vornameInput.locator('input');
-  private readonly nachnameTextInputfield: Locator = this.nachnameInput.locator('input');
-  private readonly kopersTextInputfield: Locator = this.kopersInput.locator('input');
-  private readonly befristungDateInputfield: Locator = this.befristungInput.locator('input');
+  private readonly vornameTextInputfield: Locator = this.form.getByTestId('add-person-vorname-input').locator('input');
+  private readonly nachnameTextInputfield: Locator = this.form.getByTestId('add-person-familienname-input').locator('input');
+  private readonly kopersTextInputfield: Locator = this.form.getByTestId('kopersnr-input').locator('input');
  
   private readonly organisationSelect: Locator = this.form.getByTestId('personenkontext-create-organisation-select');
-  private readonly organisationOeffnenButton: Locator = this.page.locator('[data-testid="personenkontext-create-organisation-select"] i[aria-label="Öffnen"]');
-  private readonly organisationSchliessenButton: Locator = this.page.locator('i[aria-label="Schließen"].v-autocomplete__menu-icon');
-  private readonly organisationDropdown: Locator = this.organisationSelect.locator('.v-list-item, [role="option"]');
+  private readonly organisationOeffnenButton: Locator = this.organisationSelect.locator('i[aria-label="Öffnen"]');
   private readonly organisationAutocomplete: Autocomplete = new Autocomplete(this.page, this.page.getByTestId('personenkontext-create-organisation-select'));
 
   private readonly rolleOeffnenButton: Locator = this.page.locator('[data-testid="rollen-select"] i[aria-label="Öffnen"]');
@@ -61,9 +53,9 @@ export class LandesbedienstetenHinzufuegenPage {
     await expect(this.headline).toHaveText('Landesbediensteten hinzufügen');
     await expect(this.mandatoryFieldsNotice).toHaveText('Mit * markierte Felder sind Pflichtangaben.');
     await expect(this.closeButtonX).toBeVisible();
-    await expect(this.vornameInput).toBeVisible();
-    await expect(this.nachnameInput).toBeVisible();
-    await expect(this.kopersInput).toBeVisible();
+    await expect(this.vornameTextInputfield).toBeVisible();
+    await expect(this.nachnameTextInputfield).toBeVisible();
+    await expect(this.kopersTextInputfield).toBeVisible();
     await expect(this.hasNoKopersCheckbox).toBeVisible();
     await expect(this.organisationSelect).toBeVisible();
     await expect(this.abbrechenButton).toBeVisible();
@@ -113,7 +105,7 @@ export class LandesbedienstetenHinzufuegenPage {
     await this.selectOrganisation(organisation);
     await this.selectRolle('LiV');
     await expect(this.befristungHeadline).toBeVisible();
-    await expect(this.befristungInput).toBeVisible();
+    await expect(this.form.getByTestId('befristung-input')).toBeVisible();
     await expect(this.bisSchuljahresendeRadioInput).toBeVisible();
     await expect(this.unbefristetRadio).toBeVisible();
     await expect(this.bisSchuljahresendeRadioInput).toBeChecked();
