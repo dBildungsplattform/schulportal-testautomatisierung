@@ -312,7 +312,7 @@ export async function getPersonId(page: Page, searchString: string): Promise<str
 export async function createTeacherAndLogin(page: Page): Promise<UserInfo> {
   const header: HeaderPage = new HeaderPage(page);
   const login: LoginPage = new LoginPage(page);
-  const userInfo: UserInfo = await createRolleAndPersonWithPersonenkontext(
+  const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
     page,
     testschuleName,
     typeLehrer,
