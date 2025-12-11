@@ -16,12 +16,8 @@ export class LandesbedienstetenHinzufuegenPage {
   private readonly nachnameTextInputfield: Locator = this.form.getByTestId('add-person-familienname-input').locator('input');
   private readonly kopersTextInputfield: Locator = this.form.getByTestId('kopersnr-input').locator('input');
  
-  private readonly organisationSelect: Locator = this.form.getByTestId('personenkontext-create-organisation-select');
-  private readonly organisationOeffnenButton: Locator = this.organisationSelect.locator('i[aria-label="Öffnen"]');
   private readonly organisationAutocomplete: Autocomplete = new Autocomplete(this.page, this.page.getByTestId('personenkontext-create-organisation-select'));
 
-  private readonly rolleOeffnenButton: Locator = this.page.locator('[data-testid="rollen-select"] i[aria-label="Öffnen"]');
-  private readonly rolleSchliessenButton: Locator = this.page.locator('i.v-autocomplete__menu-icon[aria-label="Schließen"]');
   private readonly rolleAutocomplete: Autocomplete = new Autocomplete(this.page, this.page.getByTestId('rollen-select'));
 
   private readonly unbefristetRadio: Locator = this.form.getByTestId('unbefristet-radio-button');
@@ -57,7 +53,7 @@ export class LandesbedienstetenHinzufuegenPage {
     await expect(this.nachnameTextInputfield).toBeVisible();
     await expect(this.kopersTextInputfield).toBeVisible();
     await expect(this.hasNoKopersCheckbox).toBeVisible();
-    await expect(this.organisationSelect).toBeVisible();
+    await this.organisationAutocomplete.isVisible();
     await expect(this.abbrechenButton).toBeVisible();
     await expect(this.landesbedienstetenHinzufuegenButton).toBeVisible();
     await expect(this.personalInfoHeadline).toBeVisible();
@@ -74,8 +70,8 @@ export class LandesbedienstetenHinzufuegenPage {
   }
 
   public async organisationIsFilledAndDisabled(organisation: string): Promise<void> {
-    await expect(this.organisationSelect.locator('.v-autocomplete__selection-text')).toHaveText(organisation);
-    await expect(this.organisationSelect.locator('input')).toBeDisabled();
+    await this.organisationAutocomplete.checkText(organisation);
+    await this.organisationAutocomplete.isDisabled();
   }
 
   public async personalDataAreFilled(vorname: string, nachname: string, kopers: string): Promise<void> {
@@ -85,8 +81,7 @@ export class LandesbedienstetenHinzufuegenPage {
   }
 
   public async selectOrganisation(organisation: string): Promise<void> {
-    await this.organisationOeffnenButton.click();
-    await this.organisationAutocomplete.selectByName(organisation);
+    await this.organisationAutocomplete.searchByTitle(organisation, false);
     await expect(this.rolleHeadline).toBeVisible();
     expect(this.rolleAutocomplete.isVisible()).toBeTruthy();
   }
@@ -96,7 +91,6 @@ export class LandesbedienstetenHinzufuegenPage {
   }
 
   public async selectRolle(rolle: string): Promise<void> {
-    await this.rolleOeffnenButton.click();
     await this.rolleAutocomplete.searchByTitle(rolle, true);
     await expect(this.befristungHeadline).toBeVisible();
   }
