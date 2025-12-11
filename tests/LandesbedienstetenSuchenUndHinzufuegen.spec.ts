@@ -162,11 +162,11 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
   });
 
   //SPSH-2631 Step 1
-  test('Nachname ist ein Pflichtfeld', { tag: [LONG, SHORT, STAGE] }, async () => {
+  test('Nachname ist ein Pflichtfeld', { tag: [LONG, SHORT, STAGE, DEV] }, async () => {
     await landesbedienstetenSearchFormPage.checkMandatoryFieldsForNameSearch('zzzzz', '');
   });
   //SPSH-2631 Step 2
-  test('Vorname ist ein Pflichtfeld', { tag: [LONG, SHORT, STAGE] }, async () => {
+  test('Vorname ist ein Pflichtfeld', { tag: [LONG, SHORT, STAGE, DEV] }, async () => {
     await landesbedienstetenSearchFormPage.checkMandatoryFieldsForNameSearch('', 'zzzzz');
   });
   //SPSH-2631 Step 3
@@ -266,7 +266,7 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
   );
 
   //SPSH-2632
-  test('Dev: Suchergebnis: Persönliche Daten und Zuordnung werden korrekt angezeigt', { tag: [DEV] }, async () => {
+  test('Dev: Suchergebnis: Persönliche Daten und Zuordnung werden korrekt angezeigt', { tag: [LONG, SHORT, DEV] }, async () => {
     const landesbedienstetenSearchResultPage: LandesbedienstetenSearchResultPage =
       await landesbedienstetenSearchFormPage.searchLandesbedienstetenViaName(lehrkraft.vorname, lehrkraft.nachname);
     await landesbedienstetenSearchResultPage.checkSearchResultCard();
@@ -286,7 +286,7 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
   //SPSH-2632
   test(
     'Stage: Suchergebnis: Persönliche Daten und Zuordnung werden korrekt angezeigt',
-    { tag: [LONG, SHORT, STAGE, BROWSER] },
+    { tag: [STAGE] },
     async () => {
       const landesbedienstetenSearchResultPage: LandesbedienstetenSearchResultPage =
         await landesbedienstetenSearchFormPage.searchLandesbedienstetenViaName(lehrkraft.vorname, lehrkraft.nachname);
@@ -310,11 +310,12 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
     ----------------------------- Funktionale Testfälle ------------------------------
   */
   //SPSH-2633
-  test('Button Zurücksetzen funktioniert', { tag: [LONG, SHORT, STAGE] }, async () => {
+  test('Button Zurücksetzen funktioniert', { tag: [LONG, SHORT, STAGE, DEV] }, async () => {
     await landesbedienstetenSearchFormPage.testZuruecksetzenButtonAlleSuchtypen();
   });
+
   //SPSH-2633
-  test('Button Zurück zur Suche funktioniert', { tag: [LONG, SHORT, STAGE] }, async () => {
+  test('Button Zurück zur Suche funktioniert', { tag: [LONG, SHORT, STAGE, DEV] }, async () => {
     interface SuchVariante {
       name: string;
       search: () => Promise<LandesbedienstetenSearchResultPage>;
@@ -331,13 +332,6 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
         expectInputValue: async () =>
           await landesbedienstetenSearchFormPage.expectKopersInputValue(lehrkraft.kopersnummer),
       },
-      //Suche per Mail kann nur auf Stage getestet werden.
-      // {
-      //   name: 'E-Mail',
-      //   search: async () => await landesbedienstetenSearchFormPage.searchLandesbedienstetenViaEmail(lehrkraft.email),
-      //   expectRadioChecked: async () => await landesbedienstetenSearchFormPage.expectEmailRadioChecked(),
-      //   expectInputValue: async () => await landesbedienstetenSearchFormPage.expectEmailInputValue(lehrkraft.email)
-      // },
       {
         name: 'Benutzername',
         search: async () =>
@@ -364,10 +358,19 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
     }
   });
 
+test('Button Zurück zur Suche funktioniert (E-Mail)', { tag: [STAGE] }, async () => {
+    const landesbedienstetenSearchResultPage: LandesbedienstetenSearchResultPage =
+      await landesbedienstetenSearchFormPage.searchLandesbedienstetenViaEmail(lehrkraft.email);
+    await landesbedienstetenSearchResultPage.checkSearchResultCard();
+    await landesbedienstetenSearchResultPage.clickZurueckZurSuche();
+    await landesbedienstetenSearchFormPage.expectEmailRadioChecked();
+    await landesbedienstetenSearchFormPage.expectEmailInputValue(lehrkraft.email);
+  });
+
   //SPSH-2634 Step 8
   test(
     'Schuladmin 1 Schule: Seite Landesbediensteten hinzufügen wird korrekt angezeigt',
-    { tag: [LONG, SHORT, STAGE] },
+    { tag: [LONG, SHORT, STAGE, DEV] },
     async () => {
       landesbedienstetenSearchResultPage = await landesbedienstetenSearchFormPage.searchLandesbedienstetenViaKopers(
         lehrkraft.kopersnummer
@@ -401,7 +404,7 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
   //SPSH-2660 Step 3
   test(
     'Schuladmin 1 Schule: Landesbediensteten ohne Schulzuordnung suchen per Benutzername und erfolgreich hinzufügen',
-    { tag: [LONG, SHORT, STAGE] },
+    { tag: [LONG, SHORT, STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       await removeAllPersonenkontexte(page, lehrkraftOhneSchulzuordnung.personId);
       landesbedienstetenSearchResultPage = await landesbedienstetenSearchFormPage.searchLandesbedienstetenViaUsername(
@@ -463,7 +466,7 @@ test.describe('Testfälle für Landesbediensteten hinzufügen, Funktion und UI-V
   });
 
   //SPSH-2634 Step 1
-  test('UI: Schuladmin 2 Schulen: initialer Formularstatus', { tag: [LONG, SHORT, STAGE] }, async () => {
+  test('UI: Schuladmin 2 Schulen: initialer Formularstatus', { tag: [LONG, SHORT, STAGE, DEV] }, async () => {
     await landesbedienstetenHinzufuegenPage.checkInitialFormState(
       lehrkraft.vorname,
       lehrkraft.nachname,
@@ -472,14 +475,14 @@ test.describe('Testfälle für Landesbediensteten hinzufügen, Funktion und UI-V
   });
 
   //SPSH-2634 Step 2
-  test('Schuladmin 2 Schulen: Organisationsauswahl eingeschränkt', { tag: [LONG, SHORT, STAGE] }, async () => {
+  test('Schuladmin 2 Schulen: Organisationsauswahl eingeschränkt', { tag: [LONG, SHORT, STAGE, DEV] }, async () => {
     const erwarteteOrganisationen: string[] = [testschuleDstNrUndName, testschule665DstNrUndName];
     await landesbedienstetenHinzufuegenPage.assertAllMenuItemsForOrganisation(erwarteteOrganisationen);
   });
   //SPSH-2634 Step 3
   test(
     'Schuladmin 2 Schulen: Rollenfelder werden nach Organisationsauswahl angezeigt',
-    { tag: [LONG, SHORT, STAGE] },
+    { tag: [LONG, SHORT, STAGE, DEV] },
     async () => {
       await landesbedienstetenHinzufuegenPage.selectOrganisation(testschule665DstNrUndName);
     }
@@ -488,7 +491,7 @@ test.describe('Testfälle für Landesbediensteten hinzufügen, Funktion und UI-V
   //SPSH-2634 Step 4
   test(
     'Schuladmin 2 Schulen: Bei Auswahl Rolle LiV wird Befristung angezeigt',
-    { tag: [LONG, SHORT, STAGE] },
+    { tag: [LONG, SHORT, STAGE, DEV] },
     async () => {
       await landesbedienstetenHinzufuegenPage.selectOrganisation(testschule665DstNrUndName);
       await landesbedienstetenHinzufuegenPage.selectRolle(lehrerImVorbereitungsdienstRolle);
@@ -498,7 +501,7 @@ test.describe('Testfälle für Landesbediensteten hinzufügen, Funktion und UI-V
   //SPSH-2634 Step 5
   test(
     'Schuladmin 2 Schulen: Bestätigungs-Popup wird angezeigt mit korrektem Text',
-    { tag: [LONG, SHORT, STAGE] },
+    { tag: [LONG, SHORT, STAGE, DEV] },
     async () => {
       await landesbedienstetenHinzufuegenPage.addLandesbedienstetenWithOrgaAndRolle(
         testschule665DstNrUndName,
@@ -514,7 +517,7 @@ test.describe('Testfälle für Landesbediensteten hinzufügen, Funktion und UI-V
   //SPSH-2634 Step 6
   test(
     'Schuladmin 2 Schulen: Bestätigungspopup schließt nach klick auf Abbrechen',
-    { tag: [LONG, SHORT, STAGE] },
+    { tag: [LONG, SHORT, STAGE, DEV] },
     async () => {
       await landesbedienstetenHinzufuegenPage.addLandesbedienstetenWithOrgaAndRolle(
         testschule665DstNrUndName,
@@ -527,7 +530,7 @@ test.describe('Testfälle für Landesbediensteten hinzufügen, Funktion und UI-V
   //SPSH-2634 Step 7
   test(
     'Schuladmin 2 Schulen: UI: Bestätigungseite wird komplett angezeigt.',
-    { tag: [LONG, SHORT, STAGE] },
+    { tag: [LONG, SHORT, STAGE, DEV] },
     async () => {
       await landesbedienstetenHinzufuegenPage.addLandesbedienstetenWithOrgaAndRolle(
         testschule665DstNrUndName,
