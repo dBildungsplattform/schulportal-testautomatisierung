@@ -22,7 +22,6 @@ jobs:
       tag: dev
       browser: ${{ matrix.browser }}
       playwright_branch: main
-      send_notifications: true
     secrets:
       SPSH_DEV_USER_SSHKEY: ${{ secrets.SPSH_DEV_USER_SSHKEY }}
       SPSH_DEV_KUBECONFIG: ${{ secrets.SPSH_DEV_KUBECONFIG }}
@@ -41,7 +40,6 @@ jobs:
       tag: smoke
       browser: chromium
       playwright_branch: main
-      send_notifications: true
     secrets:
       USER: ${{ secrets.USER }}
       PW: ${{ secrets.PW }}
