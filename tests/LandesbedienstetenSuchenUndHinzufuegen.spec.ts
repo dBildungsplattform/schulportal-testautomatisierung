@@ -104,7 +104,7 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
   test('Abbrechen Button im Suchergebnis Dialog funktioniert', { tag: [LONG, SHORT, STAGE, DEV, BROWSER] }, async () => {
     searchResultErrorDialog = await landesbedienstetenSearchFormPage.clickLandesbedienstetenSuchenWithInvalidName("zzzzz", "yyyyy");
     landesbedienstetenSearchFormPage = await searchResultErrorDialog.clickAbbrechenButton();
-    await landesbedienstetenSearchFormPage.checkNameRadioIsChecked();
+    await landesbedienstetenSearchFormPage.expectNameRadioChecked();
   });
   //SPSH-2631 Step 4
   test('Kein Treffer wegen falscher KoPers-Nr: Popup wird angezeigt und ist vollständig', { tag: [LONG, SHORT, STAGE, DEV, BROWSER] }, async () => {

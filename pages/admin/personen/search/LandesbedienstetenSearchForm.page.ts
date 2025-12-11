@@ -176,10 +176,6 @@ export class LandesbedienstetenSearchFormPage {
     await expect(this.landesbedienstetenSuchenButton).toBeDisabled();
   }
 
-  public async checkNameRadioIsChecked(): Promise<void> {
-    await expect(this.nameRadioInput).toBeChecked();
-  }
-
   public async expectKopersRadioChecked(): Promise<void> {
     await expect(this.kopersRadioInput).toBeChecked();
   }
