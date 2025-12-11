@@ -95,17 +95,6 @@ export class LandesbedienstetenHinzufuegenPage {
     await expect(this.befristungHeadline).toBeVisible();
   }
 
-  public async showBefristungForLiv(organisation: string): Promise<void> {
-    await this.selectOrganisation(organisation);
-    await this.selectRolle('LiV');
-    await expect(this.befristungHeadline).toBeVisible();
-    await expect(this.form.getByTestId('befristung-input')).toBeVisible();
-    await expect(this.bisSchuljahresendeRadioInput).toBeVisible();
-    await expect(this.unbefristetRadio).toBeVisible();
-    await expect(this.bisSchuljahresendeRadioInput).toBeChecked();
-    await expect(this.landesbedienstetenHinzufuegenButton).toBeEnabled();
-  }
-
   public async addLandesbedienstetenWithRolle(rolle: string): Promise<void> {
     await this.selectRolle(rolle);
     await this.landesbedienstetenHinzufuegenButton.click();
@@ -128,6 +117,15 @@ export class LandesbedienstetenHinzufuegenPage {
     await expect(this.confirmPopupText).toContainText(`Wollen Sie ${username} als ${rolle} hinzufügen?`);
   }
 
+  public async checkIfBefristungIsEnforced(): Promise<void> {
+    await expect(this.befristungHeadline).toBeVisible();
+    await expect(this.form.getByTestId('befristung-input')).toBeVisible();
+    await expect(this.bisSchuljahresendeRadioInput).toBeVisible();
+    await expect(this.unbefristetRadio).toBeVisible();
+    await expect(this.bisSchuljahresendeRadioInput).toBeChecked();
+    await expect(this.landesbedienstetenHinzufuegenButton).toBeEnabled();
+  }
+
   public async clickAbbrechenOnConfirmationPopup(): Promise<void> {
     await this.confirmPopupAbbrechenButton.click();
     await expect(this.confirmPopupAbbrechenButton).toBeHidden();
@@ -135,6 +133,7 @@ export class LandesbedienstetenHinzufuegenPage {
     await expect(this.confirmPopupHeadline).toBeHidden();
     await expect(this.confirmPopupText).toBeHidden();
   }
+
   public async clickLandesbedienstetenHinzufügenOnConfirmationPopup(): Promise<LandesbedienstetenSuccessPage> {
     const landesbedienstetenSuccessPage : LandesbedienstetenSuccessPage = new LandesbedienstetenSuccessPage(this.page);
     await this.confirmPopupLandesbedienstetenHinzufuegenButton.click();

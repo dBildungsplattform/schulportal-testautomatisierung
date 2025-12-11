@@ -3,7 +3,7 @@ import { freshLoginPage, lockPerson, UserInfo } from "../base/api/personApi";
 import { LONG, SHORT, STAGE, DEV, BROWSER } from "../base/tags";
 import { addSecondOrganisationToPerson, createPersonWithPersonenkontext, removeAllPersonenkontexte } from "../base/api/personApi";
 import { ersatzTestschuleName, testschule665DstNrUndName, testschule665Name, testschuleDstNr, testschuleDstNrUndName, testschuleName } from "../base/organisation";
-import { ersatzschulLehrkraftRolle, lehrkraftOeffentlichRolle, schuladminOeffentlichRolle } from "../base/rollen";
+import { ersatzschulLehrkraftRolle, lehrkraftInVertretungRolle, lehrkraftOeffentlichRolle, schuladminOeffentlichRolle } from "../base/rollen";
 import { generateKopersNr, generateNachname, generateVorname } from "../base/utils/generateTestdata";
 import { LandesbedienstetenSearchFormPage } from "../pages/admin/personen/search/LandesbedienstetenSearchForm.page";
 import { LoginViewPage } from "../pages/LoginView.neu.page";
@@ -296,7 +296,9 @@ test.describe('Testfälle für Landesbediensteten hinzufügen, Funktion und UI-V
 
   //SPSH-2634 Step 4
   test('Schuladmin 2 Schulen: Bei Auswahl Rolle LiV wird Befristung angezeigt', { tag: [LONG, SHORT, STAGE] }, async() => {
-    await landesbedienstetenHinzufuegenPage.showBefristungForLiv(testschule665DstNrUndName);
+    await landesbedienstetenHinzufuegenPage.selectOrganisation(testschule665DstNrUndName);
+    await landesbedienstetenHinzufuegenPage.selectRolle(lehrkraftInVertretungRolle);
+    await landesbedienstetenHinzufuegenPage.checkIfBefristungIsEnforced(testschule665DstNrUndName);
   });
   //SPSH-2634 Step 5
   test('Schuladmin 2 Schulen: Bestätigungs-Popup wird angezeigt mit korrektem Text', { tag: [LONG, SHORT, STAGE] }, async() => {
