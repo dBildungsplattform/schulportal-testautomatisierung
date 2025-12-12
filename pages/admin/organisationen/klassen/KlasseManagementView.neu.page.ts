@@ -19,8 +19,7 @@ export class KlasseManagementViewPage {
 
   /* actions */
   public async waitForPageLoad(): Promise<KlasseManagementViewPage> {
-    await this.page.getByTestId('klasse-management-card').waitFor({ state: 'visible' });
-    await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Klassenverwaltung');
+    await expect(this.page.getByTestId('klasse-management-headline')).toHaveText('Klassenverwaltung');
     await expect(this.table).not.toContainText('Keine Daten');
     return this;
   }
@@ -83,7 +82,7 @@ export class KlasseManagementViewPage {
   /* assertions */
   public async checkManagementPage(landesadmin: boolean): Promise<void> {
     await expect(this.page.getByTestId('admin-headline')).toHaveText('Administrationsbereich');
-    await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Klassenverwaltung');
+    await expect(this.page.getByTestId('klasse-management-headline')).toHaveText('Klassenverwaltung');
     await expect(this.page.getByTestId('klassen-management-schule-select')).toBeVisible();
     await expect(this.page.getByTestId('klassen-management-klasse-select')).toBeVisible();
     const expectedHeaders: string[] = landesadmin? ['Dienststellennummer', 'Klasse', 'Aktion'] : ['Klasse', 'Aktion'];

@@ -48,7 +48,7 @@ export class KlasseDetailsViewPage {
   /* assertions */
   public async checkDetailsForm(): Promise<void> {
     await expect(this.adminHeadline).toHaveText('Administrationsbereich');
-    await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Klasse bearbeiten');
+    await expect(this.page.getByTestId('klasse-details-headline')).toHaveText('Klasse bearbeiten');
     await expect(this.page.getByTestId('close-layout-card-button')).toBeVisible();
 
     await expect(this.page.getByText('1. Schule zuordnen', { exact: false })).toBeVisible();
@@ -63,7 +63,7 @@ export class KlasseDetailsViewPage {
 
   public async checkEditForm(): Promise<void> {
     await expect(this.adminHeadline).toHaveText('Administrationsbereich');
-    await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Klasse bearbeiten');
+    await expect(this.page.getByTestId('klasse-details-headline')).toHaveText('Klasse bearbeiten');
     await expect(this.page.getByText('Mit * markierte Felder sind Pflichtangaben.', { exact: false })).toBeVisible();
     await expect(this.page.getByTestId('close-layout-card-button')).toBeVisible();
 

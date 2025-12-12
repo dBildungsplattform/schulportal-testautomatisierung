@@ -25,7 +25,7 @@ export class DataTable {
       await this.footer.locator('.v-data-table-footer__items-per-page .v-field__append-inner').click();
       await this.page.locator(`.v-list-item:has-text("${value}")`).click();
       await expect(this.footer.locator('.v-select__selection-text')).toHaveText(value);
-      await expect(this.page.locator('.v-overlay')).toBeHidden();
+      await expect(this.page.locator('.v-overlay__content.v-select__content')).toBeHidden();
     }
   
     public async goToFirstPage(): Promise<void> {

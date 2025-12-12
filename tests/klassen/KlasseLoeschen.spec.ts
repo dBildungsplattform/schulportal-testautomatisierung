@@ -9,7 +9,7 @@ import { KlasseCreationViewPage, KlasseCreationParams } from '../../pages/admin/
 import { landSH, testschuleDstNr, testschuleName } from '../../base/organisation';
 import { generateKlassenname, generateNachname, generateRolleName, generateVorname } from '../../base/utils/generateTestdata';
 import { KlasseCreationSuccessPage } from '../../pages/admin/organisationen/klassen/KlasseCreationSuccess.page';
-import { createPersonWithPersonenkontext, createRolleAndPersonWithUserContext, freshLoginPage, UserInfo } from "../../base/api/personApi";
+import { createPersonWithPersonenkontext, createRolleAndPersonWithPersonenkontext, freshLoginPage, UserInfo } from "../../base/api/personApi";
 import { landesadminRolle, schuladminOeffentlichRolle } from '../../base/rollen';
 import { KlasseManagementViewPage } from '../../pages/admin/organisationen/klassen/KlasseManagementView.neu.page';
 import { KlasseDetailsViewPage } from '../../pages/admin/organisationen/klassen/details/KlasseDetailsView.neu.page';
@@ -85,7 +85,7 @@ let schueler : UserInfo;
         const schuelerRolleName: string = await generateRolleName();
         const klasseId: string = await getKlasseId(page, klasseParams.klassenname);
 
-        schueler = await createRolleAndPersonWithUserContext(
+        schueler = await createRolleAndPersonWithPersonenkontext(
           page, 
           klasseParams.schulname, 
           typeSchueler,
@@ -113,7 +113,7 @@ let schueler : UserInfo;
         const schuelerRolleName: string = await generateRolleName();
         const klasseId: string = await getKlasseId(page, klasseParams.klassenname);
 
-        schueler = await createRolleAndPersonWithUserContext(
+        schueler = await createRolleAndPersonWithPersonenkontext(
           page, 
           klasseParams.schulname, 
           typeSchueler,

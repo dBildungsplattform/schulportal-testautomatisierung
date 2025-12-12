@@ -13,7 +13,7 @@ export class KlasseCreationViewPage {
   /* add global locators here */
 
   private readonly adminHeadline: Locator = this.page.getByTestId('admin-headline');
-  private readonly layoutCardHeadline: Locator = this.page.getByTestId('layout-card-headline');
+  private readonly layoutCardHeadline: Locator = this.page.getByTestId('klasse-creation-headline');
   private readonly schuleName : Locator = this.page.getByTestId('klasse-form-schule-select');
   private readonly schuleNameInput : Locator = this.page.getByTestId('klasse-form-schule-select').locator('input');
   private readonly klasseNameInput : Locator = this.page.getByTestId('klassenname-input').locator('input');
@@ -24,7 +24,6 @@ export class KlasseCreationViewPage {
 
   /* actions */
   public async waitForPageLoad(): Promise<KlasseCreationViewPage> {
-    await this.page.getByTestId('klasse-creation-card').waitFor({ state: 'visible' });
     await expect(this.layoutCardHeadline).toHaveText('Neue Klasse hinzufügen');
     return this;
   }
