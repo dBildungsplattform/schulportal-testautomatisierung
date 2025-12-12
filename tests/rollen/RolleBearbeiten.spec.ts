@@ -35,9 +35,7 @@ test.describe(`Testfälle für die Rollenbearbeitung: Umgebung: ${process.env.EN
   // SPSH-2948
   test('Rollennamen ändern', async () => {
     const newRolleName: string = generateRolleName();
-
-    await test.step('Rolle bearbeiten', async () => await rolleDetailsView.editRolle(newRolleName));
-
-    await test.step('Erfolgsmeldung prüfen', async () => await rolleDetailsView.rolleSuccessfullyEdited(newRolleName));
+    await rolleDetailsView.editRolle(newRolleName);
+    await rolleDetailsView.rolleSuccessfullyEdited(newRolleName);
   });
 });

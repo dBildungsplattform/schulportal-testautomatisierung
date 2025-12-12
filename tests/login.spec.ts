@@ -1,16 +1,16 @@
 import { expect, PlaywrightTestArgs, test } from '@playwright/test';
-import { getOrganisationId } from '../base/api/organisationApi';
-import { createRolleAndPersonWithUserContext, lockPerson, UserInfo } from '../base/api/personApi';
-import { RollenArt } from '../base/api/rolleApi';
-import { getServiceProviderId } from '../base/api/serviceProviderApi';
-import { testschuleName } from '../base/organisation';
-import { BROWSER, DEV, LONG, SHORT, SMOKE, STAGE } from '../base/tags';
-import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata';
-import { generateNachname, generateRolleName, generateVorname } from '../base/utils/generateTestdata';
 import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
 import { StartPage } from '../pages/StartView.page';
 import { HeaderPage } from '../pages/components/Header.page';
+import { DEV, LONG, SHORT, SMOKE, STAGE, BROWSER } from '../base/tags';
+import { createRolleAndPersonWithPersonenkontext, lockPerson, UserInfo } from '../base/api/personApi';
+import { getServiceProviderId } from '../base/api/serviceProviderApi';
+import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata';
+import { getOrganisationId } from '../base/api/organisationApi';
+import { generateRolleName, generateNachname, generateVorname } from '../base/utils/generateTestdata';
+import { testschuleName } from '../base/organisation';
+import { RollenArt } from '../base/api/rolleApi';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -113,9 +113,9 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
       const landing: LandingPage = new LandingPage(page);
       const header: HeaderPage = new HeaderPage(page);
 
-      const lehrerVorname: string = await generateVorname();
-      const lehrerNachname: string = await generateNachname();
-      const lehrerRolle: string = await generateRolleName();
+      const lehrerVorname: string = generateVorname();
+      const lehrerNachname: string = generateNachname();
+      const lehrerRolle: string = generateRolleName();
       const lehrerRollenart: RollenArt = 'LEHR';
       const lehrerOrganisation: string = testschuleName;
       let userInfoLehrer: UserInfo;
@@ -127,7 +127,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
         await login.login(ADMIN, PW);
         const lehrerIdSPs: string[] = [await getServiceProviderId(page, 'E-Mail')];
         organisationIDLandSh = await getOrganisationId(page, 'Land Schleswig-Holstein');
-        userInfoLehrer = await createRolleAndPersonWithUserContext(
+        userInfoLehrer = await createRolleAndPersonWithPersonenkontext(
           page,
           lehrerOrganisation,
           lehrerRollenart,

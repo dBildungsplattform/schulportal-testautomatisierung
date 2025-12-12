@@ -11,7 +11,7 @@ export class Autocomplete {
 
   constructor(private readonly page: Page, private readonly locator: Locator) {
     this.overlayLocator = this.page.locator('div.v-overlay.v-menu');
-    this.itemsLocator = this.page.locator('div.v-overlay.v-menu div.v-list-item');
+    this.itemsLocator = this.page.locator('.v-overlay .v-list-item');
     this.modalToggle = this.locator.locator('.v-field__append-inner');
     this.inputLocator = this.locator.locator('input');
     this.loadingLocator = this.locator.locator('.v-field__loader');
@@ -99,7 +99,15 @@ export class Autocomplete {
     await item.click();
     await this.closeModal();
   }
+  
+  public async selectByName(name: string): Promise<void> {
+    const option: Locator = this.itemsLocator.filter({
+      hasText: name,
+    });
+    await option.click();
+  }
 
+  /* assertions */
   public async validateItemNotExists(searchString: string, exactMatch: boolean): Promise<void> {
     await this.inputLocator.click();
     await this.inputLocator.fill(searchString);
@@ -142,5 +150,18 @@ export class Autocomplete {
 
   public async checkText(text: string): Promise<void> {
     await expect(this.locator).toHaveText(text);
+  }
+
+  public async assertAllMenuItems(expectedTexts: string[]): Promise<void> {
+    await this.inputLocator.click();
+    await expect(this.itemsLocator).toHaveText(expectedTexts);
+  }
+
+  public async isVisible(): Promise<void> {
+    await expect(this.locator).toBeVisible();
+  }  
+
+  public async isDisabled(): Promise<void> {
+    await expect(this.inputLocator).toBeDisabled();
   }
 }

@@ -23,7 +23,7 @@ export class SchuleCreationViewPage{
     constructor(page: Page){
         // Anlage Schule
         this.page = page;
-        this.textH2SchuleAnlegen = page.getByTestId('layout-card-headline');
+        this.textH2SchuleAnlegen = page.getByTestId('schule-creation-headline');
         this.buttonSchliessen = page.getByTestId('close-layout-card-button');
         this.radioButtonPublicSchule = page.getByTestId('schulform-radio-button-0');
         this.inputDienststellennummer = page.getByTestId('dienststellennummer-input').locator('input');

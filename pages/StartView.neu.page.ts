@@ -1,6 +1,5 @@
 import { expect, Locator, Page, Response } from '@playwright/test';
 import { PersonManagementViewPage } from './admin/personen/PersonManagementView.neu.page';
-
 export class StartViewPage {
   /* add global locators here */
   readonly startCardHeadline: Locator;

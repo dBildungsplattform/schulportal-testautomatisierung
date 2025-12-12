@@ -44,10 +44,10 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
     const footerDataTable: FooterDataTablePage = new FooterDataTablePage(page);
 
     // Schulen können noch nicht gelöscht werden. Um doppelte Namen zu vermeiden, wird dem Schulnamen eine Zufallszahl angehängt
-    const schulname1: string = await generateSchulname();
-    const schulname2: string = await generateSchulname();
-    const dienststellenNr1: string = await generateDienststellenNr();
-    const dienststellenNr2: string = await generateDienststellenNr();
+    const schulname1: string = generateSchulname();
+    const schulname2: string = generateSchulname();
+    const dienststellenNr1: string = generateDienststellenNr();
+    const dienststellenNr2: string = generateDienststellenNr();
 
     const { menue, schuleCreationView }: { menue: MenuPage; schuleCreationView: SchuleCreationViewPage } =
       await test.step(`Dialog Schule anlegen öffnen`, async (): Promise<{
@@ -124,8 +124,8 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
     { tag: [LONG, /*STAGE,*/ DEV, SHORT, BROWSER] },
     async ({ page }: PlaywrightTestArgs) => {
       // Schulen können noch nicht gelöscht werden. Um doppelte Namen zu vermeiden, wird am dem Schulnamen eine Zufallszahl angehängt
-      const schulname: string = await generateSchulname();
-      const dienststellenNr: string = await generateDienststellenNr();
+      const schulname: string = generateSchulname();
+      const dienststellenNr: string = generateDienststellenNr();
 
       const startseite: StartPage = new StartPage(page);
 

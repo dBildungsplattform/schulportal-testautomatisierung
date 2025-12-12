@@ -1,27 +1,36 @@
 import { expect, type Locator, Page } from '@playwright/test';
 
 export class DataTable {
-  /* since the table is within Vuetify's jurisdiction,
-    we cannot specify test ids for Playwright and heavily rely on classes as locators */
-  readonly tableLocator: Locator;
- 
-  constructor(protected readonly page: Page, locator: Locator) {
-    this.tableLocator = locator;
-  }
+    /* since the table is within Vuetify's jurisdiction,
+        we cannot specify test ids for Playwright and heavily rely on classes as locators */
+    readonly tableLocator: Locator;
+    readonly footer: Locator
 
-  /* actions */
-  public getItemByText(expectedText: string): Locator {
-    return this.tableLocator.getByRole('cell', { name: expectedText, exact: true });
-  }
+    constructor(protected readonly page: Page, locator: Locator) {
+        this.tableLocator = locator;
+        this.footer = this.page.locator('.v-data-table-footer');
+    }
 
-  public async setItemsPerPage(value: string): Promise<void> {
-    await this.page.locator('.v-data-table-footer__items-per-page .v-select').click();
-    await this.page.locator('.v-list-item').filter({ hasText: value }).click();
-  }
+    /* actions */
 
-  public async goToFirstPage(): Promise<void> {
-    await this.page.locator('.v-pagination__first button:not(.v-btn--disabled)').click();
-  }
+    public async waitForPageLoad(): Promise<void> {
+      await expect(this.tableLocator).not.toContainText('Keine Daten');
+    }
+
+    public getItemByText(expectedText: string): Locator {
+      return this.tableLocator.locator(`tr:has-text("${expectedText}")`);
+    }
+
+    public async setItemsPerPage(value: string): Promise<void> {
+      await this.footer.locator('.v-data-table-footer__items-per-page .v-field__append-inner').click();
+      await this.page.locator(`.v-list-item:has-text("${value}")`).click();
+      await expect(this.footer.locator('.v-select__selection-text')).toHaveText(value);
+      await expect(this.page.locator('.v-overlay')).toBeHidden();
+    }
+  
+    public async goToFirstPage(): Promise<void> {
+      await this.page.locator('.v-pagination__first button:not(.v-btn--disabled)').click();
+    }
 
   public async goToPreviousPage(): Promise<void> {
     await this.page.locator('.v-pagination__prev button:not(.v-btn--disabled)').click();

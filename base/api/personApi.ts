@@ -27,7 +27,7 @@ export interface UserInfo {
   organisationId: string;
   personId: string;
   vorname: string;
-  familienname: string;
+  nachname: string;
   kopersnummer: string;
   email: string;
 }
@@ -61,9 +61,11 @@ export async function freshLoginPage(page: Page): Promise<LoginViewPage> {
 }
 
 function normalizeString(value: string): string {
-  return value.toLowerCase().replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue').replace(/ß/g, 'ss');
+  return value.toLowerCase().replaceAll('ä', 'ae').replaceAll('ö', 'oe').replaceAll('ü', 'ue').replaceAll('ß', 'ss');
 }
-
+/** 
+ * Does not implement complete generation logic, but should work, if names are unique.
+ */
 function generateEmailFromName(vorname: string, familienname: string): string {
   return `${normalizeString(vorname)}.${normalizeString(familienname)}@schule-sh.de`;
 }
@@ -115,7 +117,7 @@ export async function createPerson(
 
     const personenkontextApi: PersonenkontextApi = constructPersonenkontextApi(page);
     const response: ApiResponse<DBiamPersonResponse> = await personenkontextApi.dbiamPersonenkontextWorkflowControllerCreatePersonWithPersonenkontexteRaw(requestParameters);
-    await expect(response.raw.status).toBe(201);
+    expect(response.raw.status).toBe(201);
 
     const createdPerson: DBiamPersonResponse = await response.value();
 
@@ -126,7 +128,7 @@ export async function createPerson(
       organisationId: organisationId,
       personId: createdPerson.person.id,
       vorname: createdPerson.person.name.vorname,
-      familienname: createdPerson.person.name.familienname,
+      nachname: createdPerson.person.name.familienname,
       kopersnummer: koPersNr,
       email: generateEmailFromName(createdPerson.person.name.vorname, createdPerson.person.name.familienname),
     };
@@ -151,7 +153,7 @@ export async function createPersonWithPersonenkontext(
   return userInfo;
 }
 
-export async function createRolleAndPersonWithUserContext(
+export async function createRolleAndPersonWithPersonenkontext(
   page: Page,
   organisationName: string,
   rollenArt: RollenArt,
@@ -200,7 +202,7 @@ export async function removeAllPersonenkontexte(
 
     const personenkontextApi: PersonenkontextApi = constructPersonenkontextApi(page);
     const response: ApiResponse<PersonenkontexteUpdateResponse> = await personenkontextApi.dbiamPersonenkontextWorkflowControllerCommitRaw(requestParameters);
-    await expect(response.raw.status).toBe(200);
+    expect(response.raw.status).toBe(200);
   } catch (error) {
     console.error('[ERROR] removeAllPersonenkontexte failed:', error);
     throw error;
@@ -312,7 +314,7 @@ export async function getPersonId(page: Page, searchString: string): Promise<str
 export async function createTeacherAndLogin(page: Page): Promise<UserInfo> {
   const header: HeaderPage = new HeaderPage(page);
   const login: LoginPage = new LoginPage(page);
-  const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
+  const userInfo: UserInfo = await createRolleAndPersonWithPersonenkontext(
     page,
     testschuleName,
     typeLehrer,

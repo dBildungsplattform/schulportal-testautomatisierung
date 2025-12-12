@@ -18,9 +18,7 @@ export class LoginViewPage {
   }
 
   public async login(
-    username: string = process.env.USER as string,
-    password: string = process.env.PW as string
-  ): Promise<StartViewPage> {
+    username: string, password: string): Promise<StartViewPage> {
     const usernameInput: Locator = this.page.getByTestId('username-input');
     const passwordInput: Locator = this.page.getByTestId('password-input');
     const loginButton: Locator = this.page.getByTestId('login-button');
@@ -66,6 +64,12 @@ export class LoginViewPage {
       await buttonClosePWChangeDialogFromProfilView.click();
     }
     return newPassword;
+  }
+  
+  public async loginNewUserWithPasswordChange(givenUsername: string, givenPassword: string) : Promise<StartViewPage> {
+    const startPage: StartViewPage = await this.login(givenUsername, givenPassword);
+    await this.updatePassword();
+    return startPage;
   }
 
   public async loginNewUserWithPasswordChange(username: string, password: string) : Promise<StartViewPage> {
