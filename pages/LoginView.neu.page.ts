@@ -65,13 +65,13 @@ export class LoginViewPage {
     }
     return newPassword;
   }
-  
-  public async loginNewUserWithPasswordChange(givenUsername: string, givenPassword: string) : Promise<StartViewPage> {
-    const startPage: StartViewPage = await this.login(givenUsername, givenPassword);
+
+  public async loginNewUserWithPasswordChange(username: string, password: string) : Promise<StartViewPage> {
+    const startPage: StartViewPage = await this.login(username, password);
     await this.updatePassword();
     return startPage;
   }
-
+  
   /* assertions */
   public async loginFailedWithWrongCredentials(): Promise<void> {
     const inputErrorSpan: Locator = this.page.getByTestId('input-error-message');

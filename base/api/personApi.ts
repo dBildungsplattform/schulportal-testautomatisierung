@@ -318,11 +318,11 @@ export async function createTeacherAndLogin(page: Page): Promise<UserInfo> {
     page,
     testschuleName,
     typeLehrer,
-     generateNachname(),
-     generateVorname(),
+    generateNachname(),
+    generateVorname(),
     [await getServiceProviderId(page, email), await getServiceProviderId(page, kalender), await getServiceProviderId(page, adressbuch)],
-     generateRolleName(),
-     generateKopersNr()
+    generateRolleName(),
+    generateKopersNr()
   );
 
   await header.logout({ logoutViaStartPage: true });
