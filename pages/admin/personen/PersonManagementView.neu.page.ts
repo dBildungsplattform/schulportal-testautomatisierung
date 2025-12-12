@@ -1,4 +1,4 @@
-import { expect, Page } from '@playwright/test';
+import { expect, Locator, Page } from '@playwright/test';
 import { Autocomplete } from '../../../elements/Autocomplete';
 import { DataTable } from '../../components/DataTable.neu.page';
 import { PersonDetailsViewPage } from './details/PersonDetailsView.neu.page';
@@ -6,16 +6,21 @@ import { SearchFilter } from '../../../elements/SearchFilter';
 import { MenuBarPage } from '../../components/MenuBar.neu.page';
 
 export class PersonManagementViewPage {
-  private readonly personTable: DataTable = new DataTable(this.page, this.page.getByTestId('person-table'));
-  private readonly searchFilter: SearchFilter = new SearchFilter(this.page);
-  public readonly menu: MenuBarPage = new MenuBarPage(this.page);
+  private readonly personTable: DataTable;
+  private readonly searchFilter: SearchFilter;
+  public readonly menu: MenuBarPage;
+  private readonly table: Locator;
 
   constructor(protected readonly page: Page) {
+    this.table = this.page.getByTestId('person-table');
+    this.personTable = new DataTable(this.page, this.table);
+    this.searchFilter = new SearchFilter(this.page);
+    this.menu = new MenuBarPage(this.page);
   }
 
   /* actions */
   public async waitForPageLoad(): Promise<PersonManagementViewPage> {
-    await this.page.getByTestId('person-management-headline').waitFor({ state: 'visible' });
+    await this.page.getByTestId('admin-headline').waitFor({ state: 'visible' });
     await expect(this.page.getByTestId('person-management-headline')).toHaveText('Benutzerverwaltung');
     await expect(this.page.getByTestId('person-table')).not.toContainText('Keine Daten');
     return this;

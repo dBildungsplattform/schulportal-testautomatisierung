@@ -15,6 +15,7 @@ export class MenuBarPage {
   /* add global locators here */
   private klasseManagement: Locator = this.page.getByTestId('klasse-management-menu-item');
   private klasseCreation: Locator = this.page.getByTestId('klasse-creation-menu-item');
+  private schuleManagement: Locator = this.page.getByTestId('schule-management-menu-item');
 
   constructor(protected readonly page: Page) {}
 
@@ -72,7 +73,10 @@ export class MenuBarPage {
   }
 
   public async navigateToSchuleManagement(): Promise<SchuleManagementViewPage> {
-    return this.navigateTo('schule-management-menu-item', new SchuleManagementViewPage(this.page).waitForPageLoad());
+    await this.schuleManagement.click();
+    const schuleManagementViewPage: SchuleManagementViewPage = new SchuleManagementViewPage(this.page);
+    await schuleManagementViewPage.waitForPageLoad();
+    return schuleManagementViewPage;
   }
 
   public async navigateToSchuleCreation(): Promise<SchuleCreationViewPage> {
