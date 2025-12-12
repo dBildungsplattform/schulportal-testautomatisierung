@@ -49,7 +49,7 @@ export class PersonCreationViewPage {
     // Anlage Person
     this.page = page;
     this.body = page.locator('body');
-    this.textH2PersonAnlegen = page.getByTestId('layout-card-headline');
+    this.textH2PersonAnlegen = page.getByTestId('create-person-headline');
     this.buttonSchliessen = page.getByTestId('close-layout-card-button');
     this.comboboxRolle = page.getByTestId('rollen-select').locator('.v-field__input');
     this.comboboxRolleClear = page.getByTestId('rollen-select').getByLabel('leeren');
@@ -86,7 +86,7 @@ export class PersonCreationViewPage {
     this.inputEinstiegsPasswort = page.locator('[data-testid="password-output-field"] input');
     this.buttonZurueckErgebnisliste = page.getByTestId('back-to-list-button');
     this.buttonWeiterenBenutzerAnlegen = page.getByTestId('create-another-person-button');
-    this.buttonOpenGesamtuebersicht = page.getByTestId('to-details-button');
+    this.buttonOpenGesamtuebersicht = page.getByTestId('go-to-details-button');
 
     this.listboxRolle = page.locator('.v-list');
   }

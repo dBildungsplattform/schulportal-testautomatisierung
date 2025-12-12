@@ -2,7 +2,7 @@ import { expect, PlaywrightTestArgs, test } from '@playwright/test';
 import { getOrganisationId } from '../base/api/organisationApi';
 import {
   createPerson,
-  createRolleAndPersonWithUserContext,
+  createRolleAndPersonWithPersonenkontext,
   setTimeLimitPersonenkontext,
   UserInfo
 } from '../base/api/personApi';
@@ -117,14 +117,14 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
 
       // Testdaten erstellen
       const idSPs: string[] = [await getServiceProviderId(page, 'E-Mail')];
-      const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
+      const userInfo: UserInfo = await createRolleAndPersonWithPersonenkontext(
         page,
         testschuleName,
         'LEHR',
-        await generateNachname(),
-        await generateVorname(),
+        generateNachname(),
+        generateVorname(),
         idSPs,
-        await generateRolleName()
+        generateRolleName()
       );
 
       personIds.push(userInfo.personId);
@@ -157,14 +157,14 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
       const schuleId: string = await getOrganisationId(page, testschuleName);
       const klasseId: string = await getOrganisationId(page, klasse1Testschule);
       const idSPs: string[] = [await getServiceProviderId(page, 'itslearning')];
-      const rolleId: string = await createRolle(page, 'LERN', schuleId, await generateRolleName());
+      const rolleId: string = await createRolle(page, 'LERN', schuleId, generateRolleName());
       await addServiceProvidersToRolle(page, rolleId, idSPs);
       const userInfo: UserInfo = await createPerson(
         page,
         schuleId,
         rolleId,
-        await generateNachname(),
-        await generateVorname(),
+        generateNachname(),
+        generateVorname(),
         '',
         klasseId
       );
@@ -201,14 +201,14 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
 
       // Testdaten erstellen
       const idSPs: string[] = [await getServiceProviderId(page, 'Schulportal-Administration')];
-      const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
+      const userInfo: UserInfo = await createRolleAndPersonWithPersonenkontext(
         page,
         testschuleName,
         'LEIT',
-        await generateNachname(),
-        await generateVorname(),
+        generateNachname(),
+        generateVorname(),
         idSPs,
-        await generateRolleName()
+        generateRolleName()
       );
       personIds.push(userInfo.personId);
       rolleIds.push(userInfo.rolleId);
@@ -236,8 +236,8 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
   test('News-Box bei befristeten Schulzuordnungen testen', { tag: [LONG, STAGE, DEV] }, async ({ page }: PlaywrightTestArgs) => {
     let userInfoLehrer1: UserInfo;
     let userInfoLehrer2: UserInfo;
-    const rollenNameLehrer1: string = await generateRolleName();
-    const rollenNameLehrer2: string = await generateRolleName();
+    const rollenNameLehrer1: string = generateRolleName();
+    const rollenNameLehrer2: string = generateRolleName();
     const colorOrange: string = 'rgb(255, 152, 37)';
     const colorRed: string = 'rgb(255, 85, 85)';
 
@@ -246,12 +246,12 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
 
     await test.step(`Testdaten: Lehrer1 mit einer befristeten Schulzuordnung(noch 50 Tage gültig) und Lehrer2 mit einer befristeten Schulzuordnung(noch 12 Tage gültig) über die api anlegen`, async () => {
       // Lehrer1: Schulzuordnung noch 50 Tage gültig
-      userInfoLehrer1 = await createRolleAndPersonWithUserContext(
+      userInfoLehrer1 = await createRolleAndPersonWithPersonenkontext(
         page,
         testschuleName,
         typeLehrer,
-        await generateNachname(),
-        await generateVorname(),
+        generateNachname(),
+        generateVorname(),
         [await getServiceProviderId(page, email)],
         rollenNameLehrer1
       );
@@ -267,12 +267,12 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
       );
 
       // Lehrer2: Schulzuordnung noch 12 Tage gültig
-      userInfoLehrer2 = await createRolleAndPersonWithUserContext(
+      userInfoLehrer2 = await createRolleAndPersonWithPersonenkontext(
         page,
         testschuleName,
         typeLehrer,
-        await generateNachname(),
-        await generateVorname(),
+        generateNachname(),
+        generateVorname(),
         [await getServiceProviderId(page, email)],
         rollenNameLehrer2
       );
@@ -342,14 +342,14 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
       const unexpectedSps: string[] = [schulportaladmin, itslearning];
 
       const userInfo: UserInfo = await test.step('Testdaten anlegen', async () => {
-        const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
+        const userInfo: UserInfo = await createRolleAndPersonWithPersonenkontext(
           page,
           testschuleName,
           typeLehrer,
-          await generateNachname(),
-          await generateVorname(),
+          generateNachname(),
+          generateVorname(),
           await Promise.all(expectedSps.map((sp: string) => getServiceProviderId(page, sp))),
-          await generateRolleName()
+          generateRolleName()
         );
         personIds.push(userInfo.personId);
         rolleIds.push(userInfo.rolleId);
@@ -375,14 +375,14 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
     { tag: [LONG, STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const userInfo: UserInfo = await test.step('Testdaten anlegen', async () => {
-        const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
+        const userInfo: UserInfo = await createRolleAndPersonWithPersonenkontext(
           page,
           testschuleName,
           typeLehrer,
-          await generateNachname(),
-          await generateVorname(),
+          generateNachname(),
+          generateVorname(),
           [await getServiceProviderId(page, itslearning)],
-          await generateRolleName()
+          generateRolleName()
         );
         personIds.push(userInfo.personId);
         rolleIds.push(userInfo.rolleId);
@@ -420,15 +420,15 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         psychosozialesBeratungsangebot,
       ];
       const userInfo: UserInfo = await test.step('Testdaten anlegen', async () => {
-        const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
+        const userInfo: UserInfo = await createRolleAndPersonWithPersonenkontext(
           page,
           testschuleName,
           typeLehrer,
-          await generateNachname(),
-          await generateVorname(),
+          generateNachname(),
+          generateVorname(),
           await Promise.all(expected.map((sp: string) => getServiceProviderId(page, sp))),
-          await generateRolleName(),
-          await generateKopersNr(),
+          generateRolleName(),
+          generateKopersNr(),
           undefined,
           new Set<RollenMerkmal>([kopersNrPflicht])
         );
@@ -466,15 +466,15 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         psychosozialesBeratungsangebot,
       ];
       const userInfo: UserInfo = await test.step('Testdaten anlegen', async () => {
-        const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
+        const userInfo: UserInfo = await createRolleAndPersonWithPersonenkontext(
           page,
           testschuleName,
           typeLehrer,
-          await generateNachname(),
-          await generateVorname(),
+          generateNachname(),
+          generateVorname(),
           await Promise.all(expected.map((sp: string) => getServiceProviderId(page, sp))),
-          await generateRolleName(),
-          await generateKopersNr(),
+          generateRolleName(),
+          generateKopersNr(),
           undefined,
           new Set<RollenMerkmal>([kopersNrPflicht])
         );
@@ -515,15 +515,15 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         psychosozialesBeratungsangebot,
       ];
       const userInfo: UserInfo = await test.step('Testdaten anlegen', async () => {
-        const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
+        const userInfo: UserInfo = await createRolleAndPersonWithPersonenkontext(
           page,
           testschuleName,
           typeLehrer,
-          await generateNachname(),
-          await generateVorname(),
+          generateNachname(),
+          generateVorname(),
           await Promise.all(expected.map((sp: string) => getServiceProviderId(page, sp))),
-          await generateRolleName(),
-          await generateKopersNr(),
+          generateRolleName(),
+          generateKopersNr(),
           undefined,
           new Set<RollenMerkmal>([kopersNrPflicht])
         );
@@ -564,14 +564,14 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         psychosozialesBeratungsangebot,
       ];
       const userInfo: UserInfo = await test.step('Testdaten anlegen', async () => {
-        const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
+        const userInfo: UserInfo = await createRolleAndPersonWithPersonenkontext(
           page,
           testschuleName,
           typeLehrer,
-          await generateNachname(),
-          await generateVorname(),
+          generateNachname(),
+          generateVorname(),
           await Promise.all(expected.map((sp: string) => getServiceProviderId(page, sp))),
-          await generateRolleName(),
+          generateRolleName(),
           undefined,
           undefined,
           new Set<RollenMerkmal>([kopersNrPflicht])
@@ -612,15 +612,15 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         psychosozialesBeratungsangebot,
       ];
       const userInfo: UserInfo = await test.step('Testdaten anlegen', async () => {
-        const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
+        const userInfo: UserInfo = await createRolleAndPersonWithPersonenkontext(
           page,
           testschuleName,
           typeLehrer,
-          await generateNachname(),
-          await generateVorname(),
+          generateNachname(),
+          generateVorname(),
           await Promise.all(expected.map((sp: string) => getServiceProviderId(page, sp))),
-          await generateRolleName(),
-          await generateKopersNr(),
+          generateRolleName(),
+          generateKopersNr(),
           undefined,
           new Set<RollenMerkmal>([kopersNrPflicht])
         );
@@ -660,15 +660,15 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         psychosozialesBeratungsangebot,
       ];
       const userInfo: UserInfo = await test.step('Testdaten anlegen', async () => {
-        const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
+        const userInfo: UserInfo = await createRolleAndPersonWithPersonenkontext(
           page,
           testschuleName,
           typeLehrer,
-          await generateNachname(),
-          await generateVorname(),
+          generateNachname(),
+          generateVorname(),
           await Promise.all(expected.map((sp: string) => getServiceProviderId(page, sp))),
-          await generateRolleName(),
-          await generateKopersNr(),
+          generateRolleName(),
+          generateKopersNr(),
           undefined,
           new Set<RollenMerkmal>([kopersNrPflicht])
         );

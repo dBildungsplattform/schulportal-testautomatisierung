@@ -1,6 +1,6 @@
 import { expect, PlaywrightTestArgs, test } from '@playwright/test';
+import { createRolleAndPersonWithPersonenkontext, UserInfo } from '../base/api/personApi';
 import { createKlasse, getOrganisationId } from '../base/api/organisationApi';
-import { createRolleAndPersonWithUserContext, UserInfo } from '../base/api/personApi';
 import { addSystemrechtToRolle, RollenArt } from '../base/api/rolleApi';
 import { getServiceProviderId } from '../base/api/serviceProviderApi';
 import { klasse1Testschule } from '../base/klassen';
@@ -107,7 +107,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       const klasseCreationView: KlasseCreationViewPage = new KlasseCreationViewPage(page);
       const klasseManagementView: KlasseManagementViewPage = new KlasseManagementViewPage(page);
       const schulname: string = testschuleName;
-      const klassenname: string = await generateKlassenname();
+      const klassenname: string = generateKlassenname();
       klasseNames.push(klassenname);
 
       await test.step(`Dialog Klasse anlegen öffnen`, async () => {
@@ -174,7 +174,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     'Eine Klasse als Landesadmin anlegen und die Bestätigungsseite vollständig prüfen',
     { tag: [LONG, STAGE, DEV, BROWSER] },
     async ({ page }: PlaywrightTestArgs) => {
-      const klasseName: string = await generateKlassenname();
+      const klasseName: string = generateKlassenname();
 
       const klasseCreationView: KlasseCreationViewPage = await test.step(`Dialog Klasse anlegen öffnen`, async () => {
         const startseite: StartPage = new StartPage(page);
@@ -250,17 +250,17 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
 
     let userInfoAdmin: UserInfo;
     const startseite: StartPage = new StartPage(page);
-    let klassenname: string = await generateKlassenname();
+    let klassenname: string = generateKlassenname();
 
     await test.step(`Landesadmin anlegen`, async () => {
-      const adminVorname: string = await generateVorname();
-      const adminNachname: string = await generateNachname();
-      const adminRolle: string = await generateRolleName();
+      const adminVorname: string = generateVorname();
+      const adminNachname: string = generateNachname();
+      const adminRolle: string = generateRolleName();
       const adminRollenart: RollenArt = typeLandesadmin;
       const adminOrganisation: string = landSH;
       const adminIdSPs: string[] = [await getServiceProviderId(page, 'Schulportal-Administration')];
 
-      userInfoAdmin = await createRolleAndPersonWithUserContext(
+      userInfoAdmin = await createRolleAndPersonWithPersonenkontext(
         page,
         adminOrganisation,
         adminRollenart,
@@ -303,7 +303,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       const klasseManagementView: KlasseManagementViewPage = await menu.alleKlassenAnzeigen();
       await klasseManagementView.filterSchule(testschuleName);
       const klasseDetailsView: KlasseDetailsViewPage = await klasseManagementView.openDetailViewClass(klassenname);
-      klassenname = await generateKlassenname();
+      klassenname = generateKlassenname();
       await klasseDetailsView.klasseBearbeiten(klassenname);
       await expect(klasseDetailsView.textSuccess).toBeVisible();
       klasseNames.push(klassenname);
@@ -322,17 +322,17 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     let userInfoAdmin: UserInfo;
     const startseite: StartPage = new StartPage(page);
     const menu: MenuPage = new MenuPage(page);
-    let klassenname: string = await generateKlassenname();
+    let klassenname: string = generateKlassenname();
 
     await test.step(`Schuladmin anlegen`, async () => {
-      const adminVorname: string = await generateVorname();
-      const adminNachname: string = await generateNachname();
-      const adminRolle: string = await generateRolleName();
+      const adminVorname: string = generateVorname();
+      const adminNachname: string = generateNachname();
+      const adminRolle: string = generateRolleName();
       const adminRollenart: RollenArt = typeSchuladmin;
       const adminOrganisation: string = testschuleName;
       const adminIdSPs: string[] = [await getServiceProviderId(page, 'Schulportal-Administration')];
 
-      userInfoAdmin = await createRolleAndPersonWithUserContext(
+      userInfoAdmin = await createRolleAndPersonWithPersonenkontext(
         page,
         adminOrganisation,
         adminRollenart,
@@ -375,7 +375,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       await klasseManagementView.waitErgebnislisteIsLoaded();
       await klasseManagementView.filterKlasse(klassenname);
       const klasseDetailsView: KlasseDetailsViewPage = await klasseManagementView.openDetailViewClass(klassenname);
-      klassenname = await generateKlassenname();
+      klassenname = generateKlassenname();
       await klasseDetailsView.klasseBearbeiten(klassenname);
       await expect(klasseDetailsView.textSuccess).toBeVisible();
       klasseNames.push(klassenname);
@@ -390,7 +390,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     'Eine Klasse ohne zugeordnete Personen als Landesadmin via Quickaction löschen',
     { tag: [LONG, STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
-      const klassenname: string = await generateKlassenname();
+      const klassenname: string = generateKlassenname();
       const idSchule: string = await getOrganisationId(page, testschuleName);
 
       await test.step('Klasse zum Löschen via Quickaction generieren', async () => {
@@ -434,7 +434,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     'Eine Klasse ohne zugeordnete Personen als Schuladmin via Quickaction löschen',
     { tag: [LONG, STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
-      const klassenname: string = await generateKlassenname();
+      const klassenname: string = generateKlassenname();
       const idSchule: string = await getOrganisationId(page, testschuleName);
       let userInfoAdmin: UserInfo;
 
@@ -444,14 +444,14 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       });
 
       const landingPage: LandingPage = await test.step(`Schuladmin anlegen`, async () => {
-        const adminVorname: string = await generateVorname();
-        const adminNachname: string = await generateNachname();
-        const adminRolleName: string = await generateRolleName();
+        const adminVorname: string = generateVorname();
+        const adminNachname: string = generateNachname();
+        const adminRolleName: string = generateRolleName();
         const adminRollenart: RollenArt = typeSchuladmin;
         const adminOrganisation: string = testschuleName;
         const adminIdSPs: string[] = [await getServiceProviderId(page, 'Schulportal-Administration')];
 
-        userInfoAdmin = await createRolleAndPersonWithUserContext(
+        userInfoAdmin = await createRolleAndPersonWithPersonenkontext(
           page,
           adminOrganisation,
           adminRollenart,
@@ -513,7 +513,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     'Eine Klasse mit einem zugeordneten Schüler als Landesadmin via Quickaction löschen',
     { tag: [LONG, STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
-      const klassenname: string = await generateKlassenname();
+      const klassenname: string = generateKlassenname();
       const idSchule: string = await getOrganisationId(page, testschuleName);
       let klasseId: string;
       let userInfoSchueler: UserInfo;
@@ -523,13 +523,13 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       });
 
       await test.step(`Schüler anlegen`, async () => {
-        const schuelerVorname: string = await generateVorname();
-        const schuelerNachname: string = await generateNachname();
-        const schuelerRolleName: string = await generateRolleName();
+        const schuelerVorname: string = generateVorname();
+        const schuelerNachname: string = generateNachname();
+        const schuelerRolleName: string = generateRolleName();
         const schuelerRollenart: RollenArt = typeSchueler;
         const schuelerIdSPs: string[] = [await getServiceProviderId(page, 'itslearning')];
 
-        userInfoSchueler = await createRolleAndPersonWithUserContext(
+        userInfoSchueler = await createRolleAndPersonWithPersonenkontext(
           page,
           testschuleName,
           schuelerRollenart,
@@ -584,7 +584,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     'Eine Klasse ohne zugeordnete Personen als Landesadmin via Gesamtübersicht löschen',
     { tag: [LONG, STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
-      const klassenname: string = await generateKlassenname();
+      const klassenname: string = generateKlassenname();
       const idSchule: string = await getOrganisationId(page, testschuleName);
 
       await test.step('Klasse zum Löschen via Quickaction generieren', async () => {
@@ -629,7 +629,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     'Eine Klasse ohne zugeordnete Personen als Schuladmin via Gesamtübersicht löschen',
     { tag: [LONG, STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
-      const klassenname: string = await generateKlassenname();
+      const klassenname: string = generateKlassenname();
       const idSchule: string = await getOrganisationId(page, testschuleName);
       let userInfoAdmin: UserInfo;
 
@@ -639,14 +639,14 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       });
 
       const landingPage: LandingPage = await test.step(`Schuladmin anlegen`, async () => {
-        const adminVorname: string = await generateVorname();
-        const adminNachname: string = await generateNachname();
-        const adminRolleName: string = await generateRolleName();
+        const adminVorname: string = generateVorname();
+        const adminNachname: string = generateNachname();
+        const adminRolleName: string = generateRolleName();
         const adminRollenart: RollenArt = typeSchuladmin;
         const adminOrganisation: string = testschuleName;
         const adminIdSPs: string[] = [await getServiceProviderId(page, 'Schulportal-Administration')];
 
-        userInfoAdmin = await createRolleAndPersonWithUserContext(
+        userInfoAdmin = await createRolleAndPersonWithPersonenkontext(
           page,
           adminOrganisation,
           adminRollenart,
@@ -708,7 +708,7 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
     'Eine Klasse mit einem zugeordneten Schüler als Landesadmin via Gesamtübersicht löschen',
     { tag: [LONG, STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
-      const klassenname: string = await generateKlassenname();
+      const klassenname: string = generateKlassenname();
       const idSchule: string = await getOrganisationId(page, testschuleName);
       let klasseId: string;
       let userInfoSchueler: UserInfo;
@@ -718,13 +718,13 @@ test.describe(`Testfälle für die Administration von Klassen: Umgebung: ${proce
       });
 
       await test.step(`Schüler anlegen`, async () => {
-        const schuelerVorname: string = await generateVorname();
-        const schuelerNachname: string = await generateNachname();
-        const schuelerRolleName: string = await generateRolleName();
+        const schuelerVorname: string = generateVorname();
+        const schuelerNachname: string = generateNachname();
+        const schuelerRolleName: string = generateRolleName();
         const schuelerRollenart: RollenArt = typeSchueler;
         const schuelerIdSPs: string[] = [await getServiceProviderId(page, 'itslearning')];
 
-        userInfoSchueler = await createRolleAndPersonWithUserContext(
+        userInfoSchueler = await createRolleAndPersonWithPersonenkontext(
           page,
           testschuleName,
           schuelerRollenart,
