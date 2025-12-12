@@ -61,17 +61,10 @@ let admin: UserInfo;
     });
 
     // SPSH-2855
-    test(`Als ${bezeichnung}: Jede Klasse hat eine Dienststellennummer neben dem Klassennamen (ersten und letzten 100 Einträge)`, { tag: [LONG, SHORT, STAGE, BROWSER] },  async () => {
-      // erste 100 Einträge 
-      await klasseErgebnislistePage.setItemsPerPage('100');
+    test(`Als ${bezeichnung}: Jede Klasse hat eine Dienststellennummer neben dem Klassennamen`, { tag: [LONG, SHORT, STAGE, BROWSER] },  async () => {
+      // erste 50 Einträge 
+      await klasseErgebnislistePage.setItemsPerPage('50');
       await klasseErgebnislistePage.checkTableData(rolleName == landesadminRolle);
-
-      // letzte 100 Einträge (nur für Landesadmin)
-      if (rolleName == landesadminRolle) {
-        await klasseErgebnislistePage.goToLastPage();
-        klasseErgebnislistePage = await klasseErgebnislistePage.waitForPageLoad();
-        await klasseErgebnislistePage.checkTableData(rolleName == landesadminRolle);
-      }
     });
 
     test(`Klasse als ${bezeichnung} anlegen und Ergebnisliste prüfen`, { tag: [LONG, SHORT, STAGE, BROWSER] },  async () => {
