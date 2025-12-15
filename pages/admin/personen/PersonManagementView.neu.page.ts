@@ -26,15 +26,32 @@ export class PersonManagementViewPage {
     return this;
   }
 
-  private async filterByText(text: string, testId: string, endpoint: string): Promise<void> {
+  private async filterByText(text: string, testId: string): Promise<void> {
     const filter: Autocomplete = new Autocomplete(this.page, this.page.getByTestId(testId));
-    await filter.searchByTitle(text, false, endpoint);
+    await filter.searchByTitle(text, false);
   }
   public async filterBySchule(schule: string): Promise<void> {
-    await this.filterByText(schule, 'person-management-schule-select', 'organisationen**');
+    await this.filterByText(schule, 'person-management-organisation-select');
   }
+
   public async filterByRolle(rolle: string): Promise<void> {
-    await this.filterByText(rolle, 'rolle-select', 'rollen**');
+    await this.filterByText(rolle, 'rolle-select');
+  }
+
+  public async filterByKlasse(klasse: string): Promise<void> {
+    await this.filterByText(klasse, 'personen-management-klasse-select');
+  }
+
+  public async filterByStatus(status: string): Promise<void> {
+    await this.filterByText(status, 'status-select');
+  }
+
+  public async resetFilter(): Promise<void> {
+    await this.page.getByTestId('reset-filter-button').click();
+  }
+
+  public async searchByText(text: string): Promise<void> {
+    await this.searchFilter.searchByText(text);
   }
 
   public async openGesamtuebersicht(name: string): Promise<PersonDetailsViewPage> {
@@ -45,19 +62,43 @@ export class PersonManagementViewPage {
   }
 
   public async searchAndOpenGesamtuebersicht(nameOrKopers: string): Promise<PersonDetailsViewPage> {
-    await this.searchFilter.searchByText(nameOrKopers);
+    await this.searchByText(nameOrKopers);
     return this.openGesamtuebersicht(nameOrKopers);
   }
 
   /* assertions */
+  public async checkManagementPage(): Promise<void> {
+    await expect(this.page.getByTestId('admin-headline')).toHaveText('Administrationsbereich');
+    await expect(this.page.getByTestId('person-management-headline')).toHaveText('Benutzerverwaltung');
+    await expect(this.page.getByTestId('reset-filter-button')).toBeVisible();
+    await expect(this.page.getByTestId('person-management-organisation-select')).toBeVisible();
+    await expect(this.page.getByTestId('rolle-select')).toBeVisible();
+    await expect(this.page.getByTestId('personen-management-klasse-select')).toBeVisible();
+    await expect(this.page.getByTestId('status-select')).toBeVisible();
+    await expect(this.page.getByTestId('benutzer-edit-select')).toBeVisible();
+    await expect(this.page.getByTestId('search-filter-input')).toBeVisible();
+    await expect(this.page.getByTestId('apply-search-filter-button')).toBeVisible();
+    await expect(this.page.getByTestId('person-table')).toBeVisible();
+    await this.checkHeaders(['Nachname', 'Vorname', 'Benutzername', 'KoPers.-Nr.', 'Rolle', 'Schulzuordnung(en)', 'Klasse']);
+  }
+
   public async checkIfPersonExists(name: string): Promise<void> {
     await this.personTable.checkIfItemIsVisible(name);
   }
+
   public async checkIfPersonNotExists(name: string): Promise<void> {
     await this.personTable.checkIfItemIsNotVisible(name);
   }
 
+  public async checkRowCount(expectedRowCount: number): Promise<void> {
+    await this.personTable.checkRowCount(expectedRowCount);
+  }
+
   public async checkHeaders(expectedHeaders: string[]): Promise<void> {
     await this.personTable.checkHeaders(expectedHeaders);
+  }
+
+  public async checkIfSchuleIsCorrect(schulNr: string, schulname: string): Promise<void> {
+    await expect(this.page.getByTestId('person-management-organisation-select')).toHaveText(schulNr + ' (' + schulname + ')');
   }
 }
