@@ -23,8 +23,12 @@ export class SchuleManagementViewPage {
     return this;
   }
 
+  public async searchByText(text: string): Promise<void> {
+    await this.searchFilter.searchByText(text);
+  }
+
   public async searchAndSyncItslearning(schulname: string): Promise<void> {
-    await this.searchFilter.searchByText(schulname);
+    await this.searchByText(schulname);
     
     await this.page.getByTestId('open-schule-itslearning-sync-dialog-icon').click();
     await expect(this.page.getByTestId('schule-activate-in-itslearning-confirmation-text')).toHaveText(`Wollen Sie die Daten der Schule ${schulname} an itslearning übertragen?`);
@@ -45,5 +49,13 @@ export class SchuleManagementViewPage {
 
   public async checkHeaders(expectedHeaders: string[]): Promise<void> {
     await this.schuleTable.checkHeaders(expectedHeaders);
+  }
+
+  public async checkRowCount(rowCount: number): Promise<void> {
+    await this.schuleTable.checkRowCount(rowCount);
+  }
+
+  public async checkIfSchuleExists(schule: string): Promise<void> {
+    await this.schuleTable.checkIfItemIsVisible(schule);
   }
 }

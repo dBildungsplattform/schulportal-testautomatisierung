@@ -41,4 +41,16 @@ test.describe(`Testfälle für die Ergebnisliste von Schulen als Landesadmin: Um
   test(`Schulen Ergebnisliste: UI prüfen`, { tag: [LONG, SHORT, STAGE, BROWSER] },  async () => {
     await schuleErgebnislistePage.checkManagementPage();
   });
+
+  test(`In der Ergebnisliste die Suchfunktion benutzen`, { tag: [LONG, SHORT, STAGE, BROWSER] },  async () => {
+    // Suche nach Schulname
+    await schuleErgebnislistePage.searchByText('Testschule Schulportal');
+    await schuleErgebnislistePage.checkIfSchuleExists('Testschule Schulportal');
+    await schuleErgebnislistePage.checkRowCount(1);
+
+    // Suche nach Dienststellennummer
+    await schuleErgebnislistePage.searchByText('1111111');
+    await schuleErgebnislistePage.checkIfSchuleExists('1111111');
+    await schuleErgebnislistePage.checkRowCount(1);
+  });
 });
