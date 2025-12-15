@@ -1,6 +1,6 @@
 import { PlaywrightTestArgs, test } from '@playwright/test';
 import { getOrganisationId } from '../../base/api/organisationApi';
-import { createRolleAndPersonWithUserContext, UserInfo } from '../../base/api/personApi';
+import { createRolleAndPersonWithPersonenkontext, UserInfo } from '../../base/api/personApi';
 import { RollenArt } from '../../base/api/rolleApi';
 import { getServiceProviderId } from '../../base/api/serviceProviderApi';
 import { DEV, STAGE } from '../../base/tags';
@@ -24,7 +24,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       await FromAnywhere(page)
         .start()
         .then((landing: LandingViewPage) => landing.navigateToLogin())
-        .then((login: LoginViewPage) => login.login())
+        .then((login: LoginViewPage) => login.login(ADMIN, PW))
         .then((startseite: StartViewPage) => startseite.serviceProvidersAreLoaded());
     });
   });
@@ -75,7 +75,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
           );
           const klasseId: string | undefined =
             zuordnungen[0].klassenName ? await getOrganisationId(page, zuordnungen[0].klassenName) : undefined;
-          const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
+          const userInfo: UserInfo = await createRolleAndPersonWithPersonenkontext(
             page,
             zuordnungen[0].organisationsname,
             zuordnungen[0].rollenart,

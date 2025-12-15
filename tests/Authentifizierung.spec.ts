@@ -26,7 +26,7 @@ test.describe(`Testfälle für den Login: Umgebung: ${process.env.ENV}: URL: ${p
 
   test('Erfolgreicher Login', { tag: [SMOKE, DEV, STAGE] }, async () => {
     const startPage: StartViewPage = await loginPage.login(ADMIN, PASSWORD);
-    await expect(startPage.waitForPageLoad()).toBeTruthy();
+    await startPage.waitForPageLoad();
     await startPage.serviceProvidersAreLoaded();
   });
 
@@ -35,32 +35,28 @@ test.describe(`Testfälle für den Login: Umgebung: ${process.env.ENV}: URL: ${p
     await expect(loginPage.loginFailedWithWrongCredentials()).toBeTruthy();
   });
 
-  test(
-    'Fehlgeschlagener Login mit gesperrtem Benutzer',
-    { tag: [SMOKE, DEV, STAGE] },
-    async ({ page }: { page: Page }) => {
-      const startPage: StartViewPage = await loginPage.login(ADMIN, PASSWORD);
-      await startPage.waitForPageLoad();
+  test('Fehlgeschlagener Login mit gesperrtem Benutzer', { tag: [SMOKE, STAGE, DEV] }, async ({ page }: { page: Page }) => {
+    const startPage: StartViewPage = await loginPage.login(ADMIN, PASSWORD);
+    await startPage.waitForPageLoad();
 
-      /* create locked user */
-      const testSchuleId: string = await getOrganisationId(page, testschuleName);
-      const rolleName: string = await generateRolleName();
-      const rolleId: string = await createRolle(page, 'LEHR', testSchuleId, rolleName);
-      const userinfo: UserInfo = await createPerson(page, testSchuleId, rolleId);
-      await lockPerson(page, userinfo.personId, testSchuleId);
+    /* create locked user */
+    const testSchuleId: string = await getOrganisationId(page, testschuleName)
+    const rolleName: string = generateRolleName();
+    const rolleId: string = await createRolle(page, 'LEHR', testSchuleId, rolleName);
+    const userinfo: UserInfo = await createPerson(page, testSchuleId, rolleId)
+    await lockPerson(page, userinfo.personId, testSchuleId);
 
-      await header.logout();
-      loginPage = await freshLoginPage(page);
-      await loginPage.login(userinfo.username, userinfo.password);
-      await expect(loginPage.loginFailedWithLockedUser()).toBeTruthy();
-    }
-  );
+    await header.logout();
+    loginPage = await freshLoginPage(page);
+    await loginPage.login(userinfo.username, userinfo.password);
+    await expect(loginPage.loginFailedWithLockedUser()).toBeTruthy();
+  });
 
-  test('Erfolgreicher Logout', { tag: [SMOKE, DEV, STAGE] }, async () => {
+  test('Erfolgreicher Logout', { tag: [STAGE, DEV, SMOKE] }, async () => {
     const startPage: StartViewPage = await loginPage.login(ADMIN, PASSWORD);
     await startPage.waitForPageLoad();
 
     landingPage = await header.logout();
-    await expect(landingPage.waitForPageLoad()).toBeTruthy();
+    await landingPage.waitForPageLoad();
   });
 });

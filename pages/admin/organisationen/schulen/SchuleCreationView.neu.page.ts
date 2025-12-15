@@ -13,16 +13,17 @@ export interface SchuleCreationParams {
 }
 
 export class SchuleCreationViewPage {
-  private readonly headline: Locator = this.page.getByTestId('layout-card-headline');
+  private readonly headline: Locator = this.page.getByTestId('schule-creation-headline');
   private readonly oeffentlicheSchuleOption: Locator = this.page.getByTestId('schulform-radio-button-0');
   private selectedSchultraegerName: string;
 
   constructor(protected readonly page: Page) {}
 
   /* actions */
-  public async waitForPageLoad(): Promise<void> {
-    await this.page.getByTestId('schule-creation-card').waitFor({ state: 'visible' });
+  public async waitForPageLoad(): Promise<SchuleCreationViewPage> {
+    await this.headline.waitFor({ state: 'visible' });
     await expect(this.headline).toHaveText('Neue Schule hinzufügen');
+    return this;
   }
 
   public async createSchule(params: SchuleCreationParams): Promise<SchuleCreationSuccessPage> {

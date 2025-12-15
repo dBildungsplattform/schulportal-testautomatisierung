@@ -26,6 +26,10 @@ export interface UserInfo {
   rolleId: string;
   organisationId: string;
   personId: string;
+  vorname: string;
+  nachname: string;
+  kopersnummer: string;
+  email: string;
 }
 
 export function constructPersonenkontextApi(page: Page): PersonenkontextApi {
@@ -56,6 +60,16 @@ export async function freshLoginPage(page: Page): Promise<LoginViewPage> {
   return (await FromAnywhere(page).start()).navigateToLogin();
 }
 
+function normalizeString(value: string): string {
+  return value.toLowerCase().replaceAll('ä', 'ae').replaceAll('ö', 'oe').replaceAll('ü', 'ue').replaceAll('ß', 'ss');
+}
+/** 
+ * Does not implement complete generation logic, but should work, if names are unique.
+ */
+function generateEmailFromName(vorname: string, familienname: string): string {
+  return `${normalizeString(vorname)}.${normalizeString(familienname)}@schule-sh.de`;
+}
+
 export async function createPerson(
   page: Page,
   organisationId: string,
@@ -68,8 +82,8 @@ export async function createPerson(
 ): Promise<UserInfo> {
   try {
     const createPersonBodyParams: DbiamCreatePersonWithPersonenkontexteBodyParams = {
-      familienname: familienname || await generateNachname(),
-      vorname: vorname || await generateVorname(),
+      familienname: familienname || generateNachname(),
+      vorname: vorname || generateVorname(),
       createPersonenkontexte: [
         {
           organisationId: organisationId,
@@ -103,7 +117,7 @@ export async function createPerson(
 
     const personenkontextApi: PersonenkontextApi = constructPersonenkontextApi(page);
     const response: ApiResponse<DBiamPersonResponse> = await personenkontextApi.dbiamPersonenkontextWorkflowControllerCreatePersonWithPersonenkontexteRaw(requestParameters);
-    await expect(response.raw.status).toBe(201);
+    expect(response.raw.status).toBe(201);
 
     const createdPerson: DBiamPersonResponse = await response.value();
 
@@ -113,6 +127,10 @@ export async function createPerson(
       rolleId: rolleId,
       organisationId: organisationId,
       personId: createdPerson.person.id,
+      vorname: createdPerson.person.name.vorname,
+      nachname: createdPerson.person.name.familienname,
+      kopersnummer: koPersNr,
+      email: generateEmailFromName(createdPerson.person.name.vorname, createdPerson.person.name.familienname),
     };
   } catch (error) {
     console.error('[ERROR] createPerson failed:', error);
@@ -120,12 +138,12 @@ export async function createPerson(
   }
 }
 
-export async function createPersonWithUserContext(
+export async function createPersonWithPersonenkontext(
   page: Page,
   organisationName: string,
-  familienname: string,
-  vorname: string,
   rolleName: string,
+  vorname?: string,
+  familienname?: string,
   koPersNr?: string
 ): Promise<UserInfo> {
   // Organisation wird nicht angelegt, da diese zur Zeit nicht gelöscht werden kann
@@ -135,7 +153,7 @@ export async function createPersonWithUserContext(
   return userInfo;
 }
 
-export async function createRolleAndPersonWithUserContext(
+export async function createRolleAndPersonWithPersonenkontext(
   page: Page,
   organisationName: string,
   rollenArt: RollenArt,
@@ -163,6 +181,32 @@ export async function createRolleAndPersonWithUserContext(
     merkmaleName
   );
   return userInfo;
+}
+
+export async function removeAllPersonenkontexte(
+  page: Page,
+  personId: string
+): Promise<void> {
+  try {
+    const dbiamUpdatePersonenkontexteBodyParams: DbiamUpdatePersonenkontexteBodyParams = {
+      lastModified: new Date(),
+      count: 1,
+      /* an empty array clears all personenkontexte */
+      personenkontexte: [],
+    };
+
+    const requestParameters: DbiamPersonenkontextWorkflowControllerCommitRequest = {
+      personId,
+      dbiamUpdatePersonenkontexteBodyParams,
+    };
+
+    const personenkontextApi: PersonenkontextApi = constructPersonenkontextApi(page);
+    const response: ApiResponse<PersonenkontexteUpdateResponse> = await personenkontextApi.dbiamPersonenkontextWorkflowControllerCommitRaw(requestParameters);
+    expect(response.raw.status).toBe(200);
+  } catch (error) {
+    console.error('[ERROR] removeAllPersonenkontexte failed:', error);
+    throw error;
+  }
 }
 
 export async function lockPerson(page: Page, personId: string, organisationId: string): Promise<void> {
@@ -270,15 +314,15 @@ export async function getPersonId(page: Page, searchString: string): Promise<str
 export async function createTeacherAndLogin(page: Page): Promise<UserInfo> {
   const header: HeaderPage = new HeaderPage(page);
   const login: LoginPage = new LoginPage(page);
-  const userInfo: UserInfo = await createRolleAndPersonWithUserContext(
+  const userInfo: UserInfo = await createRolleAndPersonWithPersonenkontext(
     page,
     testschuleName,
     typeLehrer,
-    await generateNachname(),
-    await generateVorname(),
+    generateNachname(),
+    generateVorname(),
     [await getServiceProviderId(page, email), await getServiceProviderId(page, kalender), await getServiceProviderId(page, adressbuch)],
-    await generateRolleName(),
-    await generateKopersNr()
+    generateRolleName(),
+    generateKopersNr()
   );
 
   await header.logout({ logoutViaStartPage: true });

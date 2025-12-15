@@ -1,5 +1,5 @@
 import { expect, PlaywrightTestArgs, test } from '@playwright/test';
-import { createRolleAndPersonWithUserContext, UserInfo } from '../base/api/personApi';
+import { createRolleAndPersonWithPersonenkontext, UserInfo } from '../base/api/personApi';
 import { getServiceProviderId } from '../base/api/serviceProviderApi';
 import { testschuleName } from '../base/organisation';
 import { typeLehrer } from '../base/rollentypen';
@@ -63,14 +63,14 @@ test.describe(`Testfälle für TwoFactorAuthentication": Umgebung: ${process.env
       let userInfoLehrer: UserInfo;
 
       await test.step(`Testdaten erstellen`, async () => {
-        userInfoLehrer = await createRolleAndPersonWithUserContext(
+        userInfoLehrer = await createRolleAndPersonWithPersonenkontext(
           page,
           testschuleName,
           typeLehrer,
-          await generateNachname(),
-          await generateVorname(),
+          generateNachname(),
+          generateVorname(),
           [await getServiceProviderId(page, email)],
-          await generateRolleName()
+          generateRolleName()
         );
         usernames.push(userInfoLehrer.username);
         rolleIds.push(userInfoLehrer.rolleId);

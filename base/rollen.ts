@@ -2,4 +2,6 @@ export const schuelerRolle: string = 'itslearning-Schüler';
 export const landesadminRolle: string = 'Landesadministrator';
 export const schuladminOeffentlichRolle: string = 'Schuladministrator öffentlich';
 export const lehrkraftOeffentlichRolle: string = 'Lehrkraft';
-export const lehrkraftInVertretungRolle: string = 'LiV';
+export const lehrerImVorbereitungsdienstRolle: string = 'LiV';
+export const ersatzschulLehrkraftRolle: string = 'Ersatzschullehrkraft';
+export const vertretungslehrkraftRolle: string = 'Vertretungslehrkraft';
