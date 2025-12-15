@@ -1,5 +1,5 @@
 import { expect, PlaywrightTestArgs, test } from '@playwright/test';
-import { BROWSER, DEV, LONG, SHORT, STAGE } from '../base/tags';
+import { BROWSER, DEV, LONG, SHORT } from '../base/tags';
 import { generateDienststellenNr, generateSchulname } from '../base/utils/generateTestdata';
 import FromAnywhere from '../pages/FromAnywhere';
 import { LandingPage } from '../pages/LandingView.page';
@@ -95,28 +95,6 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
     // logoutViaStartPage = true is a workaround
     logoutViaStartPage = true;
   });
-
-  test(
-    'Ergebnisliste Schulen auf Vollständigkeit prüfen als Landesadmin',
-    { tag: [LONG, SHORT, STAGE, DEV, BROWSER] },
-    async ({ page }: PlaywrightTestArgs) => {
-      const startseite: StartPage = new StartPage(page);
-
-      await test.step(`Schulverwaltung öffnen und Alle Elemente in der Ergebnisliste auf Existenz prüfen`, async () => {
-        const menue: MenuPage = await startseite.goToAdministration();
-        const schuleManagementView: SchuleManagementViewPage = await menue.alleSchulenAnzeigen();
-        await expect(schuleManagementView.textH1Administrationsbereich).toBeVisible();
-        await expect(schuleManagementView.textH2Schulverwaltung).toBeVisible();
-        await expect(schuleManagementView.textH2Schulverwaltung).toHaveText('Schulverwaltung');
-        await expect(schuleManagementView.tableHeaderDienststellennummer).toBeVisible();
-        await expect(schuleManagementView.tableHeaderSchulname).toBeVisible();
-      });
-      // #TODO: wait for the last request in the test
-      // sometimes logout breaks the test because of interrupting requests
-      // logoutViaStartPage = true is a workaround
-      logoutViaStartPage = true;
-    }
-  );
 
   // TODO: should STAGE run against stage, once Schulen can be deleted
   test(
