@@ -16,6 +16,7 @@ export class MenuBarPage {
   private klasseManagement: Locator = this.page.getByTestId('klasse-management-menu-item');
   private klasseCreation: Locator = this.page.getByTestId('klasse-creation-menu-item');
   private schuleManagement: Locator = this.page.getByTestId('schule-management-menu-item');
+  private rolleManagement: Locator = this.page.getByTestId('rolle-management-menu-item');
 
   constructor(protected readonly page: Page) {}
 
@@ -65,7 +66,10 @@ export class MenuBarPage {
   }
 
   public async navigateToRolleManagement(): Promise<RolleManagementViewPage> {
-    return this.navigateTo('rolle-management-menu-item', new RolleManagementViewPage(this.page).waitForPageLoad());
+    await this.rolleManagement.click();
+    const rolleManagementViewPage: RolleManagementViewPage = new RolleManagementViewPage(this.page);
+    await rolleManagementViewPage.waitForPageLoad();
+    return rolleManagementViewPage;
   }
 
   public async navigateToRolleCreation(): Promise<RolleCreationViewPage> {
