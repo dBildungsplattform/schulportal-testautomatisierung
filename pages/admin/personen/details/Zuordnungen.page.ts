@@ -10,14 +10,21 @@ export interface ZuordnungCreationParams {
   kopers?: string;
   befristung?: string;
 }
+
 export interface ZuordnungValidationParams {
-  organisation: string; dstNr?: string; rolle?: string; befristung?: string; status?: 'unchanged' | 'delete' | 'create';
+  organisation: string;
+  dstNr?: string;
+  rolle?: string;
+  klasse?: string;
+  befristung?: string;
+  status?: 'unchanged' | 'delete' | 'create';
 }
 
 export class ZuordnungenPage {
-  public constructor(private readonly page: Page,   private readonly addZuordnungWorkflowFactory: (page: Page) => AddZuordnungWorkflowPage = p => new AddZuordnungWorkflowPage(p),
-  private readonly befristungWorkflowFactory: (page: Page) => BefristungWorkflowPage = p => new BefristungWorkflowPage(p)
-) {}
+  public constructor(private readonly page: Page, private readonly addZuordnungWorkflowFactory: (page: Page) => AddZuordnungWorkflowPage = p => new AddZuordnungWorkflowPage(p),
+                     private readonly befristungWorkflowFactory: (page: Page) => BefristungWorkflowPage = p => new BefristungWorkflowPage(p)
+  ) {
+  }
 
   /* actions */
   public async editZuordnungen(): Promise<void> {
@@ -97,6 +104,9 @@ export class ZuordnungenPage {
     }
     if (params.rolle) {
       expectedText += ` ${params.rolle}`;
+    }
+    if(params.klasse) {
+      expectedText += ` ${params.klasse}`;
     }
     if (params.befristung) {
       expectedText += ` (befristet bis ${params.befristung})`;

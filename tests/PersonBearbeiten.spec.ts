@@ -1,42 +1,40 @@
 import { expect, PlaywrightTestArgs, test } from '@playwright/test';
 import { waitForAPIResponse } from '../base/api/baseApi';
-import { createKlasse, getOrganisationId } from '../base/api/organisationApi';
+import { getOrganisationId } from '../base/api/organisationApi';
 import {
   createPerson,
   createRolleAndPersonWithPersonenkontext,
   setTimeLimitPersonenkontext,
-  UserInfo,
+  UserInfo
 } from '../base/api/personApi';
 import {
   addServiceProvidersToRolle,
   addSystemrechtToRolle,
   createRolle,
   RollenArt,
-  RollenMerkmal,
+  RollenMerkmal
 } from '../base/api/rolleApi';
 import { getServiceProviderId } from '../base/api/serviceProviderApi';
 import { klasse1Testschule } from '../base/klassen';
 import { befristungPflicht, kopersNrPflicht } from '../base/merkmale';
 import { landSH, testschule665Name, testschuleDstNr, testschuleName } from '../base/organisation';
 import { lehrerImVorbereitungsdienstRolle, lehrkraftOeffentlichRolle } from '../base/rollen';
-import { typeLehrer, typeSchueler, typeSchuladmin } from '../base/rollentypen';
-import { email, itslearning } from '../base/sp';
-import { BROWSER, DEV, LONG, SHORT, STAGE } from '../base/tags';
+import { typeLehrer, typeSchuladmin } from '../base/rollentypen';
+import { email } from '../base/sp';
+import { BROWSER, DEV, LONG, STAGE } from '../base/tags';
 import { deleteKlasseByName, deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata';
 import { gotoTargetURL } from '../base/testHelperUtils';
 import {
   formatDateDMY,
   generateCurrentDate,
-  generateKlassenname,
   generateKopersNr,
   generateNachname,
   generateRolleName,
-  generateVorname,
+  generateVorname
 } from '../base/utils/generateTestdata';
 import { PersonDetailsViewPage } from '../pages/admin/personen/PersonDetailsView.page';
 import { PersonManagementViewPage } from '../pages/admin/personen/PersonManagementView.page';
 import { HeaderPage } from '../pages/components/Header.page';
-import { MenuPage } from '../pages/components/MenuBar.page';
 import FromAnywhere from '../pages/FromAnywhere';
 import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
@@ -721,68 +719,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(personDetailsView.radioButtonUnbefristet).toBeVisible();
         await expect(personDetailsView.radioButtonUnbefristetDisabled).toBeDisabled();
       });
-    }
-  );
-
-  test(
-    'Einen Schüler von einer Klasse in eine Andere versetzen',
-    { tag: [LONG, SHORT, STAGE, DEV] },
-    async ({ page }: PlaywrightTestArgs) => {
-      const rolleName: string = generateRolleName();
-      const klasseNameCurrent: string = generateKlassenname();
-      const klasseNameNew: string = generateKlassenname();
-
-      const userInfoSchueler: UserInfo = await test.step('Schüler mit Rolle und 2 Klassen anlegen', async () => {
-        const idSchule: string = await getOrganisationId(page, testschuleName);
-        const klasseIdCurrent: string = await createKlasse(page, idSchule, klasseNameCurrent);
-        await createKlasse(page, idSchule, klasseNameNew);
-        const userInfoSchueler: UserInfo = await createRolleAndPersonWithPersonenkontext(
-          page,
-          testschuleName,
-          typeSchueler,
-          generateNachname(),
-          generateVorname(),
-          [await getServiceProviderId(page, itslearning)],
-          rolleName,
-          undefined,
-          klasseIdCurrent
-        );
-        usernames.push(userInfoSchueler.username);
-        rolleIds.push(userInfoSchueler.rolleId);
-        klasseNames.push(klasseNameCurrent, klasseNameNew);
-        return userInfoSchueler;
-      });
-
-      const personDetailsView: PersonDetailsViewPage = await test.step(`Gesamtübersicht Schüler öffnen `, async () => {
-        const startPage: StartPage = new StartPage(page);
-        const personManagementView: PersonManagementViewPage = await startPage
-          .goToAdministration()
-          .then((menu: MenuPage) => menu.goToBenutzerAnzeigen());
-        await personManagementView.searchBySuchfeld(userInfoSchueler.username);
-        return await personManagementView.openGesamtuebersichtPerson(page, userInfoSchueler.username);
-      });
-
-      await test.step('Schüler versetzen', async () => {
-        await personDetailsView.buttonEditSchulzuordnung.click();
-        const labelText: string = `${testschuleDstNr} (${testschuleName}): ${rolleName} ${klasseNameCurrent}`;
-        await page.locator(`label:has-text("${labelText}")`).click();
-        await personDetailsView.buttonVersetzen.click();
-        await personDetailsView.klassenVersetzen.searchByTitle(klasseNameNew, false);
-        await page.getByTestId('klasse-change-submit-button').click();
-        await expect(page.getByRole('dialog')).toContainText(
-          `Wollen Sie den Schüler aus Klasse ${klasseNameCurrent} in Klasse ${klasseNameNew} versetzen?`
-        );
-        await page.getByTestId('confirm-change-klasse-button').click();
-        await page.getByTestId('zuordnung-changes-save-button').click();
-        await page.getByTestId('change-klasse-success-dialog-close-button').click();
-      });
-
-      await test.step('In der Gesamtübersicht prüfen, dass der Schüler in die neue Klasse versetzt worden ist', async () => {
-        const expectedText: string = `${testschuleDstNr} (${testschuleName}): ${rolleName} ${klasseNameNew}`;
-        await expect(page.locator('.text-body', { hasText: expectedText })).toBeVisible();
-      });
-
-      logoutViaStartPage = true;
     }
   );
 });
