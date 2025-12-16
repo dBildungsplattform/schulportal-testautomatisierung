@@ -68,8 +68,8 @@ let admin: UserInfo;
 
       // Suche nach einem nicht existierenden Eintrag
       await benutzerErgebnislistePage.searchByText('NichtExistierenderEintrag');
-      await benutzerErgebnislistePage.checkRowCount(0);
       await benutzerErgebnislistePage.checkIfPersonExists('Keine Daten gefunden.');
+      await benutzerErgebnislistePage.checkRowCount(0);
     });
 
     // SPSH-2926

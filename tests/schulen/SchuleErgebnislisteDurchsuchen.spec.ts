@@ -43,6 +43,9 @@ test.describe(`Testfälle für die Ergebnisliste von Schulen als Landesadmin: Um
   });
 
   test(`In der Ergebnisliste die Suchfunktion benutzen`, { tag: [LONG, SHORT, STAGE, BROWSER] },  async () => {
+    // Auf 5 Einträge pro Seite setzen, damit Testschule nicht direkt sichtbar ist
+    await schuleErgebnislistePage.setPageSize('5');
+
     // Suche nach Schulname
     await schuleErgebnislistePage.searchByText('Testschule Schulportal');
     await schuleErgebnislistePage.checkIfSchuleExists('Testschule Schulportal');
