@@ -1,6 +1,7 @@
 import { expect, Locator, Page } from '@playwright/test';
 import { waitForAPIResponse } from '../../../../base/api/baseApi';
 import { ZuordnungenPage, ZuordnungValidationParams } from './Zuordnungen.page';
+import { PersonManagementViewPage } from '../PersonManagementView.neu.page';
 
 interface PersonDetailsValidationParams { 
   username: string
@@ -92,10 +93,12 @@ export class PersonDetailsViewPage {
     await this.page.getByTestId('lock-user-button').click();
   }
 
-  public async deletePerson(): Promise<void> {
+  public async deletePerson(): Promise<PersonManagementViewPage> {
     await this.page.getByTestId('open-person-delete-dialog-button').click();
     await this.page.getByTestId('person-delete-button').click();
     await this.page.getByTestId('close-person-delete-success-dialog-button').click();
+    const personManagementViewPage: PersonManagementViewPage = new PersonManagementViewPage(this.page);
+    return personManagementViewPage.waitForPageLoad();
   }
 
   /* assertions */
