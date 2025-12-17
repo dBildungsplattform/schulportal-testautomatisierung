@@ -25,11 +25,22 @@ export class PersonManagementViewPage {
     const filter: Autocomplete = new Autocomplete(this.page, this.page.getByTestId(testId));
     await filter.searchByTitle(text, false, endpoint);
   }
+
   public async filterBySchule(schule: string): Promise<void> {
     await this.filterByText(schule, 'person-management-schule-select', 'organisationen**');
   }
+
   public async filterByRolle(rolle: string): Promise<void> {
     await this.filterByText(rolle, 'rolle-select', 'rollen**');
+  }
+  
+  public async searchAndOpenGesamtuebersicht(nameOrKopers: string): Promise<PersonDetailsViewPage> {
+    await this.search(nameOrKopers);
+    return this.openGesamtuebersicht(nameOrKopers);
+  }
+
+  public async search(nameOrKopers: string): Promise<void> {
+    await this.searchFilter.searchByText(nameOrKopers);
   }
 
   public async openGesamtuebersicht(name: string): Promise<PersonDetailsViewPage> {
@@ -39,9 +50,8 @@ export class PersonManagementViewPage {
     return personDetailsViewPage;
   }
 
-  public async searchAndOpenGesamtuebersicht(nameOrKopers: string): Promise<PersonDetailsViewPage> {
-    await this.searchFilter.searchByText(nameOrKopers);
-    return this.openGesamtuebersicht(nameOrKopers);
+  public async resetSearch(): Promise<void> {
+    await this.page.getByTestId('reset-filter-button').click();
   }
 
   /* assertions */
