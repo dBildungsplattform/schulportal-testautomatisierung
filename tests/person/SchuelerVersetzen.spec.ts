@@ -8,7 +8,7 @@ import {
 } from '../../base/utils/generateTestdata';
 import { createRolleAndPersonWithPersonenkontext, UserInfo } from '../../base/api/personApi';
 import { createKlasse, getOrganisationId } from '../../base/api/organisationApi';
-import { testschuleDstNr, testschuleName } from '../../base/organisation';
+import { testschuleDstNr, testschuleDstNrUndName, testschuleName } from '../../base/organisation';
 import { typeSchueler } from '../../base/rollentypen';
 import { getServiceProviderId } from '../../base/api/serviceProviderApi';
 import { itslearning } from '../../base/sp';
@@ -29,7 +29,7 @@ describe(`Schüler versetzen, Umgebung ${process.env.ENV}, URL: ${process.env.FR
         const klasseNameNew: string = generateKlassenname();
 
         const userInfoSchueler: UserInfo = await test.step('Schüler mit Rolle und 2 Klassen anlegen', async () => {
-          const idSchule: string = await getOrganisationId(page, testschuleName);
+          const idSchule: string = await getOrganisationId(page, testschuleDstNrUndName);
           const klasseIdCurrent: string = await createKlasse(page, idSchule, klasseNameCurrent);
           await createKlasse(page, idSchule, klasseNameNew);
           return await createRolleAndPersonWithPersonenkontext(
