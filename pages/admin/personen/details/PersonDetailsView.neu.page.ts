@@ -1,3 +1,4 @@
+
 import { expect, Locator, Page } from '@playwright/test';
 import { waitForAPIResponse } from '../../../../base/api/baseApi';
 import { ZuordnungenPage, ZuordnungValidationParams } from './Zuordnungen.page';
@@ -161,5 +162,18 @@ export class PersonDetailsViewPage {
       await expect(icon).toBeHidden();
       await expect(this.page.getByTestId('user-lock-status-text')).toHaveText('Dieser Benutzer ist aktiv.');
     }
+  }
+
+  public async resetPasswordAndCopyNew(): Promise<string> {
+    await this.page.getByTestId('open-password-reset-dialog-button').click();
+    await expect(this.page.getByTestId('password-reset-dialog-header')).toBeVisible();
+    await this.page.getByTestId('password-reset-button').click();
+    await this.page.getByTestId('password-reset-info-text').waitFor({ state: 'visible' });
+    const newPassword: string = await this.page
+    .getByTestId('password-output-field')
+    .locator('input[type="password"]')
+    .inputValue();
+    await this.page.getByTestId('close-password-reset-dialog-button').click();
+    return newPassword;
   }
 }
