@@ -71,20 +71,20 @@ export class ZuordnungenPage {
     await this.savePendingChanges();
   }
 
-  public async changeKlasse(from: string, to: string): Promise<void> {
+  public async changeKlasse(dstNr: string , schule: string, rollename: string, from: string, to: string): Promise<void> {
     const autocomplete: Autocomplete = new Autocomplete(
       this.page,
       this.page.getByTestId('klasse-change-klasse-select')
     );
 
     await this.editZuordnungen();
-    await this.selectZuordnungToEdit({ organisation: from });
+    await this.selectZuordnungToEdit({dstNr, organisation: schule, rolle: rollename, klasse: from });
 
     await this.page.getByTestId('klasse-change-button').click();
     await autocomplete.searchByTitle(to, false);
     await this.page.getByTestId('klasse-change-submit-button').click();
     await expect(this.page.getByTestId('change-klasse-confirmation-dialog-text')).toContainText(
-      `Wollen Sie den Schüler/die Schülerin aus Klasse ${from} in Klasse ${to} versetzen?`
+      `Wollen Sie den Schüler aus Klasse ${from} in Klasse ${to} versetzen?`
     );
     await this.page.getByTestId('confirm-change-klasse-button').click();
     await this.savePendingChanges();
