@@ -1,14 +1,15 @@
 import { PlaywrightTestArgs, test } from '@playwright/test';
-import { BROWSER, LONG, SHORT, STAGE } from '../../base/tags';
-import { LoginViewPage } from '../../pages/LoginView.neu.page';
-import { StartViewPage } from '../../pages/StartView.neu.page';
-import { HeaderPage } from '../../pages/components/Header.neu.page';
-import { LandingViewPage } from '../../pages/LandingView.neu.page';
-import { PersonManagementViewPage } from "../../pages/admin/personen/PersonManagementView.neu.page";
+
+import { createPersonWithPersonenkontext, freshLoginPage, UserInfo } from '../../base/api/personApi';
 import { landSH, testschuleDstNr, testschuleName } from '../../base/organisation';
 import { landesadminRolle, schuladminOeffentlichRolle } from '../../base/rollen';
-import { createPersonWithPersonenkontext, freshLoginPage, UserInfo } from '../../base/api/personApi';
+import { DEV, STAGE } from '../../base/tags';
 import { generateDienststellenNr } from '../../base/utils/generateTestdata';
+import { LandingViewPage } from '../../pages/LandingView.neu.page';
+import { LoginViewPage } from '../../pages/LoginView.neu.page';
+import { StartViewPage } from '../../pages/StartView.neu.page';
+import { PersonManagementViewPage } from "../../pages/admin/personen/PersonManagementView.neu.page";
+import { HeaderPage } from '../../pages/components/Header.neu.page';
 
 let header: HeaderPage;
 let landingPage: LandingViewPage;
@@ -40,12 +41,12 @@ let admin: UserInfo;
     });
 
     // SPSH-2923
-    test(`Als ${bezeichnung}: Benutzer Ergebnisliste: UI prüfen`, { tag: [LONG, SHORT, STAGE, BROWSER] },  async () => {
+    test(`Als ${bezeichnung}: Benutzer Ergebnisliste: UI prüfen`, { tag: [STAGE, DEV] },  async () => {
       await benutzerErgebnislistePage.checkManagementPage();
     });
 
     // SPSH-2925
-    test(`Als ${bezeichnung}: In der Ergebnisliste die Suchfunktion benutzen`, { tag: [LONG, SHORT, STAGE, BROWSER] },  async () => {
+    test(`Als ${bezeichnung}: In der Ergebnisliste die Suchfunktion benutzen`, { tag: [STAGE, DEV] },  async () => {
       // Suche nach Nachnamen
       await benutzerErgebnislistePage.searchByText(admin.nachname);
       await benutzerErgebnislistePage.checkIfPersonExists(admin.nachname);
@@ -73,7 +74,7 @@ let admin: UserInfo;
     });
 
     // SPSH-2926
-    test(`Als ${bezeichnung}: In der Ergebnisliste die Filterfunktion der Schulen benutzen`, { tag: [LONG, SHORT, STAGE, BROWSER] },  async () => {
+    test(`Als ${bezeichnung}: In der Ergebnisliste die Filterfunktion der Schulen benutzen`, { tag: [STAGE, DEV] },  async () => {
       // Filtern nach Schule
       if (rolleName === landesadminRolle) {
         await benutzerErgebnislistePage.filterBySchule(organisationsName);

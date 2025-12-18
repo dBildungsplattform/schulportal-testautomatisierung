@@ -1,5 +1,5 @@
 import { PlaywrightTestArgs, test } from '@playwright/test';
-import { BROWSER, LONG, SHORT, STAGE } from '../../base/tags';
+import { DEV, STAGE } from '../../base/tags';
 import { LoginViewPage } from '../../pages/LoginView.neu.page';
 import { StartViewPage } from '../../pages/StartView.neu.page';
 import { HeaderPage } from '../../pages/components/Header.neu.page';
@@ -56,18 +56,18 @@ let admin: UserInfo;
     });
 
     // SPSH-2853
-    test(`Als ${bezeichnung}: Klasse Ergebnisliste: UI prüfen`, { tag: [LONG, SHORT, STAGE, BROWSER] },  async () => {
+    test(`Als ${bezeichnung}: Klasse Ergebnisliste: UI prüfen`, { tag: [STAGE, DEV] },  async () => {
       await klasseErgebnislistePage.checkManagementPage(rolleName == landesadminRolle);
     });
 
     // SPSH-2855
-    test(`Als ${bezeichnung}: Jede Klasse hat eine Dienststellennummer neben dem Klassennamen`, { tag: [LONG, SHORT, STAGE, BROWSER] },  async () => {
+    test(`Als ${bezeichnung}: Jede Klasse hat eine Dienststellennummer neben dem Klassennamen`, { tag: [STAGE, DEV] },  async () => {
       // erste 50 Einträge 
       await klasseErgebnislistePage.setItemsPerPage('50');
       await klasseErgebnislistePage.checkTableData(rolleName == landesadminRolle);
     });
 
-    test(`Als ${bezeichnung}: in der Ergebnisliste die Filter benutzen`, { tag: [LONG, SHORT, STAGE, BROWSER] },  async () => {
+    test(`Als ${bezeichnung}: in der Ergebnisliste die Filter benutzen`, { tag: [ STAGE, DEV] },  async () => {
       await test.step(`Klasse anlegen`, async () => {
         klasseAnlegenPage = await personManagementViewPage.menu.navigateToKlasseCreation();
         await klasseAnlegenPage.waitForPageLoad();
