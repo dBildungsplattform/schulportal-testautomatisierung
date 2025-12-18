@@ -20,7 +20,7 @@ export class RolleManagementViewPage {
     return new RolleDetailsViewPage(this.page).waitForPageLoad();
   }
 
-  public async setPageSize(size: '5' | '30' | '50' | '100' | '300'): Promise<void> {
+  public async setPageSize(size: 5 | 30 | 50 | 100 | 300): Promise<void> {
     await this.rolleTable.setItemsPerPage(size);
   }
 

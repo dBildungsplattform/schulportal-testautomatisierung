@@ -24,8 +24,8 @@ export class KlasseManagementViewPage {
     return this;
   }
 
-  public async setItemsPerPage(entries: string): Promise<void> {
-    await this.klasseTable.setItemsPerPage(entries.toString());
+  public async setItemsPerPage(entries: 5 | 30 | 50 | 100 | 300): Promise<void> {
+    await this.klasseTable.setItemsPerPage(entries);
   }
     
   private async filterByText(text: string, testId: string): Promise<void> {
@@ -41,9 +41,23 @@ export class KlasseManagementViewPage {
     await this.filterByText(klassenname, 'klassen-management-klasse-select');
   }
 
+  public async clickColumnHeader(columnName: string): Promise<void> {
+    await this.klasseTable.clickColumnHeader(columnName);
+  }
+
+  public async goToFirstPage(): Promise<void> {
+    await this.klasseTable.goToFirstPage();
+    await this.waitForPageLoad();
+  }
+
   public async goToLastPage(): Promise<void> {
     await this.klasseTable.goToLastPage();
     await this.waitForPageLoad();
+  }
+
+  public async hasMultiplePages(): Promise<boolean> {
+    const nextPageBtn: Locator = this.page.locator('.v-pagination__next button');
+    return await nextPageBtn.isEnabled();
   }
   
   public async openGesamtuebersicht(klassenname: string): Promise<KlasseDetailsViewPage> {
@@ -57,7 +71,7 @@ export class KlasseManagementViewPage {
     if (landesadmin) {
       await this.filterBySchule(klasseParams.schulname);
     } else {
-      await this.checkIfSchuleIsCorrect(klasseParams);
+      await this.checkIfSchuleIsCorrect(klasseParams.schulname, klasseParams.schulNr);
     }
     await this.filterByKlasse(klasseParams.klassenname);
     await this.checkIfKlasseExists(klasseParams.klassenname);
@@ -65,11 +79,11 @@ export class KlasseManagementViewPage {
     return this.openGesamtuebersicht(klasseParams.klassenname);
   }
 
-  public async searchAndDeleteKlasse(landesadmin: boolean, klasseParams: KlasseCreationParams): Promise<void> {
-    if (landesadmin) {
+  public async searchAndDeleteKlasse(hasMultipleSchulen: boolean, klasseParams: KlasseCreationParams): Promise<void> {
+    if (hasMultipleSchulen) {
       await this.filterBySchule(klasseParams.schulname);
     } else {
-      await this.checkIfSchuleIsCorrect(klasseParams);
+      await this.checkIfSchuleIsCorrect(klasseParams.schulname, klasseParams.schulNr);
     }
     await this.filterByKlasse(klasseParams.klassenname);
     await this.checkIfKlasseExists(klasseParams.klassenname);
@@ -102,8 +116,8 @@ export class KlasseManagementViewPage {
     await this.klasseTable.checkRowCount(rowCount);
   }
 
-  public async checkIfSchuleIsCorrect(params: KlasseCreationParams): Promise<void> {
-    await expect(this.page.getByTestId('klassen-management-schule-select')).toHaveText(params.schulNr + ' (' + params.schulname + ')');
+  public async checkIfSchuleIsCorrect(schulname: string,  schulNr: string): Promise<void> {
+    await expect(this.page.getByTestId('klassen-management-schule-select')).toHaveText(schulNr + ' (' + schulname + ')');
   }
 
   public async checkIfKlasseExists(klassenname: string): Promise<void> {
@@ -142,5 +156,35 @@ export class KlasseManagementViewPage {
   public async klasseDeletionFailed(): Promise<void> {
     await expect(this.page.getByTestId('klasse-management-error-alert-text')).toHaveText('Die Klasse kann nicht gelöscht werden, da noch Benutzer zugeordnet sind.');
     await this.page.getByTestId('klasse-management-error-alert-button').click();
+  }
+
+  public async checkColumnSorting(columnName: string, sortingStatus: 'ascending' | 'descending' | 'not-sortable'): Promise<void> {
+    await this.klasseTable.checkColumnSorting(columnName, sortingStatus);
+  }
+
+  private async checkClassNameSortingHelper(hasMultipleSchulen: boolean, direction: 'ascending' | 'descending'): Promise<void> {
+    const cellIndex: number = hasMultipleSchulen ? 2 : 1;
+    const classNames: string[] = await this.klasseTable.getTableColumnData(cellIndex);
+    const uniqueClassNames: string[] = [...new Set(classNames)];
+    const sortedClassNames: string[] = [...uniqueClassNames].sort((a: string, b: string): number => 
+      direction === 'ascending' 
+        ? a.localeCompare(b, 'de', { numeric: true })
+        : b.localeCompare(a, 'de', { numeric: true })
+    );
+    
+    await expect(uniqueClassNames).toEqual(sortedClassNames);
+  }
+
+  public async checkClassNameSorting(hasMultipleSchulen: boolean): Promise<void> {
+    await this.checkColumnSorting('Klasse', 'ascending');
+    await this.checkClassNameSortingHelper(hasMultipleSchulen, 'ascending');
+
+    await this.clickColumnHeader('Klasse');
+    await this.checkColumnSorting('Klasse', 'descending');
+    await this.checkClassNameSortingHelper(hasMultipleSchulen, 'descending');
+
+    await this.clickColumnHeader('Klasse');
+    await this.checkColumnSorting('Klasse', 'ascending');
+    await this.checkClassNameSortingHelper(hasMultipleSchulen, 'ascending');
   }
 }
