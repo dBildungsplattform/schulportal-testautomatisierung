@@ -5,7 +5,7 @@ import { StartViewPage } from '../../pages/StartView.neu.page';
 import { HeaderPage } from '../../pages/components/Header.neu.page';
 import { LandingViewPage } from '../../pages/LandingView.neu.page';
 import { PersonManagementViewPage } from "../../pages/admin/personen/PersonManagementView.neu.page";
-import { landSH } from '../../base/organisation';
+import { landSH, testschuleDstNr, testschuleName } from '../../base/organisation';
 import { landesadminRolle } from '../../base/rollen'
 import { createPersonWithPersonenkontext, freshLoginPage, UserInfo } from '../../base/api/personApi';
 import { SchuleManagementViewPage } from '../../pages/admin/organisationen/schulen/SchuleManagementView.neu.page';
@@ -14,7 +14,7 @@ let header: HeaderPage;
 let landingPage: LandingViewPage;
 let loginPage: LoginViewPage;
 let personManagementViewPage: PersonManagementViewPage;
-let schuleErgebnislistePage : SchuleManagementViewPage;
+let schuleManagementViewPage: SchuleManagementViewPage;
 let landesadmin: UserInfo;
 
 test.describe(`Testfälle für die Ergebnisliste von Schulen als Landesadmin: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
@@ -34,26 +34,26 @@ test.describe(`Testfälle für die Ergebnisliste von Schulen als Landesadmin: Um
 
     // Navigation zur Ergebnisliste von Schulen
     personManagementViewPage = await startPage.goToAdministration();  
-    schuleErgebnislistePage = await personManagementViewPage.menu.navigateToSchuleManagement();
+    schuleManagementViewPage = await personManagementViewPage.menu.navigateToSchuleManagement();
   });
 
   // SPSH-2953
   test(`Schulen Ergebnisliste: UI prüfen`, { tag: [LONG, SHORT, STAGE, BROWSER] },  async () => {
-    await schuleErgebnislistePage.checkManagementPage();
+    await schuleManagementViewPage.checkManagementPage();
   });
 
   test(`In der Ergebnisliste die Suchfunktion benutzen`, { tag: [LONG, SHORT, STAGE, BROWSER] },  async () => {
     // Auf 5 Einträge pro Seite setzen, damit Testschule nicht direkt sichtbar ist
-    await schuleErgebnislistePage.setPageSize('5');
+    await schuleManagementViewPage.setPageSize('5');
 
     // Suche nach Schulname
-    await schuleErgebnislistePage.searchByText('Testschule Schulportal');
-    await schuleErgebnislistePage.checkIfSchuleExists('Testschule Schulportal');
-    await schuleErgebnislistePage.checkRowCount(1);
+    await schuleManagementViewPage.searchByText(testschuleName);
+    await schuleManagementViewPage.checkIfSchuleExists(testschuleName);
+    await schuleManagementViewPage.checkRowCount(1);
 
     // Suche nach Dienststellennummer
-    await schuleErgebnislistePage.searchByText('1111111');
-    await schuleErgebnislistePage.checkIfSchuleExists('1111111');
-    await schuleErgebnislistePage.checkRowCount(1);
+    await schuleManagementViewPage.searchByText(testschuleDstNr);
+    await schuleManagementViewPage.checkIfSchuleExists(testschuleDstNr);
+    await schuleManagementViewPage.checkRowCount(1);
   });
 });

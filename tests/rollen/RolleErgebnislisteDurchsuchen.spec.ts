@@ -14,7 +14,7 @@ let header: HeaderPage;
 let landingPage: LandingViewPage;
 let loginPage: LoginViewPage;
 let personManagementViewPage: PersonManagementViewPage;
-let rollenErgebnislistePage : RolleManagementViewPage;
+let rolleManagementViewPage : RolleManagementViewPage;
 let landesadmin: UserInfo;
 
 test.describe(`Testfälle für die Ergebnisliste von Rollen als Landesadmin: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
@@ -34,10 +34,10 @@ test.describe(`Testfälle für die Ergebnisliste von Rollen als Landesadmin: Umg
 
       // Navigation zur Ergebnisliste von Rollen
       personManagementViewPage = await startPage.goToAdministration();  
-      rollenErgebnislistePage = await personManagementViewPage.menu.navigateToRolleManagement();
+      rolleManagementViewPage = await personManagementViewPage.menu.navigateToRolleManagement();
   });
 
   test(`Als Landesadmin: Rolle Ergebnisliste: UI prüfen`, { tag: [LONG, SHORT, STAGE, BROWSER] },  async () => {
-      await rollenErgebnislistePage.checkManagementPage();
+      await rolleManagementViewPage.checkManagementPage();
   });
 });

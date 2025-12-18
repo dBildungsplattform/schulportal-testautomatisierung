@@ -63,8 +63,8 @@ let admin: UserInfo;
       await benutzerErgebnislistePage.checkIfPersonExists(admin.kopersnummer);
 
       // Suche nach Rolle
-      await benutzerErgebnislistePage.searchByText(rolleName == landesadminRolle? landesadminRolle : schuladminOeffentlichRolle);
-      await benutzerErgebnislistePage.checkIfPersonExists(rolleName == landesadminRolle? landesadminRolle : schuladminOeffentlichRolle);
+      await benutzerErgebnislistePage.searchByText(rolleName);
+      await benutzerErgebnislistePage.checkIfPersonExists(rolleName);
 
       // Suche nach einem nicht existierenden Eintrag
       await benutzerErgebnislistePage.searchByText('NichtExistierenderEintrag');
@@ -75,7 +75,7 @@ let admin: UserInfo;
     // SPSH-2926
     test(`Als ${bezeichnung}: In der Ergebnisliste die Filterfunktion der Schulen benutzen`, { tag: [LONG, SHORT, STAGE, BROWSER] },  async () => {
       // Filtern nach Schule
-      if (rolleName == landesadminRolle) {
+      if (rolleName === landesadminRolle) {
         await benutzerErgebnislistePage.filterBySchule(testschuleDstNr + ' (' + testschuleName + ')');
         await benutzerErgebnislistePage.checkIfPersonExists(testschuleDstNr);
         await benutzerErgebnislistePage.resetFilter();
