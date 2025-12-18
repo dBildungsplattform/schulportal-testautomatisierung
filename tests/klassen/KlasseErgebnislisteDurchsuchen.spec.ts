@@ -27,9 +27,9 @@ import { generateKlassenname } from '../../base/utils/generateTestdata';
     let landingPage: LandingViewPage;
     let loginPage: LoginViewPage;
     let personManagementViewPage: PersonManagementViewPage;
-    let klasseAnlegenPage: KlasseCreationViewPage;
-    let klasseErfolgreichAngelegtPage: KlasseCreationSuccessPage;
-    let klasseErgebnislistePage: KlasseManagementViewPage;
+    let klasseCreationViewPage: KlasseCreationViewPage;
+    let klasseCreationSuccessPage: KlasseCreationSuccessPage;
+    let klasseManagementViewPage: KlasseManagementViewPage;
     let admin: UserInfo;
 
     test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
@@ -55,41 +55,41 @@ import { generateKlassenname } from '../../base/utils/generateTestdata';
 
       // Navigation zur Ergebnisliste von Klassen
       personManagementViewPage = await startPage.goToAdministration();  
-      klasseErgebnislistePage = await personManagementViewPage.menu.navigateToKlasseManagement();  
+      klasseManagementViewPage = await personManagementViewPage.menu.navigateToKlasseManagement();  
     });
 
     test.describe('UI Tests ohne Datenanlage', () => {
       // SPSH-2853
       test(`Als ${bezeichnung}: Klasse Ergebnisliste: UI prüfen`, { tag: [DEV, STAGE] },  async () => {
-        await klasseErgebnislistePage.checkManagementPage(hasMultipleSchulen);
+        await klasseManagementViewPage.checkManagementPage(hasMultipleSchulen);
       });
 
       // SPSH-2855
       test(`Als ${bezeichnung}: Jede Klasse hat eine Dienststellennummer neben dem Klassennamen`, { tag: [DEV, STAGE] },  async () => {
         // erste 50 Einträge 
-        await klasseErgebnislistePage.setItemsPerPage(50);
-        await klasseErgebnislistePage.checkTableData(hasMultipleSchulen);
+        await klasseManagementViewPage.setItemsPerPage(50);
+        await klasseManagementViewPage.checkTableData(hasMultipleSchulen);
       });
 
       test(`Als ${bezeichnung}: Ergebnisliste Klassen nach Spalte Klasse sortieren können`, { tag: [DEV, STAGE] },  async () => {
         await test.step(`Sortierverhalten ohne Filter prüfen`, async () => {
-          await klasseErgebnislistePage.setItemsPerPage(100);
-          await klasseErgebnislistePage.checkClassNameSorting(hasMultipleSchulen);
+          await klasseManagementViewPage.setItemsPerPage(100);
+          await klasseManagementViewPage.checkClassNameSorting(hasMultipleSchulen);
           if (hasMultipleSchulen) {
-            await klasseErgebnislistePage.checkColumnSorting('Dienststellennummer', 'not-sortable');
+            await klasseManagementViewPage.checkColumnSorting('Dienststellennummer', 'not-sortable');
           }
         });
 
         await test.step(`Sortierverhalten mit Schulfilter prüfen`, async () => {
           if (hasMultipleSchulen) {
-            await klasseErgebnislistePage.filterBySchule(testschuleName);
+            await klasseManagementViewPage.filterBySchule(testschuleName);
           } else {
-            await klasseErgebnislistePage.checkIfSchuleIsCorrect(testschuleName, testschuleDstNr);
+            await klasseManagementViewPage.checkIfSchuleIsCorrect(testschuleName, testschuleDstNr);
           }
           
-          await klasseErgebnislistePage.checkClassNameSorting(hasMultipleSchulen);
+          await klasseManagementViewPage.checkClassNameSorting(hasMultipleSchulen);
           if (hasMultipleSchulen) {
-            await klasseErgebnislistePage.checkColumnSorting('Dienststellennummer', 'not-sortable');
+            await klasseManagementViewPage.checkColumnSorting('Dienststellennummer', 'not-sortable');
           }
         });
       });
@@ -109,22 +109,22 @@ import { generateKlassenname } from '../../base/utils/generateTestdata';
 
       test(`Als ${bezeichnung}: in der Ergebnisliste die Filter benutzen`, { tag: [DEV, STAGE] },  async () => {
         await test.step(`Klasse anlegen`, async () => {
-          klasseAnlegenPage = await personManagementViewPage.menu.navigateToKlasseCreation();
-          klasseErfolgreichAngelegtPage = await klasseAnlegenPage.createKlasse(hasMultipleSchulen, klasseParams);
-          await klasseErfolgreichAngelegtPage.waitForPageLoad();
-          klasseErgebnislistePage = await klasseErfolgreichAngelegtPage.goBackToList();
+          klasseCreationViewPage = await personManagementViewPage.menu.navigateToKlasseCreation();
+          klasseCreationSuccessPage = await klasseCreationViewPage.createKlasse(hasMultipleSchulen, klasseParams);
+          await klasseCreationSuccessPage.waitForPageLoad();
+          klasseManagementViewPage = await klasseCreationSuccessPage.goBackToList();
         });
 
         await test.step(`In der Ergebnisliste die neue Klasse durch Filter suchen`, async () => {
-          await klasseErgebnislistePage.waitForPageLoad();
+          await klasseManagementViewPage.waitForPageLoad();
           if (hasMultipleSchulen) {
-            await klasseErgebnislistePage.filterBySchule(klasseParams.schulname);
+            await klasseManagementViewPage.filterBySchule(klasseParams.schulname);
           } else {
-            await klasseErgebnislistePage.checkIfSchuleIsCorrect(klasseParams.schulname, klasseParams.schulNr);
+            await klasseManagementViewPage.checkIfSchuleIsCorrect(klasseParams.schulname, klasseParams.schulNr);
           }
-          await klasseErgebnislistePage.filterByKlasse(klasseParams.klassenname);
-          await klasseErgebnislistePage.checkIfKlasseExists(klasseParams.klassenname);
-          await klasseErgebnislistePage.checkRows(1);
+          await klasseManagementViewPage.filterByKlasse(klasseParams.klassenname);
+          await klasseManagementViewPage.checkIfKlasseExists(klasseParams.klassenname);
+          await klasseManagementViewPage.checkRows(1);
         });
       });
     });
