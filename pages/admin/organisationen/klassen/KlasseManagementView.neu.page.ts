@@ -80,12 +80,12 @@ export class KlasseManagementViewPage {
   }
 
   /* assertions */
-  public async checkManagementPage(landesadmin: boolean): Promise<void> {
+  public async checkManagementPage(hasMultipleSchulen: boolean): Promise<void> {
     await expect(this.page.getByTestId('admin-headline')).toHaveText('Administrationsbereich');
     await expect(this.page.getByTestId('klasse-management-headline')).toHaveText('Klassenverwaltung');
     await expect(this.page.getByTestId('klassen-management-schule-select')).toBeVisible();
     await expect(this.page.getByTestId('klassen-management-klasse-select')).toBeVisible();
-    const expectedHeaders: string[] = landesadmin? ['Dienststellennummer', 'Klasse', 'Aktion'] : ['Klasse', 'Aktion'];
+    const expectedHeaders: string[] = hasMultipleSchulen? ['Dienststellennummer', 'Klasse', 'Aktion'] : ['Klasse', 'Aktion'];
     await this.checkHeaders(expectedHeaders);
   }
 
@@ -114,20 +114,20 @@ export class KlasseManagementViewPage {
     await this.klasseTable.checkIfItemIsNotVisible(klassenname);
   }
 
-  public async checkTableData(landesadmin: boolean): Promise<void> {
-    await this.klasseTable.checkTableData(this.table, (i: number) => this.checkTableRow(i, landesadmin));
+  public async checkTableData(hasMultipleSchulen: boolean): Promise<void> {
+    await this.klasseTable.checkTableData(this.table, (i: number) => this.checkTableRow(i, hasMultipleSchulen));
   }
 
-  private async checkTableRow(i: number, landesadmin: boolean): Promise<void> {
+  private async checkTableRow(i: number, hasMultipleSchulen: boolean): Promise<void> {
     const tableRows: Locator = this.table.locator('tbody tr.v-data-table__tr');
     const klassennameCell: Locator = tableRows
       .nth(i)
       .locator('td')
-      .nth(landesadmin ? 2 : 1);
+      .nth(hasMultipleSchulen ? 2 : 1);
     await expect(klassennameCell).toBeVisible();
     await expect(klassennameCell).not.toBeEmpty();
 
-    if (!landesadmin) return;
+    if (!hasMultipleSchulen) return;
     const dienststellennummerCell: Locator = tableRows.nth(i).locator('td').nth(1);
     await expect(dienststellennummerCell).toBeVisible();
     await expect(dienststellennummerCell).not.toHaveText('---');
