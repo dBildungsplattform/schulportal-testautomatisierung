@@ -16,8 +16,8 @@ export class SchuleCreationViewPage {
   private readonly headline: Locator = this.page.getByTestId('schule-creation-headline');
   private readonly oeffentlicheSchuleOption: Locator = this.page.getByTestId('schulform-radio-button-0');
   private readonly ersatzSchuleOption: Locator = this.page.getByTestId('schulform-radio-button-1');
-  private readonly dienststellenNrInput: Locator = this.page.getByTestId('dienststellennummer-input');
-  private readonly schulnameInput: Locator = this.page.getByTestId('schulname-input');
+  private readonly dienststellenNrInputContainer: Locator = this.page.getByTestId('dienststellennummer-input');
+  private readonly schulnameInputContainer: Locator = this.page.getByTestId('schulname-input');
   private readonly schuleVerwerfenButton: Locator = this.page.getByTestId('schule-creation-form-discard-button');
   private readonly schuleAnlegenButton: Locator = this.page.getByTestId('schule-creation-form-submit-button');
   private selectedSchultraegerName: string;
@@ -32,12 +32,15 @@ export class SchuleCreationViewPage {
   }
 
   public async createSchule(params: SchuleCreationParams): Promise<SchuleCreationSuccessPage> {
-    const dienststellenNrInput: Locator = this.dienststellenNrInput.locator('input');
-    const schuleNameInput: Locator = this.schulnameInput.locator('input');
+    const dienststellenNrInput: Locator = this.dienststellenNrInputContainer.locator('input');
+    const schuleNameInput: Locator = this.schulnameInputContainer.locator('input');
 
     if (params.schulform === Schulform.Oeffentlich) {
       await this.oeffentlicheSchuleOption.click();
       this.selectedSchultraegerName = await this.oeffentlicheSchuleOption.innerText();
+    } else {
+      await this.ersatzSchuleOption.click();
+      this.selectedSchultraegerName = await this.ersatzSchuleOption.innerText();
     }
 
     await dienststellenNrInput.waitFor({ state: 'visible' });
@@ -69,10 +72,10 @@ export class SchuleCreationViewPage {
     await expect(this.ersatzSchuleOption).toBeVisible();
 
     await expect(this.page.getByText('2. Dienststellennummer eingeben', { exact: false })).toBeVisible();
-    await expect(this.dienststellenNrInput).toBeVisible();
+    await expect(this.dienststellenNrInputContainer).toBeVisible();
 
     await expect(this.page.getByText('3. Schulname eingeben', { exact: false })).toBeVisible();
-    await expect(this.schulnameInput).toBeVisible();
+    await expect(this.schulnameInputContainer).toBeVisible();
 
     await expect(this.schuleVerwerfenButton).toBeVisible();
     await expect(this.schuleAnlegenButton).toBeVisible();

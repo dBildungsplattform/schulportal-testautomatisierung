@@ -85,10 +85,7 @@ export class MenuBarPage {
   }
 
   public async navigateToSchuleCreation(): Promise<SchuleCreationViewPage> {
-    await this.schuleCreation.click();
-    const schuleCreationViewPage: SchuleCreationViewPage = new SchuleCreationViewPage(this.page);
-    await schuleCreationViewPage.waitForPageLoad();
-    return schuleCreationViewPage;
+    return this.navigateTo('schule-creation-menu-item', new SchuleCreationViewPage(this.page).waitForPageLoad());
   }
 
   /* assertions */
