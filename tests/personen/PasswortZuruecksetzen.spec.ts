@@ -1,6 +1,6 @@
 import { test, PlaywrightTestArgs } from '@playwright/test';
 import { createPersonWithPersonenkontext, freshLoginPage, UserInfo } from '../../base/api/personApi';
-import { LONG, SHORT, STAGE, DEV, BROWSER } from '../../base/tags';
+import { STAGE, DEV} from '../../base/tags';
 import { LoginViewPage } from '../../pages/LoginView.neu.page';
 import { StartViewPage } from '../../pages/StartView.neu.page';
 import { testschuleName } from '../../base/organisation';
@@ -32,7 +32,7 @@ test.describe('Passwort-Reset für Lehrer', () => {
     personManagementViewPage = await startPage.goToAdministration();
   });
 
-  test('Passwort Reset für einen Lehrer als Landesadmin',{ tag: [LONG, SHORT, STAGE, DEV, BROWSER] },
+  test('Passwort Reset für einen Lehrer als Landesadmin',{ tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
     const personDetails: PersonDetailsViewPage = await personManagementViewPage.searchAndOpenGesamtuebersicht(lehrkraft.nachname);
     const newPassword: string = await personDetails.resetPasswordAndCopyNew();
