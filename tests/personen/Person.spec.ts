@@ -1,37 +1,32 @@
 import { expect, PlaywrightTestArgs, test } from '@playwright/test';
-import { getOrganisationId } from '../base/api/organisationApi';
-import { createRolleAndPersonWithPersonenkontext, UserInfo } from '../base/api/personApi';
-import { addSystemrechtToRolle, createRolle, RollenArt } from '../base/api/rolleApi';
-import { getServiceProviderId } from '../base/api/serviceProviderApi';
+
+import { getOrganisationId } from '../../base/api/organisationApi';
+import { createRolleAndPersonWithPersonenkontext, UserInfo } from '../../base/api/personApi';
+import { addSystemrechtToRolle, createRolle, RollenArt } from '../../base/api/rolleApi';
+import { getServiceProviderId } from '../../base/api/serviceProviderApi';
 import {
   ersatzLandSH,
   landSH,
   oeffentlichLandSH,
-  testschule665Name,
   testschuleDstNr,
   testschuleName,
-} from '../base/organisation';
-import { landesadminRolle, schuelerRolle, schuladminOeffentlichRolle } from '../base/rollen';
-import { typeLehrer, typeSchueler } from '../base/rollentypen';
-import { schulportaladmin } from '../base/sp';
-import { BROWSER, DEV, LONG, SHORT, STAGE } from '../base/tags';
-import { deletePersonenBySearchStrings, deleteRolleById, deleteRolleByName } from '../base/testHelperDeleteTestdata';
-import { TestHelperLdap } from '../base/testHelperLdap';
-import {
-  generateKopersNr,
-  generateNachname,
-  generateRolleName,
-  generateVorname,
-} from '../base/utils/generateTestdata';
-import { PersonCreationViewPage } from '../pages/admin/personen/PersonCreationView.page';
-import { PersonDetailsViewPage } from '../pages/admin/personen/PersonDetailsView.page';
-import { PersonManagementViewPage } from '../pages/admin/personen/PersonManagementView.page';
-import { HeaderPage } from '../pages/components/Header.page';
-import { MenuPage } from '../pages/components/MenuBar.page';
-import FromAnywhere from '../pages/FromAnywhere';
-import { LandingPage } from '../pages/LandingView.page';
-import { LoginPage } from '../pages/LoginView.page';
-import { StartPage } from '../pages/StartView.page';
+} from '../../base/organisation';
+import { landesadminRolle, schuelerRolle, schuladminOeffentlichRolle } from '../../base/rollen';
+import { typeLehrer, typeSchueler } from '../../base/rollentypen';
+import { schulportaladmin } from '../../base/sp';
+import { DEV, STAGE } from '../../base/tags';
+import { deletePersonenBySearchStrings, deleteRolleById, deleteRolleByName } from '../../base/testHelperDeleteTestdata';
+import { TestHelperLdap } from '../../base/testHelperLdap';
+import { generateKopersNr, generateNachname, generateRolleName, generateVorname } from '../../base/utils/generateTestdata';
+import { PersonCreationViewPage } from '../../pages/admin/personen/PersonCreationView.page';
+import { PersonDetailsViewPage } from '../../pages/admin/personen/PersonDetailsView.page';
+import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.page';
+import { HeaderPage } from '../../pages/components/Header.page';
+import { MenuPage } from '../../pages/components/MenuBar.page';
+import FromAnywhere from '../../pages/FromAnywhere';
+import { LandingPage } from '../../pages/LandingView.page';
+import { LoginPage } from '../../pages/LoginView.page';
+import { StartPage } from '../../pages/StartView.page';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -105,7 +100,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     'Einen Benutzer mit der Rolle Lehrkraft anlegen als Landesadmin und anschließend mit diesem Benutzer anmelden',
-    { tag: [LONG, SHORT, STAGE, DEV] },
+    { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const landing: LandingPage = new LandingPage(page);
       const startseite: StartPage = new StartPage(page);
@@ -169,7 +164,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     'Einen Benutzer mit der Rolle Landesadmin anlegen',
-    { tag: [LONG, SHORT, STAGE, DEV] },
+    { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const vorname: string = generateVorname();
       const nachname: string = generateNachname();
@@ -209,7 +204,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     'Einen Benutzer mit der Rolle LiV anlegen als Landesadmin',
-    { tag: [LONG, SHORT, STAGE, DEV] },
+    { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const startseite: StartPage = new StartPage(page);
       const menue: MenuPage = new MenuPage(page);
@@ -247,7 +242,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     'Einen Benutzer mit der Rolle Schuladmin anlegen als Landesadmin und anschließend mit diesem Benutzer anmelden und einen weiteren Benutzer anlegen',
-    { tag: [LONG, SHORT, STAGE, DEV] },
+    { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const startseite: StartPage = new StartPage(page);
       const login: LoginPage = new LoginPage(page);
@@ -312,7 +307,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     'Einen Benutzer mit der Rolle Schueler anlegen als Landesadmin',
-    { tag: [LONG, SHORT, STAGE, DEV, BROWSER] },
+    { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const startseite: StartPage = new StartPage(page);
       const menue: MenuPage = new MenuPage(page);
@@ -355,42 +350,9 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
   );
 
   test(
-    'Ergebnisliste Benutzer auf Vollständigkeit prüfen als Landesadmin',
-    { tag: [LONG, SHORT, STAGE, DEV, BROWSER] },
-    async ({ page }: PlaywrightTestArgs) => {
-      const startseite: StartPage = new StartPage(page);
-      const menue: MenuPage = new MenuPage(page);
-      const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
-
-      await test.step(`Benutzerverwaltung öffnen und alle Elemente in der Ergebnisliste auf Existenz prüfen`, async () => {
-        await startseite.cardItemSchulportalAdministration.click();
-        await menue.menueItemAlleBenutzerAnzeigen.click();
-        await personManagementView.waitForData();
-        await expect(personManagementView.textH1Administrationsbereich).toBeVisible();
-        await expect(personManagementView.textH2Benutzerverwaltung).toBeVisible();
-        await expect(personManagementView.textH2Benutzerverwaltung).toHaveText('Benutzerverwaltung');
-        await expect(personManagementView.inputSuchfeld).toBeVisible();
-        await expect(personManagementView.buttonSuchen).toBeVisible();
-        await expect(personManagementView.tableHeaderNachname).toBeVisible();
-        await expect(personManagementView.tableHeaderVorname).toBeVisible();
-        await expect(personManagementView.tableHeaderBenutzername).toBeVisible();
-        await expect(personManagementView.tableHeaderKopersNr).toBeVisible();
-        await expect(personManagementView.tableHeaderRolle).toBeVisible();
-        await expect(personManagementView.tableHeaderZuordnungen).toBeVisible();
-        await expect(personManagementView.tableHeaderKlasse).toBeVisible();
-      });
-      // #TODO: wait for the last request in the test
-      // sometimes logout breaks the test because of interrupting requests
-      // logoutViaStartPage = true is a workaround
-      logoutViaStartPage = true;
-    }
-  );
-
-  test(
     "Prüfung auf korrekte Rollen in dem Dropdown 'Rolle' nach Auswahl der Organisation bei Anlage eines Benutzer in der Rolle Landesadmin",
-    { tag: [LONG, STAGE, DEV] },
+    { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
-
       const OrganisationLand: string = landSH;
       const OrganisationOeffentlicheSchule: string = oeffentlichLandSH;
       const OrganisationErsatzschule: string = ersatzLandSH;
@@ -400,9 +362,9 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const rolleLiV: string = 'LiV';
 
       const personCreationView: PersonCreationViewPage = await test.step(`Dialog Person anlegen öffnen`, async () => {
-      const startseite: StartPage = new StartPage(page);
-      const menue: MenuPage = await startseite.goToAdministration();
-      return await menue.personAnlegen();
+        const startseite: StartPage = new StartPage(page);
+        const menue: MenuPage = await startseite.goToAdministration();
+        return await menue.personAnlegen();
       });
 
       await test.step(`Organisation 'Land Schleswig-Holstein' auswählen und Dropdown 'Rolle' prüfen`, async () => {
@@ -447,99 +409,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
   );
 
   test(
-    'In der Ergebnisliste die Suchfunktion ausführen als Landesadmin',
-    { tag: [LONG, SHORT, STAGE, DEV] },
-    async ({ page }: PlaywrightTestArgs) => {
-      const startseite: StartPage = new StartPage(page);
-      const menu: MenuPage = await startseite.goToAdministration();
-
-      const rolle: string = 'Lehrkraft';
-      const vorname: string = generateVorname();
-      const nachname: string = generateNachname();
-      const kopersnr: string = generateKopersNr();
-      const schulstrukturknoten: string = testschuleName;
-
-      await test.step(`Benutzer Lehrkraft anlegen`, async () => {
-        const personCreationView: PersonCreationViewPage = await menu.personAnlegen();
-        await personCreationView.createUser(schulstrukturknoten, rolle, vorname, nachname, kopersnr);
-        await expect(personCreationView.textSuccess).toBeVisible();
-        usernames.push(await personCreationView.dataBenutzername.innerText());
-      });
-
-      const personManagementView: PersonManagementViewPage = await test.step('Benutzerverwaltung öffnen', async () => {
-        const personManagementView: PersonManagementViewPage = await menu.alleBenutzerAnzeigen();
-        await expect(personManagementView.textH2Benutzerverwaltung).toHaveText('Benutzerverwaltung');
-        return personManagementView;
-      });
-
-      await test.step(`Suche nach Vornamen `, async () => {
-        await personManagementView.inputSuchfeld.fill(vorname);
-        await personManagementView.buttonSuchen.click();
-        await expect(page.getByRole('cell', { name: vorname })).toBeVisible();
-      });
-
-      await test.step(`Suche nach Nachnamen `, async () => {
-        await personManagementView.inputSuchfeld.fill(nachname);
-        await personManagementView.buttonSuchen.click();
-        await expect(page.getByRole('cell', { name: nachname })).toBeVisible();
-      });
-
-      await test.step(`Suche nach Benutzernamen `, async () => {
-        await personManagementView.inputSuchfeld.fill(usernames[0]);
-        await personManagementView.buttonSuchen.click();
-        await expect(page.getByRole('cell', { name: nachname })).toBeVisible();
-      });
-
-      await test.step(`Suche nach Dienststellennummer `, async () => {
-        await personManagementView.inputSuchfeld.fill(kopersnr);
-        await personManagementView.buttonSuchen.click();
-        await expect(page.getByRole('cell', { name: nachname })).toBeVisible();
-      });
-
-      await test.step(`Suche mit leerer Ergebnisliste. Geprüft wird das der Text "Keine Daten gefunden." gefunden wird, danach wird gepüft dass die Tabelle 0 Zeilen hat.`, async () => {
-        await personManagementView.resetFilter();
-        await personManagementView.inputSuchfeld.fill('!§$%aavvccdd44xx@');
-        await personManagementView.buttonSuchen.click();
-        await expect(page.getByRole('cell', { name: 'Keine Daten gefunden.' })).toBeVisible();
-        await expect(page.locator('v-data-table__td')).toHaveCount(0);
-      });
-      // #TODO: wait for the last request in the test
-      // sometimes logout breaks the test because of interrupting requests
-      // logoutViaStartPage = true is a workaround
-      logoutViaStartPage = true;
-    }
-  );
-
-  test(
-    'In der Ergebnisliste die Filterfunktion der Schulen benutzen als Landesadmin',
-    { tag: [LONG, SHORT, STAGE, DEV] },
-    async ({ page }: PlaywrightTestArgs) => {
-      const startseite: StartPage = new StartPage(page);
-      const menu: MenuPage = await startseite.goToAdministration();
-      const personManagementView: PersonManagementViewPage = await menu.alleBenutzerAnzeigen();
-
-      await test.step(`Benutzerverwaltung öffnen`, async () => {
-        await expect(personManagementView.textH2Benutzerverwaltung).toHaveText('Benutzerverwaltung');
-        await personManagementView.waitForData();
-      });
-
-      await test.step(`Filter öffnen und Schule selektieren`, async () => {
-        await personManagementView.filterSchule(testschule665Name);
-
-        await expect(page.getByTestId('person-management-organisation-select')).toHaveText('1111165 (Testschule-PW665)');
-
-        await expect(personManagementView.getRows().first()).toContainText('1111165');
-      });
-      // #TODO: wait for the last request in the test
-      // sometimes logout breaks the test because of interrupting requests
-      // logoutViaStartPage = true is a workaround
-      logoutViaStartPage = true;
-    }
-  );
-
-  test(
     'Eine Lehrkraft anlegen und Ihren Kontext entfernen dann wieder hinzufügen und den LDAP Inhalt vollständig prüfen',
-    { tag: [LONG, DEV] },
+    { tag: [DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
       let personDetailsView: PersonDetailsViewPage = new PersonDetailsViewPage(page);
@@ -594,8 +465,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
       await test.step(`Schulzuordnung entfernen`, async () => {
         await personDetailsView.buttonEditSchulzuordnung.click();
-        await page.locator('div.v-selection-control__input').click()
-        await personDetailsView.button_deleteSchulzuordnung.click()
+        await page.locator('div.v-selection-control__input').click();
+        await personDetailsView.button_deleteSchulzuordnung.click();
         await personDetailsView.button_confirmDeleteSchulzuordnung.click();
         await personDetailsView.buttonSaveAssignmentChanges.click();
         await personDetailsView.button_closeZuordnungSuccess.click();
@@ -603,9 +474,9 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
       const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
       personDetailsView = await test.step(`Kontextlose Person suchen und Gesamtübersicht öffnen`, async () => {
-          await personManagementView.searchBySuchfeld(createdBenutzername);
-          return await personManagementView.openGesamtuebersichtPerson(page, createdBenutzername);
-        });
+        await personManagementView.searchBySuchfeld(createdBenutzername);
+        return await personManagementView.openGesamtuebersichtPerson(page, createdBenutzername);
+      });
 
       await test.step(`Schulzuordnung wieder hinzufügen`, async () => {
         await personDetailsView.buttonEditSchulzuordnung.click();
@@ -633,11 +504,12 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         expect(mailPrimaryAddress).toContain('schule-sh.de');
         expect(mailPrimaryAddress.length).toBeGreaterThan(5);
       });
-    });
+    }
+  );
 
   test(
     'Eine Lehrkraft anlegen in der Rolle Landesadmin und die Bestätigungsseite sowie den LDAP Inhalt vollständig prüfen',
-    { tag: [LONG, DEV] },
+    { tag: [DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
       const rolleNames: string[] = ['Lehrkraft'];
@@ -687,7 +559,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       });
 
       await test.step(`Prüfen, dass Lehrkraft im LDAP angelegt wurde`, async () => {
-         expect(await testHelperLdap.validateUserExists(createdBenutzername, 10, 1000)).toBeTruthy();
+        expect(await testHelperLdap.validateUserExists(createdBenutzername, 10, 1000)).toBeTruthy();
       });
 
       await test.step(`Prüfen, dass Lehrkraft im LDAP korrekter Gruppe zugeordnet wurde`, async () => {
@@ -715,7 +587,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     'Mehrere Benutzer hintereinander anlegen in der Rolle Landesadmin für die Rollenarten LERN und LEHR und die Bestätigungsseiten vollständig prüfen',
-    { tag: [LONG, SHORT, STAGE, DEV] },
+    { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const landing: LandingPage = new LandingPage(page);
       const startseite: StartPage = new StartPage(page);
@@ -905,14 +777,11 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     }
   );
 
-  test(
-    'Einen Benutzer über das FE löschen',
-    { tag: [LONG, SHORT, STAGE, DEV, BROWSER] },
-    async ({ page }: PlaywrightTestArgs) => {
-      const startseite: StartPage = new StartPage(page);
-      await startseite.goToAdministration();
-      const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
-      const header: HeaderPage = new HeaderPage(page);
+  test('Einen Benutzer über das FE löschen', { tag: [STAGE, DEV] }, async ({ page }: PlaywrightTestArgs) => {
+    const startseite: StartPage = new StartPage(page);
+    await startseite.goToAdministration();
+    const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
+    const header: HeaderPage = new HeaderPage(page);
 
       const vorname: string = generateVorname();
       const nachname: string = generateNachname();
@@ -925,38 +794,37 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         rolleNames.push(rolle);
       });
 
-      await test.step(`Benutzer wieder löschen über das FE`, async () => {
-        await personManagementView.inputSuchfeld.fill(nachname);
-        await personManagementView.buttonSuchen.click();
-        const personDetailsView: PersonDetailsViewPage = await personManagementView.openGesamtuebersichtPerson(
-          page,
-          nachname
-        );
-        await personDetailsView.buttonDeletePerson.click();
-        await personDetailsView.buttonDeletePersonConfirm.click();
-        await personDetailsView.buttonCloseDeletePersonConfirm.click();
-        await expect(personManagementView.textH2Benutzerverwaltung).toHaveText('Benutzerverwaltung');
-        await personManagementView.resetFilter();
-        // warten, dass die Seite mit dem Laden fertig ist, da z.B. icons mit ajax nachgeladen werden
-        // dieses ist nur ein workaround; im FE muss noch eine Lösung für den Status 'Seite ist vollständig geladen' geschaffen werden
-        await expect(header.iconMyProfil).toBeVisible();
-        await expect(header.iconLogout).toBeVisible();
-        await expect(personManagementView.comboboxMenuIconSchule).toBeVisible();
-        await expect(personManagementView.comboboxMenuIconRolle).toBeVisible();
-        await expect(personManagementView.comboboxMenuIconKlasse).toBeVisible();
-        await expect(personManagementView.comboboxMenuIconStatus).toBeVisible();
-        await expect(page.getByRole('cell', { name: nachname, exact: true })).toBeHidden();
-      });
-      // #TODO: wait for the last request in the test
-      // sometimes logout breaks the test because of interrupting requests
-      // logoutViaStartPage = true is a workaround
-      logoutViaStartPage = true;
-    }
-  );
+    await test.step(`Benutzer wieder löschen über das FE`, async () => {
+      await personManagementView.inputSuchfeld.fill(nachname);
+      await personManagementView.buttonSuchen.click();
+      const personDetailsView: PersonDetailsViewPage = await personManagementView.openGesamtuebersichtPerson(
+        page,
+        nachname
+      );
+      await personDetailsView.buttonDeletePerson.click();
+      await personDetailsView.buttonDeletePersonConfirm.click();
+      await personDetailsView.buttonCloseDeletePersonConfirm.click();
+      await expect(personManagementView.textH2Benutzerverwaltung).toHaveText('Benutzerverwaltung');
+      await personManagementView.resetFilter();
+      // warten, dass die Seite mit dem Laden fertig ist, da z.B. icons mit ajax nachgeladen werden
+      // dieses ist nur ein workaround; im FE muss noch eine Lösung für den Status 'Seite ist vollständig geladen' geschaffen werden
+      await expect(header.iconMyProfil).toBeVisible();
+      await expect(header.iconLogout).toBeVisible();
+      await expect(personManagementView.comboboxMenuIconSchule).toBeVisible();
+      await expect(personManagementView.comboboxMenuIconRolle).toBeVisible();
+      await expect(personManagementView.comboboxMenuIconKlasse).toBeVisible();
+      await expect(personManagementView.comboboxMenuIconStatus).toBeVisible();
+      await expect(page.getByRole('cell', { name: nachname, exact: true })).toBeHidden();
+    });
+    // #TODO: wait for the last request in the test
+    // sometimes logout breaks the test because of interrupting requests
+    // logoutViaStartPage = true is a workaround
+    logoutViaStartPage = true;
+  });
 
   test(
     `Bei Nutzerneuanlage prüfen, dass die combobox 'Rolle' nach Auswahl einer Rolle, nur noch Rollen der gleichen Rollenart angeboten werden`,
-    { tag: [LONG, STAGE, DEV] },
+    { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const rolleNames: string[] = [];
 
@@ -993,7 +861,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     }
   );
 
-  test(`Neuen Benutzer mit mehreren Rollen anlegen`, { tag: [LONG, STAGE, DEV] }, async ({ page }: PlaywrightTestArgs) => {
+  test(`Neuen Benutzer mit mehreren Rollen anlegen`, { tag: [STAGE, DEV] }, async ({ page }: PlaywrightTestArgs) => {
     const rolleNames: string[] = [];
     const vorname: string = generateVorname();
     const nachname: string = generateNachname();
