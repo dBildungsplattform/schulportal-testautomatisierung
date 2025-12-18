@@ -1,18 +1,19 @@
 import { PlaywrightTestArgs, test } from '@playwright/test';
-import { BROWSER, LONG, SHORT, STAGE } from '../../base/tags';
-import { LoginViewPage } from '../../pages/LoginView.neu.page';
-import { HeaderPage } from '../../pages/components/Header.neu.page';
+
+import { createPersonWithPersonenkontext, freshLoginPage, UserInfo } from '../../base/api/personApi';
+import { landSH, testschuleDstNr, testschuleName } from '../../base/organisation';
+import { landesadminRolle, schuladminOeffentlichRolle } from '../../base/rollen';
+import { DEV, STAGE } from '../../base/tags';
+import { generateKlassenname } from '../../base/utils/generateTestdata';
 import { LandingViewPage } from '../../pages/LandingView.neu.page';
+import { LoginViewPage } from '../../pages/LoginView.neu.page';
 import { StartViewPage } from '../../pages/StartView.neu.page';
-import { PersonManagementViewPage } from "../../pages/admin/personen/PersonManagementView.neu.page";
 import { KlasseCreationSuccessPage } from '../../pages/admin/organisationen/klassen/KlasseCreationSuccess.page';
+import { KlasseCreationParams, KlasseCreationViewPage } from '../../pages/admin/organisationen/klassen/KlasseCreationView.neu.page';
 import { KlasseManagementViewPage } from '../../pages/admin/organisationen/klassen/KlasseManagementView.neu.page';
 import { KlasseDetailsViewPage } from '../../pages/admin/organisationen/klassen/details/KlasseDetailsView.neu.page';
-import { createPersonWithPersonenkontext, freshLoginPage, UserInfo } from '../../base/api/personApi';
-import { KlasseCreationViewPage, KlasseCreationParams } from '../../pages/admin/organisationen/klassen/KlasseCreationView.neu.page';
-import { landSH, testschuleDstNr, testschuleName } from '../../base/organisation';
-import { generateKlassenname } from '../../base/utils/generateTestdata';
-import { landesadminRolle, schuladminOeffentlichRolle } from '../../base/rollen';
+import { PersonManagementViewPage } from "../../pages/admin/personen/PersonManagementView.neu.page";
+import { HeaderPage } from '../../pages/components/Header.neu.page';
 
 let header: HeaderPage;
 let landingPage: LandingViewPage;
@@ -64,7 +65,7 @@ let admin: UserInfo;
     });
 
     // SPSH-2856 & SPSH-2857
-    test(`Klasse bearbeiten als ${bezeichnung}`, { tag: [LONG, SHORT, STAGE, BROWSER] },  async () => {
+    test(`Klasse bearbeiten als ${bezeichnung}`, { tag: [STAGE, DEV] },  async () => {
       await test.step(`Klasse anlegen`, async () => {
         klasseErfolgreichAngelegtPage = await klasseAnlegenPage.createKlasse(rolleName == landesadminRolle, klasseParams);
         await klasseErfolgreichAngelegtPage.waitForPageLoad();

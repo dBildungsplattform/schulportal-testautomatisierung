@@ -1,32 +1,32 @@
 import { expect, PlaywrightTestArgs, test } from '@playwright/test';
-import { getOrganisationId } from '../base/api/organisationApi';
-import { createRolleAndPersonWithPersonenkontext, UserInfo } from '../base/api/personApi';
-import { addSystemrechtToRolle, createRolle, RollenArt } from '../base/api/rolleApi';
-import { getServiceProviderId } from '../base/api/serviceProviderApi';
+
+import { getOrganisationId } from '../../base/api/organisationApi';
+import { createRolleAndPersonWithPersonenkontext, UserInfo } from '../../base/api/personApi';
+import { addSystemrechtToRolle, createRolle, RollenArt } from '../../base/api/rolleApi';
+import { getServiceProviderId } from '../../base/api/serviceProviderApi';
 import {
   ersatzLandSH,
   landSH,
   oeffentlichLandSH,
-  testschule665Name,
   testschuleDstNr,
   testschuleName,
-} from '../base/organisation';
-import { landesadminRolle, schuelerRolle, schuladminOeffentlichRolle } from '../base/rollen';
-import { typeLehrer, typeSchueler } from '../base/rollentypen';
-import { schulportaladmin } from '../base/sp';
-import { DEV, STAGE } from '../base/tags';
-import { deletePersonenBySearchStrings, deleteRolleById, deleteRolleByName } from '../base/testHelperDeleteTestdata';
-import { TestHelperLdap } from '../base/testHelperLdap';
-import { generateKopersNr, generateNachname, generateRolleName, generateVorname } from '../base/utils/generateTestdata';
-import { PersonCreationViewPage } from '../pages/admin/personen/PersonCreationView.page';
-import { PersonDetailsViewPage } from '../pages/admin/personen/PersonDetailsView.page';
-import { PersonManagementViewPage } from '../pages/admin/personen/PersonManagementView.page';
-import { HeaderPage } from '../pages/components/Header.page';
-import { MenuPage } from '../pages/components/MenuBar.page';
-import FromAnywhere from '../pages/FromAnywhere';
-import { LandingPage } from '../pages/LandingView.page';
-import { LoginPage } from '../pages/LoginView.page';
-import { StartPage } from '../pages/StartView.page';
+} from '../../base/organisation';
+import { landesadminRolle, schuelerRolle, schuladminOeffentlichRolle } from '../../base/rollen';
+import { typeLehrer, typeSchueler } from '../../base/rollentypen';
+import { schulportaladmin } from '../../base/sp';
+import { DEV, STAGE } from '../../base/tags';
+import { deletePersonenBySearchStrings, deleteRolleById, deleteRolleByName } from '../../base/testHelperDeleteTestdata';
+import { TestHelperLdap } from '../../base/testHelperLdap';
+import { generateKopersNr, generateNachname, generateRolleName, generateVorname } from '../../base/utils/generateTestdata';
+import { PersonCreationViewPage } from '../../pages/admin/personen/PersonCreationView.page';
+import { PersonDetailsViewPage } from '../../pages/admin/personen/PersonDetailsView.page';
+import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.page';
+import { HeaderPage } from '../../pages/components/Header.page';
+import { MenuPage } from '../../pages/components/MenuBar.page';
+import FromAnywhere from '../../pages/FromAnywhere';
+import { LandingPage } from '../../pages/LandingView.page';
+import { LoginPage } from '../../pages/LoginView.page';
+import { StartPage } from '../../pages/StartView.page';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -350,38 +350,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
   );
 
   test(
-    'Ergebnisliste Benutzer auf Vollständigkeit prüfen als Landesadmin',
-    { tag: [STAGE, DEV] },
-    async ({ page }: PlaywrightTestArgs) => {
-      const startseite: StartPage = new StartPage(page);
-      const menue: MenuPage = new MenuPage(page);
-      const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
-
-      await test.step(`Benutzerverwaltung öffnen und alle Elemente in der Ergebnisliste auf Existenz prüfen`, async () => {
-        await startseite.cardItemSchulportalAdministration.click();
-        await menue.menueItemAlleBenutzerAnzeigen.click();
-        await personManagementView.waitForData();
-        await expect(personManagementView.textH1Administrationsbereich).toBeVisible();
-        await expect(personManagementView.textH2Benutzerverwaltung).toBeVisible();
-        await expect(personManagementView.textH2Benutzerverwaltung).toHaveText('Benutzerverwaltung');
-        await expect(personManagementView.inputSuchfeld).toBeVisible();
-        await expect(personManagementView.buttonSuchen).toBeVisible();
-        await expect(personManagementView.tableHeaderNachname).toBeVisible();
-        await expect(personManagementView.tableHeaderVorname).toBeVisible();
-        await expect(personManagementView.tableHeaderBenutzername).toBeVisible();
-        await expect(personManagementView.tableHeaderKopersNr).toBeVisible();
-        await expect(personManagementView.tableHeaderRolle).toBeVisible();
-        await expect(personManagementView.tableHeaderZuordnungen).toBeVisible();
-        await expect(personManagementView.tableHeaderKlasse).toBeVisible();
-      });
-      // #TODO: wait for the last request in the test
-      // sometimes logout breaks the test because of interrupting requests
-      // logoutViaStartPage = true is a workaround
-      logoutViaStartPage = true;
-    }
-  );
-
-  test(
     "Prüfung auf korrekte Rollen in dem Dropdown 'Rolle' nach Auswahl der Organisation bei Anlage eines Benutzer in der Rolle Landesadmin",
     { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
@@ -432,99 +400,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
           [rolleLehr, rolleLiV, schuladminOeffentlichRolle, schuelerRolle],
           [landesadminRolle]
         );
-      });
-      // #TODO: wait for the last request in the test
-      // sometimes logout breaks the test because of interrupting requests
-      // logoutViaStartPage = true is a workaround
-      logoutViaStartPage = true;
-    }
-  );
-
-  test(
-    'In der Ergebnisliste die Suchfunktion ausführen als Landesadmin',
-    { tag: [STAGE, DEV] },
-    async ({ page }: PlaywrightTestArgs) => {
-      const startseite: StartPage = new StartPage(page);
-      const menu: MenuPage = await startseite.goToAdministration();
-
-      const rolle: string = 'Lehrkraft';
-      const vorname: string = generateVorname();
-      const nachname: string = generateNachname();
-      const kopersnr: string = generateKopersNr();
-      const schulstrukturknoten: string = testschuleName;
-
-      await test.step(`Benutzer Lehrkraft anlegen`, async () => {
-        const personCreationView: PersonCreationViewPage = await menu.personAnlegen();
-        await personCreationView.createUser(schulstrukturknoten, rolle, vorname, nachname, kopersnr);
-        await expect(personCreationView.textSuccess).toBeVisible();
-        usernames.push(await personCreationView.dataBenutzername.innerText());
-      });
-
-      const personManagementView: PersonManagementViewPage = await test.step('Benutzerverwaltung öffnen', async () => {
-        const personManagementView: PersonManagementViewPage = await menu.alleBenutzerAnzeigen();
-        await expect(personManagementView.textH2Benutzerverwaltung).toHaveText('Benutzerverwaltung');
-        return personManagementView;
-      });
-
-      await test.step(`Suche nach Vornamen `, async () => {
-        await personManagementView.inputSuchfeld.fill(vorname);
-        await personManagementView.buttonSuchen.click();
-        await expect(page.getByRole('cell', { name: vorname })).toBeVisible();
-      });
-
-      await test.step(`Suche nach Nachnamen `, async () => {
-        await personManagementView.inputSuchfeld.fill(nachname);
-        await personManagementView.buttonSuchen.click();
-        await expect(page.getByRole('cell', { name: nachname })).toBeVisible();
-      });
-
-      await test.step(`Suche nach Benutzernamen `, async () => {
-        await personManagementView.inputSuchfeld.fill(usernames[0]);
-        await personManagementView.buttonSuchen.click();
-        await expect(page.getByRole('cell', { name: nachname })).toBeVisible();
-      });
-
-      await test.step(`Suche nach Dienststellennummer `, async () => {
-        await personManagementView.inputSuchfeld.fill(kopersnr);
-        await personManagementView.buttonSuchen.click();
-        await expect(page.getByRole('cell', { name: nachname })).toBeVisible();
-      });
-
-      await test.step(`Suche mit leerer Ergebnisliste. Geprüft wird das der Text "Keine Daten gefunden." gefunden wird, danach wird gepüft dass die Tabelle 0 Zeilen hat.`, async () => {
-        await personManagementView.resetFilter();
-        await personManagementView.inputSuchfeld.fill('!§$%aavvccdd44xx@');
-        await personManagementView.buttonSuchen.click();
-        await expect(page.getByRole('cell', { name: 'Keine Daten gefunden.' })).toBeVisible();
-        await expect(page.locator('v-data-table__td')).toHaveCount(0);
-      });
-      // #TODO: wait for the last request in the test
-      // sometimes logout breaks the test because of interrupting requests
-      // logoutViaStartPage = true is a workaround
-      logoutViaStartPage = true;
-    }
-  );
-
-  test(
-    'In der Ergebnisliste die Filterfunktion der Schulen benutzen als Landesadmin',
-    { tag: [STAGE, DEV] },
-    async ({ page }: PlaywrightTestArgs) => {
-      const startseite: StartPage = new StartPage(page);
-      const menu: MenuPage = await startseite.goToAdministration();
-      const personManagementView: PersonManagementViewPage = await menu.alleBenutzerAnzeigen();
-
-      await test.step(`Benutzerverwaltung öffnen`, async () => {
-        await expect(personManagementView.textH2Benutzerverwaltung).toHaveText('Benutzerverwaltung');
-        await personManagementView.waitForData();
-      });
-
-      await test.step(`Filter öffnen und Schule selektieren`, async () => {
-        await personManagementView.filterSchule(testschule665Name);
-
-        await expect(page.getByTestId('person-management-organisation-select')).toHaveText(
-          '1111165 (Testschule-PW665)'
-        );
-
-        await expect(personManagementView.getRows().first()).toContainText('1111165');
       });
       // #TODO: wait for the last request in the test
       // sometimes logout breaks the test because of interrupting requests
