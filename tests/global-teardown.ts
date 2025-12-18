@@ -46,4 +46,15 @@ teardown('delete database', async ({ page }: PlaywrightTestArgs) => {
       await page.request.delete(FRONTEND_URL + `api/organisationen/${klasse.id}/klasse`);
     }
   });
+
+  await test.step(`Schulen löschen`, async () => {
+    const response: APIResponse = await page.request.get(
+      FRONTEND_URL + `api/organisationen?searchString=${searchString}&typ=SCHULE`
+    );
+    const schulenJson: { id: string }[] = await response.json();
+
+    for (const schule of schulenJson) {
+      await page.request.delete(FRONTEND_URL + `api/organisationen/${schule.id}`);
+    }
+  });
 });
