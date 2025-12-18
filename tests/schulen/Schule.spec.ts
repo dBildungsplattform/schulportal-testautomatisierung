@@ -1,5 +1,5 @@
 import { expect, PlaywrightTestArgs, test } from '@playwright/test';
-import { BROWSER, DEV, LONG, SHORT } from '../../base/tags';
+import { DEV } from '../../base/tags';
 import { generateDienststellenNr, generateSchulname } from '../../base/utils/generateTestdata';
 import FromAnywhere from '../../pages/FromAnywhere';
 import { LandingPage } from '../../pages/LandingView.page';
@@ -38,10 +38,13 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
   });
 
   // TODO: should run against stage, once Schulen can be deleted
-  test('2 Schulen nacheinander anlegen als Landesadmin', { tag: [LONG, /*STAGE,*/ DEV] }, async ({ page }: PlaywrightTestArgs) => {
-    const startseite: StartPage = new StartPage(page);
-    const schuleManagementView: SchuleManagementViewPage = new SchuleManagementViewPage(page);
-    const footerDataTable: FooterDataTablePage = new FooterDataTablePage(page);
+  test(
+    '2 Schulen nacheinander anlegen als Landesadmin',
+    { tag: [/*STAGE,*/ DEV] },
+    async ({ page }: PlaywrightTestArgs) => {
+      const startseite: StartPage = new StartPage(page);
+      const schuleManagementView: SchuleManagementViewPage = new SchuleManagementViewPage(page);
+      const footerDataTable: FooterDataTablePage = new FooterDataTablePage(page);
 
     // Schulen können noch nicht gelöscht werden. Um doppelte Namen zu vermeiden, wird dem Schulnamen eine Zufallszahl angehängt
     const schulname1: string = generateSchulname();
@@ -49,57 +52,58 @@ test.describe(`Testfälle für die Administration von Schulen: Umgebung: ${proce
     const dienststellenNr1: string = generateDienststellenNr();
     const dienststellenNr2: string = generateDienststellenNr();
 
-    const { menue, schuleCreationView }: { menue: MenuPage; schuleCreationView: SchuleCreationViewPage } =
-      await test.step(`Dialog Schule anlegen öffnen`, async (): Promise<{
-        menue: MenuPage;
-        schuleCreationView: SchuleCreationViewPage;
-      }> => {
-        const menue: MenuPage = await startseite.goToAdministration();
-        const schuleCreationView: SchuleCreationViewPage = await menue.schuleAnlegen();
-        await menue.menueItemSchuleAnlegen.click();
-        await expect(schuleCreationView.textH2SchuleAnlegen).toHaveText('Neue Schule hinzufügen');
-        return { menue, schuleCreationView };
+      const { menue, schuleCreationView }: { menue: MenuPage; schuleCreationView: SchuleCreationViewPage } =
+        await test.step(`Dialog Schule anlegen öffnen`, async (): Promise<{
+          menue: MenuPage;
+          schuleCreationView: SchuleCreationViewPage;
+        }> => {
+          const menue: MenuPage = await startseite.goToAdministration();
+          const schuleCreationView: SchuleCreationViewPage = await menue.schuleAnlegen();
+          await menue.menueItemSchuleAnlegen.click();
+          await expect(schuleCreationView.textH2SchuleAnlegen).toHaveText('Neue Schule hinzufügen');
+          return { menue, schuleCreationView };
+        });
+
+      await test.step(`Erste Schule anlegen`, async () => {
+        await schuleCreationView.radioButtonPublicSchule.click();
+
+        await schuleCreationView.inputDienststellennummer.fill(dienststellenNr1);
+        await schuleCreationView.inputSchulname.fill(schulname1);
+        await schuleCreationView.buttonSchuleAnlegen.click();
+        await expect(schuleCreationView.textSuccess).toBeVisible();
       });
 
-    await test.step(`Erste Schule anlegen`, async () => {
-      await schuleCreationView.radioButtonPublicSchule.click();
+      await test.step(`Zweite Schule anlegen`, async () => {
+        await schuleCreationView.buttonWeitereSchuleAnlegen.click();
+        await schuleCreationView.radioButtonPublicSchule.click();
 
-      await schuleCreationView.inputDienststellennummer.fill(dienststellenNr1);
-      await schuleCreationView.inputSchulname.fill(schulname1);
-      await schuleCreationView.buttonSchuleAnlegen.click();
-      await expect(schuleCreationView.textSuccess).toBeVisible();
-    });
+        await schuleCreationView.inputDienststellennummer.click();
+        await schuleCreationView.inputDienststellennummer.fill(dienststellenNr2);
 
-    await test.step(`Zweite Schule anlegen`, async () => {
-      await schuleCreationView.buttonWeitereSchuleAnlegen.click();
-      await schuleCreationView.radioButtonPublicSchule.click();
+        await schuleCreationView.inputSchulname.fill(schulname2);
+        await schuleCreationView.buttonSchuleAnlegen.click();
+        await expect(schuleCreationView.textSuccess).toBeVisible();
+      });
 
-      await schuleCreationView.inputDienststellennummer.click();
-      await schuleCreationView.inputDienststellennummer.fill(dienststellenNr2);
-
-      await schuleCreationView.inputSchulname.fill(schulname2);
-      await schuleCreationView.buttonSchuleAnlegen.click();
-      await expect(schuleCreationView.textSuccess).toBeVisible();
-    });
-
-    await test.step(`In der Ergebnisliste prüfen, dass die beiden neuen Schulen angezeigt werden`, async () => {
-      await menue.menueItemAlleSchulenAnzeigen.click();
-      await footerDataTable.comboboxAnzahlEintraege.click();
-      await page.getByText('300', { exact: true }).click();
-      await expect(schuleManagementView.textH2Schulverwaltung).toHaveText('Schulverwaltung');
-      await expect(page.getByRole('cell', { name: schulname1 })).toBeVisible();
-      await expect(page.getByRole('cell', { name: schulname2 })).toBeVisible();
-    });
-    // #TODO: wait for the last request in the test
-    // sometimes logout breaks the test because of interrupting requests
-    // logoutViaStartPage = true is a workaround
-    logoutViaStartPage = true;
-  });
+      await test.step(`In der Ergebnisliste prüfen, dass die beiden neuen Schulen angezeigt werden`, async () => {
+        await menue.menueItemAlleSchulenAnzeigen.click();
+        await footerDataTable.comboboxAnzahlEintraege.click();
+        await page.getByText('300', { exact: true }).click();
+        await expect(schuleManagementView.textH2Schulverwaltung).toHaveText('Schulverwaltung');
+        await expect(page.getByRole('cell', { name: schulname1 })).toBeVisible();
+        await expect(page.getByRole('cell', { name: schulname2 })).toBeVisible();
+      });
+      // #TODO: wait for the last request in the test
+      // sometimes logout breaks the test because of interrupting requests
+      // logoutViaStartPage = true is a workaround
+      logoutViaStartPage = true;
+    }
+  );
 
   // TODO: should STAGE run against stage, once Schulen can be deleted
   test(
     'Eine Schule anlegen als Landesadmin und die Bestätigungsseite vollständig prüfen',
-    { tag: [LONG, /*STAGE,*/ DEV, SHORT, BROWSER] },
+    { tag: [/*STAGE,*/ DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       // Schulen können noch nicht gelöscht werden. Um doppelte Namen zu vermeiden, wird am dem Schulnamen eine Zufallszahl angehängt
       const schulname: string = generateSchulname();

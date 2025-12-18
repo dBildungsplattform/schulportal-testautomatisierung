@@ -1,5 +1,5 @@
 import { PlaywrightTestArgs, test } from '@playwright/test';
-import { BROWSER, LONG, SHORT, STAGE } from '../../base/tags';
+import { DEV, STAGE } from '../../base/tags';
 import { LoginViewPage } from '../../pages/LoginView.neu.page';
 import { StartViewPage } from '../../pages/StartView.neu.page';
 import { HeaderPage } from '../../pages/components/Header.neu.page';
@@ -57,18 +57,18 @@ import { generateKlassenname } from '../../base/utils/generateTestdata';
     });
 
     // SPSH-2853
-    test(`Als ${bezeichnung}: Klasse Ergebnisliste: UI prüfen`, { tag: [LONG, SHORT, STAGE, BROWSER] },  async () => {
+    test(`Als ${bezeichnung}: Klasse Ergebnisliste: UI prüfen`, { tag: [DEV, STAGE] },  async () => {
       await klasseErgebnislistePage.checkManagementPage(bezeichnung !== 'Schuladmin (1 Schule)');
     });
 
     // SPSH-2855
-    test(`Als ${bezeichnung}: Jede Klasse hat eine Dienststellennummer neben dem Klassennamen`, { tag: [LONG, SHORT, STAGE, BROWSER] },  async () => {
+    test(`Als ${bezeichnung}: Jede Klasse hat eine Dienststellennummer neben dem Klassennamen`, { tag: [DEV, STAGE] },  async () => {
       // erste 50 Einträge 
       await klasseErgebnislistePage.setItemsPerPage(50);
       await klasseErgebnislistePage.checkTableData(bezeichnung !== 'Schuladmin (1 Schule)');
     });
 
-    test(`Als ${bezeichnung}: in der Ergebnisliste die Filter benutzen`, { tag: [LONG, SHORT, STAGE, BROWSER] },  async () => {
+    test(`Als ${bezeichnung}: in der Ergebnisliste die Filter benutzen`, { tag: [DEV, STAGE] },  async () => {
       const klasseParams : KlasseCreationParams  = {
         schulname: testschuleName,
         klassenname: generateKlassenname(),
@@ -95,7 +95,7 @@ import { generateKlassenname } from '../../base/utils/generateTestdata';
       });
     });
 
-    test(`Als ${bezeichnung}: Ergebnisliste Klassen nach Spalte Klasse sortieren können`, { tag: [LONG, SHORT, STAGE, BROWSER] },  async () => {
+    test(`Als ${bezeichnung}: Ergebnisliste Klassen nach Spalte Klasse sortieren können`, { tag: [DEV, STAGE] },  async () => {
       const hasMultipleSchulen: boolean = bezeichnung !== 'Schuladmin (1 Schule)';
 
       await test.step(`Sortierverhalten ohne Filter prüfen`, async () => {

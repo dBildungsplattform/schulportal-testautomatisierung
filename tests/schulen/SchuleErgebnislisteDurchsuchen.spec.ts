@@ -1,14 +1,14 @@
 import { PlaywrightTestArgs, test } from '@playwright/test';
-import { BROWSER, LONG, SHORT, STAGE } from '../../base/tags';
+import { createPersonWithPersonenkontext, freshLoginPage, UserInfo } from '../../base/api/personApi';
+import { landSH, testschuleDstNr, testschuleName } from '../../base/organisation';
+import { landesadminRolle } from '../../base/rollen';
+import { DEV, STAGE } from '../../base/tags';
+import { LandingViewPage } from '../../pages/LandingView.neu.page';
 import { LoginViewPage } from '../../pages/LoginView.neu.page';
 import { StartViewPage } from '../../pages/StartView.neu.page';
-import { HeaderPage } from '../../pages/components/Header.neu.page';
-import { LandingViewPage } from '../../pages/LandingView.neu.page';
-import { PersonManagementViewPage } from "../../pages/admin/personen/PersonManagementView.neu.page";
-import { landSH, testschuleDstNr, testschuleName } from '../../base/organisation';
-import { landesadminRolle } from '../../base/rollen'
-import { createPersonWithPersonenkontext, freshLoginPage, UserInfo } from '../../base/api/personApi';
 import { SchuleManagementViewPage } from '../../pages/admin/organisationen/schulen/SchuleManagementView.neu.page';
+import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.neu.page';
+import { HeaderPage } from '../../pages/components/Header.neu.page';
 
 let header: HeaderPage;
 let landingPage: LandingViewPage;
@@ -29,20 +29,23 @@ test.describe(`Testfälle für die Ergebnisliste von Schulen als Landesadmin: Um
     landingPage.navigateToLogin();
 
     // Erstmalige Anmeldung mit Passwortänderung
-    const startPage: StartViewPage = await loginPage.loginNewUserWithPasswordChange(landesadmin.username, landesadmin.password)
+    const startPage: StartViewPage = await loginPage.loginNewUserWithPasswordChange(
+      landesadmin.username,
+      landesadmin.password
+    );
     await startPage.waitForPageLoad();
 
     // Navigation zur Ergebnisliste von Schulen
-    personManagementViewPage = await startPage.goToAdministration();  
+    personManagementViewPage = await startPage.goToAdministration();
     schuleManagementViewPage = await personManagementViewPage.menu.navigateToSchuleManagement();
   });
 
   // SPSH-2953
-  test(`Schulen Ergebnisliste: UI prüfen`, { tag: [LONG, SHORT, STAGE, BROWSER] },  async () => {
+  test(`Schulen Ergebnisliste: UI prüfen`, { tag: [STAGE, DEV] }, async () => {
     await schuleManagementViewPage.checkManagementPage();
   });
 
-  test(`In der Ergebnisliste die Suchfunktion benutzen`, { tag: [LONG, SHORT, STAGE, BROWSER] },  async () => {
+  test(`In der Ergebnisliste die Suchfunktion benutzen`, { tag: [STAGE, DEV] }, async () => {
     // Auf 5 Einträge pro Seite setzen, damit Testschule nicht direkt sichtbar ist
     await schuleManagementViewPage.setPageSize('5');
 
