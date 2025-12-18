@@ -25,6 +25,15 @@ export class RolleManagementViewPage {
   }
 
   /* assertions */
+  public async checkManagementPage(): Promise<void> {
+    await expect(this.page.getByTestId('admin-headline')).toHaveText('Administrationsbereich');
+    await expect(this.page.getByTestId('rolle-management-headline')).toHaveText('Rollenverwaltung');
+    await this.checkHeaders(['Rollenname', 'Rollenart', 'Merkmale', 'Angebote', 'Administrationsebene']);
+  }
+  
+  public async checkHeaders(expectedHeaders: string[]): Promise<void> {
+    await this.rolleTable.checkHeaders(expectedHeaders);
+  }
   public async checkIfRolleExists(rollenname: string): Promise<void> {
     await this.rolleTable.checkIfItemIsVisible(rollenname);
   }
