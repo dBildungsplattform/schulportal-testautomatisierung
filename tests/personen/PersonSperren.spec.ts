@@ -1,5 +1,4 @@
 import { PlaywrightTestArgs, test } from '@playwright/test';
-
 import { createPersonWithPersonenkontext, UserInfo } from '../../base/api/personApi';
 import { testschuleName } from '../../base/organisation';
 import { lehrkraftOeffentlichRolle } from '../../base/rollen';
@@ -14,7 +13,26 @@ import { HeaderPage } from '../../pages/components/Header.neu.page';
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
 
-test.describe(`Testfälle für das Personen löschen: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
+interface LockOption {
+  description: string;
+  until?: string;
+  expectUntil?: string;
+}
+
+const lockOptions: Array<LockOption> = [
+  {
+    description: 'unbefristet sperren',
+    until: undefined,
+    expectUntil: undefined,
+  },
+  {
+    description: 'befristet sperren',
+    until: '31.12.2099',
+    expectUntil: '31.12.2099',
+  },
+];
+
+test.describe(`Testfälle für das Personen sperren: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   let userInfo: UserInfo;
 
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
@@ -36,20 +54,25 @@ test.describe(`Testfälle für das Personen löschen: Umgebung: ${process.env.EN
     await header.logout();
   });
 
-  test('Person via Gesamtübersicht löschen', async ({ page }: PlaywrightTestArgs) => {
-    const personDetailsViewPage: PersonDetailsViewPage = await test.step(`Zur Gesamtübersicht navigieren`, async () => {
-      const personenManagementViewPage: PersonManagementViewPage = new PersonManagementViewPage(page);
-      await personenManagementViewPage.waitForPageLoad();
-      return personenManagementViewPage.searchAndOpenGesamtuebersicht(userInfo.username);
-    });
+  lockOptions.forEach(({ description, until, expectUntil }: LockOption) => {
+    test(`Person via Gesamtübersicht ${description}`, async ({ page }: PlaywrightTestArgs) => {
+      const personDetailsViewPage: PersonDetailsViewPage = await test.step(`Zur Gesamtübersicht navigieren`, async () => {
+        const personenManagementViewPage: PersonManagementViewPage = new PersonManagementViewPage(page);
+        await personenManagementViewPage.waitForPageLoad();
+        return personenManagementViewPage.searchAndOpenGesamtuebersicht(userInfo.username);
+      });
 
-    const personenManagementViewPage: PersonManagementViewPage = await test.step(`Person löschen`, async () => {
-      return personDetailsViewPage.deletePerson({ clearFilter: true });
-    });
+      await test.step(`Person sperren (${description})`, async () => {
+        await personDetailsViewPage.lockPerson(until);
+      });
 
-    await test.step(`Löschung verifizieren`, async () => {
-      await personenManagementViewPage.searchByText(userInfo.username);
-      await personenManagementViewPage.checkIfPersonNotExists(userInfo.username);
+      await test.step(`Sperrstatus verifizieren`, async () => {
+        await personDetailsViewPage.checkPersonLock({
+          locked: true,
+          from: undefined, // Optionally add a check for the lock start date if needed
+          until: expectUntil,
+        });
+      });
     });
   });
 });
