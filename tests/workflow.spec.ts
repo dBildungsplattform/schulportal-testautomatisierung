@@ -75,7 +75,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
     });
   });
 
-  test('Angebote per Link öffnen als Lehrer', { tag: [LONG, SHORT, STAGE, DEV] }, async ({ page }: PlaywrightTestArgs) => {
+  test('Angebote per Link öffnen als Lehrer', { tag: [STAGE, DEV] }, async ({ page }: PlaywrightTestArgs) => {
     const startseite: StartPage = new StartPage(page);
     let userInfoAdmin: UserInfo;
 
@@ -99,7 +99,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
       if (isStageTest()) {
         // TODO: implement assertion
       } else {
-          await expect(email.textH1).toBeVisible(); // dummy Seite email wikipedia
+        await expect(email.textH1).toBeVisible(); // dummy Seite email wikipedia
       }
       await emailPage.close();
 

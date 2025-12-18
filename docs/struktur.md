@@ -35,11 +35,6 @@ Eine Seite hat dabei high-level-Funktionen, zur Navigation und zum Aufruf von Se
 
 #### `/tests`: Die eigentlichen Tests
 
-### Tags
-Wir verwenden Tags, um diejenigen Tests auszuwählen, die ausgeführt werden sollen.
-Zur Zeit unterscheiden wir nach Ausführungslänge (@long, @short).
-Das muss aber nicht die einzige Unterscheidungskategorie bleiben.
-
 ### Navigation mit FromAnywhere
 Für die Verwendung von mehreren Pages in den einzelnen Tests müssen sie nicht in jedem Test importiert und einzeln navigiert werden. Stattdessen ist es sinnvoll, verlinkte Pages in dedizierten Funktionen der einzelnen Pages zu returnen und die Funktionen im Test aufzurufen. Das spart Code und Wartungsaufwand.
 

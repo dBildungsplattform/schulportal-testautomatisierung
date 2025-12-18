@@ -9,7 +9,7 @@ import { testschuleName } from '../base/organisation';
 import { getOrganisationId } from '../base/api/organisationApi';
 import { generateRolleName } from '../base/utils/generateTestdata';
 import { freshLoginPage } from '../base/api/personApi';
-import { DEV, LONG, SHORT, SMOKE, STAGE, BROWSER } from '../base/tags';
+import { DEV, SMOKE, STAGE } from '../base/tags';
 
 const ADMIN: string | undefined = process.env.USER;
 const PASSWORD: string | undefined = process.env.PW;
@@ -24,18 +24,18 @@ test.describe(`Testfälle für den Login: Umgebung: ${process.env.ENV}: URL: ${p
     header = new HeaderPage(page);
   });
 
-  test('Erfolgreicher Login', { tag: [LONG, SMOKE, STAGE, BROWSER, DEV] }, async () => {
+  test('Erfolgreicher Login', { tag: [SMOKE, DEV, STAGE] }, async () => {
     const startPage: StartViewPage = await loginPage.login(ADMIN, PASSWORD);
     await startPage.waitForPageLoad();
     await startPage.serviceProvidersAreLoaded();
   });
 
-  test('Fehlgeschlagener Login mit falschen Daten', { tag: [LONG, SHORT, STAGE, DEV] }, async () => {
+  test('Fehlgeschlagener Login mit falschen Daten', { tag: [SMOKE, DEV, STAGE] }, async () => {
     await loginPage.login('anakin', 'obi-wan');
     await expect(loginPage.loginFailedWithWrongCredentials()).toBeTruthy();
   });
 
-  test('Fehlgeschlagener Login mit gesperrtem Benutzer', { tag: [LONG, STAGE, DEV] }, async ({ page }: { page: Page }) => {
+  test('Fehlgeschlagener Login mit gesperrtem Benutzer', { tag: [SMOKE, STAGE, DEV] }, async ({ page }: { page: Page }) => {
     const startPage: StartViewPage = await loginPage.login(ADMIN, PASSWORD);
     await startPage.waitForPageLoad();
 
@@ -52,7 +52,7 @@ test.describe(`Testfälle für den Login: Umgebung: ${process.env.ENV}: URL: ${p
     await expect(loginPage.loginFailedWithLockedUser()).toBeTruthy();
   });
 
-  test('Erfolgreicher Logout', { tag: [LONG, SHORT, STAGE, DEV, BROWSER] }, async () => {
+  test('Erfolgreicher Logout', { tag: [STAGE, DEV, SMOKE] }, async () => {
     const startPage: StartViewPage = await loginPage.login(ADMIN, PASSWORD);
     await startPage.waitForPageLoad();
 
