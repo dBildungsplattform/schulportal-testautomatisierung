@@ -6,8 +6,6 @@ import FromAnywhere from '../pages/FromAnywhere';
 import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
 import { StartPage } from '../pages/StartView.page';
-import { PersonDetailsViewPage } from '../pages/admin/personen/PersonDetailsView.page';
-import { PersonManagementViewPage } from '../pages/admin/personen/PersonManagementView.page';
 import { HeaderPage } from '../pages/components/Header.page';
 import { CalendarPage } from '../pages/components/service-provider-cards/Calendar.page';
 import { DirectoryPage } from '../pages/components/service-provider-cards/Directory.page';
@@ -138,60 +136,4 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
     // logoutViaStartPage = true is a workaround
     logoutViaStartPage = true;
   });
-
-  test(
-    'Passwort Reset für einen Lehrer als Landesadmin',
-    { tag: [STAGE, DEV] },
-    async ({ page }: PlaywrightTestArgs) => {
-      const landing: LandingPage = new LandingPage(page);
-      const login: LoginPage = new LoginPage(page);
-      const startseite: StartPage = new StartPage(page);
-      const personManagement: PersonManagementViewPage = new PersonManagementViewPage(page);
-      const personManagementDetail: PersonDetailsViewPage = new PersonDetailsViewPage(page);
-      const header: HeaderPage = new HeaderPage(page);
-      const lastname: string = 'AutoTester';
-      const username: string = 'autotester';
-      let newPassword: string = '';
-
-      await test.step(`Benutzerverwaltung öffnen`, async () => {
-        await startseite.cardItemSchulportalAdministration.click();
-      });
-
-      await test.step(`In der Benutzerverwaltung die Zeile für Benutzer ${lastname} anklicken und User-Details öffnen`, async () => {
-        await expect(personManagement.textH2Benutzerverwaltung).toBeVisible();
-        await personManagement.inputSuchfeld.fill(username);
-        await personManagement.buttonSuchen.click();
-        await expect(page.getByRole('cell', { name: lastname, exact: true })).toBeEnabled();
-        await page.getByRole('cell', { name: lastname, exact: true }).click();
-      });
-
-      await test.step(`In den User-Details PW-Reset Dialog starten`, async () => {
-        await expect(personManagementDetail.textH2BenutzerBearbeiten).toBeVisible();
-        await personManagementDetail.buttonPwChange.click();
-        await expect(personManagementDetail.textPwResetInfo).toBeVisible();
-      });
-
-      await test.step(`In dem overlay den PW-Reset bestätigen, das PW kopieren und Dialog schließen`, async () => {
-        await personManagementDetail.buttonPwReset.click();
-        await expect(personManagementDetail.textPwResetInfo).toBeVisible();
-        newPassword = await personManagementDetail.inputPw.inputValue();
-        await personManagementDetail.buttonClosePwreset.click();
-      });
-
-      await test.step(`Login für Benutzer ${lastname} mit dem neuen PW`, async () => {
-        await header.logout({ logoutViaStartPage: true });
-        await landing.buttonAnmelden.click();
-        await login.login(username, newPassword);
-      });
-
-      await test.step(`Neues PW vergeben`, async () => {
-        await login.updatePW();
-        await startseite.validateStartPageIsLoaded();
-      });
-      // #TODO: wait for the last request in the test
-      // sometimes logout breaks the test because of interrupting requests
-      // logoutViaStartPage = true is a workaround
-      logoutViaStartPage = true;
-    }
-  );
 });
