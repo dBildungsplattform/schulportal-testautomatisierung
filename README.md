@@ -98,13 +98,4 @@ aus faker oder einem festen Wert. Der Name einer Rolle ist z.B. TAuto-PW-R-xxxxx
 test.only('2 Schulen nacheinander anlegen', async ({ page }: PlaywrightTestArgs) => {
 
 ## Definition Testsuiten
-### smoke
-Dieses ist die kleinste Testsuite. Hiermit wird nur getestet, dass das Portal erfolgreich deployed wurde und die wichtigsten Komponenten lauffähig sind.
-Getestet wird dieses durch einen Login-Test, der nach der Anmeldung prüft, dass die Kachel "Schulportal-Administration" angezeigt wird
-### short
-Die Testsuite läuft auf den Branch-Umgebungen und sollte eine Laufzeit von 5 Minuten nicht überschreiten. Für die Testuite werden die Testfälle mit der höchsten Priorität ausgewählt.
-### long
-Die Testsuite enthält alle funktionalen Tests.
-### stage
-Die Testsuite hat einen ähnlichen Umfang wie die Testsuite long. Auf der stage werden aber nicht die Testfälle ausgeführt, die aufgrund noch nicht implementierter Funktionen (wie z.B. Schulen löschen) Testdaten hinterlassen.
-Desweiteren gibt es auf der Stage-Umgebung Schnittstellen wie z.B. itslearning, die nur da laufen bzw. eine Anbindung an das Testsystem von itslearning haben. Diese Testfälle können dann auch nur auf stage laufen.
+Die Testsuiten werden über Tags definiert. Siehe docs/tags.md

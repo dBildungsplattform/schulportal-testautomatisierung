@@ -1,17 +1,17 @@
 import { PlaywrightTestArgs, test } from '@playwright/test';
-import { BROWSER, LONG, SHORT, STAGE } from '../../base/tags';
-import { LoginViewPage } from '../../pages/LoginView.neu.page';
-import { StartViewPage } from '../../pages/StartView.neu.page';
-import { HeaderPage } from '../../pages/components/Header.neu.page';
-import { LandingViewPage } from '../../pages/LandingView.neu.page';
-import { freshLoginPage, UserInfo } from '../../base/api/personApi';
-import { PersonManagementViewPage } from "../../pages/admin/personen/PersonManagementView.neu.page";
-import { KlasseCreationViewPage, KlasseCreationParams } from '../../pages/admin/organisationen/klassen/KlasseCreationView.neu.page';
+
+import { createPersonWithPersonenkontext, freshLoginPage, UserInfo } from '../../base/api/personApi';
 import { landSH, testschuleDstNr, testschuleName } from '../../base/organisation';
+import { landesadminRolle, schuladminOeffentlichRolle } from '../../base/rollen';
+import { DEV, STAGE } from '../../base/tags';
 import { generateKlassenname } from '../../base/utils/generateTestdata';
 import { KlasseCreationSuccessPage } from '../../pages/admin/organisationen/klassen/KlasseCreationSuccess.page';
-import { createPersonWithPersonenkontext } from "../../base/api/personApi";
-import { landesadminRolle, schuladminOeffentlichRolle } from '../../base/rollen';
+import { KlasseCreationParams, KlasseCreationViewPage } from '../../pages/admin/organisationen/klassen/KlasseCreationView.neu.page';
+import { PersonManagementViewPage } from "../../pages/admin/personen/PersonManagementView.neu.page";
+import { HeaderPage } from '../../pages/components/Header.neu.page';
+import { LandingViewPage } from '../../pages/LandingView.neu.page';
+import { LoginViewPage } from '../../pages/LoginView.neu.page';
+import { StartViewPage } from '../../pages/StartView.neu.page';
 
 let header: HeaderPage;
 let landingPage: LandingViewPage;
@@ -54,12 +54,12 @@ let admin: UserInfo;
       };
     });
 
-    test(`Klasse als ${bezeichnung} anlegen: UI prüfen`, { tag: [LONG, SHORT, STAGE, BROWSER] }, async () => {
+    test(`Klasse als ${bezeichnung} anlegen: UI prüfen`, { tag: [STAGE, DEV] }, async () => {
       await klasseAnlegenPage.checkCreateForm();
     });
 
     // SPSH-2854
-    test(`Klasse als ${bezeichnung} anlegen und Bestätigungsseite prüfen`, { tag: [LONG, SHORT, STAGE, BROWSER] },  async () => {
+    test(`Klasse als ${bezeichnung} anlegen und Bestätigungsseite prüfen`, { tag: [STAGE, DEV] },  async () => {
       await test.step(`Klasse anlegen`, async () => {
         klasseErfolgreichAngelegtPage = await klasseAnlegenPage.createKlasse(rolleName == landesadminRolle, klasseParams);
       });

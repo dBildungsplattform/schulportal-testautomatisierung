@@ -5,7 +5,7 @@ import {
   createPerson,
   createRolleAndPersonWithPersonenkontext,
   setTimeLimitPersonenkontext,
-  UserInfo,
+  UserInfo
 } from '../../base/api/personApi';
 import {
   addServiceProvidersToRolle,
@@ -21,7 +21,7 @@ import { landSH, testschule665Name, testschuleDstNr, testschuleName } from '../.
 import { lehrerImVorbereitungsdienstRolle, lehrkraftOeffentlichRolle } from '../../base/rollen';
 import { typeLehrer, typeSchueler, typeSchuladmin } from '../../base/rollentypen';
 import { email, itslearning } from '../../base/sp';
-import { BROWSER, DEV, LONG, SHORT, STAGE } from '../../base/tags';
+import { DEV, STAGE } from '../../base/tags';
 import { deleteKlasseByName, deletePersonenBySearchStrings, deleteRolleById } from '../../base/testHelperDeleteTestdata';
 import { gotoTargetURL } from '../../base/testHelperUtils';
 import {
@@ -112,7 +112,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     'Befristung beim hinzufügen von Personenkontexten',
-    { tag: [LONG, STAGE, DEV] },
+    { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       let userInfoLehrer: UserInfo;
       const unbefristeteRolle: string = lehrkraftOeffentlichRolle;
@@ -161,7 +161,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     'Einen Benutzer über das FE unbefristet sperren',
-    { tag: [LONG, STAGE, DEV, BROWSER] },
+    { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       let userInfoLehrer: UserInfo;
       const sperrDatumAbHeute: string = formatDateDMY(generateCurrentDate({ days: 0, months: 0 }));
@@ -200,7 +200,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     'Einen Benutzer über das FE befristet sperren',
-    { tag: [LONG, STAGE, DEV] },
+    { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       let userInfoLehrer: UserInfo;
       const sperrDatumAbHeute: string = formatDateDMY(generateCurrentDate({ days: 0, months: 0 }));
@@ -242,7 +242,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     'Gesamtübersicht für einen Benutzer als Schueler öffnen und Unsichtbarkeit des 2FA Abschnitts prüfen',
-    { tag: [LONG, STAGE, DEV] },
+    { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       let userInfoSchueler: UserInfo;
 
@@ -292,7 +292,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     'Gesamtübersicht für einen Benutzer als Lehrkraft öffnen und 2FA Status prüfen dass kein Token eingerichtet ist',
-    { tag: [LONG, STAGE, DEV] },
+    { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       let userInfoLehrer: UserInfo;
       logoutViaStartPage = true;
@@ -328,7 +328,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     'Gesamtübersicht für einen Benutzer als Schuladmin öffnen und 2FA Status prüfen dass kein Token eingerichtet ist',
-    { tag: [LONG, STAGE, DEV] },
+    { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const addminVorname: string = generateVorname();
       const adminNachname: string = generateNachname();
@@ -369,7 +369,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     'Gesamtübersicht für einen Benutzer als Landesadmin öffnen, 2FA Token einrichten und 2FA Status prüfen dass ein Token eingerichtet ist',
-    { tag: [LONG, STAGE, DEV, BROWSER] },
+    { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const addminVorname: string = generateVorname();
       const adminNachname: string = generateNachname();
@@ -423,7 +423,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     'Gesamtübersicht für einen Benutzer als Schuladmin öffnen, 2FA Token einrichten und 2FA Status prüfen dass ein Token eingerichtet ist',
-    { tag: [LONG, STAGE, DEV, BROWSER] },
+    { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const adminRollenart: RollenArt = typeSchuladmin;
       const adminOrganisation: string = testschule665Name;
@@ -467,7 +467,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     'Gesamtübersicht für einen Benutzer als Lehrkraft öffnen, 2FA Token einrichten und 2FA Status prüfen dass ein Token eingerichtet ist',
-    { tag: [LONG, STAGE, DEV] },
+    { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       let userInfoLehrer: UserInfo;
       await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) über die api anlegen ${ADMIN}`, async () => {
@@ -510,7 +510,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     'Inbetriebnahme-Passwort über die Gesamtübersicht erzeugen',
-    { tag: [LONG, STAGE, DEV] },
+    { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       let userInfoLehrer: UserInfo;
 
@@ -548,7 +548,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     'Befristung einer Schulzuordnung von einem Lehrer durch einen Landesadmin bearbeiten',
-    { tag: [LONG, STAGE, DEV] },
+    { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       let userInfoLehrer: UserInfo;
       const timeLimitTeacherRolle: string = formatDateDMY(generateCurrentDate({ days: 3, months: 5 }));
@@ -677,7 +677,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     `Prüfen, dass eine Person mit einer befristeten Rolle wie z.B. LiV, nicht die Option 'Unbefristet' bekommen kann wenn man eine Befristung bearbeitet`,
-    { tag: [LONG, STAGE, DEV] },
+    { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       let userInfoLehrer: UserInfo;
       const nameRolle: string = generateRolleName();
@@ -726,7 +726,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     'Einen Schüler von einer Klasse in eine Andere versetzen',
-    { tag: [LONG, SHORT, STAGE, DEV] },
+    { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const rolleName: string = generateRolleName();
       const klasseNameCurrent: string = generateKlassenname();
