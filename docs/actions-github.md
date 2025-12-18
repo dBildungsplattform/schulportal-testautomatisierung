@@ -1,17 +1,11 @@
-# Ausführung der Tests durch Actions in github
-Alle Actions können jederzeit manuell getriggert werden. Hierzu die entsprechende action auswählen. Dann auf den Button "Run workflow" klicken.
+# Actions
 
-## Action "Manuell alle Tests(staging)"
-Diese Action kann nur manuell ausgelöst werden und enthält die Testsuite "stage"
+## Structure
 
-## Action "Playwright Tests"
-Die Action wird beim Deployment auf den Branch-Umgebungen automatisch ausgelöst und enthält die Testsuite "short"
+The actual workflow is in `run-playwright.yml`. This workflow can be used directly via "Run workflow" in Github's Actions GUI or from other workflows. Additionally we defined the following workflows, which function as triggers for the main workflow:
 
-## Action "Scheduled Playwright Alle Tests(main)"
-Die Action wird jeden Morgen zu einer bestimmten Uhrzeit zeitgesteuert ausgelöst und enthält die Testsuite "long"
-
-## Action "Scheduled Playwright Smoketest(staging)"
-Die Action wird jeden Morgen zu einer bestimmten Uhrzeit zeitgesteuert ausgelöst und enthält die Testsuite "smoke"
-
-## Action "Scheduled Playwright Smoketest(test.dev)"
-Die Action wird jeden Morgen zu einer bestimmten Uhrzeit zeitgesteuert ausgelöst und enthält die Testsuite "smoke"
+| file                                  | function                                                           |
+| ------------------------------------- | ------------------------------------------------------------------ |
+| `run-playwright-pullrequest-main.yml` | runs the workflow on push to any branch with an open PR to main. |
+| `run-playwright-push-main.yml`        | runs the workflow after push to main                             |
+| `run-playwright-scheduled.yml`        | runs the workflows on a schedule with different browsers           |
