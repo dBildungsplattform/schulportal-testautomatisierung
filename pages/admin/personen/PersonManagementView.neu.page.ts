@@ -28,7 +28,7 @@ export class PersonManagementViewPage {
 
   private async filterByText(text: string, testId: string): Promise<void> {
     const filter: Autocomplete = new Autocomplete(this.page, this.page.getByTestId(testId));
-    await filter.searchByTitle(text, false);
+    await filter.selectByTitle(text);
   }
   public async filterBySchule(schule: string): Promise<void> {
     await this.filterByText(schule, 'person-management-organisation-select');

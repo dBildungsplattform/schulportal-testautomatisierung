@@ -76,8 +76,8 @@ let admin: UserInfo;
     test(`Als ${bezeichnung}: In der Ergebnisliste die Filterfunktion der Schulen benutzen`, { tag: [LONG, SHORT, STAGE, BROWSER] },  async () => {
       // Filtern nach Schule
       if (rolleName === landesadminRolle) {
-        await benutzerErgebnislistePage.filterBySchule(testschuleDstNr + ' (' + testschuleName + ')');
-        await benutzerErgebnislistePage.checkIfPersonExists(testschuleDstNr);
+        await benutzerErgebnislistePage.filterBySchule(organisationsName);
+        await benutzerErgebnislistePage.checkIfPersonExists(admin.username);
         await benutzerErgebnislistePage.resetFilter();
       } else {
         await benutzerErgebnislistePage.checkIfSchuleIsCorrect(testschuleDstNr, testschuleName);
