@@ -1,24 +1,38 @@
-import { expect, Page } from '@playwright/test';
+import { expect, Locator, Page } from '@playwright/test';
 import { DataTable } from '../../../components/DataTable.neu.page';
 import { SearchFilter } from '../../../../elements/SearchFilter';
 
 export class SchuleManagementViewPage {
   /* add global locators here */
-  private readonly schuleTable: DataTable = new DataTable(this.page, this.page.getByTestId('schule-table'));
-  private readonly searchFilter: SearchFilter = new SearchFilter(this.page);
+  private readonly schuleTable: DataTable;
+  private readonly searchFilter: SearchFilter;
+  private readonly table: Locator;
+  private readonly headline: Locator;
 
-  constructor(protected readonly page: Page) {}
+  constructor(protected readonly page: Page) {
+    this.table = this.page.getByTestId('schule-table'); 
+    this.schuleTable = new DataTable(this.page, this.table);
+    this.searchFilter = new SearchFilter(this.page);
+    this.headline = this.page.getByTestId('schule-management-headline');
+  }
 
   /* actions */
   public async waitForPageLoad(): Promise<SchuleManagementViewPage> {
-    await this.page.getByTestId('schule-management-headline').waitFor({ state: 'visible' });
-    await expect(this.page.getByTestId('schule-management-headline')).toHaveText('Schulverwaltung');
-    await expect(this.page.getByTestId('schule-table')).not.toContainText('Keine Daten');
+    await expect(this.headline).toHaveText('Schulverwaltung');
+    await expect(this.table).not.toContainText('Keine Daten');
     return this;
   }
 
+  public async searchByText(text: string): Promise<void> {
+    await this.searchFilter.searchByText(text);
+  }
+
+  public async setPageSize(size: '5' | '30' | '50' | '100' | '300'): Promise<void> {
+    await this.schuleTable.setItemsPerPage(size);
+  }
+
   public async searchAndSyncItslearning(schulname: string): Promise<void> {
-    await this.searchFilter.searchByText(schulname);
+    await this.searchByText(schulname);
     
     await this.page.getByTestId('open-schule-itslearning-sync-dialog-icon').click();
     await expect(this.page.getByTestId('schule-activate-in-itslearning-confirmation-text')).toHaveText(`Wollen Sie die Daten der Schule ${schulname} an itslearning übertragen?`);
@@ -29,4 +43,23 @@ export class SchuleManagementViewPage {
   }
 
   /* assertions */
+  public async checkManagementPage(): Promise<void> {
+    await expect(this.page.getByTestId('admin-headline')).toHaveText('Administrationsbereich');
+    await expect(this.headline).toHaveText('Schulverwaltung');
+    await expect(this.page.getByTestId('search-filter-input')).toBeVisible();
+    await expect(this.page.getByTestId('apply-search-filter-button')).toBeVisible();
+    await this.checkHeaders(['Dienststellennummer', 'Schulname', 'itslearning-Status']);
+  }
+
+  public async checkHeaders(expectedHeaders: string[]): Promise<void> {
+    await this.schuleTable.checkHeaders(expectedHeaders);
+  }
+
+  public async checkRowCount(rowCount: number): Promise<void> {
+    await this.schuleTable.checkRowCount(rowCount);
+  }
+
+  public async checkIfSchuleExists(schule: string): Promise<void> {
+    await this.schuleTable.checkIfItemIsVisible(schule);
+  }
 }

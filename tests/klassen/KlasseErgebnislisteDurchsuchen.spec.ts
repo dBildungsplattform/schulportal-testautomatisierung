@@ -67,7 +67,7 @@ let admin: UserInfo;
       await klasseErgebnislistePage.checkTableData(rolleName == landesadminRolle);
     });
 
-    test(`Klasse als ${bezeichnung} anlegen und Ergebnisliste prüfen`, { tag: [LONG, SHORT, STAGE, BROWSER] },  async () => {
+    test(`Als ${bezeichnung}: in der Ergebnisliste die Filter benutzen`, { tag: [LONG, SHORT, STAGE, BROWSER] },  async () => {
       await test.step(`Klasse anlegen`, async () => {
         klasseAnlegenPage = await personManagementViewPage.menu.navigateToKlasseCreation();
         await klasseAnlegenPage.waitForPageLoad();
@@ -76,7 +76,7 @@ let admin: UserInfo;
         await klasseErfolgreichAngelegtPage.checkSuccessPage(klasseParams);
       });
 
-      await test.step(`In der Ergebnisliste prüfen, dass die neue Klasse angezeigt wird`, async () => {
+      await test.step(`In der Ergebnisliste die neue Klasse durch Filter suchen`, async () => {
         klasseErgebnislistePage = await klasseErfolgreichAngelegtPage.goBackToList();
         await klasseErgebnislistePage.waitForPageLoad();
         if (rolleName == landesadminRolle) {
@@ -86,6 +86,7 @@ let admin: UserInfo;
         }
         await klasseErgebnislistePage.filterByKlasse(klasseParams.klassenname);
         await klasseErgebnislistePage.checkIfKlasseExists(klasseParams.klassenname);
+        await klasseErgebnislistePage.checkRows(1);
       });
     });
   });
