@@ -1,6 +1,6 @@
 import { expect, Page, PlaywrightTestArgs, test } from '@playwright/test';
 import { createTeacherAndLogin, UserInfo } from '../base/api/personApi';
-import { DEV, LONG, SHORT, STAGE } from '../base/tags';
+import { DEV, STAGE } from '../base/tags';
 import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata';
 import FromAnywhere from '../pages/FromAnywhere';
 import { LandingPage } from '../pages/LandingView.page';
