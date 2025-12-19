@@ -23,14 +23,16 @@ export class DataTable {
     return this.tableLocator.locator(`tr:has-text("${expectedText}")`);
   }
 
-  public async clickColumnHeader(columnName: string): Promise<void> {
+  public async clickColumnHeader(columnName: string, endpoint?: string): Promise<void> {
     const header: Locator = this.tableLocator.locator('th').filter({ hasText: columnName });
     await header.click();
     
-    // Das Timeout ist notwendig, da nach Klick auf die Spalte gewartet werden muss, 
-    // bis die Daten geladen sind und keine anderen Mechanismen verfügbar sind (es gibt keinen LadeSpinner oder ähnliches),
-    // um auf Sortierungsvollendung zu warten (waitForPageLoad() ist hier auch unpassend)
-    await this.page.waitForTimeout(500);
+    if (endpoint) {
+      await this.page.waitForResponse(new RegExp(`/api/${endpoint}`));
+    } else {
+      await this.page.waitForTimeout(500);
+    }
+    
     await this.waitForPageLoad();
   }
 
@@ -83,6 +85,11 @@ export class DataTable {
     await expect(Number(currentPageNumberText)).toBe(expectedPageNumber);
   }
 
+  public async hasMultiplePages(): Promise<boolean> {
+    const nextPageBtn: Locator = this.page.locator('.v-pagination__next button');
+    return await nextPageBtn.isEnabled();
+  }
+
   public async checkHeaders(expectedHeaders: string[]): Promise<void> {
     const tableHeaders: Locator[] = await this.tableLocator.locator('thead th.v-data-table__th').all();
     const tableHeadersCount: number = tableHeaders.length - 1; // frist th is for checkbox
@@ -104,11 +111,12 @@ export class DataTable {
     await expect(tableRowsCount).toEqual(expectedRowCount);
   }
 
-  public async checkTableData(table: Locator, checkTableRow: (i: number) => Promise<void>): Promise<void> {
+  public async checkTableData(table: Locator, checkTableRow: (row: Locator) => Promise<void>): Promise<void> {
     const tableRows: Locator = table.locator('tbody tr.v-data-table__tr');
     const tableRowsCount: number = await tableRows.count();
     for (let i: number = 0; i < tableRowsCount; i++) {
-      await checkTableRow(i);
+      const row: Locator = tableRows.nth(i);
+      await checkTableRow(row);
     }
   }
 
@@ -134,13 +142,12 @@ export class DataTable {
 
   public async checkIfColumnDataSorted(cellIndex: number, direction: 'ascending' | 'descending'): Promise<void> {
     const columnData: string[] = await this.getColumnData(cellIndex);
-    const uniqueData: string[] = [...new Set(columnData)];
-    const sortedData: string[] = [...uniqueData].sort((a: string, b: string): number => 
+    const sortedData: string[] = [...columnData].sort((a: string, b: string): number => 
       direction === 'ascending' 
         ? a.localeCompare(b, 'de', { numeric: true })
         : b.localeCompare(a, 'de', { numeric: true })
     );
     
-    await expect(uniqueData).toEqual(sortedData);
+    expect(columnData).toEqual(sortedData);
   }
 }

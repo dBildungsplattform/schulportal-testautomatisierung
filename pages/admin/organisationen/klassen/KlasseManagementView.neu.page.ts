@@ -42,7 +42,7 @@ export class KlasseManagementViewPage {
   }
 
   public async clickColumnHeader(columnName: string): Promise<void> {
-    await this.klasseTable.clickColumnHeader(columnName);
+    await this.klasseTable.clickColumnHeader(columnName, 'organisationen');
   }
 
   public async goToFirstPage(): Promise<void> {
@@ -56,8 +56,7 @@ export class KlasseManagementViewPage {
   }
 
   public async hasMultiplePages(): Promise<boolean> {
-    const nextPageBtn: Locator = this.page.locator('.v-pagination__next button');
-    return await nextPageBtn.isEnabled();
+    return await this.klasseTable.hasMultiplePages();
   }
   
   public async openGesamtuebersicht(klassenname: string): Promise<KlasseDetailsViewPage> {
@@ -129,23 +128,20 @@ export class KlasseManagementViewPage {
   }
 
   public async checkTableData(hasMultipleSchulen: boolean): Promise<void> {
-    await this.klasseTable.checkTableData(this.table, (i: number) => this.checkTableRow(i, hasMultipleSchulen));
+    await this.klasseTable.checkTableData(this.table, (row: Locator) => this.checkTableRow(row, hasMultipleSchulen));
   }
 
-  private async checkTableRow(i: number, hasMultipleSchulen: boolean): Promise<void> {
-    const tableRows: Locator = this.table.locator('tbody tr.v-data-table__tr');
-    const klassennameCell: Locator = tableRows
-      .nth(i)
-      .locator('td')
-      .nth(hasMultipleSchulen ? 2 : 1);
+  private async checkTableRow(row: Locator, hasMultipleSchulen: boolean): Promise<void> {
+    const cells: Locator = row.locator('td');
+    
+    const klassennameCell: Locator = cells.nth(hasMultipleSchulen ? 2 : 1);
     await expect(klassennameCell).toBeVisible();
     await expect(klassennameCell).not.toBeEmpty();
 
     if (!hasMultipleSchulen) return;
-    const dienststellennummerCell: Locator = tableRows.nth(i).locator('td').nth(1);
+    const dienststellennummerCell: Locator = cells.nth(1);
     await expect(dienststellennummerCell).toBeVisible();
-    await expect(dienststellennummerCell).not.toHaveText('---');
-    await expect(dienststellennummerCell).toHaveText(new RegExp(/\W+/));
+    await expect(dienststellennummerCell).toHaveText(new RegExp(/\(.+\)$/));
   } 
 
   public async klasseSuccessfullyDeleted(schulname: string, klassenname: string, schulNr: string): Promise<void> {

@@ -22,22 +22,15 @@ import { generateKlassenname } from '../../base/utils/generateTestdata';
 ].forEach(({ organisationsName, rolleName, bezeichnung }: { organisationsName: string; rolleName: string; bezeichnung: string }) => {
   test.describe(`Testfälle für die Ergebnisliste von Klassen als ${bezeichnung}: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
     const hasMultipleSchulen: boolean = bezeichnung !== 'Schuladmin (1 Schule)';
-
-    let header: HeaderPage;
-    let landingPage: LandingViewPage;
-    let loginPage: LoginViewPage;
-    let personManagementViewPage: PersonManagementViewPage;
-    let klasseCreationViewPage: KlasseCreationViewPage;
-    let klasseCreationSuccessPage: KlasseCreationSuccessPage;
     let klasseManagementViewPage: KlasseManagementViewPage;
-    let admin: UserInfo;
+    let personManagementViewPage: PersonManagementViewPage;
 
     test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
-      header = new HeaderPage(page);
-      loginPage = await freshLoginPage(page);
+      const header: HeaderPage = new HeaderPage(page);
+      const loginPage: LoginViewPage = await freshLoginPage(page);
       await loginPage.login(process.env.USER, process.env.PW);
 
-      admin = await createPersonWithPersonenkontext(page, organisationsName, rolleName);
+      const admin: UserInfo = await createPersonWithPersonenkontext(page, organisationsName, rolleName);
 
       if (bezeichnung === 'Schuladmin (2 Schulen)') {
         const ersteSchuleId: string = await getOrganisationId(page, testschuleName);
@@ -46,7 +39,7 @@ import { generateKlassenname } from '../../base/utils/generateTestdata';
         await addSecondOrganisationToPerson(page, admin.personId, ersteSchuleId, zweiteSchuleId, rolleId);
       }
 
-      landingPage = await header.logout();
+      const landingPage: LandingViewPage = await header.logout();
       landingPage.navigateToLogin();
 
       // Erstmalige Anmeldung mit Passwortänderung
@@ -54,7 +47,7 @@ import { generateKlassenname } from '../../base/utils/generateTestdata';
       await startPage.waitForPageLoad();
 
       // Navigation zur Ergebnisliste von Klassen
-      personManagementViewPage = await startPage.goToAdministration();  
+      personManagementViewPage = await startPage.goToAdministration(); 
       klasseManagementViewPage = await personManagementViewPage.menu.navigateToKlasseManagement();  
     });
 
@@ -109,8 +102,8 @@ import { generateKlassenname } from '../../base/utils/generateTestdata';
 
       test(`Als ${bezeichnung}: in der Ergebnisliste die Filter benutzen`, { tag: [DEV, STAGE] },  async () => {
         await test.step(`Klasse anlegen`, async () => {
-          klasseCreationViewPage = await personManagementViewPage.menu.navigateToKlasseCreation();
-          klasseCreationSuccessPage = await klasseCreationViewPage.createKlasse(hasMultipleSchulen, klasseParams);
+          const klasseCreationViewPage: KlasseCreationViewPage = await personManagementViewPage.menu.navigateToKlasseCreation();
+          const klasseCreationSuccessPage: KlasseCreationSuccessPage = await klasseCreationViewPage.createKlasse(hasMultipleSchulen, klasseParams);
           await klasseCreationSuccessPage.waitForPageLoad();
           klasseManagementViewPage = await klasseCreationSuccessPage.goBackToList();
         });
