@@ -158,33 +158,22 @@ export class KlasseManagementViewPage {
     await this.page.getByTestId('klasse-management-error-alert-button').click();
   }
 
-  public async checkColumnSorting(columnName: string, sortingStatus: 'ascending' | 'descending' | 'not-sortable'): Promise<void> {
-    await this.klasseTable.checkColumnSorting(columnName, sortingStatus);
+  public async checkIfColumnHeaderSorted(columnName: string, sortingStatus: 'ascending' | 'descending' | 'not-sortable'): Promise<void> {
+    await this.klasseTable.checkIfColumnHeaderSorted(columnName, sortingStatus);
   }
 
-  private async checkClassNameSortingHelper(hasMultipleSchulen: boolean, direction: 'ascending' | 'descending'): Promise<void> {
+  public async checkIfColumnDataSorted(hasMultipleSchulen: boolean): Promise<void> {
     const cellIndex: number = hasMultipleSchulen ? 2 : 1;
-    const classNames: string[] = await this.klasseTable.getTableColumnData(cellIndex);
-    const uniqueClassNames: string[] = [...new Set(classNames)];
-    const sortedClassNames: string[] = [...uniqueClassNames].sort((a: string, b: string): number => 
-      direction === 'ascending' 
-        ? a.localeCompare(b, 'de', { numeric: true })
-        : b.localeCompare(a, 'de', { numeric: true })
-    );
-    
-    await expect(uniqueClassNames).toEqual(sortedClassNames);
-  }
 
-  public async checkClassNameSorting(hasMultipleSchulen: boolean): Promise<void> {
-    await this.checkColumnSorting('Klasse', 'ascending');
-    await this.checkClassNameSortingHelper(hasMultipleSchulen, 'ascending');
+    await this.checkIfColumnHeaderSorted('Klasse', 'ascending');
+    await this.klasseTable.checkIfColumnDataSorted(cellIndex, 'ascending');
 
     await this.clickColumnHeader('Klasse');
-    await this.checkColumnSorting('Klasse', 'descending');
-    await this.checkClassNameSortingHelper(hasMultipleSchulen, 'descending');
+    await this.checkIfColumnHeaderSorted('Klasse', 'descending');
+    await this.klasseTable.checkIfColumnDataSorted(cellIndex, 'descending');
 
     await this.clickColumnHeader('Klasse');
-    await this.checkColumnSorting('Klasse', 'ascending');
-    await this.checkClassNameSortingHelper(hasMultipleSchulen, 'ascending');
+    await this.checkIfColumnHeaderSorted('Klasse', 'ascending');
+    await this.klasseTable.checkIfColumnDataSorted(cellIndex, 'ascending');
   }
 }

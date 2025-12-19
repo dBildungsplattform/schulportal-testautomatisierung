@@ -56,6 +56,24 @@ export class DataTable {
     await this.page.locator('.v-pagination__last button:not(.v-btn--disabled)').click();
   }
 
+  public async getColumnData(cellIndex: number): Promise<string[]> {
+    const pageData: string[] = [];
+    await this.waitForPageLoad();
+    
+    const tableRows: Locator = this.tableLocator.locator('tbody tr.v-data-table__tr');
+    const rowCount: number = await tableRows.count();
+    
+    for (let i: number = 0; i < rowCount; i++) {
+      const cell: Locator = tableRows.nth(i).locator('td').nth(cellIndex);
+      const text: string | null = await cell.textContent();
+      if (text) {
+        pageData.push(text.trim());
+      }
+    }
+    
+    return pageData;
+  }
+  
   /* assertions */
   public async checkCurrentPageNumber(expectedPageNumber: number): Promise<void> {
     const currentPageNumberElement: Locator = this.page.locator('.v-pagination__item');
@@ -101,7 +119,7 @@ export class DataTable {
     await expect(this.tableLocator.getByRole('cell', { name: expectedText, exact: true })).toBeVisible();
   }
 
-  public async checkColumnSorting(columnName: string, sortingStatus: 'ascending' | 'descending' | 'not-sortable'): Promise<void> {
+  public async checkIfColumnHeaderSorted(columnName: string, sortingStatus: 'ascending' | 'descending' | 'not-sortable'): Promise<void> {
     const header: Locator = this.tableLocator.locator('th').filter({ hasText: columnName });
     
     if (sortingStatus === 'ascending') {
@@ -113,21 +131,15 @@ export class DataTable {
     }
   }
 
-  public async getTableColumnData(cellIndex: number): Promise<string[]> {
-    const pageData: string[] = [];
-    await this.waitForPageLoad();
+  public async checkIfColumnDataSorted(cellIndex: number, direction: 'ascending' | 'descending'): Promise<void> {
+    const columnData: string[] = await this.getColumnData(cellIndex);
+    const uniqueData: string[] = [...new Set(columnData)];
+    const sortedData: string[] = [...uniqueData].sort((a: string, b: string): number => 
+      direction === 'ascending' 
+        ? a.localeCompare(b, 'de', { numeric: true })
+        : b.localeCompare(a, 'de', { numeric: true })
+    );
     
-    const tableRows: Locator = this.tableLocator.locator('tbody tr.v-data-table__tr');
-    const rowCount: number = await tableRows.count();
-    
-    for (let i: number = 0; i < rowCount; i++) {
-      const cell: Locator = tableRows.nth(i).locator('td').nth(cellIndex);
-      const text: string | null = await cell.textContent();
-      if (text) {
-        pageData.push(text.trim());
-      }
-    }
-    
-    return pageData;
+    await expect(uniqueData).toEqual(sortedData);
   }
 }

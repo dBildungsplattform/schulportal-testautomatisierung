@@ -74,9 +74,9 @@ import { generateKlassenname } from '../../base/utils/generateTestdata';
       test(`Als ${bezeichnung}: Ergebnisliste Klassen nach Spalte Klasse sortieren können`, { tag: [DEV, STAGE] },  async () => {
         await test.step(`Sortierverhalten ohne Filter prüfen`, async () => {
           await klasseManagementViewPage.setItemsPerPage(100);
-          await klasseManagementViewPage.checkClassNameSorting(hasMultipleSchulen);
+          await klasseManagementViewPage.checkIfColumnDataSorted(hasMultipleSchulen);
           if (hasMultipleSchulen) {
-            await klasseManagementViewPage.checkColumnSorting('Dienststellennummer', 'not-sortable');
+            await klasseManagementViewPage.checkIfColumnHeaderSorted('Dienststellennummer', 'not-sortable');
           }
         });
 
@@ -87,9 +87,9 @@ import { generateKlassenname } from '../../base/utils/generateTestdata';
             await klasseManagementViewPage.checkIfSchuleIsCorrect(testschuleName, testschuleDstNr);
           }
           
-          await klasseManagementViewPage.checkClassNameSorting(hasMultipleSchulen);
+          await klasseManagementViewPage.checkIfColumnDataSorted(hasMultipleSchulen);
           if (hasMultipleSchulen) {
-            await klasseManagementViewPage.checkColumnSorting('Dienststellennummer', 'not-sortable');
+            await klasseManagementViewPage.checkIfColumnHeaderSorted('Dienststellennummer', 'not-sortable');
           }
         });
       });
