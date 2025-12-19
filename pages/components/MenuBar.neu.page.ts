@@ -16,7 +16,6 @@ export class MenuBarPage {
   private klasseManagement: Locator = this.page.getByTestId('klasse-management-menu-item');
   private klasseCreation: Locator = this.page.getByTestId('klasse-creation-menu-item');
   private schuleManagement: Locator = this.page.getByTestId('schule-management-menu-item');
-  private schuleCreation: Locator = this.page.getByTestId('schule-creation-menu-item');
   private rolleManagement: Locator = this.page.getByTestId('rolle-management-menu-item');
 
   constructor(protected readonly page: Page) {}

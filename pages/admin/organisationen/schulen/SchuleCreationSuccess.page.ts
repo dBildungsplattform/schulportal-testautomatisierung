@@ -41,7 +41,7 @@ export class SchuleCreationSuccessPage {
     await expect(this.page.getByTestId('created-schule-name-label')).toBeVisible();
 
     // value column
-    const schulform: string = params.schulform === Schulform.Oeffentlich? 'Öffentliche Schulen Land Schleswig-Holstein' : 'Ersatzschulen Land Schleswig-Holstein';
+    const schulform: string = params.schulform === Schulform.Oeffentlich ? 'Öffentliche Schulen Land Schleswig-Holstein' : 'Ersatzschulen Land Schleswig-Holstein';
     await expect(this.page.getByTestId('created-schule-form')).toHaveText(schulform);
     await expect(this.page.getByTestId('created-schule-dienststellennummer')).toHaveText(params.dienststellenNr);
     await expect(this.page.getByTestId('created-schule-name')).toHaveText(params.name);
