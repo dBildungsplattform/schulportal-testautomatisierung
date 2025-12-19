@@ -27,8 +27,9 @@ export class DataTable {
     const header: Locator = this.tableLocator.locator('th').filter({ hasText: columnName });
     await header.click();
     
-    // Vuetify sortiert asynchron ohne Test-Hooks. Timeout notwendig, da Seitennummer nicht ändert
-    // und keine anderen Mechanismen verfügbar sind, um auf Sortierungsvollendung zu warten
+    // Das Timeout ist notwendig, da nach Klick auf die Spalte gewartet werden muss, 
+    // bis die Daten geladen sind und keine anderen Mechanismen verfügbar sind (es gibt keinen LadeSpinner oder ähnliches),
+    // um auf Sortierungsvollendung zu warten (waitForPageLoad() ist hier auch unpassend)
     await this.page.waitForTimeout(500);
     await this.waitForPageLoad();
   }
@@ -73,7 +74,7 @@ export class DataTable {
     
     return pageData;
   }
-  
+
   /* assertions */
   public async checkCurrentPageNumber(expectedPageNumber: number): Promise<void> {
     const currentPageNumberElement: Locator = this.page.locator('.v-pagination__item');
