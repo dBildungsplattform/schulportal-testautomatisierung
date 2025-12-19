@@ -1,7 +1,7 @@
 import { expect, type Locator, Page } from '@playwright/test';
 import { SchuleCreationSuccessPage } from './SchuleCreationSuccess.page';
 
-enum Schulform {
+export enum Schulform {
   Oeffentlich = 'öffentlich',
   Ersatz = 'ersatz'
 }
@@ -15,6 +15,11 @@ export interface SchuleCreationParams {
 export class SchuleCreationViewPage {
   private readonly headline: Locator = this.page.getByTestId('schule-creation-headline');
   private readonly oeffentlicheSchuleOption: Locator = this.page.getByTestId('schulform-radio-button-0');
+  private readonly ersatzSchuleOption: Locator = this.page.getByTestId('schulform-radio-button-1');
+  private readonly dienststellenNrInputContainer: Locator = this.page.getByTestId('dienststellennummer-input');
+  private readonly schulnameInputContainer: Locator = this.page.getByTestId('schulname-input');
+  private readonly schuleVerwerfenButton: Locator = this.page.getByTestId('schule-creation-form-discard-button');
+  private readonly schuleAnlegenButton: Locator = this.page.getByTestId('schule-creation-form-submit-button');
   private selectedSchultraegerName: string;
 
   constructor(protected readonly page: Page) {}
@@ -27,13 +32,15 @@ export class SchuleCreationViewPage {
   }
 
   public async createSchule(params: SchuleCreationParams): Promise<SchuleCreationSuccessPage> {
-    const dienststellenNrInput: Locator = this.page.getByTestId('dienststellennummer-input').locator('input');
-    const schuleNameInput: Locator = this.page.getByTestId('schulname-input').locator('input');
-    const createSchuleButton: Locator = this.page.getByTestId('schule-creation-form-submit-button');
+    const dienststellenNrInput: Locator = this.dienststellenNrInputContainer.locator('input');
+    const schuleNameInput: Locator = this.schulnameInputContainer.locator('input');
 
     if (params.schulform === Schulform.Oeffentlich) {
       await this.oeffentlicheSchuleOption.click();
       this.selectedSchultraegerName = await this.oeffentlicheSchuleOption.innerText();
+    } else {
+      await this.ersatzSchuleOption.click();
+      this.selectedSchultraegerName = await this.ersatzSchuleOption.innerText();
     }
 
     await dienststellenNrInput.waitFor({ state: 'visible' });
@@ -42,8 +49,8 @@ export class SchuleCreationViewPage {
     await schuleNameInput.waitFor({ state: 'visible' });
     await schuleNameInput.fill(params.name);
 
-    await createSchuleButton.waitFor({ state: 'visible' });
-    await createSchuleButton.click();
+    await this.schuleAnlegenButton.waitFor({ state: 'visible' });
+    await this.schuleAnlegenButton.click();
 
     return new SchuleCreationSuccessPage(this.page);
   }
@@ -53,31 +60,24 @@ export class SchuleCreationViewPage {
   }
 
   /* assertions */
-  public async checkSuccessPage(
-    params: SchuleCreationParams
-  ): Promise<void> {
-    /* header */
+  public async checkCreateForm(): Promise<void> {
+    await expect(this.page.getByTestId('schule-creation-form')).toBeVisible();
+    await expect(this.page.getByTestId('admin-headline')).toHaveText('Administrationsbereich');
     await expect(this.headline).toHaveText('Neue Schule hinzufügen');
-    await expect(this.page.getByTestId('schule-success-icon')).toBeVisible();
-    await expect(this.page.getByTestId('schule-success-text')).toBeVisible();
-
-    /* buttons */
     await expect(this.page.getByTestId('close-layout-card-button')).toBeVisible();
-    await expect(this.page.getByTestId('create-another-schule-button')).toBeVisible();
-    await expect(this.page.getByTestId('back-to-list-button')).toBeVisible();
+    await expect(this.page.getByTestId('mandatory-fields-notice')).toHaveText('Mit * markierte Felder sind Pflichtangaben.');
 
-    /* key column */
-    await expect(this.page.getByTestId('following-data-created-text')).toBeVisible();
-    await expect(this.page.getByTestId('created-schule-form-label')).toBeVisible();
-    await expect(this.page.getByTestId('created-schule-dienststellennummer-label')).toBeVisible();
-    await expect(this.page.getByTestId('created-schule-name-label')).toBeVisible();
+    await expect(this.page.getByText('1. Schulform zuordnen', { exact: false })).toBeVisible();
+    await expect(this.oeffentlicheSchuleOption).toBeVisible();
+    await expect(this.ersatzSchuleOption).toBeVisible();
 
-    /* value column */
-    await expect(this.page.getByTestId('created-schule-form'))
-      .toContainText(this.selectedSchultraegerName);
-    await expect(this.page.getByTestId('created-schule-dienststellennummer'))
-      .toHaveText(params.dienststellenNr);
-    await expect(this.page.getByTestId('created-schule-name'))
-      .toHaveText(params.name);
+    await expect(this.page.getByText('2. Dienststellennummer eingeben', { exact: false })).toBeVisible();
+    await expect(this.dienststellenNrInputContainer).toBeVisible();
+
+    await expect(this.page.getByText('3. Schulname eingeben', { exact: false })).toBeVisible();
+    await expect(this.schulnameInputContainer).toBeVisible();
+
+    await expect(this.schuleVerwerfenButton).toBeVisible();
+    await expect(this.schuleAnlegenButton).toBeVisible();
   }
 }
