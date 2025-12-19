@@ -13,7 +13,6 @@ import { StartViewPage } from '../StartView.neu.page';
 
 export class MenuBarPage {
   /* add global locators here */
-  private klasseManagement: Locator = this.page.getByTestId('klasse-management-menu-item');
   private klasseCreation: Locator = this.page.getByTestId('klasse-creation-menu-item');
   private schuleManagement: Locator = this.page.getByTestId('schule-management-menu-item');
   private rolleManagement: Locator = this.page.getByTestId('rolle-management-menu-item');
@@ -52,10 +51,7 @@ export class MenuBarPage {
   }
 
   public async navigateToKlasseManagement(): Promise<KlasseManagementViewPage> {  
-    await this.klasseManagement.click();
-    const klasseManagementViewPage: KlasseManagementViewPage = new KlasseManagementViewPage(this.page);
-    await klasseManagementViewPage.waitForPageLoad();
-    return klasseManagementViewPage;
+    return this.navigateTo('klasse-management-menu-item', new KlasseManagementViewPage(this.page).waitForPageLoad());
   }
 
   public async navigateToKlasseCreation(): Promise<KlasseCreationViewPage> {
