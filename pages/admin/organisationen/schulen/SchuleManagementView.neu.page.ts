@@ -48,7 +48,7 @@ export class SchuleManagementViewPage {
     await expect(this.headline).toHaveText('Schulverwaltung');
     await expect(this.page.getByTestId('search-filter-input')).toBeVisible();
     await expect(this.page.getByTestId('apply-search-filter-button')).toBeVisible();
-    await this.checkHeaders(['Dienststellennummer', 'Schulname', 'itslearning-Status']);
+    await this.checkHeaders(['Dienststellennummer', 'Schulname', 'itslearning-Status', 'Aktion']);
   }
 
   public async checkHeaders(expectedHeaders: string[]): Promise<void> {
