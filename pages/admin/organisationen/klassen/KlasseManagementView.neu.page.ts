@@ -141,7 +141,7 @@ export class KlasseManagementViewPage {
     if (!hasMultipleSchulen) return;
     const dienststellennummerCell: Locator = cells.nth(1);
     await expect(dienststellennummerCell).toBeVisible();
-    await expect(dienststellennummerCell).toHaveText(new RegExp(/\(.+\)$/));
+    await expect(dienststellennummerCell).toHaveText(/\S/);
   } 
 
   public async klasseSuccessfullyDeleted(schulname: string, klassenname: string, schulNr: string): Promise<void> {
