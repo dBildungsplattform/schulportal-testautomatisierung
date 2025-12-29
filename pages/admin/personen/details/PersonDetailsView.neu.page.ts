@@ -2,6 +2,7 @@
 import { expect, Locator, Page } from '@playwright/test';
 import { waitForAPIResponse } from '../../../../base/api/baseApi';
 import { ZuordnungenPage, ZuordnungValidationParams } from './Zuordnungen.page';
+import { PersonManagementViewPage } from '../PersonManagementView.neu.page';
 
 interface PersonDetailsValidationParams { 
   username: string
@@ -76,7 +77,7 @@ export class PersonDetailsViewPage {
     await expect(this.page.getByTestId('person-lock-card').getByTestId('layout-card-headline')).toHaveText(
       'Benutzer sperren'
     );
-    await expect(this.page.getByTestId('person-lock-card').locator('input')).toHaveText(
+    await expect(this.page.getByTestId('person-lock-card').getByRole('combobox', { name: 'Öffnen' })).toHaveValue(
       'Land Schleswig-Holstein'
     );
     await expect(this.page.getByTestId('lock-user-info-text')).toHaveText(
@@ -93,10 +94,15 @@ export class PersonDetailsViewPage {
     await this.page.getByTestId('lock-user-button').click();
   }
 
-  public async deletePerson(): Promise<void> {
+  public async deletePerson(options?: { clearFilter?: boolean }): Promise<PersonManagementViewPage> {
     await this.page.getByTestId('open-person-delete-dialog-button').click();
     await this.page.getByTestId('person-delete-button').click();
     await this.page.getByTestId('close-person-delete-success-dialog-button').click();
+    const personManagementViewPage: PersonManagementViewPage = new PersonManagementViewPage(this.page);
+    if (options.clearFilter) {
+      await personManagementViewPage.resetFilter();
+    }
+    return personManagementViewPage.waitForPageLoad();
   }
 
   /* assertions */

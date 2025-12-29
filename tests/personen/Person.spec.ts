@@ -777,51 +777,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     }
   );
 
-  test('Einen Benutzer über das FE löschen', { tag: [STAGE, DEV] }, async ({ page }: PlaywrightTestArgs) => {
-    const startseite: StartPage = new StartPage(page);
-    await startseite.goToAdministration();
-    const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
-    const header: HeaderPage = new HeaderPage(page);
-
-      const vorname: string = generateVorname();
-      const nachname: string = generateNachname();
-      const rolle: string = generateRolleName();
-      const berechtigung: RollenArt = 'SYSADMIN';
-      const idSPs: string[] = [await getServiceProviderId(page, 'Schulportal-Administration')];
-
-      await test.step(`Neuen Benutzer über die api anlegen`, async () => {
-        await createRolleAndPersonWithPersonenkontext(page, landSH, berechtigung, vorname, nachname, idSPs, rolle);
-        rolleNames.push(rolle);
-      });
-
-    await test.step(`Benutzer wieder löschen über das FE`, async () => {
-      await personManagementView.inputSuchfeld.fill(nachname);
-      await personManagementView.buttonSuchen.click();
-      const personDetailsView: PersonDetailsViewPage = await personManagementView.openGesamtuebersichtPerson(
-        page,
-        nachname
-      );
-      await personDetailsView.buttonDeletePerson.click();
-      await personDetailsView.buttonDeletePersonConfirm.click();
-      await personDetailsView.buttonCloseDeletePersonConfirm.click();
-      await expect(personManagementView.textH2Benutzerverwaltung).toHaveText('Benutzerverwaltung');
-      await personManagementView.resetFilter();
-      // warten, dass die Seite mit dem Laden fertig ist, da z.B. icons mit ajax nachgeladen werden
-      // dieses ist nur ein workaround; im FE muss noch eine Lösung für den Status 'Seite ist vollständig geladen' geschaffen werden
-      await expect(header.iconMyProfil).toBeVisible();
-      await expect(header.iconLogout).toBeVisible();
-      await expect(personManagementView.comboboxMenuIconSchule).toBeVisible();
-      await expect(personManagementView.comboboxMenuIconRolle).toBeVisible();
-      await expect(personManagementView.comboboxMenuIconKlasse).toBeVisible();
-      await expect(personManagementView.comboboxMenuIconStatus).toBeVisible();
-      await expect(page.getByRole('cell', { name: nachname, exact: true })).toBeHidden();
-    });
-    // #TODO: wait for the last request in the test
-    // sometimes logout breaks the test because of interrupting requests
-    // logoutViaStartPage = true is a workaround
-    logoutViaStartPage = true;
-  });
-
   test(
     `Bei Nutzerneuanlage prüfen, dass die combobox 'Rolle' nach Auswahl einer Rolle, nur noch Rollen der gleichen Rollenart angeboten werden`,
     { tag: [STAGE, DEV] },
