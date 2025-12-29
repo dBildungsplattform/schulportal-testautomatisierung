@@ -1,88 +1,128 @@
 import { PlaywrightTestArgs, test } from '@playwright/test';
-
 import { createPersonWithPersonenkontext, freshLoginPage, UserInfo } from '../../base/api/personApi';
-import { landSH, testschuleDstNr, testschuleName } from '../../base/organisation';
+import { createKlasse, getOrganisationId } from '../../base/api/organisationApi';
 import { landesadminRolle, schuladminOeffentlichRolle } from '../../base/rollen';
 import { DEV, STAGE } from '../../base/tags';
-import { generateDienststellenNr } from '../../base/utils/generateTestdata';
+import { generateDienststellenNr, generateSchulname, generateKlassenname } from '../../base/utils/generateTestdata';
 import { LandingViewPage } from '../../pages/LandingView.neu.page';
 import { LoginViewPage } from '../../pages/LoginView.neu.page';
 import { StartViewPage } from '../../pages/StartView.neu.page';
 import { PersonManagementViewPage } from "../../pages/admin/personen/PersonManagementView.neu.page";
 import { HeaderPage } from '../../pages/components/Header.neu.page';
-
-let header: HeaderPage;
-let landingPage: LandingViewPage;
-let loginPage: LoginViewPage;
-let benutzerErgebnislistePage: PersonManagementViewPage;
-let admin: UserInfo;
+import { SchuleCreationParams, SchuleCreationViewPage, Schulform } from '../../pages/admin/organisationen/schulen/SchuleCreationView.neu.page';
+import { landSH } from '../../base/organisation';
 
 [
-  { organisationsName: landSH, rolleName: landesadminRolle, bezeichnung: 'Landesadmin' },
-  { organisationsName: testschuleName, rolleName: schuladminOeffentlichRolle, bezeichnung: 'Schuladmin' },
-].forEach(({ organisationsName, rolleName, bezeichnung }: { organisationsName: string; rolleName: string; bezeichnung: string }) => {
+  { rolleName: landesadminRolle, bezeichnung: 'Landesadmin' },
+  { rolleName: schuladminOeffentlichRolle, bezeichnung: 'Schuladmin' },
+].forEach(({ rolleName, bezeichnung }: { rolleName: string; bezeichnung: string }) => {
   test.describe(`Testfälle für die Ergebnisliste von Benutzern als ${bezeichnung}: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
+    let header: HeaderPage;
+    let loginPage: LoginViewPage;
+    let personManagementViewPage: PersonManagementViewPage;
+    let schuleParams: SchuleCreationParams;
+    let admin: UserInfo;
+
     test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
       header = new HeaderPage(page);
       loginPage = await freshLoginPage(page);
-      await loginPage.login(process.env.USER, process.env.PW);
+      let startPage: StartViewPage = await loginPage.login(process.env.USER, process.env.PW);
+      await startPage.waitForPageLoad();
 
-      admin = await createPersonWithPersonenkontext(page, organisationsName, rolleName, undefined, undefined, generateDienststellenNr());
+      // Schule anlegen
+      personManagementViewPage = await startPage.goToAdministration();  
+      const schuleCreationViewPage: SchuleCreationViewPage = await personManagementViewPage.menu.navigateToSchuleCreation();
+      schuleParams = {
+        name: generateSchulname(),
+        dienststellenNr: generateDienststellenNr(),
+        schulform: Schulform.Oeffentlich
+      };
+      await schuleCreationViewPage.createSchule(schuleParams);
+      
+      // Verifizieren, dass die Schule existiert
+      await getOrganisationId(page, schuleParams.name);
 
-      landingPage = await header.logout();
+      // Admin für die Schule/Land anlegen (Landesadmin auf Land-Ebene, Schuladmin auf Schul-Ebene)
+      const adminOrganisation: string = rolleName === landesadminRolle ? landSH : schuleParams.name;
+      admin = await createPersonWithPersonenkontext(page, adminOrganisation, rolleName, undefined, undefined, generateDienststellenNr());
+
+      const landingPage: LandingViewPage = await header.logout();
       landingPage.navigateToLogin();
 
       // Erstmalige Anmeldung mit Passwortänderung
-      const startPage: StartViewPage = await loginPage.loginNewUserWithPasswordChange(admin.username, admin.password)
+      startPage = await loginPage.loginNewUserWithPasswordChange(admin.username, admin.password)
       await startPage.waitForPageLoad();
 
       // Navigation zur Ergebnisliste von Benutzern
-      benutzerErgebnislistePage = await startPage.goToAdministration();  
+      personManagementViewPage = await startPage.goToAdministration();  
     });
 
     // SPSH-2923
     test(`Als ${bezeichnung}: Benutzer Ergebnisliste: UI prüfen`, { tag: [STAGE, DEV] },  async () => {
-      await benutzerErgebnislistePage.checkManagementPage();
+      await personManagementViewPage.checkManagementPage();
     });
 
     // SPSH-2925
     test(`Als ${bezeichnung}: In der Ergebnisliste die Suchfunktion benutzen`, { tag: [STAGE, DEV] },  async () => {
       // Suche nach Nachnamen
-      await benutzerErgebnislistePage.searchByText(admin.nachname);
-      await benutzerErgebnislistePage.checkIfPersonExists(admin.nachname);
+      await personManagementViewPage.searchByText(admin.nachname);
+      await personManagementViewPage.checkIfPersonExists(admin.nachname);
 
       // Suche nach Vornamen
-      await benutzerErgebnislistePage.searchByText(admin.vorname);
-      await benutzerErgebnislistePage.checkIfPersonExists(admin.vorname);
+      await personManagementViewPage.searchByText(admin.vorname);
+      await personManagementViewPage.checkIfPersonExists(admin.vorname);
 
       // Suche nach Benutzername
-      await benutzerErgebnislistePage.searchByText(admin.username);
-      await benutzerErgebnislistePage.checkIfPersonExists(admin.username);
+      await personManagementViewPage.searchByText(admin.username);
+      await personManagementViewPage.checkIfPersonExists(admin.username);
 
       // Suche nach Kopers
-      await benutzerErgebnislistePage.searchByText(admin.kopersnummer);
-      await benutzerErgebnislistePage.checkIfPersonExists(admin.kopersnummer);
+      await personManagementViewPage.searchByText(admin.kopersnummer);
+      await personManagementViewPage.checkIfPersonExists(admin.kopersnummer);
 
       // Suche nach Rolle
-      await benutzerErgebnislistePage.searchByText(rolleName);
-      await benutzerErgebnislistePage.checkIfPersonExists(rolleName);
+      await personManagementViewPage.searchByText(rolleName);
+      await personManagementViewPage.checkIfPersonExists(rolleName);
 
       // Suche nach einem nicht existierenden Eintrag
-      await benutzerErgebnislistePage.searchByText('NichtExistierenderEintrag');
-      await benutzerErgebnislistePage.checkIfPersonExists('Keine Daten gefunden.');
-      await benutzerErgebnislistePage.checkRowCount(0);
+      await personManagementViewPage.searchByText('NichtExistierenderEintrag');
+      await personManagementViewPage.checkIfPersonExists('Keine Daten gefunden.');
+      await personManagementViewPage.checkRowCount(0);
     });
 
     // SPSH-2926
     test(`Als ${bezeichnung}: In der Ergebnisliste die Filterfunktion der Schulen benutzen`, { tag: [STAGE, DEV] },  async () => {
       // Filtern nach Schule
       if (rolleName === landesadminRolle) {
-        await benutzerErgebnislistePage.filterBySchule(organisationsName);
-        await benutzerErgebnislistePage.checkIfPersonExists(admin.username);
-        await benutzerErgebnislistePage.resetFilter();
+        await personManagementViewPage.filterBySchule(landSH, true);
+        await personManagementViewPage.checkIfPersonExists(admin.username);
+        await personManagementViewPage.resetFilter();
       } else {
-        await benutzerErgebnislistePage.checkIfSchuleIsCorrect(testschuleDstNr, testschuleName);
+        await personManagementViewPage.checkIfSchuleIsCorrect(schuleParams.dienststellenNr, schuleParams.name);
       }
+    });
+
+    test.describe('Klassenfilter-Tests', () => {
+      let klassenNamen: string[] = [];
+
+      test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
+        // 40 Klassen für die Schule anlegen
+        const schuleId: string = await getOrganisationId(page, schuleParams.name);
+        klassenNamen = [];
+        for (let i: number = 0; i < 40; i++) {
+          const klassenname: string = generateKlassenname();
+          await createKlasse(page, schuleId, klassenname);
+          klassenNamen.push(klassenname);
+        }
+      });
+
+      test(`Als ${bezeichnung}: Alle Klassen im Drop-Down des Klassenfilters anzeigen`, { tag: [STAGE, DEV] }, async () => {
+        // Für Landesadmin: erst nach Schule filtern
+        if (rolleName === landesadminRolle) {
+          await personManagementViewPage.filterBySchule(schuleParams.name, false);
+        }
+        await personManagementViewPage.checkIfAllKlassenVisible(klassenNamen);
+      });
     });
   });
 });
