@@ -20,7 +20,6 @@ export class KlasseManagementViewPage {
   /* actions */
   public async waitForPageLoad(): Promise<KlasseManagementViewPage> {
     await expect(this.page.getByTestId('klasse-management-headline')).toHaveText('Klassenverwaltung');
-    await expect(this.table).not.toContainText('Keine Daten');
     return this;
   }
 
@@ -158,18 +157,18 @@ export class KlasseManagementViewPage {
     await this.klasseTable.checkIfColumnHeaderSorted(columnName, sortingStatus);
   }
 
-  public async checkIfColumnDataSorted(hasMultipleSchulen: boolean): Promise<void> {
+  public async checkIfColumnDataSorted(klassenNamen: string[], hasMultipleSchulen: boolean): Promise<void> {
     const cellIndex: number = hasMultipleSchulen ? 2 : 1;
 
     await this.checkIfColumnHeaderSorted('Klasse', 'ascending');
-    await this.klasseTable.checkIfColumnDataSorted(cellIndex, 'ascending');
+    await this.klasseTable.checkIfColumnDataSorted(cellIndex, klassenNamen, 'ascending');
 
     await this.clickColumnHeader('Klasse');
     await this.checkIfColumnHeaderSorted('Klasse', 'descending');
-    await this.klasseTable.checkIfColumnDataSorted(cellIndex, 'descending');
+    await this.klasseTable.checkIfColumnDataSorted(cellIndex, klassenNamen, 'descending');
 
     await this.clickColumnHeader('Klasse');
     await this.checkIfColumnHeaderSorted('Klasse', 'ascending');
-    await this.klasseTable.checkIfColumnDataSorted(cellIndex, 'ascending');
+    await this.klasseTable.checkIfColumnDataSorted(cellIndex, klassenNamen, 'ascending');
   }
 }

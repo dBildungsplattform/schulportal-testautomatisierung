@@ -138,14 +138,30 @@ export class DataTable {
     }
   }
 
-  public async checkIfColumnDataSorted(cellIndex: number, direction: 'ascending' | 'descending'): Promise<void> {
-    const columnData: string[] = await this.getColumnData(cellIndex);
-    const sortedData: string[] = [...columnData].sort((a: string, b: string): number => 
-      direction === 'ascending' 
+  public async checkIfColumnDataSorted(cellIndex: number, expectedNames: string[], direction: 'ascending' | 'descending'): Promise<void> {
+    const tableRows: Locator = this.tableLocator.locator('tbody tr.v-data-table__tr');
+    const rowCount: number = await tableRows.count();
+    
+    const actualNames: string[] = [];
+    for (let i: number = 0; i < rowCount; i++) {
+      const cell: Locator = tableRows.nth(i).locator('td').nth(cellIndex);
+      await cell.scrollIntoViewIfNeeded();
+      const text: string | null = await cell.textContent();
+      if (text) {
+        actualNames.push(text.trim());
+      }
+    }
+
+    this.compareData(actualNames, expectedNames, direction);
+  }
+
+  private compareData(actualData: string[], expectedData: string[], direction: 'ascending' | 'descending'): void {
+    const expectedSorted: string[] = [...expectedData].sort((a: string, b: string): number =>
+      direction === 'ascending'
         ? a.localeCompare(b, 'de', { numeric: true })
         : b.localeCompare(a, 'de', { numeric: true })
     );
-    
-    expect(columnData).toEqual(sortedData);
+
+    expect(actualData).toEqual(expectedSorted);
   }
 }
