@@ -139,13 +139,13 @@ export class DataTable {
   }
 
   public async checkIfColumnDataSorted(cellIndex: number, expectedNames: string[], direction: 'ascending' | 'descending'): Promise<void> {
-    const tableRows: Locator = this.tableLocator.locator('tbody tr.v-data-table__tr');
-    const rowCount: number = await tableRows.count();
+    const rowCount: number = await this.tableLocator.locator('tbody tr.v-data-table__tr').count();
     
     const actualNames: string[] = [];
     for (let i: number = 0; i < rowCount; i++) {
-      const cell: Locator = tableRows.nth(i).locator('td').nth(cellIndex);
+      const cell: Locator = this.tableLocator.locator('tbody tr.v-data-table__tr').nth(i).locator('td').nth(cellIndex);
       await cell.scrollIntoViewIfNeeded();
+      await this.page.waitForTimeout(100);
       const text: string | null = await cell.textContent();
       if (text) {
         actualNames.push(text.trim());
