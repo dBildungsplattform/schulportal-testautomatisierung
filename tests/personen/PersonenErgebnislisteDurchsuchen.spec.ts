@@ -11,6 +11,7 @@ import { PersonManagementViewPage } from "../../pages/admin/personen/PersonManag
 import { HeaderPage } from '../../pages/components/Header.neu.page';
 import { SchuleCreationParams, SchuleCreationViewPage, Schulform } from '../../pages/admin/organisationen/schulen/SchuleCreationView.neu.page';
 import { landSH } from '../../base/organisation';
+import { SchuleCreationSuccessPage } from '../../pages/admin/organisationen/schulen/SchuleCreationSuccess.page';
 
 [
   { rolleName: landesadminRolle, bezeichnung: 'Landesadmin' },
@@ -21,6 +22,7 @@ import { landSH } from '../../base/organisation';
     let loginPage: LoginViewPage;
     let personManagementViewPage: PersonManagementViewPage;
     let schuleParams: SchuleCreationParams;
+    let schuleId: string;
     let admin: UserInfo;
 
     test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
@@ -37,14 +39,12 @@ import { landSH } from '../../base/organisation';
         dienststellenNr: generateDienststellenNr(),
         schulform: Schulform.Oeffentlich
       };
-      await schuleCreationViewPage.createSchule(schuleParams);
-      
-      // Verifizieren, dass die Schule existiert
-      await getOrganisationId(page, schuleParams.name);
+      const schuleSuccessPage: SchuleCreationSuccessPage = await schuleCreationViewPage.createSchule(schuleParams);
+      await schuleSuccessPage.waitForPageLoad();
+      schuleId = await getOrganisationId(page, schuleParams.name);
 
-      // Admin für die Schule/Land anlegen (Landesadmin auf Land-Ebene, Schuladmin auf Schul-Ebene)
-      const adminOrganisation: string = rolleName === landesadminRolle ? landSH : schuleParams.name;
-      admin = await createPersonWithPersonenkontext(page, adminOrganisation, rolleName, undefined, undefined, generateDienststellenNr());
+      // Admin anlegen
+      admin = await createPersonWithPersonenkontext(page, rolleName === landesadminRolle ? landSH : schuleParams.name, rolleName, undefined, undefined, generateDienststellenNr());
 
       const landingPage: LandingViewPage = await header.logout();
       landingPage.navigateToLogin();
@@ -107,7 +107,6 @@ import { landSH } from '../../base/organisation';
 
       test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
         // 40 Klassen für die Schule anlegen
-        const schuleId: string = await getOrganisationId(page, schuleParams.name);
         klassenNamen = [];
         for (let i: number = 0; i < 40; i++) {
           const klassenname: string = generateKlassenname();
@@ -119,7 +118,7 @@ import { landSH } from '../../base/organisation';
       test(`Als ${bezeichnung}: Alle Klassen im Drop-Down des Klassenfilters anzeigen`, { tag: [STAGE, DEV] }, async () => {
         // Für Landesadmin: erst nach Schule filtern
         if (rolleName === landesadminRolle) {
-          await personManagementViewPage.filterBySchule(schuleParams.name, false);
+          await personManagementViewPage.filterBySchule(schuleParams.name);
         }
         await personManagementViewPage.checkIfAllKlassenVisible(klassenNamen);
       });
