@@ -29,10 +29,8 @@ export class DataTable {
     
     if (endpoint) {
       await this.page.waitForResponse(new RegExp(`/api/${endpoint}`));
-    } else {
-      await this.page.waitForTimeout(500);
     }
-    
+    await this.page.waitForTimeout(800);
     await this.waitForPageLoad();
   }
 
