@@ -66,7 +66,7 @@ import { generateKlassenname } from '../../base/utils/generateTestdata';
 
       test(`Als ${bezeichnung}: Ergebnisliste Klassen nach Spalte Klasse sortieren können`, { tag: [DEV, STAGE] },  async () => {
         await test.step(`Sortierverhalten ohne Filter prüfen`, async () => {
-          await klasseManagementViewPage.setItemsPerPage(100);
+          await klasseManagementViewPage.setItemsPerPage(30);
           await klasseManagementViewPage.checkIfColumnDataSorted(hasMultipleSchulen);
           if (hasMultipleSchulen) {
             await klasseManagementViewPage.checkIfColumnHeaderSorted('Dienststellennummer', 'not-sortable');
