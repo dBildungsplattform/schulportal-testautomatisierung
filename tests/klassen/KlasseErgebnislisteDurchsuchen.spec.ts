@@ -108,13 +108,13 @@ import { SchuleCreationSuccessPage } from '../../pages/admin/organisationen/schu
           await klasseManagementViewPage.setItemsPerPage(50);
           if (hasMultipleSchulen) {
             await klasseManagementViewPage.filterBySchule(schuleParams.name);
-            await klasseManagementViewPage.waitForPageLoad();
           } else {
             await klasseManagementViewPage.checkIfSchuleIsCorrect(schuleParams.name, schuleParams.dienststellenNr);
           }
         });
 
         await test.step(`Sortierverhalten prüfen`, async () => {
+          await klasseManagementViewPage.waitForDataLoad();
           await klasseManagementViewPage.checkIfColumnDataSorted(generierteKlassenNamen, hasMultipleSchulen);
           if (hasMultipleSchulen) {
             await klasseManagementViewPage.checkIfColumnHeaderSorted('Dienststellennummer', 'not-sortable');
@@ -126,13 +126,13 @@ import { SchuleCreationSuccessPage } from '../../pages/admin/organisationen/schu
         const testKlasse: string = generierteKlassenNamen[0];
 
         await test.step(`In der Ergebnisliste eine Klasse durch Filter suchen`, async () => {
-          await klasseManagementViewPage.waitForPageLoad();
           if (hasMultipleSchulen) {
             await klasseManagementViewPage.filterBySchule(schuleParams.name);
           } else {
             await klasseManagementViewPage.checkIfSchuleIsCorrect(schuleParams.name, schuleParams.dienststellenNr);
           }
           await klasseManagementViewPage.filterByKlasse(testKlasse);
+          await klasseManagementViewPage.waitForDataLoad();
           await klasseManagementViewPage.checkIfKlasseExists(testKlasse);
           await klasseManagementViewPage.checkRows(1);
         });

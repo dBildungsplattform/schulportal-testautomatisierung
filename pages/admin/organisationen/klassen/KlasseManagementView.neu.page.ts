@@ -23,6 +23,11 @@ export class KlasseManagementViewPage {
     return this;
   }
 
+  public async waitForDataLoad(): Promise<KlasseManagementViewPage> {
+    await this.klasseTable.waitForPageLoad();
+    return this;
+  }
+
   public async setItemsPerPage(entries: 5 | 30 | 50 | 100 | 300): Promise<void> {
     await this.klasseTable.setItemsPerPage(entries);
   }
