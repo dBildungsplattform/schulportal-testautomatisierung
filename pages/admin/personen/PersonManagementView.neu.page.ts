@@ -15,8 +15,11 @@ export class PersonManagementViewPage {
   constructor(protected readonly page: Page) {
     this.table = this.page.getByTestId('person-table');
     this.personTable = new DataTable(this.page, this.table);
-    this.searchFilter = new SearchFilter(this.page);
-    this.organisationAutocomplete = new Autocomplete(this.page, this.page.getByTestId('person-management-organisation-select'));
+    this.searchFilter = new SearchFilter(this.page, 'dbiam/personenuebersicht');
+    this.organisationAutocomplete = new Autocomplete(
+      this.page,
+      this.page.getByTestId('person-management-organisation-select')
+    );
     this.menu = new MenuBarPage(this.page);
   }
 
@@ -34,7 +37,7 @@ export class PersonManagementViewPage {
   }
 
   public async filterBySchule(schule: string): Promise<void> {
-    await this.organisationAutocomplete.searchByTitle(schule, false, 'organisationen/**');
+    await this.organisationAutocomplete.searchByTitle(schule, false, 'dbiam/personenuebersicht');
   }
 
   public async filterByRolle(rolle: string): Promise<void> {
@@ -112,7 +115,7 @@ export class PersonManagementViewPage {
   public async checkIfSchuleIsCorrect(schulname: string, schulNr?: string): Promise<void> {
     const expected: string = schulNr ? `${schulNr} (${schulname})` : schulname;
     await this.organisationAutocomplete.checkText(expected);
-    await this.personTable.checkColumn(6, async (cell: Locator) => {
+    await this.personTable.checkColumn(7, async (cell: Locator) => {
       const cellText: string | null = await cell.textContent();
       expect(cellText).toContain(schulname);
       if (schulNr) {
