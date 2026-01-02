@@ -103,11 +103,10 @@ export class PersonManagementViewPage {
   }
 
   public async checkIfAllKlassenVisible(klassen: string[]): Promise<void> {
-    await this.page.getByTestId('personen-management-klasse-select').click();
-    for (const klasse of klassen) {
-      const option: Locator = this.page.getByRole('option', { name: klasse });
-      await option.scrollIntoViewIfNeeded();
-      await expect(option).toBeVisible();
-    }
+    await this.personTable.checkDropdownOptionsVisibleAndClickable(
+      klassen,
+      this.page.getByTestId('personen-management-klasse-select'),
+      `${klassen.length} Klassen gefunden`
+    );
   }
 }

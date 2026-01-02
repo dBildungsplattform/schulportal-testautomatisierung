@@ -54,7 +54,6 @@ export class MenuBarPage {
   public async navigateToKlasseManagement(): Promise<KlasseManagementViewPage> {  
     await this.klasseManagement.click();
     const klasseManagementViewPage: KlasseManagementViewPage = new KlasseManagementViewPage(this.page);
-    await klasseManagementViewPage.waitForPageLoad();
     return klasseManagementViewPage;
   }
 

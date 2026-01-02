@@ -1,5 +1,7 @@
 import { expect, type Locator, Page } from '@playwright/test';
 
+type ItemsPerPage = 5 | 30 | 50 | 100 | 300;
+
 export class DataTable {
     /* since the table is within Vuetify's jurisdiction,
         we cannot specify test ids for Playwright and heavily rely on classes as locators */
@@ -21,10 +23,21 @@ export class DataTable {
       return this.tableLocator.locator(`tr:has-text("${expectedText}")`);
     }
 
-    public async setItemsPerPage(value: string): Promise<void> {
+    public async clickColumnHeader(columnName: string, endpoint?: string): Promise<void> {
+      const header: Locator = this.tableLocator.locator('th').filter({ hasText: columnName });
+      await header.click();
+      
+      if (endpoint) {
+        await this.page.waitForResponse(new RegExp(`/api/${endpoint}`));
+      }
+      await this.page.waitForTimeout(500);
+      await this.waitForPageLoad();
+    }
+
+    public async setItemsPerPage(value: ItemsPerPage): Promise<void> {
       await this.footer.locator('.v-data-table-footer__items-per-page .v-field__append-inner').click();
-      await this.page.locator('.v-list-item').getByText(value, { exact: true }).click();
-      await expect(this.footer.locator('.v-select__selection-text')).toHaveText(value);
+      await this.page.locator('.v-list-item').getByText(value.toString(), { exact: true }).click();
+      await expect(this.footer.locator('.v-select__selection-text')).toHaveText(value.toString());
       await expect(this.page.locator('.v-overlay__content.v-select__content')).toBeHidden();
     }
   
@@ -42,6 +55,34 @@ export class DataTable {
 
   public async goToLastPage(): Promise<void> {
     await this.page.locator('.v-pagination__last button:not(.v-btn--disabled)').click();
+  }
+
+  public async getColumnData(cellIndex: number): Promise<string[]> {
+    const pageData: string[] = [];
+    await this.waitForPageLoad();
+    
+    const tableRows: Locator = this.tableLocator.locator('tbody tr.v-data-table__tr');
+    const rowCount: number = await tableRows.count();
+    
+    for (let i: number = 0; i < rowCount; i++) {
+      const cell: Locator = this.tableLocator.locator('tbody tr.v-data-table__tr').nth(i).locator('td').nth(cellIndex);
+      const text: string | null = await cell.textContent();
+      if (text) {
+        pageData.push(text.trim());
+      }
+    }
+    
+    return pageData;
+  }
+
+  private compareData(actualData: string[], expectedData: string[], direction: 'ascending' | 'descending'): void {
+    const expectedSorted: string[] = [...expectedData].sort((a: string, b: string): number =>
+      direction === 'ascending'
+        ? a.localeCompare(b, 'de', { numeric: true })
+        : b.localeCompare(a, 'de', { numeric: true })
+    );
+
+    expect(actualData).toEqual(expectedSorted);
   }
 
   /* assertions */
@@ -88,4 +129,34 @@ export class DataTable {
   public async checkIfItemIsVisible(expectedText: string): Promise<void> {
     await expect(this.tableLocator.getByRole('cell', { name: expectedText, exact: true })).toBeVisible();
   }
-}
+
+  public async checkIfColumnHeaderSorted(columnName: string, sortingStatus: 'ascending' | 'descending' | 'not-sortable'): Promise<void> {
+    const header: Locator = this.tableLocator.locator('th').filter({ hasText: columnName });
+    
+    if (sortingStatus === 'ascending') {
+      await expect(header.locator('.mdi-arrow-up')).toBeVisible();
+    } else if (sortingStatus === 'descending') {
+      await expect(header.locator('.mdi-arrow-down')).toBeVisible();
+    } else if (sortingStatus === 'not-sortable') {
+      await expect(header).not.toHaveClass(/v-data-table__th--sortable/);
+    }
+  }
+
+  public async checkIfColumnDataSorted(cellIndex: number, expectedNames?: string[], direction: 'ascending' | 'descending' = 'ascending'): Promise<void> {
+    const actualNames: string[] = await this.getColumnData(cellIndex);
+    const expectedData: string[] = expectedNames || actualNames;
+    this.compareData(actualNames, expectedData, direction);
+  }
+
+  public async checkDropdownOptionsVisibleAndClickable(items: string[], dropdownLocator: Locator, filterHeaderText: string): Promise<void> {
+    await dropdownLocator.click();
+    // Sortiere Items alphanumerisch wie sie im Dropdown angeordnet sind
+    const sortedItems: string[] = [...items].sort((a, b) => a.localeCompare(b, 'de', { numeric: true }));
+    await expect(this.page.locator('.filter-header')).toContainText(filterHeaderText);
+    for (const item of sortedItems) {
+      const option: Locator = this.page.getByRole('option', { name: item, exact: false });
+      await option.scrollIntoViewIfNeeded();
+      await expect(option).toBeVisible();
+      await option.click();
+    }
+  }}
