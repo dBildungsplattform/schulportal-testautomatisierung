@@ -36,8 +36,9 @@ export class PersonManagementViewPage {
     await filter.selectByTitle(text);
   }
 
-  public async filterBySchule(schule: string): Promise<void> {
-    await this.organisationAutocomplete.searchByTitle(schule, false, 'dbiam/personenuebersicht');
+  public async filterBySchule(name: string, dienststellenNr?: string): Promise<void> {
+    const displayName: string = dienststellenNr ? `${dienststellenNr} (${name})` : name;
+    await this.organisationAutocomplete.searchByTitle(displayName, true, 'dbiam/personenuebersicht');
   }
 
   public async filterByRolle(rolle: string): Promise<void> {
