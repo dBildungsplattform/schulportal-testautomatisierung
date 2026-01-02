@@ -16,7 +16,7 @@ import { adressbuch, email, kalender } from '../sp';
 import { makeFetchWithPlaywright } from './playwrightFetchAdapter';
 import { DbiamPersonenkontextWorkflowControllerCommitRequest, DbiamPersonenkontextWorkflowControllerCreatePersonWithPersonenkontexteRequest, PersonenkontextApi } from './generated/apis/PersonenkontextApi';
 import { ApiResponse, Configuration } from './generated/runtime';
-import { DbiamCreatePersonWithPersonenkontexteBodyParams, DBiamPersonResponse, DbiamUpdatePersonenkontexteBodyParams, LockUserBodyParams, PersonenkontexteUpdateResponse, PersonFrontendControllerFindPersons200Response, PersonLockResponse, RollenArt, RollenMerkmal } from './generated/models';
+import { DbiamCreatePersonWithPersonenkontexteBodyParams, DBiamPersonResponse, DbiamUpdatePersonenkontexteBodyParams, LockUserBodyParams, PersonendatensatzResponse, PersonenkontexteUpdateResponse, PersonFrontendControllerFindPersons200Response, PersonLockResponse, RollenArt, RollenMerkmal } from './generated/models';
 import { PersonControllerDeletePersonByIdRequest, PersonControllerLockPersonRequest, PersonControllerResetUEMPasswordByPersonIdRequest, PersonenApi } from './generated/apis/PersonenApi';
 import { PersonenFrontendApi, PersonFrontendControllerFindPersonsRequest } from './generated/apis/PersonenFrontendApi';
 
@@ -118,8 +118,13 @@ export async function createPerson(
     const personenkontextApi: PersonenkontextApi = constructPersonenkontextApi(page);
     const response: ApiResponse<DBiamPersonResponse> = await personenkontextApi.dbiamPersonenkontextWorkflowControllerCreatePersonWithPersonenkontexteRaw(requestParameters);
     expect(response.raw.status).toBe(201);
-
     const createdPerson: DBiamPersonResponse = await response.value();
+
+    const personenApi: PersonenApi = constructPersonenApi(page);
+
+    const personendatensatzResponse: ApiResponse<PersonendatensatzResponse> = await personenApi.personControllerFindPersonByIdRaw({personId: createdPerson.person.id });
+    expect(personendatensatzResponse.raw.status).toBe(200);
+    const personendatensatz: PersonendatensatzResponse = await personendatensatzResponse.value();
 
     return {
       username: createdPerson.person.username,
@@ -130,7 +135,7 @@ export async function createPerson(
       vorname: createdPerson.person.name.vorname,
       nachname: createdPerson.person.name.familienname,
       kopersnummer: koPersNr,
-      email: generateEmailFromName(createdPerson.person.name.vorname, createdPerson.person.name.familienname),
+      email: personendatensatz.person.email.address,
     };
   } catch (error) {
     console.error('[ERROR] createPerson failed:', error);
