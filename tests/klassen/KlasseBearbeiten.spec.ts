@@ -74,7 +74,7 @@ let admin: UserInfo;
 
       await test.step(`Klasse öffnen`, async () => {
         klasseErgebnislistePage = await klasseErfolgreichAngelegtPage.goBackToList();
-        await klasseErgebnislistePage.waitForPageLoad();
+        await klasseErgebnislistePage.waitForDataLoad();
         klasseDetailsPage = await klasseErgebnislistePage.searchAndOpenGesamtuebersicht(rolleName == landesadminRolle, klasseParams);
       });
 
