@@ -14,10 +14,30 @@ import { typeLehrer } from '../rollentypen';
 import { getServiceProviderId } from './serviceProviderApi';
 import { adressbuch, email, kalender } from '../sp';
 import { makeFetchWithPlaywright } from './playwrightFetchAdapter';
-import { DbiamPersonenkontextWorkflowControllerCommitRequest, DbiamPersonenkontextWorkflowControllerCreatePersonWithPersonenkontexteRequest, PersonenkontextApi } from './generated/apis/PersonenkontextApi';
+import {
+  DbiamPersonenkontextWorkflowControllerCommitRequest,
+  DbiamPersonenkontextWorkflowControllerCreatePersonWithPersonenkontexteRequest,
+  PersonenkontextApi,
+} from './generated/apis/PersonenkontextApi';
 import { ApiResponse, Configuration } from './generated/runtime';
-import { DbiamCreatePersonWithPersonenkontexteBodyParams, DBiamPersonResponse, DbiamUpdatePersonenkontexteBodyParams, LockUserBodyParams, PersonendatensatzResponse, PersonenkontexteUpdateResponse, PersonFrontendControllerFindPersons200Response, PersonLockResponse, RollenArt, RollenMerkmal } from './generated/models';
-import { PersonControllerDeletePersonByIdRequest, PersonControllerLockPersonRequest, PersonControllerResetUEMPasswordByPersonIdRequest, PersonenApi } from './generated/apis/PersonenApi';
+import {
+  DbiamCreatePersonWithPersonenkontexteBodyParams,
+  DBiamPersonResponse,
+  DbiamUpdatePersonenkontexteBodyParams,
+  LockUserBodyParams,
+  PersonendatensatzResponse,
+  PersonenkontexteUpdateResponse,
+  PersonFrontendControllerFindPersons200Response,
+  PersonLockResponse,
+  RollenArt,
+  RollenMerkmal,
+} from './generated/models';
+import {
+  PersonControllerDeletePersonByIdRequest,
+  PersonControllerLockPersonRequest,
+  PersonControllerResetUEMPasswordByPersonIdRequest,
+  PersonenApi,
+} from './generated/apis/PersonenApi';
 import { PersonenFrontendApi, PersonFrontendControllerFindPersonsRequest } from './generated/apis/PersonenFrontendApi';
 
 export interface UserInfo {
@@ -60,16 +80,6 @@ export async function freshLoginPage(page: Page): Promise<LoginViewPage> {
   return (await FromAnywhere(page).start()).navigateToLogin();
 }
 
-function normalizeString(value: string): string {
-  return value.toLowerCase().replaceAll('ä', 'ae').replaceAll('ö', 'oe').replaceAll('ü', 'ue').replaceAll('ß', 'ss');
-}
-/** 
- * Does not implement complete generation logic, but should work, if names are unique.
- */
-function generateEmailFromName(vorname: string, familienname: string): string {
-  return `${normalizeString(vorname)}.${normalizeString(familienname)}@schule-sh.de`;
-}
-
 export async function createPerson(
   page: Page,
   organisationId: string,
@@ -90,7 +100,7 @@ export async function createPerson(
           rolleId: rolleId,
         },
       ],
-    }
+    };
 
     if (klasseId) {
       createPersonBodyParams.createPersonenkontexte.push({
@@ -112,19 +122,16 @@ export async function createPerson(
     }
 
     const requestParameters: DbiamPersonenkontextWorkflowControllerCreatePersonWithPersonenkontexteRequest = {
-      dbiamCreatePersonWithPersonenkontexteBodyParams: createPersonBodyParams
+      dbiamCreatePersonWithPersonenkontexteBodyParams: createPersonBodyParams,
     };
 
     const personenkontextApi: PersonenkontextApi = constructPersonenkontextApi(page);
-    const response: ApiResponse<DBiamPersonResponse> = await personenkontextApi.dbiamPersonenkontextWorkflowControllerCreatePersonWithPersonenkontexteRaw(requestParameters);
+    const response: ApiResponse<DBiamPersonResponse> =
+      await personenkontextApi.dbiamPersonenkontextWorkflowControllerCreatePersonWithPersonenkontexteRaw(
+        requestParameters
+      );
     expect(response.raw.status).toBe(201);
     const createdPerson: DBiamPersonResponse = await response.value();
-
-    const personenApi: PersonenApi = constructPersonenApi(page);
-
-    const personendatensatzResponse: ApiResponse<PersonendatensatzResponse> = await personenApi.personControllerFindPersonByIdRaw({personId: createdPerson.person.id });
-    expect(personendatensatzResponse.raw.status).toBe(200);
-    const personendatensatz: PersonendatensatzResponse = await personendatensatzResponse.value();
 
     return {
       username: createdPerson.person.username,
@@ -135,7 +142,7 @@ export async function createPerson(
       vorname: createdPerson.person.name.vorname,
       nachname: createdPerson.person.name.familienname,
       kopersnummer: koPersNr,
-      email: personendatensatz.person.email.address,
+      email: createdPerson.person.email?.address, // is undefined
     };
   } catch (error) {
     console.error('[ERROR] createPerson failed:', error);
@@ -188,10 +195,7 @@ export async function createRolleAndPersonWithPersonenkontext(
   return userInfo;
 }
 
-export async function removeAllPersonenkontexte(
-  page: Page,
-  personId: string
-): Promise<void> {
+export async function removeAllPersonenkontexte(page: Page, personId: string): Promise<void> {
   try {
     const dbiamUpdatePersonenkontexteBodyParams: DbiamUpdatePersonenkontexteBodyParams = {
       lastModified: new Date(),
@@ -206,7 +210,8 @@ export async function removeAllPersonenkontexte(
     };
 
     const personenkontextApi: PersonenkontextApi = constructPersonenkontextApi(page);
-    const response: ApiResponse<PersonenkontexteUpdateResponse> = await personenkontextApi.dbiamPersonenkontextWorkflowControllerCommitRaw(requestParameters);
+    const response: ApiResponse<PersonenkontexteUpdateResponse> =
+      await personenkontextApi.dbiamPersonenkontextWorkflowControllerCommitRaw(requestParameters);
     expect(response.raw.status).toBe(200);
   } catch (error) {
     console.error('[ERROR] removeAllPersonenkontexte failed:', error);
@@ -228,8 +233,10 @@ export async function lockPerson(page: Page, personId: string, organisationId: s
     };
 
     const personenApi: PersonenApi = constructPersonenApi(page);
-    const response: ApiResponse<PersonLockResponse> = await personenApi.personControllerLockPersonRaw(requestParameters);
-    await expect(response.raw.status).toBe(202);
+    const response: ApiResponse<PersonLockResponse> = await personenApi.personControllerLockPersonRaw(
+      requestParameters
+    );
+    expect(response.raw.status).toBe(202);
 
     const lockMessage: PersonLockResponse = await response.value();
     expect(lockMessage.message).toBe('User has been successfully locked.');
@@ -270,8 +277,9 @@ export async function addSecondOrganisationToPerson(
     };
 
     const personenkontextApi: PersonenkontextApi = constructPersonenkontextApi(page);
-    const response: ApiResponse<PersonenkontexteUpdateResponse> = await personenkontextApi.dbiamPersonenkontextWorkflowControllerCommitRaw(requestParameters);
-    await expect(response.raw.status).toBe(200);
+    const response: ApiResponse<PersonenkontexteUpdateResponse> =
+      await personenkontextApi.dbiamPersonenkontextWorkflowControllerCommitRaw(requestParameters);
+    expect(response.raw.status).toBe(200);
 
     const updatedPersonenkontexte: PersonenkontexteUpdateResponse = await response.value();
     expect(updatedPersonenkontexte.dBiamPersonenkontextResponses.length).toBe(2);
@@ -285,11 +293,11 @@ export async function deletePerson(page: Page, personId: string): Promise<void> 
   try {
     const requestParameters: PersonControllerDeletePersonByIdRequest = {
       personId,
-    }
+    };
 
     const personenApi: PersonenApi = constructPersonenApi(page);
     const response: ApiResponse<void> = await personenApi.personControllerDeletePersonByIdRaw(requestParameters);
-    await expect(response.raw.status).toBe(204);
+    expect(response.raw.status).toBe(204);
   } catch (error) {
     console.error('[ERROR] deletePerson failed:', error);
     throw error;
@@ -301,15 +309,15 @@ export async function getPersonId(page: Page, searchString: string): Promise<str
     const requestParameters: PersonFrontendControllerFindPersonsRequest = {
       suchFilter: searchString,
       limit: 1,
-    }
+    };
 
     const personenFrontendApi: PersonenFrontendApi = constructPersonenFrontendApi(page);
-    const response: ApiResponse<PersonFrontendControllerFindPersons200Response> = await personenFrontendApi.personFrontendControllerFindPersonsRaw(requestParameters)
-    await expect(response.raw.status).toBe(200);
+    const response: ApiResponse<PersonFrontendControllerFindPersons200Response> =
+      await personenFrontendApi.personFrontendControllerFindPersonsRaw(requestParameters);
+    expect(response.raw.status).toBe(200);
 
     const fetchedPersonen: PersonFrontendControllerFindPersons200Response = await response.value();
     return fetchedPersonen.items[0].person.id;
-
   } catch (error) {
     console.error('[ERROR] getPersonId failed:', error);
     throw error;
@@ -325,7 +333,11 @@ export async function createTeacherAndLogin(page: Page): Promise<UserInfo> {
     typeLehrer,
     generateNachname(),
     generateVorname(),
-    [await getServiceProviderId(page, email), await getServiceProviderId(page, kalender), await getServiceProviderId(page, adressbuch)],
+    [
+      await getServiceProviderId(page, email),
+      await getServiceProviderId(page, kalender),
+      await getServiceProviderId(page, adressbuch),
+    ],
     generateRolleName(),
     generateKopersNr()
   );
@@ -351,8 +363,10 @@ export async function setUEMPassword(page: Page, personId: string): Promise<stri
     };
 
     const personenApi: PersonenApi = constructPersonenApi(page);
-    const response: ApiResponse<string> = await personenApi.personControllerResetUEMPasswordByPersonIdRaw(requestParameters);
-    await expect(response.raw.status).toBe(202);
+    const response: ApiResponse<string> = await personenApi.personControllerResetUEMPasswordByPersonIdRaw(
+      requestParameters
+    );
+    expect(response.raw.status).toBe(202);
 
     const newPassword: string = await response.value();
     return newPassword;
@@ -381,21 +395,31 @@ export async function setTimeLimitPersonenkontext(
           rolleId: rolleId,
         },
       ],
-    }
+    };
 
     const requestParameters: DbiamPersonenkontextWorkflowControllerCommitRequest = {
       personId,
       dbiamUpdatePersonenkontexteBodyParams,
-    }
+    };
 
     const personenkontextApi: PersonenkontextApi = constructPersonenkontextApi(page);
-    const response: ApiResponse<PersonenkontexteUpdateResponse> = await personenkontextApi.dbiamPersonenkontextWorkflowControllerCommitRaw(requestParameters);
-    await expect(response.raw.status).toBe(200);
+    const response: ApiResponse<PersonenkontexteUpdateResponse> =
+      await personenkontextApi.dbiamPersonenkontextWorkflowControllerCommitRaw(requestParameters);
+    expect(response.raw.status).toBe(200);
 
     const updatedPersonenkontexte: PersonenkontexteUpdateResponse = await response.value();
-    await expect(updatedPersonenkontexte.dBiamPersonenkontextResponses.length).toBe(1);
+    expect(updatedPersonenkontexte.dBiamPersonenkontextResponses.length).toBe(1);
   } catch (error) {
     console.error('[ERROR] setTimeLimitPersonenkontext failed:', error);
     throw error;
   }
+}
+
+export async function getEmailByPersonId(page: Page, id: string): Promise<string | undefined> {
+  const personenApi: PersonenApi = constructPersonenApi(page);
+  const personendatensatzResponse: ApiResponse<PersonendatensatzResponse> =
+    await personenApi.personControllerFindPersonByIdRaw({ personId: id });
+  expect(personendatensatzResponse.raw.status).toBe(200);
+  const personendatensatz: PersonendatensatzResponse = await personendatensatzResponse.value();
+  return personendatensatz.person.email?.address;
 }

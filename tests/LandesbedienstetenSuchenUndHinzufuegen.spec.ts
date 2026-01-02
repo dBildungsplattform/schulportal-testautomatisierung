@@ -5,6 +5,7 @@ import {
   addSecondOrganisationToPerson,
   createPersonWithPersonenkontext,
   freshLoginPage,
+  getEmailByPersonId,
   lockPerson,
   removeAllPersonenkontexte,
   UserInfo,
@@ -357,13 +358,17 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
     }
   });
 
-  test('Button Zurück zur Suche funktioniert (E-Mail)', { tag: [STAGE] }, async () => {
+  test('Button Zurück zur Suche funktioniert (E-Mail)', { tag: [STAGE] }, async ({ page }: PlaywrightTestArgs) => {
+    const email: string | undefined = await getEmailByPersonId(page, lehrkraft.personId);
+    if (!email) {
+      throw new Error('Lehrkraft hat keine E-Mail-Adresse');
+    }
     const landesbedienstetenSearchResultPage: LandesbedienstetenSearchResultPage =
-      await landesbedienstetenSearchFormPage.searchLandesbedienstetenViaEmail(lehrkraft.email);
+      await landesbedienstetenSearchFormPage.searchLandesbedienstetenViaEmail(email);
     await landesbedienstetenSearchResultPage.checkSearchResultCard();
     await landesbedienstetenSearchResultPage.clickZurueckZurSuche();
     await landesbedienstetenSearchFormPage.expectEmailRadioChecked();
-    await landesbedienstetenSearchFormPage.expectEmailInputValue(lehrkraft.email);
+    await landesbedienstetenSearchFormPage.expectEmailInputValue(email);
   });
 
   //SPSH-2634 Step 8
