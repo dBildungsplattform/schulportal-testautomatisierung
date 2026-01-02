@@ -1,7 +1,7 @@
 import { expect, test, type Page, type PlaywrightTestArgs } from '@playwright/test';
 import { getOrganisationId } from '../base/api/organisationApi';
 import { createPerson, freshLoginPage, lockPerson, type UserInfo } from '../base/api/personApi';
-import { createRolle } from '../base/api/rolleApi';
+import { createRolle, RollenArt } from '../base/api/rolleApi';
 import { testschuleName } from '../base/organisation';
 import { DEV, SMOKE, STAGE } from '../base/tags';
 import { generateRolleName } from '../base/utils/generateTestdata';
@@ -31,7 +31,7 @@ test.describe(`Testfälle für den Login: Umgebung: ${process.env.ENV}: URL: ${p
 
   test('Fehlgeschlagener Login mit falschen Daten', { tag: [SMOKE, DEV, STAGE] }, async () => {
     await loginPage.login('anakin', 'obi-wan');
-    expect(await loginPage.loginFailedWithWrongCredentials()).toBeTruthy();
+    await expect(loginPage.loginFailedWithWrongCredentials()).resolves.toBeUndefined();
   });
 
   test('Fehlgeschlagener Login mit gesperrtem Benutzer', { tag: [STAGE, DEV] }, async ({ page }: { page: Page }) => {
@@ -41,14 +41,14 @@ test.describe(`Testfälle für den Login: Umgebung: ${process.env.ENV}: URL: ${p
     /* create locked user */
     const testSchuleId: string = await getOrganisationId(page, testschuleName)
     const rolleName: string = generateRolleName();
-    const rolleId: string = await createRolle(page, 'LEHR', testSchuleId, rolleName);
+    const rolleId: string = await createRolle(page, RollenArt.Lehr, testSchuleId, rolleName);
     const userinfo: UserInfo = await createPerson(page, testSchuleId, rolleId)
     await lockPerson(page, userinfo.personId, testSchuleId);
 
     await header.logout();
     loginPage = await freshLoginPage(page);
     await loginPage.login(userinfo.username, userinfo.password);
-    await expect(loginPage.loginFailedWithLockedUser()).toBeTruthy();
+    await expect(loginPage.loginFailedWithLockedUser()).resolves.toBeUndefined();
   });
 
   test('Erfolgreicher Logout', { tag: [STAGE, DEV, SMOKE] }, async () => {
