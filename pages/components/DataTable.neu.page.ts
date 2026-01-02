@@ -65,9 +65,8 @@ export class DataTable {
     const rowCount: number = await tableRows.count();
     
     for (let i: number = 0; i < rowCount; i++) {
-      const cell: Locator = tableRows.nth(i).locator('td').nth(cellIndex);
+      const cell: Locator = this.tableLocator.locator('tbody tr.v-data-table__tr').nth(i).locator('td').nth(cellIndex);
       await cell.scrollIntoViewIfNeeded();
-      //await this.page.waitForTimeout(100);
       const text: string | null = await cell.textContent();
       if (text) {
         pageData.push(text.trim());
