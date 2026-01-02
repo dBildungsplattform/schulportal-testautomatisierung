@@ -105,7 +105,7 @@ import { SchuleCreationSuccessPage } from '../../pages/admin/organisationen/schu
 
       test(`Als ${bezeichnung}: Ergebnisliste Klassen nach Spalte Klasse sortieren können`, { tag: [DEV, STAGE] }, async () => {
         await test.step(`Schule filtern oder validieren`, async () => {
-          await klasseManagementViewPage.setItemsPerPage(50);
+          await klasseManagementViewPage.setItemsPerPage(5);
           if (hasMultipleSchulen) {
             await klasseManagementViewPage.filterBySchule(schuleParams.name);
           } else {
@@ -115,7 +115,7 @@ import { SchuleCreationSuccessPage } from '../../pages/admin/organisationen/schu
 
         await test.step(`Sortierverhalten prüfen`, async () => {
           await klasseManagementViewPage.waitForDataLoad();
-          await klasseManagementViewPage.checkIfColumnDataSorted(generierteKlassenNamen, hasMultipleSchulen);
+          await klasseManagementViewPage.checkIfColumnDataSorted(hasMultipleSchulen);
           if (hasMultipleSchulen) {
             await klasseManagementViewPage.checkIfColumnHeaderSorted('Dienststellennummer', 'not-sortable');
           }

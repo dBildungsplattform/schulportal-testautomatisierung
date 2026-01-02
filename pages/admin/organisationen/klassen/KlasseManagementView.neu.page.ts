@@ -162,7 +162,7 @@ export class KlasseManagementViewPage {
     await this.klasseTable.checkIfColumnHeaderSorted(columnName, sortingStatus);
   }
 
-  public async checkIfColumnDataSorted(klassenNamen: string[], hasMultipleSchulen: boolean): Promise<void> {
+  public async checkIfColumnDataSorted(hasMultipleSchulen: boolean, klassenNamen?: string[]): Promise<void> {
     const cellIndex: number = hasMultipleSchulen ? 2 : 1;
 
     await this.checkIfColumnHeaderSorted('Klasse', 'ascending');
