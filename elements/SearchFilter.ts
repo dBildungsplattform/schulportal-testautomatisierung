@@ -7,6 +7,6 @@ export class SearchFilter {
     const searchFilterInput: Locator = this.page.getByTestId('search-filter-input').locator('input');
 
     await searchFilterInput.fill(searchText);
-    return await this.page.getByTestId('apply-search-filter-button').click();
+    await this.page.getByTestId('apply-search-filter-button').click();
   }
 }

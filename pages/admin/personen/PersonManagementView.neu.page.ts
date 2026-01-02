@@ -8,6 +8,7 @@ import { MenuBarPage } from '../../components/MenuBar.neu.page';
 export class PersonManagementViewPage {
   private readonly personTable: DataTable;
   private readonly searchFilter: SearchFilter;
+  private readonly organisationAutocomplete: Autocomplete;
   public readonly menu: MenuBarPage;
   private readonly table: Locator;
 
@@ -15,6 +16,7 @@ export class PersonManagementViewPage {
     this.table = this.page.getByTestId('person-table');
     this.personTable = new DataTable(this.page, this.table);
     this.searchFilter = new SearchFilter(this.page);
+    this.organisationAutocomplete = new Autocomplete(this.page, this.page.getByTestId('person-management-organisation-select'));
     this.menu = new MenuBarPage(this.page);
   }
 
@@ -30,8 +32,9 @@ export class PersonManagementViewPage {
     const filter: Autocomplete = new Autocomplete(this.page, this.page.getByTestId(testId));
     await filter.selectByTitle(text);
   }
+
   public async filterBySchule(schule: string): Promise<void> {
-    await this.filterByText(schule, 'person-management-organisation-select');
+    await this.organisationAutocomplete.searchByTitle(schule, false, 'organisationen/**');
   }
 
   public async filterByRolle(rolle: string): Promise<void> {
@@ -71,7 +74,7 @@ export class PersonManagementViewPage {
     await expect(this.page.getByTestId('admin-headline')).toHaveText('Administrationsbereich');
     await expect(this.page.getByTestId('person-management-headline')).toHaveText('Benutzerverwaltung');
     await expect(this.page.getByTestId('reset-filter-button')).toBeVisible();
-    await expect(this.page.getByTestId('person-management-organisation-select')).toBeVisible();
+    await this.organisationAutocomplete.isVisible();
     await expect(this.page.getByTestId('rolle-select')).toBeVisible();
     await expect(this.page.getByTestId('personen-management-klasse-select')).toBeVisible();
     await expect(this.page.getByTestId('status-select')).toBeVisible();
@@ -79,7 +82,15 @@ export class PersonManagementViewPage {
     await expect(this.page.getByTestId('search-filter-input')).toBeVisible();
     await expect(this.page.getByTestId('apply-search-filter-button')).toBeVisible();
     await expect(this.page.getByTestId('person-table')).toBeVisible();
-    await this.checkHeaders(['Nachname', 'Vorname', 'Benutzername', 'KoPers.-Nr.', 'Rolle', 'Schulzuordnung(en)', 'Klasse']);
+    await this.checkHeaders([
+      'Nachname',
+      'Vorname',
+      'Benutzername',
+      'KoPers.-Nr.',
+      'Rolle',
+      'Schulzuordnung(en)',
+      'Klasse',
+    ]);
   }
 
   public async checkIfPersonExists(name: string): Promise<void> {
@@ -98,7 +109,15 @@ export class PersonManagementViewPage {
     await this.personTable.checkHeaders(expectedHeaders);
   }
 
-  public async checkIfSchuleIsCorrect(schulNr: string, schulname: string): Promise<void> {
-    await expect(this.page.getByTestId('person-management-organisation-select')).toHaveText(schulNr + ' (' + schulname + ')');
+  public async checkIfSchuleIsCorrect(schulname: string, schulNr?: string): Promise<void> {
+    const expected: string = schulNr ? `${schulNr} (${schulname})` : schulname;
+    await this.organisationAutocomplete.checkText(expected);
+    await this.personTable.checkColumn(6, async (cell: Locator) => {
+      const cellText: string | null = await cell.textContent();
+      expect(cellText).toContain(schulname);
+      if (schulNr) {
+        expect(cellText).toContain(schulNr);
+      }
+    });
   }
 }

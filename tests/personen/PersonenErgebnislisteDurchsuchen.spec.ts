@@ -8,7 +8,7 @@ import { generateDienststellenNr } from '../../base/utils/generateTestdata';
 import { LandingViewPage } from '../../pages/LandingView.neu.page';
 import { LoginViewPage } from '../../pages/LoginView.neu.page';
 import { StartViewPage } from '../../pages/StartView.neu.page';
-import { PersonManagementViewPage } from "../../pages/admin/personen/PersonManagementView.neu.page";
+import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.neu.page';
 import { HeaderPage } from '../../pages/components/Header.neu.page';
 
 let header: HeaderPage;
@@ -17,72 +17,95 @@ let loginPage: LoginViewPage;
 let benutzerErgebnislistePage: PersonManagementViewPage;
 let admin: UserInfo;
 
+type AdminFixture = {
+  organisationsName: string;
+  dienststellenNr?: string;
+  rolleName: string;
+  bezeichnung: string;
+};
+
 [
-  { organisationsName: landSH, rolleName: landesadminRolle, bezeichnung: 'Landesadmin' },
-  { organisationsName: testschuleName, rolleName: schuladminOeffentlichRolle, bezeichnung: 'Schuladmin' },
-].forEach(({ organisationsName, rolleName, bezeichnung }: { organisationsName: string; rolleName: string; bezeichnung: string }) => {
+  { organisationsName: landSH, dienststellenNr: undefined, rolleName: landesadminRolle, bezeichnung: 'Landesadmin' },
+  {
+    organisationsName: testschuleName,
+    dienststellenNr: testschuleDstNr,
+    rolleName: schuladminOeffentlichRolle,
+    bezeichnung: 'Schuladmin',
+  },
+].forEach(({ organisationsName, dienststellenNr, rolleName, bezeichnung }: AdminFixture) => {
   test.describe(`Testfälle für die Ergebnisliste von Benutzern als ${bezeichnung}: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
     test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
       header = new HeaderPage(page);
       loginPage = await freshLoginPage(page);
       await loginPage.login(process.env.USER, process.env.PW);
 
-      admin = await createPersonWithPersonenkontext(page, organisationsName, rolleName, undefined, undefined, generateDienststellenNr());
+      admin = await createPersonWithPersonenkontext(
+        page,
+        organisationsName,
+        rolleName,
+        undefined,
+        undefined,
+        generateDienststellenNr()
+      );
 
       landingPage = await header.logout();
       landingPage.navigateToLogin();
 
       // Erstmalige Anmeldung mit Passwortänderung
-      const startPage: StartViewPage = await loginPage.loginNewUserWithPasswordChange(admin.username, admin.password)
+      const startPage: StartViewPage = await loginPage.loginNewUserWithPasswordChange(admin.username, admin.password);
       await startPage.waitForPageLoad();
 
       // Navigation zur Ergebnisliste von Benutzern
-      benutzerErgebnislistePage = await startPage.goToAdministration();  
+      benutzerErgebnislistePage = await startPage.goToAdministration();
     });
 
     // SPSH-2923
-    test(`Als ${bezeichnung}: Benutzer Ergebnisliste: UI prüfen`, { tag: [STAGE, DEV] },  async () => {
+    test(`Als ${bezeichnung}: Benutzer Ergebnisliste: UI prüfen`, { tag: [STAGE, DEV] }, async () => {
       await benutzerErgebnislistePage.checkManagementPage();
     });
 
     // SPSH-2925
-    test(`Als ${bezeichnung}: In der Ergebnisliste die Suchfunktion benutzen`, { tag: [STAGE, DEV] },  async () => {
-      // Suche nach Nachnamen
-      await benutzerErgebnislistePage.searchByText(admin.nachname);
-      await benutzerErgebnislistePage.checkIfPersonExists(admin.nachname);
+    test.describe(
+      `Als ${bezeichnung}: In der Ergebnisliste die Suchfunktion benutzen`,
+      { tag: [STAGE, DEV] },
+      async () => {
+        for (const [key, value] of [
+          ['Nachname', admin.nachname],
+          ['Vorname', admin.vorname],
+          ['Benutzername', admin.username],
+          ['Kopersnummer', admin.kopersnummer],
+        ]) {
+          test(`Suche nach ${key}`, async () => {
+            await benutzerErgebnislistePage.searchByText(value);
+            await benutzerErgebnislistePage.checkIfPersonExists(value);
+          });
+        }
 
-      // Suche nach Vornamen
-      await benutzerErgebnislistePage.searchByText(admin.vorname);
-      await benutzerErgebnislistePage.checkIfPersonExists(admin.vorname);
+        // searching for rolle in search-field makes no sense
+        test.skip(`Suche nach Rolle`, async () => {
+          await benutzerErgebnislistePage.searchByText(rolleName);
+          await benutzerErgebnislistePage.checkIfPersonExists(rolleName);
+        });
 
-      // Suche nach Benutzername
-      await benutzerErgebnislistePage.searchByText(admin.username);
-      await benutzerErgebnislistePage.checkIfPersonExists(admin.username);
-
-      // Suche nach Kopers
-      await benutzerErgebnislistePage.searchByText(admin.kopersnummer);
-      await benutzerErgebnislistePage.checkIfPersonExists(admin.kopersnummer);
-
-      // Suche nach Rolle
-      await benutzerErgebnislistePage.searchByText(rolleName);
-      await benutzerErgebnislistePage.checkIfPersonExists(rolleName);
-
-      // Suche nach einem nicht existierenden Eintrag
-      await benutzerErgebnislistePage.searchByText('NichtExistierenderEintrag');
-      await benutzerErgebnislistePage.checkIfPersonExists('Keine Daten gefunden.');
-      await benutzerErgebnislistePage.checkRowCount(0);
-    });
+        test(`Suche nach einem nicht existierenden Eintrag`, async () => {
+          await benutzerErgebnislistePage.searchByText('NichtExistierenderEintrag');
+          await benutzerErgebnislistePage.checkIfPersonExists('Keine Daten gefunden.');
+          await benutzerErgebnislistePage.checkRowCount(0);
+        });
+      }
+    );
 
     // SPSH-2926
-    test(`Als ${bezeichnung}: In der Ergebnisliste die Filterfunktion der Schulen benutzen`, { tag: [STAGE, DEV] },  async () => {
-      // Filtern nach Schule
-      if (rolleName === landesadminRolle) {
-        await benutzerErgebnislistePage.filterBySchule(organisationsName);
-        await benutzerErgebnislistePage.checkIfPersonExists(admin.username);
-        await benutzerErgebnislistePage.resetFilter();
-      } else {
-        await benutzerErgebnislistePage.checkIfSchuleIsCorrect(testschuleDstNr, testschuleName);
+    test(
+      `Als ${bezeichnung}: In der Ergebnisliste die Filterfunktion der Schulen benutzen`,
+      { tag: [STAGE, DEV] },
+      async () => {
+        // Filtern nach Schule
+        if (rolleName === landesadminRolle) {
+          await benutzerErgebnislistePage.filterBySchule(organisationsName);
+        }
+        await benutzerErgebnislistePage.checkIfSchuleIsCorrect(organisationsName, dienststellenNr);
       }
-    });
+    );
   });
 });
