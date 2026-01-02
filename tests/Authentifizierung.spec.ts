@@ -1,15 +1,14 @@
-import { expect, type Page, test, type PlaywrightTestArgs } from '@playwright/test';
-import { LoginViewPage } from '../pages/LoginView.neu.page';
-import { StartViewPage } from '../pages/StartView.neu.page';
-import { LandingViewPage } from '../pages/LandingView.neu.page';
-import { HeaderPage } from '../pages/components/Header.neu.page';
-import { createPerson, lockPerson, type UserInfo } from '../base/api/personApi';
+import { expect, test, type Page, type PlaywrightTestArgs } from '@playwright/test';
+import { getOrganisationId } from '../base/api/organisationApi';
+import { createPerson, freshLoginPage, lockPerson, type UserInfo } from '../base/api/personApi';
 import { createRolle } from '../base/api/rolleApi';
 import { testschuleName } from '../base/organisation';
-import { getOrganisationId } from '../base/api/organisationApi';
-import { generateRolleName } from '../base/utils/generateTestdata';
-import { freshLoginPage } from '../base/api/personApi';
 import { DEV, SMOKE, STAGE } from '../base/tags';
+import { generateRolleName } from '../base/utils/generateTestdata';
+import { LandingViewPage } from '../pages/LandingView.neu.page';
+import { LoginViewPage } from '../pages/LoginView.neu.page';
+import { StartViewPage } from '../pages/StartView.neu.page';
+import { HeaderPage } from '../pages/components/Header.neu.page';
 
 const ADMIN: string | undefined = process.env.USER;
 const PASSWORD: string | undefined = process.env.PW;
@@ -32,10 +31,10 @@ test.describe(`Testfälle für den Login: Umgebung: ${process.env.ENV}: URL: ${p
 
   test('Fehlgeschlagener Login mit falschen Daten', { tag: [SMOKE, DEV, STAGE] }, async () => {
     await loginPage.login('anakin', 'obi-wan');
-    await expect(loginPage.loginFailedWithWrongCredentials()).toBeTruthy();
+    expect(await loginPage.loginFailedWithWrongCredentials()).toBeTruthy();
   });
 
-  test('Fehlgeschlagener Login mit gesperrtem Benutzer', { tag: [SMOKE, STAGE, DEV] }, async ({ page }: { page: Page }) => {
+  test('Fehlgeschlagener Login mit gesperrtem Benutzer', { tag: [STAGE, DEV] }, async ({ page }: { page: Page }) => {
     const startPage: StartViewPage = await loginPage.login(ADMIN, PASSWORD);
     await startPage.waitForPageLoad();
 
