@@ -69,13 +69,14 @@ type AdminFixture = {
       `Als ${bezeichnung}: In der Ergebnisliste die Suchfunktion benutzen`,
       { tag: [STAGE, DEV] },
       async () => {
-        for (const [key, value] of [
-          ['Nachname', admin.nachname],
-          ['Vorname', admin.vorname],
-          ['Benutzername', admin.username],
-          ['Kopersnummer', admin.kopersnummer],
-        ]) {
+        for (const [key, getValue] of [
+          ['Nachname', () => admin.nachname],
+          ['Vorname', () => admin.vorname],
+          ['Benutzername', () => admin.username],
+          ['Kopersnummer', () => admin.kopersnummer],
+        ] as [string, () => string][]) {
           test(`Suche nach ${key}`, async () => {
+            const value: string = getValue();
             await benutzerErgebnislistePage.searchByText(value);
             await benutzerErgebnislistePage.checkIfPersonExists(value);
           });
