@@ -66,7 +66,6 @@ export class DataTable {
     
     for (let i: number = 0; i < rowCount; i++) {
       const cell: Locator = this.tableLocator.locator('tbody tr.v-data-table__tr').nth(i).locator('td').nth(cellIndex);
-      await cell.scrollIntoViewIfNeeded();
       const text: string | null = await cell.textContent();
       if (text) {
         pageData.push(text.trim());
