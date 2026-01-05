@@ -83,9 +83,9 @@ type AdminFixture = {
         }
 
         // searching for rolle in search-field makes no sense
-        test.skip(`Suche nach Rolle`, async () => {
-          await benutzerErgebnislistePage.searchByText(rolleName);
-          await benutzerErgebnislistePage.checkIfPersonExists(rolleName);
+        test(`Suche nach Rolle`, async () => {
+          await benutzerErgebnislistePage.filterByRolle(rolleName);
+          await benutzerErgebnislistePage.checkIfRolleIsCorrect(rolleName);
         });
 
         test(`Suche nach einem nicht existierenden Eintrag`, async () => {

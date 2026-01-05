@@ -10,6 +10,7 @@ export class PersonManagementViewPage {
   private readonly personTable: DataTable;
   private readonly searchFilter: SearchFilter;
   private readonly organisationAutocomplete: Autocomplete;
+  private readonly rolleAutocomplete: Autocomplete;
   public readonly menu: MenuBarPage;
   private readonly table: Locator;
 
@@ -20,6 +21,10 @@ export class PersonManagementViewPage {
     this.organisationAutocomplete = new Autocomplete(
       this.page,
       this.page.getByTestId('person-management-organisation-select')
+    );
+    this.rolleAutocomplete = new Autocomplete(
+      this.page,
+      this.page.getByTestId('rolle-select')
     );
     this.menu = new MenuBarPage(this.page);
   }
@@ -40,12 +45,10 @@ export class PersonManagementViewPage {
   public async filterBySchule(name: string, dienststellenNr?: string): Promise<void> {
     const displayName: string = dienststellenNr ? `${dienststellenNr} (${name})` : name;
     await this.organisationAutocomplete.searchByTitle(displayName, true);
-    await waitForAPIResponse(this.page, 'personen-frontend*');
-    await waitForAPIResponse(this.page, 'dbiam/personenuebersicht');
 }
 
   public async filterByRolle(rolle: string): Promise<void> {
-    await this.filterByText(rolle, 'rolle-select');
+    await this.rolleAutocomplete.searchByTitle(rolle, true);
   }
 
   public async filterByKlasse(klasse: string): Promise<void> {
@@ -116,12 +119,21 @@ export class PersonManagementViewPage {
     await this.personTable.checkHeaders(expectedHeaders);
   }
 
+  private async checkIfColumnAlwaysContainsText(columnIndex: number, expectedText: string): Promise<void> {
+    const column: Locator = await this.personTable.getColumn(columnIndex);
+    // we don't know how many valid rows there should be, so we have to check that no invalid rows are present
+    // using count or all is flaky, because we can't be sure if the table has updated already
+    await expect(column.filter({ hasNotText: expectedText })).toHaveCount(0);
+  }
+
   public async checkIfSchuleIsCorrect(schulname: string, schulNr?: string): Promise<void> {
     const expected: string = schulNr ? `${schulNr} (${schulname})` : schulname;
     await this.organisationAutocomplete.checkText(expected);
-    const column: Locator = await this.personTable.getColumn(7);
-    // we don't know how many valid rows there should be, so we have to check that no invalid rows are present
-    // using count or all is flaky, because we can't be sure if the table has updated already
-    await expect(column.filter({ hasNotText: schulNr ? schulNr : schulname })).toHaveCount(0);
+    await this.checkIfColumnAlwaysContainsText(7, schulNr ? schulNr : schulname)
+  }
+
+  public async checkIfRolleIsCorrect(rolleName: string): Promise<void> {
+    await this.rolleAutocomplete.checkText(rolleName);
+    await this.checkIfColumnAlwaysContainsText(6, rolleName)
   }
 }
