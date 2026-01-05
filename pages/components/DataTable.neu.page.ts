@@ -58,14 +58,14 @@ export class DataTable {
     const currentPageNumberElement: Locator = this.page.locator('.v-pagination__item');
     const currentPageNumberText: string | null = await currentPageNumberElement.textContent();
 
-    await expect(Number(currentPageNumberText)).toBe(expectedPageNumber);
+    expect(Number(currentPageNumberText)).toBe(expectedPageNumber);
   }
 
   public async checkHeaders(expectedHeaders: string[]): Promise<void> {
     const tableHeaders: Locator[] = await this.tableLocator.locator('thead th.v-data-table__th').all();
     const tableHeadersCount: number = tableHeaders.length - 1; // frist th is for checkbox
 
-    await expect(tableHeadersCount).toEqual(expectedHeaders.length);
+    expect(tableHeadersCount).toEqual(expectedHeaders.length);
 
     for (let i: number = 0; i < tableHeadersCount; i++) {
       const cell: Locator = tableHeaders[i+1].locator('.v-data-table-header__content');
@@ -79,7 +79,7 @@ export class DataTable {
     const tableRows: Locator = this.tableLocator.locator('tbody tr.v-data-table__tr');
     const tableRowsCount: number = await tableRows.count();
 
-    await expect(tableRowsCount).toEqual(expectedRowCount);
+    expect(tableRowsCount).toEqual(expectedRowCount);
   }
 
   public async checkTableData(table: Locator, checkTableRow: (i: number) => Promise<void>): Promise<void> {
