@@ -76,25 +76,16 @@ export class DataTable {
   }
 
   public async checkRowCount(expectedRowCount: number): Promise<void> {
-    const tableRows: Locator = this.tableLocator.locator('tbody tr.v-data-table__tr');
-    const tableRowsCount: number = await tableRows.count();
-
-    expect(tableRowsCount).toEqual(expectedRowCount);
+    const tableRows: Locator = await this.getRows();
+    await expect(tableRows).toHaveCount(expectedRowCount);
   }
 
-  public async checkTableData(table: Locator, checkTableRow: (i: number) => Promise<void>): Promise<void> {
-    const tableRows: Locator = table.locator('tbody tr.v-data-table__tr');
+  public async checkTableData(checkTableRow: (i: number) => Promise<void>): Promise<void> {
+    const tableRows: Locator = await this.getRows();
     const tableRowsCount: number = await tableRows.count();
     for (let i: number = 0; i < tableRowsCount; i++) {
       await checkTableRow(i);
     }
-  }
-
-  public async checkColumn(columnIndex: number, content: string): Promise<void> {
-    const column: Locator = await this.getColumn(columnIndex);
-    // we don't know how many valid rows there should be, so we have to check that no invalid rows are present
-    // using count or all is flaky, because we can't be sure if the table has updated already
-    await expect(column.filter({ hasNotText: content })).toHaveCount(0);
   }
 
   public async checkIfItemIsNotVisible(expectedText: string): Promise<void> {

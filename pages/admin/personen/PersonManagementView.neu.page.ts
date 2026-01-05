@@ -119,6 +119,9 @@ export class PersonManagementViewPage {
   public async checkIfSchuleIsCorrect(schulname: string, schulNr?: string): Promise<void> {
     const expected: string = schulNr ? `${schulNr} (${schulname})` : schulname;
     await this.organisationAutocomplete.checkText(expected);
-    await this.personTable.checkColumn(7, schulNr ? schulNr : schulname);
+    const column: Locator = await this.personTable.getColumn(7);
+    // we don't know how many valid rows there should be, so we have to check that no invalid rows are present
+    // using count or all is flaky, because we can't be sure if the table has updated already
+    await expect(column.filter({ hasNotText: schulNr ? schulNr : schulname })).toHaveCount(0);
   }
 }
