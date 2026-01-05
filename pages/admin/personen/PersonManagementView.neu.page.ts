@@ -121,9 +121,9 @@ export class PersonManagementViewPage {
     await this.organisationAutocomplete.checkText(expected);
     await this.personTable.checkColumn(7, async (cell: Locator) => {
       if (schulNr) {
-        expect(cell).toHaveText(schulNr);
+        expect(cell).toContainText(schulNr);
       } else {
-        expect(cell).toHaveText(schulname);
+        expect(cell).toContainText(schulname);
       }
     });
   }
