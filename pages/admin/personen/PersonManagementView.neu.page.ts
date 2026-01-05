@@ -1,9 +1,10 @@
-import { expect, Locator, Page } from '@playwright/test';
+import { expect, Locator, Page, Request } from '@playwright/test';
 import { Autocomplete } from '../../../elements/Autocomplete';
 import { DataTable } from '../../components/DataTable.neu.page';
 import { PersonDetailsViewPage } from './details/PersonDetailsView.neu.page';
 import { SearchFilter } from '../../../elements/SearchFilter';
 import { MenuBarPage } from '../../components/MenuBar.neu.page';
+import { waitForAPIResponse } from '../../../base/api/baseApi';
 
 export class PersonManagementViewPage {
   private readonly personTable: DataTable;
@@ -38,8 +39,10 @@ export class PersonManagementViewPage {
 
   public async filterBySchule(name: string, dienststellenNr?: string): Promise<void> {
     const displayName: string = dienststellenNr ? `${dienststellenNr} (${name})` : name;
-    await this.organisationAutocomplete.searchByTitle(displayName, true, 'dbiam/personenuebersicht');
-  }
+    await this.organisationAutocomplete.searchByTitle(displayName, true);
+    await waitForAPIResponse(this.page, 'personen-frontend*');
+    await waitForAPIResponse(this.page, 'dbiam/personenuebersicht');
+}
 
   public async filterByRolle(rolle: string): Promise<void> {
     await this.filterByText(rolle, 'rolle-select');
@@ -117,11 +120,10 @@ export class PersonManagementViewPage {
     const expected: string = schulNr ? `${schulNr} (${schulname})` : schulname;
     await this.organisationAutocomplete.checkText(expected);
     await this.personTable.checkColumn(7, async (cell: Locator) => {
-      const cellText: string | null = await cell.textContent();
       if (schulNr) {
-        expect(cellText).toContain(schulNr);
+        expect(cell).toHaveText(schulNr);
       } else {
-        expect(cellText).toContain(schulname);
+        expect(cell).toHaveText(schulname);
       }
     });
   }
