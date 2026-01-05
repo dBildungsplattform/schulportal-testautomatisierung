@@ -48,9 +48,9 @@ export class DataTable {
     return this.tableLocator.locator('tbody tr.v-data-table__tr');
   }
 
-  public async getColumn(columnIndex: number): Promise<Array<Locator>> {
+  public async getColumn(columnIndex: number): Promise<Locator> {
     const rows: Locator = await this.getRows();
-    return Promise.all((await rows.all()).map(async (row: Locator) => row.locator(`td.v-data-table__td:nth-child(${columnIndex})`)));
+    return rows.locator(`td.v-data-table__td:nth-child(${columnIndex})`);
   }
 
   /* assertions */
@@ -90,11 +90,11 @@ export class DataTable {
     }
   }
 
-  public async checkColumn(columnIndex: number, check: (cell: Locator) => Promise<void>): Promise<void> {
-    const column: Array<Locator> = await this.getColumn(columnIndex);
-    for (const cell of column) {
-      await check(cell);
-    }
+  public async checkColumn(columnIndex: number, content: string): Promise<void> {
+    const column: Locator = await this.getColumn(columnIndex);
+    // we don't know how many valid rows there should be, so we have to check that no invalid rows are present
+    // using count or all is flaky, because we can't be sure if the table has updated already
+    await expect(column.filter({ hasNotText: content })).toHaveCount(0);
   }
 
   public async checkIfItemIsNotVisible(expectedText: string): Promise<void> {

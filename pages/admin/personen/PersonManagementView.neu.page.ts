@@ -119,12 +119,6 @@ export class PersonManagementViewPage {
   public async checkIfSchuleIsCorrect(schulname: string, schulNr?: string): Promise<void> {
     const expected: string = schulNr ? `${schulNr} (${schulname})` : schulname;
     await this.organisationAutocomplete.checkText(expected);
-    await this.personTable.checkColumn(7, async (cell: Locator) => {
-      if (schulNr) {
-        expect(cell).toContainText(schulNr);
-      } else {
-        expect(cell).toContainText(schulname);
-      }
-    });
+    await this.personTable.checkColumn(7, schulNr ? schulNr : schulname);
   }
 }
