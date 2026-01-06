@@ -17,7 +17,7 @@ export class PersonManagementViewPage {
   constructor(protected readonly page: Page) {
     this.table = this.page.getByTestId('person-table');
     this.personTable = new DataTable(this.page, this.table);
-    this.searchFilter = new SearchFilter(this.page, 'dbiam/personenuebersicht');
+    this.searchFilter = new SearchFilter(this.page);
     this.organisationAutocomplete = new Autocomplete(
       this.page,
       this.page.getByTestId('person-management-organisation-select')
