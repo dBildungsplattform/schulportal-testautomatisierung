@@ -120,7 +120,15 @@ import { SchuleCreationSuccessPage } from '../../pages/admin/organisationen/schu
         if (rolleName === landesadminRolle) {
           await personManagementViewPage.filterBySchule(schuleParams.name);
         }
-        await personManagementViewPage.checkIfAllKlassenVisible(klassenNamen);
+        await personManagementViewPage.checkAllDropdownOptionsVisible(klassenNamen);
+      });
+
+      test(`Als ${bezeichnung}: Alle Klassen im Drop-Down des Klassenfilters anklickbar`, { tag: [STAGE, DEV] }, async () => {
+        // Für Landesadmin: erst nach Schule filtern
+        if (rolleName === landesadminRolle) {
+          await personManagementViewPage.filterBySchule(schuleParams.name);
+        }
+        await personManagementViewPage.checkAllDropdownOptionsClickable(klassenNamen);
       });
     });
   });

@@ -57,6 +57,11 @@ export class DataTable {
     await this.page.locator('.v-pagination__last button:not(.v-btn--disabled)').click();
   }
 
+  public async clickDropdownOption(item: string): Promise<void> {
+    const option: Locator = this.page.getByRole('option', { name: item, exact: false });
+    await option.click();
+  }
+
   public async getColumnData(cellIndex: number): Promise<string[]> {
     const pageData: string[] = [];
     await this.waitForPageLoad();
@@ -148,15 +153,24 @@ export class DataTable {
     this.compareData(actualNames, expectedData, direction);
   }
 
-  public async checkDropdownOptionsVisibleAndClickable(items: string[], dropdownLocator: Locator, filterHeaderText: string): Promise<void> {
+  public async checkAllDropdownOptionsVisible(items: string[], dropdownLocator: Locator, filterHeaderText: string): Promise<void> {
     await dropdownLocator.click();
-    // Sortiere Items alphanumerisch wie sie im Dropdown angeordnet sind
-    const sortedItems: string[] = [...items].sort((a, b) => a.localeCompare(b, 'de', { numeric: true }));
+    // Sortiere Items alphanumerisch wie sie im Dropdown angeordnet sind (Zeitersparnis beim Testlauf)
+    const sortedItems: string[] = [...items].sort((a: string, b: string) => a.localeCompare(b, 'de', { numeric: true }));
     await expect(this.page.locator('.filter-header')).toContainText(filterHeaderText);
     for (const item of sortedItems) {
       const option: Locator = this.page.getByRole('option', { name: item, exact: false });
       await option.scrollIntoViewIfNeeded();
       await expect(option).toBeVisible();
-      await option.click();
     }
-  }}
+  }
+
+  public async checkAllDropdownOptionsClickable(items: string[], dropdownLocator: Locator): Promise<void> {
+    await dropdownLocator.click();
+    // Sortiere Items alphanumerisch wie sie im Dropdown angeordnet sind (Zeitersparnis beim Testlauf)
+    const sortedItems: string[] = [...items].sort((a: string, b: string) => a.localeCompare(b, 'de', { numeric: true }));
+    for (const item of sortedItems) {
+      await this.clickDropdownOption(item);
+    }
+  }
+}

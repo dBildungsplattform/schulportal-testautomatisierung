@@ -10,11 +10,13 @@ export class KlasseManagementViewPage {
   private readonly klasseTable: DataTable;
   private readonly searchFilter: SearchFilter;
   private readonly table: Locator;
+  private readonly klasseSelect: Locator;
 
   constructor(protected readonly page: Page) {
     this.table = this.page.getByTestId('klasse-table');
     this.klasseTable = new DataTable(this.page, this.table);
     this.searchFilter = new SearchFilter(this.page);
+    this.klasseSelect = this.page.getByTestId('klassen-management-klasse-select');
   }
 
   /* actions */
@@ -43,7 +45,8 @@ export class KlasseManagementViewPage {
   }
 
   public async filterByKlasse(klassenname: string): Promise<void> {
-    await this.filterByText(klassenname, 'klassen-management-klasse-select');
+    const filter: Autocomplete = new Autocomplete(this.page, this.klasseSelect);
+    await filter.searchByTitle(klassenname, false);
   }
 
   public async clickColumnHeader(columnName: string): Promise<void> {
@@ -93,7 +96,7 @@ export class KlasseManagementViewPage {
     await expect(this.page.getByTestId('admin-headline')).toHaveText('Administrationsbereich');
     await expect(this.page.getByTestId('klasse-management-headline')).toHaveText('Klassenverwaltung');
     await expect(this.page.getByTestId('klassen-management-schule-select')).toBeVisible();
-    await expect(this.page.getByTestId('klassen-management-klasse-select')).toBeVisible();
+    await expect(this.klasseSelect).toBeVisible();
     const expectedHeaders: string[] = landesadmin? ['Dienststellennummer', 'Klasse', 'Aktion'] : ['Klasse', 'Aktion'];
     await this.checkHeaders(expectedHeaders);
   }
@@ -103,12 +106,16 @@ export class KlasseManagementViewPage {
     await this.klasseTable.checkHeaders(expectedHeaders);
   }
 
-  public async checkIfAllKlassenInDropdownVisible(klassen: string[]): Promise<void> {
-    await this.klasseTable.checkDropdownOptionsVisibleAndClickable(
+  public async checkAllDropdownOptionsVisible(klassen: string[]): Promise<void> {
+    await this.klasseTable.checkAllDropdownOptionsVisible(
       klassen,
-      this.page.getByTestId('klassen-management-klasse-select'),
+      this.klasseSelect,
       `${klassen.length} Klassen gefunden`
     );
+  }
+
+  public async checkAllDropdownOptionsClickable(klassen: string[]): Promise<void> {
+    await this.klasseTable.checkAllDropdownOptionsClickable(klassen, this.klasseSelect);
   }
 
   public async checkHeaders(expectedHeaders: string[]): Promise<void> {

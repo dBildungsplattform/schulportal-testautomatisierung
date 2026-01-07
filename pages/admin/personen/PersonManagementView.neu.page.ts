@@ -102,11 +102,15 @@ export class PersonManagementViewPage {
     await expect(this.page.getByTestId('person-management-organisation-select')).toHaveText(schulNr + ' (' + schulname + ')');
   }
 
-  public async checkIfAllKlassenVisible(klassen: string[]): Promise<void> {
-    await this.personTable.checkDropdownOptionsVisibleAndClickable(
+  public async checkAllDropdownOptionsVisible(klassen: string[]): Promise<void> {
+    await this.personTable.checkAllDropdownOptionsVisible(
       klassen,
       this.page.getByTestId('personen-management-klasse-select'),
       `${klassen.length} Klassen gefunden`
     );
+  }
+
+  public async checkAllDropdownOptionsClickable(klassen: string[]): Promise<void> {
+    await this.personTable.checkAllDropdownOptionsClickable(klassen, this.page.getByTestId('personen-management-klasse-select'));
   }
 }
