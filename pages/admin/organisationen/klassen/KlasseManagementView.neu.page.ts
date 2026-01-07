@@ -25,8 +25,8 @@ export class KlasseManagementViewPage {
   }
 
   public async waitForDataLoad(): Promise<KlasseManagementViewPage> {
-    await this.klasseTable.waitForDataLoad();
     await waitForAPIResponse(this.page, 'organisationen');
+    await this.klasseTable.waitForDataLoad();
     return this;
   }
 
@@ -146,7 +146,7 @@ export class KlasseManagementViewPage {
     if (!hasMultipleSchulen) return;
     const dienststellennummerCell: Locator = cells.nth(1);
     await expect(dienststellennummerCell).toBeVisible();
-    await expect(dienststellennummerCell).toHaveText(/\S+ \(\S+\)/);
+    await expect(dienststellennummerCell).toHaveText(/\S{1,255} \(\S{1,255}\)/);
   } 
 
   public async klasseSuccessfullyDeleted(schulname: string, klassenname: string, schulNr: string): Promise<void> {
