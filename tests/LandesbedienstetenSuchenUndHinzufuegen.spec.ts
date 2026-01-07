@@ -312,16 +312,17 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
     test(
       'Stage: Suchergebnis: Persönliche Daten und Zuordnung werden korrekt angezeigt',
       { tag: [STAGE] },
-      async () => {
+      async ({ page }: PlaywrightTestArgs) => {
         const landesbedienstetenSearchResultPage: LandesbedienstetenSearchResultPage =
           await landesbedienstetenSearchFormPage.searchLandesbedienstetenViaName(lehrkraft.vorname, lehrkraft.nachname);
         await landesbedienstetenSearchResultPage.checkSearchResultCard();
         const lehrFullname: string = lehrkraft.vorname + ' ' + lehrkraft.nachname;
+        const email: string | undefined = await getEmailByPersonId(page, lehrkraft.personId);
         await landesbedienstetenSearchResultPage.checkPersonalDataCard(
           lehrFullname,
           lehrkraft.username,
           lehrkraft.kopersnummer,
-          lehrkraft.email
+          email
         );
         await landesbedienstetenSearchResultPage.checkZuordnungCard(
           testschuleName,
