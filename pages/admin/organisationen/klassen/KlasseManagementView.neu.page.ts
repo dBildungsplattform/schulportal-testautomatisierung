@@ -4,6 +4,7 @@ import { DataTable } from '../../../components/DataTable.neu.page';
 import { KlasseDetailsViewPage } from './details/KlasseDetailsView.neu.page';
 import { SearchFilter } from '../../../../elements/SearchFilter';
 import { KlasseCreationParams } from './KlasseCreationView.neu.page';
+import { waitForAPIResponse } from '../../../../base/api/baseApi';
 
 export class KlasseManagementViewPage {
   /* add global locators here */
@@ -24,7 +25,8 @@ export class KlasseManagementViewPage {
   }
 
   public async waitForDataLoad(): Promise<KlasseManagementViewPage> {
-    await this.klasseTable.waitForPageLoad();
+    await this.klasseTable.waitForDataLoad();
+    await waitForAPIResponse(this.page, 'organisationen');
     return this;
   }
 
@@ -45,18 +47,17 @@ export class KlasseManagementViewPage {
     await this.filterByText(klassenname, 'klassen-management-klasse-select');
   }
 
-  public async clickColumnHeader(columnName: string): Promise<void> {
-    await this.klasseTable.clickColumnHeader(columnName, 'organisationen');
+  public async toggleKlasseSort(): Promise<void> {
+    await this.klasseTable.clickColumnHeader('Klasse', 'organisationen');
   }
 
   public async goToFirstPage(): Promise<void> {
     await this.klasseTable.goToFirstPage();
-    await this.waitForPageLoad();
+    
   }
 
   public async goToLastPage(): Promise<void> {
     await this.klasseTable.goToLastPage();
-    await this.waitForPageLoad();
   }
 
   public async hasMultiplePages(): Promise<boolean> {
@@ -70,8 +71,8 @@ export class KlasseManagementViewPage {
     return klasseDetailsViewPage;
   }
   
-  public async searchAndOpenGesamtuebersicht(landesadmin: boolean, klasseParams: KlasseCreationParams): Promise<KlasseDetailsViewPage> {
-    if (landesadmin) {
+  public async searchAndOpenGesamtuebersicht(hasMultipleSchulen: boolean, klasseParams: KlasseCreationParams): Promise<KlasseDetailsViewPage> {
+    if (hasMultipleSchulen) {
       await this.filterBySchule(klasseParams.schulname);
     } else {
       await this.checkIfSchuleIsCorrect(klasseParams.schulname, klasseParams.schulNr);
@@ -102,7 +103,7 @@ export class KlasseManagementViewPage {
     await expect(this.page.getByTestId('klasse-management-headline')).toHaveText('Klassenverwaltung');
     await expect(this.page.getByTestId('klassen-management-schule-select')).toBeVisible();
     await expect(this.page.getByTestId('klassen-management-klasse-select')).toBeVisible();
-    const expectedHeaders: string[] = hasMultipleSchulen? ['Dienststellennummer', 'Klasse', 'Aktion'] : ['Klasse', 'Aktion'];
+    const expectedHeaders: string[] = hasMultipleSchulen ? ['Dienststellennummer', 'Klasse', 'Aktion'] : ['Klasse', 'Aktion'];
     await this.checkHeaders(expectedHeaders);
   }
 
@@ -145,7 +146,7 @@ export class KlasseManagementViewPage {
     if (!hasMultipleSchulen) return;
     const dienststellennummerCell: Locator = cells.nth(1);
     await expect(dienststellennummerCell).toBeVisible();
-    await expect(dienststellennummerCell).toHaveText(/\S/);
+    await expect(dienststellennummerCell).toHaveText(/\S+ \(\S+\)/);
   } 
 
   public async klasseSuccessfullyDeleted(schulname: string, klassenname: string, schulNr: string): Promise<void> {
@@ -162,18 +163,10 @@ export class KlasseManagementViewPage {
     await this.klasseTable.checkIfColumnHeaderSorted(columnName, sortingStatus);
   }
 
-  public async checkIfColumnDataSorted(hasMultipleSchulen: boolean, klassenNamen?: string[]): Promise<void> {
+  public async checkIfColumnDataSorted(hasMultipleSchulen: boolean, sortOrder: 'ascending' | 'descending'): Promise<void> {
     const cellIndex: number = hasMultipleSchulen ? 2 : 1;
 
-    await this.checkIfColumnHeaderSorted('Klasse', 'ascending');
-    await this.klasseTable.checkIfColumnDataSorted(cellIndex, klassenNamen, 'ascending');
-
-    await this.clickColumnHeader('Klasse');
-    await this.checkIfColumnHeaderSorted('Klasse', 'descending');
-    await this.klasseTable.checkIfColumnDataSorted(cellIndex, klassenNamen, 'descending');
-
-    await this.clickColumnHeader('Klasse');
-    await this.checkIfColumnHeaderSorted('Klasse', 'ascending');
-    await this.klasseTable.checkIfColumnDataSorted(cellIndex, klassenNamen, 'ascending');
+    await this.checkIfColumnHeaderSorted('Klasse', sortOrder);
+    await this.klasseTable.checkIfColumnDataSorted(cellIndex, sortOrder);
   }
 }

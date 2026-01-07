@@ -11,7 +11,7 @@ export class RolleManagementViewPage {
   /* actions */
   public async waitForPageLoad(): Promise<RolleManagementViewPage> {
     await expect(this.page.getByTestId('rolle-management-headline')).toHaveText('Rollenverwaltung');
-    await this.rolleTable.waitForPageLoad();
+    await this.rolleTable.waitForDataLoad();
     return this;
   }
 
