@@ -49,7 +49,6 @@ export interface UserInfo {
   vorname: string;
   nachname: string;
   kopersnummer: string;
-  email: string;
 }
 
 export function constructPersonenkontextApi(page: Page): PersonenkontextApi {
@@ -142,7 +141,6 @@ export async function createPerson(
       vorname: createdPerson.person.name.vorname,
       nachname: createdPerson.person.name.familienname,
       kopersnummer: koPersNr,
-      email: createdPerson.person.email?.address, // is undefined
     };
   } catch (error) {
     console.error('[ERROR] createPerson failed:', error);
