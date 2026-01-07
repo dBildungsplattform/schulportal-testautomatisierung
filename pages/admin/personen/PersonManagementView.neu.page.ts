@@ -1,10 +1,9 @@
-import { expect, Locator, Page, Request } from '@playwright/test';
+import { expect, Locator, Page } from '@playwright/test';
 import { Autocomplete } from '../../../elements/Autocomplete';
-import { DataTable } from '../../components/DataTable.neu.page';
-import { PersonDetailsViewPage } from './details/PersonDetailsView.neu.page';
 import { SearchFilter } from '../../../elements/SearchFilter';
+import { DataTable } from '../../components/DataTable.neu.page';
 import { MenuBarPage } from '../../components/MenuBar.neu.page';
-import { waitForAPIResponse } from '../../../base/api/baseApi';
+import { PersonDetailsViewPage } from './details/PersonDetailsView.neu.page';
 
 export class PersonManagementViewPage {
   private readonly personTable: DataTable;

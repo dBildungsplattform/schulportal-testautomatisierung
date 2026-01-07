@@ -1,4 +1,4 @@
-import { Download, expect, PlaywrightTestArgs, test } from '@playwright/test';
+import { Download, expect, PlaywrightTestArgs, Response, test } from '@playwright/test';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -91,7 +91,7 @@ test.describe(`Testfälle für den Benutzerimport": Umgebung: ${process.env.ENV}
         );
         await personImportPage.executeImportButton.click();
         await expect(personImportPage.importProgressBar).toBeVisible();
-        await page.waitForResponse((response) => response.url().includes('import/importedUsers') && response.status() === 200);
+        await page.waitForResponse((response: Response) => response.url().includes('import/importedUsers') && response.status() === 200);
         await expect(personImportPage.importProgressBar).toHaveText('100%');
         await expect(personImportPage.importSuccessText).toBeVisible();
         await expect(personImportPage.importSuccessText).toHaveText(

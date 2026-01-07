@@ -192,20 +192,25 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
     });
   });
 
-  [
+  interface PopupFixture {
+    label: string;
+    setupPerson: (page: Page) => Promise<UserInfo>;
+    formFunction: (landesbedienstetenSearchFormPage: LandesbedienstetenSearchFormPage, person: UserInfo) => Promise<SearchResultErrorDialog>;
+  }
+  const popupFixtures: PopupFixture[] = [
     {
       //SPSH-2747 Step 1
       label: 'Kein Treffer bei Ersatzschullehrkraft Suche nach Namen',
-      setupPerson: async (page: Page) =>
+      setupPerson: async (page: Page): Promise<UserInfo> =>
         await createPersonWithPersonenkontext(page, ersatzTestschuleName, ersatzschulLehrkraftRolle),
-      formFunction: async (landesbedienstetenSearchFormPage: LandesbedienstetenSearchFormPage, person: UserInfo) =>
+      formFunction: async (landesbedienstetenSearchFormPage: LandesbedienstetenSearchFormPage, person: UserInfo) : Promise<SearchResultErrorDialog>=>
         landesbedienstetenSearchFormPage.clickLandesbedienstetenSuchenWithInvalidName(person.vorname, person.nachname),
     },
     {
       //SPSH-2747 Step 2
       label: 'Kein Treffer bei gesperrten Benutzer: Popup wird angezeigt und ist vollständig',
-      setupPerson: async (page: Page) => {
-        const lockedLehrkraft = await createPersonWithPersonenkontext(
+      setupPerson: async (page: Page): Promise<UserInfo> => {
+        const lockedLehrkraft: UserInfo = await createPersonWithPersonenkontext(
           page,
           testschuleName,
           lehrkraftOeffentlichRolle,
@@ -216,17 +221,17 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
         await lockPerson(page, lockedLehrkraft.personId, testschuleDstNr);
         return lockedLehrkraft;
       },
-      formFunction: async (landesbedienstetenSearchFormPage: LandesbedienstetenSearchFormPage, person: UserInfo) =>
+      formFunction: async (landesbedienstetenSearchFormPage: LandesbedienstetenSearchFormPage, person: UserInfo) : Promise<SearchResultErrorDialog>=>
         landesbedienstetenSearchFormPage.clickLandesbedienstetenSuchenWithInvalidBenutzername(person.username),
     },
     {
       //SPSH-2747 Step 3
       label: 'Mehr als ein Treffer bei doppelten Namen: Popup wird angezeigt und ist vollständig',
-      setupPerson: async (page: Page) => {
+      setupPerson: async (page: Page): Promise<UserInfo> => {
         const vornameDoppelt: string = generateVorname();
         const nachnameDoppelt: string = generateNachname();
         let person: UserInfo;
-        for (let i = 0; i < 2; i++) {
+        for (let i: number = 0; i < 2; i++) {
           person = await createPersonWithPersonenkontext(
             page,
             testschuleName,
@@ -238,16 +243,18 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
         }
         return person;
       },
-      formFunction: async (landesbedienstetenSearchFormPage: LandesbedienstetenSearchFormPage, person: UserInfo) =>
+      formFunction: async (landesbedienstetenSearchFormPage: LandesbedienstetenSearchFormPage, person: UserInfo): Promise<SearchResultErrorDialog> =>
         landesbedienstetenSearchFormPage.clickLandesbedienstetenSuchenWithDuplicateName(
           person.vorname,
           person.nachname
         ),
     },
-  ].forEach(({ label, setupPerson, formFunction }) => {
+  ];
+
+  popupFixtures.forEach(({ label, setupPerson, formFunction }: PopupFixture) => {
     test.describe(label, () => {
       let person: UserInfo;
-      test.beforeEach(async ({ page }) => {
+      test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
         landesbedienstetenSearchFormPage = new LandesbedienstetenSearchFormPage(page);
         header = new HeaderPage(page);
         loginPage = await freshLoginPage(page);

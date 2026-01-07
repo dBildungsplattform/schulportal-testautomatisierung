@@ -17,12 +17,12 @@ let loginPage: LoginViewPage;
 let benutzerErgebnislistePage: PersonManagementViewPage;
 let admin: UserInfo;
 
-type AdminFixture = {
+interface AdminFixture {
   organisationsName: string;
   dienststellenNr?: string;
   rolleName: string;
   bezeichnung: string;
-};
+}
 
 [
   { organisationsName: landSH, dienststellenNr: undefined, rolleName: landesadminRolle, bezeichnung: 'Landesadmin' },
@@ -70,10 +70,10 @@ type AdminFixture = {
       { tag: [STAGE, DEV] },
       async () => {
         for (const [key, getValue] of [
-          ['Nachname', () => admin.nachname],
-          ['Vorname', () => admin.vorname],
-          ['Benutzername', () => admin.username],
-          ['Kopersnummer', () => admin.kopersnummer],
+          ['Nachname', (): string => admin.nachname],
+          ['Vorname', (): string => admin.vorname],
+          ['Benutzername', (): string => admin.username],
+          ['Kopersnummer', (): string => admin.kopersnummer],
         ] as [string, () => string][]) {
           test(`Suche nach ${key}`, async () => {
             const value: string = getValue();

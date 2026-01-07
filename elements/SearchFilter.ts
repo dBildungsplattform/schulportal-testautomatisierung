@@ -1,5 +1,4 @@
 import { type Locator, Page } from '@playwright/test';
-import { waitForAPIResponse } from '../base/api/baseApi';
 
 export class SearchFilter {
   constructor(private readonly page: Page) {}
