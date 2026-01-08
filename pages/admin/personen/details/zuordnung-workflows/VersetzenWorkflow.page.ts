@@ -1,13 +1,15 @@
 import { expect, type Locator, Page } from '@playwright/test';
+import { BaseWorkflowPage } from './BaseWorkflow.page';
 import { Autocomplete } from '../../../../../elements/Autocomplete';
-import { ZuordnungenPage } from '../Zuordnungen.page';
 
-export class VersetzenWorkflowPage {
+export class VersetzenWorkflowPage extends BaseWorkflowPage {
   /* add global locators here */
   private readonly schule: Autocomplete;
   private readonly klasse: Autocomplete;
+  protected readonly ENDPOINT: string = 'klasse-change/**';
 
   constructor(protected readonly page: Page) {
+    super(page);
     this.schule = new Autocomplete(this.page, this.page.getByTestId('klasse-change-schule-select'));
     this.klasse = new Autocomplete(this.page, this.page.getByTestId('klasse-change-klasse-select'));
   }
@@ -19,32 +21,6 @@ export class VersetzenWorkflowPage {
 
   public async selectKlasse(klasse: string): Promise<void> {
     await this.klasse.searchByTitle(klasse, false);
-  }
-
-  public async submit(): Promise<ZuordnungenPage> {
-    const submitButton: Locator = this.page.getByTestId('klasse-change-submit-button');
-    await submitButton.waitFor({ state: 'visible' });
-    await submitButton.click();
-    return new ZuordnungenPage(this.page);
-  }
-
-  public async confirm(): Promise<ZuordnungenPage> {
-    const confirmButton: Locator = this.page.getByTestId('confirm-change-klasse-button');
-    await confirmButton.waitFor({ state: 'visible' });
-    await confirmButton.click();
-    return new ZuordnungenPage(this.page);
-  }
-
-  public async discard(): Promise<ZuordnungenPage> {
-    const discardButton: Locator = this.page.getByTestId('klasse-change-discard-button');
-    await discardButton.click();
-    return new ZuordnungenPage(this.page);
-  }
-
-  public async closeSuccessDialog(): Promise<void> {
-    const closeDialogButton: Locator = this.page.getByTestId('change-klasse-success-dialog-close-button');
-    await closeDialogButton.waitFor({ state: 'visible' });
-    await closeDialogButton.click();
   }
 
   /* assertions */
@@ -63,13 +39,31 @@ export class VersetzenWorkflowPage {
   }
 
   public async checkKlasseDropdownVisibleAndClickable(items: string[]): Promise<void> {
-    const sortedItems: string[] = [...items].sort((a: string, b: string) => a.localeCompare(b, 'de', { numeric: true }));
-    for (const item of sortedItems) {
-      await this.page.getByTestId('klasse-change-klasse-select').click();
-      const option: Locator = this.page.getByRole('option', { name: item, exact: false });
-      await option.scrollIntoViewIfNeeded();
-      await expect(option).toBeVisible();
-      await option.click();
-    }
+    await super.checkKlasseDropdownVisibleAndClickable(items);
+  }
+
+  /* template method implementations */
+  protected async clickSubmitButton(): Promise<void> {
+    const submitButton: Locator = this.page.getByTestId('klasse-change-submit-button');
+    await submitButton.waitFor({ state: 'visible' });
+    await submitButton.click();
+  }
+
+  protected async clickConfirmButton(): Promise<void> {
+    const confirmButton: Locator = this.page.getByTestId('confirm-change-klasse-button');
+    await confirmButton.waitFor({ state: 'visible' });
+    await confirmButton.click();
+  }
+
+  protected getDiscardButton(): Locator {
+    return this.page.getByTestId('klasse-change-discard-button');
+  }
+
+  protected getCloseSuccessDialogButton(): Locator {
+    return this.page.getByTestId('change-klasse-success-dialog-close-button');
+  }
+
+  protected getKlasseSelectTestId(): string {
+    return 'klasse-change-klasse-select';
   }
 }

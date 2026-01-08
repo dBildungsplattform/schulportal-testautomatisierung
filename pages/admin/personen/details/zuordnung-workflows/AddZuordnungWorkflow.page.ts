@@ -1,38 +1,26 @@
 import { expect, Locator, type Page } from '@playwright/test';
 import { Autocomplete } from '../../../../../elements/Autocomplete';
-import { ZuordnungenPage } from '../Zuordnungen.page';
-import { waitForAPIResponse } from '../../../../../base/api/baseApi';
+import { BaseWorkflowPage } from './BaseWorkflow.page';
 
-export class AddZuordnungWorkflowPage {
+export class AddZuordnungWorkflowPage extends BaseWorkflowPage {
   /* add global locators here */
   private readonly organisationen: Autocomplete;
   private readonly rollen: Autocomplete;
-  private static readonly ENDPOINT: string = 'personenkontext-workflow/**';
+  protected readonly ENDPOINT: string = 'personenkontext-workflow/**';
 
   constructor(protected readonly page: Page) {
+    super(page);
     this.organisationen = new Autocomplete(this.page, this.page.getByTestId('personenkontext-create-organisation-select'));
     this.rollen = new Autocomplete(this.page, this.page.getByTestId('rolle-select'));
   }
 
   /* actions */
-  public async submit(): Promise<ZuordnungenPage> {
-    await this.page.getByTestId('zuordnung-creation-submit-button').click();
-    await this.page.getByTestId('confirm-zuordnung-dialog-addition').click();
-    await waitForAPIResponse(this.page, AddZuordnungWorkflowPage.ENDPOINT);
-    return new ZuordnungenPage(this.page);
-  }
-
-  public async discard(): Promise<ZuordnungenPage> {
-    await this.page.getByTestId('zuordnung-creation-discard-button').click();
-    return new ZuordnungenPage(this.page);
-  }
-
   public async selectOrganisation(organisation: string): Promise<void> {
     await this.organisationen.searchByTitle(organisation, false);
   }
 
   public async selectRolle(rolle: string): Promise<void> {
-    await this.rollen.searchByTitle(rolle, true, AddZuordnungWorkflowPage.ENDPOINT);
+    await this.rollen.searchByTitle(rolle, true, this.ENDPOINT);
   }
 
   public async fillKopers(kopers: string): Promise<void> {
@@ -54,14 +42,27 @@ export class AddZuordnungWorkflowPage {
   }
 
   public async checkKlasseDropdownVisibleAndClickable(items: string[]): Promise<void> {   
-    const sortedItems: string[] = [...items].sort((a: string, b: string) => a.localeCompare(b, 'de', { numeric: true }));
-    for (const item of sortedItems) {
-      await this.page.getByTestId('personenkontext-create-klasse-select').click();
-      const option: Locator = this.page.getByRole('option', { name: item, exact: false });
-      await option.scrollIntoViewIfNeeded();
-      await expect(option).toBeVisible();
-      await option.click();
-    }
+    await super.checkKlasseDropdownVisibleAndClickable(items);
   }
 
+  /* template method implementations */
+  protected async clickSubmitButton(): Promise<void> {
+    await this.page.getByTestId('zuordnung-creation-submit-button').click();
+  }
+
+  protected async clickConfirmButton(): Promise<void> {
+    await this.page.getByTestId('confirm-zuordnung-dialog-addition').click();
+  }
+
+  protected getDiscardButton(): Locator {
+    return this.page.getByTestId('zuordnung-creation-discard-button');
+  }
+
+  protected getCloseSuccessDialogButton(): Locator {
+    return this.page.getByTestId('change-klasse-success-dialog-close-button');
+  }
+
+  protected getKlasseSelectTestId(): string {
+    return 'personenkontext-create-klasse-select';
+  }
 }

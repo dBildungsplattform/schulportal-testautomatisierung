@@ -1,11 +1,14 @@
 import { expect, type Locator, Page } from '@playwright/test';
+import { BaseWorkflowPage } from './BaseWorkflow.page';
 
-export class BefristungWorkflowPage {
+export class BefristungWorkflowPage extends BaseWorkflowPage {
   /* add global locators here */
   private readonly unbefristetRadioButton: Locator;
   private readonly schuljahresendeRadioButton: Locator;
+  protected readonly ENDPOINT: string = 'befristung-change/**';
 
   constructor(protected readonly page: Page) {
+    super(page);
     this.unbefristetRadioButton = this.page.getByTestId('unbefristet-radio-button');
     this.schuljahresendeRadioButton = this.page.getByTestId('schuljahresende-radio-button');
   }
@@ -19,24 +22,6 @@ export class BefristungWorkflowPage {
 
   public async selectBefristungOption(option: 'unbefristet' | 'schuljahresende'): Promise<void> {
     await this.page.getByTestId(`${option}-radio-button`).locator('input').check();
-  }
-
-  public async submit(): Promise<void> {
-    const submitButton: Locator = this.page.getByTestId('change-befristung-submit-button');
-    await submitButton.waitFor({ state: 'visible' });
-    await submitButton.click();
-  }
-
-  public async confirm(): Promise<void> {
-    const confirmButton: Locator = this.page.getByTestId('confirm-change-befristung-button');
-    await confirmButton.waitFor({ state: 'visible' });
-    await confirmButton.click();
-  }
-
-  public async closeSuccessDialog(): Promise<void> {
-    const closeDialogButton: Locator = this.page.getByTestId('change-befristung-success-dialog-close-button');
-    await closeDialogButton.waitFor({ state: 'visible' });
-    await closeDialogButton.click();
   }
 
   /* assertions */
@@ -62,5 +47,30 @@ export class BefristungWorkflowPage {
 
   public async checkUnbefristetDisabled(): Promise<void> {
     await expect(this.unbefristetRadioButton).toBeDisabled();
+  }
+
+  /* template method implementations */
+  protected async clickSubmitButton(): Promise<void> {
+    const submitButton: Locator = this.page.getByTestId('change-befristung-submit-button');
+    await submitButton.waitFor({ state: 'visible' });
+    await submitButton.click();
+  }
+
+  protected async clickConfirmButton(): Promise<void> {
+    const confirmButton: Locator = this.page.getByTestId('confirm-change-befristung-button');
+    await confirmButton.waitFor({ state: 'visible' });
+    await confirmButton.click();
+  }
+
+  protected getDiscardButton(): Locator {
+    return this.page.getByTestId('befristung-discard-button');
+  }
+
+  protected getCloseSuccessDialogButton(): Locator {
+    return this.page.getByTestId('change-befristung-success-dialog-close-button');
+  }
+
+  protected getKlasseSelectTestId(): string {
+    return 'befristung-klasse-select';
   }
 }
