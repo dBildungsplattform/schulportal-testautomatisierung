@@ -25,12 +25,6 @@ import {
     RolleRefResponseFromJSONTyped,
     RolleRefResponseToJSON,
 } from './RolleRefResponse';
-import type { RollenerweiterungForServiceProviderResponse } from './RollenerweiterungForServiceProviderResponse';
-import {
-    RollenerweiterungForServiceProviderResponseFromJSON,
-    RollenerweiterungForServiceProviderResponseFromJSONTyped,
-    RollenerweiterungForServiceProviderResponseToJSON,
-} from './RollenerweiterungForServiceProviderResponse';
 import type { ServiceProviderKategorie } from './ServiceProviderKategorie';
 import {
     ServiceProviderKategorieFromJSON,
@@ -94,10 +88,16 @@ export interface ManageableServiceProviderResponse {
     url: string;
     /**
      * 
-     * @type {Array<RollenerweiterungForServiceProviderResponse>}
+     * @type {boolean}
      * @memberof ManageableServiceProviderResponse
      */
-    rollenerweiterungen: Array<RollenerweiterungForServiceProviderResponse>;
+    hasRollenerweiterung: boolean;
+    /**
+     * Indicates whether the service provider is available for rollenerweiterung.
+     * @type {boolean}
+     * @memberof ManageableServiceProviderResponse
+     */
+    availableForRollenerweiterung: boolean;
     /**
      * 
      * @type {Array<RolleRefResponse>}
@@ -118,7 +118,8 @@ export function instanceOfManageableServiceProviderResponse(value: object): bool
     isInstance = isInstance && "requires2fa" in value;
     isInstance = isInstance && "merkmale" in value;
     isInstance = isInstance && "url" in value;
-    isInstance = isInstance && "rollenerweiterungen" in value;
+    isInstance = isInstance && "hasRollenerweiterung" in value;
+    isInstance = isInstance && "availableForRollenerweiterung" in value;
     isInstance = isInstance && "rollen" in value;
 
     return isInstance;
@@ -141,7 +142,8 @@ export function ManageableServiceProviderResponseFromJSONTyped(json: any, ignore
         'requires2fa': json['requires2fa'],
         'merkmale': ((json['merkmale'] as Array<any>).map(ServiceProviderMerkmalFromJSON)),
         'url': json['url'],
-        'rollenerweiterungen': ((json['rollenerweiterungen'] as Array<any>).map(RollenerweiterungForServiceProviderResponseFromJSON)),
+        'hasRollenerweiterung': json['hasRollenerweiterung'],
+        'availableForRollenerweiterung': json['availableForRollenerweiterung'],
         'rollen': ((json['rollen'] as Array<any>).map(RolleRefResponseFromJSON)),
     };
 }
@@ -162,7 +164,8 @@ export function ManageableServiceProviderResponseToJSON(value?: ManageableServic
         'requires2fa': value.requires2fa,
         'merkmale': ((value.merkmale as Array<any>).map(ServiceProviderMerkmalToJSON)),
         'url': value.url,
-        'rollenerweiterungen': ((value.rollenerweiterungen as Array<any>).map(RollenerweiterungForServiceProviderResponseToJSON)),
+        'hasRollenerweiterung': value.hasRollenerweiterung,
+        'availableForRollenerweiterung': value.availableForRollenerweiterung,
         'rollen': ((value.rollen as Array<any>).map(RolleRefResponseToJSON)),
     };
 }
