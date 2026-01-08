@@ -1,7 +1,7 @@
 import { PlaywrightTestArgs, test } from '@playwright/test';
 import { createPersonWithPersonenkontext, createRolleAndPersonWithPersonenkontext, freshLoginPage, UserInfo } from '../../base/api/personApi';
 import { createKlasse, getKlasseId, getOrganisationId } from '../../base/api/organisationApi';
-import { landesadminRolle, schuladminOeffentlichRolle } from '../../base/rollen';
+import { landesadminRolle, schuelerRolle, schuladminOeffentlichRolle } from '../../base/rollen';
 import { DEV, STAGE } from '../../base/tags';
 import { generateDienststellenNr, generateSchulname, generateKlassenname, generateVorname, generateNachname, generateRolleName } from '../../base/utils/generateTestdata';
 import { LandingViewPage } from '../../pages/LandingView.neu.page';
@@ -17,6 +17,8 @@ import { getServiceProviderId } from '../../base/api/serviceProviderApi';
 import { itslearning } from '../../base/sp';
 import { PersonDetailsViewPage } from '../../pages/admin/personen/details/PersonDetailsView.neu.page';
 import { ZuordnungValidationParams, ZuordnungenPage } from '../../pages/admin/personen/details/Zuordnungen.page';
+import { AddZuordnungWorkflowPage } from '../../pages/admin/personen/details/zuordnung-workflows/AddZuordnungWorkflow.page';
+import { VersetzenWorkflowPage } from '../../pages/admin/personen/details/zuordnung-workflows/VersetzenWorkflow.page';
 
 [
   { rolleName: landesadminRolle, bezeichnung: 'Landesadmin' },
@@ -65,15 +67,15 @@ import { ZuordnungValidationParams, ZuordnungenPage } from '../../pages/admin/pe
     test.describe('Klassenfilter-Tests', () => {
       let klassenNamen: string[] = [];
       let schueler: UserInfo;
-      let personDetailsViewPage: PersonDetailsViewPage
+      let personDetailsViewPage: PersonDetailsViewPage;
       let zuordnungenPage: ZuordnungenPage;
-      let params: ZuordnungValidationParams;
 
-      //zweites before-each damit andere Tests spater nicht beeinflusst werden
+      //zweites before-each damit andere Tests später nicht beeinflusst werden
       test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
-        // 40 Klassen für die Schule anlegen
+        // Klassen für die Schule anlegen
+        const KLASSEN_COUNT: number = 40;
         klassenNamen = [];
-        for (let i: number = 0; i < 40; i++) {
+        for (let i: number = 0; i < KLASSEN_COUNT; i++) {
           const klassenname: string = generateKlassenname();
           await createKlasse(page, schuleId, klassenname);
           klassenNamen.push(klassenname);
@@ -92,18 +94,20 @@ import { ZuordnungValidationParams, ZuordnungenPage } from '../../pages/admin/pe
           schuelerKopers,
           await getKlasseId(page, klassenNamen[0])
         );
+
+        // Zur Bearbeiten-Ansicht des Schülers navigieren
+        if (rolleName === landesadminRolle) {
+          await personManagementViewPage.filterBySchule(schuleParams.name);
+        } else {
+          await personManagementViewPage.checkIfSchuleIsCorrect(schuleParams.dienststellenNr, schuleParams.name);
+        }
+        personDetailsViewPage = await personManagementViewPage.searchAndOpenGesamtuebersicht(schueler.kopersnummer);
+        await personDetailsViewPage.waitForPageLoad();
       });
 
       test(`Als ${bezeichnung}: Alle Klassen im Drop-Down bei SuS versetzen anzeigen`, { tag: [STAGE, DEV] }, async () => {
-        await test.step(`Bearbeiten-Ansicht eines Schülers öffnen`, async () => {
-          // Für Landesadmin: erst nach Schule filtern
-          if (rolleName === landesadminRolle) {
-            await personManagementViewPage.filterBySchule(schuleParams.name);
-          }
-          personDetailsViewPage = await personManagementViewPage.searchAndOpenGesamtuebersicht(schueler.kopersnummer);
-          await personDetailsViewPage.waitForPageLoad();
-
-        });
+        let params: ZuordnungValidationParams;
+        let versetzenWorkflowPage: VersetzenWorkflowPage;
 
         await test.step(`Zum Klassen-Drop-Down navigieren`, async () => {
           zuordnungenPage = await personDetailsViewPage.editZuordnungen();
@@ -112,16 +116,33 @@ import { ZuordnungValidationParams, ZuordnungenPage } from '../../pages/admin/pe
             dstNr: schuleParams.dienststellenNr
           };
           await zuordnungenPage.selectZuordnungToEdit(params);
-          await zuordnungenPage.clickVersetzen();
+          versetzenWorkflowPage = await zuordnungenPage.startVersetzenWorkflow();
         });
 
         await test.step(`Klassen-Drop-Down überprüfen`, async () => {
-          await zuordnungenPage.checkKlasseDropdownVisibleAndClickable(klassenNamen)
+          await versetzenWorkflowPage.checkKlasseDropdownVisibleAndClickable(klassenNamen);
+          await versetzenWorkflowPage.discard();
         });
       });
 
       test(`Als ${bezeichnung}: Alle Klassen im Drop-Down bei Schulzuordnung hinzufügen anzeigen`, { tag: [STAGE, DEV] }, async () => {
-        //Todo
+        let addZuordnungWorkflowPage: AddZuordnungWorkflowPage;
+
+        await test.step(`Zum Klassen-Drop-Down navigieren`, async () => {
+          zuordnungenPage = await personDetailsViewPage.editZuordnungen();
+          addZuordnungWorkflowPage = await zuordnungenPage.startAddZuordnungWorkflow();
+          if (rolleName === landesadminRolle) {
+            await addZuordnungWorkflowPage.selectOrganisation(schuleParams.name);
+          } else {
+            await addZuordnungWorkflowPage.checkSelectedOrganisation(schuleParams.dienststellenNr + ' (' + schuleParams.name + ')');
+          }
+          await addZuordnungWorkflowPage.selectRolle(schuelerRolle);
+        });
+
+        await test.step(`Klassen-Drop-Down überprüfen`, async () => {
+          await addZuordnungWorkflowPage.checkKlasseDropdownVisibleAndClickable(klassenNamen);
+          await addZuordnungWorkflowPage.discard();
+        });
       });
     });
   });

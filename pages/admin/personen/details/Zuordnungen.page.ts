@@ -1,7 +1,7 @@
-import { expect, Locator, Page } from '@playwright/test';
-import { Autocomplete } from '../../../../elements/Autocomplete';
+import { expect, Page } from '@playwright/test';
 import { AddZuordnungWorkflowPage } from './zuordnung-workflows/AddZuordnungWorkflow.page';
 import { BefristungWorkflowPage } from './zuordnung-workflows/BefristungWorkflow.page';
+import { VersetzenWorkflowPage } from './zuordnung-workflows/VersetzenWorkflow.page';
 
 export interface ZuordnungCreationParams {
   rolle: string;
@@ -15,8 +15,10 @@ export interface ZuordnungValidationParams {
 }
 
 export class ZuordnungenPage {
-  public constructor(private readonly page: Page,   private readonly addZuordnungWorkflowFactory: (page: Page) => AddZuordnungWorkflowPage = p => new AddZuordnungWorkflowPage(p),
-  private readonly befristungWorkflowFactory: (page: Page) => BefristungWorkflowPage = p => new BefristungWorkflowPage(p)
+  public constructor(private readonly page: Page,   
+  private readonly addZuordnungWorkflowFactory: (page: Page) => AddZuordnungWorkflowPage = p => new AddZuordnungWorkflowPage(p),
+  private readonly befristungWorkflowFactory: (page: Page) => BefristungWorkflowPage = p => new BefristungWorkflowPage(p),
+  private readonly versetzenWorkflowFactory: (page: Page) => VersetzenWorkflowPage = p => new VersetzenWorkflowPage(p)
 ) {}
 
   /* actions */
@@ -37,6 +39,11 @@ export class ZuordnungenPage {
   public async startBefristungWorkflow(): Promise<BefristungWorkflowPage> {
     await this.page.getByTestId('befristung-change-button').click();
     return this.befristungWorkflowFactory(this.page);
+  }
+
+  public async startVersetzenWorkflow(): Promise<VersetzenWorkflowPage> {
+    await this.page.getByTestId('klasse-change-button').click();
+    return this.versetzenWorkflowFactory(this.page);
   }
 
   public async addZuordnung(params: ZuordnungCreationParams): Promise<void> {
@@ -64,26 +71,15 @@ export class ZuordnungenPage {
     await this.savePendingChanges();
   }
 
-  public async clickVersetzen(): Promise<void> {
-    await this.page.getByTestId('klasse-change-button').click();
-  }
-
   public async changeKlasse(from: string, to: string): Promise<void> {
-    const autocomplete: Autocomplete = new Autocomplete(
-      this.page,
-      this.page.getByTestId('klasse-change-klasse-select')
-    );
-
     await this.editZuordnungen();
     await this.selectZuordnungToEdit({ organisation: from });
 
-    await this.clickVersetzen();
-    await autocomplete.searchByTitle(to, false);
-    await this.page.getByTestId('klasse-change-submit-button').click();
-    await expect(this.page.getByTestId('change-klasse-confirmation-dialog-text')).toContainText(
-      `Wollen Sie den Schüler/die Schülerin aus Klasse ${from} in Klasse ${to} versetzen?`
-    );
-    await this.page.getByTestId('confirm-change-klasse-button').click();
+    const workflowPage: VersetzenWorkflowPage = await this.startVersetzenWorkflow();
+    await workflowPage.selectKlasse(to);
+    await workflowPage.submit();
+    await workflowPage.checkConfirmation(from, to);
+    await workflowPage.confirm();
     await this.savePendingChanges();
   }
 
@@ -144,16 +140,6 @@ export class ZuordnungenPage {
       case 'create':
         await expect(this.page.getByTestId('person-zuordnungen-section-edit').locator('span.text-red')).toContainText(expectedText);
         break;
-    }
-  }
-
-  public async checkKlasseDropdownVisibleAndClickable(items: string[]): Promise<void> {   const sortedItems: string[] = [...items].sort((a: string, b: string) => a.localeCompare(b, 'de', { numeric: true }));
-    for (const item of sortedItems) {
-      await this.page.getByTestId('klasse-change-klasse-select').click();
-      const option: Locator = this.page.getByRole('option', { name: item, exact: false });
-      await option.scrollIntoViewIfNeeded();
-      await expect(option).toBeVisible();
-      await option.click();
     }
   }
 }
