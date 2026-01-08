@@ -19,7 +19,7 @@ interface LockOption {
   expectUntil?: string;
 }
 
-const lockOptions: Array<LockOption> = [
+const lockOptions: LockOption[] = [
   {
     description: 'unbefristet sperren',
     until: undefined,

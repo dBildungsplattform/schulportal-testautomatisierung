@@ -115,7 +115,7 @@ export class KlasseManagementViewPage {
   }
 
   public async checkTableData(landesadmin: boolean): Promise<void> {
-    await this.klasseTable.checkTableData(this.table, (i: number) => this.checkTableRow(i, landesadmin));
+    await this.klasseTable.checkTableData((i: number) => this.checkTableRow(i, landesadmin));
   }
 
   private async checkTableRow(i: number, landesadmin: boolean): Promise<void> {

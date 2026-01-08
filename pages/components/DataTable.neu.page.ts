@@ -44,6 +44,15 @@ export class DataTable {
     await this.page.locator('.v-pagination__last button:not(.v-btn--disabled)').click();
   }
 
+  public async getRows(): Promise<Locator> {
+    return this.tableLocator.locator('tbody tr.v-data-table__tr');
+  }
+
+  public async getColumn(columnIndex: number): Promise<Locator> {
+    const rows: Locator = await this.getRows();
+    return rows.locator(`td.v-data-table__td:nth-child(${columnIndex})`);
+  }
+
   /* assertions */
   public async checkCurrentPageNumber(expectedPageNumber: number): Promise<void> {
     const currentPageNumberElement: Locator = this.page.locator('.v-pagination__item');
@@ -67,14 +76,12 @@ export class DataTable {
   }
 
   public async checkRowCount(expectedRowCount: number): Promise<void> {
-    const tableRows: Locator = this.tableLocator.locator('tbody tr.v-data-table__tr');
-    const tableRowsCount: number = await tableRows.count();
-
-    expect(tableRowsCount).toEqual(expectedRowCount);
+    const tableRows: Locator = await this.getRows();
+    await expect(tableRows).toHaveCount(expectedRowCount);
   }
 
-  public async checkTableData(table: Locator, checkTableRow: (i: number) => Promise<void>): Promise<void> {
-    const tableRows: Locator = table.locator('tbody tr.v-data-table__tr');
+  public async checkTableData(checkTableRow: (i: number) => Promise<void>): Promise<void> {
+    const tableRows: Locator = await this.getRows();
     const tableRowsCount: number = await tableRows.count();
     for (let i: number = 0; i < tableRowsCount; i++) {
       await checkTableRow(i);

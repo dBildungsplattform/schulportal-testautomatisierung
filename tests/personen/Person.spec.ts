@@ -2,7 +2,7 @@ import { expect, PlaywrightTestArgs, test } from '@playwright/test';
 
 import { getOrganisationId } from '../../base/api/organisationApi';
 import { createRolleAndPersonWithPersonenkontext, UserInfo } from '../../base/api/personApi';
-import { addSystemrechtToRolle, createRolle, RollenArt } from '../../base/api/rolleApi';
+import { addSystemrechtToRolle, createRolle } from '../../base/api/rolleApi';
 import { getServiceProviderId } from '../../base/api/serviceProviderApi';
 import {
   ersatzLandSH,

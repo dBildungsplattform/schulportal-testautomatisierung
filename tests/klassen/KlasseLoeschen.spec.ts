@@ -29,8 +29,6 @@ let klasseErgebnislistePage : KlasseManagementViewPage;
 let klasseDetailsPage : KlasseDetailsViewPage;
 let klasseParams : KlasseCreationParams;
 let admin : UserInfo;
-let schueler : UserInfo;
-
 
 [
   { organisationsName: landSH, rolleName: landesadminRolle, bezeichnung: 'Landesadmin' },
@@ -86,7 +84,7 @@ let schueler : UserInfo;
         const schuelerRolleName: string = await generateRolleName();
         const klasseId: string = await getKlasseId(page, klasseParams.klassenname);
 
-        schueler = await createRolleAndPersonWithPersonenkontext(
+        await createRolleAndPersonWithPersonenkontext(
           page, 
           klasseParams.schulname, 
           typeSchueler,
@@ -114,7 +112,7 @@ let schueler : UserInfo;
         const schuelerRolleName: string = await generateRolleName();
         const klasseId: string = await getKlasseId(page, klasseParams.klassenname);
 
-        schueler = await createRolleAndPersonWithPersonenkontext(
+        await createRolleAndPersonWithPersonenkontext(
           page, 
           klasseParams.schulname, 
           typeSchueler,
