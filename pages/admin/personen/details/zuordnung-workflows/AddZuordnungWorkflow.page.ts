@@ -1,12 +1,20 @@
-import { expect, Locator, type Page } from '@playwright/test';
+import { expect, type Page } from '@playwright/test';
 import { Autocomplete } from '../../../../../elements/Autocomplete';
-import { BaseWorkflowPage } from './BaseWorkflow.page';
+import { BaseWorkflowPage, TestIdsType } from './BaseWorkflow.page';
 
 export class AddZuordnungWorkflowPage extends BaseWorkflowPage {
   /* add global locators here */
   private readonly organisationen: Autocomplete;
   private readonly rollen: Autocomplete;
   protected readonly ENDPOINT: string = 'personenkontext-workflow/**';
+  
+  protected readonly TEST_IDS: TestIdsType = {
+    submitButton: 'zuordnung-creation-submit-button',
+    confirmButton: 'confirm-zuordnung-dialog-addition',
+    discardButton: 'zuordnung-creation-discard-button',
+    closeSuccessDialog: 'change-klasse-success-dialog-close-button',
+    klasseSelect: 'personenkontext-create-klasse-select',
+  } as const;
 
   constructor(protected readonly page: Page) {
     super(page);
@@ -39,30 +47,5 @@ export class AddZuordnungWorkflowPage extends BaseWorkflowPage {
   public async checkSelectedBefristungOption(option: 'unbefristet' | 'schuljahresende'): Promise<void> {
     if (option === 'schuljahresende') await expect(this.page.getByLabel('Bis Schuljahresende (31.07.')).toBeChecked();
     if (option === 'unbefristet') await expect(this.page.getByLabel('Unbefristet')).toBeChecked();
-  }
-
-  public async checkKlasseDropdownVisibleAndClickable(items: string[]): Promise<void> {   
-    await super.checkKlasseDropdownVisibleAndClickable(items);
-  }
-
-  /* template method implementations */
-  protected async clickSubmitButton(): Promise<void> {
-    await this.page.getByTestId('zuordnung-creation-submit-button').click();
-  }
-
-  protected async clickConfirmButton(): Promise<void> {
-    await this.page.getByTestId('confirm-zuordnung-dialog-addition').click();
-  }
-
-  protected getDiscardButton(): Locator {
-    return this.page.getByTestId('zuordnung-creation-discard-button');
-  }
-
-  protected getCloseSuccessDialogButton(): Locator {
-    return this.page.getByTestId('change-klasse-success-dialog-close-button');
-  }
-
-  protected getKlasseSelectTestId(): string {
-    return 'personenkontext-create-klasse-select';
   }
 }

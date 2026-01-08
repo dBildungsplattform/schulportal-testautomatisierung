@@ -2,6 +2,7 @@ import { expect, Page } from '@playwright/test';
 import { AddZuordnungWorkflowPage } from './zuordnung-workflows/AddZuordnungWorkflow.page';
 import { BefristungWorkflowPage } from './zuordnung-workflows/BefristungWorkflow.page';
 import { VersetzenWorkflowPage } from './zuordnung-workflows/VersetzenWorkflow.page';
+import { BaseWorkflowPage } from './zuordnung-workflows/BaseWorkflow.page';
 
 export interface ZuordnungCreationParams {
   rolle: string;
@@ -11,7 +12,11 @@ export interface ZuordnungCreationParams {
   befristung?: string;
 }
 export interface ZuordnungValidationParams {
-  organisation: string; dstNr?: string; rolle?: string; befristung?: string; status?: 'unchanged' | 'delete' | 'create';
+  organisation: string;
+  dstNr?: string;
+  rolle?: string;
+  befristung?: string;
+  status?: 'unchanged' | 'delete' | 'create';
 }
 
 export class ZuordnungenPage {
@@ -54,7 +59,7 @@ export class ZuordnungenPage {
     if (params.kopers) await workflowPage.fillKopers(params.kopers);
     if (params.befristung) await workflowPage.fillBefristung(params.befristung);
     await workflowPage.submit();
-    await this.savePendingChanges();
+    await this.savePendingChanges(workflowPage);
   }
 
   public async editBefristung(
@@ -68,7 +73,7 @@ export class ZuordnungenPage {
       await workflowPage.fillBefristungInput(params.befristung);
     }
     await workflowPage.submit();
-    await this.savePendingChanges();
+    await this.savePendingChanges(workflowPage);
   }
 
   public async changeKlasse(from: string, to: string): Promise<void> {
@@ -80,12 +85,12 @@ export class ZuordnungenPage {
     await workflowPage.submit();
     await workflowPage.checkConfirmation(from, to);
     await workflowPage.confirm();
-    await this.savePendingChanges();
+    await this.savePendingChanges(workflowPage);
   }
 
-  private async savePendingChanges(): Promise<void> {
+  private async savePendingChanges(workflowPage: BaseWorkflowPage): Promise<void> {
     await this.page.getByTestId('zuordnung-changes-save-button').click();
-    await this.page.getByTestId('change-klasse-success-dialog-close-button').click();
+    await workflowPage.closeSuccessDialog();
   }
 
   private buildExpectedTextForZuordnung(params: ZuordnungValidationParams): string {

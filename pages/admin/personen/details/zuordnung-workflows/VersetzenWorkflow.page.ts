@@ -1,5 +1,5 @@
-import { expect, type Locator, Page } from '@playwright/test';
-import { BaseWorkflowPage } from './BaseWorkflow.page';
+import { expect, Page } from '@playwright/test';
+import { BaseWorkflowPage, TestIdsType } from './BaseWorkflow.page';
 import { Autocomplete } from '../../../../../elements/Autocomplete';
 
 export class VersetzenWorkflowPage extends BaseWorkflowPage {
@@ -8,10 +8,18 @@ export class VersetzenWorkflowPage extends BaseWorkflowPage {
   private readonly klasse: Autocomplete;
   protected readonly ENDPOINT: string = 'klasse-change/**';
 
+  protected readonly TEST_IDS: TestIdsType = {
+    submitButton: 'klasse-change-submit-button',
+    confirmButton: 'confirm-change-klasse-button',
+    discardButton: 'klasse-change-discard-button',
+    closeSuccessDialog: 'change-klasse-success-dialog-close-button',
+    klasseSelect: 'klasse-change-klasse-select',
+  } as const;
+
   constructor(protected readonly page: Page) {
     super(page);
     this.schule = new Autocomplete(this.page, this.page.getByTestId('klasse-change-schule-select'));
-    this.klasse = new Autocomplete(this.page, this.page.getByTestId('klasse-change-klasse-select'));
+    this.klasse = new Autocomplete(this.page, this.page.getByTestId(this.TEST_IDS.klasseSelect));
   }
 
   /* actions */
@@ -36,34 +44,5 @@ export class VersetzenWorkflowPage extends BaseWorkflowPage {
     await expect(
       this.page.getByTestId('change-klasse-confirmation-dialog-text')
     ).toContainText(`Wollen Sie den Schüler aus Klasse ${from} in Klasse ${to} versetzen?`);
-  }
-
-  public async checkKlasseDropdownVisibleAndClickable(items: string[]): Promise<void> {
-    await super.checkKlasseDropdownVisibleAndClickable(items);
-  }
-
-  /* template method implementations */
-  protected async clickSubmitButton(): Promise<void> {
-    const submitButton: Locator = this.page.getByTestId('klasse-change-submit-button');
-    await submitButton.waitFor({ state: 'visible' });
-    await submitButton.click();
-  }
-
-  protected async clickConfirmButton(): Promise<void> {
-    const confirmButton: Locator = this.page.getByTestId('confirm-change-klasse-button');
-    await confirmButton.waitFor({ state: 'visible' });
-    await confirmButton.click();
-  }
-
-  protected getDiscardButton(): Locator {
-    return this.page.getByTestId('klasse-change-discard-button');
-  }
-
-  protected getCloseSuccessDialogButton(): Locator {
-    return this.page.getByTestId('change-klasse-success-dialog-close-button');
-  }
-
-  protected getKlasseSelectTestId(): string {
-    return 'klasse-change-klasse-select';
   }
 }

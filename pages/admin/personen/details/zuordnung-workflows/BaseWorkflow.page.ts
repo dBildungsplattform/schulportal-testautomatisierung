@@ -2,36 +2,67 @@ import { expect, type Locator, Page } from '@playwright/test';
 import { ZuordnungenPage } from '../Zuordnungen.page';
 import { waitForAPIResponse } from '../../../../../base/api/baseApi';
 
+export interface TestIdsType {
+  submitButton: string;
+  confirmButton: string;
+  discardButton: string;
+  closeSuccessDialog: string;
+  klasseSelect: string;
+}
+
 export abstract class BaseWorkflowPage {
   protected abstract readonly ENDPOINT: string;
+  protected abstract readonly TEST_IDS: TestIdsType;
 
   constructor(protected readonly page: Page) {}
 
   /* actions */
+  protected getSubmitButtonTestId(): string {
+    return this.TEST_IDS.submitButton;
+  }
+
+  protected getConfirmButtonTestId(): string {
+    return this.TEST_IDS.confirmButton;
+  }
+
+  protected getDiscardButtonTestId(): string {
+    return this.TEST_IDS.discardButton;
+  }
+
+  protected getCloseSuccessDialogButtonTestId(): string {
+    return this.TEST_IDS.closeSuccessDialog;
+  }
+
+  protected getKlasseSelectTestId(): string {
+    return this.TEST_IDS.klasseSelect;
+  }
+
   protected async waitForResponse(): Promise<void> {
     await waitForAPIResponse(this.page, this.ENDPOINT);
   }
 
   public async submit(): Promise<ZuordnungenPage> {
-    await this.clickSubmitButton();
+    const submitButton: Locator = this.page.getByTestId(this.getSubmitButtonTestId());
+    await submitButton.click();
     await this.waitForResponse();
     return new ZuordnungenPage(this.page);
   }
 
   public async confirm(): Promise<ZuordnungenPage> {
-    await this.clickConfirmButton();
+    const confirmButton: Locator = this.page.getByTestId(this.getConfirmButtonTestId());
+    await confirmButton.click();
     await this.waitForResponse();
     return new ZuordnungenPage(this.page);
   }
 
   public async discard(): Promise<ZuordnungenPage> {
-    await this.getDiscardButton().click();
+    const discardButton: Locator = this.page.getByTestId(this.getDiscardButtonTestId());
+    await discardButton.click();
     return new ZuordnungenPage(this.page);
   }
 
   public async closeSuccessDialog(): Promise<void> {
-    const closeDialogButton: Locator = this.getCloseSuccessDialogButton();
-    await closeDialogButton.waitFor({ state: 'visible' });
+    const closeDialogButton: Locator = this.page.getByTestId(this.getCloseSuccessDialogButtonTestId());
     await closeDialogButton.click();
   }
 
@@ -46,11 +77,4 @@ export abstract class BaseWorkflowPage {
       await option.click();
     }
   }
-
-  /* template methods - subclasses override these */
-  protected abstract clickSubmitButton(): Promise<void>;
-  protected abstract clickConfirmButton(): Promise<void>;
-  protected abstract getDiscardButton(): Locator;
-  protected abstract getCloseSuccessDialogButton(): Locator;
-  protected abstract getKlasseSelectTestId(): string;
 }
