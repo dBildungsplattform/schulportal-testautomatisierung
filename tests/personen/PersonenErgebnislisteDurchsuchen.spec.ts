@@ -25,7 +25,8 @@ let admin: UserInfo;
     test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
       header = new HeaderPage(page);
       loginPage = await freshLoginPage(page);
-      await loginPage.login(process.env.USER, process.env.PW);
+      const startViewPage = await loginPage.login(process.env.USER, process.env.PW);
+      await startViewPage.navigateToAdministration();
 
       admin = await createPersonWithPersonenkontext(page, organisationsName, rolleName, undefined, undefined, generateDienststellenNr());
 
@@ -37,7 +38,7 @@ let admin: UserInfo;
       await startPage.waitForPageLoad();
 
       // Navigation zur Ergebnisliste von Benutzern
-      benutzerErgebnislistePage = await startPage.goToAdministration();  
+      benutzerErgebnislistePage = await startPage.navigateToAdministration();  
     });
 
     // SPSH-2923

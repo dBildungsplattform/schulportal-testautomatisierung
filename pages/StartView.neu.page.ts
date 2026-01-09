@@ -1,5 +1,6 @@
 import { expect, Locator, Page, Response } from '@playwright/test';
 import { PersonManagementViewPage } from './admin/personen/PersonManagementView.neu.page';
+import { TwoFactorWorkflowPage } from './TwoFactorWorkflow.page';
 export class StartViewPage {
   /* add global locators here */
   readonly startCardHeadline: Locator;
@@ -17,7 +18,9 @@ export class StartViewPage {
 
   public async navigateToAdministration(): Promise<PersonManagementViewPage> {
     await this.page.locator('[data-testid^="service-provider-card"]').filter({ hasText: 'Schulportal-Administration' }).click();
-    return new PersonManagementViewPage(this.page).waitForPageLoad();
+
+    const twoFactorWorkflowPage: TwoFactorWorkflowPage = new TwoFactorWorkflowPage(this.page);
+    return twoFactorWorkflowPage.complete();
   }
 
   public async goToAdministration(): Promise<PersonManagementViewPage> {
