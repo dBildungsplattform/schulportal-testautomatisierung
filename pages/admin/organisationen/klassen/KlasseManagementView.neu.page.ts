@@ -27,7 +27,8 @@ export class KlasseManagementViewPage {
   }
 
   public async waitForDataLoad(): Promise<KlasseManagementViewPage> {
-    await this.klasseTable.waitForPageLoad();
+    await waitForAPIResponse(this.page, 'organisationen');
+    await this.klasseTable.waitForDataLoad();
     return this;
   }
 
