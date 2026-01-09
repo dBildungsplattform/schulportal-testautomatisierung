@@ -26,12 +26,12 @@ export class PersonManagementViewPage {
     return this;
   }
 
-  private async filterByText(text: string, testId: string): Promise<void> {
+  private async filterByText(text: string, testId: string, exactMatch?: boolean): Promise<void> {
     const filter: Autocomplete = new Autocomplete(this.page, this.page.getByTestId(testId));
-    await filter.selectByTitle(text);
+    await filter.searchByTitle(text, exactMatch);
   }
-  public async filterBySchule(schule: string): Promise<void> {
-    await this.filterByText(schule, 'person-management-organisation-select');
+  public async filterBySchule(schule: string, exactMatch?: boolean): Promise<void> {
+    await this.filterByText(schule, 'person-management-organisation-select', exactMatch);
   }
 
   public async filterByRolle(rolle: string): Promise<void> {
@@ -100,5 +100,17 @@ export class PersonManagementViewPage {
 
   public async checkIfSchuleIsCorrect(schulNr: string, schulname: string): Promise<void> {
     await expect(this.page.getByTestId('person-management-organisation-select')).toHaveText(schulNr + ' (' + schulname + ')');
+  }
+
+  public async checkAllDropdownOptionsVisible(klassen: string[]): Promise<void> {
+    await this.personTable.checkAllDropdownOptionsVisible(
+      klassen,
+      this.page.getByTestId('personen-management-klasse-select'),
+      `${klassen.length} Klassen gefunden`
+    );
+  }
+
+  public async checkAllDropdownOptionsClickable(klassen: string[]): Promise<void> {
+    await this.personTable.checkAllDropdownOptionsClickable(klassen, this.page.getByTestId('personen-management-klasse-select'));
   }
 }
