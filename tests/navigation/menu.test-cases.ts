@@ -1,6 +1,16 @@
 import { RollenSystemRecht } from "../../base/api/generated/models/RollenSystemRecht";
 import { MenuBarPage } from "../../pages/components/MenuBar.neu.page";
 
+/**
+ * Represents a single menu item test case for the MenuBar.
+ *
+ * Each test case defines:
+ * - `name`: Human-readable description of the menu item.
+ * - `testId`: The data-testid used in the frontend to locate the menu item.
+ * - `navigate`: Function that performs the navigation to the menu item using the MenuBarPage object.
+ * - `route`: Expected URL route after navigation.
+ * - `requiredPermissions`: Array of system rights required for this menu item to be visible.
+ */
 export interface MenuTestCase {
   name: string;
   testId: string;
@@ -9,6 +19,15 @@ export interface MenuTestCase {
   requiredPermissions: RollenSystemRecht[];
 }
 
+/**
+ * Array of all menu item test cases to validate visibility and navigation
+ * according to the user's system rights.
+ *
+ * Each entry in this array corresponds to a menu item in the application.
+ * During tests, the system will check:
+ * - Whether the menu item is visible if the user has the required permissions.
+ * - Whether navigation leads to the correct route.
+ */
 export const MENU_TEST_CASES: MenuTestCase[] = [
   {
     name: 'Person management',
