@@ -1,7 +1,7 @@
 import { expect, type Locator, Page, Response } from '@playwright/test';
 import { PersonManagementViewPage } from './admin/personen/PersonManagementView.page';
 import { LandingPage } from './LandingView.page';
-import { MenuPage } from './components/MenuBar.page';
+import { MenuBarPage } from './components/MenuBar.neu.page';
 import { schulportaladmin } from '../base/sp';
 
 export class StartPage {
@@ -27,12 +27,12 @@ export class StartPage {
     this.cardItem = (spName: string): Locator => page.locator('[data-testid^="service-provider-card"]', { hasText: spName });
   }
 
-  public async goToAdministration(): Promise<MenuPage> {
+  public async goToAdministration(): Promise<MenuBarPage> {
     await this.checkSpIsVisible([schulportaladmin]);
     await this.cardItemSchulportalAdministration.click();
     const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(this.page);
     await personManagementView.waitForData();
-    return new MenuPage(this.page);
+    return new MenuBarPage(this.page);
   }
 
   public async start(): Promise<LandingPage> {
