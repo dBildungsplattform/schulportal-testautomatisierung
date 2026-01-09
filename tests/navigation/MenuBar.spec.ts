@@ -25,7 +25,7 @@ ROLLEN_CASES.forEach((rolle: {
 
       });
 
-      test('Menu visibility and navigation', async ({ page }: { page: Page }) => {
+      test('Menu Sichtbarkeit und Navigation', async ({ page }: { page: Page }) => {
         const menu: MenuBarPage = new MenuBarPage(page);
 
         for (const item of MENU_TEST_CASES) {
