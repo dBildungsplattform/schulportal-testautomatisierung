@@ -50,7 +50,7 @@ import { SchuleCreationSuccessPage } from '../../pages/admin/organisationen/schu
       const admin: UserInfo = await createPersonWithPersonenkontext(page, adminOrganisation, rolleName);
 
       // Bei Schuladmin mit 2 Schulen: zweite Schule anlegen
-      if (bezeichnung === 'Schuladmin (2 Schulen)') {
+      if (hasMultipleSchulen) {
         const zweiteSchule: SchuleCreationParams = {
           name: generateSchulname(),
           dienststellenNr: generateDienststellenNr(),
@@ -89,12 +89,13 @@ import { SchuleCreationSuccessPage } from '../../pages/admin/organisationen/schu
 
       test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
         // 40 Klassen anlegen
-        generierteKlassenNamen = [];
-        for (let i: number = 1; i <= 40; i++) {
-          const klassenname: string = generateKlassenname();
-          await createKlasse(page, schuleId, klassenname);
-          generierteKlassenNamen.push(klassenname);
-        }
+        generierteKlassenNamen = await Promise.all(
+          Array.from({length: 40}, async () => {
+            const klassenname: string = generateKlassenname();
+            await createKlasse(page, schuleId, klassenname);
+            return klassenname;
+          })
+        );
       });
 
       // SPSH-2855
@@ -108,14 +109,21 @@ import { SchuleCreationSuccessPage } from '../../pages/admin/organisationen/schu
           await klasseManagementViewPage.setItemsPerPage(5);
           if (hasMultipleSchulen) {
             await klasseManagementViewPage.filterBySchule(schuleParams.name);
+            await klasseManagementViewPage.waitForDataLoad();
           } else {
             await klasseManagementViewPage.checkIfSchuleIsCorrect(schuleParams.name, schuleParams.dienststellenNr);
           }
         });
 
         await test.step(`Sortierverhalten prüfen`, async () => {
-          await klasseManagementViewPage.waitForDataLoad();
-          await klasseManagementViewPage.checkIfColumnDataSorted(hasMultipleSchulen);
+          await klasseManagementViewPage.checkIfColumnDataSorted(hasMultipleSchulen, 'ascending');
+
+          await klasseManagementViewPage.toggleKlasseSort();
+          await klasseManagementViewPage.checkIfColumnDataSorted(hasMultipleSchulen, 'descending');
+
+          await klasseManagementViewPage.toggleKlasseSort();
+          await klasseManagementViewPage.checkIfColumnDataSorted(hasMultipleSchulen, 'ascending');
+
           if (hasMultipleSchulen) {
             await klasseManagementViewPage.checkIfColumnHeaderSorted('Dienststellennummer', 'not-sortable');
           }
