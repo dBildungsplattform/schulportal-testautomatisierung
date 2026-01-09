@@ -16,17 +16,26 @@
 import * as runtime from '../runtime';
 import type {
   ManageableServiceProviderResponse,
+  ProviderControllerFindRollenerweiterungenByServiceProviderId200Response,
   ProviderControllerGetManageableServiceProviders200Response,
   ServiceProviderResponse,
 } from '../models';
 import {
     ManageableServiceProviderResponseFromJSON,
     ManageableServiceProviderResponseToJSON,
+    ProviderControllerFindRollenerweiterungenByServiceProviderId200ResponseFromJSON,
+    ProviderControllerFindRollenerweiterungenByServiceProviderId200ResponseToJSON,
     ProviderControllerGetManageableServiceProviders200ResponseFromJSON,
     ProviderControllerGetManageableServiceProviders200ResponseToJSON,
     ServiceProviderResponseFromJSON,
     ServiceProviderResponseToJSON,
 } from '../models';
+
+export interface ProviderControllerFindRollenerweiterungenByServiceProviderIdRequest {
+    angebotId: string;
+    offset?: number;
+    limit?: number;
+}
 
 export interface ProviderControllerGetManageableServiceProviderByIdRequest {
     angebotId: string;
@@ -48,6 +57,24 @@ export interface ProviderControllerGetServiceProviderLogoRequest {
  * @interface ProviderApiInterface
  */
 export interface ProviderApiInterface {
+    /**
+     * Get rollenerweiterungen for service-provider with provided id.
+     * @summary 
+     * @param {string} angebotId The id of the service provider
+     * @param {number} [offset] The offset of the paginated list.
+     * @param {number} [limit] The requested limit for the page size.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ProviderApiInterface
+     */
+    providerControllerFindRollenerweiterungenByServiceProviderIdRaw(requestParameters: ProviderControllerFindRollenerweiterungenByServiceProviderIdRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ProviderControllerFindRollenerweiterungenByServiceProviderId200Response>>;
+
+    /**
+     * Get rollenerweiterungen for service-provider with provided id.
+     * 
+     */
+    providerControllerFindRollenerweiterungenByServiceProviderId(requestParameters: ProviderControllerFindRollenerweiterungenByServiceProviderIdRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ProviderControllerFindRollenerweiterungenByServiceProviderId200Response>;
+
     /**
      * Get all service-providers.
      * @summary 
@@ -130,6 +157,59 @@ export interface ProviderApiInterface {
  * 
  */
 export class ProviderApi extends runtime.BaseAPI implements ProviderApiInterface {
+
+    /**
+     * Get rollenerweiterungen for service-provider with provided id.
+     * 
+     */
+    async providerControllerFindRollenerweiterungenByServiceProviderIdRaw(requestParameters: ProviderControllerFindRollenerweiterungenByServiceProviderIdRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ProviderControllerFindRollenerweiterungenByServiceProviderId200Response>> {
+        if (requestParameters.angebotId === null || requestParameters.angebotId === undefined) {
+            throw new runtime.RequiredError('angebotId','Required parameter requestParameters.angebotId was null or undefined when calling providerControllerFindRollenerweiterungenByServiceProviderId.');
+        }
+
+        const queryParameters: any = {};
+
+        if (requestParameters.offset !== undefined) {
+            queryParameters['offset'] = requestParameters.offset;
+        }
+
+        if (requestParameters.limit !== undefined) {
+            queryParameters['limit'] = requestParameters.limit;
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearer", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2", []);
+        }
+
+        const response = await this.request({
+            path: `/api/provider/{angebotId}/rollenerweiterung`.replace(`{${"angebotId"}}`, encodeURIComponent(String(requestParameters.angebotId))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ProviderControllerFindRollenerweiterungenByServiceProviderId200ResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Get rollenerweiterungen for service-provider with provided id.
+     * 
+     */
+    async providerControllerFindRollenerweiterungenByServiceProviderId(requestParameters: ProviderControllerFindRollenerweiterungenByServiceProviderIdRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ProviderControllerFindRollenerweiterungenByServiceProviderId200Response> {
+        const response = await this.providerControllerFindRollenerweiterungenByServiceProviderIdRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
 
     /**
      * Get all service-providers.

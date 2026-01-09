@@ -2,7 +2,12 @@ import { Page, expect } from '@playwright/test';
 import { FRONTEND_URL } from './baseApi';
 import { ApiResponse, Configuration } from './generated/runtime';
 import { makeFetchWithPlaywright } from './playwrightFetchAdapter';
-import { OrganisationControllerCreateOrganisationRequest, OrganisationControllerDeleteKlasseRequest, OrganisationControllerFindOrganizationsRequest, OrganisationenApi } from './generated/apis/OrganisationenApi';
+import {
+  OrganisationControllerCreateOrganisationRequest,
+  OrganisationControllerDeleteOrganisationRequest,
+  OrganisationControllerFindOrganizationsRequest,
+  OrganisationenApi,
+} from './generated/apis/OrganisationenApi';
 import { CreateOrganisationBodyParams, OrganisationResponse } from './generated/models';
 
 export function constructOrganisationApi(page: Page): OrganisationenApi {
@@ -16,11 +21,12 @@ export function constructOrganisationApi(page: Page): OrganisationenApi {
 export async function getOrganisationId(page: Page, organisationName: string): Promise<string> {
   try {
     const requestParameters: OrganisationControllerFindOrganizationsRequest = {
-      name: organisationName
+      name: organisationName,
     };
 
     const organisationApi: OrganisationenApi = constructOrganisationApi(page);
-    const response: ApiResponse<OrganisationResponse[]> = await organisationApi.organisationControllerFindOrganizationsRaw(requestParameters);
+    const response: ApiResponse<OrganisationResponse[]> =
+      await organisationApi.organisationControllerFindOrganizationsRaw(requestParameters);
     await expect(response.raw.status).toBe(200);
 
     const organisations: OrganisationResponse[] = await response.value();
@@ -43,12 +49,14 @@ export async function getOrganisationId(page: Page, organisationName: string): P
 
 export async function deleteKlasse(page: Page, klasseId: string): Promise<void> {
   try {
-    const requestParameters: OrganisationControllerDeleteKlasseRequest = {
-      organisationId: klasseId
+    const requestParameters: OrganisationControllerDeleteOrganisationRequest = {
+      organisationId: klasseId,
     };
 
     const organisationApi: OrganisationenApi = constructOrganisationApi(page);
-    const response: ApiResponse<void> = await organisationApi.organisationControllerDeleteKlasseRaw(requestParameters);
+    const response: ApiResponse<void> = await organisationApi.organisationControllerDeleteOrganisationRaw(
+      requestParameters
+    );
     await expect(response.raw.status).toBe(204);
   } catch (error) {
     console.error('[ERROR] deleteKlasse failed:', error);
@@ -60,11 +68,20 @@ export async function getKlasseId(page: Page, klassennname: string): Promise<str
   try {
     const requestParameters: OrganisationControllerFindOrganizationsRequest = {
       name: klassennname,
-      excludeTyp: ['ROOT', 'LAND', 'TRAEGER', 'SCHULE', 'ANBIETER', 'SONSTIGE ORGANISATION / EINRICHTUNG', 'UNBESTAETIGT'],
-    }
+      excludeTyp: [
+        'ROOT',
+        'LAND',
+        'TRAEGER',
+        'SCHULE',
+        'ANBIETER',
+        'SONSTIGE ORGANISATION / EINRICHTUNG',
+        'UNBESTAETIGT',
+      ],
+    };
 
     const organisationApi: OrganisationenApi = constructOrganisationApi(page);
-    const response: ApiResponse<OrganisationResponse[]> = await organisationApi.organisationControllerFindOrganizationsRaw(requestParameters);
+    const response: ApiResponse<OrganisationResponse[]> =
+      await organisationApi.organisationControllerFindOrganizationsRaw(requestParameters);
     await expect(response.raw.status).toBe(200);
 
     const organisations: OrganisationResponse[] = await response.value();
@@ -86,14 +103,15 @@ export async function createKlasse(page: Page, schuleId: string, name: string): 
       zugehoerigZu: schuleId,
       name: name,
       typ: 'KLASSE',
-    }
+    };
 
     const requestParameters: OrganisationControllerCreateOrganisationRequest = {
       createOrganisationBodyParams,
-    }
+    };
 
     const organisationApi: OrganisationenApi = constructOrganisationApi(page);
-    const response: ApiResponse<OrganisationResponse> = await organisationApi.organisationControllerCreateOrganisationRaw(requestParameters);
+    const response: ApiResponse<OrganisationResponse> =
+      await organisationApi.organisationControllerCreateOrganisationRaw(requestParameters);
     await expect(response.raw.status).toBe(201);
 
     const createdKlasse: OrganisationResponse = await response.value();

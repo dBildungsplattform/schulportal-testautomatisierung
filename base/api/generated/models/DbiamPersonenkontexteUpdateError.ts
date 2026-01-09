@@ -47,7 +47,8 @@ export const DbiamPersonenkontexteUpdateErrorI18nKeyEnum = {
     PersonNotFound: 'PERSON_NOT_FOUND',
     InvalidPersonenkontextForPersonWithRollenartLern: 'INVALID_PERSONENKONTEXT_FOR_PERSON_WITH_ROLLENART_LERN',
     BefristungRequiredForPersonenkontext: ' BEFRISTUNG_REQUIRED_FOR_PERSONENKONTEXT',
-    DuplicateKlassenkontextForSameRolle: 'DUPLICATE_KLASSENKONTEXT_FOR_SAME_ROLLE'
+    DuplicateKlassenkontextForSameRolle: 'DUPLICATE_KLASSENKONTEXT_FOR_SAME_ROLLE',
+    LernNotAtSchuleAndKlasse: 'LERN_NOT_AT_SCHULE_AND_KLASSE'
 } as const;
 export type DbiamPersonenkontexteUpdateErrorI18nKeyEnum = typeof DbiamPersonenkontexteUpdateErrorI18nKeyEnum[keyof typeof DbiamPersonenkontexteUpdateErrorI18nKeyEnum];
 
