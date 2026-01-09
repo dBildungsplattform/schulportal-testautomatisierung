@@ -15,7 +15,7 @@ export const ROLLEN_CASES: {
   permissions: string[];
 }[] = [
   {
-    name: 'Alle Systemrechte',
+    name: 'Rolle mit allen Systemrechte',
     permissions: [
       'PERSONEN_VERWALTEN',
       'PERSONEN_ANLEGEN',
@@ -27,11 +27,11 @@ export const ROLLEN_CASES: {
     ],
   },
   {
-    name: 'PERSON_VERWALTEN',
+    name: 'Rolle mit PERSONEN_VERWALTEN',
     permissions: ['PERSONEN_VERWALTEN'],
   },
   {
-    name: 'PERSONEN_VERWALTEN + KLASSEN_VERWALTEN',
+    name: 'Rolle mit PERSONEN_VERWALTEN + KLASSEN_VERWALTEN',
     permissions: ['PERSONEN_VERWALTEN', 'KLASSEN_VERWALTEN'],
   },
 ];
