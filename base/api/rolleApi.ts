@@ -1,9 +1,10 @@
 import { Page, expect } from '@playwright/test';
 import { FRONTEND_URL } from './baseApi';
-import { CreateRolleBodyParams, RollenArt, RollenMerkmal, RollenSystemRecht, RolleResponse, RolleWithServiceProvidersResponse, ServiceProviderResponse } from './generated/models';
+import { CreateRolleBodyParams, RollenArt, RollenMerkmal, RolleResponse, RolleWithServiceProvidersResponse, ServiceProviderResponse } from './generated/models';
 import { RolleApi, RolleControllerAddSystemRechtRequest, RolleControllerCreateRolleRequest, RolleControllerDeleteRolleRequest, RolleControllerFindRollenRequest, RolleControllerUpdateServiceProvidersByIdRequest } from './generated/apis/RolleApi';
 import { makeFetchWithPlaywright } from './playwrightFetchAdapter';
 import { ApiResponse, Configuration } from './generated/runtime';
+import { RollenSystemRecht } from './generated/models/RollenSystemRecht';
 
 export { RollenArt };
 export { RollenMerkmal };

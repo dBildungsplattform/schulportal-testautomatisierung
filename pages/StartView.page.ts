@@ -1,8 +1,8 @@
 import { expect, type Locator, Page, Response } from '@playwright/test';
 import { PersonManagementViewPage } from './admin/personen/PersonManagementView.page';
 import { LandingPage } from './LandingView.page';
-import { MenuPage } from './components/MenuBar.page';
 import { schulportaladmin } from '../base/sp';
+import { MenuPage } from './components/MenuBar.page';
 
 export class StartPage {
   readonly page: Page;
