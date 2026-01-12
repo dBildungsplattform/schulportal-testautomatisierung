@@ -27,7 +27,7 @@ export class SchuleManagementViewPage {
     await this.searchFilter.searchByText(text);
   }
 
-  public async setPageSize(size: '5' | '30' | '50' | '100' | '300'): Promise<void> {
+  public async setPageSize(size: 5 | 30 | 50 | 100 | 300): Promise<void> {
     await this.schuleTable.setItemsPerPage(size);
   }
 

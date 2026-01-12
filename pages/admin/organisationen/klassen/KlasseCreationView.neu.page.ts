@@ -28,8 +28,8 @@ export class KlasseCreationViewPage {
     return this;
   }
 
-  public async createKlasse(landesadmin : boolean, params: KlasseCreationParams): Promise<KlasseCreationSuccessPage> {
-    if (landesadmin) {
+  public async createKlasse(hasMultipleSchulen : boolean, params: KlasseCreationParams): Promise<KlasseCreationSuccessPage> {
+    if (hasMultipleSchulen) {
       const schuleNameAutocomplete: Autocomplete = new Autocomplete(this.page, this.schuleName);
       await schuleNameAutocomplete.searchByTitle(params.schulname, false);
     } else {
