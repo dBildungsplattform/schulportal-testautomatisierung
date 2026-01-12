@@ -81,6 +81,11 @@ export class DataTable {
     return pageData;
   }
 
+  public async getColumn(columnIndex: number): Promise<Locator> {
+    const rows: Locator = await this.getRows();
+    return rows.locator(`td.v-data-table__td:nth-child(${columnIndex})`);
+  }
+
   /* assertions */
   public async checkCurrentPageNumber(expectedPageNumber: number): Promise<void> {
     const currentPageNumberElement: Locator = this.page.locator('.v-pagination__item');
@@ -110,12 +115,10 @@ export class DataTable {
 
   public async checkRowCount(expectedRowCount: number): Promise<void> {
     const tableRows: Locator = this.getRows();
-    const tableRowsCount: number = await tableRows.count();
-
-    expect(tableRowsCount).toEqual(expectedRowCount);
+    await expect(tableRows).toHaveCount(expectedRowCount);
   }
 
-  public async checkTableData(table: Locator, checkTableRow: (row: Locator) => Promise<void>): Promise<void> {
+  public async checkTableData(checkTableRow: (row: Locator) => Promise<void>): Promise<void> {
     const tableRows: Locator = this.getRows();
     for (const row of await tableRows.all()) {
       await checkTableRow(row);

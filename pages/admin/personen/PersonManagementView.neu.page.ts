@@ -1,13 +1,15 @@
 import { expect, Locator, Page } from '@playwright/test';
 import { Autocomplete } from '../../../elements/Autocomplete';
-import { DataTable } from '../../components/DataTable.neu.page';
-import { PersonDetailsViewPage } from './details/PersonDetailsView.neu.page';
 import { SearchFilter } from '../../../elements/SearchFilter';
+import { DataTable } from '../../components/DataTable.neu.page';
 import { MenuBarPage } from '../../components/MenuBar.neu.page';
+import { PersonDetailsViewPage } from './details/PersonDetailsView.neu.page';
 
 export class PersonManagementViewPage {
   private readonly personTable: DataTable;
   private readonly searchFilter: SearchFilter;
+  private readonly organisationAutocomplete: Autocomplete;
+  private readonly rolleAutocomplete: Autocomplete;
   public readonly menu: MenuBarPage;
   private readonly table: Locator;
 
@@ -15,6 +17,14 @@ export class PersonManagementViewPage {
     this.table = this.page.getByTestId('person-table');
     this.personTable = new DataTable(this.page, this.table);
     this.searchFilter = new SearchFilter(this.page);
+    this.organisationAutocomplete = new Autocomplete(
+      this.page,
+      this.page.getByTestId('person-management-organisation-select')
+    );
+    this.rolleAutocomplete = new Autocomplete(
+      this.page,
+      this.page.getByTestId('rolle-select')
+    );
     this.menu = new MenuBarPage(this.page);
   }
 
@@ -30,12 +40,13 @@ export class PersonManagementViewPage {
     const filter: Autocomplete = new Autocomplete(this.page, this.page.getByTestId(testId));
     await filter.selectByTitle(text);
   }
-  public async filterBySchule(schule: string): Promise<void> {
-    await this.filterByText(schule, 'person-management-organisation-select');
-  }
+
+  public async filterBySchule(name: string): Promise<void> {
+    await this.organisationAutocomplete.searchByTitle(name, true);
+}
 
   public async filterByRolle(rolle: string): Promise<void> {
-    await this.filterByText(rolle, 'rolle-select');
+    await this.rolleAutocomplete.searchByTitle(rolle, true);
   }
 
   public async filterByKlasse(klasse: string): Promise<void> {
@@ -71,7 +82,7 @@ export class PersonManagementViewPage {
     await expect(this.page.getByTestId('admin-headline')).toHaveText('Administrationsbereich');
     await expect(this.page.getByTestId('person-management-headline')).toHaveText('Benutzerverwaltung');
     await expect(this.page.getByTestId('reset-filter-button')).toBeVisible();
-    await expect(this.page.getByTestId('person-management-organisation-select')).toBeVisible();
+    await this.organisationAutocomplete.isVisible();
     await expect(this.page.getByTestId('rolle-select')).toBeVisible();
     await expect(this.page.getByTestId('personen-management-klasse-select')).toBeVisible();
     await expect(this.page.getByTestId('status-select')).toBeVisible();
@@ -79,7 +90,15 @@ export class PersonManagementViewPage {
     await expect(this.page.getByTestId('search-filter-input')).toBeVisible();
     await expect(this.page.getByTestId('apply-search-filter-button')).toBeVisible();
     await expect(this.page.getByTestId('person-table')).toBeVisible();
-    await this.checkHeaders(['Nachname', 'Vorname', 'Benutzername', 'KoPers.-Nr.', 'Rolle', 'Schulzuordnung(en)', 'Klasse']);
+    await this.checkHeaders([
+      'Nachname',
+      'Vorname',
+      'Benutzername',
+      'KoPers.-Nr.',
+      'Rolle',
+      'Schulzuordnung(en)',
+      'Klasse',
+    ]);
   }
 
   public async checkIfPersonExists(name: string): Promise<void> {
@@ -98,7 +117,21 @@ export class PersonManagementViewPage {
     await this.personTable.checkHeaders(expectedHeaders);
   }
 
-  public async checkIfSchuleIsCorrect(schulNr: string, schulname: string): Promise<void> {
-    await expect(this.page.getByTestId('person-management-organisation-select')).toHaveText(schulNr + ' (' + schulname + ')');
+  private async checkIfColumnAlwaysContainsText(columnIndex: number, expectedText: string): Promise<void> {
+    const column: Locator = await this.personTable.getColumn(columnIndex);
+    // we don't know how many valid rows there should be, so we have to check that no invalid rows are present
+    // using count or all is flaky, because we can't be sure if the table has updated already
+    await expect(column.filter({ hasNotText: expectedText })).toHaveCount(0);
+  }
+
+  public async checkIfSchuleIsCorrect(schulname: string, schulNr?: string): Promise<void> {
+    const expected: string = schulNr ? `${schulNr} (${schulname})` : schulname;
+    await this.organisationAutocomplete.checkText(expected);
+    await this.checkIfColumnAlwaysContainsText(7, schulNr ? schulNr : schulname)
+  }
+
+  public async checkIfRolleIsCorrect(rolleName: string): Promise<void> {
+    await this.rolleAutocomplete.checkText(rolleName);
+    await this.checkIfColumnAlwaysContainsText(6, rolleName)
   }
 }
