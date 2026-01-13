@@ -35,10 +35,10 @@ export interface PersonenInfoControllerInfoV1Request {
  */
 export interface PersonenInfoApiInterface {
     /**
-     * Das Limit (x-limit) darf maximal 5000 betragen.
-     * @summary liefert Personeninformationen basierend auf den Berechtigungen auf Service Provider des aufrufenden Nutzers. Das Limit (x-limit) darf maximal 5000 betragen.
-     * @param {number} [xOffset] Offset für die Ergebnisse (maximal 5000)
-     * @param {number} [xLimit] Maximale Anzahl der Ergebnisse (maximal 5000)
+     * liefert Personeninformationen basierend auf den Berechtigungen auf Service Provider des aufrufenden Nutzers.
+     * @summary liefert Personeninformationen basierend auf den Berechtigungen auf Service Provider des aufrufenden Nutzers.
+     * @param {number} [xOffset] Offset für die Ergebnisse
+     * @param {number} [xLimit] Maximale Anzahl der Ergebnisse
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PersonenInfoApiInterface
@@ -46,8 +46,8 @@ export interface PersonenInfoApiInterface {
     personenInfoControllerInfoV1Raw(requestParameters: PersonenInfoControllerInfoV1Request, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PersonInfoResponseV1>>;
 
     /**
-     * Das Limit (x-limit) darf maximal 5000 betragen.
-     * liefert Personeninformationen basierend auf den Berechtigungen auf Service Provider des aufrufenden Nutzers. Das Limit (x-limit) darf maximal 5000 betragen.
+     * liefert Personeninformationen basierend auf den Berechtigungen auf Service Provider des aufrufenden Nutzers.
+     * liefert Personeninformationen basierend auf den Berechtigungen auf Service Provider des aufrufenden Nutzers.
      */
     personenInfoControllerInfoV1(requestParameters: PersonenInfoControllerInfoV1Request, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PersonInfoResponseV1>;
 
@@ -59,8 +59,8 @@ export interface PersonenInfoApiInterface {
 export class PersonenInfoApi extends runtime.BaseAPI implements PersonenInfoApiInterface {
 
     /**
-     * Das Limit (x-limit) darf maximal 5000 betragen.
-     * liefert Personeninformationen basierend auf den Berechtigungen auf Service Provider des aufrufenden Nutzers. Das Limit (x-limit) darf maximal 5000 betragen.
+     * liefert Personeninformationen basierend auf den Berechtigungen auf Service Provider des aufrufenden Nutzers.
+     * liefert Personeninformationen basierend auf den Berechtigungen auf Service Provider des aufrufenden Nutzers.
      */
     async personenInfoControllerInfoV1Raw(requestParameters: PersonenInfoControllerInfoV1Request, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PersonInfoResponseV1>> {
         const queryParameters: any = {};
@@ -99,8 +99,8 @@ export class PersonenInfoApi extends runtime.BaseAPI implements PersonenInfoApiI
     }
 
     /**
-     * Das Limit (x-limit) darf maximal 5000 betragen.
-     * liefert Personeninformationen basierend auf den Berechtigungen auf Service Provider des aufrufenden Nutzers. Das Limit (x-limit) darf maximal 5000 betragen.
+     * liefert Personeninformationen basierend auf den Berechtigungen auf Service Provider des aufrufenden Nutzers.
+     * liefert Personeninformationen basierend auf den Berechtigungen auf Service Provider des aufrufenden Nutzers.
      */
     async personenInfoControllerInfoV1(requestParameters: PersonenInfoControllerInfoV1Request = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PersonInfoResponseV1> {
         const response = await this.personenInfoControllerInfoV1Raw(requestParameters, initOverrides);
