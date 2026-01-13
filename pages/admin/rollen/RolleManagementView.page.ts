@@ -11,7 +11,7 @@ export class RolleManagementViewPage {
   /* actions */
   public async waitForPageLoad(): Promise<RolleManagementViewPage> {
     await expect(this.page.getByTestId('rolle-management-headline')).toHaveText('Rollenverwaltung');
-    await this.rolleTable.waitForPageLoad();
+    await this.rolleTable.waitForDataLoad();
     return this;
   }
 
@@ -20,7 +20,7 @@ export class RolleManagementViewPage {
     return new RolleDetailsViewPage(this.page).waitForPageLoad();
   }
 
-  public async setPageSize(size: '5' | '30' | '50' | '100' | '300'): Promise<void> {
+  public async setPageSize(size: 5 | 30 | 50 | 100 | 300): Promise<void> {
     await this.rolleTable.setItemsPerPage(size);
   }
 

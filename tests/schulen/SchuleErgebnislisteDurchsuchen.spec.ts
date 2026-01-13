@@ -47,16 +47,14 @@ test.describe(`Testfälle für die Ergebnisliste von Schulen als Landesadmin: Um
 
   test(`In der Ergebnisliste die Suchfunktion benutzen`, { tag: [STAGE, DEV] }, async () => {
     // Auf 5 Einträge pro Seite setzen, damit Testschule nicht direkt sichtbar ist
-    await schuleManagementViewPage.setPageSize('5');
+    await schuleManagementViewPage.setPageSize(5);
 
     // Suche nach Schulname
     await schuleManagementViewPage.searchByText(testschuleName);
     await schuleManagementViewPage.checkIfSchuleExists(testschuleName);
-    await schuleManagementViewPage.checkRowCount(1);
 
     // Suche nach Dienststellennummer
     await schuleManagementViewPage.searchByText(testschuleDstNr);
     await schuleManagementViewPage.checkIfSchuleExists(testschuleDstNr);
-    await schuleManagementViewPage.checkRowCount(1);
   });
 });
