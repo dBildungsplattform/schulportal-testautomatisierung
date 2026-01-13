@@ -1,9 +1,10 @@
 import { PlaywrightTestArgs, test } from '@playwright/test';
 
-import { createPersonWithPersonenkontext, freshLoginPage, UserInfo } from '../../base/api/personApi';
+import { createPersonWithPersonenkontext, UserInfo } from '../../base/api/personApi';
 import { landSH, testschuleDstNr, testschuleName } from '../../base/organisation';
 import { landesadminRolle, schuladminOeffentlichRolle } from '../../base/rollen';
 import { DEV, STAGE } from '../../base/tags';
+import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
 import { generateDienststellenNr } from '../../base/utils/generateTestdata';
 import { LandingViewPage } from '../../pages/LandingView.neu.page';
 import { LoginViewPage } from '../../pages/LoginView.neu.page';
@@ -36,9 +37,7 @@ interface AdminFixture {
   test.describe(`Testfälle für die Ergebnisliste von Benutzern als ${bezeichnung}: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
     test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
       header = new HeaderPage(page);
-      loginPage = await freshLoginPage(page);
-      const startViewPage = await loginPage.login(process.env.USER, process.env.PW);
-      await startViewPage.navigateToAdministration();
+      await loginAndNavigateToAdministration(page);
 
       admin = await createPersonWithPersonenkontext(
         page,
