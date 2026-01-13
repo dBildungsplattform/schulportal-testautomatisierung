@@ -1,4 +1,5 @@
 import { PlaywrightTestArgs, test } from '@playwright/test';
+
 import { getOrganisationId } from '../../base/api/organisationApi';
 import { createPerson, freshLoginPage, UserInfo } from '../../base/api/personApi';
 import { getRolleId, RollenMerkmal } from '../../base/api/rolleApi';
@@ -6,6 +7,7 @@ import { klasse1Testschule } from '../../base/klassen';
 import { rollenMerkmalLabel } from '../../base/merkmale';
 import { testschuleName } from '../../base/organisation';
 import { rollenArtLabel } from '../../base/rollentypen';
+import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
 import { generateRolleName } from '../../base/utils/generateTestdata';
 import { Alert } from '../../elements/Alert';
 import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.neu.page';
@@ -19,15 +21,9 @@ import { LoginViewPage } from '../../pages/LoginView.neu.page';
 import { StartViewPage } from '../../pages/StartView.neu.page';
 import { rolleCreationParams } from './RolleAnlegen.data';
 
-const ADMIN: string | undefined = process.env.USER;
-const PASSWORD: string | undefined = process.env.PW;
-
 async function setupAndGoToRolleCreationPage(page: PlaywrightTestArgs['page']): Promise<RolleCreationViewPage> {
   return test.step('Anmelden und zur Rollenanlage navigieren', async () => {
-    const loginPage: LoginViewPage = await freshLoginPage(page);
-    const startPage: StartViewPage = await loginPage.login(ADMIN, PASSWORD);
-    await startPage.waitForPageLoad();
-    const personManagementView: PersonManagementViewPage = await startPage.navigateToAdministration();
+    const personManagementView: PersonManagementViewPage = await loginAndNavigateToAdministration(page);
     return personManagementView.menu.navigateToRolleCreation();
   });
 }
@@ -63,7 +59,7 @@ test.describe(`Testfälle für die Rollenanlage: Umgebung: ${process.env.ENV}: U
         const rolleDetailsView: RolleDetailsViewPage = await test.step('Zur Gesamtübersicht navigieren', async () => {
           await rolleCreationSuccessPage.checkSuccessPage(params);
           const rolleManagementViewPage: RolleManagementViewPage = await rolleCreationSuccessPage.backToResultList();
-          await rolleManagementViewPage.setPageSize('300');
+          await rolleManagementViewPage.setPageSize(300);
           return await rolleManagementViewPage.openGesamtuebersicht(params.name);
         });
 
@@ -79,7 +75,7 @@ test.describe(`Testfälle für die Rollenanlage: Umgebung: ${process.env.ENV}: U
         await rolleCreationSuccessPage.waitForPageLoad();
         await rolleCreationSuccessPage.checkSuccessPage(params);
         const rolleManagementViewPage: RolleManagementViewPage = await rolleCreationSuccessPage.backToResultList();
-        await rolleManagementViewPage.setPageSize('300');
+        await rolleManagementViewPage.setPageSize(300);
         await rolleManagementViewPage.checkIfRolleExists(params.name);
         await rolleManagementViewPage.checkIfRolleHasServiceProviders(params.name, params.serviceProviders);
       });
@@ -147,7 +143,7 @@ test.describe(`Testfälle für die Rollenanlage: Umgebung: ${process.env.ENV}: U
 
     await test.step('Ergebnisliste prüfen', async () => {
       const rolleManagementViewPage: RolleManagementViewPage = await rolleCreationSuccessPage.backToResultList();
-      await rolleManagementViewPage.setPageSize('300');
+      await rolleManagementViewPage.setPageSize(300);
       await rolleManagementViewPage.checkIfRolleExists(rolle1.name);
       await rolleManagementViewPage.checkIfRolleExists(rolle2.name);
     });

@@ -14,6 +14,7 @@ import { getRolleId } from '../../base/api/rolleApi';
 import { generateKlassenname, generateDienststellenNr, generateSchulname } from '../../base/utils/generateTestdata';
 import { SchuleCreationParams, SchuleCreationViewPage, Schulform } from '../../pages/admin/organisationen/schulen/SchuleCreationView.neu.page';
 import { SchuleCreationSuccessPage } from '../../pages/admin/organisationen/schulen/SchuleCreationSuccess.page';
+import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
 
 [
   { organisationsName: landSH, rolleName: landesadminRolle, bezeichnung: 'Landesadmin' },
@@ -30,12 +31,9 @@ import { SchuleCreationSuccessPage } from '../../pages/admin/organisationen/schu
 
     test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
       const header: HeaderPage = new HeaderPage(page);
-      const loginPage: LoginViewPage = await freshLoginPage(page);
-      let startPage: StartViewPage = await loginPage.login(process.env.USER, process.env.PW);
-      await startPage.waitForPageLoad();
+      personManagementViewPage = await loginAndNavigateToAdministration(page);
 
       // Schule anlegen
-      personManagementViewPage = await startPage.goToAdministration();
       let schuleCreationViewPage: SchuleCreationViewPage = await personManagementViewPage.menu.navigateToSchuleCreation();
       schuleParams = {
         name: generateSchulname(),
@@ -66,14 +64,14 @@ import { SchuleCreationSuccessPage } from '../../pages/admin/organisationen/schu
       }
 
       const landingPage: LandingViewPage = await header.logout();
-      landingPage.navigateToLogin();
+      const loginPage: LoginViewPage = await landingPage.navigateToLogin();
 
       // Anmeldung mit Passwortänderung
-      startPage = await loginPage.loginNewUserWithPasswordChange(admin.username, admin.password);
+      const startPage: StartViewPage = await loginPage.loginNewUserWithPasswordChange(admin.username, admin.password);
       await startPage.waitForPageLoad();
 
       // Navigation zur Klassenliste
-      personManagementViewPage = await startPage.goToAdministration();
+      personManagementViewPage = await startPage.navigateToAdministration();
       klasseManagementViewPage = await personManagementViewPage.menu.navigateToKlasseManagement();
     });
 

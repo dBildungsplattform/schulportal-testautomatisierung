@@ -10,6 +10,7 @@ import { PersonDetailsViewPage } from '../../pages/admin/personen/details/Person
 import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.neu.page';
 import { HeaderPage } from '../../pages/components/Header.neu.page';
 import { LandingViewPage } from '../../pages/LandingView.neu.page';
+import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
 
 test.describe('Passwort-Reset für Lehrer', () => { 
 
@@ -18,9 +19,7 @@ test.describe('Passwort-Reset für Lehrer', () => {
   let loginPage: LoginViewPage;
 
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
-    loginPage = await freshLoginPage(page);
-    const startPage: StartViewPage = await loginPage.login(process.env.USER as string, process.env.PW as string);
-    await startPage.waitForPageLoad();
+    personManagementViewPage = await loginAndNavigateToAdministration(page);
     lehrkraft = await createPersonWithPersonenkontext(
       page,
       testschuleName,
@@ -29,7 +28,6 @@ test.describe('Passwort-Reset für Lehrer', () => {
       undefined,
       generateKopersNr()
     );
-    personManagementViewPage = await startPage.goToAdministration();
   });
 
   test('Passwort Reset für einen Lehrer als Landesadmin',{ tag: [STAGE, DEV] },

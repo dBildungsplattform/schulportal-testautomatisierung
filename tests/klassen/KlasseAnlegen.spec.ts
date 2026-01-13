@@ -12,6 +12,7 @@ import { HeaderPage } from '../../pages/components/Header.neu.page';
 import { LandingViewPage } from '../../pages/LandingView.neu.page';
 import { LoginViewPage } from '../../pages/LoginView.neu.page';
 import { StartViewPage } from '../../pages/StartView.neu.page';
+import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
 
 let header: HeaderPage;
 let landingPage: LandingViewPage;
@@ -30,8 +31,7 @@ let admin: UserInfo;
     test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
 
       header = new HeaderPage(page);
-      loginPage = await freshLoginPage(page);
-      await loginPage.login(process.env.USER, process.env.PW);
+      await loginAndNavigateToAdministration(page);
 
       admin = await createPersonWithPersonenkontext(page, organisationsName, rolleName);
 
@@ -43,7 +43,7 @@ let admin: UserInfo;
       await startPage.waitForPageLoad();
 
       // Navigation zur Klassenanlage
-      personManagementViewPage = await startPage.goToAdministration();
+      personManagementViewPage = await startPage.navigateToAdministration();
       klasseAnlegenPage = await personManagementViewPage.menu.navigateToKlasseCreation();
 
       // Testdaten vorbereiten

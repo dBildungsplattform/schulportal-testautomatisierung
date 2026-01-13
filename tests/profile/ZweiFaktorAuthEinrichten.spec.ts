@@ -18,6 +18,7 @@ import { LandingViewPage } from '../../pages/LandingView.neu.page';
 import { LoginViewPage } from '../../pages/LoginView.neu.page';
 import { ProfileViewPage } from '../../pages/ProfileView.neu.page';
 import { StartViewPage } from '../../pages/StartView.neu.page';
+import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -28,11 +29,7 @@ let currentUserIsLandesadministrator: boolean = true;
 test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
     await test.step(`Login`, async () => {
-      await FromAnywhere(page)
-        .start()
-        .then((landing: LandingViewPage) => landing.navigateToLogin())
-        .then((login: LoginViewPage) => login.login(ADMIN, PW))
-        .then((startseite: StartViewPage) => startseite.serviceProvidersAreLoaded());
+      await loginAndNavigateToAdministration(page);
     });
   });
 
@@ -82,7 +79,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       const organisation: string = testschuleName;
       const rollenart: RollenArt = typeLehrer;
       let username: string = '';
-      const kopersnummer: string = await generateKopersNr();
+      const kopersnummer: string = generateKopersNr();
 
       await test.step('Lehrer via API anlegen und mit diesem anmelden', async () => {
         const idSPs: string[] = [await getServiceProviderId(page, email)];
@@ -90,10 +87,10 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
           page,
           organisation,
           rollenart,
-          await generateNachname(),
-          await generateVorname(),
+          generateNachname(),
+          generateVorname(),
           idSPs,
-          await generateRolleName(),
+          generateRolleName(),
           kopersnummer
         );
         username = userInfo.username;

@@ -14,7 +14,6 @@ import { HeaderPage } from '../../pages/components/Header.neu.page';
 
 let header: HeaderPage;
 let landingPage: LandingViewPage;
-let loginPage: LoginViewPage;
 let benutzerErgebnislistePage: PersonManagementViewPage;
 let admin: UserInfo;
 
@@ -49,7 +48,7 @@ interface AdminFixture {
       );
 
       landingPage = await header.logout();
-      landingPage.navigateToLogin();
+      const loginPage: LoginViewPage = await landingPage.navigateToLogin();
 
       // Erstmalige Anmeldung mit Passwortänderung
       const startPage: StartViewPage = await loginPage.loginNewUserWithPasswordChange(admin.username, admin.password);

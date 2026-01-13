@@ -23,13 +23,6 @@ export class StartViewPage {
     return twoFactorWorkflowPage.complete();
   }
 
-  public async goToAdministration(): Promise<PersonManagementViewPage> {
-    await this.page.locator('[data-testid^="service-provider-card"]').filter({ hasText: 'Schulportal-Administration' }).click();
-    const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(this.page);
-    await personManagementView.waitForPageLoad();
-    return personManagementView;
-  }
-
   /* assertions */
   public async serviceProvidersAreLoaded(): Promise<void> {
     await this.page.waitForResponse(

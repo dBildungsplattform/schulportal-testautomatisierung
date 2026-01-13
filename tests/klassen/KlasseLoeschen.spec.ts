@@ -18,11 +18,8 @@ import { KlasseManagementViewPage } from '../../pages/admin/organisationen/klass
 import { KlasseDetailsViewPage } from '../../pages/admin/organisationen/klassen/details/KlasseDetailsView.neu.page';
 import { PersonManagementViewPage } from "../../pages/admin/personen/PersonManagementView.neu.page";
 import { HeaderPage } from '../../pages/components/Header.neu.page';
+import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
 
-let header: HeaderPage;
-let landingPage: LandingViewPage;
-let loginPage: LoginViewPage;
-let personManagementViewPage: PersonManagementViewPage;
 let klasseAnlegenPage : KlasseCreationViewPage;
 let klasseErfolgreichAngelegtPage : KlasseCreationSuccessPage;
 let klasseErgebnislistePage : KlasseManagementViewPage;
@@ -37,25 +34,23 @@ let admin : UserInfo;
   test.describe(`Testfälle für das Löschen von Klassen als ${bezeichnung}: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
     test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
 
-      header = new HeaderPage(page);
-      loginPage = await freshLoginPage(page);
-      await loginPage.login(process.env.USER, process.env.PW);
+      await loginAndNavigateToAdministration(page);
 
       admin = await createPersonWithPersonenkontext(page, organisationsName, rolleName);
 
-      landingPage = await header.logout();
-      landingPage.navigateToLogin();
+      const landingPage: LandingViewPage = await (new HeaderPage(page)).logout();
+      const loginPage: LoginViewPage = await landingPage.navigateToLogin();
 
       // Erstmalige Anmeldung mit Passwortänderung
       const startPage: StartViewPage = await loginPage.loginNewUserWithPasswordChange(admin.username, admin.password)
       await startPage.waitForPageLoad();
 
       // Klasse anlegen
-      personManagementViewPage = await startPage.goToAdministration();
+      const personManagementViewPage: PersonManagementViewPage = await startPage.navigateToAdministration();
       klasseAnlegenPage = await personManagementViewPage.menu.navigateToKlasseCreation();
       klasseParams = {
         schulname: testschuleName,
-        klassenname: await generateKlassenname(),
+        klassenname: generateKlassenname(),
         schulNr: testschuleDstNr
       };
       klasseErfolgreichAngelegtPage = await klasseAnlegenPage.createKlasse(rolleName == landesadminRolle, klasseParams);
@@ -78,10 +73,10 @@ let admin : UserInfo;
     // SPSH-2860 
     test(`Eine Klasse mit einem zugeordneten Schüler als ${bezeichnung} via Quickaction löschen`, { tag: [STAGE, DEV] }, async ({ page }: PlaywrightTestArgs) => {
       await test.step(`Schüler anlegen`, async () => {
-        const schuelerVorname: string = await generateVorname();
-        const schuelerNachname: string = await generateNachname();
+        const schuelerVorname: string = generateVorname();
+        const schuelerNachname: string = generateNachname();
         const schuelerIdSPs: string[] = [await getServiceProviderId(page, itslearning)];
-        const schuelerRolleName: string = await generateRolleName();
+        const schuelerRolleName: string = generateRolleName();
         const klasseId: string = await getKlasseId(page, klasseParams.klassenname);
 
         await createRolleAndPersonWithPersonenkontext(
@@ -106,10 +101,10 @@ let admin : UserInfo;
     // SPSH-2863 
     test(`Eine Klasse mit einem zugeordneten Schüler als ${bezeichnung} via Gesamtübersicht löschen `, { tag: [STAGE, DEV] }, async ({ page }: PlaywrightTestArgs) => {
       await test.step(`Schüler anlegen`, async () => {
-        const schuelerVorname: string = await generateVorname();
-        const schuelerNachname: string = await generateNachname();
+        const schuelerVorname: string = generateVorname();
+        const schuelerNachname: string = generateNachname();
         const schuelerIdSPs: string[] = [await getServiceProviderId(page, itslearning)];
-        const schuelerRolleName: string = await generateRolleName();
+        const schuelerRolleName: string = generateRolleName();
         const klasseId: string = await getKlasseId(page, klasseParams.klassenname);
 
         await createRolleAndPersonWithPersonenkontext(
