@@ -1,11 +1,11 @@
 import test, { expect, Locator, Page } from '@playwright/test';
 import { MenuBarPage } from '../../pages/components/MenuBar.neu.page';
 import { MENU_TEST_CASES } from './menu.test-cases';
-import { ROLLEN_CASES } from './rollen';
 import { RollenSystemRecht } from '../../base/api/generated/models/RollenSystemRecht';
 import { LoginViewPage } from '../../pages/LoginView.neu.page';
 import { freshLoginPage } from '../../base/api/personApi';
 import { prepareAndLoginUserWithPermissions } from '../helpers/prepareAndLoginUserWithPermissions';
+import { ROLLEN_CASES } from '../../base/rollen';
 
 ROLLEN_CASES.forEach((rolle: {
   name: string;
