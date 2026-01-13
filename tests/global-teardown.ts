@@ -3,11 +3,15 @@ import FromAnywhere from '../pages/FromAnywhere';
 import { LandingPage } from '../pages/LandingView.page';
 import { StartPage } from '../pages/StartView.page';
 import { LoginPage } from '../pages/LoginView.page';
+import { ApiResponse, OrganisationenApi, OrganisationResponse, OrganisationsTyp } from '../base/api/generated';
+import { constructOrganisationApi } from '../base/api/organisationApi';
 
 const FRONTEND_URL: string | undefined = process.env.FRONTEND_URL || '';
 const searchString: string = 'TAuto';
 
 teardown('delete database', async ({ page }: PlaywrightTestArgs) => {
+  const organisationApi: OrganisationenApi = constructOrganisationApi(page);
+
   await test.step(`Login`, async () => {
     await FromAnywhere(page)
       .start()
@@ -37,13 +41,20 @@ teardown('delete database', async ({ page }: PlaywrightTestArgs) => {
   });
 
   await test.step(`Klassen löschen`, async () => {
-    const response: APIResponse = await page.request.get(
-      FRONTEND_URL + `api/organisationen?searchString=${searchString}&typ=KLASSE`
-    );
-    const klassenJson: { id: string }[] = await response.json();
+    let klassen: Array<OrganisationResponse> = [];
+    try {
+      const response: ApiResponse<Array<OrganisationResponse>> =
+        await organisationApi.organisationControllerFindOrganizationsRaw({
+          searchString,
+          typ: OrganisationsTyp.Klasse,
+        });
+      klassen = await response.value();
+    } catch {}
 
-    for (const klasse of klassenJson) {
-      await page.request.delete(FRONTEND_URL + `api/organisationen/${klasse.id}/klasse`);
+    for (const { id } of klassen) {
+      try {
+        await organisationApi.organisationControllerDeleteOrganisationRaw({ organisationId: id });
+      } catch {}
     }
   });
 

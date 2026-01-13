@@ -152,7 +152,7 @@ export class KlasseManagementViewPage {
   }
 
   public async checkTableData(hasMultipleSchulen: boolean): Promise<void> {
-    await this.klasseTable.checkTableData(this.table, (row: Locator) => this.checkTableRow(row, hasMultipleSchulen));
+    await this.klasseTable.checkTableData((row: Locator) => this.checkTableRow(row, hasMultipleSchulen));
   }
 
   private async checkTableRow(row: Locator, hasMultipleSchulen: boolean): Promise<void> {

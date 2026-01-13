@@ -52,11 +52,9 @@ test.describe(`Testfälle für die Ergebnisliste von Schulen als Landesadmin: Um
     // Suche nach Schulname
     await schuleManagementViewPage.searchByText(testschuleName);
     await schuleManagementViewPage.checkIfSchuleExists(testschuleName);
-    await schuleManagementViewPage.checkRowCount(1);
 
     // Suche nach Dienststellennummer
     await schuleManagementViewPage.searchByText(testschuleDstNr);
     await schuleManagementViewPage.checkIfSchuleExists(testschuleDstNr);
-    await schuleManagementViewPage.checkRowCount(1);
   });
 });

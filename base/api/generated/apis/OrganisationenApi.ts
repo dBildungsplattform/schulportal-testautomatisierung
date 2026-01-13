@@ -64,7 +64,7 @@ export interface OrganisationControllerCreateOrganisationRequest {
     createOrganisationBodyParams: CreateOrganisationBodyParams;
 }
 
-export interface OrganisationControllerDeleteKlasseRequest {
+export interface OrganisationControllerDeleteOrganisationRequest {
     organisationId: string;
 }
 
@@ -90,6 +90,7 @@ export interface OrganisationControllerFindOrganizationsRequest {
     organisationIds?: Array<string>;
     sortOrder?: OrganisationControllerFindOrganizationsSortOrderEnum;
     sortField?: OrganisationControllerFindOrganizationsSortFieldEnum;
+    getChildrenRecursively?: boolean | null;
 }
 
 export interface OrganisationControllerGetAdministrierteOrganisationenRequest {
@@ -152,20 +153,20 @@ export interface OrganisationenApiInterface {
     organisationControllerCreateOrganisation(requestParameters: OrganisationControllerCreateOrganisationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<OrganisationResponse>;
 
     /**
-     * Delete an organisation of type Klasse by id.
+     * Delete an organisation by id.
      * @summary 
      * @param {string} organisationId The id of an organization
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof OrganisationenApiInterface
      */
-    organisationControllerDeleteKlasseRaw(requestParameters: OrganisationControllerDeleteKlasseRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>>;
+    organisationControllerDeleteOrganisationRaw(requestParameters: OrganisationControllerDeleteOrganisationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>>;
 
     /**
-     * Delete an organisation of type Klasse by id.
+     * Delete an organisation by id.
      * 
      */
-    organisationControllerDeleteKlasse(requestParameters: OrganisationControllerDeleteKlasseRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void>;
+    organisationControllerDeleteOrganisation(requestParameters: OrganisationControllerDeleteOrganisationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void>;
 
     /**
      * 
@@ -208,6 +209,7 @@ export interface OrganisationenApiInterface {
      * @param {Array<string>} [organisationIds] Liefert Organisationen mit den angegebenen IDs, selbst wenn andere Filterkriterien nicht zutreffen (ODER-verknüpft mit anderen Kriterien).
      * @param {'asc' | 'desc'} [sortOrder] Order to sort by.
      * @param {'name' | 'kennung'} [sortField] Field to sort by.
+     * @param {boolean} [getChildrenRecursively] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof OrganisationenApiInterface
@@ -411,12 +413,12 @@ export class OrganisationenApi extends runtime.BaseAPI implements Organisationen
     }
 
     /**
-     * Delete an organisation of type Klasse by id.
+     * Delete an organisation by id.
      * 
      */
-    async organisationControllerDeleteKlasseRaw(requestParameters: OrganisationControllerDeleteKlasseRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async organisationControllerDeleteOrganisationRaw(requestParameters: OrganisationControllerDeleteOrganisationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters.organisationId === null || requestParameters.organisationId === undefined) {
-            throw new runtime.RequiredError('organisationId','Required parameter requestParameters.organisationId was null or undefined when calling organisationControllerDeleteKlasse.');
+            throw new runtime.RequiredError('organisationId','Required parameter requestParameters.organisationId was null or undefined when calling organisationControllerDeleteOrganisation.');
         }
 
         const queryParameters: any = {};
@@ -437,7 +439,7 @@ export class OrganisationenApi extends runtime.BaseAPI implements Organisationen
         }
 
         const response = await this.request({
-            path: `/api/organisationen/{organisationId}/klasse`.replace(`{${"organisationId"}}`, encodeURIComponent(String(requestParameters.organisationId))),
+            path: `/api/organisationen/{organisationId}`.replace(`{${"organisationId"}}`, encodeURIComponent(String(requestParameters.organisationId))),
             method: 'DELETE',
             headers: headerParameters,
             query: queryParameters,
@@ -447,11 +449,11 @@ export class OrganisationenApi extends runtime.BaseAPI implements Organisationen
     }
 
     /**
-     * Delete an organisation of type Klasse by id.
+     * Delete an organisation by id.
      * 
      */
-    async organisationControllerDeleteKlasse(requestParameters: OrganisationControllerDeleteKlasseRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.organisationControllerDeleteKlasseRaw(requestParameters, initOverrides);
+    async organisationControllerDeleteOrganisation(requestParameters: OrganisationControllerDeleteOrganisationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.organisationControllerDeleteOrganisationRaw(requestParameters, initOverrides);
     }
 
     /**
@@ -591,6 +593,10 @@ export class OrganisationenApi extends runtime.BaseAPI implements Organisationen
 
         if (requestParameters.sortField !== undefined) {
             queryParameters['sortField'] = requestParameters.sortField;
+        }
+
+        if (requestParameters.getChildrenRecursively !== undefined) {
+            queryParameters['getChildrenRecursively'] = requestParameters.getChildrenRecursively;
         }
 
         const headerParameters: runtime.HTTPHeaders = {};
