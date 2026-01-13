@@ -41,22 +41,9 @@ export class TwoFactorWorkflowPage {
     await profileViewPage.open2FADialog();
     await profileViewPage.proceedTo2FAQrCode();
 
-    const qrCodeSrc: string = await this.page
-      .getByTestId('software-token-dialog-qr-code')
-      .locator('img')
-      .getAttribute('src');
-
-    let img: PNG = new PNG();
-    const base64Data: string = qrCodeSrc.replace('data:image/png;base64,', '');
-    const buffer: Buffer = Buffer.from(base64Data, 'base64');
-    img = PNG.sync.read(buffer);
-    const qrCode: QRCode = jsQR(new Uint8ClampedArray(img.data), img.width, img.height);
-    const url: URL = new URL(qrCode.data);
-    const otpSecret: string | null = url.searchParams.get('secret');
-    if (!otpSecret) {
-      throw new Error('OTP secret not found in QR code URL');
-    }
+    const otpSecret: string | null = await this.getOtpSecretFromQRCode();
     const otp: string = await this.getOtp(otpSecret);
+
     await profileViewPage.proceedToOtpEntry();
     for (let index = 0; index < otp.length; index++) {
       const digit: string = otp.at(index);
@@ -64,6 +51,30 @@ export class TwoFactorWorkflowPage {
     }
     await this.page.getByTestId('proceed-two-factor-authentication-dialog').click();
     return new ProfileViewPage(this.page).waitForPageLoad();
+  }
+
+  private async getOtpSecretFromQRCode() {
+    const qrCode: QRCode = await this.getQRCodeFromImage();
+
+    const url: URL = new URL(qrCode.data);
+    const otpSecret: string | null = url.searchParams.get('secret');
+    if (!otpSecret) {
+      throw new Error('OTP secret not found in QR code URL');
+    }
+    return otpSecret;
+  }
+
+  private async getQRCodeFromImage() {
+    const qrCodeSrc: string = await this.page
+      .getByTestId('software-token-dialog-qr-code')
+      .locator('img')
+      .getAttribute('src');
+    const base64Data: string = qrCodeSrc.replace('data:image/png;base64,', '');
+    const buffer: Buffer = Buffer.from(base64Data, 'base64');
+    let img: PNG = new PNG();
+    img = PNG.sync.read(buffer);
+    const qrCode: QRCode = jsQR(new Uint8ClampedArray(img.data), img.width, img.height);
+    return qrCode;
   }
 
   private async fillOtpAndConfirm(otp: string): Promise<void> {
