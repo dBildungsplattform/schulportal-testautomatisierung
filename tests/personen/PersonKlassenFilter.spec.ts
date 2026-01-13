@@ -24,7 +24,7 @@ import { VersetzenWorkflowPage } from '../../pages/admin/personen/details/zuordn
   { rolleName: landesadminRolle, bezeichnung: 'Landesadmin' },
   { rolleName: schuladminOeffentlichRolle, bezeichnung: 'Schuladmin' },
 ].forEach(({ rolleName, bezeichnung }: { rolleName: string; bezeichnung: string }) => {
-  test.describe(`Testfälle für die Ergebnisliste von Benutzern als ${bezeichnung}: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
+  test.describe(`Testfälle für den Klassenfilter als ${bezeichnung}: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
     let header: HeaderPage;
     let loginPage: LoginViewPage;
     let personManagementViewPage: PersonManagementViewPage;
@@ -70,7 +70,7 @@ import { VersetzenWorkflowPage } from '../../pages/admin/personen/details/zuordn
       let personDetailsViewPage: PersonDetailsViewPage;
       let zuordnungenPage: ZuordnungenPage;
 
-      //zweites before-each damit andere Tests später nicht beeinflusst werden
+      // Zweites before-each damit andere Tests später nicht beeinflusst werden
       test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
         // Klassen für die Schule anlegen
         const KLASSEN_COUNT: number = 40;
