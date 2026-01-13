@@ -8,8 +8,11 @@ import { constructOrganisationApi } from '../base/api/organisationApi';
 
 const FRONTEND_URL: string | undefined = process.env.FRONTEND_URL || '';
 const searchString: string = 'TAuto';
+const timeoutMS: number = 2 * 60 * 1000;
 
 teardown('delete database', async ({ page }: PlaywrightTestArgs) => {
+  test.setTimeout(timeoutMS);
+
   const organisationApi: OrganisationenApi = constructOrganisationApi(page);
 
   await test.step(`Login`, async () => {
