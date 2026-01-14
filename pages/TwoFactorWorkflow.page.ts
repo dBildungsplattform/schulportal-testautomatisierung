@@ -12,15 +12,17 @@ export class TwoFactorWorkflowPage {
   public async complete(): Promise<PersonManagementViewPage> {
     const setupButton: Locator = this.getSecondFactorSetupButtonLocator();
     const requires2FASetup: boolean = await this.isLocatorVisible(setupButton);
+    let otpSecret: string | undefined;
     if (requires2FASetup) {
-      await this.setupTwoFactorAuthentication();
+      const result = await this.setupTwoFactorAuthentication();
+      otpSecret = result.otpSecret;
       await this.page.goto('/admin/personen');
     }
 
     const otpInput: Locator = this.getOtpInputLocator();
     const requires2FA: boolean = await this.isLocatorVisible(otpInput);
     if (requires2FA) {
-      const otp: string = await this.getOtp();
+      const otp: string = await this.getOtp(otpSecret);
       await this.fillOtpAndConfirm(otp);
     }
     return new PersonManagementViewPage(this.page).waitForPageLoad();
@@ -35,7 +37,7 @@ export class TwoFactorWorkflowPage {
     }
   }
 
-  private async setupTwoFactorAuthentication(): Promise<ProfileViewPage> {
+  private async setupTwoFactorAuthentication(): Promise<{ page: ProfileViewPage, otpSecret: string }> {
     await this.getSecondFactorSetupButtonLocator().click();
     const profileViewPage = await new ProfileViewPage(this.page).waitForPageLoad();
     await profileViewPage.open2FADialog();
@@ -50,7 +52,7 @@ export class TwoFactorWorkflowPage {
       await this.page.getByTestId('self-service-otp-input').locator('input').nth(index).fill(digit);
     }
     await this.page.getByTestId('proceed-two-factor-authentication-dialog').click();
-    return new ProfileViewPage(this.page).waitForPageLoad();
+    return { page: await new ProfileViewPage(this.page).waitForPageLoad(), otpSecret };
   }
 
   private async getOtpSecretFromQRCode() {
