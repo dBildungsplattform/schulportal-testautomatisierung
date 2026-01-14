@@ -20,7 +20,7 @@ export class TwoFactorWorkflowPage {
     }
 
     const otpInput: Locator = this.getOtpInputLocator();
-    const requires2FA: boolean = await this.isLocatorVisible(otpInput);
+    const requires2FA: boolean = await otpInput.isVisible({ timeout: 10 * 1000});
     if (requires2FA) {
       const otp: string = await this.getOtp(otpSecret);
       await this.fillOtpAndConfirm(otp);
@@ -30,7 +30,7 @@ export class TwoFactorWorkflowPage {
 
   private async isLocatorVisible(locator: Locator): Promise<boolean> {
     try {
-      await expect(locator).toBeVisible();
+      await locator.waitFor({ timeout: 10 * 1000, state: 'visible' });
       return true;
     } catch {
       return false;
