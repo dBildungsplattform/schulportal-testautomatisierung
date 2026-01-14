@@ -658,10 +658,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       });
 
       const personDetailsView: PersonDetailsViewPage = await test.step(`Gesamtübersicht Schüler öffnen `, async () => {
-        const startPage: StartPage = new StartPage(page);
-        const personManagementView: PersonManagementViewPage = await startPage
-          .goToAdministration()
-          .then((menu: MenuPage) => menu.goToBenutzerAnzeigen());
+        const personManagementView: PersonManagementViewPage = await new MenuPage(page).goToBenutzerAnzeigen();
         await personManagementView.searchBySuchfeld(userInfoSchueler.username);
         return await personManagementView.openGesamtuebersichtPerson(page, userInfoSchueler.username);
       });
