@@ -6,6 +6,11 @@ import { TOTP } from 'totp-generator';
 import { PersonManagementViewPage } from './admin/personen/PersonManagementView.neu.page';
 import { ProfileViewPage } from './ProfileView.neu.page';
 
+interface TwoFactorSetupResult {
+  page: ProfileViewPage;
+  otpSecret: string;
+}
+
 export class TwoFactorWorkflowPage {
   constructor(protected readonly page: Page) {}
 
@@ -14,7 +19,7 @@ export class TwoFactorWorkflowPage {
     const requires2FASetup: boolean = await this.isLocatorVisible(setupButton);
     let otpSecret: string | undefined;
     if (requires2FASetup) {
-      const result = await this.setupTwoFactorAuthentication();
+      const result: TwoFactorSetupResult = await this.setupTwoFactorAuthentication();
       otpSecret = result.otpSecret;
       await this.page.goto('/admin/personen');
     }
@@ -37,7 +42,7 @@ export class TwoFactorWorkflowPage {
     }
   }
 
-  private async setupTwoFactorAuthentication(): Promise<{ page: ProfileViewPage, otpSecret: string }> {
+  private async setupTwoFactorAuthentication(): Promise<TwoFactorSetupResult> {
     await this.getSecondFactorSetupButtonLocator().click();
     const profileViewPage = await new ProfileViewPage(this.page).waitForPageLoad();
     await profileViewPage.open2FADialog();
