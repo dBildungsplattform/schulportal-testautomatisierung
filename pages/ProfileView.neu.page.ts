@@ -1,6 +1,6 @@
 import { expect, type Locator, Page } from '@playwright/test';
-import { LoginViewPage } from './LoginView.neu.page';
 import { RollenArt } from '../base/api/generated';
+import { LoginViewPage } from './LoginView.neu.page';
 
 export interface Zuordnung {
   dienststellennummer?: string;
@@ -28,10 +28,11 @@ export class ProfileViewPage {
   }
 
   /* actions */
-  public async waitForPageLoad(): Promise<void> {
+  public async waitForPageLoad(): Promise<ProfileViewPage> {
     await this.page.getByTestId('profile-headline').waitFor({ state: 'visible' });
     await expect(this.page.getByTestId('profile-headline')).toHaveText('Mein Profil');
     await expect(this.page.getByTestId('loading-spinner')).toBeHidden();
+    return this;
   }
 
   public async getFirstSchuleName(): Promise<string> {

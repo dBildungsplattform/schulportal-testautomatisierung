@@ -2,17 +2,13 @@ import { expect, Page, PlaywrightTestArgs, test } from '@playwright/test';
 import { createTeacherAndLogin, UserInfo } from '../base/api/personApi';
 import { DEV, STAGE } from '../base/tags';
 import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata';
-import FromAnywhere from '../pages/FromAnywhere';
+import { loginAndNavigateToAdministration } from '../base/testHelperUtils';
 import { LandingPage } from '../pages/LandingView.page';
-import { LoginPage } from '../pages/LoginView.page';
 import { StartPage } from '../pages/StartView.page';
 import { HeaderPage } from '../pages/components/Header.page';
 import { CalendarPage } from '../pages/components/service-provider-cards/Calendar.page';
 import { DirectoryPage } from '../pages/components/service-provider-cards/Directory.page';
 import { Email } from '../pages/components/service-provider-cards/Email.page';
-
-const PW: string | undefined = process.env.PW;
-const ADMIN: string | undefined = process.env.USER;
 
 // The created test data will be deleted in the afterEach block
 let usernames: string[] = [];
@@ -26,13 +22,7 @@ const isStageTest = (): boolean => process.env.ENV === 'stage' || process.env.TA
 test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
     await test.step(`Login`, async () => {
-      const startPage: StartPage = await FromAnywhere(page)
-        .start()
-        .then((landing: LandingPage) => landing.goToLogin())
-        .then((login: LoginPage) => login.login())
-        .then((startseite: StartPage) => startseite.validateStartPageIsLoaded());
-
-      return startPage;
+      await loginAndNavigateToAdministration(page);
     });
   });
 
@@ -40,8 +30,6 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
     if (!currentUserIsLandesadministrator) {
       const header: HeaderPage = new HeaderPage(page);
       const landing: LandingPage = new LandingPage(page);
-      const login: LoginPage = new LoginPage(page);
-      const startseite: StartPage = new StartPage(page);
 
       if (logoutViaStartPage) {
         await header.logout({ logoutViaStartPage: true });
@@ -49,8 +37,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
         await header.logout({ logoutViaStartPage: false });
       }
       await landing.buttonAnmelden.click();
-      await login.login(ADMIN, PW);
-      await startseite.validateStartPageIsLoaded();
+      await loginAndNavigateToAdministration(page);
     }
 
     await test.step(`Testdaten(Benutzer) löschen via API`, async () => {

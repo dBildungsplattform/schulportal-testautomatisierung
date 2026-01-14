@@ -1,17 +1,12 @@
 import { PlaywrightTestArgs, test } from '@playwright/test';
+
 import { createPersonWithPersonenkontext, UserInfo } from '../../base/api/personApi';
 import { testschuleName } from '../../base/organisation';
 import { lehrkraftOeffentlichRolle } from '../../base/rollen';
-import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.neu.page';
-import FromAnywhere from '../../pages/FromAnywhere.neu';
-import { LandingViewPage } from '../../pages/LandingView.neu.page';
-import { LoginViewPage } from '../../pages/LoginView.neu.page';
-import { StartViewPage } from '../../pages/StartView.neu.page';
+import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
 import { PersonDetailsViewPage } from '../../pages/admin/personen/details/PersonDetailsView.neu.page';
+import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.neu.page';
 import { HeaderPage } from '../../pages/components/Header.neu.page';
-
-const PW: string | undefined = process.env.PW;
-const ADMIN: string | undefined = process.env.USER;
 
 interface LockOption {
   description: string;
@@ -37,11 +32,7 @@ test.describe(`Testfälle für das Personen sperren: Umgebung: ${process.env.ENV
 
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
     await test.step(`Login`, async () => {
-      const landing: LandingViewPage = await FromAnywhere(page).start();
-      const login: LoginViewPage = await landing.navigateToLogin();
-      const startseite: StartViewPage = await login.login(ADMIN, PW);
-      await startseite.serviceProvidersAreLoaded();
-      await startseite.navigateToAdministration();
+      await loginAndNavigateToAdministration(page);
     });
 
     await test.step(`Daten anlegen`, async () => {

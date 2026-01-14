@@ -1,9 +1,10 @@
 import { PlaywrightTestArgs, test } from '@playwright/test';
 
-import { createPersonWithPersonenkontext, freshLoginPage, UserInfo } from '../../base/api/personApi';
+import { createPersonWithPersonenkontext, UserInfo } from '../../base/api/personApi';
 import { landSH, testschuleDstNr, testschuleName } from '../../base/organisation';
 import { landesadminRolle, schuladminOeffentlichRolle } from '../../base/rollen';
 import { DEV, STAGE } from '../../base/tags';
+import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
 import { generateDienststellenNr } from '../../base/utils/generateTestdata';
 import { LandingViewPage } from '../../pages/LandingView.neu.page';
 import { LoginViewPage } from '../../pages/LoginView.neu.page';
@@ -13,7 +14,6 @@ import { HeaderPage } from '../../pages/components/Header.neu.page';
 
 let header: HeaderPage;
 let landingPage: LandingViewPage;
-let loginPage: LoginViewPage;
 let benutzerErgebnislistePage: PersonManagementViewPage;
 let admin: UserInfo;
 
@@ -36,8 +36,7 @@ interface AdminFixture {
   test.describe(`Testfälle für die Ergebnisliste von Benutzern als ${bezeichnung}: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
     test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
       header = new HeaderPage(page);
-      loginPage = await freshLoginPage(page);
-      await loginPage.login(process.env.USER, process.env.PW);
+      await loginAndNavigateToAdministration(page);
 
       admin = await createPersonWithPersonenkontext(
         page,
@@ -49,14 +48,14 @@ interface AdminFixture {
       );
 
       landingPage = await header.logout();
-      landingPage.navigateToLogin();
+      const loginPage: LoginViewPage = await landingPage.navigateToLogin();
 
       // Erstmalige Anmeldung mit Passwortänderung
       const startPage: StartViewPage = await loginPage.loginNewUserWithPasswordChange(admin.username, admin.password);
       await startPage.waitForPageLoad();
 
       // Navigation zur Ergebnisliste von Benutzern
-      benutzerErgebnislistePage = await startPage.goToAdministration();
+      benutzerErgebnislistePage = await startPage.navigateToAdministration();  
     });
 
     // SPSH-2923

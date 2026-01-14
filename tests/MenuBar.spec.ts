@@ -1,8 +1,7 @@
 import { expect, PlaywrightTestArgs, test } from '@playwright/test';
+
 import { DEV, STAGE } from '../base/tags';
-import FromAnywhere from '../pages/FromAnywhere';
-import { LandingPage } from '../pages/LandingView.page';
-import { LoginPage } from '../pages/LoginView.page';
+import { loginAndNavigateToAdministration } from '../base/testHelperUtils';
 import { StartPage } from '../pages/StartView.page';
 import { HeaderPage } from '../pages/components/Header.page';
 import { MenuPage } from '../pages/components/MenuBar.page';
@@ -12,13 +11,7 @@ let logoutViaStartPage: boolean = false;
 test.describe(`Testfälle für die Hauptmenue-Leiste: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
     await test.step(`Login`, async () => {
-      const startPage: StartPage = await FromAnywhere(page)
-        .start()
-        .then((landing: LandingPage) => landing.goToLogin())
-        .then((login: LoginPage) => login.login())
-        .then((startseite: StartPage) => startseite.validateStartPageIsLoaded());
-
-      return startPage;
+      await loginAndNavigateToAdministration(page);
     });
   });
 
@@ -37,11 +30,9 @@ test.describe(`Testfälle für die Hauptmenue-Leiste: Umgebung: ${process.env.EN
     'Test der Hauptmenue-Leiste und Untermenues auf Vollständigkeit',
     { tag: [STAGE, DEV ] },
     async ({ page }: PlaywrightTestArgs) => {
-      const startseite: StartPage = new StartPage(page);
       const menuBar: MenuPage = new MenuPage(page);
 
       await test.step(`Pruefen der Hauptmenueleiste mit Untermenues`, async () => {
-        await startseite.cardItemSchulportalAdministration.click();
         await expect(menuBar.headerLabelNavigation).toBeVisible();
         await expect(menuBar.buttonBackStartpage).toBeVisible();
         await expect(menuBar.labelBenutzerverwaltung).toBeVisible();
@@ -69,7 +60,6 @@ test.describe(`Testfälle für die Hauptmenue-Leiste: Umgebung: ${process.env.EN
       const menuBar: MenuPage = new MenuPage(page);
 
       await test.step(`Menue-Eintrag zum Rücksprung auf die Startseite klicken`, async () => {
-        await startseite.cardItemSchulportalAdministration.click();
         await expect(menuBar.headerLabelNavigation).toBeVisible();
         await menuBar.buttonBackStartpage.click();
         await startseite.validateStartPageIsLoaded();

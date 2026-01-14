@@ -1,4 +1,5 @@
 import { expect, PlaywrightTestArgs, test } from '@playwright/test';
+
 import { getOrganisationId } from '../base/api/organisationApi';
 import {
   createPerson,
@@ -28,6 +29,7 @@ import {
 } from '../base/sp';
 import { DEV, STAGE } from '../base/tags';
 import { deletePersonById, deleteRolleById } from '../base/testHelperDeleteTestdata';
+import { loginAndNavigateToAdministration } from '../base/testHelperUtils';
 import {
   formatDateDMY,
   generateCurrentDate,
@@ -37,7 +39,6 @@ import {
   generateVorname,
 } from '../base/utils/generateTestdata';
 import { HeaderPage } from '../pages/components/Header.page';
-import FromAnywhere from '../pages/FromAnywhere';
 import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
 import { StartPage } from '../pages/StartView.page';
@@ -56,13 +57,7 @@ let logoutViaStartPage: boolean = false;
 test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
     await test.step(`Login`, async () => {
-      const startPage: StartPage = await FromAnywhere(page)
-        .start()
-        .then((landing: LandingPage) => landing.goToLogin())
-        .then((login: LoginPage) => login.login())
-        .then((startseite: StartPage) => startseite.validateStartPageIsLoaded());
-
-      return startPage;
+      await loginAndNavigateToAdministration(page);
     });
   });
 
