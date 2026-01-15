@@ -24,6 +24,9 @@ export default defineConfig({
   maxFailures: 0, // TODO: change back
   workers: process.env.CI ? 6 : undefined,
   reporter: [['html']],
+  // This file will be required and run after all the tests. It must export a single function
+  globalTeardown: './tests/global-teardown.ts',
+
   use: {
     trace: 'on-first-retry',
     locale: 'de-DE',
@@ -35,30 +38,43 @@ export default defineConfig({
 
   projects: [
     {
-      name: 'setup',
-      testDir: './',
-      testMatch: 'global-teardown.ts',
-      teardown: 'teardown',
+      name: 'chromium',
       use: {
-        ignoreHTTPSErrors: !process.env.CI
-      }
+        ...devices['Desktop Chrome'],
+        viewport: { width: 1920, height: 1080 },
+        ignoreHTTPSErrors: true,
+      },
     },
     {
-      name: 'teardown',
-      testDir: './',
-      testMatch: 'global-teardown.ts',
+      name: 'firefox',
       use: {
-        ignoreHTTPSErrors: !process.env.CI
-      }
+        ...devices['Desktop Firefox'],
+        viewport: { width: 1920, height: 1080 },
+        ignoreHTTPSErrors: true,
+      },
     },
-
+    {
+      name: 'webkit',
+      use: {
+        ...devices['Desktop Safari'],
+        viewport: { width: 1920, height: 1080 },
+        ignoreHTTPSErrors: true,
+      },
+    },
+    /* Test against branded browsers. */
+    {
+      name: 'msedge',
+      use: {
+        channel: 'msedge',
+        viewport: { width: 1920, height: 1080 },
+      },
+    },
     {
       name: 'chrome',
       use: {
         channel: 'chrome',
         viewport: { width: 1920, height: 1080 },
       },
-      dependencies: ['setup'],
     },
 
     /* Test against mobile viewports. */
