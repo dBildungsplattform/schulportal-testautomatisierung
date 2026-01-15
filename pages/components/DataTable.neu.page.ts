@@ -81,6 +81,11 @@ export class DataTable {
     return pageData;
   }
 
+  public async clickDropdownOption(item: string): Promise<void> {
+    const option: Locator = this.page.getByRole('option', { name: item, exact: false });
+    await option.click();
+  }
+
   public async getColumn(columnIndex: number): Promise<Locator> {
     const rows: Locator = await this.getRows();
     return rows.locator(`td.v-data-table__td:nth-child(${columnIndex})`);
@@ -142,6 +147,27 @@ export class DataTable {
       await expect(header.locator('.mdi-arrow-down')).toBeVisible();
     } else if (sortingStatus === 'not-sortable') {
       await expect(header).not.toHaveClass(/v-data-table__th--sortable/);
+    }
+  }
+
+  public async checkAllDropdownOptionsVisible(items: string[], dropdownLocator: Locator, filterHeaderText: string): Promise<void> {
+    await dropdownLocator.click();
+    // Sortiere Items alphanumerisch wie sie im Dropdown angeordnet sind (Zeitersparnis beim Testlauf)
+    const sortedItems: string[] = [...items].sort((a: string, b: string) => a.localeCompare(b, 'de', { numeric: true }));
+    await expect(this.page.locator('.filter-header')).toContainText(filterHeaderText);
+    for (const item of sortedItems) {
+      const option: Locator = this.page.getByRole('option', { name: item, exact: false });
+      await option.scrollIntoViewIfNeeded();
+      await expect(option).toBeVisible();
+    }
+  }
+
+  public async checkAllDropdownOptionsClickable(items: string[], dropdownLocator: Locator): Promise<void> {
+    await dropdownLocator.click();
+    // Sortiere Items alphanumerisch wie sie im Dropdown angeordnet sind (Zeitersparnis beim Testlauf)
+    const sortedItems: string[] = [...items].sort((a: string, b: string) => a.localeCompare(b, 'de', { numeric: true }));
+    for (const item of sortedItems) {
+      await this.clickDropdownOption(item);
     }
   }
 

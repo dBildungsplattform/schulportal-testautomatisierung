@@ -1,6 +1,7 @@
 import { expect, Locator, Page } from '@playwright/test';
 import { DataTable } from '../../../components/DataTable.neu.page';
 import { SearchFilter } from '../../../../elements/SearchFilter';
+import { MenuBarPage } from '../../../components/MenuBar.neu.page';
 
 export class SchuleManagementViewPage {
   /* add global locators here */
@@ -8,12 +9,14 @@ export class SchuleManagementViewPage {
   private readonly searchFilter: SearchFilter;
   private readonly table: Locator;
   private readonly headline: Locator;
+  public readonly menu: MenuBarPage;
 
   constructor(protected readonly page: Page) {
     this.table = this.page.getByTestId('schule-table'); 
     this.schuleTable = new DataTable(this.page, this.table);
     this.searchFilter = new SearchFilter(this.page);
     this.headline = this.page.getByTestId('schule-management-headline');
+    this.menu = new MenuBarPage(this.page);
   }
 
   /* actions */
