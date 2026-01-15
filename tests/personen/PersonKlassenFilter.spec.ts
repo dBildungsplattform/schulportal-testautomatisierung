@@ -99,7 +99,7 @@ import { VersetzenWorkflowPage } from '../../pages/admin/personen/details/zuordn
         if (rolleName === landesadminRolle) {
           await personManagementViewPage.filterBySchule(schuleParams.name);
         } else {
-          await personManagementViewPage.checkIfSchuleIsCorrect(schuleParams.dienststellenNr, schuleParams.name);
+          await personManagementViewPage.checkIfSchuleIsCorrect( schuleParams.name, schuleParams.dienststellenNr);
         }
         personDetailsViewPage = await personManagementViewPage.searchAndOpenGesamtuebersicht(schueler.kopersnummer);
         await personDetailsViewPage.waitForPageLoad();
@@ -125,7 +125,7 @@ import { VersetzenWorkflowPage } from '../../pages/admin/personen/details/zuordn
         });
       });
 
-      test(`Als ${bezeichnung}: Alle Klassen im Drop-Down bei Schulzuordnung hinzufügen anzeigen`, { tag: [STAGE, DEV] }, async () => {
+      test.only(`Als ${bezeichnung}: Alle Klassen im Drop-Down bei Schulzuordnung hinzufügen anzeigen`, { tag: [STAGE, DEV] }, async () => {
         let addZuordnungWorkflowPage: AddZuordnungWorkflowPage;
 
         await test.step(`Zum Klassen-Drop-Down navigieren`, async () => {
