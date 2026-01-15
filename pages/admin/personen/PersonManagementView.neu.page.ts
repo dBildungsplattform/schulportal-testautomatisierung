@@ -4,6 +4,7 @@ import { SearchFilter } from '../../../elements/SearchFilter';
 import { DataTable } from '../../components/DataTable.neu.page';
 import { MenuBarPage } from '../../components/MenuBar.neu.page';
 import { PersonDetailsViewPage } from './details/PersonDetailsView.neu.page';
+import { waitForAPIResponse } from '../../../base/api/baseApi';
 
 export class PersonManagementViewPage {
   private readonly personTable: DataTable;
@@ -35,6 +36,12 @@ export class PersonManagementViewPage {
     await expect(this.page.getByTestId('person-table')).not.toContainText('Keine Daten');
     return this;
   }
+
+    public async waitForDataLoad(): Promise<PersonManagementViewPage> {
+      await waitForAPIResponse(this.page, 'personen-frontend');
+      await this.personTable.waitForDataLoad();
+      return this;
+    }
 
   private async filterByText(text: string, testId: string, exactMatch?: boolean): Promise<void> {
     const filter: Autocomplete = new Autocomplete(this.page, this.page.getByTestId(testId));
