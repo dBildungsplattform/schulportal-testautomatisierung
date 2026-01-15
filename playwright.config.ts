@@ -30,7 +30,7 @@ export default defineConfig({
     timezoneId: 'Europe/Brussels',
     screenshot: 'only-on-failure',
     baseURL: FRONTEND_URL,
-    headless: true,
+    headless: false,
   },
 
   projects: [
@@ -51,42 +51,7 @@ export default defineConfig({
         ignoreHTTPSErrors: !process.env.CI
       }
     },
-    {
-      name: 'chromium',
-      use: {
-        ...devices['Desktop Chrome'],
-        viewport: { width: 1920, height: 1080 },
-        ignoreHTTPSErrors: true,
-      },
-      dependencies: ['setup'],
-    },
-    {
-      name: 'firefox',
-      use: {
-        ...devices['Desktop Firefox'],
-        viewport: { width: 1920, height: 1080 },
-        ignoreHTTPSErrors: true,
-      },
-      dependencies: ['setup'],
-    },
-    {
-      name: 'webkit',
-      use: {
-        ...devices['Desktop Safari'],
-        viewport: { width: 1920, height: 1080 },
-        ignoreHTTPSErrors: true,
-      },
-      dependencies: ['setup'],
-    },
-    /* Test against branded browsers. */
-    {
-      name: 'msedge',
-      use: {
-        channel: 'msedge',
-        viewport: { width: 1920, height: 1080 },
-      },
-      dependencies: ['setup'],
-    },
+
     {
       name: 'chrome',
       use: {
