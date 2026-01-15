@@ -48,8 +48,8 @@ export class PersonManagementViewPage {
     await filter.searchByTitle(text, exactMatch);
   }
 
-  public async filterBySchule(name: string): Promise<void> {
-    await this.organisationAutocomplete.searchByTitle(name, false);
+  public async filterBySchule(name: string, exactMatch?: boolean): Promise<void> {
+    await this.organisationAutocomplete.searchByTitle(name, exactMatch ?? false);
   }
 
   public async filterByRolle(rolle: string): Promise<void> {

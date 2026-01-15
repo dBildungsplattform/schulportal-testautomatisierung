@@ -127,9 +127,11 @@ interface AdminFixture {
       `Als ${bezeichnung}: In der Ergebnisliste die Filterfunktion der Schulen benutzen`,
       { tag: [STAGE, DEV] },
       async () => {
-        // Filtern nach Schule
-        if (rolleName === landesadminRolle) {
-          await personManagementViewPage.filterBySchule(organisationsName);
+        if(rolleName === schuladminOeffentlichRolle){
+        await personManagementViewPage.filterBySchule(organisationsName, false);
+        } else {
+          // The searchstring for land matches multiple organisations, so we need to use exactMatch=true
+        await personManagementViewPage.filterBySchule(organisationsName, true);
         }
         await personManagementViewPage.checkIfSchuleIsCorrect(organisationsName, dienststellenNr);
       }
