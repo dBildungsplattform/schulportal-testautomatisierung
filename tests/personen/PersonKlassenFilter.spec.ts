@@ -125,7 +125,7 @@ import { VersetzenWorkflowPage } from '../../pages/admin/personen/details/zuordn
         });
       });
 
-      test.only(`Als ${bezeichnung}: Alle Klassen im Drop-Down bei Schulzuordnung hinzufügen anzeigen`, { tag: [STAGE, DEV] }, async () => {
+      test(`Als ${bezeichnung}: Alle Klassen im Drop-Down bei Schulzuordnung hinzufügen anzeigen`, { tag: [STAGE, DEV] }, async () => {
         let addZuordnungWorkflowPage: AddZuordnungWorkflowPage;
 
         await test.step(`Zum Klassen-Drop-Down navigieren`, async () => {
