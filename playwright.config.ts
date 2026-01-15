@@ -33,7 +33,7 @@ export default defineConfig({
     timezoneId: 'Europe/Brussels',
     screenshot: 'only-on-failure',
     baseURL: FRONTEND_URL,
-    headless: false,
+    headless: true,
   },
 
   projects: [
