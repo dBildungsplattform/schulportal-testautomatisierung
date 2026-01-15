@@ -24,10 +24,10 @@ export default async function globalTeardown(): Promise<void> {
 
   const browser: Browser = await chromium.launch();
   const context: BrowserContext = await browser.newContext({
-  baseURL: FRONTEND_URL,
+    baseURL: FRONTEND_URL,
   });
 
-const page: Page = await context.newPage();
+  const page: Page = await context.newPage();
 
   try {
     const organisationApi: OrganisationenApi = constructOrganisationApi(page);
