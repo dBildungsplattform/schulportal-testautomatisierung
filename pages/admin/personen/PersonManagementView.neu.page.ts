@@ -42,7 +42,7 @@ export class PersonManagementViewPage {
   }
 
   public async filterBySchule(name: string): Promise<void> {
-    await this.organisationAutocomplete.searchByTitle(name, true);
+    await this.organisationAutocomplete.searchByTitle(name, false);
   }
 
   public async filterByRolle(rolle: string): Promise<void> {
