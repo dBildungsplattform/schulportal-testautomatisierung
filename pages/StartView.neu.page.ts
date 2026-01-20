@@ -20,7 +20,7 @@ export class StartViewPage {
     await this.page.locator('[data-testid^="service-provider-card"]').filter({ hasText: 'Schulportal-Administration' }).click();
 
     const twoFactorWorkflowPage: TwoFactorWorkflowPage = new TwoFactorWorkflowPage(this.page);
-    return twoFactorWorkflowPage.complete();
+    return twoFactorWorkflowPage.completeTwoFactorAuthentication();
   }
 
   /* assertions */
