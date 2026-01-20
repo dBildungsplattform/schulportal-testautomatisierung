@@ -4,6 +4,7 @@ import { SearchFilter } from '../../../elements/SearchFilter';
 import { DataTable } from '../../components/DataTable.neu.page';
 import { MenuBarPage } from '../../components/MenuBar.neu.page';
 import { PersonDetailsViewPage } from './details/PersonDetailsView.neu.page';
+import { waitForAPIResponse } from '../../../base/api/baseApi';
 
 export class PersonManagementViewPage {
   private readonly personTable: DataTable;
@@ -36,14 +37,20 @@ export class PersonManagementViewPage {
     return this;
   }
 
-  private async filterByText(text: string, testId: string): Promise<void> {
+    public async waitForDataLoad(): Promise<PersonManagementViewPage> {
+      await waitForAPIResponse(this.page, 'personen-frontend');
+      await this.personTable.waitForDataLoad();
+      return this;
+    }
+
+  private async filterByText(text: string, testId: string, exactMatch?: boolean): Promise<void> {
     const filter: Autocomplete = new Autocomplete(this.page, this.page.getByTestId(testId));
-    await filter.selectByTitle(text);
+    await filter.searchByTitle(text, exactMatch);
   }
 
-  public async filterBySchule(name: string): Promise<void> {
-    await this.organisationAutocomplete.searchByTitle(name, true);
-}
+  public async filterBySchule(name: string, exactMatch?: boolean): Promise<void> {
+    await this.organisationAutocomplete.searchByTitle(name, exactMatch ?? false);
+  }
 
   public async filterByRolle(rolle: string): Promise<void> {
     await this.rolleAutocomplete.searchByTitle(rolle, true);
@@ -122,6 +129,18 @@ export class PersonManagementViewPage {
     // we don't know how many valid rows there should be, so we have to check that no invalid rows are present
     // using count or all is flaky, because we can't be sure if the table has updated already
     await expect(column.filter({ hasNotText: expectedText })).toHaveCount(0);
+  }
+
+  public async checkAllDropdownOptionsVisible(klassen: string[]): Promise<void> {
+    await this.personTable.checkAllDropdownOptionsVisible(
+      klassen,
+      this.page.getByTestId('personen-management-klasse-select'),
+      `${klassen.length} Klassen gefunden`
+    );
+  }
+
+  public async checkAllDropdownOptionsClickable(klassen: string[]): Promise<void> {
+    await this.personTable.checkAllDropdownOptionsClickable(klassen, this.page.getByTestId('personen-management-klasse-select'));
   }
 
   public async checkIfSchuleIsCorrect(schulname: string, schulNr?: string): Promise<void> {

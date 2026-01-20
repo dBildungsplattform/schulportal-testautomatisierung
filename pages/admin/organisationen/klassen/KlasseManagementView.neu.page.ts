@@ -11,11 +11,13 @@ export class KlasseManagementViewPage {
   private readonly klasseTable: DataTable;
   private readonly searchFilter: SearchFilter;
   private readonly table: Locator;
+  private readonly klasseSelect: Locator;
 
   constructor(protected readonly page: Page) {
     this.table = this.page.getByTestId('klasse-table');
     this.klasseTable = new DataTable(this.page, this.table);
     this.searchFilter = new SearchFilter(this.page);
+    this.klasseSelect = this.page.getByTestId('klassen-management-klasse-select');
   }
 
   /* actions */
@@ -34,17 +36,22 @@ export class KlasseManagementViewPage {
     await this.klasseTable.setItemsPerPage(entries);
   }
     
-  private async filterByText(text: string, testId: string): Promise<void> {
+  private async filterByText(text: string, testId: string, exact: boolean = false): Promise<void> {
     const filter: Autocomplete = new Autocomplete(this.page, this.page.getByTestId(testId));
-    await filter.searchByTitle(text, false);
+    await filter.searchByTitle(text, exact);
   }
 
-  public async filterBySchule(schulname: string): Promise<void> {
-    await this.filterByText(schulname, 'klassen-management-schule-select');
+  public async filterBySchule(schulname: string, exact: boolean = false): Promise<void> {
+    await this.filterByText(schulname, 'klassen-management-schule-select', exact);
   }
 
   public async filterByKlasse(klassenname: string): Promise<void> {
-    await this.filterByText(klassenname, 'klassen-management-klasse-select');
+    const filter: Autocomplete = new Autocomplete(this.page, this.klasseSelect);
+    await filter.searchByTitle(klassenname, false);
+  }
+
+  public async clickColumnHeader(columnName: string): Promise<void> {
+    await this.klasseTable.clickColumnHeader(columnName, 'organisationen');
   }
 
   public async toggleKlasseSort(): Promise<void> {
@@ -110,6 +117,18 @@ export class KlasseManagementViewPage {
   public async checkIfTableIsLoaded(rowCount: number, expectedHeaders: string[]): Promise<void> {
     await this.klasseTable.checkRowCount(rowCount);
     await this.klasseTable.checkHeaders(expectedHeaders);
+  }
+
+  public async checkAllDropdownOptionsVisible(klassen: string[]): Promise<void> {
+    await this.klasseTable.checkAllDropdownOptionsVisible(
+      klassen,
+      this.klasseSelect,
+      `${klassen.length} Klassen gefunden`
+    );
+  }
+
+  public async checkAllDropdownOptionsClickable(klassen: string[]): Promise<void> {
+    await this.klasseTable.checkAllDropdownOptionsClickable(klassen, this.klasseSelect);
   }
 
   public async checkHeaders(expectedHeaders: string[]): Promise<void> {
