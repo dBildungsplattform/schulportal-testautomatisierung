@@ -13,7 +13,6 @@ import {
 } from '../../base/organisation';
 import { landesadminRolle, schuelerRolle, schuladminOeffentlichRolle } from '../../base/rollen';
 import { typeLehrer, typeSchueler } from '../../base/rollentypen';
-import { schulportaladmin } from '../../base/sp';
 import { DEV, STAGE } from '../../base/tags';
 import { deletePersonenBySearchStrings, deleteRolleById, deleteRolleByName } from '../../base/testHelperDeleteTestdata';
 import { TestHelperLdap } from '../../base/testHelperLdap';
@@ -26,8 +25,8 @@ import { HeaderPage } from '../../pages/components/Header.page';
 import { MenuPage } from '../../pages/components/MenuBar.page';
 import { LandingPage } from '../../pages/LandingView.page';
 import { LoginPage } from '../../pages/LoginView.page';
-import { StartPage } from '../../pages/StartView.page';
 import { StartViewPage as NewStartPage } from '../../pages/StartView.neu.page';
+import { StartPage } from '../../pages/StartView.page';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;

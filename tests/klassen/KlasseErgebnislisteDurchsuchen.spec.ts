@@ -143,6 +143,24 @@ import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
           await klasseManagementViewPage.checkRows(1);
         });
       });
+
+      test(`Als ${bezeichnung}: Alle Klassen im Drop-Down des Klassenfilters anzeigen`, { tag: [STAGE, DEV] }, async () => {
+        if (hasMultipleSchulen) {
+          await klasseManagementViewPage.filterBySchule(schuleParams.name);
+        } else {
+          await klasseManagementViewPage.checkIfSchuleIsCorrect(schuleParams.name, schuleParams.dienststellenNr);
+        }
+        await klasseManagementViewPage.checkAllDropdownOptionsVisible(generierteKlassenNamen);
+      });
+
+      test(`Als ${bezeichnung}: Alle Klassen im Drop-Down des Klassenfilters anklickbar`, { tag: [STAGE, DEV] }, async () => {
+        if (hasMultipleSchulen) {
+          await klasseManagementViewPage.filterBySchule(schuleParams.name);
+        } else {
+          await klasseManagementViewPage.checkIfSchuleIsCorrect(schuleParams.name, schuleParams.dienststellenNr);
+        }
+        await klasseManagementViewPage.checkAllDropdownOptionsClickable(generierteKlassenNamen);
+      });
     });
   });
 });
