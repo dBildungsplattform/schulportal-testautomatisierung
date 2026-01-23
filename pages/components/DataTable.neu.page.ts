@@ -24,6 +24,20 @@ export class DataTable {
     return this.tableLocator.locator(`tr:has-text("${expectedText}")`);
   }
 
+  public async toggleSelectAllRows(select: boolean): Promise<void> {
+    const checkbox: Locator = this.tableLocator.locator('thead input[type="checkbox"]').first();
+    
+    for (let i: number = 0; i < 2; i++) {
+      if ((await checkbox.isChecked()) === select) break;
+      await checkbox.click();
+    }
+  }
+
+  public async selectRowByText(text: string): Promise<void> {    
+    const rowCheckbox: Locator = this.getItemByText(text).locator('.v-selection-control');
+    await rowCheckbox.click();
+  }
+
   public async clickColumnHeader(columnName: string, endpoint?: string): Promise<void> {
     const header: Locator = this.tableLocator.locator('th').filter({ hasText: columnName });
     await header.click();
@@ -150,11 +164,18 @@ export class DataTable {
     }
   }
 
-  public async checkAllDropdownOptionsVisible(items: string[], dropdownLocator: Locator, filterHeaderText: string): Promise<void> {
+  public async checkAllDropdownOptionsVisible(items: string[], dropdownLocator: Locator, filterHeaderText?: string, exactCount: boolean = false): Promise<void> {
     await dropdownLocator.click();
     // Sortiere Items alphanumerisch wie sie im Dropdown angeordnet sind (Zeitersparnis beim Testlauf)
     const sortedItems: string[] = [...items].sort((a: string, b: string) => a.localeCompare(b, 'de', { numeric: true }));
-    await expect(this.page.locator('.filter-header')).toContainText(filterHeaderText);
+    if (filterHeaderText) {
+      await expect(this.page.locator('.filter-header')).toContainText(filterHeaderText);
+    }
+    if (exactCount) {
+      const options: Locator = this.page.getByRole('option');
+      const expectedCount: number = filterHeaderText ? sortedItems.length + 1 : sortedItems.length;
+      await expect(options).toHaveCount(expectedCount, { timeout: 5000 });
+    }
     for (const item of sortedItems) {
       const option: Locator = this.page.getByRole('option', { name: item, exact: false });
       await option.scrollIntoViewIfNeeded();
@@ -178,5 +199,11 @@ export class DataTable {
       return sortOrder === 'ascending' ? comparison : -comparison;
     });
     expect(columnData).toEqual(sortedData);
+  }
+
+  public async checkCellInRow(rowIdentifier: string, cellIndex: number, expectedText: string): Promise<void> {
+    const row: Locator = this.getItemByText(rowIdentifier);
+    const cell: Locator = row.locator('td').nth(cellIndex);
+    await expect(cell).toContainText(expectedText);
   }
 }

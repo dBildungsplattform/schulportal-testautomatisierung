@@ -153,7 +153,7 @@ interface AdminFixture {
 
       test(`Als ${bezeichnung}: Alle Klassen im Drop-Down des Klassenfilters anzeigen`, { tag: [STAGE, DEV] }, async () => {
         await personManagementViewPage.filterBySchule(schuleParams.name);
-        await personManagementViewPage.checkAllDropdownOptionsVisible(klassenNamen);
+        await personManagementViewPage.checkAllDropdownOptionsVisible(klassenNamen, 'personen-management-klasse-select', true, true);
       });
 
       test(`Als ${bezeichnung}: Alle Klassen im Drop-Down des Klassenfilters anklickbar`, { tag: [STAGE, DEV] }, async () => {
