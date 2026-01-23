@@ -15,6 +15,7 @@ import { constructOrganisationApi } from '../base/api/organisationApi';
 
 const FRONTEND_URL: string = process.env.FRONTEND_URL ?? '';
 const searchString: string = 'TAuto';
+const timeoutMS: number = 2 * 60 * 1000;
 
 /**
  * Global teardown – runs ONCE per Playwright run

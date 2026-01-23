@@ -12,15 +12,12 @@ import { HeaderPage } from '../../pages/components/Header.neu.page';
 import { LandingViewPage } from '../../pages/LandingView.neu.page';
 import { LoginViewPage } from '../../pages/LoginView.neu.page';
 import { StartViewPage } from '../../pages/StartView.neu.page';
+import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
 
-let header: HeaderPage;
-let landingPage: LandingViewPage;
-let loginPage: LoginViewPage;
 let personManagementViewPage: PersonManagementViewPage;
 let klasseAnlegenPage : KlasseCreationViewPage;
 let klasseErfolgreichAngelegtPage : KlasseCreationSuccessPage;
 let klasseParams : KlasseCreationParams;
-let admin: UserInfo;
 
 [
   { organisationsName: landSH, rolleName: landesadminRolle, bezeichnung: 'Landesadmin' },
@@ -29,27 +26,25 @@ let admin: UserInfo;
   test.describe(`Testfälle für das Anlegen von Klassen als ${bezeichnung}: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
     test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
 
-      header = new HeaderPage(page);
-      loginPage = await freshLoginPage(page);
-      await loginPage.login(process.env.USER, process.env.PW);
+      await loginAndNavigateToAdministration(page);
 
-      admin = await createPersonWithPersonenkontext(page, organisationsName, rolleName);
+      const admin: UserInfo = await createPersonWithPersonenkontext(page, organisationsName, rolleName);
 
-      landingPage = await header.logout();
-      landingPage.navigateToLogin();
+      const landingPage: LandingViewPage = await new HeaderPage(page).logout();
+      const loginPage: LoginViewPage = await landingPage.navigateToLogin();
 
       // Erstmalige Anmeldung mit Passwortänderung
       const startPage: StartViewPage = await loginPage.loginNewUserWithPasswordChange(admin.username, admin.password)
       await startPage.waitForPageLoad();
 
       // Navigation zur Klassenanlage
-      personManagementViewPage = await startPage.goToAdministration();
+      personManagementViewPage = await startPage.navigateToAdministration();
       klasseAnlegenPage = await personManagementViewPage.menu.navigateToKlasseCreation();
 
       // Testdaten vorbereiten
       klasseParams = {
         schulname: testschuleName,
-        klassenname: await generateKlassenname(),
+        klassenname: generateKlassenname(),
         schulNr: testschuleDstNr
       };
     });
