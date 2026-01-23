@@ -4,7 +4,6 @@ import { SearchFilter } from '../../../elements/SearchFilter';
 import { DataTable } from '../../components/DataTable.neu.page';
 import { MenuBarPage } from '../../components/MenuBar.neu.page';
 import { PersonDetailsViewPage } from './details/PersonDetailsView.neu.page';
-import { waitForAPIResponse } from '../../../base/api/baseApi';
 import { UserInfo } from '../../../base/api/personApi';
 
 export class PersonManagementViewPage {
@@ -41,7 +40,6 @@ export class PersonManagementViewPage {
   }
 
   public async waitForDataLoad(): Promise<PersonManagementViewPage> {
-    await waitForAPIResponse(this.page, 'personen-frontend');
     await this.personTable.waitForDataLoad();
     return this;
   }
@@ -77,6 +75,10 @@ export class PersonManagementViewPage {
 
   public async searchByText(text: string): Promise<void> {
     await this.searchFilter.searchByText(text);
+  }
+
+  public async toggleColumnSort(columnName: string): Promise<void> {
+    await this.personTable.clickColumnHeader(columnName, 'personen-frontend');
   }
 
   public async openGesamtuebersicht(name: string): Promise<PersonDetailsViewPage> {
@@ -183,6 +185,14 @@ export class PersonManagementViewPage {
   public async checkIfRolleIsCorrect(rolleName: string): Promise<void> {
     await this.rolleAutocomplete.checkText(rolleName);
     await this.checkIfColumnAlwaysContainsText(6, rolleName)
+  }
+
+  public async checkIfColumnHeaderSorted(columnName: string, sortingStatus: 'ascending' | 'descending' | 'not-sortable'): Promise<void> {
+    await this.personTable.checkIfColumnHeaderSorted(columnName, sortingStatus);
+  }
+
+  public async checkIfColumnDataSorted(cellIndex: number, sortOrder: 'ascending' | 'descending'): Promise<void> {
+    await this.personTable.checkIfColumnDataSorted(cellIndex, sortOrder);
   }
 
   public async checkSchuelerVersetzenDialog(klassenNamen: string[]): Promise<void> {
