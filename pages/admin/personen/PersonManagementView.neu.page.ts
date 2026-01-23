@@ -4,7 +4,6 @@ import { SearchFilter } from '../../../elements/SearchFilter';
 import { DataTable } from '../../components/DataTable.neu.page';
 import { MenuBarPage } from '../../components/MenuBar.neu.page';
 import { PersonDetailsViewPage } from './details/PersonDetailsView.neu.page';
-import { waitForAPIResponse } from '../../../base/api/baseApi';
 
 export class PersonManagementViewPage {
   private readonly personTable: DataTable;
@@ -37,11 +36,14 @@ export class PersonManagementViewPage {
     return this;
   }
 
-    public async waitForDataLoad(): Promise<PersonManagementViewPage> {
-      await waitForAPIResponse(this.page, 'personen-frontend');
-      await this.personTable.waitForDataLoad();
-      return this;
-    }
+  public async waitForDataLoad(): Promise<PersonManagementViewPage> {
+    await this.personTable.waitForDataLoad();
+    return this;
+  }
+
+  public async setItemsPerPage(entries: 5 | 30 | 50 | 100 | 300): Promise<void> {
+    await this.personTable.setItemsPerPage(entries);
+  }
 
   private async filterByText(text: string, testId: string, exactMatch?: boolean): Promise<void> {
     const filter: Autocomplete = new Autocomplete(this.page, this.page.getByTestId(testId));
@@ -70,6 +72,10 @@ export class PersonManagementViewPage {
 
   public async searchByText(text: string): Promise<void> {
     await this.searchFilter.searchByText(text);
+  }
+
+  public async toggleColumnSort(columnName: string): Promise<void> {
+    await this.personTable.clickColumnHeader(columnName, 'personen-frontend');
   }
 
   public async openGesamtuebersicht(name: string): Promise<PersonDetailsViewPage> {
@@ -152,5 +158,13 @@ export class PersonManagementViewPage {
   public async checkIfRolleIsCorrect(rolleName: string): Promise<void> {
     await this.rolleAutocomplete.checkText(rolleName);
     await this.checkIfColumnAlwaysContainsText(6, rolleName)
+  }
+
+  public async checkIfColumnHeaderSorted(columnName: string, sortingStatus: 'ascending' | 'descending' | 'not-sortable'): Promise<void> {
+    await this.personTable.checkIfColumnHeaderSorted(columnName, sortingStatus);
+  }
+
+  public async checkIfColumnDataSorted(cellIndex: number, sortOrder: 'ascending' | 'descending'): Promise<void> {
+    await this.personTable.checkIfColumnDataSorted(cellIndex, sortOrder);
   }
 }
