@@ -82,10 +82,10 @@ interface AdminFixture {
       personManagementViewPage = await startPage.goToAdministration();
     });
 
-    test.describe(`Als ${bezeichnung}: Schüler versetzen als Mehrfachbearbeitung prüfen`, { tag: [STAGE, DEV] }, async () => {
+    test(`Als ${bezeichnung}: Schüler versetzen als Mehrfachbearbeitung prüfen`, { tag: [STAGE, DEV] }, async ({ page }: PlaywrightTestArgs) => {
       let testData: PersonenMehrfachbearbeitungTestData;
 
-      test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
+      await test.step(`Testdaten erstellen`, async () => {
         testData = await createTestDataForSchuelerVersetzen(
           page,
           schule1Params,
@@ -95,50 +95,48 @@ interface AdminFixture {
         );
       });
 
-      test(`Als ${bezeichnung}: Schüler versetzen als Mehrfachbearbeitung prüfen`, { tag: [STAGE, DEV] }, async () => {
-        if (hasMultipleSchulen) {
-          await test.step(`Fehlermeldungen für Schule und Schülerrolle testen`, async () => {
-            await personManagementViewPage.setItemsPerPage(50);
-            await personManagementViewPage.toggleSelectAllRows(true);
-            await personManagementViewPage.selectMehrfachauswahl('Schüler versetzen');
-            await personManagementViewPage.checkSchuelerVersetzenErrorDialog('all');
-            await personManagementViewPage.closeDialog('invalid-selection-alert-dialog-cancel-button');
-
-            await personManagementViewPage.filterBySchule(schule1Params.name);
-          });
-        }
-
-        await test.step(`Fehlermeldungen nur für Schülerrolle testen`, async () => {
-          await personManagementViewPage.setItemsPerPage(5);
+      if (hasMultipleSchulen) {
+        await test.step(`Fehlermeldungen für Schule und Schülerrolle testen`, async () => {
+          await personManagementViewPage.setItemsPerPage(50);
           await personManagementViewPage.toggleSelectAllRows(true);
           await personManagementViewPage.selectMehrfachauswahl('Schüler versetzen');
-          await personManagementViewPage.checkSchuelerVersetzenErrorDialog('rolle');
+          await personManagementViewPage.checkSchuelerVersetzenErrorDialog('all');
           await personManagementViewPage.closeDialog('invalid-selection-alert-dialog-cancel-button');
-        });
-      
-        await test.step(`Nur Schüler auswählen`, async () => {
-          await personManagementViewPage.toggleSelectAllRows(false);
-          for (const schueler of testData.schuelerSchule1) {
-            await personManagementViewPage.checkIfPersonExists(`${schueler.nachname}`);
-            await personManagementViewPage.selectPerson(`${schueler.nachname}`);
-          }
-        });
 
-        await test.step(`Schüler versetzen-Dialog prüfen und anschließend versetzen`, async () => {
-          await personManagementViewPage.selectMehrfachauswahl('Schüler versetzen');
-          await personManagementViewPage.checkSchuelerVersetzenDialog(testData.klassenNamenSchule1);
-          await personManagementViewPage.versetzeSchueler(testData.klassenNamenSchule1[0]);
+          await personManagementViewPage.filterBySchule(schule1Params.name);
         });
+      }
 
-        await test.step(`Progressbar und Erfolgsdialog prüfen`, async () => {
-          await personManagementViewPage.checkSchuelerVersetzenInProgress();
-          await personManagementViewPage.checkSchuelerVersetzenSuccessDialog();
-          await personManagementViewPage.closeDialog('bulk-change-klasse-close-button');
-        });
+      await test.step(`Fehlermeldungen nur für Schülerrolle testen`, async () => {
+        await personManagementViewPage.setItemsPerPage(5);
+        await personManagementViewPage.toggleSelectAllRows(true);
+        await personManagementViewPage.selectMehrfachauswahl('Schüler versetzen');
+        await personManagementViewPage.checkSchuelerVersetzenErrorDialog('rolle');
+        await personManagementViewPage.closeDialog('invalid-selection-alert-dialog-cancel-button');
+      });
+    
+      await test.step(`Nur Schüler auswählen`, async () => {
+        await personManagementViewPage.toggleSelectAllRows(false);
+        for (const schueler of testData.schuelerSchule1) {
+          await personManagementViewPage.checkIfPersonExists(`${schueler.nachname}`);
+          await personManagementViewPage.selectPerson(`${schueler.nachname}`);
+        }
+      });
 
-        await test.step(`Aktualisierte Ergebnisliste prüfen`, async () => {
-          await personManagementViewPage.checkNewKlasseNachVersetzen(testData.schuelerSchule1, testData.klassenNamenSchule1[0]);
-        });
+      await test.step(`Schüler versetzen-Dialog prüfen und anschließend versetzen`, async () => {
+        await personManagementViewPage.selectMehrfachauswahl('Schüler versetzen');
+        await personManagementViewPage.checkSchuelerVersetzenDialog(testData.klassenNamenSchule1);
+        await personManagementViewPage.versetzeSchueler(testData.klassenNamenSchule1[0]);
+      });
+
+      await test.step(`Progressbar und Erfolgsdialog prüfen`, async () => {
+        await personManagementViewPage.checkSchuelerVersetzenInProgress();
+        await personManagementViewPage.checkSchuelerVersetzenSuccessDialog();
+        await personManagementViewPage.closeDialog('bulk-change-klasse-close-button');
+      });
+
+      await test.step(`Aktualisierte Ergebnisliste prüfen`, async () => {
+        await personManagementViewPage.checkNewKlasseNachVersetzen(testData.schuelerSchule1, testData.klassenNamenSchule1[0]);
       });
     });
   });
