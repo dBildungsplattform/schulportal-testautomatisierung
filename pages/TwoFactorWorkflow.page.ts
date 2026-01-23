@@ -6,12 +6,14 @@ import { TOTP } from 'totp-generator';
 import { PersonManagementViewPage } from './admin/personen/PersonManagementView.neu.page';
 import { ProfileViewPage } from './ProfileView.neu.page';
 
-interface TwoFactorSetupResult {
+export interface TwoFactorSetupResult {
   page: ProfileViewPage;
   otpSecret: string;
 }
 
 export class TwoFactorWorkflowPage {
+  private expires: number | undefined;
+
   constructor(protected readonly page: Page) {}
 
   public async completeTwoFactorAuthentication(): Promise<PersonManagementViewPage> {
@@ -19,7 +21,7 @@ export class TwoFactorWorkflowPage {
     const requires2FASetup: boolean = await this.isLocatorVisible(setupButton);
     let otpSecret: string | undefined;
     if (requires2FASetup) {
-      const result: TwoFactorSetupResult = await this.setupTwoFactorAuthentication();
+      const result: TwoFactorSetupResult = await this.setupTwoFactorAuthenticationFromErrorMessage();
       otpSecret = result.otpSecret;
       await this.page.goto('/admin/personen');
     }
@@ -27,23 +29,17 @@ export class TwoFactorWorkflowPage {
     const otpInput: Locator = this.getOtpInputLocator();
     const requires2FA: boolean = await this.isLocatorVisible(otpInput);
     if (requires2FA) {
-      const otp: string = await this.generateCurrentOtp(otpSecret);
-      await this.fillOtpAndConfirm(otp);
+      await this.enterOtpForTwoFactorAuthentication(otpSecret);
     }
     return new PersonManagementViewPage(this.page).waitForPageLoad();
   }
 
-  private async isLocatorVisible(locator: Locator): Promise<boolean> {
-    try {
-      await locator.waitFor({ timeout: 10 * 1000, state: 'visible' });
-      return true;
-    } catch {
-      return false;
-    }
+  public async setupTwoFactorAuthenticationFromErrorMessage(): Promise<TwoFactorSetupResult> {
+    await this.getSecondFactorSetupButtonLocator().click();
+    return this.setupTwoFactorAuthenticationFromProfile();
   }
 
-  private async setupTwoFactorAuthentication(): Promise<TwoFactorSetupResult> {
-    await this.getSecondFactorSetupButtonLocator().click();
+  public async setupTwoFactorAuthenticationFromProfile(): Promise<TwoFactorSetupResult> {
     const profileViewPage = await new ProfileViewPage(this.page).waitForPageLoad();
     await profileViewPage.open2FADialog();
     await profileViewPage.proceedTo2FAQrCode();
@@ -59,6 +55,21 @@ export class TwoFactorWorkflowPage {
     await this.page.getByTestId('proceed-two-factor-authentication-dialog').click();
     return { page: await new ProfileViewPage(this.page).waitForPageLoad(), otpSecret };
   }
+
+  public async enterOtpForTwoFactorAuthentication(otpKey?: string): Promise<void> {
+    const otp: string = await this.generateCurrentOtp(otpKey);
+    await this.fillOtpAndConfirm(otp);
+  }
+
+  private async isLocatorVisible(locator: Locator): Promise<boolean> {
+    try {
+      await locator.waitFor({ timeout: 10 * 1000, state: 'visible' });
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
 
   private async getOtpSecretFromQRCode(): Promise<string> {
     const qrCode: QRCode = await this.getQRCodeFromImage();
@@ -76,7 +87,7 @@ export class TwoFactorWorkflowPage {
       .getByTestId('software-token-dialog-qr-code')
       .locator('img')
       .getAttribute('src');
-      expect(qrCodeSrc).not.toBeNull();
+    expect(qrCodeSrc).not.toBeNull();
     const base64Data: string = qrCodeSrc!.replace('data:image/png;base64,', '');
     const buffer: Buffer = Buffer.from(base64Data, 'base64');
     let img: PNG = new PNG();
@@ -107,7 +118,10 @@ export class TwoFactorWorkflowPage {
     if (!otpKey) {
       throw new Error('OTP key not provided and environment variable is not set');
     }
-    const { otp } = await TOTP.generate(otpKey);
+    
+    const timestamp: number = Math.max((this.expires ?? 0) + 1000, Date.now());
+    const { otp, expires } = await TOTP.generate(otpKey, { timestamp });
+    this.expires = expires;
     return otp;
   }
 }
