@@ -34,7 +34,8 @@ export class DataTable {
   }
 
   public async selectRowByText(text: string): Promise<void> {    
-    const rowCheckbox: Locator = this.getItemByText(text).locator('.v-selection-control');
+    const row: Locator = this.getItemByText(text);
+    const rowCheckbox: Locator = row.locator('.v-selection-control');
     await rowCheckbox.click();
   }
 
@@ -130,6 +131,12 @@ export class DataTable {
       await expect(cell).toBeVisible();
       await expect(cell).toHaveText(expectedHeaders[i]);
     }
+  }
+
+  public async checkIfRowIsSelectedByText(rowIdentifier: string): Promise<void> {
+    const row: Locator = this.getItemByText(rowIdentifier);
+    const rowCheckbox: Locator = row.locator('.v-selection-control');
+    await expect(rowCheckbox.locator('input[type="checkbox"]')).toBeChecked();
   }
 
   public async checkRowCount(expectedRowCount: number): Promise<void> {

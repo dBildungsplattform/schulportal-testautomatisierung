@@ -195,6 +195,10 @@ export class PersonManagementViewPage {
     await this.personTable.checkIfColumnDataSorted(cellIndex, sortOrder);
   }
 
+  public async checkIfPersonIsSelected(name: string): Promise<void> {
+    return this.personTable.checkIfRowIsSelectedByText(name);
+  }
+
   public async checkSchuelerVersetzenDialog(klassenNamen: string[]): Promise<void> {
     await expect(this.dialogCard).toBeVisible(); 
     await expect(this.dialogCard.getByTestId('layout-card-headline')).toHaveText('Schüler versetzen');

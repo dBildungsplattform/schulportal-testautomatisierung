@@ -120,6 +120,7 @@ interface AdminFixture {
         for (const schueler of testData.schuelerSchule1) {
           await personManagementViewPage.checkIfPersonExists(`${schueler.nachname}`);
           await personManagementViewPage.selectPerson(`${schueler.nachname}`);
+          await personManagementViewPage.checkIfPersonIsSelected(`${schueler.nachname}`);
         }
       });
 
