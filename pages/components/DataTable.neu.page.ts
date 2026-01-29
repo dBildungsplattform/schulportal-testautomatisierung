@@ -20,21 +20,22 @@ export class DataTable {
     await expect(this.tableLocator).not.toContainText('Keine Daten');
   }
 
-  public getItemByText(expectedText: string): Locator {
+  public getRow(expectedText: string): Locator {
     return this.tableLocator.locator(`tr:has-text("${expectedText}")`);
   }
 
   public async toggleSelectAllRows(select: boolean): Promise<void> {
     const checkbox: Locator = this.tableLocator.locator('thead input[type="checkbox"]').first();
     
+    // Checkbox has 3 states (checked, unchecked, mixed), so max 2 clicks needed to reach desired state
     for (let i: number = 0; i < 2; i++) {
       if ((await checkbox.isChecked()) === select) break;
       await checkbox.click();
     }
   }
 
-  public async selectRowByText(text: string): Promise<void> {    
-    const row: Locator = this.getItemByText(text);
+  public async selectRow(text: string): Promise<void> {    
+    const row: Locator = this.getRow(text);
     const rowCheckbox: Locator = row.locator('.v-selection-control');
     await rowCheckbox.click();
   }
@@ -133,8 +134,8 @@ export class DataTable {
     }
   }
 
-  public async checkIfRowIsSelectedByText(rowIdentifier: string): Promise<void> {
-    const row: Locator = this.getItemByText(rowIdentifier);
+  public async checkRowSelected(rowIdentifier: string): Promise<void> {
+    const row: Locator = this.getRow(rowIdentifier);
     const rowCheckbox: Locator = row.locator('.v-selection-control');
     await expect(rowCheckbox.locator('input[type="checkbox"]')).toBeChecked();
   }
@@ -171,7 +172,7 @@ export class DataTable {
     }
   }
 
-  public async checkAllDropdownOptionsVisible(items: string[], dropdownLocator: Locator, filterHeaderText?: string, exactCount: boolean = false): Promise<void> {
+  public async checkVisibleDropdownOptions(items: string[], dropdownLocator: Locator, exactCount: boolean = false, filterHeaderText?: string): Promise<void> {
     await dropdownLocator.click();
     // Sortiere Items alphanumerisch wie sie im Dropdown angeordnet sind (Zeitersparnis beim Testlauf)
     const sortedItems: string[] = [...items].sort((a: string, b: string) => a.localeCompare(b, 'de', { numeric: true }));
@@ -209,7 +210,7 @@ export class DataTable {
   }
 
   public async checkCellInRow(rowIdentifier: string, cellIndex: number, expectedText: string): Promise<void> {
-    const row: Locator = this.getItemByText(rowIdentifier);
+    const row: Locator = this.getRow(rowIdentifier);
     const cell: Locator = row.locator('td').nth(cellIndex);
     await expect(cell).toContainText(expectedText);
   }

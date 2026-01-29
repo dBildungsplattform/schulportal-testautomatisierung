@@ -13,7 +13,7 @@ import { getOrganisationId } from '../../base/api/organisationApi';
 import { SchuleCreationSuccessPage } from '../../pages/admin/organisationen/schulen/SchuleCreationSuccess.page';
 import { SchuleCreationParams, SchuleCreationViewPage, Schulform } from '../../pages/admin/organisationen/schulen/SchuleCreationView.neu.page';
 import { getRolleId } from '../../base/api/rolleApi';
-import { createTestDataForSchuelerVersetzen, PersonenMehrfachbearbeitungTestData } from './PersonenMehrfachbearbeitung.data';
+import { createKlassenAndSchuelerForSchulen, KlassenAndSchuelerData } from '../helpers/createKlassenAndSchuelerForSchulen';
 
 interface AdminFixture {
   organisationsName?: string;
@@ -26,7 +26,6 @@ interface AdminFixture {
   { rolleName: schuladminOeffentlichRolle, bezeichnung: 'Schuladmin (1 Schule)' },
   { rolleName: schuladminOeffentlichRolle, bezeichnung: 'Schuladmin (2 Schulen)' },
 ].forEach(({ organisationsName, rolleName, bezeichnung }: AdminFixture) => {
-
   test.describe(`Testfälle für die Mehrfachbearbeitung von Benutzern als ${bezeichnung}: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
     const hasMultipleSchulen: boolean = bezeichnung !== 'Schuladmin (1 Schule)';
     let personManagementViewPage: PersonManagementViewPage;
@@ -56,7 +55,7 @@ interface AdminFixture {
       const adminOrganisation: string = organisationsName || schule1Params.name;
       const admin: UserInfo = await createPersonWithPersonenkontext(page, adminOrganisation, rolleName);
 
-      // Bei Schuladmin mit 2 Schulen: zweite Schule anlegen
+      // für Admins mit mehreren Schulen: zweite Schule anlegen
       if (hasMultipleSchulen) {
         schule2Params = {
           name: generateSchulname(),
@@ -83,16 +82,13 @@ interface AdminFixture {
     });
 
     test(`Als ${bezeichnung}: Schüler versetzen als Mehrfachbearbeitung prüfen`, { tag: [STAGE, DEV] }, async ({ page }: PlaywrightTestArgs) => {
-      let testData: PersonenMehrfachbearbeitungTestData;
+      let testData: KlassenAndSchuelerData[];
 
       await test.step(`Testdaten erstellen`, async () => {
-        testData = await createTestDataForSchuelerVersetzen(
-          page,
-          schule1Params,
-          schuleId,
-          hasMultipleSchulen ? schule2Params : undefined,
-          hasMultipleSchulen ? schuleId2 : undefined
-        );
+        testData = await createKlassenAndSchuelerForSchulen(page, [
+          { params: schule1Params, schuleId, klassenCount: 26, schuelerCount: 3 },
+          ...(hasMultipleSchulen ? [{ params: schule2Params, schuleId: schuleId2, klassenCount: 2, schuelerCount: 2 }] : [])
+        ]);
       });
 
       if (hasMultipleSchulen) {
@@ -117,17 +113,17 @@ interface AdminFixture {
     
       await test.step(`Nur Schüler auswählen`, async () => {
         await personManagementViewPage.toggleSelectAllRows(false);
-        for (const schueler of testData.schuelerSchule1) {
+        for (const schueler of testData[0].schuelerSchule) {
           await personManagementViewPage.checkIfPersonExists(`${schueler.nachname}`);
           await personManagementViewPage.selectPerson(`${schueler.nachname}`);
-          await personManagementViewPage.checkIfPersonIsSelected(`${schueler.nachname}`);
+          await personManagementViewPage.checkPersonSelected(`${schueler.nachname}`);
         }
       });
 
       await test.step(`Schüler versetzen-Dialog prüfen und anschließend versetzen`, async () => {
         await personManagementViewPage.selectMehrfachauswahl('Schüler versetzen');
-        await personManagementViewPage.checkSchuelerVersetzenDialog(testData.klassenNamenSchule1);
-        await personManagementViewPage.versetzeSchueler(testData.klassenNamenSchule1[0]);
+        await personManagementViewPage.checkSchuelerVersetzenDialog(testData[0].klassenNamenSchule);
+        await personManagementViewPage.versetzeSchueler(testData[0].klassenNamenSchule[0]);
       });
 
       await test.step(`Progressbar und Erfolgsdialog prüfen`, async () => {
@@ -137,7 +133,7 @@ interface AdminFixture {
       });
 
       await test.step(`Aktualisierte Ergebnisliste prüfen`, async () => {
-        await personManagementViewPage.checkNewKlasseNachVersetzen(testData.schuelerSchule1, testData.klassenNamenSchule1[0]);
+        await personManagementViewPage.checkNewKlasseNachVersetzen(testData[0].schuelerSchule, testData[0].klassenNamenSchule[0]);
       });
     });
   });

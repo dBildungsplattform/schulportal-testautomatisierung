@@ -7,17 +7,9 @@ import { itslearning } from '../../base/sp';
 import { generateKlassenname, generateNachname, generateRolleName, generateVorname } from '../../base/utils/generateTestdata';
 import { SchuleCreationParams } from '../../pages/admin/organisationen/schulen/SchuleCreationView.neu.page';
 
-// Konstanten für Testdaten-Generierung
-const KLASSEN_ANZAHL_SCHULE_1: number = 26;
-const KLASSEN_ANZAHL_SCHULE_2: number = 2;
-const SCHUELER_ANZAHL_SCHULE_1: number = 3;
-const SCHUELER_ANZAHL_SCHULE_2: number = 2;
-
-export interface PersonenMehrfachbearbeitungTestData {
-  klassenNamenSchule1: string[];
-  klassenNamenSchule2?: string[];
-  schuelerSchule1: UserInfo[];
-  schuelerSchule2?: UserInfo[]
+export interface KlassenAndSchuelerData {
+  klassenNamenSchule: string[];
+  schuelerSchule: UserInfo[];
 }
 
 interface Klassen {
@@ -31,46 +23,31 @@ interface Schueler {
   count: number;
 }
 
-export async function createTestDataForSchuelerVersetzen(
+interface Schule {
+  params: SchuleCreationParams;
+  schuleId: string;
+  klassenCount: number;
+  schuelerCount: number;
+}
+
+export async function createKlassenAndSchuelerForSchulen(
   page: Page,
-  schule1Params: SchuleCreationParams,
-  schuleId: string,
-  schule2Params?: SchuleCreationParams,
-  schuleId2?: string
-): Promise<PersonenMehrfachbearbeitungTestData> {
-  const hasMultipleSchulen: boolean = schule2Params !== undefined && schuleId2 !== undefined;
-
-  const klassenNamenSchule1: string[] = await createKlassenForSchule(page, { id: schuleId, klassenCount: KLASSEN_ANZAHL_SCHULE_1 });
-  const klassenNamenSchule2: string[] | undefined = hasMultipleSchulen
-    ? await createKlassenForSchule(page, { id: schuleId2, klassenCount: KLASSEN_ANZAHL_SCHULE_2 })
-    : undefined;
-
-  const schuelerSchule1: UserInfo[] = await createSchuelerForSchule(
-    page,
-    {
-      schuleName: schule1Params.name,
-      klassenName: klassenNamenSchule1[0],
-      count: SCHUELER_ANZAHL_SCHULE_1
-    }
-  );
-
-  const schuelerSchule2: UserInfo[] | undefined = hasMultipleSchulen && schule2Params && klassenNamenSchule2
-    ? await createSchuelerForSchule(
+  schulen: Schule[]
+): Promise<KlassenAndSchuelerData[]> {
+  return Promise.all(
+    schulen.map(async (schule: Schule): Promise<KlassenAndSchuelerData> => {
+      const klassenNamenSchule: string[] = await createKlassenForSchule(page, { id: schule.schuleId, klassenCount: schule.klassenCount });
+      const schuelerSchule: UserInfo[] = await createSchuelerForSchule(
         page,
         {
-          schuleName: schule2Params.name,
-          klassenName: klassenNamenSchule2[0],
-          count: SCHUELER_ANZAHL_SCHULE_2
+          schuleName: schule.params.name,
+          klassenName: klassenNamenSchule[0],
+          count: schule.schuelerCount
         }
-      )
-    : undefined;
-
-  return {
-    klassenNamenSchule1,
-    klassenNamenSchule2,
-    schuelerSchule1,
-    schuelerSchule2
-  };
+      );
+      return { klassenNamenSchule, schuelerSchule };
+    })
+  );
 }
 
 /**
@@ -112,6 +89,4 @@ async function createSchuelerForSchule(
     })
   );
 }
-
-// Platz für weitere Testdaten-Funktionen für Mehrfachbearbeitungen
 

@@ -82,7 +82,7 @@ export class PersonManagementViewPage {
   }
 
   public async openGesamtuebersicht(name: string): Promise<PersonDetailsViewPage> {
-    await this.personTable.getItemByText(name).click();
+    await this.personTable.getRow(name).click();
     const personDetailsViewPage: PersonDetailsViewPage = new PersonDetailsViewPage(this.page);
     await personDetailsViewPage.waitForPageLoad();
     return personDetailsViewPage;
@@ -98,7 +98,7 @@ export class PersonManagementViewPage {
   }
 
   public async selectPerson(name: string): Promise<void> {
-    await this.personTable.selectRowByText(name);
+    await this.personTable.selectRow(name);
   }
 
   public async selectMehrfachauswahl(option: string): Promise<void> {
@@ -163,12 +163,12 @@ export class PersonManagementViewPage {
     await expect(column.filter({ hasNotText: expectedText })).toHaveCount(0);
   }
 
-  public async checkAllDropdownOptionsVisible(options: string[], dropDownId: string, hasHeader: boolean, exactCount: boolean = false): Promise<void> {
-    await this.personTable.checkAllDropdownOptionsVisible(
+  public async checkAllDropdownOptionsVisible(options: string[], dropDownId: string, exactCount: boolean = false, hasHeader?: boolean): Promise<void> {
+    await this.personTable.checkVisibleDropdownOptions(
       options,
       this.page.getByTestId(dropDownId),
+      exactCount,
       hasHeader? `${options.length} Klassen gefunden` : undefined,
-      exactCount
     );
   }
 
@@ -195,8 +195,8 @@ export class PersonManagementViewPage {
     await this.personTable.checkIfColumnDataSorted(cellIndex, sortOrder);
   }
 
-  public async checkIfPersonIsSelected(name: string): Promise<void> {
-    return this.personTable.checkIfRowIsSelectedByText(name);
+  public async checkPersonSelected(name: string): Promise<void> {
+    return this.personTable.checkRowSelected(name);
   }
 
   public async checkSchuelerVersetzenDialog(klassenNamen: string[]): Promise<void> {
@@ -209,8 +209,8 @@ export class PersonManagementViewPage {
     await this.checkAllDropdownOptionsVisible(
       klassenNamen,
       'bulk-change-klasse-klasse-select',
-      undefined,
-      true
+      true,
+      false
     );
   }
 
@@ -236,17 +236,17 @@ export class PersonManagementViewPage {
     
     const dialogText: string = await dialogCard.textContent();
     
-    const schulError: string = 'Bitte wählen Sie im Filter genau eine Schule aus, um die Aktion durchzuführen.';
+    const schuleError: string = 'Bitte wählen Sie im Filter genau eine Schule aus, um die Aktion durchzuführen.';
     const rolleError: string = 'Bitte wählen Sie nur Benutzer mit einer Schülerrolle aus, um die Aktion durchzuführen.';
     
     if (expectedErrors === 'schule') {
-      await expect(dialogText).toContain(schulError);
+      await expect(dialogText).toContain(schuleError);
       await expect(dialogText).not.toContain(rolleError);
     } else if (expectedErrors === 'rolle') {
       await expect(dialogText).toContain(rolleError);
-      await expect(dialogText).not.toContain(schulError);
+      await expect(dialogText).not.toContain(schuleError);
     } else {
-      await expect(dialogText).toContain(schulError);
+      await expect(dialogText).toContain(schuleError);
       await expect(dialogText).toContain(rolleError);
     }
     
