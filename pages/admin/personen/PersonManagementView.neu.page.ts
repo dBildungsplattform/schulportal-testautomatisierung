@@ -200,7 +200,6 @@ export class PersonManagementViewPage {
   }
 
   public async checkSchuelerVersetzenDialog(klassenNamen: string[]): Promise<void> {
-    await expect(this.dialogCard).toBeVisible(); 
     await expect(this.dialogCard.getByTestId('layout-card-headline')).toHaveText('Schüler versetzen');
     await expect(this.dialogCard.getByTestId('bulk-change-klasse-klasse-select')).toBeVisible();
     await expect(this.dialogCard.getByTestId('bulk-change-klasse-button')).toBeVisible();
