@@ -12,6 +12,7 @@ import { generateNachname, generateRolleName, generateVorname } from '../base/ut
 import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
 import { StartPage } from '../pages/StartView.page';
+import { StartViewPage as NewStartPage } from '../pages/StartView.neu.page';
 import { HeaderPage } from '../pages/components/Header.page';
 
 const PW: string | undefined = process.env.PW;
@@ -121,6 +122,8 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
         await page.goto('/');
         await landing.buttonAnmelden.click();
         await login.login(ADMIN, PW);
+        const startPage: NewStartPage = new NewStartPage(page);
+        await startPage.navigateToAdministration();
         const lehrerIdSPs: string[] = [await getServiceProviderId(page, 'E-Mail')];
         organisationIDLandSh = await getOrganisationId(page, 'Land Schleswig-Holstein');
         userInfoLehrer = await createRolleAndPersonWithPersonenkontext(

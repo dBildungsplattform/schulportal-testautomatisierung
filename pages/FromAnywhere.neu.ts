@@ -4,7 +4,8 @@ import { LandingViewPage } from './LandingView.neu.page';
 function FromAnywhere(page: Page): { start: () => Promise<LandingViewPage> } {
   return {
     async start(): Promise<LandingViewPage> {
-      return page.goto('/').then(() => new LandingViewPage(page));
+      await page.goto('/');
+      return new LandingViewPage(page);
     },
   };
 }

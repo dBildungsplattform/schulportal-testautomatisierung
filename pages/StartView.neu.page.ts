@@ -5,7 +5,7 @@ export class StartViewPage {
   /* add global locators here */
   readonly startCardHeadline: Locator;
 
-  constructor(protected readonly page: Page) {
+  constructor(protected readonly page: Page, private readonly username?: string) {
     this.startCardHeadline = this.page.locator('[data-testid="start-card-headline"]');
   }
 
@@ -19,7 +19,7 @@ export class StartViewPage {
   public async navigateToAdministration(): Promise<PersonManagementViewPage> {
     await this.page.locator('[data-testid^="service-provider-card"]').filter({ hasText: 'Schulportal-Administration' }).click();
 
-    const twoFactorWorkflowPage: TwoFactorWorkflowPage = new TwoFactorWorkflowPage(this.page);
+    const twoFactorWorkflowPage: TwoFactorWorkflowPage = new TwoFactorWorkflowPage(this.page, this.username);
     return twoFactorWorkflowPage.completeTwoFactorAuthentication();
   }
 

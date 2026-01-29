@@ -5,6 +5,7 @@ import { TOTP } from 'totp-generator';
 
 import { PersonManagementViewPage } from './admin/personen/PersonManagementView.neu.page';
 import { ProfileViewPage } from './ProfileView.neu.page';
+import { Env } from '../base/env';
 
 export interface TwoFactorSetupResult {
   page: ProfileViewPage;
@@ -14,7 +15,10 @@ export interface TwoFactorSetupResult {
 export class TwoFactorWorkflowPage {
   private expires: number | undefined;
 
-  constructor(protected readonly page: Page) {}
+  constructor(
+    protected readonly page: Page,
+    private readonly username?: string,
+  ) {}
 
   public async completeTwoFactorAuthentication(): Promise<PersonManagementViewPage> {
     const setupButton: Locator = this.getSecondFactorSetupButtonLocator();
@@ -59,6 +63,7 @@ export class TwoFactorWorkflowPage {
   public async enterOtpForTwoFactorAuthentication(otpKey?: string): Promise<void> {
     const otp: string = await this.generateCurrentOtp(otpKey);
     await this.fillOtpAndConfirm(otp);
+    await expect(this.page.getByTestId('login-error-message')).toBeHidden();
   }
 
   private async isLocatorVisible(locator: Locator): Promise<boolean> {
@@ -70,7 +75,6 @@ export class TwoFactorWorkflowPage {
     }
   }
 
-
   private async getOtpSecretFromQRCode(): Promise<string> {
     const qrCode: QRCode = await this.getQRCodeFromImage();
 
@@ -78,6 +82,12 @@ export class TwoFactorWorkflowPage {
     const otpSecret: string | null = url.searchParams.get('secret');
     if (!otpSecret) {
       throw new Error('OTP secret not found in QR code URL');
+    }
+    if (this.username) {
+      const workerParallelIndex: string = process.env['TEST_PARALLEL_INDEX']!;
+      if (Env.getUsername(workerParallelIndex) === this.username) {
+        Env.setOtpSeed(otpSecret, workerParallelIndex);
+      }
     }
     return otpSecret;
   }
@@ -114,13 +124,32 @@ export class TwoFactorWorkflowPage {
   }
 
   private async generateCurrentOtp(key?: string): Promise<string> {
-    let otpKey: string | undefined = key ?? process.env['OTP_SEED_B32'];
+    let otpKey: string | undefined;
+    if (key) {
+      otpKey = key;
+    } else if (this.username) {
+      const workerParallelIndex: string = process.env['TEST_PARALLEL_INDEX']!;
+      // are we the workers designated root user?
+      if (Env.getUsername(workerParallelIndex) === this.username) {
+        otpKey = Env.getOtpSeed(workerParallelIndex)!;
+      }
+    } 
+    if (!otpKey) {
+      // fallback to global root
+      otpKey = Env.getOtpSeed();
+    }
+
     if (!otpKey) {
       throw new Error('OTP key not provided and environment variable is not set');
     }
     
-    const timestamp: number = Math.max((this.expires ?? 0) + 1000, Date.now());
-    const { otp, expires } = await TOTP.generate(otpKey, { timestamp });
+    if (this.expires) {
+      const currentTime: number = Date.now();
+      const timeLeft: number = this.expires - currentTime;
+      await this.page.waitForTimeout(timeLeft + 100);
+    }
+
+    const { otp, expires } = await TOTP.generate(otpKey);
     this.expires = expires;
     return otp;
   }
