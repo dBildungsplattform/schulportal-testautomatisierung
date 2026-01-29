@@ -219,7 +219,7 @@ export class PersonManagementViewPage {
     await expect(progressbar).toBeVisible();
     await expect(this.dialogCard.getByTestId('bulk-change-klasse-close-button')).toBeHidden(); 
     // Warte bis Progressbar zu 100% abgeschlossen ist
-    await expect(progressbar).toHaveAttribute('aria-valuenow', '100', { timeout: 30000 });
+    await expect(progressbar).toHaveAttribute('aria-valuenow', '100', { timeout: 10000 });
   }
 
   public async checkSchuelerVersetzenSuccessDialog(): Promise<void> {
