@@ -1,5 +1,6 @@
 import { expect, type Locator, Page } from '@playwright/test';
 import generator from 'generate-password-ts';
+
 import { StartViewPage } from './StartView.neu.page';
 
 export class LoginViewPage {
@@ -67,7 +68,7 @@ export class LoginViewPage {
 
   public async loginNewUserWithPasswordChange(username: string, password: string): Promise<StartViewPage> {
     await this.login(username, password);
-    const newPassword: string = await this.updatePassword();
+    await this.updatePassword();
     return new StartViewPage(this.page, username).waitForPageLoad();
   }
 

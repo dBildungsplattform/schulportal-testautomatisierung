@@ -17,7 +17,7 @@ export async function login(
   const loginPage: LoginViewPage = await freshLoginPage(page);
   if (!username) throw new Error('No username provided for login');
   if (!password) throw new Error('No password provided for login');
-  const startPage = await loginPage.login(username, password);
+  const startPage: StartViewPage = await loginPage.login(username, password);
   return startPage.waitForPageLoad();
 }
 

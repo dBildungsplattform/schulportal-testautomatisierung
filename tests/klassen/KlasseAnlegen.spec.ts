@@ -1,9 +1,10 @@
 import { PlaywrightTestArgs, test } from '@playwright/test';
 
-import { createPersonWithPersonenkontext, freshLoginPage, UserInfo } from '../../base/api/personApi';
+import { createPersonWithPersonenkontext, UserInfo } from '../../base/api/personApi';
 import { landSH, testschuleDstNr, testschuleName } from '../../base/organisation';
 import { landesadminRolle, schuladminOeffentlichRolle } from '../../base/rollen';
 import { DEV, STAGE } from '../../base/tags';
+import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
 import { generateKlassenname } from '../../base/utils/generateTestdata';
 import { KlasseCreationSuccessPage } from '../../pages/admin/organisationen/klassen/KlasseCreationSuccess.page';
 import { KlasseCreationParams, KlasseCreationViewPage } from '../../pages/admin/organisationen/klassen/KlasseCreationView.neu.page';
@@ -12,7 +13,6 @@ import { HeaderPage } from '../../pages/components/Header.neu.page';
 import { LandingViewPage } from '../../pages/LandingView.neu.page';
 import { LoginViewPage } from '../../pages/LoginView.neu.page';
 import { StartViewPage } from '../../pages/StartView.neu.page';
-import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
 
 let personManagementViewPage: PersonManagementViewPage;
 let klasseAnlegenPage : KlasseCreationViewPage;

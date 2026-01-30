@@ -3,9 +3,9 @@ import jsQR, { QRCode } from 'jsqr';
 import { PNG } from 'pngjs';
 import { TOTP } from 'totp-generator';
 
+import { Env } from '../base/env';
 import { PersonManagementViewPage } from './admin/personen/PersonManagementView.neu.page';
 import { ProfileViewPage } from './ProfileView.neu.page';
-import { Env } from '../base/env';
 
 export interface TwoFactorSetupResult {
   page: ProfileViewPage;
@@ -44,7 +44,7 @@ export class TwoFactorWorkflowPage {
   }
 
   public async setupTwoFactorAuthenticationFromProfile(): Promise<TwoFactorSetupResult> {
-    const profileViewPage = await new ProfileViewPage(this.page).waitForPageLoad();
+    const profileViewPage: ProfileViewPage = await new ProfileViewPage(this.page).waitForPageLoad();
     await profileViewPage.open2FADialog();
     await profileViewPage.proceedTo2FAQrCode();
     await expect(this.page.getByTestId('self-service-token-init-error-text')).toBeHidden(); // fail-fast
@@ -53,7 +53,7 @@ export class TwoFactorWorkflowPage {
     const otp: string = await this.generateCurrentOtp(otpSecret);
 
     await profileViewPage.proceedToOtpEntry();
-    for (let index = 0; index < otp.length; index++) {
+    for (let index: number = 0; index < otp.length; index++) {
       const digit: string = otp.at(index)!;
       await this.page.getByTestId('self-service-otp-input').locator('input').nth(index).fill(digit);
     }
@@ -134,7 +134,7 @@ export class TwoFactorWorkflowPage {
       if (Env.getUsername(workerParallelIndex) === this.username) {
         otpKey = Env.getOtpSeed(workerParallelIndex)!;
       }
-    } 
+    }
     if (!otpKey) {
       // fallback to global root
       otpKey = Env.getOtpSeed();
@@ -143,14 +143,20 @@ export class TwoFactorWorkflowPage {
     if (!otpKey) {
       throw new Error('OTP key not provided and environment variable is not set');
     }
-    
+
     if (this.expires) {
       const currentTime: number = Date.now();
       const timeLeft: number = this.expires - currentTime;
       await this.page.waitForTimeout(timeLeft + 100);
     }
 
-    const { otp, expires } = await TOTP.generate(otpKey);
+    const {
+      otp,
+      expires,
+    }: {
+      otp: string;
+      expires: number;
+    } = await TOTP.generate(otpKey);
     this.expires = expires;
     return otp;
   }

@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 import { APIResponse, Browser, BrowserContext, chromium, Page } from '@playwright/test';
 
 import {
@@ -12,9 +14,9 @@ import { LandingViewPage } from '../pages/LandingView.neu.page';
 import { LoginViewPage } from '../pages/LoginView.neu.page';
 import { StartViewPage } from '../pages/StartView.neu.page';
 
+
 const FRONTEND_URL: string = process.env.FRONTEND_URL ?? '';
 const searchString: string = 'TAuto';
-const timeoutMS: number = 2 * 60 * 1000;
 
 /**
  * Global teardown – runs ONCE per Playwright run
@@ -89,12 +91,12 @@ export default async function globalTeardown(): Promise<void> {
         typ: OrganisationsTyp.Klasse,
       });
 
-    const klassen: Array<OrganisationResponse> = await klassenResponse.value();
+    const klassen: OrganisationResponse[] = await klassenResponse.value();
 
     console.log(`Found ${klassen.length} Klassen to delete`);
 
     await Promise.allSettled(
-      klassen.map(({ id }) =>
+      klassen.map(({ id }: OrganisationResponse) =>
         organisationApi.organisationControllerDeleteOrganisationRaw({ organisationId: id })
       )
     );
@@ -110,11 +112,11 @@ export default async function globalTeardown(): Promise<void> {
         typ: OrganisationsTyp.Schule,
       });
 
-    const schulen: Array<OrganisationResponse> = await schulenResponse.value();
+    const schulen: OrganisationResponse[] = await schulenResponse.value();
     console.log(`Found ${schulen.length} Schulen to delete`);
 
     await Promise.allSettled(
-      schulen.map(({ id }) =>
+      schulen.map(({ id }: OrganisationResponse) =>
         organisationApi.organisationControllerDeleteOrganisationRaw({ organisationId: id })
       )
     );

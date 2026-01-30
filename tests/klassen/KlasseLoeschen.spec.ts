@@ -1,13 +1,14 @@
 import { PlaywrightTestArgs, test } from '@playwright/test';
 
 import { getKlasseId } from '../../base/api/organisationApi';
-import { createPersonWithPersonenkontext, createRolleAndPersonWithPersonenkontext, freshLoginPage, UserInfo } from "../../base/api/personApi";
+import { createPersonWithPersonenkontext, createRolleAndPersonWithPersonenkontext, UserInfo } from "../../base/api/personApi";
 import { getServiceProviderId } from '../../base/api/serviceProviderApi';
 import { landSH, testschuleDstNr, testschuleName } from '../../base/organisation';
 import { landesadminRolle, schuladminOeffentlichRolle } from '../../base/rollen';
 import { typeSchueler } from '../../base/rollentypen';
 import { itslearning } from '../../base/sp';
 import { DEV, STAGE } from '../../base/tags';
+import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
 import { generateKlassenname, generateNachname, generateRolleName, generateVorname } from '../../base/utils/generateTestdata';
 import { LandingViewPage } from '../../pages/LandingView.neu.page';
 import { LoginViewPage } from '../../pages/LoginView.neu.page';
@@ -18,7 +19,6 @@ import { KlasseManagementViewPage } from '../../pages/admin/organisationen/klass
 import { KlasseDetailsViewPage } from '../../pages/admin/organisationen/klassen/details/KlasseDetailsView.neu.page';
 import { PersonManagementViewPage } from "../../pages/admin/personen/PersonManagementView.neu.page";
 import { HeaderPage } from '../../pages/components/Header.neu.page';
-import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
 
 let klasseAnlegenPage : KlasseCreationViewPage;
 let klasseErfolgreichAngelegtPage : KlasseCreationSuccessPage;

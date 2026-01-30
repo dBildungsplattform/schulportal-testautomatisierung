@@ -1,4 +1,5 @@
 import { PlaywrightTestArgs, test } from '@playwright/test';
+
 import { RollenArt } from '../../base/api/generated';
 import { createRolleAndPersonWithPersonenkontext, UserInfo } from '../../base/api/personApi';
 import { getServiceProviderId } from '../../base/api/serviceProviderApi';
@@ -6,6 +7,7 @@ import { testschuleName } from '../../base/organisation';
 import { typeLehrer } from '../../base/rollentypen';
 import { email } from '../../base/sp';
 import { DEV, STAGE } from '../../base/tags';
+import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
 import {
   generateKopersNr,
   generateNachname,
@@ -13,12 +15,10 @@ import {
   generateVorname,
 } from '../../base/utils/generateTestdata';
 import { HeaderPage } from '../../pages/components/Header.neu.page';
-import FromAnywhere from '../../pages/FromAnywhere.neu';
 import { LandingViewPage } from '../../pages/LandingView.neu.page';
 import { LoginViewPage } from '../../pages/LoginView.neu.page';
 import { ProfileViewPage } from '../../pages/ProfileView.neu.page';
 import { StartViewPage } from '../../pages/StartView.neu.page';
-import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;

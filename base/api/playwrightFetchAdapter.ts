@@ -1,4 +1,7 @@
 import { APIRequestContext, APIResponse, Page } from '@playwright/test';
+import { FetchAPI } from './generated';
+
+type PlaywrightFetchInit = Parameters<APIRequestContext['fetch']>[1];
 
 /**
  * makeFetchWithPlaywright
@@ -39,9 +42,9 @@ import { APIRequestContext, APIResponse, Page } from '@playwright/test';
  * @param page Playwright Page (provides `page.request.fetch`)
  * @returns A function compatible with the `fetchApi` option in OpenAPI Configuration
  */
-export function makeFetchWithPlaywright(page: Page) {
-  return async (url: string, init?): Promise<Response> => {
-    const playwrightInit: Parameters<APIRequestContext['fetch']>[1] = {
+export function makeFetchWithPlaywright(page: Page): FetchAPI {
+  return async (url: string, init?: RequestInit & PlaywrightFetchInit): Promise<Response> => {
+    const playwrightInit: PlaywrightFetchInit = {
       ...init,
       data: init?.body,
       maxRetries: 3,

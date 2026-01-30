@@ -1,4 +1,5 @@
 import { expect, PlaywrightTestArgs, test } from '@playwright/test';
+
 import { waitForAPIResponse } from '../../base/api/baseApi';
 import { createKlasse, getOrganisationId } from '../../base/api/organisationApi';
 import {
@@ -37,7 +38,6 @@ import { PersonDetailsViewPage } from '../../pages/admin/personen/PersonDetailsV
 import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.page';
 import { HeaderPage } from '../../pages/components/Header.page';
 import { MenuPage } from '../../pages/components/MenuBar.page';
-import { StartPage } from '../../pages/StartView.page';
 
 const ADMIN: string | undefined = process.env.USER;
 

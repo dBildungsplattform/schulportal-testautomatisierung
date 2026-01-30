@@ -1,21 +1,20 @@
-import { APIResponse, Browser, BrowserContext, chromium, Page } from '@playwright/test';
+/* eslint-disable no-console */
 
-import { ApiResponse, OrganisationenApi, OrganisationResponse, OrganisationsTyp } from '../base/api/generated';
-import { constructOrganisationApi, getOrganisationId } from '../base/api/organisationApi';
+import { Browser, BrowserContext, chromium, Page } from '@playwright/test';
+
+import { getOrganisationId } from '../base/api/organisationApi';
+import { createPerson, UserInfo } from '../base/api/personApi';
+import { getRolleId } from '../base/api/rolleApi';
+import { Env } from '../base/env';
+import { landSH } from '../base/organisation';
+import { landesadminRolle } from '../base/rollen';
+import { generateNachname, generateVorname } from '../base/utils/generateTestdata';
+import { HeaderPage } from '../pages/components/Header.neu.page';
 import FromAnywhere from '../pages/FromAnywhere.neu';
 import { LandingViewPage } from '../pages/LandingView.neu.page';
 import { LoginViewPage } from '../pages/LoginView.neu.page';
 import { StartViewPage } from '../pages/StartView.neu.page';
-import { landSH } from '../base/organisation';
-import { getRolleId } from '../base/api/rolleApi';
-import { landesadminRolle } from '../base/rollen';
-import { createPerson, UserInfo } from '../base/api/personApi';
-import { generateNachname, generateVorname } from '../base/utils/generateTestdata';
 import { workers } from '../playwright.config';
-import { Env } from '../base/env';
-import { HeaderPage } from '../pages/components/Header.neu.page';
-
-const searchString: string = 'TAuto';
 
 const FRONTEND_URL: string = process.env.FRONTEND_URL ?? '';
 
@@ -55,7 +54,7 @@ export default async function globalSetup(): Promise<void> {
     const organisationId: string = await getOrganisationId(page, landSH);
     const rolleId: string = await getRolleId(page, landesadminRolle);
 
-    const userInfos: Array<UserInfo> = await Promise.all(
+    const userInfos: UserInfo[] = await Promise.all(
       Array.from({ length: workers }).map(() =>
         createPerson(page, organisationId, rolleId, generateNachname(), generateVorname()),
       ),
