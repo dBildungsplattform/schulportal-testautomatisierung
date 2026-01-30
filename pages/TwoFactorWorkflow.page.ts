@@ -47,6 +47,7 @@ export class TwoFactorWorkflowPage {
     const profileViewPage = await new ProfileViewPage(this.page).waitForPageLoad();
     await profileViewPage.open2FADialog();
     await profileViewPage.proceedTo2FAQrCode();
+    await expect(this.page.getByTestId('self-service-token-init-error-text')).toBeHidden(); // fail-fast
 
     const otpSecret: string = await this.getOtpSecretFromQRCode();
     const otp: string = await this.generateCurrentOtp(otpSecret);
