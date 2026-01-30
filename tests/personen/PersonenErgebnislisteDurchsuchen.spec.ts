@@ -147,7 +147,7 @@ interface AdminFixture {
       test.describe('Klassenfilter-Tests', () => {
         test(`Als ${bezeichnung}: Alle Klassen im Drop-Down des Klassenfilters anzeigen`, { tag: [STAGE, DEV] }, async () => {
           await personManagementViewPage.filterBySchule(schuleParams.name);
-          await personManagementViewPage.checkVisibleDropdownOptions(klassenNamen, 'personen-management-klasse-select', true, true);
+          await personManagementViewPage.checkIfKlassenAreVisibleInDropdown(klassenNamen);
         });
 
         test(`Als ${bezeichnung}: Alle Klassen im Drop-Down des Klassenfilters anklickbar`, { tag: [STAGE, DEV] }, async () => {
