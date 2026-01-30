@@ -54,6 +54,11 @@ export function makeFetchWithPlaywright(page: Page): FetchAPI {
 
     const headers: Headers = new Headers(resp.headers());
 
+    if (!resp.ok()) {
+      console.log(`Request to ${url} failed with status ${resp.status()} on worker ${process.env['TEST_PARALLEL_INDEX']}`);
+      console.log(await resp.json());
+    }
+
     return {
       ok: resp.ok(),
       status: resp.status(),

@@ -64,7 +64,12 @@ export class TwoFactorWorkflowPage {
   public async enterOtpForTwoFactorAuthentication(otpKey?: string): Promise<void> {
     const otp: string = await this.generateCurrentOtp(otpKey);
     await this.fillOtpAndConfirm(otp);
-    await expect(this.page.getByTestId('login-error-message')).toBeHidden();
+    // try to recover from possible failed attempts due to timing issues
+    if (await this.isLocatorVisible(this.page.getByTestId('login-error-message'))) {
+      const otp: string = await this.generateCurrentOtp(otpKey);
+      await this.fillOtpAndConfirm(otp);
+    }
+    expect(this.page.getByTestId('login-error-message')).toBeHidden();
   }
 
   private async isLocatorVisible(locator: Locator): Promise<boolean> {

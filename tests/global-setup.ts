@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 
 import { Browser, BrowserContext, chromium, Page } from '@playwright/test';
+import path from 'node:path';
 
 import { getOrganisationId } from '../base/api/organisationApi';
 import { createPerson, UserInfo } from '../base/api/personApi';
@@ -17,6 +18,16 @@ import { StartViewPage } from '../pages/StartView.neu.page';
 import { workers } from '../playwright.config';
 
 const FRONTEND_URL: string = process.env.FRONTEND_URL ?? '';
+
+function encodeNumberAsLetters(num: number): string {
+  let encoded = '';
+  while (num > 0) {
+    const remainder = (num - 1) % 26;
+    encoded = String.fromCharCode(65 + remainder) + encoded;
+    num = Math.floor((num - 1) / 26);
+  }
+  return encoded;
+}
 
 /**
  * Global setup – runs ONCE per Playwright run
@@ -55,8 +66,8 @@ export default async function globalSetup(): Promise<void> {
     const rolleId: string = await getRolleId(page, landesadminRolle);
 
     const userInfos: UserInfo[] = await Promise.all(
-      Array.from({ length: workers }).map(() =>
-        createPerson(page, organisationId, rolleId, generateNachname(), generateVorname()),
+      Array.from({ length: workers }).map((_, index) =>
+        createPerson(page, organisationId, rolleId, generateNachname() + encodeNumberAsLetters(index), generateVorname()),
       ),
     );
 
@@ -78,7 +89,8 @@ export default async function globalSetup(): Promise<void> {
         await page.close();
         console.log(`Created ${index + 1}/${workers}`);
       } catch (error) {
-        await page.screenshot({ path: `error-creating-admin-${index}.png` });
+        const screenshotPath = path.join('playwright-report', `error-creating-admin-${index}.png`);
+        await page.screenshot({ path: screenshotPath });
         console.error(`Error creating admin ${index}:`, error);
         throw error;
       } finally {
