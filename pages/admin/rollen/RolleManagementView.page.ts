@@ -16,7 +16,7 @@ export class RolleManagementViewPage {
   }
 
   public async openGesamtuebersicht(rollenname: string): Promise<RolleDetailsViewPage> {
-    await this.rolleTable.getItemByText(rollenname).click();
+    await this.rolleTable.getRow(rollenname).click();
     return new RolleDetailsViewPage(this.page).waitForPageLoad();
   }
 

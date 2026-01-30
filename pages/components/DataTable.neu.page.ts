@@ -20,8 +20,24 @@ export class DataTable {
     await expect(this.tableLocator).not.toContainText('Keine Daten');
   }
 
-  public getItemByText(expectedText: string): Locator {
+  public getRow(expectedText: string): Locator {
     return this.tableLocator.locator(`tr:has-text("${expectedText}")`);
+  }
+
+  public async toggleSelectAllRows(select: boolean): Promise<void> {
+    const checkbox: Locator = this.tableLocator.locator('thead input[type="checkbox"]').first();
+    
+    // Checkbox has 3 states (checked, unchecked, mixed), so max 2 clicks needed to reach desired state
+    for (let i: number = 0; i < 2; i++) {
+      if ((await checkbox.isChecked()) === select) break;
+      await checkbox.click();
+    }
+  }
+
+  public async selectRow(text: string): Promise<void> {    
+    const row: Locator = this.getRow(text);
+    const rowCheckbox: Locator = row.locator('.v-selection-control');
+    await rowCheckbox.click();
   }
 
   public async clickColumnHeader(columnName: string, endpoint?: string): Promise<void> {
@@ -118,6 +134,12 @@ export class DataTable {
     }
   }
 
+  public async checkRowSelected(rowIdentifier: string): Promise<void> {
+    const row: Locator = this.getRow(rowIdentifier);
+    const rowCheckbox: Locator = row.locator('.v-selection-control');
+    await expect(rowCheckbox.locator('input[type="checkbox"]')).toBeChecked();
+  }
+
   public async checkRowCount(expectedRowCount: number): Promise<void> {
     const tableRows: Locator = this.getRows();
     await expect(tableRows).toHaveCount(expectedRowCount);
@@ -150,11 +172,18 @@ export class DataTable {
     }
   }
 
-  public async checkAllDropdownOptionsVisible(items: string[], dropdownLocator: Locator, filterHeaderText: string): Promise<void> {
+  public async checkVisibleDropdownOptions(items: string[], dropdownLocator: Locator, exactCount: boolean = false, filterHeaderText?: string): Promise<void> {
     await dropdownLocator.click();
     // Sortiere Items alphanumerisch wie sie im Dropdown angeordnet sind (Zeitersparnis beim Testlauf)
     const sortedItems: string[] = [...items].sort((a: string, b: string) => a.localeCompare(b, 'de', { numeric: true }));
-    await expect(this.page.locator('.filter-header')).toContainText(filterHeaderText);
+    if (filterHeaderText) {
+      await expect(this.page.locator('.filter-header')).toContainText(filterHeaderText);
+    }
+    if (exactCount) {
+      const options: Locator = this.page.getByRole('option');
+      const expectedCount: number = filterHeaderText ? sortedItems.length + 1 : sortedItems.length;
+      await expect(options).toHaveCount(expectedCount, { timeout: 5000 });
+    }
     for (const item of sortedItems) {
       const option: Locator = this.page.getByRole('option', { name: item, exact: false });
       await option.scrollIntoViewIfNeeded();
@@ -178,5 +207,11 @@ export class DataTable {
       return sortOrder === 'ascending' ? comparison : -comparison;
     });
     expect(columnData).toEqual(sortedData);
+  }
+
+  public async checkCellInRow(rowIdentifier: string, cellIndex: number, expectedText: string): Promise<void> {
+    const row: Locator = this.getRow(rowIdentifier);
+    const cell: Locator = row.locator('td').nth(cellIndex);
+    await expect(cell).toContainText(expectedText);
   }
 }

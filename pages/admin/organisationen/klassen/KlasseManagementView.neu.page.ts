@@ -72,7 +72,7 @@ export class KlasseManagementViewPage {
   }
   
   public async openGesamtuebersicht(klassenname: string): Promise<KlasseDetailsViewPage> {
-    await this.klasseTable.getItemByText(klassenname).click();
+    await this.klasseTable.getRow(klassenname).click();
     const klasseDetailsViewPage: KlasseDetailsViewPage = new KlasseDetailsViewPage(this.page);
     await klasseDetailsViewPage.waitForPageLoad();
     return klasseDetailsViewPage;
@@ -120,9 +120,10 @@ export class KlasseManagementViewPage {
   }
 
   public async checkAllDropdownOptionsVisible(klassen: string[]): Promise<void> {
-    await this.klasseTable.checkAllDropdownOptionsVisible(
+    await this.klasseTable.checkVisibleDropdownOptions(
       klassen,
       this.klasseSelect,
+      true,
       `${klassen.length} Klassen gefunden`
     );
   }
