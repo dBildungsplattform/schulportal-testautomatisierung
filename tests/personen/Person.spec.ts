@@ -28,8 +28,6 @@ import { LoginPage } from '../../pages/LoginView.page';
 import { StartViewPage as NewStartPage } from '../../pages/StartView.neu.page';
 import { StartPage } from '../../pages/StartView.page';
 
-const PW: string | undefined = process.env.PW;
-const ADMIN: string | undefined = process.env.USER;
 const LDAP_URL: string = process.env.LDAP_URL;
 const LDAP_ADMIN_PASSWORD: string = process.env.LDAP_ADMIN_PASSWORD;
 
@@ -51,18 +49,13 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
   test.afterEach(async ({ page }: PlaywrightTestArgs) => {
     if (!currentUserIsLandesadministrator) {
       const header: HeaderPage = new HeaderPage(page);
-      const landing: LandingPage = new LandingPage(page);
-      const login: LoginPage = new LoginPage(page);
-      const startseite: StartPage = new StartPage(page);
 
       if (logoutViaStartPage) {
         await header.logout({ logoutViaStartPage: true });
       } else {
         await header.logout({ logoutViaStartPage: false });
       }
-      await landing.buttonAnmelden.click();
-      await login.login(ADMIN, PW);
-      await startseite.validateStartPageIsLoaded();
+      await loginAndNavigateToAdministration(page);
     }
 
     await test.step(`Testdaten(Benutzer) löschen via API`, async () => {
