@@ -1,4 +1,4 @@
-import { PlaywrightTestArgs, test } from '@playwright/test';
+import { Download, PlaywrightTestArgs, test } from '@playwright/test';
 import { addSecondOrganisationToPerson, createPersonWithPersonenkontext, freshLoginPage, UserInfo } from '../../base/api/personApi';
 import { landSH } from '../../base/organisation';
 import { landesadminRolle, schuladminOeffentlichRolle } from '../../base/rollen';
@@ -33,6 +33,7 @@ interface AdminFixture {
     let schule2Params: SchuleCreationParams;
     let schuleId: string;
     let schuleId2: string;
+    let admin: UserInfo;
 
     test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
       const header: HeaderPage = new HeaderPage(page);
@@ -53,7 +54,7 @@ interface AdminFixture {
       schuleId = await getOrganisationId(page, schule1Params.name);
 
       const adminOrganisation: string = organisationsName || schule1Params.name;
-      const admin: UserInfo = await createPersonWithPersonenkontext(page, adminOrganisation, rolleName);
+      admin = await createPersonWithPersonenkontext(page, adminOrganisation, rolleName);
 
       // für Admins mit mehreren Schulen: zweite Schule anlegen
       if (hasMultipleSchulen) {
@@ -136,6 +137,53 @@ interface AdminFixture {
         await personManagementViewPage.checkNewKlasseNachVersetzen(testData[0].schuelerSchule, testData[0].klassenNamenSchule[0]);
       });
     });
+
+    if (bezeichnung !== 'Schuladmin (2 Schulen)') {
+      test(`Als ${bezeichnung}: Passwörter zurücksetzen als Mehrfachbearbeitung prüfen`, { tag: [STAGE, DEV] }, async ({ page }: PlaywrightTestArgs) => {
+        let testData: KlassenAndSchuelerData[];
+
+        await test.step(`Testdaten erstellen`, async () => {
+          testData = await createKlassenAndSchuelerForSchulen(page, [
+            { params: schule1Params, schuleId, klassenCount: 1, schuelerCount: 4 },
+            ...(hasMultipleSchulen ? [{ params: schule2Params, schuleId: schuleId2, klassenCount: 1, schuelerCount: 1 }] : [])
+          ]);
+        });
+
+        if (hasMultipleSchulen) {
+          await test.step(`Fehlermeldungen für Schule testen`, async () => {
+            await personManagementViewPage.setItemsPerPage(50);
+            await personManagementViewPage.toggleSelectAllRows(true);
+            await personManagementViewPage.selectMehrfachauswahl('Passwort zurücksetzen');
+            await personManagementViewPage.checkPasswortZuruecksetzenErrorDialog();
+            await personManagementViewPage.closeDialog('invalid-selection-alert-dialog-cancel-button');
+            await personManagementViewPage.filterBySchule(schule1Params.name);
+          });
+        }
+
+        await test.step(`Passwort zurücksetzen-Dialog prüfen und anschließend zurücksetzen`, async () => {
+          await personManagementViewPage.setItemsPerPage(5);
+          await personManagementViewPage.toggleSelectAllRows(true);
+          await personManagementViewPage.selectMehrfachauswahl('Passwort zurücksetzen');
+          await personManagementViewPage.checkPasswortZuruecksetzenDialog();
+          await personManagementViewPage.setzePasswoerterZurueck();
+        });
+
+        await test.step(`Progressbar und Erfolgsdialog prüfen`, async () => {
+          await personManagementViewPage.checkPasswortZuruecksetzenInProgress();
+          await personManagementViewPage.checkPasswortZuruecksetzenSuccessDialog();
+          await personManagementViewPage.closeDialog('password-reset-close-button');
+        });
+
+        await test.step(`Hinweis zur Passwortdatei prüfen und anschließend Datei herunterladen `, async () => {
+          await personManagementViewPage.checkPasswortdateiHinweis();
+          await personManagementViewPage.closeDialog('password-reset-download-confirmation-button');
+          const download: Download = await personManagementViewPage.downloadPasswortdatei();
+          const users: UserInfo[] = [...testData[0].schuelerSchule, admin];
+          await personManagementViewPage.checkPasswortdatei(download, schule1Params.dienststellenNr, users, hasMultipleSchulen);
+          await personManagementViewPage.closeDialog('password-reset-close-button');
+        });
+      });
+    }
   });
 });
 
