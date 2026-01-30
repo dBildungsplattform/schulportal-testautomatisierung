@@ -163,7 +163,7 @@ export class PersonManagementViewPage {
     await expect(column.filter({ hasNotText: expectedText })).toHaveCount(0);
   }
 
-  public async checkAllDropdownOptionsVisible(options: string[], dropDownId: string, exactCount: boolean = false, hasHeader?: boolean): Promise<void> {
+  public async checkVisibleDropdownOptions(options: string[], dropDownId: string, exactCount: boolean = false, hasHeader?: boolean): Promise<void> {
     await this.personTable.checkVisibleDropdownOptions(
       options,
       this.page.getByTestId(dropDownId),
@@ -206,7 +206,7 @@ export class PersonManagementViewPage {
     await expect(this.dialogCard.getByTestId('bulk-change-klasse-button')).toBeVisible();
     await expect(this.dialogCard.getByTestId('bulk-change-klasse-discard-button')).toBeVisible();
 
-    await this.checkAllDropdownOptionsVisible(
+    await this.checkVisibleDropdownOptions(
       klassenNamen,
       'bulk-change-klasse-klasse-select',
       true,
