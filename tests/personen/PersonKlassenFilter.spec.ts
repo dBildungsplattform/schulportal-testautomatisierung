@@ -39,7 +39,7 @@ import { VersetzenWorkflowPage } from '../../pages/admin/personen/details/zuordn
       await startPage.waitForPageLoad();
 
       // Schule anlegen
-      personManagementViewPage = await startPage.goToAdministration();  
+      personManagementViewPage = await startPage.navigateToAdministration();  
       const schuleCreationViewPage: SchuleCreationViewPage = await personManagementViewPage.menu.navigateToSchuleCreation();
       schuleParams = {
         name: generateSchulname(),
@@ -61,7 +61,7 @@ import { VersetzenWorkflowPage } from '../../pages/admin/personen/details/zuordn
       await startPage.waitForPageLoad();
 
       // Navigation zur Ergebnisliste von Benutzern
-      personManagementViewPage = await startPage.goToAdministration();  
+      personManagementViewPage = await startPage.navigateToAdministration();  
     });
 
     test.describe('Klassenfilter-Tests', () => {

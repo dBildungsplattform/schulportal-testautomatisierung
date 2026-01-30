@@ -1,9 +1,6 @@
-import { chromium, APIResponse, Browser, BrowserContext, Page } from '@playwright/test';
+/* eslint-disable no-console */
 
-import FromAnywhere from '../pages/FromAnywhere';
-import { LandingPage } from '../pages/LandingView.page';
-import { StartPage } from '../pages/StartView.page';
-import { LoginPage } from '../pages/LoginView.page';
+import { APIResponse, Browser, BrowserContext, chromium, Page } from '@playwright/test';
 
 import {
   ApiResponse,
@@ -12,6 +9,11 @@ import {
   OrganisationsTyp,
 } from '../base/api/generated';
 import { constructOrganisationApi } from '../base/api/organisationApi';
+import FromAnywhere from '../pages/FromAnywhere.neu';
+import { LandingViewPage } from '../pages/LandingView.neu.page';
+import { LoginViewPage } from '../pages/LoginView.neu.page';
+import { StartViewPage } from '../pages/StartView.neu.page';
+
 
 const FRONTEND_URL: string = process.env.FRONTEND_URL ?? '';
 const searchString: string = 'TAuto';
@@ -37,11 +39,11 @@ export default async function globalTeardown(): Promise<void> {
     // ---------------------------------------------------------------------
     console.log('Login');
 
-    await FromAnywhere(page)
-      .start()
-      .then((landing: LandingPage) => landing.goToLogin())
-      .then((login: LoginPage) => login.login())
-      .then((startseite: StartPage) => startseite.validateStartPageIsLoaded());
+    const landingPage: LandingViewPage= await FromAnywhere(page).start()
+    const loginPage: LoginViewPage = await landingPage.navigateToLogin();
+    const startPage: StartViewPage = await loginPage.login(process.env.USER!, process.env.PW!);
+    await startPage.waitForPageLoad();
+    await startPage.navigateToAdministration();
 
     // ---------------------------------------------------------------------
     // PERSONEN LÖSCHEN
@@ -54,6 +56,8 @@ export default async function globalTeardown(): Promise<void> {
 
     const personenJson: { items: { person: { id: string } }[] } =
       await personenResponse.json();
+
+    console.log(`Found ${personenJson.items.length} Personen to delete`);
 
     for (const { person } of personenJson.items) {
       await page.request.delete(`${FRONTEND_URL}api/personen/${person.id}`);
@@ -70,6 +74,8 @@ export default async function globalTeardown(): Promise<void> {
 
     const rollenJson: { id: string }[] = await rollenResponse.json();
 
+    console.log(`Found ${rollenJson.length} Rollen to delete`);
+
     for (const rolle of rollenJson) {
       await page.request.delete(`${FRONTEND_URL}api/rolle/${rolle.id}`);
     }
@@ -85,14 +91,15 @@ export default async function globalTeardown(): Promise<void> {
         typ: OrganisationsTyp.Klasse,
       });
 
-    const klassen = await klassenResponse.value();
+    const klassen: OrganisationResponse[] = await klassenResponse.value();
+
+    console.log(`Found ${klassen.length} Klassen to delete`);
 
     await Promise.allSettled(
-      klassen.map(({ id }) =>
+      klassen.map(({ id }: OrganisationResponse) =>
         organisationApi.organisationControllerDeleteOrganisationRaw({ organisationId: id })
       )
     );
-
 
     // ---------------------------------------------------------------------
     // SCHULEN LÖSCHEN
@@ -105,10 +112,11 @@ export default async function globalTeardown(): Promise<void> {
         typ: OrganisationsTyp.Schule,
       });
 
-    const schulen = await schulenResponse.value();
+    const schulen: OrganisationResponse[] = await schulenResponse.value();
+    console.log(`Found ${schulen.length} Schulen to delete`);
 
     await Promise.allSettled(
-      schulen.map(({ id }) =>
+      schulen.map(({ id }: OrganisationResponse) =>
         organisationApi.organisationControllerDeleteOrganisationRaw({ organisationId: id })
       )
     );

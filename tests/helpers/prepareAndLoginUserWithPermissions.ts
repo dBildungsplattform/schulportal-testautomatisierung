@@ -77,5 +77,5 @@ export async function prepareAndLoginUserWithPermissions(
 
   // Wait for the start page to load and go to administration
   await startPage.waitForPageLoad();
-  await startPage.goToAdministration();
+  await startPage.navigateToAdministration();
 }

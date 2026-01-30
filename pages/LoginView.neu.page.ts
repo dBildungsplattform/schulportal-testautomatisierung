@@ -1,5 +1,6 @@
 import { expect, type Locator, Page } from '@playwright/test';
 import generator from 'generate-password-ts';
+
 import { StartViewPage } from './StartView.neu.page';
 
 export class LoginViewPage {
@@ -17,15 +18,14 @@ export class LoginViewPage {
     return generator.generate({ length: 8, numbers: true }) + '1Aa!';
   }
 
-  public async login(
-    username: string, password: string): Promise<StartViewPage> {
+  public async login(username: string, password: string): Promise<StartViewPage> {
     const usernameInput: Locator = this.page.getByTestId('username-input');
     const passwordInput: Locator = this.page.getByTestId('password-input');
     const loginButton: Locator = this.page.getByTestId('login-button');
 
     await expect(this.page.getByTestId('login-page-title')).toHaveText('Anmeldung');
     await expect(this.page.getByTestId('login-prompt-text')).toHaveText(
-      'Bitte geben Sie Ihre persönlichen Zugangsdaten ein.'
+      'Bitte geben Sie Ihre persönlichen Zugangsdaten ein.',
     );
 
     await usernameInput.waitFor({ state: 'visible' });
@@ -36,7 +36,7 @@ export class LoginViewPage {
 
     await loginButton.waitFor({ state: 'visible' });
     await loginButton.click();
-    return new StartViewPage(this.page);
+    return new StartViewPage(this.page, username);
   }
 
   public async updatePassword(isEntryFromProfileView?: boolean): Promise<string> {
@@ -44,13 +44,13 @@ export class LoginViewPage {
     const newPasswordInput: Locator = this.page.getByTestId('new-password-input');
     const newPasswordConfirmInput: Locator = this.page.getByTestId('new-password-confirm-input');
     const buttonClosePWChangeDialogFromProfilView: Locator = this.page.getByTestId(
-      'close-password-changed-dialog-button'
+      'close-password-changed-dialog-button',
     );
     const buttonSubmitPWChange: Locator = this.page.getByTestId('set-password-button');
 
     await expect(this.page.getByTestId('update-password-title')).toHaveText('Passwort festlegen');
     await expect(this.page.getByTestId('password-update-prompt')).toHaveText(
-      'Bitte legen Sie ein neues, selbstgewähltes Passwort fest.'
+      'Bitte legen Sie ein neues, selbstgewähltes Passwort fest.',
     );
 
     await newPasswordInput.waitFor({ state: 'visible' });
@@ -66,12 +66,12 @@ export class LoginViewPage {
     return newPassword;
   }
 
-  public async loginNewUserWithPasswordChange(username: string, password: string) : Promise<StartViewPage> {
-    const startPage: StartViewPage = await this.login(username, password);
+  public async loginNewUserWithPasswordChange(username: string, password: string): Promise<StartViewPage> {
+    await this.login(username, password);
     await this.updatePassword();
-    return startPage;
+    return new StartViewPage(this.page, username).waitForPageLoad();
   }
-  
+
   /* assertions */
   public async loginFailedWithWrongCredentials(): Promise<void> {
     const inputErrorSpan: Locator = this.page.getByTestId('input-error-message');
@@ -85,7 +85,7 @@ export class LoginViewPage {
 
     await expect(loginErrorSpan).toBeVisible();
     await expect(loginErrorSpan).toHaveText(
-      'Ihr Benutzerkonto ist gesperrt. Bitte wenden Sie sich an Ihre schulischen Administratorinnen und Administratoren.'
+      'Ihr Benutzerkonto ist gesperrt. Bitte wenden Sie sich an Ihre schulischen Administratorinnen und Administratoren.',
     );
   }
 }

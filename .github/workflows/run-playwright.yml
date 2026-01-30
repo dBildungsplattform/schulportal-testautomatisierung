@@ -25,6 +25,9 @@ on:
       PW:
         description: 'Password for the application'
         required: true
+      OTP_SEED_B32:
+        description: 'Base32 encoded OTP seed for 2FA (required for stage tests with 2FA)'
+        required: false
       RC_WEBHOOK:
         description: 'Webhook URL for notifications'
         required: true
@@ -204,6 +207,7 @@ jobs:
           BROWSER: ${{ inputs.browser }}
           USER: '${{ secrets.USER }}'
           PW: '${{ secrets.PW }}'
+          OTP_SEED_B32: '${{ secrets.OTP_SEED_B32 }}'
           LDAP_URL: ldap://localhost:1389
           LDAP_ADMIN_PASSWORD: ${{ env.LDAP_ADMIN_PASSWORD }}
           NODE_OPTIONS: --no-experimental-strip-types

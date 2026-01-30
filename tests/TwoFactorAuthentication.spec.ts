@@ -6,15 +6,11 @@ import { typeLehrer } from '../base/rollentypen';
 import { email } from '../base/sp';
 import { DEV, STAGE } from '../base/tags';
 import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata';
-import { gotoTargetURL } from '../base/testHelperUtils';
+import { gotoTargetURL, loginAndNavigateToAdministration } from '../base/testHelperUtils';
 import { generateNachname, generateRolleName, generateVorname } from '../base/utils/generateTestdata';
 import { PersonDetailsViewPage } from '../pages/admin/personen/PersonDetailsView.page';
 import { PersonManagementViewPage } from '../pages/admin/personen/PersonManagementView.page';
 import { HeaderPage } from '../pages/components/Header.page';
-import FromAnywhere from '../pages/FromAnywhere';
-import { LandingPage } from '../pages/LandingView.page';
-import { LoginPage } from '../pages/LoginView.page';
-import { StartPage } from '../pages/StartView.page';
 
 // The created test data will be deleted in the afterEach block
 let usernames: string[] = [];
@@ -24,13 +20,7 @@ let logoutViaStartPage: boolean = false;
 test.describe(`Testfälle für TwoFactorAuthentication": Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
     await test.step(`Login`, async () => {
-      const startPage: StartPage = await FromAnywhere(page)
-        .start()
-        .then((landing: LandingPage) => landing.goToLogin())
-        .then((login: LoginPage) => login.login())
-        .then((startseite: StartPage) => startseite.validateStartPageIsLoaded());
-
-      return startPage;
+      await loginAndNavigateToAdministration(page);
     });
   });
 
