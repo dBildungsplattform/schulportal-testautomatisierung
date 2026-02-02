@@ -119,11 +119,11 @@ export class PersonManagementViewPage {
     await this.page.getByTestId('bulk-change-klasse-button').click();
   }
 
-  public async setzePasswoerterZurueck(): Promise<void> {
+  public async resetPassword(): Promise<void> {
     await this.page.getByTestId('password-reset-submit-button').click();
   }
 
-  public async downloadPasswortdatei(): Promise<Download> {
+  public async downloadPasswordFile(): Promise<Download> {
     const downloadPromise: Promise<Download> = this.page.waitForEvent('download');
     await this.page.getByTestId('download-result-button').click();
     return downloadPromise;

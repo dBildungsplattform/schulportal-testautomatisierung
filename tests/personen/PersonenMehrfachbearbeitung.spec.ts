@@ -165,7 +165,7 @@ interface AdminFixture {
           await personManagementViewPage.toggleSelectAllRows(true);
           await personManagementViewPage.selectMehrfachauswahl('Passwort zurücksetzen');
           await personManagementViewPage.checkPasswortZuruecksetzenDialog();
-          await personManagementViewPage.setzePasswoerterZurueck();
+          await personManagementViewPage.resetPassword();
         });
 
         await test.step(`Progressbar und Erfolgsdialog prüfen`, async () => {
@@ -177,7 +177,7 @@ interface AdminFixture {
         await test.step(`Hinweis zur Passwortdatei prüfen und anschließend Datei herunterladen `, async () => {
           await personManagementViewPage.checkPasswortdateiHinweis();
           await personManagementViewPage.closeDialog('password-reset-download-confirmation-button');
-          const download: Download = await personManagementViewPage.downloadPasswortdatei();
+          const download: Download = await personManagementViewPage.downloadPasswordFile();
           const users: UserInfo[] = [...testData[0].schuelerSchule, admin];
           await personManagementViewPage.checkPasswortdatei(download, schule1Params.dienststellenNr, users, hasMultipleSchulen);
           await personManagementViewPage.closeDialog('password-reset-close-button');
