@@ -1,6 +1,6 @@
 import { Locator, Page } from '@playwright/test';
 import { Row } from './Row';
-import { Autocomplete } from '../../elements/Autocomplete';
+import { Autocomplete } from '../../pages/components/Autocomplete';
 
 export class RolleForm {
   public readonly adminstrationsebene: Row<Autocomplete, Locator>;

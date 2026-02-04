@@ -1,6 +1,6 @@
 import { expect, Locator, Page } from '@playwright/test';
 import { DataTable } from '../../../components/DataTable.neu.page';
-import { SearchFilter } from '../../../../elements/SearchFilter';
+import { SearchFilter } from '../../../components/SearchFilter';
 import { MenuBarPage } from '../../../components/MenuBar.neu.page';
 
 export class SchuleManagementViewPage {

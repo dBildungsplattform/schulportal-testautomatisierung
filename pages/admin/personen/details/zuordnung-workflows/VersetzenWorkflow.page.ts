@@ -1,6 +1,6 @@
 import { expect, Page } from '@playwright/test';
 import { BaseWorkflowPage, TestIdsType } from './BaseWorkflow.page';
-import { Autocomplete } from '../../../../../elements/Autocomplete';
+import { Autocomplete } from '../../../../components/Autocomplete';
 
 export class VersetzenWorkflowPage extends BaseWorkflowPage {
   /* add global locators here */

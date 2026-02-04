@@ -1,5 +1,5 @@
 import { Download, expect, Page } from '@playwright/test';
-import { Autocomplete } from '../../../elements/Autocomplete';
+import { Autocomplete } from '../../components/Autocomplete';
 import { PersonManagementViewPage } from './PersonManagementView.page';
 
 export class PersonImportViewPage {
