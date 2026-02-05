@@ -43,9 +43,6 @@ import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
 import { StartPage } from '../pages/StartView.page';
 
-const PW: string | undefined = process.env.PW;
-const ADMIN: string | undefined = process.env.USER;
-
 // The created test data will be deleted in the afterEach block
 let personIds: string[] = [];
 let rolleIds: string[] = [];
@@ -64,18 +61,13 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
   test.afterEach(async ({ page }: PlaywrightTestArgs) => {
     if (!currentUserIsLandesadministrator) {
       const header: HeaderPage = new HeaderPage(page);
-      const landing: LandingPage = new LandingPage(page);
-      const startseite: StartPage = new StartPage(page);
-      const login: LoginPage = new LoginPage(page);
 
       if (logoutViaStartPage) {
         await header.logout({ logoutViaStartPage: true });
       } else {
         await header.logout({ logoutViaStartPage: false });
       }
-      await landing.buttonAnmelden.click();
-      await login.login(ADMIN, PW);
-      await startseite.validateStartPageIsLoaded();
+      await loginAndNavigateToAdministration(page);
     }
 
     await test.step(`Testdaten löschen via API`, async () => {
