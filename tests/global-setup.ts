@@ -1,14 +1,15 @@
 /* eslint-disable no-console */
 
-import { Browser, BrowserContext, chromium, Page } from '@playwright/test';
+import { Browser, BrowserContext, chromium, Page, Request, Response } from '@playwright/test';
 import path from 'node:path';
 
 import { getOrganisationId } from '../base/api/organisationApi';
-import { createPerson, UserInfo } from '../base/api/personApi';
+import { construct2FAApi, createPerson, UserInfo } from '../base/api/personApi';
 import { getRolleId } from '../base/api/rolleApi';
-import { Env } from '../base/env';
+import { SharedCredentialManager } from '../base/env';
 import { landSH } from '../base/organisation';
 import { landesadminRolle } from '../base/rollen';
+import { loginAndNavigateToAdministration } from '../base/testHelperUtils';
 import { generateNachname, generateVorname } from '../base/utils/generateTestdata';
 import { HeaderPage } from '../pages/components/Header.neu.page';
 import FromAnywhere from '../pages/FromAnywhere.neu';
@@ -16,6 +17,11 @@ import { LandingViewPage } from '../pages/LandingView.neu.page';
 import { LoginViewPage } from '../pages/LoginView.neu.page';
 import { StartViewPage } from '../pages/StartView.neu.page';
 import { workers } from '../playwright.config';
+import { Class2FAApi } from '../base/api/generated';
+import { PNG } from 'pngjs';
+import jsQR, { QRCode } from 'jsqr';
+import { TOTP } from 'totp-generator';
+import { getSecretFromTokenQRCode } from '../base/2fa';
 
 const FRONTEND_URL: string = process.env.FRONTEND_URL ?? '';
 
@@ -38,6 +44,7 @@ export default async function globalSetup(): Promise<void> {
   const browser: Browser = await chromium.launch();
   const context: BrowserContext = await browser.newContext({
     baseURL: FRONTEND_URL,
+    ignoreHTTPSErrors: true,
   });
 
   const page: Page = await context.newPage();
@@ -47,14 +54,7 @@ export default async function globalSetup(): Promise<void> {
     // LOGIN
     // ---------------------------------------------------------------------
     console.log('Login');
-
-    {
-      const landingPage: LandingViewPage = await FromAnywhere(page).start();
-      const loginPage: LoginViewPage = await landingPage.navigateToLogin();
-      const startPage: StartViewPage = await loginPage.login(process.env.USER!, process.env.PW!);
-      await startPage.waitForPageLoad();
-      await startPage.navigateToAdministration();
-    }
+    await loginAndNavigateToAdministration(page, process.env.USER!, process.env.PW!);
 
     // ---------------------------------------------------------------------
     // BOOTSTRAP ADMINS
@@ -67,12 +67,21 @@ export default async function globalSetup(): Promise<void> {
 
     const userInfos: UserInfo[] = await Promise.all(
       Array.from({ length: workers }).map((_, index) =>
-        createPerson(page, organisationId, rolleId, generateNachname() + encodeNumberAsLetters(index), generateVorname()),
+        createPerson(
+          page,
+          organisationId,
+          rolleId,
+          generateNachname() + encodeNumberAsLetters(index + 1),
+          generateVorname(),
+        ),
       ),
     );
 
     const header: HeaderPage = new HeaderPage(page);
     await header.logout();
+
+    SharedCredentialManager.init();
+    const twoFactorApi: Class2FAApi = construct2FAApi(page);
 
     for (const [index, userInfo] of userInfos.entries()) {
       const page: Page = await context.newPage();
@@ -82,12 +91,30 @@ export default async function globalSetup(): Promise<void> {
         const startPage: StartViewPage = await loginPage.login(userInfo.username, userInfo.password);
         const password: string = await loginPage.updatePassword();
         await startPage.waitForPageLoad();
-        Env.setUsername(userInfo.username, index);
-        Env.setPassword(password, index);
+        SharedCredentialManager.setUsername(userInfo.username, index);
+        SharedCredentialManager.setPassword(password, index);
+
+        const initTokenResponse: string = await twoFactorApi.privacyIdeaAdministrationControllerInitializeSoftwareToken({
+          tokenInitBodyParams: {
+            personId: userInfo.personId,
+          },
+        });
+        const otpSecret: string | null = getSecretFromTokenQRCode(initTokenResponse);
+        if (!otpSecret) throw new Error(`Setting up 2FA for ${userInfo.username} failed`)
+
+        const otp = await TOTP.generate(otpSecret!);
+        await twoFactorApi.privacyIdeaAdministrationControllerVerifyTokenRaw({
+          tokenVerifyBodyParams: {
+            personId: userInfo.personId,
+            otp: otp.otp,
+          },
+        })
+        SharedCredentialManager.setOtpSeed(otpSecret!, index);
+
         const header: HeaderPage = new HeaderPage(page);
         await header.logout();
         await page.close();
-        console.log(`Created ${index + 1}/${workers}`);
+        console.log(`| ${index.toString().padStart(2, '0')} | ${userInfo.username.padStart(32, ' ')} |`);
       } catch (error) {
         const screenshotPath = path.join('playwright-report', `error-creating-admin-${index}.png`);
         await page.screenshot({ path: screenshotPath });
@@ -97,8 +124,16 @@ export default async function globalSetup(): Promise<void> {
         await page.close();
       }
     }
+
+    console.log(userInfos.map((info) => `Created user: ${info.username}`).join('\n'));
   } catch (error) {
     console.error('Error during global setup:', error);
+    const screenshotPath = `error-global-setup.png`;
+    await page.screenshot({ path: screenshotPath });
+    const requests = await page.requests();
+    for (const request of requests) {
+      await logRequest(request);
+    }
     throw error;
   } finally {
     await context.close();
@@ -106,4 +141,9 @@ export default async function globalSetup(): Promise<void> {
   }
 
   console.log('Global setup completed');
+}
+
+async function logRequest(r: Request): Promise<void> {
+  const res: Response | null = await r.response();
+  console.log(`>> ${r.method()} ${r.url()} ${res?.status()}`);
 }

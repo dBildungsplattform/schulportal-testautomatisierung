@@ -11,8 +11,7 @@ export class StartViewPage {
 
   /* actions */
   public async waitForPageLoad(): Promise<StartViewPage> {
-    await this.startCardHeadline.waitFor({ state: 'visible' });
-    await expect(this.startCardHeadline).toHaveText('Startseite');
+    await expect(this.startCardHeadline).toHaveText('Startseite', { timeout: 60_000 });
     return this;
   }
 

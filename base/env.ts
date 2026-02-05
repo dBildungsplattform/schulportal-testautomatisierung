@@ -1,3 +1,9 @@
+import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "fs";
+import { tmpdir } from "os";
+import { join } from "path";
+import { workers } from "../playwright.config";
+
+
 enum CustomEnvKeys {
     USER = 'USER',
     PW = 'PW',
@@ -5,45 +11,57 @@ enum CustomEnvKeys {
 }
 
 /**
- * Utility class to access custom environment variables
+ * Utility class to access credentials that are shared across multiple test workers.
  */
-export class Env {
+export class SharedCredentialManager {
+  /**
+   * This must be called during global setup. Otherwise credentials will not persist across workers.
+   */
+  static init(): void {
+    const tempPath: string = mkdtempSync(join(tmpdir(), 'testautomatisierung-'));
+    process.env['TEST_CREDENTIALS_PATH'] = tempPath;
+    for (let index = 0; index < workers; index++) {
+      mkdirSync(join(tempPath, index.toString()));
+    }
+  }
+
   static getUsername(workerParallelIndex?: string | number): string | undefined {
-    return Env.getByPrefix(CustomEnvKeys.USER, workerParallelIndex);
+    return SharedCredentialManager.read(CustomEnvKeys.USER, workerParallelIndex);
   }
 
   static setUsername(value: string, workerParallelIndex?: string | number): void {
-    Env.setByPrefix(CustomEnvKeys.USER, value, workerParallelIndex);
+    SharedCredentialManager.create(CustomEnvKeys.USER, value, workerParallelIndex);
   }
 
   static getPassword(workerParallelIndex?: string | number): string | undefined {
-    return Env.getByPrefix(CustomEnvKeys.PW, workerParallelIndex);
+    return SharedCredentialManager.read(CustomEnvKeys.PW, workerParallelIndex);
   }
 
   static setPassword(value: string, workerParallelIndex?: string | number): void {
-    Env.setByPrefix(CustomEnvKeys.PW, value, workerParallelIndex);
+    SharedCredentialManager.create(CustomEnvKeys.PW, value, workerParallelIndex);
   }
 
   static getOtpSeed(workerParallelIndex?: string | number): string | undefined {
-    return Env.getByPrefix(CustomEnvKeys.OTP_SEED_B32, workerParallelIndex);
+    return SharedCredentialManager.read(CustomEnvKeys.OTP_SEED_B32, workerParallelIndex);
   }
 
   static setOtpSeed(value: string, workerParallelIndex?: string | number): void {
-    Env.setByPrefix(CustomEnvKeys.OTP_SEED_B32, value, workerParallelIndex);
+    SharedCredentialManager.create(CustomEnvKeys.OTP_SEED_B32, value, workerParallelIndex);
   }
 
-  private static getByPrefix(prefix: string, workerParallelIndex?: string | number): string | undefined {
+  private static create(prefix: string, value: string, workerParallelIndex?: string | number): void {
     if (workerParallelIndex !== undefined) {
-      return process.env[`${prefix}_${workerParallelIndex}`];
-    }
-    return process.env[prefix];
-  }
-
-  private static setByPrefix(prefix: string, value: string, workerParallelIndex?: string | number): void {
-    if (workerParallelIndex !== undefined) {
-      process.env[`${prefix}_${workerParallelIndex}`] = value;
+      writeFileSync(join(process.env['TEST_CREDENTIALS_PATH']!, workerParallelIndex.toString(), prefix), value);
     } else {
       process.env[prefix] = value;
     }
+  }
+
+  private static read(prefix: string, workerParallelIndex?: string | number): string | undefined {
+    if (workerParallelIndex !== undefined) {
+      const buffer: Buffer = readFileSync(join(process.env['TEST_CREDENTIALS_PATH']!, workerParallelIndex.toString(), prefix));
+      return buffer.toString();
+    }
+    return process.env[prefix];
   }
 }

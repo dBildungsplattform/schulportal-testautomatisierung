@@ -3,9 +3,10 @@ import jsQR, { QRCode } from 'jsqr';
 import { PNG } from 'pngjs';
 import { TOTP } from 'totp-generator';
 
-import { Env } from '../base/env';
+import { SharedCredentialManager } from '../base/env';
 import { PersonManagementViewPage } from './admin/personen/PersonManagementView.neu.page';
 import { ProfileViewPage } from './ProfileView.neu.page';
+import { getSecretFromTokenQRCode } from '../base/2fa';
 
 export interface TwoFactorSetupResult {
   page: ProfileViewPage;
@@ -57,7 +58,12 @@ export class TwoFactorWorkflowPage {
       const digit: string = otp.at(index)!;
       await this.page.getByTestId('self-service-otp-input').locator('input').nth(index).fill(digit);
     }
-    await this.page.getByTestId('proceed-two-factor-authentication-dialog').click();
+    const setupButton: Locator = this.page.getByTestId('proceed-two-factor-authentication-dialog');
+    await setupButton.click();
+    await expect(setupButton).toBeHidden();
+
+    this.saveOtpSecretInEnv(otpSecret); // only save the secret if setup was successful
+
     return { page: await new ProfileViewPage(this.page).waitForPageLoad(), otpSecret };
   }
 
@@ -82,37 +88,26 @@ export class TwoFactorWorkflowPage {
   }
 
   private async getOtpSecretFromQRCode(): Promise<string> {
-    const qrCode: QRCode = await this.getQRCodeFromImage();
-
-    const url: URL = new URL(qrCode.data);
-    const otpSecret: string | null = url.searchParams.get('secret');
-    if (!otpSecret) {
-      throw new Error('OTP secret not found in QR code URL');
-    }
-    if (this.username) {
-      const workerParallelIndex: string = process.env['TEST_PARALLEL_INDEX']!;
-      if (Env.getUsername(workerParallelIndex) === this.username) {
-        Env.setOtpSeed(otpSecret, workerParallelIndex);
-      }
-    }
-    return otpSecret;
-  }
-
-  private async getQRCodeFromImage(): Promise<QRCode> {
     const qrCodeSrc: string | null = await this.page
       .getByTestId('software-token-dialog-qr-code')
       .locator('img')
       .getAttribute('src');
     expect(qrCodeSrc).not.toBeNull();
-    const base64Data: string = qrCodeSrc!.replace('data:image/png;base64,', '');
-    const buffer: Buffer = Buffer.from(base64Data, 'base64');
-    let img: PNG = new PNG();
-    img = PNG.sync.read(buffer);
-    const qrCode: QRCode | null = jsQR(new Uint8ClampedArray(img.data), img.width, img.height);
-    if (!qrCode) {
-      throw new Error('Failed to decode QR code from image');
+
+    const otpSecret: string | null = getSecretFromTokenQRCode(qrCodeSrc);
+    if (!otpSecret) {
+      throw new Error('OTP secret not found in QR code URL');
     }
-    return qrCode;
+    return otpSecret;
+  }
+
+  private saveOtpSecretInEnv(otpSecret: string) {
+    if (this.username) {
+      const workerParallelIndex: string = process.env['TEST_PARALLEL_INDEX']!;
+      if (SharedCredentialManager.getUsername(workerParallelIndex) === this.username) {
+        SharedCredentialManager.setOtpSeed(otpSecret, workerParallelIndex);
+      }
+    }
   }
 
   private async fillOtpAndConfirm(otp: string): Promise<void> {
@@ -136,13 +131,14 @@ export class TwoFactorWorkflowPage {
     } else if (this.username) {
       const workerParallelIndex: string = process.env['TEST_PARALLEL_INDEX']!;
       // are we the workers designated root user?
-      if (Env.getUsername(workerParallelIndex) === this.username) {
-        otpKey = Env.getOtpSeed(workerParallelIndex)!;
+      if (SharedCredentialManager.getUsername(workerParallelIndex) === this.username) {
+        otpKey = SharedCredentialManager.getOtpSeed(workerParallelIndex)!;
       }
     }
     if (!otpKey) {
       // fallback to global root
-      otpKey = Env.getOtpSeed();
+      console.warn('Falling back to global OTP seed from ENV');
+      otpKey = SharedCredentialManager.getOtpSeed();
     }
 
     if (!otpKey) {
@@ -154,14 +150,15 @@ export class TwoFactorWorkflowPage {
       const timeLeft: number = this.expires - currentTime;
       await this.page.waitForTimeout(timeLeft + 100);
     }
-
+    
+    const now: number = Date.now();
     const {
       otp,
       expires,
     }: {
       otp: string;
       expires: number;
-    } = await TOTP.generate(otpKey);
+    } = await TOTP.generate(otpKey, { timestamp: now });
     this.expires = expires;
     return otp;
   }
