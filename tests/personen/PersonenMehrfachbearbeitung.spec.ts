@@ -103,6 +103,7 @@ interface AdminFixture {
 
       await test.step(`Fehlermeldungen nur für Schülerrolle testen`, async () => {
         await personManagementViewPage.setItemsPerPage(5);
+        await personManagementViewPage.checkRowCount(4);
         await personManagementViewPage.toggleSelectAllRows(true);
         await personManagementViewPage.selectMehrfachauswahl('Schüler versetzen');
         await personManagementViewPage.checkSchuelerVersetzenErrorDialog('rolle');
