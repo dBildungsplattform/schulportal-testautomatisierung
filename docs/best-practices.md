@@ -1,47 +1,70 @@
 # TLDR
-
 - Code soll Typescript Best Practices folgen
 - Frontend-Views werden als Pages abgebildet
 - Funktionslogik (Actions und Assertions) als Methoden in Pages
-- Navigation sollte über Pages laufen und die `waitForPageLoad()`-Funktion sollte aufgerufen werden
+- Navigation läuft über Pages laufen und die `waitForPageLoad()`-Funktion wird aufgerufen
 - Testlogik (inkl. Aufruf der Page-Methoden) in Tests
-- Alle definierten Variablen in Pages sind mit private readonly deklariert und werden nur in den lokalen Methoden benutzt
+- Alle definierten Variablen in Pages sind mit `private readonly` deklariert und werden nur in den lokalen Methoden benutzt
 - API-Funktionen werden mit Hilfe einer generierten API und Playwright-Fetch-Wrapper implementiert
 - Die API muss bei jeder Aktualisierung im Backend auch in Playwright aktualisiert werden
 
 # Pages
+Jede View im Frontend (schulportal-client) wird als Page in Playwright abgebildet.
+
+Pages beinhalten Actions und Assertions. Actions sind die Methoden zur Funktionslogik der Frontend-Views. Assertions sind die Überprüfungen (expects). Die Assertions beginnen alle mit dem Präfix "assert", bspw. `assertPersonalData()`.
 
 Alle Variablen, die Lokatoren verwenden, sollen readonly sein und nur innerhalb der Page benutzt werden. Dadurch verringern wir den Wartungsaufwand bei Änderungen erheblich, da die Änderungen nur an einer Stelle erfolgen müssen.
 
-Methoden, die Funktionslogik beinhalten, können public sein und in den Tests verwendet werden. Die Tests sollen nur so wenig Parameter wie möglich (aber so viele wie nötig) an die Page-Funktionen übergeben.
+Alle Methoden, die Funktionslogik beinhalten, dürfen (aber müssen nicht) public sein und in den Tests verwendet werden. Die Tests sollen nur so wenig Parameter wie möglich (aber so viele wie nötig) an die Page-Funktionen übergeben.
 
 Die Namen der Locator-Variablen orientieren sich an den Benennungen der Test-Ids im Frontend.
 
 Jede Page besitzt eine Methode waitForPageLoad(), die mindestens eine eindeutige Headline (oder ähnliches Element) der Seite überprüft und die Page anschließend zurückgibt.
 
+Innerhalb der Pages beschreibt die Bezeichnung 'Workflow' einen fachlichen Ablauf, der im Frontend durchgeführt wird und in Playwright aus mehreren Einheiten (z.B. Actions, Pages, etc.) zusammengesetzt wird.
+
+## Test-Ids
+Jedes sinnvoll mit Playwright zu testende HTML-Element im Frontend bekommt eine Test-Id über das HTML-Attribut data-testid. Dieses Attribut kann mit der Playwright-Funktion .getByTestId() ausgelesen werden. Vorzugsweise erfolgt die Benennung im Frontend in kebab-case nach dem Schema <Funktion>-<Element>, bspw. `data-testid="username-input"`.
+
+Test-Ids müssen pro Seite eindeutig sein, damit die Tests eindeutig auf die Elemente zugreifen können. Das betrifft insbesondere programmatisch generierte Elemente, wie z.B. die Service-Provider-Cards. Bei solchen Elementen muss die Test-Id einen Affix bekommen, der sie unique macht, bspw. die Id des Models: `service-provider-card-7e6f10d7-b6e5-4686-9011-182634c03bf3`.
+
+### Keine Id im Frontend vorhanden?
+Sollte ein zu testendes Element keine Test-Id haben, muss im Frontend nachgearbeitet werden. Am sinnvollsten ist in diesem Fall ein Branch im schulportal-client mit der gleichen Nummer des Playwright-Tickets. Dadurch stellen wir sicher, dass die Tests immer konsistent durchlaufen.
+
+### Ausnahmen wegen Vuetify
+In einigen Fällen kann es vorkommen, dass ein konkretes Element (z.B. ein Inputfeld) keine Test-Id hat, obwohl im Frontend eine Test-Id vergeben wurde. Dann liegt es an Vuetify, der UI-Komponenten-Bibliothek, die im Frontend eingesetzt wird. Für Vuetify-Komponenten können wir (nach aktuellem Stand) nur auf oberster Ebene eine Test-Id vergeben. Wenn ein Element auf einer tieferen Ebene in Playwright lokalisiert werden muss, ist dies über Chaining der Playwright-Methoden möglich.
+
+Beispiel: Das Inputfeld im Search Filter soll lokalisiert werden, der Search Filter ist eine Vuetify-Komponente mit Test-Id. Chaining wie folgt: `this.page.getByTestId('search-filter-input').locator('input')`.
+
 # Testsuiten
+Alle Testsuiten (Dateien) sind Use-Case bezogen. Eine Testsuite beinhaltet **nur einen** Use-Case. Ein Use-Case kann aus mehreren Testfällen bestehen.
 
-Alle Testsuiten (Dateien) sind Use-Case bezogen. Eine Testsuite beinhaltet nur einen Use-Case. Ein Use-Case kann aus mehreren Testfällen bestehen.
+Die Tests beinhalten keine Funktionslogik. Logik, Aktionen und Überprüfungen finden nur in den Pages statt.
 
-Abzubildende Use Cases während des Refactorings
+Ein Top-Level describe-Block ist nicht nötig, wenn aus dem Dateinamen klar wird, was im Test inbegriffen ist.
 
 # Namensgebung
-
 | Element             | Empfohlener Case     | Endung   | Beispiel                 | Besonderheit                                      |
 | ------------------- | -------------------- | -------- | ------------------------ | ------------------------------------------------- |
 | Pages               | PascalCase           | .page.ts | PersonImportView.page.ts | Übernahme des Dateinamens der View im Frontend    |
+| Testsuiten          | PascalCase           | .spec.ts | RolleAnlegen.spec.ts     | Testsuiten sind immer Use Case bezogen |
+| Helper/Utils        | camelCase            | .ts      | generateTestdata.ts      | 
 | Variablen           | camelCase            | -        | organisationAutocomplete |
 | Konstanten          | SCREAMING_SNAKE_CASE | -        | FRONTEND_URL             |
 | Methoden            | camelCase            | -        | waitForPageLoad()        |
-| Testsuiten          | PascalCase           | .spec.ts | RolleAnlegen.spec.ts     | Testsuiten sind immer Use Case bezogen, siehe hie |
 | Test Ids (Frontend) | kebab-case           | -        | person-creation-form     |
 
 # Coding-Regeln
+Vor dem Pushen *immer* Linter, Build und Tests ausführen
+```
+npm run lint
 
-Linter immer ausführen vor dem Pushen `npm run lint`
+npm run build
+
+npm run coverage
+```
 
 # Tags
-
 Mit Tags können wir die Ausführung der Tests gezielt steuern. So können beispielsweise Tests nur auf Stage oder nur auf Dev ausgeführt, je nachdem welche Drittsysteme oder andere Gegebenheiten berücksichtigt werden müssen. Die folgende Matrix zeigt, welche Tags vorhanden sind und welche Besonderheiten sie abdecken.
 
 | Tag   | Grundfunktionen | LDAP | Drittsysteme | Login |
@@ -50,40 +73,22 @@ Mit Tags können wir die Ausführung der Tests gezielt steuern. So können beisp
 | stage | x               |      | x            |       |
 | smoke |                 |      |              | x     |
 
-# Refactoring (ab Juni 2025)
-
-In einem Workshop am 26.6.25 wurde beschlossen, dass für die Stabilität der Playwright Tests ein Refactoring notwendig ist. Mehrere Wochen fehlschlagender Tests in Pull Requests und geplanten Workflows haben für Mehrarbeit und Frustration gesorgt, die durch das Refactoring zukünftig verhindert werden sollten. Das Refactoring wurde aufgeteilt in die folgenden Punkte:
-
-## Pages
-
-Jede Seite, die im Frontend des Schulportals vorhanden ist, wurde in einem eigenen Page-Objekt in Playwright abgebildet.
-
-Alle Funktionen, die eine Seite bietet, wurden identifiziert und als Methoden in den Pages implementiert. Dabei sollen so wenig Parameter wie möglich vom Test an die Pages übergeben werden. Das stellt sicher, dass die Funktionslogik hauptsächlich durch die Pages abgedeckt ist und die Tests auf die Testlogik reduziert werden können.
-
-Am Ende sollen im Idealfall keine public Variablen mehr in den Pages vorhanden sein.
-
-Um den Scope des Refactorings zu gewährleisten, wurden vorerst nur die bereits in Playwright implementierten Funktionen hinzugefügt. Alle neuen Funktionen werden in weiteren Tickets nachträglich ergänzt.
-
-## Tests
-
-Nach dem Refactoring sollen alle Tests um einiges schlanker sein, da die Funktionslogik in die Pages verlagert wurde. In den Tests werden benötigte Variablen definiert und die Funktionen der Pages aufgerufen, an die die Variablen übergeben werden. Durch diesen Schritt werden alle Tests lesbarer und übersichtlicher.
-
-Abzubildende Use Cases während des Refactorings
-
-## API
-
+# API
 Für die Erhaltung der Stabilität und Wartbarkeit der automatisierten Tests wurden auch die API-Calls in eigenen Klassen definiert. Es gibt einmal die von uns erstellten API-Klassen, bspw. base/api/personApi.ts (selbst vergebener Name, Modelname im Singular), in denen wir die Methoden zur Verwendung in Pages und Tests definieren. Dort benutzen wir die zugehörige generierte API-Klasse, bspw. base/api/generated/personenApi.ts (Name aus der API vom Backend vergeben). Diese wird aus dem Swagger Doc der Backend-API generiert.
 
 Vor dem Refactoring gab es Helper-Klassen, die sowohl Funktionslogik, als auch API-Logik beinhaltet haben. Diese wurden durch das Refactoring getrennt, so dass die API-Klassen nur noch API-Logik beinhalten.
 
 Bei jeder Änderung der API im Backend-Repo muss die API auch in Playwright neu generiert werden. Der Befehl dazu lautet im Playwright-Repo `npm run generate-api`.
 
-## Workflows
+## Github Workflows
+Es gibt einen Github Workflow (run-playwright.yml), der sich um die Ausführung kümmert und Parameter für Umgebung, Browser und Testumfang (Tags) annimmt. Damit ist es möglich, jede mögliche Kombination von Parametern manuell und geplant auszuführen.
 
-Die bestehenden Workflows in den Github Actions sind historisch gewachsen und größtenteils unverständlich. Mit dem Refactoring wurden die Workflows reduziert und parametrisierbar gemacht. Es gibt nun einen Workflow, der sich um die Ausführung kümmert und Parameter für Umgebung, Browser und Testumfang (Tags) entgegennimmt. Damit ist es möglich, jede mögliche Kombination von Parametern manuell und geplant auszuführen.
+Die weiteren Github Workflows rufen run-playwright.yml parametrisiert auf.
+
+Siehe docs/actions-github.md.
 
 # Beispiele
-
+## Page
 ```typescript
 import ....
 
@@ -154,7 +159,7 @@ export class LoginViewPage {
   }
 }
 ```
-
+## Test
 ```typescript
 import ....
 

@@ -1,5 +1,5 @@
 import { type Locator, Page } from '@playwright/test';
-import { Autocomplete } from '../../../../elements/Autocomplete';
+import { Autocomplete } from '../../../components/Autocomplete';
 
 export class KlasseCreationViewPage {
   readonly page: Page;
