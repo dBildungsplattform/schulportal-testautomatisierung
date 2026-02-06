@@ -1,9 +1,7 @@
 import { expect, Locator, Page } from '@playwright/test';
-import jsQR, { QRCode } from 'jsqr';
-import { PNG } from 'pngjs';
 import { TOTP } from 'totp-generator';
 
-import { SharedCredentialManager } from '../base/env';
+import { SharedCredentialManager } from '../base/SharedCredentialManager';
 import { PersonManagementViewPage } from './admin/personen/PersonManagementView.neu.page';
 import { ProfileViewPage } from './ProfileView.neu.page';
 import { getSecretFromTokenQRCode } from '../base/2fa';

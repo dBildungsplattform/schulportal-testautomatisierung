@@ -2,11 +2,12 @@
 
 import { Browser, BrowserContext, chromium, Page, Request, Response } from '@playwright/test';
 import path from 'node:path';
+import { TOTP } from 'totp-generator';
 
 import { getOrganisationId } from '../base/api/organisationApi';
 import { construct2FAApi, createPerson, UserInfo } from '../base/api/personApi';
 import { getRolleId } from '../base/api/rolleApi';
-import { SharedCredentialManager } from '../base/env';
+import { SharedCredentialManager } from '../base/SharedCredentialManager';
 import { landSH } from '../base/organisation';
 import { landesadminRolle } from '../base/rollen';
 import { loginAndNavigateToAdministration } from '../base/testHelperUtils';
@@ -18,9 +19,6 @@ import { LoginViewPage } from '../pages/LoginView.neu.page';
 import { StartViewPage } from '../pages/StartView.neu.page';
 import { workers } from '../playwright.config';
 import { Class2FAApi } from '../base/api/generated';
-import { PNG } from 'pngjs';
-import jsQR, { QRCode } from 'jsqr';
-import { TOTP } from 'totp-generator';
 import { getSecretFromTokenQRCode } from '../base/2fa';
 
 const FRONTEND_URL: string = process.env.FRONTEND_URL ?? '';
