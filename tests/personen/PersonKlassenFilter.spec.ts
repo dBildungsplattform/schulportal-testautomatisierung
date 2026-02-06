@@ -106,6 +106,8 @@ import { VersetzenWorkflowPage } from '../../pages/admin/personen/details/zuordn
       });
 
       test(`Als ${bezeichnung}: Alle Klassen im Drop-Down bei SuS versetzen anzeigen`, { tag: [STAGE, DEV] }, async () => {
+        test.slow();
+        
         let params: ZuordnungValidationParams;
         let versetzenWorkflowPage: VersetzenWorkflowPage;
 
@@ -126,6 +128,8 @@ import { VersetzenWorkflowPage } from '../../pages/admin/personen/details/zuordn
       });
 
       test(`Als ${bezeichnung}: Alle Klassen im Drop-Down bei Schulzuordnung hinzufügen anzeigen`, { tag: [STAGE, DEV] }, async () => {
+        test.slow();
+
         let addZuordnungWorkflowPage: AddZuordnungWorkflowPage;
 
         await test.step(`Zum Klassen-Drop-Down navigieren`, async () => {
