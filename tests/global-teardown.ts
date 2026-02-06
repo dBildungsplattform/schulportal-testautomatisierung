@@ -11,19 +11,22 @@ import { constructRolleApi } from '../base/api/rolleApi';
 const FRONTEND_URL: string = process.env.FRONTEND_URL ?? '';
 const searchString: string = 'TAuto';
 const limit: number = 100;
+const batchSize: number = 20;
 
 async function cleanup<T>(get: () => Promise<Array<T>>, del: (item: T) => Promise<void>): Promise<void> {
   let items: Array<T> = await get();
   do {
-    for (const item of items) {
-      try {
-        await del(item);
-      } catch (err: unknown) {
-        console.error(err);
-      }
+    for (const promise of getBatchedDelPromise(items, del)) {
+      await promise;
     }
     items = await get();
   } while (items.length > 0)
+}
+
+function* getBatchedDelPromise<T>(arr: Array<T>, del: (item: T) => Promise<void>) {
+  for (let start = 0; start < arr.length; start += batchSize) {
+    yield Promise.allSettled(arr.slice(start, start + batchSize).map(del))
+  }
 }
 
 /**
