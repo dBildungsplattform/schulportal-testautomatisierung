@@ -92,7 +92,7 @@ export class TwoFactorWorkflowPage {
       .getAttribute('src');
     expect(qrCodeSrc).not.toBeNull();
 
-    const otpSecret: string | null = getSecretFromTokenQRCode(qrCodeSrc);
+    const otpSecret: string | null = getSecretFromTokenQRCode(qrCodeSrc!);
     if (!otpSecret) {
       throw new Error('OTP secret not found in QR code URL');
     }
