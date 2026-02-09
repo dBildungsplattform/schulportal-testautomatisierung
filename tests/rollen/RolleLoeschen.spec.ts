@@ -6,7 +6,7 @@ import { createRolle, RollenArt } from '../../base/api/rolleApi';
 import { testschuleName } from '../../base/organisation';
 import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
 import { generateRolleName } from '../../base/utils/generateTestdata';
-import { Alert } from '../../elements/Alert';
+import { Alert } from '../../pages/components/Alert';
 import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.neu.page';
 import { RolleDetailsViewPage } from '../../pages/admin/rollen/RolleDetailsView.page';
 import { RolleManagementViewPage } from '../../pages/admin/rollen/RolleManagementView.page';

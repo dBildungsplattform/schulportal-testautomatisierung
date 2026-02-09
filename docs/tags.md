@@ -1,8 +1,8 @@
 # Tags
 
 ## Environments
-
 Tags control which tests are run. We use this to differentiate different environments, which may have different capabilities.
+For currently used tags, see base/tags.ts
 
 | Tag   | Base functionality | LDAP | third-party systems | Login |
 | ----- | ------------------ | ---- | ------------------- | ----- |

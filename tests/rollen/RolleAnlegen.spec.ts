@@ -9,7 +9,7 @@ import { testschuleName } from '../../base/organisation';
 import { rollenArtLabel } from '../../base/rollentypen';
 import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
 import { generateRolleName } from '../../base/utils/generateTestdata';
-import { Alert } from '../../elements/Alert';
+import { Alert } from '../../pages/components/Alert';
 import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.neu.page';
 import { RolleCreationSuccessPage } from '../../pages/admin/rollen/RolleCreationSuccess.page';
 import { RolleCreationParams, RolleCreationViewPage } from '../../pages/admin/rollen/RolleCreationView.page';

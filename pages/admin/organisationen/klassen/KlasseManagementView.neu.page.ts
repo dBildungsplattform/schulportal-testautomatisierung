@@ -1,8 +1,8 @@
 import { expect, Locator, Page } from '@playwright/test';
-import { Autocomplete } from '../../../../elements/Autocomplete';
+import { Autocomplete } from '../../../components/Autocomplete';
 import { DataTable } from '../../../components/DataTable.neu.page';
 import { KlasseDetailsViewPage } from './details/KlasseDetailsView.neu.page';
-import { SearchFilter } from '../../../../elements/SearchFilter';
+import { SearchFilter } from '../../../components/SearchFilter';
 import { KlasseCreationParams } from './KlasseCreationView.neu.page';
 import { waitForAPIResponse } from '../../../../base/api/baseApi';
 

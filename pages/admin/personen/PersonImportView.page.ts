@@ -1,6 +1,6 @@
 import { type Locator, Page } from '@playwright/test';
 import { PersonManagementViewPage } from './PersonManagementView.page';
-import { Autocomplete } from '../../../elements/Autocomplete';
+import { Autocomplete } from '../../components/Autocomplete';
 
 export class PersonImportViewPage {
   readonly page: Page;

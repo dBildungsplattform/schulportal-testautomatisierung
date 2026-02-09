@@ -1,6 +1,6 @@
 import { expect, Locator, Page } from '@playwright/test';
-import { Autocomplete } from '../../../elements/Autocomplete';
-import { SearchFilter } from '../../../elements/SearchFilter';
+import { Autocomplete } from '../../components/Autocomplete';
+import { SearchFilter } from '../../components/SearchFilter';
 import { DataTable } from '../../components/DataTable.neu.page';
 import { MenuBarPage } from '../../components/MenuBar.neu.page';
 import { PersonDetailsViewPage } from './details/PersonDetailsView.neu.page';
