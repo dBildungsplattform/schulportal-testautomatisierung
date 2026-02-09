@@ -17,7 +17,7 @@ export class TwoFactorWorkflowPage {
   constructor(
     protected readonly page: Page,
     private readonly username?: string,
-  ) {}
+  ) { }
 
   public async completeTwoFactorAuthentication(): Promise<PersonManagementViewPage> {
     const setupButton: Locator = this.getSecondFactorSetupButtonLocator();
@@ -68,14 +68,16 @@ export class TwoFactorWorkflowPage {
   public async enterOtpForTwoFactorAuthentication(otpKey?: string): Promise<void> {
     const otp: string = await this.generateCurrentOtp(otpKey);
     await this.fillOtpAndConfirm(otp);
+    const errorMessageLocator: Locator = this.page.getByTestId('login-error-message');
     // try to recover from possible failed attempts due to timing issues
-    if (await this.isLocatorVisible(this.page.getByTestId('login-error-message'))) {
+    if (await this.isLocatorVisible(errorMessageLocator)) {
       const otp: string = await this.generateCurrentOtp(otpKey);
       await this.fillOtpAndConfirm(otp);
     }
-    expect(this.page.getByTestId('login-error-message')).toBeHidden();
+    expect(errorMessageLocator).toBeHidden();
   }
 
+  /** This function swallows errors, so we can use the result to retry. */
   private async isLocatorVisible(locator: Locator): Promise<boolean> {
     try {
       await locator.waitFor({ timeout: 10 * 1000, state: 'visible' });
@@ -122,41 +124,42 @@ export class TwoFactorWorkflowPage {
     return this.page.locator('#otp');
   }
 
-  private async generateCurrentOtp(key?: string): Promise<string> {
-    let otpKey: string | undefined;
-    if (key) {
-      otpKey = key;
+  private async generateCurrentOtp(providedKey?: string): Promise<string> {
+    let key: string | undefined;
+    if (providedKey) {
+      key = providedKey;
     } else if (this.username) {
       const workerParallelIndex: string = process.env['TEST_PARALLEL_INDEX']!;
       // are we the workers designated root user?
       if (SharedCredentialManager.getUsername(workerParallelIndex) === this.username) {
-        otpKey = SharedCredentialManager.getOtpSeed(workerParallelIndex)!;
+        key = SharedCredentialManager.getOtpSeed(workerParallelIndex)!;
       }
     }
-    if (!otpKey) {
+    if (!key) {
       // fallback to global root
       console.warn('Falling back to global OTP seed from ENV');
-      otpKey = SharedCredentialManager.getOtpSeed();
+      key = SharedCredentialManager.getOtpSeed();
     }
 
-    if (!otpKey) {
+    if (!key) {
       throw new Error('OTP key not provided and environment variable is not set');
     }
 
     if (this.expires) {
+      // if we are asked to input two OTPs in a short time, i.e. during setup,
+      // we may need to wait for the next token, since repeated entry is not allowed
       const currentTime: number = Date.now();
       const timeLeft: number = this.expires - currentTime;
       await this.page.waitForTimeout(timeLeft + 100);
     }
-    
-    const now: number = Date.now();
+
     const {
       otp,
       expires,
     }: {
       otp: string;
       expires: number;
-    } = await TOTP.generate(otpKey, { timestamp: now });
+    } = await TOTP.generate(key);
     this.expires = expires;
     return otp;
   }
