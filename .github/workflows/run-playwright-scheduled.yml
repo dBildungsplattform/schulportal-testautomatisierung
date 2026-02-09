@@ -28,6 +28,7 @@ jobs:
       SPSH_DEV_TUNNEL_PORT: ${{ secrets.SPSH_DEV_TUNNEL_PORT }}
       USER: ${{ secrets.USER }}
       PW: ${{ secrets.PW }}
+      OTP_SEED_B32: ${{ secrets.OTP_SEED_B32 }}
       RC_WEBHOOK: ${{ secrets.RC_WEBHOOK }}
 
   stage_smoke_test:
@@ -42,4 +43,5 @@ jobs:
     secrets:
       USER: ${{ secrets.USER }}
       PW: ${{ secrets.PW }}
+      OTP_SEED_B32: ${{ secrets.OTP_SEED_B32 }}
       RC_WEBHOOK: ${{ secrets.RC_WEBHOOK }}
