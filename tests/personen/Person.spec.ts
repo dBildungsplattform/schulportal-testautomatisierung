@@ -389,7 +389,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     }
   );
 
-  test.skip(
+  test(
     'Eine Lehrkraft anlegen und Ihren Kontext entfernen dann wieder hinzufügen und den LDAP Inhalt vollständig prüfen',
     { tag: [DEV] },
     async ({ page }: PlaywrightTestArgs) => {
@@ -488,7 +488,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     }
   );
 
-  test.skip(
+  test(
     'Eine Lehrkraft anlegen in der Rolle Landesadmin und die Bestätigungsseite sowie den LDAP Inhalt vollständig prüfen',
     { tag: [DEV] },
     async ({ page }: PlaywrightTestArgs) => {
