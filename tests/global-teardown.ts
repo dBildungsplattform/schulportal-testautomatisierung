@@ -2,7 +2,7 @@
 
 import { Browser, BrowserContext, chromium, Page } from '@playwright/test';
 
-import { ApiResponse, OrganisationenApi, OrganisationResponse, OrganisationsTyp, PersonenApi, PersonendatensatzResponse, PersonenFrontendApi, RolleApi, RolleWithServiceProvidersResponse } from '../base/api/generated';
+import { ApiResponse, OrganisationenApi, OrganisationResponse, OrganisationsTyp, PersonenApi, PersonendatensatzResponse, PersonenFrontendApi, PersonFrontendControllerFindPersons200Response, RolleApi, RolleWithServiceProvidersResponse } from '../base/api/generated';
 import { constructOrganisationApi } from '../base/api/organisationApi';
 import { loginAndNavigateToAdministration } from '../base/testHelperUtils';
 import { constructPersonenApi, constructPersonenFrontendApi } from '../base/api/personApi';
@@ -13,8 +13,8 @@ const searchString: string = 'TAuto';
 const limit: number = 100;
 const batchSize: number = 20;
 
-async function cleanup<T>(get: () => Promise<Array<T>>, del: (item: T) => Promise<void>): Promise<void> {
-  let items: Array<T> = await get();
+async function cleanup<T>(get: () => Promise<T[]>, del: (item: T) => Promise<void>): Promise<void> {
+  let items: T[] = await get();
   do {
     for (const promise of getBatchedDelPromise(items, del)) {
       await promise;
@@ -23,7 +23,7 @@ async function cleanup<T>(get: () => Promise<Array<T>>, del: (item: T) => Promis
   } while (items.length > 0)
 }
 
-function* getBatchedDelPromise<T>(arr: Array<T>, del: (item: T) => Promise<void>) {
+function* getBatchedDelPromise<T>(arr: T[], del: (item: T) => Promise<void>): Generator<Promise<PromiseSettledResult<void>[]>> {
   for (let start = 0; start < arr.length; start += batchSize) {
     yield Promise.allSettled(arr.slice(start, start + batchSize).map(del))
   }
@@ -62,7 +62,7 @@ export default async function globalTeardown(): Promise<void> {
 
     await cleanup(
       async () => {
-        const resp = await personFrontendApi.personFrontendControllerFindPersons({
+        const resp: PersonFrontendControllerFindPersons200Response = await personFrontendApi.personFrontendControllerFindPersons({
           suchFilter: searchString,
           limit,
         });
@@ -96,7 +96,7 @@ export default async function globalTeardown(): Promise<void> {
 
     await cleanup(
       async () => {
-        const wrappedResponse = await organisationApi.organisationControllerFindOrganizationsRaw({
+        const wrappedResponse: ApiResponse<OrganisationResponse[]> = await organisationApi.organisationControllerFindOrganizationsRaw({
           searchString,
           typ: OrganisationsTyp.Klasse,
           limit,
@@ -114,7 +114,7 @@ export default async function globalTeardown(): Promise<void> {
 
     await cleanup(
       async () => {
-        const wrappedResponse = await organisationApi.organisationControllerFindOrganizationsRaw({
+        const wrappedResponse: ApiResponse<OrganisationResponse[]> = await organisationApi.organisationControllerFindOrganizationsRaw({
           searchString,
           typ: OrganisationsTyp.Schule,
           limit,

@@ -24,11 +24,12 @@ import { getSecretFromTokenQRCode } from '../base/2fa';
 const FRONTEND_URL: string = process.env.FRONTEND_URL ?? '';
 
 function encodeNumberAsLetters(num: number): string {
-  let encoded = '';
-  while (num > 0) {
-    const remainder = (num - 1) % 26;
+  let encoded: string = '';
+  let n: number = num;
+  while (n > 0) {
+    const remainder: number = (n - 1) % 26;
     encoded = String.fromCharCode(65 + remainder) + encoded;
-    num = Math.floor((num - 1) / 26);
+    n = Math.floor((n - 1) / 26);
   }
   return encoded;
 }
@@ -64,7 +65,7 @@ export default async function globalSetup(): Promise<void> {
     const rolleId: string = await getRolleId(page, landesadminRolle);
 
     const userInfos: UserInfo[] = await Promise.all(
-      Array.from({ length: workers }).map((_, index) =>
+      Array.from({ length: workers }).map((_: unknown, index: number) =>
         createPerson(
           page,
           organisationId,
@@ -100,7 +101,7 @@ export default async function globalSetup(): Promise<void> {
         const otpSecret: string | null = getSecretFromTokenQRCode(initTokenResponse);
         if (!otpSecret) throw new Error(`Setting up 2FA for ${userInfo.username} failed`)
 
-        const otp = await TOTP.generate(otpSecret!);
+        const otp: { otp: string, expires: number } = await TOTP.generate(otpSecret!);
         await twoFactorApi.privacyIdeaAdministrationControllerVerifyTokenRaw({
           tokenVerifyBodyParams: {
             personId: userInfo.personId,
@@ -114,7 +115,7 @@ export default async function globalSetup(): Promise<void> {
         await page.close();
         console.log(`| ${index.toString().padStart(2, '0')} | ${userInfo.username.padStart(32, ' ')} |`);
       } catch (error) {
-        const screenshotPath = path.join('playwright-report', `error-creating-admin-${index}.png`);
+        const screenshotPath: string = path.join('playwright-report', `error-creating-admin-${index}.png`);
         await page.screenshot({ path: screenshotPath });
         console.error(`Error creating admin ${index}:`, error);
         throw error;
@@ -123,12 +124,12 @@ export default async function globalSetup(): Promise<void> {
       }
     }
 
-    console.log(userInfos.map((info) => `Created user: ${info.username}`).join('\n'));
+    console.log(userInfos.map((info: UserInfo) => `Created user: ${info.username}`).join('\n'));
   } catch (error) {
     console.error('Error during global setup:', error);
-    const screenshotPath = `error-global-setup.png`;
+    const screenshotPath: string = `error-global-setup.png`;
     await page.screenshot({ path: screenshotPath });
-    const requests = await page.requests();
+    const requests: Request[] = await page.requests();
     for (const request of requests) {
       await logRequest(request);
     }

@@ -74,7 +74,7 @@ export class TwoFactorWorkflowPage {
       const otp: string = await this.generateCurrentOtp(otpKey);
       await this.fillOtpAndConfirm(otp);
     }
-    expect(errorMessageLocator).toBeHidden();
+    await expect(errorMessageLocator).toBeHidden();
   }
 
   /** This function swallows errors, so we can use the result to retry. */
@@ -101,7 +101,7 @@ export class TwoFactorWorkflowPage {
     return otpSecret;
   }
 
-  private saveOtpSecretInEnv(otpSecret: string) {
+  private saveOtpSecretInEnv(otpSecret: string): void {
     if (this.username) {
       const workerParallelIndex: string = process.env['TEST_PARALLEL_INDEX']!;
       if (SharedCredentialManager.getUsername(workerParallelIndex) === this.username) {
@@ -137,6 +137,7 @@ export class TwoFactorWorkflowPage {
     }
     if (!key) {
       // fallback to global root
+      // eslint-disable-next-line no-console
       console.warn('Falling back to global OTP seed from ENV');
       key = SharedCredentialManager.getOtpSeed();
     }
@@ -150,6 +151,7 @@ export class TwoFactorWorkflowPage {
       // we may need to wait for the next token, since repeated entry is not allowed
       const currentTime: number = Date.now();
       const timeLeft: number = this.expires - currentTime;
+      // eslint-disable-next-line playwright/no-wait-for-timeout
       await this.page.waitForTimeout(timeLeft + 100);
     }
 

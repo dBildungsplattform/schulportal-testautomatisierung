@@ -17,20 +17,23 @@ interface StorageStrategy {
 }
 
 class FileStorageStrategy implements StorageStrategy {
-  private static readonly credentialPath = 'TEST_CREDENTIALS_PATH';
+  private static readonly credentialPath: string = 'TEST_CREDENTIALS_PATH';
+
   init(): void {
     const tempPath: string = mkdtempSync(join(tmpdir(), 'testautomatisierung-'));
     process.env[FileStorageStrategy.credentialPath] = tempPath;
-    for (let index = 0; index < workers; index++) {
+    for (let index: number = 0; index < workers; index++) {
       mkdirSync(join(tempPath, index.toString()));
     }
   }
+
   create(prefix: string, value: string, index?: string | number): void {
     if (index !== undefined)
       writeFileSync(this.computePath(index, prefix), value);
     else
       process.env[prefix] = value;
   }
+
   read(prefix: string, index?: string | number): string | undefined {
     if (index !== undefined)
       return readFileSync(this.computePath(index, prefix)).toString();
@@ -45,14 +48,16 @@ class FileStorageStrategy implements StorageStrategy {
 
 class EnvStorageStrategy implements StorageStrategy {
   init(): void { }
+
   create(prefix: string, value: string, index?: string | number): void {
     process.env[this.computeName(index, prefix)] = value;
   }
+
   read(prefix: string, index?: string | number): string | undefined {
     return process.env[this.computeName(index, prefix)];
   }
-
-  private computeName(index: string | number | undefined, prefix: string) {
+  
+  private computeName(index: string | number | undefined, prefix: string): string {
     return index !== undefined ? prefix.concat('_', index.toString()) : prefix;
   }
 }
