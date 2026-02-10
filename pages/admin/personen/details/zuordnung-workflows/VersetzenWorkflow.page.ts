@@ -6,7 +6,7 @@ export class VersetzenWorkflowPage extends BaseWorkflowPage {
   /* add global locators here */
   private readonly schule: Autocomplete;
   private readonly klasse: Autocomplete;
-  protected readonly ENDPOINT: string = 'klasse-change/**';
+  protected readonly ENDPOINT: string = 'personenkontext-workflow/**';
 
   protected readonly TEST_IDS: TestIdsType = {
     submitButton: 'klasse-change-submit-button',
