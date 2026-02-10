@@ -17,7 +17,7 @@ import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManag
 import { MenuBarPage } from '../../pages/components/MenuBar.neu.page';
 import { PersonDetailsViewPage } from '../../pages/admin/personen/details/PersonDetailsView.neu.page';
 import { ZuordnungenPage } from '../../pages/admin/personen/details/Zuordnungen.page';
-import { DEV, LONG, SHORT, STAGE } from '../../base/tags';
+import { DEV, STAGE } from '../../base/tags';
 import { LoginViewPage } from '../../pages/LoginView.neu.page';
 
 const ADMIN: string | undefined = process.env.USER;
@@ -63,7 +63,7 @@ describe(`Schüler versetzen, Umgebung ${process.env.ENV}, URL: ${process.env.FR
 
     test(
       'von einer Klasse in eine andere',
-      { tag: [LONG, SHORT, STAGE, DEV] },
+      { tag: [DEV, STAGE] },
       async ({ page }: PlaywrightTestArgs) => {
         const personDetailsView: PersonDetailsViewPage = await test.step('Gesamtübersicht Schüler öffnen', async () => {
           const startPage: StartViewPage = new StartViewPage(page);
