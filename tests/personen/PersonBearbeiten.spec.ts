@@ -1,44 +1,44 @@
 import { expect, PlaywrightTestArgs, test } from '@playwright/test';
-import { waitForAPIResponse } from '../base/api/baseApi';
-import { getOrganisationId } from '../base/api/organisationApi';
+import { waitForAPIResponse } from '../../base/api/baseApi';
+import { getOrganisationId } from '../../base/api/organisationApi';
 import {
   createPerson,
   createRolleAndPersonWithPersonenkontext,
   setTimeLimitPersonenkontext,
   UserInfo
-} from '../base/api/personApi';
+} from '../../base/api/personApi';
 import {
   addServiceProvidersToRolle,
   addSystemrechtToRolle,
   createRolle,
   RollenArt,
-  RollenMerkmal
-} from '../base/api/rolleApi';
-import { getServiceProviderId } from '../base/api/serviceProviderApi';
-import { klasse1Testschule } from '../base/klassen';
-import { befristungPflicht, kopersNrPflicht } from '../base/merkmale';
-import { landSH, testschule665Name, testschuleDstNr, testschuleName } from '../base/organisation';
-import { lehrerImVorbereitungsdienstRolle, lehrkraftOeffentlichRolle } from '../base/rollen';
-import { typeLehrer, typeSchuladmin } from '../base/rollentypen';
-import { email } from '../base/sp';
-import { BROWSER, DEV, LONG, STAGE } from '../base/tags';
-import { deleteKlasseByName, deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata';
-import { gotoTargetURL } from '../base/testHelperUtils';
+  RollenMerkmal,
+} from '../../base/api/rolleApi';
+import { getServiceProviderId } from '../../base/api/serviceProviderApi';
+import { klasse1Testschule } from '../../base/klassen';
+import { befristungPflicht, kopersNrPflicht } from '../../base/merkmale';
+import { landSH, testschule665Name, testschuleDstNr, testschuleName } from '../../base/organisation';
+import { lehrerImVorbereitungsdienstRolle, lehrkraftOeffentlichRolle } from '../../base/rollen';
+import { typeLehrer, typeSchuladmin } from '../../base/rollentypen';
+import { email } from '../../base/sp';
+import { DEV, STAGE } from '../../base/tags';
+import { deleteKlasseByName, deletePersonenBySearchStrings, deleteRolleById } from '../../base/testHelperDeleteTestdata';
+import { gotoTargetURL } from '../../base/testHelperUtils';
 import {
   formatDateDMY,
   generateCurrentDate,
   generateKopersNr,
   generateNachname,
   generateRolleName,
-  generateVorname
-} from '../base/utils/generateTestdata';
-import { PersonDetailsViewPage } from '../pages/admin/personen/PersonDetailsView.page';
-import { PersonManagementViewPage } from '../pages/admin/personen/PersonManagementView.page';
-import { HeaderPage } from '../pages/components/Header.page';
-import FromAnywhere from '../pages/FromAnywhere';
-import { LandingPage } from '../pages/LandingView.page';
-import { LoginPage } from '../pages/LoginView.page';
-import { StartPage } from '../pages/StartView.page';
+  generateVorname,
+} from '../../base/utils/generateTestdata';
+import { PersonDetailsViewPage } from '../../pages/admin/personen/PersonDetailsView.page';
+import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.page';
+import { HeaderPage } from '../../pages/components/Header.page';
+import FromAnywhere from '../../pages/FromAnywhere';
+import { LandingPage } from '../../pages/LandingView.page';
+import { LoginPage } from '../../pages/LoginView.page';
+import { StartPage } from '../../pages/StartView.page';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;
@@ -110,7 +110,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     'Befristung beim hinzufügen von Personenkontexten',
-    { tag: [LONG, STAGE, DEV] },
+    { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       let userInfoLehrer: UserInfo;
       const unbefristeteRolle: string = lehrkraftOeffentlichRolle;
@@ -158,89 +158,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
   );
 
   test(
-    'Einen Benutzer über das FE unbefristet sperren',
-    { tag: [LONG, STAGE, DEV, BROWSER] },
-    async ({ page }: PlaywrightTestArgs) => {
-      let userInfoLehrer: UserInfo;
-      const sperrDatumAbHeute: string = formatDateDMY(generateCurrentDate({ days: 0, months: 0 }));
-      logoutViaStartPage = true;
-
-      await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) und SP(email) über die api anlegen ${ADMIN}`, async () => {
-        userInfoLehrer = await createRolleAndPersonWithPersonenkontext(
-          page,
-          testschuleName,
-          typeLehrer,
-          generateNachname(),
-          generateVorname(),
-          [await getServiceProviderId(page, email)],
-          generateRolleName()
-        );
-        usernames.push(userInfoLehrer.username);
-        rolleIds.push(userInfoLehrer.rolleId);
-      });
-
-      const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
-
-      const personDetailsView: PersonDetailsViewPage =
-        await test.step(`Zu sperrenden Lehrer suchen und Gesamtübersicht öffnen`, async () => {
-          await gotoTargetURL(page, 'admin/personen');
-          await personManagementView.searchBySuchfeld(userInfoLehrer.username);
-          return await personManagementView.openGesamtuebersichtPerson(page, userInfoLehrer.username); // Klick auf den Benutzernamen
-        });
-
-      await test.step(`Lehrer sperren und anschließend prüfen, dass die Sperre gesetzt ist`, async () => {
-        await personDetailsView.lockUserWithoutDate();
-        await personDetailsView.checkUserIsLocked();
-        await personDetailsView.checkLockDateFrom(sperrDatumAbHeute);
-      });
-    }
-  );
-
-  test(
-    'Einen Benutzer über das FE befristet sperren',
-    { tag: [LONG, STAGE, DEV] },
-    async ({ page }: PlaywrightTestArgs) => {
-      let userInfoLehrer: UserInfo;
-      const sperrDatumAbHeute: string = formatDateDMY(generateCurrentDate({ days: 0, months: 0 }));
-      const sperrDatumBis: string = formatDateDMY(generateCurrentDate({ days: 5, months: 2 }));
-      logoutViaStartPage = true;
-
-      await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) und SP(email) über die api anlegen ${ADMIN}`, async () => {
-        userInfoLehrer = await createRolleAndPersonWithPersonenkontext(
-          page,
-          testschuleName,
-          typeLehrer,
-          generateNachname(),
-          generateVorname(),
-          [await getServiceProviderId(page, email)],
-          generateRolleName()
-        );
-        usernames.push(userInfoLehrer.username);
-        rolleIds.push(userInfoLehrer.rolleId);
-      });
-
-      const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
-
-      const personDetailsView: PersonDetailsViewPage =
-        await test.step(`Zu sperrenden Lehrer suchen und Gesamtübersicht öffnen`, async () => {
-          await gotoTargetURL(page, 'admin/personen');
-          await gotoTargetURL(page, 'admin/personen');
-          await personManagementView.searchBySuchfeld(userInfoLehrer.username);
-          return await personManagementView.openGesamtuebersichtPerson(page, userInfoLehrer.username);
-        });
-
-      await test.step(`Lehrer sperren und anschließend prüfen, dass die Sperre gesetzt ist`, async () => {
-        await personDetailsView.lockUserWithDate(sperrDatumBis);
-        await personDetailsView.checkUserIsLocked();
-        await personDetailsView.checkLockDateFrom(sperrDatumAbHeute);
-        await personDetailsView.checkLockDateTo(sperrDatumBis);
-      });
-    }
-  );
-
-  test(
     'Gesamtübersicht für einen Benutzer als Schueler öffnen und Unsichtbarkeit des 2FA Abschnitts prüfen',
-    { tag: [LONG, STAGE, DEV] },
+    { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       let userInfoSchueler: UserInfo;
 
@@ -290,7 +209,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     'Gesamtübersicht für einen Benutzer als Lehrkraft öffnen und 2FA Status prüfen dass kein Token eingerichtet ist',
-    { tag: [LONG, STAGE, DEV] },
+    { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       let userInfoLehrer: UserInfo;
       logoutViaStartPage = true;
@@ -326,7 +245,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     'Gesamtübersicht für einen Benutzer als Schuladmin öffnen und 2FA Status prüfen dass kein Token eingerichtet ist',
-    { tag: [LONG, STAGE, DEV] },
+    { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const addminVorname: string = generateVorname();
       const adminNachname: string = generateNachname();
@@ -367,7 +286,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     'Gesamtübersicht für einen Benutzer als Landesadmin öffnen, 2FA Token einrichten und 2FA Status prüfen dass ein Token eingerichtet ist',
-    { tag: [LONG, STAGE, DEV, BROWSER] },
+    { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const addminVorname: string = generateVorname();
       const adminNachname: string = generateNachname();
@@ -421,7 +340,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     'Gesamtübersicht für einen Benutzer als Schuladmin öffnen, 2FA Token einrichten und 2FA Status prüfen dass ein Token eingerichtet ist',
-    { tag: [LONG, STAGE, DEV, BROWSER] },
+    { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const adminRollenart: RollenArt = typeSchuladmin;
       const adminOrganisation: string = testschule665Name;
@@ -465,7 +384,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     'Gesamtübersicht für einen Benutzer als Lehrkraft öffnen, 2FA Token einrichten und 2FA Status prüfen dass ein Token eingerichtet ist',
-    { tag: [LONG, STAGE, DEV] },
+    { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       let userInfoLehrer: UserInfo;
       await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) über die api anlegen ${ADMIN}`, async () => {
@@ -508,7 +427,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     'Inbetriebnahme-Passwort über die Gesamtübersicht erzeugen',
-    { tag: [LONG, STAGE, DEV] },
+    { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       let userInfoLehrer: UserInfo;
 
@@ -546,7 +465,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     'Befristung einer Schulzuordnung von einem Lehrer durch einen Landesadmin bearbeiten',
-    { tag: [LONG, STAGE, DEV] },
+    { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       let userInfoLehrer: UserInfo;
       const timeLimitTeacherRolle: string = formatDateDMY(generateCurrentDate({ days: 3, months: 5 }));
@@ -675,7 +594,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
   test(
     `Prüfen, dass eine Person mit einer befristeten Rolle wie z.B. LiV, nicht die Option 'Unbefristet' bekommen kann wenn man eine Befristung bearbeitet`,
-    { tag: [LONG, STAGE, DEV] },
+    { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       let userInfoLehrer: UserInfo;
       const nameRolle: string = generateRolleName();

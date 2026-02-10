@@ -13,8 +13,9 @@ import { StartViewPage } from '../StartView.neu.page';
 
 export class MenuBarPage {
   /* add global locators here */
-  private klasseManagement: Locator = this.page.getByTestId('klasse-management-menu-item');
   private klasseCreation: Locator = this.page.getByTestId('klasse-creation-menu-item');
+  private schuleManagement: Locator = this.page.getByTestId('schule-management-menu-item');
+  private rolleManagement: Locator = this.page.getByTestId('rolle-management-menu-item');
 
   constructor(protected readonly page: Page) {}
 
@@ -50,10 +51,7 @@ export class MenuBarPage {
   }
 
   public async navigateToKlasseManagement(): Promise<KlasseManagementViewPage> {  
-    await this.klasseManagement.click();
-    const klasseManagementViewPage: KlasseManagementViewPage = new KlasseManagementViewPage(this.page);
-    await klasseManagementViewPage.waitForPageLoad();
-    return klasseManagementViewPage;
+    return this.navigateTo('klasse-management-menu-item', new KlasseManagementViewPage(this.page).waitForPageLoad());
   }
 
   public async navigateToKlasseCreation(): Promise<KlasseCreationViewPage> {
@@ -64,7 +62,10 @@ export class MenuBarPage {
   }
 
   public async navigateToRolleManagement(): Promise<RolleManagementViewPage> {
-    return this.navigateTo('rolle-management-menu-item', new RolleManagementViewPage(this.page).waitForPageLoad());
+    await this.rolleManagement.click();
+    const rolleManagementViewPage: RolleManagementViewPage = new RolleManagementViewPage(this.page);
+    await rolleManagementViewPage.waitForPageLoad();
+    return rolleManagementViewPage;
   }
 
   public async navigateToRolleCreation(): Promise<RolleCreationViewPage> {
@@ -72,7 +73,10 @@ export class MenuBarPage {
   }
 
   public async navigateToSchuleManagement(): Promise<SchuleManagementViewPage> {
-    return this.navigateTo('schule-management-menu-item', new SchuleManagementViewPage(this.page).waitForPageLoad());
+    await this.schuleManagement.click();
+    const schuleManagementViewPage: SchuleManagementViewPage = new SchuleManagementViewPage(this.page);
+    await schuleManagementViewPage.waitForPageLoad();
+    return schuleManagementViewPage;
   }
 
   public async navigateToSchuleCreation(): Promise<SchuleCreationViewPage> {

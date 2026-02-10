@@ -1,22 +1,23 @@
 import { PlaywrightTestArgs, test } from '@playwright/test';
-import { BROWSER, LONG, SHORT, STAGE } from '../../base/tags';
-import { LoginViewPage } from '../../pages/LoginView.neu.page';
-import { StartViewPage } from '../../pages/StartView.neu.page';
-import { HeaderPage } from '../../pages/components/Header.neu.page';
-import { LandingViewPage } from '../../pages/LandingView.neu.page';
-import { PersonManagementViewPage } from "../../pages/admin/personen/PersonManagementView.neu.page";
-import { KlasseCreationViewPage, KlasseCreationParams } from '../../pages/admin/organisationen/klassen/KlasseCreationView.neu.page';
-import { landSH, testschuleDstNr, testschuleName } from '../../base/organisation';
-import { generateKlassenname, generateNachname, generateRolleName, generateVorname } from '../../base/utils/generateTestdata';
-import { KlasseCreationSuccessPage } from '../../pages/admin/organisationen/klassen/KlasseCreationSuccess.page';
+
+import { getKlasseId } from '../../base/api/organisationApi';
 import { createPersonWithPersonenkontext, createRolleAndPersonWithPersonenkontext, freshLoginPage, UserInfo } from "../../base/api/personApi";
-import { landesadminRolle, schuladminOeffentlichRolle } from '../../base/rollen';
-import { KlasseManagementViewPage } from '../../pages/admin/organisationen/klassen/KlasseManagementView.neu.page';
-import { KlasseDetailsViewPage } from '../../pages/admin/organisationen/klassen/details/KlasseDetailsView.neu.page';
 import { getServiceProviderId } from '../../base/api/serviceProviderApi';
+import { landSH, testschuleDstNr, testschuleName } from '../../base/organisation';
+import { landesadminRolle, schuladminOeffentlichRolle } from '../../base/rollen';
 import { typeSchueler } from '../../base/rollentypen';
 import { itslearning } from '../../base/sp';
-import { getKlasseId } from '../../base/api/organisationApi';
+import { DEV, STAGE } from '../../base/tags';
+import { generateKlassenname, generateNachname, generateRolleName, generateVorname } from '../../base/utils/generateTestdata';
+import { LandingViewPage } from '../../pages/LandingView.neu.page';
+import { LoginViewPage } from '../../pages/LoginView.neu.page';
+import { StartViewPage } from '../../pages/StartView.neu.page';
+import { KlasseCreationSuccessPage } from '../../pages/admin/organisationen/klassen/KlasseCreationSuccess.page';
+import { KlasseCreationParams, KlasseCreationViewPage } from '../../pages/admin/organisationen/klassen/KlasseCreationView.neu.page';
+import { KlasseManagementViewPage } from '../../pages/admin/organisationen/klassen/KlasseManagementView.neu.page';
+import { KlasseDetailsViewPage } from '../../pages/admin/organisationen/klassen/details/KlasseDetailsView.neu.page';
+import { PersonManagementViewPage } from "../../pages/admin/personen/PersonManagementView.neu.page";
+import { HeaderPage } from '../../pages/components/Header.neu.page';
 
 let header: HeaderPage;
 let landingPage: LandingViewPage;
@@ -28,8 +29,6 @@ let klasseErgebnislistePage : KlasseManagementViewPage;
 let klasseDetailsPage : KlasseDetailsViewPage;
 let klasseParams : KlasseCreationParams;
 let admin : UserInfo;
-let schueler : UserInfo;
-
 
 [
   { organisationsName: landSH, rolleName: landesadminRolle, bezeichnung: 'Landesadmin' },
@@ -65,19 +64,19 @@ let schueler : UserInfo;
     });
 
     // SPSH-2858 & SPSH-2859
-    test(`Eine Klasse ohne zugeordnete Personen als ${bezeichnung} via Quickaction löschen`, { tag: [LONG, SHORT, STAGE, BROWSER] }, async () => {
+    test(`Eine Klasse ohne zugeordnete Personen als ${bezeichnung} via Quickaction löschen`, { tag: [STAGE, DEV] }, async () => {
       await klasseErgebnislistePage.searchAndDeleteKlasse(rolleName == landesadminRolle, klasseParams);
       await klasseErgebnislistePage.klasseSuccessfullyDeleted(klasseParams.schulname, klasseParams.klassenname, klasseParams.schulNr);
     });
 
     // SPSH-2861 & SPSH-2862 
-    test(`Eine Klasse ohne zugeordnete Personen als ${bezeichnung} via Gesamtübersicht löschen`, { tag: [LONG, SHORT, STAGE, BROWSER] }, async () => {
+    test(`Eine Klasse ohne zugeordnete Personen als ${bezeichnung} via Gesamtübersicht löschen`, { tag: [STAGE, DEV] }, async () => {
       klasseDetailsPage = await klasseErgebnislistePage.searchAndOpenGesamtuebersicht(rolleName == landesadminRolle, klasseParams);
       klasseErgebnislistePage = await klasseDetailsPage.successfullyDeleteKlasse(klasseParams.schulname, klasseParams.klassenname);
     });
 
     // SPSH-2860 
-    test(`Eine Klasse mit einem zugeordneten Schüler als ${bezeichnung} via Quickaction löschen`, { tag: [LONG, SHORT, STAGE, BROWSER] }, async ({ page }: PlaywrightTestArgs) => {
+    test(`Eine Klasse mit einem zugeordneten Schüler als ${bezeichnung} via Quickaction löschen`, { tag: [STAGE, DEV] }, async ({ page }: PlaywrightTestArgs) => {
       await test.step(`Schüler anlegen`, async () => {
         const schuelerVorname: string = await generateVorname();
         const schuelerNachname: string = await generateNachname();
@@ -85,7 +84,7 @@ let schueler : UserInfo;
         const schuelerRolleName: string = await generateRolleName();
         const klasseId: string = await getKlasseId(page, klasseParams.klassenname);
 
-        schueler = await createRolleAndPersonWithPersonenkontext(
+        await createRolleAndPersonWithPersonenkontext(
           page, 
           klasseParams.schulname, 
           typeSchueler,
@@ -105,7 +104,7 @@ let schueler : UserInfo;
     });
 
     // SPSH-2863 
-    test(`Eine Klasse mit einem zugeordneten Schüler als ${bezeichnung} via Gesamtübersicht löschen `, { tag: [LONG, SHORT, STAGE, BROWSER] }, async ({ page }: PlaywrightTestArgs) => {
+    test(`Eine Klasse mit einem zugeordneten Schüler als ${bezeichnung} via Gesamtübersicht löschen `, { tag: [STAGE, DEV] }, async ({ page }: PlaywrightTestArgs) => {
       await test.step(`Schüler anlegen`, async () => {
         const schuelerVorname: string = await generateVorname();
         const schuelerNachname: string = await generateNachname();
@@ -113,7 +112,7 @@ let schueler : UserInfo;
         const schuelerRolleName: string = await generateRolleName();
         const klasseId: string = await getKlasseId(page, klasseParams.klassenname);
 
-        schueler = await createRolleAndPersonWithPersonenkontext(
+        await createRolleAndPersonWithPersonenkontext(
           page, 
           klasseParams.schulname, 
           typeSchueler,

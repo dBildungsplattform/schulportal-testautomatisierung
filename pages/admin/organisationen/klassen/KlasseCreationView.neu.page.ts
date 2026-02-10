@@ -1,5 +1,5 @@
 import { expect, type Locator, Page } from '@playwright/test';
-import { Autocomplete } from '../../../../elements/Autocomplete';
+import { Autocomplete } from '../../../components/Autocomplete';
 import { KlasseCreationSuccessPage } from './KlasseCreationSuccess.page';
 import { KlasseManagementViewPage } from './KlasseManagementView.neu.page';
 
@@ -28,8 +28,8 @@ export class KlasseCreationViewPage {
     return this;
   }
 
-  public async createKlasse(landesadmin : boolean, params: KlasseCreationParams): Promise<KlasseCreationSuccessPage> {
-    if (landesadmin) {
+  public async createKlasse(hasMultipleSchulen : boolean, params: KlasseCreationParams): Promise<KlasseCreationSuccessPage> {
+    if (hasMultipleSchulen) {
       const schuleNameAutocomplete: Autocomplete = new Autocomplete(this.page, this.schuleName);
       await schuleNameAutocomplete.searchByTitle(params.schulname, false);
     } else {

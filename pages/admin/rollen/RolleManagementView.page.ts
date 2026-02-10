@@ -11,20 +11,29 @@ export class RolleManagementViewPage {
   /* actions */
   public async waitForPageLoad(): Promise<RolleManagementViewPage> {
     await expect(this.page.getByTestId('rolle-management-headline')).toHaveText('Rollenverwaltung');
-    await this.rolleTable.waitForPageLoad();
+    await this.rolleTable.waitForDataLoad();
     return this;
   }
 
   public async openGesamtuebersicht(rollenname: string): Promise<RolleDetailsViewPage> {
-    await this.rolleTable.getItemByText(rollenname).click();
+    await this.rolleTable.getRow(rollenname).click();
     return new RolleDetailsViewPage(this.page).waitForPageLoad();
   }
 
-  public async setPageSize(size: '5' | '30' | '50' | '100' | '300'): Promise<void> {
+  public async setPageSize(size: 5 | 30 | 50 | 100 | 300): Promise<void> {
     await this.rolleTable.setItemsPerPage(size);
   }
 
   /* assertions */
+  public async checkManagementPage(): Promise<void> {
+    await expect(this.page.getByTestId('admin-headline')).toHaveText('Administrationsbereich');
+    await expect(this.page.getByTestId('rolle-management-headline')).toHaveText('Rollenverwaltung');
+    await this.checkHeaders(['Rollenname', 'Rollenart', 'Merkmale', 'Angebote', 'Administrationsebene']);
+  }
+  
+  public async checkHeaders(expectedHeaders: string[]): Promise<void> {
+    await this.rolleTable.checkHeaders(expectedHeaders);
+  }
   public async checkIfRolleExists(rollenname: string): Promise<void> {
     await this.rolleTable.checkIfItemIsVisible(rollenname);
   }

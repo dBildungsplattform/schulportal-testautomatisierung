@@ -1,6 +1,6 @@
 import { expect, Page } from '@playwright/test';
 import { RolleForm } from '../../../components/RolleForm';
-import { Alert } from '../../../elements/Alert';
+import { Alert } from '../../components/Alert';
 import { RolleCreationSuccessPage } from './RolleCreationSuccess.page';
 import { RolleCreationParams, RolleCreationViewPage } from './RolleCreationView.page';
 

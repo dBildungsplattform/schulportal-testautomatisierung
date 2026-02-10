@@ -1,9 +1,9 @@
-import { Download, expect, PlaywrightTestArgs, test } from '@playwright/test';
+import { Download, expect, PlaywrightTestArgs, Response, test } from '@playwright/test';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { schuelerRolle } from '../base/rollen';
-import { BROWSER, DEV, LONG, STAGE } from '../base/tags';
+import { DEV, STAGE } from '../base/tags';
 import { deletePersonBySearchString } from '../base/testHelperDeleteTestdata';
 import FromAnywhere from '../pages/FromAnywhere';
 import { PersonImportViewPage } from '../pages/admin/personen/PersonImportView.page';
@@ -63,7 +63,7 @@ test.describe(`Testfälle für den Benutzerimport": Umgebung: ${process.env.ENV}
 
   test(
     'Als Landesadmin eine CSV-Datei mit Benutzerdaten hochladen und importieren',
-    { tag: [LONG, STAGE, BROWSER, DEV] },
+    { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       await test.step('CSV-Datei hochladen, importieren und importierte Daten downloaden', async () => {
         // select schule
@@ -91,7 +91,7 @@ test.describe(`Testfälle für den Benutzerimport": Umgebung: ${process.env.ENV}
         );
         await personImportPage.executeImportButton.click();
         await expect(personImportPage.importProgressBar).toBeVisible();
-        await page.waitForResponse((response) => response.url().includes('import/importedUsers') && response.status() === 200);
+        await page.waitForResponse((response: Response) => response.url().includes('import/importedUsers') && response.status() === 200);
         await expect(personImportPage.importProgressBar).toHaveText('100%');
         await expect(personImportPage.importSuccessText).toBeVisible();
         await expect(personImportPage.importSuccessText).toHaveText(

@@ -1,5 +1,5 @@
 import { expect, type Locator, Page } from '@playwright/test';
-import { Alert } from '../../../elements/Alert';
+import { Alert } from '../../components/Alert';
 import { RolleCreationParams } from './RolleCreationView.page';
 import { RolleManagementViewPage } from './RolleManagementView.page';
 

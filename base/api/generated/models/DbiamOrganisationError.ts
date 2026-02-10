@@ -57,7 +57,13 @@ export const DbiamOrganisationErrorI18nKeyEnum = {
     NewerVersionOrganisation: 'NEWER_VERSION_ORGANISATION',
     OrganisationWechseltTeilbaum: 'ORGANISATION_WECHSELT_TEILBAUM',
     OrganisationZuweisungFehler: 'ORGANISATION_ZUWEISUNG_FEHLER',
-    SchultraegerNameEindeutig: 'SCHULTRAEGER_NAME_EINDEUTIG'
+    SchultraegerNameEindeutig: 'SCHULTRAEGER_NAME_EINDEUTIG',
+    OrganisationHatKinder: 'ORGANISATION_HAT_KINDER',
+    OrganisationHatZugehoerige: 'ORGANISATION_HAT_ZUGEHOERIGE',
+    OrganisationHatRollen: 'ORGANISATION_HAT_ROLLEN',
+    OrganisationHatPersonenkontexte: 'ORGANISATION_HAT_PERSONENKONTEXTE',
+    OrganisationHatAngebote: 'ORGANISATION_HAT_ANGEBOTE',
+    OrganisationHatRollenerweiterungen: 'ORGANISATION_HAT_ROLLENERWEITERUNGEN'
 } as const;
 export type DbiamOrganisationErrorI18nKeyEnum = typeof DbiamOrganisationErrorI18nKeyEnum[keyof typeof DbiamOrganisationErrorI18nKeyEnum];
 
