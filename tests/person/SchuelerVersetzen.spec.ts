@@ -75,9 +75,9 @@ describe(`Schüler versetzen, Umgebung ${process.env.ENV}, URL: ${process.env.FR
         });
 
         await test.step('Schüler in neue Klasse versetzen', async () => {
-                  const zuordnungenPage: ZuordnungenPage = new ZuordnungenPage(page);
-                  await zuordnungenPage.changeKlasse(testschuleDstNr, testschuleName, rolleName, klasseNameCurrent, klasseNameNew);
-                });
+          const zuordnungenPage: ZuordnungenPage = new ZuordnungenPage(page);
+          await zuordnungenPage.changeKlasse(testschuleDstNr, testschuleName, rolleName, klasseNameCurrent, klasseNameNew);
+        });
 
         await test.step('Prüfen, dass Schüler in neuer Klasse zugeordnet ist', async () => {
           await personDetailsView.checkZuordnungExists({

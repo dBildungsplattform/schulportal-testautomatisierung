@@ -29,7 +29,7 @@ test.describe(`Testfälle für die Rollenlöschung: Umgebung: ${process.env.ENV}
     await createRolle(page, RollenArt.Leit, organisationId, rolleName);
     personManagementView = await startPage.goToAdministration();
     rolleManagementViewPage = await personManagementView.menu.navigateToRolleManagement();
-    await rolleManagementViewPage.setPageSize('300');
+    await rolleManagementViewPage.setPageSize(300);
     rolleDetailsView = await rolleManagementViewPage.openGesamtuebersicht(rolleName);
   });
 
@@ -40,7 +40,7 @@ test.describe(`Testfälle für die Rollenlöschung: Umgebung: ${process.env.ENV}
 
   test('Erfolgreich löschen', async () => {
     rolleManagementViewPage = await rolleDetailsView.deleteRolle();
-    await rolleManagementViewPage.setPageSize('300');
+    await rolleManagementViewPage.setPageSize(300);
     await rolleManagementViewPage.checkIfRolleDoesNotExist(rolleName);
   });
 
@@ -52,7 +52,7 @@ test.describe(`Testfälle für die Rollenlöschung: Umgebung: ${process.env.ENV}
     const alert: Alert<RolleManagementViewPage> = await rolleDetailsView.attemptDeletionOfAssignedRolle();
     await alert.assertExpectedTexts();
     rolleManagementViewPage = await (await alert.confirm()).waitForPageLoad();
-    await rolleManagementViewPage.setPageSize('300');
+    await rolleManagementViewPage.setPageSize(300);
     await rolleManagementViewPage.checkIfRolleExists(rolleName);
   });
 });
