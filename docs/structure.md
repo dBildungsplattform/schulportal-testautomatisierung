@@ -22,16 +22,18 @@ Es ist daher ratsam, Testdateien klein zu halten und entsprechend sinnvoll zu sc
 Im `base`-Verzeichnis befinden sich Helper, die von den Tests aufgerufen werden aber nicht direkt zu den Tests gehören.
 Darunter fällt zum Beispiel die Erzeugung von Testdaten direkt über API.
 
-#### `elements`: wiederkehrende Seitenelemente (TODO: über Umbenennung in "components" nachdenken)
-In `elements` befinden sich semantische Wrapper um Locators, die wiederkehrende Elemente auf den Seiten testen.
-Beispielsweise legen wir hier eine Klasse für "Comboboxen" ab, die die nötigen Schritte zur Auswahl von Elementen kapselt.
+#### `components`: wiederkehrende Komponenten
+In `components` befinden sich semantische Wrapper um Locators, die wiederkehrende Komponenten auf den Seiten testen.
+Beispielsweise legen wir hier eine Klasse für "Comboboxen" ab, die die nötigen Schritte zur Auswahl von Komponenten kapselt.
 
 #### `fixtures`: Ablage von Testdaten
-Das `fixtures`-Verzeichnis beinhaltet Testdaten, die als JSON oder in beliebigen anderen Formaten abgelegt werden können.
+Fixtures meinen in diesem Fall die klassischen Testing-Fixtures. Das `fixtures`-Verzeichnis beinhaltet Testdaten, die als JSON oder in beliebigen anderen Formaten abgelegt werden können.
+
+Playwright-Fixtures sind hier nicht hinterlegt.
 
 #### `pages`: Seitenobjekte
-Im Verzeichnis `pages` liegen Seitenrepräsentationen.
-Eine Seite hat dabei high-level-Funktionen, zur Navigation und zum Aufruf von Seitenfunktionalitäten.
+Im Verzeichnis `pages` liegen Repräsentationen der Views im Frontend (schulportal-client).
+Eine Seite hat dabei high-level-Funktionen zur Navigation und zum Aufruf von Seitenfunktionalitäten. Außerdem werden die Assertions hier durchgeführt.
 
 #### `/tests`: Die eigentlichen Tests
 

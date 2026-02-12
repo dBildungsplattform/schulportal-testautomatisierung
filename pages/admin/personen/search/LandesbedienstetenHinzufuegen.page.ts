@@ -1,5 +1,5 @@
 import { expect, Locator, Page } from "@playwright/test";
-import { Autocomplete } from "../../../../elements/Autocomplete";
+import { Autocomplete } from "../../../components/Autocomplete";
 import { LandesbedienstetenSuccessPage } from "./LandesbedienstetenSucess.page";
 
 export class LandesbedienstetenHinzufuegenPage {

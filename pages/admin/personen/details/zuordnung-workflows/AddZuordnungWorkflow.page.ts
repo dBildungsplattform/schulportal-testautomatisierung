@@ -1,5 +1,5 @@
 import { expect, type Page } from '@playwright/test';
-import { Autocomplete } from '../../../../../elements/Autocomplete';
+import { Autocomplete } from '../../../../components/Autocomplete';
 import { BaseWorkflowPage, TestIdsType } from './BaseWorkflow.page';
 
 export class AddZuordnungWorkflowPage extends BaseWorkflowPage {
