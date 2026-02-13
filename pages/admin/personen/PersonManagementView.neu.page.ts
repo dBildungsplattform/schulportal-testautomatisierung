@@ -302,7 +302,6 @@ export class PersonManagementViewPage {
     await expect(this.passwortZuruecksetzenDialogCard).toBeVisible(); 
     await expect(this.passwortZuruecksetzenDialogCard.getByTestId('layout-card-headline')).toHaveText('Passwort zurücksetzen');
     await expect(this.passwortZuruecksetzenDialogCard.getByTestId('password-reset-success-text')).toHaveText(
-      'Die Passwörter wurden erfolgreich zurückgesetzt.' +
       'Bitte laden Sie die Benutzerdaten herunter und teilen Sie den Benutzern das temporäre Passwort mit. ' +
       'Nach dem Schließen des Dialogs werden die Passwörter aus Sicherheitsgründen nicht mehr angezeigt.');
     await expect(this.passwortZuruecksetzenDialogCard.getByTestId('password-reset-close-button')).toBeVisible(); 
