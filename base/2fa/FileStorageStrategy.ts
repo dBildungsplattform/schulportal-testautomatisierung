@@ -25,8 +25,15 @@ export class FileStorageStrategy implements SharedCredentialStorageStrategy {
   }
 
   read(prefix: string, index?: string | number): string | undefined {
-    if (index !== undefined)
-      return readFileSync(this.computePath(index, prefix)).toString();
+    if (index !== undefined) {
+      try {
+        const computedFilePath: PathOrFileDescriptor = this.computePath(index, prefix);
+        return readFileSync(computedFilePath).toString();
+      } catch (error: unknown) {
+        console.error(error);
+        return undefined;
+      }
+    }
 
     else
       return process.env[prefix];
