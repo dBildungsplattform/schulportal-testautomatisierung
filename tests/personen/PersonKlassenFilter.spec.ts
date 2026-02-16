@@ -1,24 +1,26 @@
 import { PlaywrightTestArgs, test } from '@playwright/test';
-import { createPersonWithPersonenkontext, createRolleAndPersonWithPersonenkontext, freshLoginPage, UserInfo } from '../../base/api/personApi';
+
 import { createKlasse, getKlasseId, getOrganisationId } from '../../base/api/organisationApi';
+import { createPersonWithPersonenkontext, createRolleAndPersonWithPersonenkontext, UserInfo } from '../../base/api/personApi';
+import { getServiceProviderId } from '../../base/api/serviceProviderApi';
+import { landSH } from '../../base/organisation';
 import { landesadminRolle, schuelerRolle, schuladminOeffentlichRolle } from '../../base/rollen';
+import { typeSchueler } from '../../base/rollentypen';
+import { itslearning } from '../../base/sp';
 import { DEV, STAGE } from '../../base/tags';
-import { generateDienststellenNr, generateSchulname, generateKlassenname, generateVorname, generateNachname, generateRolleName } from '../../base/utils/generateTestdata';
+import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
+import { generateDienststellenNr, generateKlassenname, generateNachname, generateRolleName, generateSchulname, generateVorname } from '../../base/utils/generateTestdata';
 import { LandingViewPage } from '../../pages/LandingView.neu.page';
 import { LoginViewPage } from '../../pages/LoginView.neu.page';
 import { StartViewPage } from '../../pages/StartView.neu.page';
-import { PersonManagementViewPage } from "../../pages/admin/personen/PersonManagementView.neu.page";
-import { HeaderPage } from '../../pages/components/Header.neu.page';
-import { SchuleCreationParams, SchuleCreationViewPage, Schulform } from '../../pages/admin/organisationen/schulen/SchuleCreationView.neu.page';
-import { landSH } from '../../base/organisation';
 import { SchuleCreationSuccessPage } from '../../pages/admin/organisationen/schulen/SchuleCreationSuccess.page';
-import { typeSchueler } from '../../base/rollentypen';
-import { getServiceProviderId } from '../../base/api/serviceProviderApi';
-import { itslearning } from '../../base/sp';
+import { SchuleCreationParams, SchuleCreationViewPage, Schulform } from '../../pages/admin/organisationen/schulen/SchuleCreationView.neu.page';
+import { PersonManagementViewPage } from "../../pages/admin/personen/PersonManagementView.neu.page";
 import { PersonDetailsViewPage } from '../../pages/admin/personen/details/PersonDetailsView.neu.page';
-import { ZuordnungValidationParams, ZuordnungenPage } from '../../pages/admin/personen/details/Zuordnungen.page';
+import { ZuordnungenPage, ZuordnungValidationParams } from '../../pages/admin/personen/details/Zuordnungen.page';
 import { AddZuordnungWorkflowPage } from '../../pages/admin/personen/details/zuordnung-workflows/AddZuordnungWorkflow.page';
 import { VersetzenWorkflowPage } from '../../pages/admin/personen/details/zuordnung-workflows/VersetzenWorkflow.page';
+import { HeaderPage } from '../../pages/components/Header.neu.page';
 
 [
   { rolleName: landesadminRolle, bezeichnung: 'Landesadmin' },
@@ -34,12 +36,8 @@ import { VersetzenWorkflowPage } from '../../pages/admin/personen/details/zuordn
 
     test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
       header = new HeaderPage(page);
-      loginPage = await freshLoginPage(page);
-      let startPage: StartViewPage = await loginPage.login(process.env.USER, process.env.PW);
-      await startPage.waitForPageLoad();
-
+      personManagementViewPage = await loginAndNavigateToAdministration(page);
       // Schule anlegen
-      personManagementViewPage = await startPage.navigateToAdministration();  
       const schuleCreationViewPage: SchuleCreationViewPage = await personManagementViewPage.menu.navigateToSchuleCreation();
       schuleParams = {
         name: generateSchulname(),
@@ -54,10 +52,10 @@ import { VersetzenWorkflowPage } from '../../pages/admin/personen/details/zuordn
       admin = await createPersonWithPersonenkontext(page, rolleName === landesadminRolle ? landSH : schuleParams.name, rolleName, undefined, undefined, generateDienststellenNr());
 
       const landingPage: LandingViewPage = await header.logout();
-      landingPage.navigateToLogin();
+      const loginPage: LoginViewPage = await landingPage.navigateToLogin();
 
       // Erstmalige Anmeldung mit Passwortänderung
-      startPage = await loginPage.loginNewUserWithPasswordChange(admin.username, admin.password)
+      const startPage: StartViewPage = await loginPage.loginNewUserWithPasswordChange(admin.username, admin.password)
       await startPage.waitForPageLoad();
 
       // Navigation zur Ergebnisliste von Benutzern
