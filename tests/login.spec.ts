@@ -122,7 +122,7 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
         await page.goto('/');
         await landing.buttonAnmelden.click();
         await login.login(ADMIN, PW);
-        const startPage: NewStartPage = new NewStartPage(page);
+        const startPage: NewStartPage = new NewStartPage(page, ADMIN);
         await startPage.navigateToAdministration();
         const lehrerIdSPs: string[] = [await getServiceProviderId(page, 'E-Mail')];
         organisationIDLandSh = await getOrganisationId(page, 'Land Schleswig-Holstein');
