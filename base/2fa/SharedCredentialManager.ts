@@ -1,8 +1,4 @@
-import { mkdirSync, mkdtempSync, PathOrFileDescriptor, readFileSync, writeFileSync } from "fs";
-import { tmpdir } from "os";
-import { join } from "path";
-
-import { workers } from "../playwright.config";
+import { FileStorageStrategy } from "./FileStorageStrategy";
 
 enum CustomEnvKeys {
   USER = 'USER',
@@ -10,63 +6,17 @@ enum CustomEnvKeys {
   OTP_SEED_B32 = 'OTP_SEED_B32',
 }
 
-interface StorageStrategy {
+export interface SharedCredentialStorageStrategy {
   init(): void;
   create(prefix: string, value: string, index?: string | number): void;
   read(prefix: string, index?: string | number): string | undefined;
-}
-
-class FileStorageStrategy implements StorageStrategy {
-  private static readonly credentialPath: string = 'TEST_CREDENTIALS_PATH';
-
-  init(): void {
-    const tempPath: string = mkdtempSync(join(tmpdir(), 'testautomatisierung-'));
-    process.env[FileStorageStrategy.credentialPath] = tempPath;
-    for (let index: number = 0; index < workers; index++) {
-      mkdirSync(join(tempPath, index.toString()));
-    }
-  }
-
-  create(prefix: string, value: string, index?: string | number): void {
-    if (index !== undefined)
-      writeFileSync(this.computePath(index, prefix), value);
-    else
-      process.env[prefix] = value;
-  }
-
-  read(prefix: string, index?: string | number): string | undefined {
-    if (index !== undefined)
-      return readFileSync(this.computePath(index, prefix)).toString();
-    else
-      return process.env[prefix];
-  }
-
-  private computePath(index: string | number, prefix: string): PathOrFileDescriptor {
-    return join(process.env[FileStorageStrategy.credentialPath]!, index.toString(), prefix);
-  }
-}
-
-class EnvStorageStrategy implements StorageStrategy {
-  init(): void { }
-
-  create(prefix: string, value: string, index?: string | number): void {
-    process.env[this.computeName(index, prefix)] = value;
-  }
-
-  read(prefix: string, index?: string | number): string | undefined {
-    return process.env[this.computeName(index, prefix)];
-  }
-  
-  private computeName(index: string | number | undefined, prefix: string): string {
-    return index !== undefined ? prefix.concat('_', index.toString()) : prefix;
-  }
 }
 
 /**
  * Utility class to access credentials that are shared across multiple test workers.
  */
 export class SharedCredentialManager {
-  private static store: StorageStrategy = new FileStorageStrategy();
+  private static store: SharedCredentialStorageStrategy = new FileStorageStrategy();
   /**
    * This must be called during global setup. Otherwise credentials will not persist across workers.
    */

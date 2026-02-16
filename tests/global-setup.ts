@@ -4,10 +4,11 @@ import { Browser, BrowserContext, chromium, Page, Request, Response } from '@pla
 import path from 'node:path';
 import { TOTP } from 'totp-generator';
 
+import { getSecretFromTokenQRCode, SharedCredentialManager } from '../base/2fa';
+import { Class2FAApi } from '../base/api/generated';
 import { getOrganisationId } from '../base/api/organisationApi';
 import { construct2FAApi, createPerson, UserInfo } from '../base/api/personApi';
 import { getRolleId } from '../base/api/rolleApi';
-import { SharedCredentialManager } from '../base/SharedCredentialManager';
 import { landSH } from '../base/organisation';
 import { landesadminRolle } from '../base/rollen';
 import { loginAndNavigateToAdministration } from '../base/testHelperUtils';
@@ -18,8 +19,6 @@ import { LandingViewPage } from '../pages/LandingView.neu.page';
 import { LoginViewPage } from '../pages/LoginView.neu.page';
 import { StartViewPage } from '../pages/StartView.neu.page';
 import { workers } from '../playwright.config';
-import { Class2FAApi } from '../base/api/generated';
-import { getSecretFromTokenQRCode } from '../base/2fa';
 
 const FRONTEND_URL: string = process.env.FRONTEND_URL ?? '';
 
