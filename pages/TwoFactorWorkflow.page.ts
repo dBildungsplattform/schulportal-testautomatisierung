@@ -100,6 +100,11 @@ export class TwoFactorWorkflowPage {
     return otpSecret;
   }
 
+  /**
+   * Saves the OTP secret in the environment, if the current user matches the worker's designated root user.
+   * This should only be called during first-time 2FA setup, and not during regular login.
+   * @param otpSecret 
+   */
   private saveOtpSecretInEnv(otpSecret: string): void {
     if (this.username) {
       const workerParallelIndex: string = process.env['TEST_PARALLEL_INDEX']!;
