@@ -139,15 +139,9 @@ export class TwoFactorWorkflowPage {
         key = SharedCredentialManager.getOtpSeed(workerParallelIndex)!;
       }
     }
-    if (!key) {
-      // fallback to global root
-      // eslint-disable-next-line no-console
-      console.warn('Falling back to global OTP seed from ENV');
-      key = SharedCredentialManager.getOtpSeed();
-    }
 
     if (!key) {
-      throw new Error('OTP key not provided and environment variable is not set');
+      throw new Error(`No OTP seed found for user ${this.username} and TEST_PARALLEL_INDEX ${process.env.TEST_PARALLEL_INDEX}`);
     }
 
     if (this.expires) {
