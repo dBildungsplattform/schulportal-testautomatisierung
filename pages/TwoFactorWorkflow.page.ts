@@ -136,7 +136,9 @@ export class TwoFactorWorkflowPage {
       const workerParallelIndex: string = process.env['TEST_PARALLEL_INDEX']!;
       // are we the workers designated root user?
       if (SharedCredentialManager.getUsername(workerParallelIndex) === this.username) {
-        key = SharedCredentialManager.getOtpSeed(workerParallelIndex)!;
+        key = SharedCredentialManager.getOtpSeed(workerParallelIndex);
+      } else if (this.username === process.env['USER']) {
+        key = SharedCredentialManager.getOtpSeed();
       }
     }
 
