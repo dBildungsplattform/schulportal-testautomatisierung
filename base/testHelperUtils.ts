@@ -1,9 +1,10 @@
 import { type Page } from '@playwright/test';
+
 import { LoginViewPage } from '../pages/LoginView.neu.page';
-import { freshLoginPage } from './api/personApi';
 import { StartViewPage } from '../pages/StartView.neu.page';
 import { PersonManagementViewPage } from '../pages/admin/personen/PersonManagementView.neu.page';
-import { SharedCredentialManager } from './SharedCredentialManager';
+import { SharedCredentialManager } from './2fa';
+import { freshLoginPage } from './api/personApi';
 
 export async function gotoTargetURL(page: Page, target: string): Promise<void> {
   await page.goto(target);
