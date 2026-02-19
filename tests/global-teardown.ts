@@ -14,7 +14,7 @@ import {
 import { constructOrganisationApi } from '../base/api/organisationApi';
 
 const FRONTEND_URL: string = process.env.FRONTEND_URL ?? '';
-const searchString: string = 'TAuto';
+const testDataPrefix: string = 'TAuto';
 
 /**
  * Global teardown – runs ONCE per Playwright run
@@ -49,7 +49,7 @@ export default async function globalTeardown(): Promise<void> {
     console.log('Personen löschen');
 
     const personenResponse: APIResponse = await page.request.get(
-      `${FRONTEND_URL}api/personen-frontend?suchFilter=${searchString}`
+      `${FRONTEND_URL}api/personen-frontend?suchFilter=${testDataPrefix}`
     );
 
     const personenJson: { items: { person: { id: string } }[] } =
@@ -65,7 +65,7 @@ export default async function globalTeardown(): Promise<void> {
     console.log('Rollen löschen');
 
     const rollenResponse: APIResponse = await page.request.get(
-      `${FRONTEND_URL}api/rolle?searchStr=${searchString}`
+      `${FRONTEND_URL}api/rolle?searchStr=${testDataPrefix}`
     );
 
     const rollenJson: { id: string }[] = await rollenResponse.json();
@@ -81,7 +81,7 @@ export default async function globalTeardown(): Promise<void> {
 
     const klassenResponse: ApiResponse<OrganisationResponse[]> =
       await organisationApi.organisationControllerFindOrganizationsRaw({
-        searchString,
+        searchString: testDataPrefix,
         typ: OrganisationsTyp.Klasse,
       });
 
@@ -101,7 +101,7 @@ export default async function globalTeardown(): Promise<void> {
 
     const schulenResponse: ApiResponse<OrganisationResponse[]> =
       await organisationApi.organisationControllerFindOrganizationsRaw({
-        searchString,
+        searchString: testDataPrefix,
         typ: OrganisationsTyp.Schule,
       });
 

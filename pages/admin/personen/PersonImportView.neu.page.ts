@@ -1,9 +1,12 @@
 import { Download, expect, Page } from '@playwright/test';
 import { Autocomplete } from '../../components/Autocomplete';
+import { AbstractAdminPage } from '../AbstractAdmin.page';
 import { PersonManagementViewPage } from './PersonManagementView.page';
 
-export class PersonImportViewPage {
-  constructor(protected readonly page: Page) {}
+export class PersonImportViewPage extends AbstractAdminPage {
+  constructor(protected readonly page: Page) {
+    super(page);
+  }
 
   /* actions */
   public async waitForPageLoad(): Promise<PersonImportViewPage> {
@@ -14,7 +17,7 @@ export class PersonImportViewPage {
 
   public async selectSchule(schule: string): Promise<void> {
     const schuleAutocomplete: Autocomplete = new Autocomplete(this.page, this.page.getByTestId('person-import-schule-select'));
-    await schuleAutocomplete.searchByTitle(schule, true);
+    await schuleAutocomplete.searchByTitle(schule, false);
   }
 
   public async selectRolle(rolle: string): Promise<void> {
@@ -28,6 +31,7 @@ export class PersonImportViewPage {
   }
 
   public async executeImport(): Promise<void> {
+    await this.page.getByTestId('open-confirmation-dialog-button').click();
     return this.page.getByTestId('execute-import-button').click();
   }
 

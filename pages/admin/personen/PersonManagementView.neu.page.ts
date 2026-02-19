@@ -5,17 +5,20 @@ import { DataTable } from '../../components/DataTable.neu.page';
 import { MenuBarPage } from '../../components/MenuBar.neu.page';
 import { PersonDetailsViewPage } from './details/PersonDetailsView.neu.page';
 import { UserInfo } from '../../../base/api/personApi';
+import { AbstractAdminPage } from '../AbstractAdmin.page';
 
-export class PersonManagementViewPage {
+export class PersonManagementViewPage extends AbstractAdminPage {
   private readonly personTable: DataTable;
   private readonly searchFilter: SearchFilter;
   private readonly organisationAutocomplete: Autocomplete;
   private readonly rolleAutocomplete: Autocomplete;
+  private readonly klasseAutocomplete: Autocomplete;
   public readonly menu: MenuBarPage;
   private readonly table: Locator;
   private readonly dialogCard: Locator;
 
   constructor(protected readonly page: Page) {
+    super(page);
     this.table = this.page.getByTestId('person-table');
     this.personTable = new DataTable(this.page, this.table);
     this.searchFilter = new SearchFilter(this.page);
@@ -27,12 +30,13 @@ export class PersonManagementViewPage {
       this.page,
       this.page.getByTestId('rolle-select')
     );
+    this.klasseAutocomplete = new Autocomplete(this.page, this.page.getByTestId('personen-management-klasse-select'));
     this.menu = new MenuBarPage(this.page);
     this.dialogCard = this.page.getByTestId('change-klasse-layout-card');
   }
 
   /* actions */
-  public async waitForPageLoad(): Promise<PersonManagementViewPage> {
+  public override async waitForPageLoad(): Promise<PersonManagementViewPage> {
     await this.page.getByTestId('admin-headline').waitFor({ state: 'visible' });
     await expect(this.page.getByTestId('person-management-headline')).toHaveText('Benutzerverwaltung');
     await expect(this.page.getByTestId('person-table')).not.toContainText('Keine Daten');
@@ -62,7 +66,11 @@ export class PersonManagementViewPage {
   }
 
   public async filterByKlasse(klasse: string): Promise<void> {
-    await this.filterByText(klasse, 'personen-management-klasse-select');
+    await this.klasseAutocomplete.searchByTitle(klasse, true);
+  }
+
+  public async resetKlasseFilter(): Promise<void> {
+    await this.klasseAutocomplete.clickClearIcon();
   }
 
   public async filterByStatus(status: string): Promise<void> {
@@ -123,7 +131,7 @@ export class PersonManagementViewPage {
     await expect(this.page.getByTestId('reset-filter-button')).toBeVisible();
     await this.organisationAutocomplete.isVisible();
     await expect(this.page.getByTestId('rolle-select')).toBeVisible();
-    await expect(this.page.getByTestId('personen-management-klasse-select')).toBeVisible();
+    await this.klasseAutocomplete.isVisible();
     await expect(this.page.getByTestId('status-select')).toBeVisible();
     await expect(this.page.getByTestId('benutzer-edit-select')).toBeVisible();
     await expect(this.page.getByTestId('search-filter-input')).toBeVisible();

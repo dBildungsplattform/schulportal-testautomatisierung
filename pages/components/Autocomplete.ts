@@ -76,6 +76,7 @@ export class Autocomplete {
     }
     await this.openModal();
     await this.clear();
+    await this.waitForData();
     await this.inputLocator.pressSequentially(searchString);
     let item: Locator;
 
@@ -105,6 +106,10 @@ export class Autocomplete {
       hasText: name,
     });
     await option.click();
+  }
+
+  public async clickClearIcon(): Promise<void> {
+    await this.locator.locator('.v-field__clearable').click();
   }
 
   /* assertions */

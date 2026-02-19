@@ -103,7 +103,7 @@ export class DataTable {
   }
 
   public async getColumn(columnIndex: number): Promise<Locator> {
-    const rows: Locator = await this.getRows();
+    const rows: Locator = this.getRows();
     return rows.locator(`td.v-data-table__td:nth-child(${columnIndex})`);
   }
 
