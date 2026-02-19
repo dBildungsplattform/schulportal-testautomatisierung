@@ -4,11 +4,10 @@ import { getOrganisationId } from '../base/api/organisationApi';
 import {
   addSecondOrganisationToPerson,
   createPersonWithPersonenkontext,
-  freshLoginPage,
   getEmailByPersonId,
   lockPerson,
   removeAllPersonenkontexte,
-  UserInfo,
+  UserInfo
 } from '../base/api/personApi';
 import { getRolleId } from '../base/api/rolleApi';
 import {
@@ -27,6 +26,7 @@ import {
   vertretungslehrkraftRolle,
 } from '../base/rollen';
 import { DEV, STAGE } from '../base/tags';
+import { loginAndNavigateToAdministration } from '../base/testHelperUtils';
 import { generateKopersNr, generateNachname, generateVorname } from '../base/utils/generateTestdata';
 import { PersonManagementViewPage } from '../pages/admin/personen/PersonManagementView.neu.page';
 import { LandesbedienstetenHinzufuegenPage } from '../pages/admin/personen/search/LandesbedienstetenHinzufuegen.page';
@@ -46,7 +46,6 @@ let landesbedienstetenSearchFormPage: LandesbedienstetenSearchFormPage;
 let landesbedienstetenHinzufuegenPage: LandesbedienstetenHinzufuegenPage;
 let landesbedienstetenSearchResultPage: LandesbedienstetenSearchResultPage;
 let landesbedienstetenSuccessPage: LandesbedienstetenSuccessPage;
-let header: HeaderPage;
 let searchResultErrorDialog: SearchResultErrorDialog;
 
 /**
@@ -72,7 +71,7 @@ async function setupSchuladminAndLoginAndNavigate(
     await addSecondOrganisationToPerson(page, schuladmin.personId, primarySchuleId, secondSchuleId, rolleId);
   }
 
-  header = new HeaderPage(page);
+  const header: HeaderPage = new HeaderPage(page);
   landingPage = await header.logout();
   loginPage = await landingPage.navigateToLogin();
   const startPage: StartViewPage = await loginPage.loginNewUserWithPasswordChange(
@@ -80,7 +79,7 @@ async function setupSchuladminAndLoginAndNavigate(
     schuladmin.password
   );
   await startPage.waitForPageLoad();
-  personManagementViewPage = await startPage.goToAdministration();
+  personManagementViewPage = await startPage.navigateToAdministration();
   landesbedienstetenSearchFormPage =
     await personManagementViewPage.menu.navigateToLandesbedienstetenSuchenUndHinzufuegen();
   return await landesbedienstetenSearchFormPage.waitForPageLoad();
@@ -90,8 +89,7 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx Schuladmin mit einer Schule xxxxxxxxxxxxxxxxxx
 */
 test.describe('UI Test zu Landesbediensteten suchen', () => {
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
-    loginPage = await freshLoginPage(page);
-    await loginPage.login(process.env.USER, process.env.PW);
+    await loginAndNavigateToAdministration(page);
     landesbedienstetenSearchFormPage = await setupSchuladminAndLoginAndNavigate(
       page,
       testschuleName,
@@ -108,9 +106,7 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
   test.describe('Ohne Datenanlage', () => {
     test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
       landesbedienstetenSearchFormPage = new LandesbedienstetenSearchFormPage(page);
-      header = new HeaderPage(page);
-      loginPage = await freshLoginPage(page);
-      await loginPage.login(process.env.USER, process.env.PW);
+      await loginAndNavigateToAdministration(page);
 
       landesbedienstetenSearchFormPage = await setupSchuladminAndLoginAndNavigate(
         page,
@@ -256,9 +252,7 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
       let person: UserInfo;
       test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
         landesbedienstetenSearchFormPage = new LandesbedienstetenSearchFormPage(page);
-        header = new HeaderPage(page);
-        loginPage = await freshLoginPage(page);
-        await loginPage.login(process.env.USER, process.env.PW);
+        await loginAndNavigateToAdministration(page);
         person = await setupPerson(page);
         landesbedienstetenSearchFormPage = await setupSchuladminAndLoginAndNavigate(
           page,
@@ -266,6 +260,7 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
           schuladminOeffentlichRolle
         );
       });
+
       test('Popup wird angezeigt und ist vollständig', { tag: [STAGE, DEV] }, async () => {
         searchResultErrorDialog = await formFunction(landesbedienstetenSearchFormPage, person);
         await searchResultErrorDialog.checkPopupCompleteness();
@@ -277,9 +272,7 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
     let lehrkraft: UserInfo;
     test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
       landesbedienstetenSearchFormPage = new LandesbedienstetenSearchFormPage(page);
-      header = new HeaderPage(page);
-      loginPage = await freshLoginPage(page);
-      await loginPage.login(process.env.USER, process.env.PW);
+      await loginAndNavigateToAdministration(page);
 
       lehrkraft = await createPersonWithPersonenkontext(
         page,
@@ -462,9 +455,7 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
     let lehrkraft: UserInfo;
     test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
       landesbedienstetenSearchFormPage = new LandesbedienstetenSearchFormPage(page);
-      header = new HeaderPage(page);
-      loginPage = await freshLoginPage(page);
-      await loginPage.login(process.env.USER, process.env.PW);
+      await loginAndNavigateToAdministration(page);
 
       lehrkraft = await createPersonWithPersonenkontext(
         page,
@@ -509,9 +500,7 @@ test.describe('Testfälle für Landesbediensteten hinzufügen, Funktion und UI-V
   let lehrkraft: UserInfo;
 
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
-    header = new HeaderPage(page);
-    loginPage = await freshLoginPage(page);
-    await loginPage.login(process.env.USER, process.env.PW);
+    await loginAndNavigateToAdministration(page);
 
     lehrkraft = await createPersonWithPersonenkontext(
       page,

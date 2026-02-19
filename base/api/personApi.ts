@@ -39,6 +39,7 @@ import {
   PersonenApi,
 } from './generated/apis/PersonenApi';
 import { PersonenFrontendApi, PersonFrontendControllerFindPersonsRequest } from './generated/apis/PersonenFrontendApi';
+import { Class2FAApi } from './generated';
 
 export interface UserInfo {
   username: string;
@@ -73,6 +74,14 @@ export function constructPersonenFrontendApi(page: Page): PersonenFrontendApi {
     fetchApi: makeFetchWithPlaywright(page),
   });
   return new PersonenFrontendApi(config);
+}
+
+export function construct2FAApi(page: Page): Class2FAApi {
+  const config: Configuration = new Configuration({
+    basePath: FRONTEND_URL.replace(/\/$/, ''),
+    fetchApi: makeFetchWithPlaywright(page),
+  });
+  return new Class2FAApi(config);
 }
 
 export async function freshLoginPage(page: Page): Promise<LoginViewPage> {

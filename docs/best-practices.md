@@ -7,6 +7,7 @@
 - Alle definierten Variablen in Pages sind mit `private readonly` deklariert und werden nur in den lokalen Methoden benutzt
 - API-Funktionen werden mit Hilfe einer generierten API und Playwright-Fetch-Wrapper implementiert
 - Die API muss bei jeder Aktualisierung im Backend auch in Playwright aktualisiert werden
+- Um Daten via API anzulegen muss bis ins Portal navigiert werden, damit gegebenenfalls 2FA ausgeführt werden kann.
 
 # Pages
 Jede View im Frontend (schulportal-client) wird als Page in Playwright abgebildet.

@@ -1,20 +1,33 @@
-import { chromium, APIResponse, Browser, BrowserContext, Page } from '@playwright/test';
+/* eslint-disable no-console */
 
-import FromAnywhere from '../pages/FromAnywhere';
-import { LandingPage } from '../pages/LandingView.page';
-import { StartPage } from '../pages/StartView.page';
-import { LoginPage } from '../pages/LoginView.page';
+import { Browser, BrowserContext, chromium, Page } from '@playwright/test';
 
-import {
-  ApiResponse,
-  OrganisationenApi,
-  OrganisationResponse,
-  OrganisationsTyp,
-} from '../base/api/generated';
+import { ApiResponse, OrganisationenApi, OrganisationResponse, OrganisationsTyp, PersonenApi, PersonendatensatzResponse, PersonenFrontendApi, PersonFrontendControllerFindPersons200Response, RolleApi, RolleWithServiceProvidersResponse } from '../base/api/generated';
 import { constructOrganisationApi } from '../base/api/organisationApi';
+import { loginAndNavigateToAdministration } from '../base/testHelperUtils';
+import { constructPersonenApi, constructPersonenFrontendApi } from '../base/api/personApi';
+import { constructRolleApi } from '../base/api/rolleApi';
 
 const FRONTEND_URL: string = process.env.FRONTEND_URL ?? '';
 const testDataPrefix: string = 'TAuto';
+const limit: number = 100;
+const batchSize: number = 20;
+
+async function cleanup<T>(get: () => Promise<T[]>, del: (item: T) => Promise<void>): Promise<void> {
+  let items: T[] = await get();
+  do {
+    for (const promise of getBatchedDelPromise(items, del)) {
+      await promise;
+    }
+    items = await get();
+  } while (items.length > 0)
+}
+
+function* getBatchedDelPromise<T>(arr: T[], del: (item: T) => Promise<void>): Generator<Promise<PromiseSettledResult<void>[]>> {
+  for (let start = 0; start < arr.length; start += batchSize) {
+    yield Promise.allSettled(arr.slice(start, start + batchSize).map(del))
+  }
+}
 
 /**
  * Global teardown – runs ONCE per Playwright run
@@ -25,92 +38,91 @@ export default async function globalTeardown(): Promise<void> {
   const browser: Browser = await chromium.launch();
   const context: BrowserContext = await browser.newContext({
     baseURL: FRONTEND_URL,
+    ignoreHTTPSErrors: true,
   });
 
   const page: Page = await context.newPage();
 
   try {
+    const personApi: PersonenApi = constructPersonenApi(page);
+    const personFrontendApi: PersonenFrontendApi = constructPersonenFrontendApi(page);
+    const rolleApi: RolleApi = constructRolleApi(page);
     const organisationApi: OrganisationenApi = constructOrganisationApi(page);
 
     // ---------------------------------------------------------------------
     // LOGIN
     // ---------------------------------------------------------------------
     console.log('Login');
-
-    await FromAnywhere(page)
-      .start()
-      .then((landing: LandingPage) => landing.goToLogin())
-      .then((login: LoginPage) => login.login())
-      .then((startseite: StartPage) => startseite.validateStartPageIsLoaded());
+    await loginAndNavigateToAdministration(page, process.env.USER!, process.env.PW!);
 
     // ---------------------------------------------------------------------
     // PERSONEN LÖSCHEN
     // ---------------------------------------------------------------------
     console.log('Personen löschen');
 
-    const personenResponse: APIResponse = await page.request.get(
-      `${FRONTEND_URL}api/personen-frontend?suchFilter=${testDataPrefix}`
+    await cleanup(
+      async () => {
+        const resp: PersonFrontendControllerFindPersons200Response = await personFrontendApi.personFrontendControllerFindPersons({
+          suchFilter: testDataPrefix,
+          limit,
+        });
+        console.log(`${resp.total} personen to delete`)
+        return resp.items;
+      },
+      async (item: PersonendatensatzResponse) => await personApi.personControllerDeletePersonById({ personId: item.person.id }),
     );
-
-    const personenJson: { items: { person: { id: string } }[] } =
-      await personenResponse.json();
-
-    for (const { person } of personenJson.items) {
-      await page.request.delete(`${FRONTEND_URL}api/personen/${person.id}`);
-    }
 
     // ---------------------------------------------------------------------
     // ROLLEN LÖSCHEN
     // ---------------------------------------------------------------------
     console.log('Rollen löschen');
 
-    const rollenResponse: APIResponse = await page.request.get(
-      `${FRONTEND_URL}api/rolle?searchStr=${testDataPrefix}`
+    await cleanup(
+      async () => {
+        const wrappedResponse: ApiResponse<RolleWithServiceProvidersResponse[]> = await rolleApi.rolleControllerFindRollenRaw({
+          searchStr: testDataPrefix,
+          limit,
+        });
+        console.log(`${wrappedResponse.raw.headers.get('X-Paging-Total')} rollen to delete`);
+        return wrappedResponse.value();
+      },
+      async (item: RolleWithServiceProvidersResponse) => await rolleApi.rolleControllerDeleteRolle({ rolleId: item.id })
     );
-
-    const rollenJson: { id: string }[] = await rollenResponse.json();
-
-    for (const rolle of rollenJson) {
-      await page.request.delete(`${FRONTEND_URL}api/rolle/${rolle.id}`);
-    }
 
     // ---------------------------------------------------------------------
     // KLASSEN LÖSCHEN
     // ---------------------------------------------------------------------
     console.log('Klassen löschen');
 
-    const klassenResponse: ApiResponse<OrganisationResponse[]> =
-      await organisationApi.organisationControllerFindOrganizationsRaw({
-        searchString: testDataPrefix,
-        typ: OrganisationsTyp.Klasse,
-      });
-
-    const klassen = await klassenResponse.value();
-
-    await Promise.allSettled(
-      klassen.map(({ id }) =>
-        organisationApi.organisationControllerDeleteOrganisationRaw({ organisationId: id })
-      )
+    await cleanup(
+      async () => {
+        const wrappedResponse: ApiResponse<OrganisationResponse[]> = await organisationApi.organisationControllerFindOrganizationsRaw({
+          searchString: testDataPrefix,
+          typ: OrganisationsTyp.Klasse,
+          limit,
+        });
+        console.log(`${wrappedResponse.raw.headers.get('X-Paging-Total')} klassen to delete`)
+        return wrappedResponse.value()
+      },
+      async (item: OrganisationResponse) => organisationApi.organisationControllerDeleteOrganisation({ organisationId: item.id }),
     );
-
 
     // ---------------------------------------------------------------------
     // SCHULEN LÖSCHEN
     // ---------------------------------------------------------------------
     console.log('Schulen löschen');
 
-    const schulenResponse: ApiResponse<OrganisationResponse[]> =
-      await organisationApi.organisationControllerFindOrganizationsRaw({
-        searchString: testDataPrefix,
-        typ: OrganisationsTyp.Schule,
-      });
-
-    const schulen = await schulenResponse.value();
-
-    await Promise.allSettled(
-      schulen.map(({ id }) =>
-        organisationApi.organisationControllerDeleteOrganisationRaw({ organisationId: id })
-      )
+    await cleanup(
+      async () => {
+        const wrappedResponse: ApiResponse<OrganisationResponse[]> = await organisationApi.organisationControllerFindOrganizationsRaw({
+          searchString: testDataPrefix,
+          typ: OrganisationsTyp.Schule,
+          limit,
+        });
+        console.log(`${wrappedResponse.raw.headers.get('X-Paging-Total')} schulen to delete`)
+        return wrappedResponse.value();
+      },
+      async (item: OrganisationResponse) => organisationApi.organisationControllerDeleteOrganisation({ organisationId: item.id }),
     );
 
     console.log('Global teardown finished successfully');
