@@ -27,7 +27,7 @@ test.describe(`Testfälle für die Rollenbearbeitung: Umgebung: ${process.env.EN
       const personManagementView: PersonManagementViewPage = await startPage.navigateToAdministration();
       const rolleManagementViewPage: RolleManagementViewPage =
         await personManagementView.menu.navigateToRolleManagement();
-      await rolleManagementViewPage.setPageSize('300');
+      await rolleManagementViewPage.setPageSize(300);
       rolleDetailsView = await rolleManagementViewPage.openGesamtuebersicht(rolleName);
     });
   });

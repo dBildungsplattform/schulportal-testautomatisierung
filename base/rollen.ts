@@ -1,3 +1,5 @@
+import { RollenSystemRecht } from "./api/generated/models/RollenSystemRecht";
+
 export const schuelerRolle: string = 'itslearning-Schüler';
 export const landesadminRolle: string = 'Landesadministrator';
 export const schuladminOeffentlichRolle: string = 'Schuladministrator öffentlich';
@@ -20,7 +22,7 @@ export const vertretungslehrkraftRolle: string = 'Vertretungslehrkraft';
  */
 export const ROLLEN_CASES: {
   name: string;
-  permissions: string[];
+  permissions: RollenSystemRecht[];
 }[] = [
   {
     name: 'Rolle mit allen Systemrechte',
