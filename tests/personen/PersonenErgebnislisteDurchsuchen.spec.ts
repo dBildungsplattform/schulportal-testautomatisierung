@@ -1,23 +1,23 @@
 import { PlaywrightTestArgs, test } from '@playwright/test';
 
-import { addSecondOrganisationToPerson, createPersonWithPersonenkontext, freshLoginPage, UserInfo } from '../../base/api/personApi';
+import { createKlasse, getOrganisationId } from '../../base/api/organisationApi';
+import { addSecondOrganisationToPerson, createPersonWithPersonenkontext, UserInfo } from '../../base/api/personApi';
+import { getRolleId } from '../../base/api/rolleApi';
 import { landSH, testschuleDstNr, testschuleName } from '../../base/organisation';
 import { landesadminRolle, lehrkraftOeffentlichRolle, schuladminOeffentlichRolle } from '../../base/rollen';
 import { DEV, STAGE } from '../../base/tags';
+import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
 import { generateDienststellenNr, generateKlassenname, generateKopersNr, generateNachname, generateSchulname, generateVorname } from '../../base/utils/generateTestdata';
 import { LandingViewPage } from '../../pages/LandingView.neu.page';
 import { LoginViewPage } from '../../pages/LoginView.neu.page';
 import { StartViewPage } from '../../pages/StartView.neu.page';
-import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.neu.page';
-import { HeaderPage } from '../../pages/components/Header.neu.page';
-import { createKlasse, getOrganisationId } from '../../base/api/organisationApi';
 import { SchuleCreationSuccessPage } from '../../pages/admin/organisationen/schulen/SchuleCreationSuccess.page';
 import { SchuleCreationParams, SchuleCreationViewPage, Schulform } from '../../pages/admin/organisationen/schulen/SchuleCreationView.neu.page';
-import { getRolleId } from '../../base/api/rolleApi';
+import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.neu.page';
+import { HeaderPage } from '../../pages/components/Header.neu.page';
 
 let header: HeaderPage;
 let landingPage: LandingViewPage;
-let loginPage: LoginViewPage;
 let personManagementViewPage: PersonManagementViewPage;
 let admin: UserInfo;
 
@@ -42,13 +42,7 @@ interface AdminFixture {
   test.describe(`Testfälle für die Ergebnisliste von Benutzern als ${bezeichnung}: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
     test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
       header = new HeaderPage(page);
-      loginPage = await freshLoginPage(page);
-      const startPage: StartViewPage = await loginPage.login(process.env.USER, process.env.PW);
-      await startPage.waitForPageLoad();
-
-      // Navigation zur Ergebnisliste von Benutzern
-      personManagementViewPage = await startPage.goToAdministration();
-      personManagementViewPage.waitForPageLoad();
+      personManagementViewPage = await loginAndNavigateToAdministration(page);
 
       admin = await createPersonWithPersonenkontext(
         page,
@@ -74,14 +68,14 @@ interface AdminFixture {
         await addSecondOrganisationToPerson(page, admin.personId, schuleId1, schuleId2, rolleId);
       }
       landingPage = await header.logout();
-      landingPage.navigateToLogin();
+      const loginPage: LoginViewPage = await landingPage.navigateToLogin();
 
       // Erstmalige Anmeldung mit Passwortänderung
-      await loginPage.loginNewUserWithPasswordChange(admin.username, admin.password);
+      const startPage: StartViewPage = await loginPage.loginNewUserWithPasswordChange(admin.username, admin.password);
       await startPage.waitForPageLoad();
 
-      personManagementViewPage = await startPage.goToAdministration();
-      await personManagementViewPage.waitForPageLoad();
+      // Navigation zur Ergebnisliste von Benutzern
+      personManagementViewPage = await startPage.navigateToAdministration();  
     });
 
     test.describe('UI-Tests ohne Datenanlage', () => {
@@ -153,7 +147,7 @@ interface AdminFixture {
       test.describe('Klassenfilter-Tests', () => {
         test(`Als ${bezeichnung}: Alle Klassen im Drop-Down des Klassenfilters anzeigen`, { tag: [STAGE, DEV] }, async () => {
           await personManagementViewPage.filterBySchule(schuleParams.name);
-          await personManagementViewPage.checkVisibleDropdownOptions(klassenNamen, 'personen-management-klasse-select', true, true);
+          await personManagementViewPage.checkIfKlassenAreVisibleInDropdown(klassenNamen);
         });
 
         test(`Als ${bezeichnung}: Alle Klassen im Drop-Down des Klassenfilters anklickbar`, { tag: [STAGE, DEV] }, async () => {

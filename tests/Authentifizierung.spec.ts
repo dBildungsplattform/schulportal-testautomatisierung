@@ -9,6 +9,7 @@ import { LandingViewPage } from '../pages/LandingView.neu.page';
 import { LoginViewPage } from '../pages/LoginView.neu.page';
 import { StartViewPage } from '../pages/StartView.neu.page';
 import { HeaderPage } from '../pages/components/Header.neu.page';
+import { loginAndNavigateToAdministration } from '../base/testHelperUtils';
 
 const ADMIN: string | undefined = process.env.USER;
 const PASSWORD: string | undefined = process.env.PW;
@@ -35,8 +36,7 @@ test.describe(`Testfälle für den Login: Umgebung: ${process.env.ENV}: URL: ${p
   });
 
   test('Fehlgeschlagener Login mit gesperrtem Benutzer', { tag: [STAGE, DEV] }, async ({ page }: { page: Page }) => {
-    const startPage: StartViewPage = await loginPage.login(ADMIN, PASSWORD);
-    await startPage.waitForPageLoad();
+    await loginAndNavigateToAdministration(page);
 
     /* create locked user */
     const testSchuleId: string = await getOrganisationId(page, testschuleName)

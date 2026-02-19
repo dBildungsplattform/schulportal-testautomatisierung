@@ -52,7 +52,7 @@ export async function createRolle(
 
     const rolleApi: RolleApi = constructRolleApi(page);
     const response: ApiResponse<RolleResponse> = await rolleApi.rolleControllerCreateRolleRaw(requestParameters);
-    await expect(response.raw.status).toBe(201);
+    expect(response.raw.status).toBe(201);
 
     const createdRolle: RolleResponse = await response.value();
     return createdRolle.id;
@@ -74,7 +74,7 @@ export async function addServiceProvidersToRolle(page: Page, rolleId: string, se
 
     const rolleApi: RolleApi = constructRolleApi(page);
     const response: ApiResponse<ServiceProviderResponse[]> = await rolleApi.rolleControllerUpdateServiceProvidersByIdRaw(requestParameters);
-    await expect(response.raw.status).toBe(201);
+    expect(response.raw.status).toBe(201);
 
     const addedServiceProviders: ServiceProviderResponse[] = await response.value();
     expect(addedServiceProviders.length).toBe(serviceProviderIds.length);
@@ -95,7 +95,7 @@ export async function addSystemrechtToRolle(page: Page, rolleId: string, systemR
 
     const rolleApi: RolleApi = constructRolleApi(page);
     const response: ApiResponse<void> = await rolleApi.rolleControllerAddSystemRechtRaw(requestParameters);
-    await expect(response.raw.status).toBe(200);
+    expect(response.raw.status).toBe(200);
   } catch (error) {
     console.error('[ERROR] addSystemrechtToRolle failed:', error);
     throw error;
@@ -110,7 +110,7 @@ export async function deleteRolle(page: Page, rolleId: string): Promise<void> {
 
     const rolleApi: RolleApi = constructRolleApi(page);
     const response: ApiResponse<void> = await rolleApi.rolleControllerDeleteRolleRaw(requestParameters);
-    await expect(response.raw.status).toBe(204);
+    expect(response.raw.status).toBe(204);
   } catch (error) {
     console.error('[ERROR] deleteRolle failed:', error);
     throw error;
@@ -125,7 +125,7 @@ export async function getRolleId(page: Page, rollenname: string): Promise<string
 
     const rolleApi: RolleApi = constructRolleApi(page);
     const response: ApiResponse<RolleWithServiceProvidersResponse[]> = await rolleApi.rolleControllerFindRollenRaw(requestParameters);
-    await expect(response.raw.status).toBe(200);
+    expect(response.raw.status).toBe(200);
 
     const fetchedRollen: RolleWithServiceProvidersResponse[] = await response.value();
     let fetchedRolleId: string = '';

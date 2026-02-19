@@ -5,16 +5,15 @@ import { fileURLToPath } from 'node:url';
 import { schuelerRolle } from '../base/rollen';
 import { DEV, STAGE } from '../base/tags';
 import { deletePersonBySearchString } from '../base/testHelperDeleteTestdata';
-import FromAnywhere from '../pages/FromAnywhere';
 import { PersonImportViewPage } from '../pages/admin/personen/PersonImportView.page';
+import { PersonManagementViewPage as NewPersonManagementViewPage } from '../pages/admin/personen/PersonManagementView.neu.page';
 import { PersonManagementViewPage } from '../pages/admin/personen/PersonManagementView.page';
 import { HeaderPage } from '../pages/components/Header.page';
 
 // schulen cannot be deleted yet, so we use this testschule, which should already exist
 import { testschule665Name } from '../base/organisation';
+import { loginAndNavigateToAdministration } from '../base/testHelperUtils';
 
-const PW: string = process.env.PW as string;
-const ADMIN: string = process.env.USER as string;
 let personImportPage: PersonImportViewPage = undefined as unknown as PersonImportViewPage;
 let logoutViaStartPage: boolean = false;
 
@@ -32,11 +31,10 @@ test.describe(`Testfälle für den Benutzerimport": Umgebung: ${process.env.ENV}
 
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
     await test.step('Einloggen und zu Benutzerimport navigieren', async () => {
-      await page.goto('/');
-      personImportPage = await (
-        await (await (await (await FromAnywhere(page).start()).goToLogin()).login(ADMIN, PW)).goToAdministration()
-      ).goToBenutzerImport();
-
+      const personManagementViewPage: NewPersonManagementViewPage = await loginAndNavigateToAdministration(page);
+      await personManagementViewPage.menu.navigateToPersonImport();
+      // this test has not been refactored to use new Pages, but requires 2FA, which is only available in the new implementation
+      personImportPage = new PersonImportViewPage(page);
       await expect(personImportPage.headlineBenutzerImport).toBeVisible();
     });
   });
