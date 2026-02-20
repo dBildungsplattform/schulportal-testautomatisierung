@@ -19,6 +19,7 @@ import { StartViewPage } from '../../pages/StartView.neu.page';
 import { PersonImportViewPage } from '../../pages/admin/personen/PersonImportView.neu.page';
 import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.neu.page';
 import { MenuBarPage } from '../../pages/components/MenuBar.neu.page';
+import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
 
 interface ImportUser {
   nachname: string;
@@ -35,10 +36,7 @@ test.describe(`Als Landesadmin Benutzer importieren`, () => {
 
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
     let personManagementPage: PersonManagementViewPage = await test.step(`Einloggen als Root`, async () => {
-      const loginPage: LoginViewPage = await freshLoginPage(page);
-      const startView: StartViewPage = await loginPage.login(process.env.USER!, process.env.PW!);
-      await startView.waitForPageLoad();
-      return startView.navigateToAdministration();
+      return loginAndNavigateToAdministration(page);
     });
 
     await test.step(`Schule und Klassen anlegen`, async () => {
