@@ -4,7 +4,6 @@ import { KlasseManagementViewPage, KlasseManagementViewPageOptions } from '../ad
 import { SchuleCreationViewPage } from '../admin/organisationen/schulen/SchuleCreationView.page';
 import { SchuleManagementViewPage } from '../admin/organisationen/schulen/SchuleManagementView.page';
 import { PersonCreationViewPage } from '../admin/personen/PersonCreationView.page';
-import { PersonImportViewPage } from '../admin/personen/PersonImportView.page';
 import { PersonManagementViewPage } from '../admin/personen/PersonManagementView.page';
 
 export class MenuPage {
@@ -59,11 +58,6 @@ export class MenuPage {
   public async schuleAnlegen(): Promise<SchuleCreationViewPage> {
     await this.menueItemSchuleAnlegen.click();
     return new SchuleCreationViewPage(this.page);
-  }
-
-  public async goToBenutzerImport(): Promise<PersonImportViewPage> {
-    await this.menuItemBenutzerImportieren.click();
-    return new PersonImportViewPage(this.page);
   }
 
   public async alleKlassenAnzeigen(options?: KlasseManagementViewPageOptions): Promise<KlasseManagementViewPage> {

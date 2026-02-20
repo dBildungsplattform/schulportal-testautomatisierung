@@ -4,9 +4,10 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, sep } from 'node:path';
 import { createKlasse, createSchule } from '../../base/api/organisationApi';
-import { createPersonWithPersonenkontext, freshLoginPage, UserInfo } from '../../base/api/personApi';
+import { createPersonWithPersonenkontext, UserInfo } from '../../base/api/personApi';
 import { landSH } from '../../base/organisation';
 import { landesadminRolle, schuelerRolle } from '../../base/rollen';
+import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
 import {
   generateKlassenname,
   generateNachname,
@@ -16,10 +17,9 @@ import {
 import { LandingViewPage } from '../../pages/LandingView.neu.page';
 import { LoginViewPage } from '../../pages/LoginView.neu.page';
 import { StartViewPage } from '../../pages/StartView.neu.page';
-import { PersonImportViewPage } from '../../pages/admin/personen/PersonImportView.neu.page';
+import { PersonImportViewPage } from '../../pages/admin/personen/PersonImportView.page';
 import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.neu.page';
 import { MenuBarPage } from '../../pages/components/MenuBar.neu.page';
-import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
 
 interface ImportUser {
   nachname: string;

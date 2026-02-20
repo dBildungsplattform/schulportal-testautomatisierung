@@ -1,52 +1,64 @@
-import { type Locator, Page } from '@playwright/test';
-import { PersonManagementViewPage } from './PersonManagementView.page';
+import { Download, expect, Page } from '@playwright/test';
 import { Autocomplete } from '../../components/Autocomplete';
+import { AbstractAdminPage } from '../AbstractAdmin.page';
+import { PersonManagementViewPage } from './PersonManagementView.page';
 
-export class PersonImportViewPage {
-  readonly page: Page;
-  readonly body: Locator;
-  readonly headlineBenutzerImport: Locator;
-  readonly schuleSelectInput: Locator;
-  readonly schuleSelectCombobox: Autocomplete;
-  readonly rolleSelectInput: Locator;
-  readonly fileInput: Locator;
-  readonly discardFileUploadButton: Locator;
-  readonly submitFileUploadButton: Locator;
-  readonly uploadSuccessText: Locator;
-  readonly openConfirmationDialogButton: Locator;
-  readonly importConfirmationText: Locator;
-  readonly executeImportButton: Locator;
-  readonly importProgressBar: Locator;
-  readonly importSuccessText: Locator;
-  readonly downloadFileButton: Locator;
-  readonly closeCardButton: Locator;
-  readonly confirmUnsavedChangesButton: Locator;
-  
-  constructor(page: Page) {
-    // Benutzerimport
-    this.page = page;  
-    this.body = page.locator('body');
-    this.headlineBenutzerImport = page.getByTestId('person-import-headline');
-    this.schuleSelectInput = page.getByTestId('schule-select').locator('input');
-    this.schuleSelectCombobox = new Autocomplete(this.page, page.getByTestId('person-import-schule-select'));
-    this.rolleSelectInput = page.getByTestId('rolle-select').locator('input');
-    this.fileInput = page.getByTestId('file-input').locator('input');
-    this.discardFileUploadButton = page.getByTestId('person-import-form-discard-button');
-    this.submitFileUploadButton = page.getByTestId('person-import-form-submit-button');
-    this.uploadSuccessText = page.getByTestId('person-upload-success-text');
-    this.openConfirmationDialogButton = page.getByTestId('open-confirmation-dialog-button');
-    this.importConfirmationText = page.getByTestId('person-import-confirmation-text');
-    this.executeImportButton = page.getByTestId('execute-import-button');
-    this.importProgressBar = page.getByTestId('import-progress-bar');
-    this.importSuccessText = page.getByTestId('person-import-success-text');
-    this.downloadFileButton = page.getByTestId('download-all-data-button');
-    this.closeCardButton = page.getByTestId('close-layout-card-button');
-    this.confirmUnsavedChangesButton = page.getByTestId('confirm-unsaved-changes-button');
+export class PersonImportViewPage extends AbstractAdminPage {
+  constructor(protected readonly page: Page) {
+    super(page);
   }
 
-  public async navigateToPersonManagementView(): Promise<PersonManagementViewPage> {
-    await this.closeCardButton.click();
+  /* actions */
+  public async waitForPageLoad(): Promise<PersonImportViewPage> {
+    await this.page.getByTestId('person-import-headline').waitFor({ state: 'visible' });
+    await expect(this.page.getByTestId('person-import-headline')).toHaveText('Benutzer importieren');
+    return this;
+  }
 
+  public async selectSchule(schule: string): Promise<void> {
+    const schuleAutocomplete: Autocomplete = new Autocomplete(this.page, this.page.getByTestId('person-import-schule-select'));
+    await schuleAutocomplete.searchByTitle(schule, false);
+  }
+
+  public async selectRolle(rolle: string): Promise<void> {
+    const rolleAutocomplete: Autocomplete = new Autocomplete(this.page, this.page.getByTestId('rolle-select'));
+    await rolleAutocomplete.searchByTitle(rolle, true);
+  }
+
+  public async uploadFile(filePath: string): Promise<void> {
+    await this.page.getByTestId('file-input').locator('input').setInputFiles(filePath);
+    return this.page.getByTestId('person-import-form-submit-button').click();
+  }
+
+  public async executeImport(): Promise<void> {
+    await this.page.getByTestId('open-confirmation-dialog-button').click();
+    return this.page.getByTestId('execute-import-button').click();
+  }
+
+  public async downloadFile(): Promise<Download> {
+    await this.page.getByTestId('download-all-data-button').click();
+    return this.page.waitForEvent('download');
+  }
+
+  public async closeCard(): Promise<PersonManagementViewPage> {
+    await this.page.getByTestId('close-layout-card-button').click();
     return new PersonManagementViewPage(this.page);
+  }
+
+  /* assertions */
+  public async uploadCompletedSuccessfully(expectedCount: number): Promise<void> {
+    await expect(this.page.getByTestId('person-upload-success-text')).toHaveText(
+      `Die Datei wurde erfolgreich hochgeladen. ${expectedCount} Datensätze stehen zum Import bereit.`
+    );
+  }
+
+  public async importCompletedSuccessfully(): Promise<void> {
+    await expect(this.page.getByTestId('person-import-success-text')).toHaveText(
+      'Die Daten wurden erfolgreich importiert. Die importierten Daten stehen zum Download bereit.'
+    );
+  }
+
+  public verifyFileName(download: Download, fileName: string = 'Benutzerdaten.txt'): void {
+    expect(download.suggestedFilename()).toBe(fileName);
   }
 }
