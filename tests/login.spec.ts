@@ -7,10 +7,12 @@ import { getServiceProviderId } from '../base/api/serviceProviderApi';
 import { testschuleName } from '../base/organisation';
 import { DEV, SMOKE, STAGE } from '../base/tags';
 import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata';
+import { loginAndNavigateToAdministration } from '../base/testHelperUtils';
 import { generateNachname, generateRolleName, generateVorname } from '../base/utils/generateTestdata';
 import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
 import { StartPage } from '../pages/StartView.page';
+import { StartViewPage as NewStartPage } from '../pages/StartView.neu.page';
 import { HeaderPage } from '../pages/components/Header.page';
 
 const PW: string | undefined = process.env.PW;
@@ -26,17 +28,11 @@ let logoutViaStartPage: boolean = false;
 test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.afterEach(async ({ page }: PlaywrightTestArgs) => {
     const header: HeaderPage = new HeaderPage(page);
-    const landing: LandingPage = new LandingPage(page);
-    const login: LoginPage = new LoginPage(page);
-    const startseite: StartPage = new StartPage(page);
 
     await test.step(`Testdaten(Benutzer) löschen via API`, async () => {
       // login as Landesadmin if neccessary
       if ((usernames.length > 0 || rolleIds.length > 0) && !loggedIn) {
-        await page.goto('/');
-        await landing.buttonAnmelden.click();
-        await login.login(ADMIN, PW);
-        await startseite.validateStartPageIsLoaded();
+        await loginAndNavigateToAdministration(page);
         loggedIn = true;
 
         if (usernames.length > 0) {
@@ -126,6 +122,8 @@ test.describe(`Testfälle für die Authentifizierung: Umgebung: ${process.env.EN
         await page.goto('/');
         await landing.buttonAnmelden.click();
         await login.login(ADMIN, PW);
+        const startPage: NewStartPage = new NewStartPage(page, ADMIN);
+        await startPage.navigateToAdministration();
         const lehrerIdSPs: string[] = [await getServiceProviderId(page, 'E-Mail')];
         organisationIDLandSh = await getOrganisationId(page, 'Land Schleswig-Holstein');
         userInfoLehrer = await createRolleAndPersonWithPersonenkontext(

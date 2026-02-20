@@ -21,7 +21,15 @@ export class HeaderPage {
     await this.page.context().clearCookies();
     
     // Navigate to root with a clean slate
-    await this.page.goto('/', { waitUntil: 'load' });
+    try {
+      await this.page.goto('/', { waitUntil: 'load' });
+    } catch (error) {
+      console.log('Error navigating to root after logout:');
+      console.log(error);
+
+      console.log('Attempting again');
+      await this.page.goto('/', { waitUntil: 'load' });
+    }
     
     const landingPage: LandingViewPage = new LandingViewPage(this.page);
     await landingPage.waitForPageLoad();

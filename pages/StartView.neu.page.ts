@@ -1,30 +1,25 @@
 import { expect, Locator, Page, Response } from '@playwright/test';
 import { PersonManagementViewPage } from './admin/personen/PersonManagementView.neu.page';
+import { TwoFactorWorkflowPage } from './TwoFactorWorkflow.page';
 export class StartViewPage {
   /* add global locators here */
   readonly startCardHeadline: Locator;
 
-  constructor(protected readonly page: Page) {
+  constructor(protected readonly page: Page, private readonly username?: string) {
     this.startCardHeadline = this.page.locator('[data-testid="start-card-headline"]');
   }
 
   /* actions */
   public async waitForPageLoad(): Promise<StartViewPage> {
-    await this.startCardHeadline.waitFor({ state: 'visible' });
-    await expect(this.startCardHeadline).toHaveText('Startseite');
+    await expect(this.startCardHeadline).toHaveText('Startseite', { timeout: 60_000 });
     return this;
   }
 
   public async navigateToAdministration(): Promise<PersonManagementViewPage> {
     await this.page.locator('[data-testid^="service-provider-card"]').filter({ hasText: 'Schulportal-Administration' }).click();
-    return new PersonManagementViewPage(this.page).waitForPageLoad();
-  }
 
-  public async goToAdministration(): Promise<PersonManagementViewPage> {
-    await this.page.locator('[data-testid^="service-provider-card"]').filter({ hasText: 'Schulportal-Administration' }).click();
-    const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(this.page);
-    await personManagementView.waitForPageLoad();
-    return personManagementView;
+    const twoFactorWorkflowPage: TwoFactorWorkflowPage = new TwoFactorWorkflowPage(this.page, this.username);
+    return twoFactorWorkflowPage.completeTwoFactorAuthentication();
   }
 
   /* assertions */

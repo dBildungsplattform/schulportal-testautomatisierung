@@ -1,22 +1,22 @@
 import { PlaywrightTestArgs, test } from '@playwright/test';
+
+import { createPersonWithPersonenkontext, UserInfo } from '../../base/api/personApi';
+import { landSH } from '../../base/organisation';
+import { landesadminRolle } from '../../base/rollen';
 import { DEV, STAGE } from '../../base/tags';
+import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
+import { generateDienststellenNr, generateSchulname } from '../../base/utils/generateTestdata';
+import { LandingViewPage } from '../../pages/LandingView.neu.page';
 import { LoginViewPage } from '../../pages/LoginView.neu.page';
 import { StartViewPage } from '../../pages/StartView.neu.page';
-import { HeaderPage } from '../../pages/components/Header.neu.page';
-import { LandingViewPage } from '../../pages/LandingView.neu.page';
-import { PersonManagementViewPage } from "../../pages/admin/personen/PersonManagementView.neu.page";
-import { landSH } from '../../base/organisation';
-import { landesadminRolle } from '../../base/rollen'
-import { createPersonWithPersonenkontext, freshLoginPage, UserInfo } from '../../base/api/personApi';
-import { SchuleCreationParams, SchuleCreationViewPage, Schulform } from '../../pages/admin/organisationen/schulen/SchuleCreationView.neu.page';
-import { generateDienststellenNr, generateSchulname } from '../../base/utils/generateTestdata';
 import { SchuleCreationSuccessPage } from '../../pages/admin/organisationen/schulen/SchuleCreationSuccess.page';
+import { SchuleCreationParams, SchuleCreationViewPage, Schulform } from '../../pages/admin/organisationen/schulen/SchuleCreationView.neu.page';
 import { SchuleManagementViewPage } from '../../pages/admin/organisationen/schulen/SchuleManagementView.neu.page';
+import { PersonManagementViewPage } from "../../pages/admin/personen/PersonManagementView.neu.page";
+import { HeaderPage } from '../../pages/components/Header.neu.page';
 
 test.describe(`Testfälle für das Anlegen von Schulen als Landesadmin: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   let header: HeaderPage;
-  let landingPage: LandingViewPage;
-  let loginPage: LoginViewPage;
   let personManagementViewPage: PersonManagementViewPage;
   let schuleCreationPage : SchuleCreationViewPage;
   let landesadmin: UserInfo;
@@ -25,20 +25,19 @@ test.describe(`Testfälle für das Anlegen von Schulen als Landesadmin: Umgebung
 
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
     header = new HeaderPage(page);
-    loginPage = await freshLoginPage(page);
-    await loginPage.login(process.env.USER, process.env.PW);
+    await loginAndNavigateToAdministration(page);
 
     landesadmin = await createPersonWithPersonenkontext(page, landSH, landesadminRolle);
 
-    landingPage = await header.logout();
-    landingPage.navigateToLogin();
+    const landingPage: LandingViewPage = await header.logout();
+    const loginPage: LoginViewPage = await landingPage.navigateToLogin();
 
     // Erstmalige Anmeldung mit Passwortänderung
     const startPage: StartViewPage = await loginPage.loginNewUserWithPasswordChange(landesadmin.username, landesadmin.password)
     await startPage.waitForPageLoad();
 
     // Navigation zur Anlage von Schulen
-    personManagementViewPage = await startPage.goToAdministration();  
+    personManagementViewPage = await startPage.navigateToAdministration();  
     schuleCreationPage = await personManagementViewPage.menu.navigateToSchuleCreation();
   });
 
