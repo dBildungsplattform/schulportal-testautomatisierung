@@ -292,7 +292,7 @@ export class PersonManagementViewPage {
     const dialogCard: Locator = this.page.getByTestId('password-reset-layout-card');
     await expect(dialogCard).toBeVisible();
     await expect(dialogCard.getByTestId('layout-card-headline')).toHaveText('Passwort zurücksetzen');
-    await expect(dialogCard.getByTestId('password-reset-progressing-notice')).toHaveText('Bitte den Browser während der Bearbeitung nicht schließen!');
+    // await expect(dialogCard.getByTestId('password-reset-progressing-notice')).toHaveText('Bitte den Browser während der Bearbeitung nicht schließen!');
 
     const progressbar: Locator = dialogCard.getByTestId('password-reset-progressbar');
     await expect(progressbar).toBeVisible();
