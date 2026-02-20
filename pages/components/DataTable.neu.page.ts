@@ -82,6 +82,11 @@ export class DataTable {
     return this.tableLocator.locator('tbody tr.v-data-table__tr');
   }
 
+  /**
+   * NOTE: This function DOES NOT WAIT and returns what is on screen immediately!
+   * @param columnIndex 
+   * @returns 
+   */
   public async getColumnData(columnIndex: number): Promise<string[]> {
     await this.waitForDataLoad();
 
@@ -90,21 +95,16 @@ export class DataTable {
 
     for (const row of rows) {
       const cell: Locator = row.locator('td').nth(columnIndex);
-      const text: string = await cell.textContent();
+      const text: string | null = await cell.textContent();
       if (text) pageData.push(text.trim());
     }
 
     return pageData;
   }
 
-  public async clickDropdownOption(item: string): Promise<void> {
-    const option: Locator = this.page.getByRole('option', { name: item, exact: false });
-    await option.click();
-  }
-
   public async getColumn(columnIndex: number): Promise<Locator> {
     const rows: Locator = this.getRows();
-    return rows.locator(`td.v-data-table__td:nth-child(${columnIndex})`);
+    return rows.locator(`td.v-data-table__td:nth-child(${columnIndex + 1})`); // nth-child is 1-based
   }
 
   /* assertions */
@@ -172,41 +172,16 @@ export class DataTable {
     }
   }
 
-  public async checkVisibleDropdownOptions(items: string[], dropdownLocator: Locator, exactCount: boolean = false, filterHeaderText?: string): Promise<void> {
-    await dropdownLocator.click();
-    // Sortiere Items alphanumerisch wie sie im Dropdown angeordnet sind (Zeitersparnis beim Testlauf)
-    const sortedItems: string[] = [...items].sort((a: string, b: string) => a.localeCompare(b, 'de', { numeric: true }));
-    if (filterHeaderText) {
-      await expect(this.page.locator('.filter-header')).toContainText(filterHeaderText);
-    }
-    if (exactCount) {
-      const options: Locator = this.page.getByRole('option');
-      const expectedCount: number = filterHeaderText ? sortedItems.length + 1 : sortedItems.length;
-      await expect(options).toHaveCount(expectedCount, { timeout: 5000 });
-    }
-    for (const item of sortedItems) {
-      const option: Locator = this.page.getByRole('option', { name: item, exact: false });
-      await option.scrollIntoViewIfNeeded();
-      await expect(option).toBeVisible();
-    }
-  }
-
-  public async checkAllDropdownOptionsClickable(items: string[], dropdownLocator: Locator): Promise<void> {
-    await dropdownLocator.click();
-    // Sortiere Items alphanumerisch wie sie im Dropdown angeordnet sind (Zeitersparnis beim Testlauf)
-    const sortedItems: string[] = [...items].sort((a: string, b: string) => a.localeCompare(b, 'de', { numeric: true }));
-    for (const item of sortedItems) {
-      await this.clickDropdownOption(item);
-    }
-  }
-
   public async checkIfColumnDataSorted(columnIndex: number, sortOrder: 'ascending' | 'descending'): Promise<void> {
-    const columnData: string[] = await this.getColumnData(columnIndex);
-    const sortedData: string[] = [...columnData].sort((a: string, b: string): number => {
+    const columnLocator: Locator = await this.getColumn(columnIndex);
+    const sortedData: string[] = (await this.getColumnData(columnIndex))
+      .sort((a: string, b: string): number => {
       const comparison: number = a.localeCompare(b, 'de', { numeric: true });
       return sortOrder === 'ascending' ? comparison : -comparison;
     });
-    expect(columnData).toEqual(sortedData);
+    for (const [index, data] of sortedData.entries()) {
+      await expect(columnLocator.nth(index)).toHaveText(data);
+    }
   }
 
   public async checkCellInRow(rowIdentifier: string, cellIndex: number, expectedText: string): Promise<void> {

@@ -169,4 +169,37 @@ export class Autocomplete {
   public async isDisabled(): Promise<void> {
     await expect(this.inputLocator).toBeDisabled();
   }
+
+  public async checkVisibleDropdownOptions(items: string[], exactCount: boolean = false, filterHeaderText?: string): Promise<void> {
+    await this.inputLocator.click();
+    // Sortiere Items alphanumerisch wie sie im Dropdown angeordnet sind (Zeitersparnis beim Testlauf)
+    const sortedItems: string[] = [...items].sort((a: string, b: string) => a.localeCompare(b, 'de', { numeric: true }));
+    if (filterHeaderText) {
+      await expect(this.page.locator('.filter-header')).toContainText(filterHeaderText);
+    }
+    if (exactCount) {
+      const options: Locator = this.page.getByRole('option');
+      const expectedCount: number = filterHeaderText ? sortedItems.length + 1 : sortedItems.length;
+      await expect(options).toHaveCount(expectedCount, { timeout: 5000 });
+    }
+    for (const item of sortedItems) {
+      const option: Locator = this.page.getByRole('option', { name: item, exact: false });
+      await option.scrollIntoViewIfNeeded();
+      await expect(option).toBeVisible();
+    }
+  }
+
+  public async checkAllDropdownOptionsClickable(items: string[]): Promise<void> {
+    await this.inputLocator.click();
+    // Sortiere Items alphanumerisch wie sie im Dropdown angeordnet sind (Zeitersparnis beim Testlauf)
+    const sortedItems: string[] = [...items].sort((a: string, b: string) => a.localeCompare(b, 'de', { numeric: true }));
+    for (const item of sortedItems) {
+      await this.clickDropdownOption(item);
+    }
+  }
+
+  public async clickDropdownOption(item: string): Promise<void> {
+    const option: Locator = this.page.getByRole('option', { name: item, exact: false });
+    await option.click();
+  }
 }
