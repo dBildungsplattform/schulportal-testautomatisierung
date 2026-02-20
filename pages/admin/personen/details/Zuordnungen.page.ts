@@ -23,8 +23,8 @@ export class ZuordnungenPage {
 
   public constructor(private readonly page: Page,
   private readonly befristungWorkflowFactory: (page: Page) => BefristungWorkflowPage = (p: Page) => new BefristungWorkflowPage(p),
-  private readonly addZuordnungWorkflowFactory: (page: Page) => AddZuordnungWorkflowPage = p => new AddZuordnungWorkflowPage(p),
-  private readonly versetzenWorkflowFactory: (page: Page) => VersetzenWorkflowPage = p => new VersetzenWorkflowPage(p)
+  private readonly addZuordnungWorkflowFactory: (page: Page) => AddZuordnungWorkflowPage = (p: Page) => new AddZuordnungWorkflowPage(p),
+  private readonly versetzenWorkflowFactory: (page: Page) => VersetzenWorkflowPage = (p: Page) => new VersetzenWorkflowPage(p)
 ) {}
 
   /* actions */

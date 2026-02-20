@@ -1,13 +1,14 @@
 import { PlaywrightTestArgs, test } from '@playwright/test';
+
 import { createRolleAndPersonWithPersonenkontext, UserInfo } from '../../base/api/personApi';
 import { getServiceProviderId } from '../../base/api/serviceProviderApi';
 import { testschuleName } from '../../base/organisation';
 import { typeLehrer } from '../../base/rollentypen';
 import { email } from '../../base/sp';
 import { DEV, STAGE } from '../../base/tags';
+import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
 import { generateKopersNr, generateNachname, generateRolleName, generateVorname } from '../../base/utils/generateTestdata';
 import { HeaderPage } from '../../pages/components/Header.neu.page';
-import FromAnywhere from '../../pages/FromAnywhere.neu';
 import { LandingViewPage } from '../../pages/LandingView.neu.page';
 import { LoginViewPage } from '../../pages/LoginView.neu.page';
 import { ProfileViewPage } from '../../pages/ProfileView.neu.page';
@@ -22,11 +23,7 @@ let currentUserIsLandesadministrator: boolean = true;
 test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
     await test.step(`Login`, async () => {
-       await FromAnywhere(page)
-        .start()
-        .then((landing: LandingViewPage) => landing.navigateToLogin())
-        .then((login: LoginViewPage) => login.login(ADMIN, PW))
-        .then((startseite: StartViewPage) => startseite.serviceProvidersAreLoaded());
+      await loginAndNavigateToAdministration(page);
     });
   });
 
@@ -80,11 +77,11 @@ test(
         page,
         testschuleName,
         typeLehrer,
-        await generateNachname(),
-        await generateVorname(),
+        generateNachname(),
+        generateVorname(),
         [await getServiceProviderId(page, email)],
-        await generateRolleName(),
-        await generateKopersNr()
+        generateRolleName(),
+        generateKopersNr()
       );
 
       await header.logout();

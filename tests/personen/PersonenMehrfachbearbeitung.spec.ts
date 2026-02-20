@@ -1,18 +1,19 @@
 import { Download, PlaywrightTestArgs, test } from '@playwright/test';
-import { addSecondOrganisationToPerson, createPersonWithPersonenkontext, freshLoginPage, UserInfo } from '../../base/api/personApi';
+import { getOrganisationId } from '../../base/api/organisationApi';
+import { addSecondOrganisationToPerson, createPersonWithPersonenkontext, UserInfo } from '../../base/api/personApi';
+import { getRolleId } from '../../base/api/rolleApi';
 import { landSH } from '../../base/organisation';
 import { landesadminRolle, schuladminOeffentlichRolle } from '../../base/rollen';
 import { DEV, STAGE } from '../../base/tags';
+import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
 import { generateDienststellenNr, generateSchulname } from '../../base/utils/generateTestdata';
 import { LandingViewPage } from '../../pages/LandingView.neu.page';
 import { LoginViewPage } from '../../pages/LoginView.neu.page';
 import { StartViewPage } from '../../pages/StartView.neu.page';
-import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.neu.page';
-import { HeaderPage } from '../../pages/components/Header.neu.page';
-import { getOrganisationId } from '../../base/api/organisationApi';
 import { SchuleCreationSuccessPage } from '../../pages/admin/organisationen/schulen/SchuleCreationSuccess.page';
 import { SchuleCreationParams, SchuleCreationViewPage, Schulform } from '../../pages/admin/organisationen/schulen/SchuleCreationView.neu.page';
-import { getRolleId } from '../../base/api/rolleApi';
+import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.neu.page';
+import { HeaderPage } from '../../pages/components/Header.neu.page';
 import { createKlassenAndSchuelerForSchulen, KlassenAndSchuelerData } from '../helpers/createKlassenAndSchuelerForSchulen';
 
 interface AdminFixture {
@@ -37,12 +38,8 @@ interface AdminFixture {
 
     test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
       const header: HeaderPage = new HeaderPage(page);
-      const loginPage: LoginViewPage = await freshLoginPage(page);
-      let startPage: StartViewPage = await loginPage.login(process.env.USER, process.env.PW);
-      await startPage.waitForPageLoad();
-
+      personManagementViewPage = await loginAndNavigateToAdministration(page);
       // Schule anlegen
-      personManagementViewPage = await startPage.goToAdministration();
       let schuleCreationViewPage: SchuleCreationViewPage = await personManagementViewPage.menu.navigateToSchuleCreation();
       schule1Params = {
         name: generateSchulname(),
@@ -73,13 +70,13 @@ interface AdminFixture {
       }
 
       const landingPage: LandingViewPage = await header.logout();
-      landingPage.navigateToLogin();
+      const loginPage: LoginViewPage = await landingPage.navigateToLogin();
 
       // Anmeldung mit Passwortänderung
-      startPage = await loginPage.loginNewUserWithPasswordChange(admin.username, admin.password);
+      const startPage: StartViewPage = await loginPage.loginNewUserWithPasswordChange(admin.username, admin.password);
       await startPage.waitForPageLoad();
 
-      personManagementViewPage = await startPage.goToAdministration();
+      personManagementViewPage = await startPage.navigateToAdministration();
     });
 
     test(`Als ${bezeichnung}: Schüler versetzen als Mehrfachbearbeitung prüfen`, { tag: [STAGE, DEV] }, async ({ page }: PlaywrightTestArgs) => {
@@ -106,6 +103,7 @@ interface AdminFixture {
 
       await test.step(`Fehlermeldungen nur für Schülerrolle testen`, async () => {
         await personManagementViewPage.setItemsPerPage(5);
+        await personManagementViewPage.checkRowCount(4);
         await personManagementViewPage.toggleSelectAllRows(true);
         await personManagementViewPage.selectMehrfachauswahl('Schüler versetzen');
         await personManagementViewPage.checkSchuelerVersetzenErrorDialog('rolle');

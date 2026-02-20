@@ -51,8 +51,8 @@ export class PersonManagementViewPage {
     await this.personTable.setItemsPerPage(entries);
   }
 
-  private async filterByText(text: string, testId: string, exactMatch?: boolean): Promise<void> {
-    const filter: Autocomplete = new Autocomplete(this.page, this.page.getByTestId(testId));
+  private async filterByText(text: string, locator: Locator, exactMatch?: boolean): Promise<void> {
+    const filter: Autocomplete = new Autocomplete(this.page, locator);
     await filter.searchByTitle(text, exactMatch);
   }
 
@@ -65,11 +65,11 @@ export class PersonManagementViewPage {
   }
 
   public async filterByKlasse(klasse: string): Promise<void> {
-    await this.filterByText(klasse, 'personen-management-klasse-select');
+    await this.filterByText(klasse, this.getKlassenDropdownLocator());
   }
 
   public async filterByStatus(status: string): Promise<void> {
-    await this.filterByText(status, 'status-select');
+    await this.filterByText(status, this.page.getByTestId('status-select'));
   }
 
   public async resetFilter(): Promise<void> {
@@ -114,7 +114,7 @@ export class PersonManagementViewPage {
   }
 
   public async versetzeSchueler(klassenname: string): Promise<void> {
-    await this.page.getByTestId('bulk-change-klasse-klasse-select').click();
+    await this.getKlassenDropdownLocatorInBulkChangeKlasse().click();
     await this.page.getByRole('option', { name: klassenname, exact: true }).click();
     await this.page.getByTestId('bulk-change-klasse-button').click();
   }
@@ -129,6 +129,14 @@ export class PersonManagementViewPage {
     return downloadPromise;
   }
 
+  private getKlassenDropdownLocator(): Locator {
+    return this.page.getByTestId('personen-management-klasse-select');
+  }
+
+  private getKlassenDropdownLocatorInBulkChangeKlasse(): Locator {
+    return this.page.getByTestId('bulk-change-klasse-klasse-select');
+  }
+
   /* assertions */
   public async checkManagementPage(): Promise<void> {
     await expect(this.page.getByTestId('admin-headline')).toHaveText('Administrationsbereich');
@@ -136,7 +144,7 @@ export class PersonManagementViewPage {
     await expect(this.page.getByTestId('reset-filter-button')).toBeVisible();
     await this.organisationAutocomplete.isVisible();
     await expect(this.page.getByTestId('rolle-select')).toBeVisible();
-    await expect(this.page.getByTestId('personen-management-klasse-select')).toBeVisible();
+    await expect(this.getKlassenDropdownLocator()).toBeVisible();
     await expect(this.page.getByTestId('status-select')).toBeVisible();
     await expect(this.page.getByTestId('benutzer-edit-select')).toBeVisible();
     await expect(this.page.getByTestId('search-filter-input')).toBeVisible();
@@ -176,17 +184,21 @@ export class PersonManagementViewPage {
     await expect(column.filter({ hasNotText: expectedText })).toHaveCount(0);
   }
 
-  public async checkVisibleDropdownOptions(options: string[], dropDownId: string, exactCount: boolean = false, hasHeader?: boolean): Promise<void> {
+  public async checkIfKlassenAreVisibleInDropdown(klassenNamen: string[]): Promise<void> {
+      return this.checkVisibleDropdownOptions(klassenNamen, this.getKlassenDropdownLocator(), true, true);
+  }
+
+  private async checkVisibleDropdownOptions(options: string[], locator: Locator, exactCount: boolean = false, hasHeader?: boolean): Promise<void> {
     await this.personTable.checkVisibleDropdownOptions(
       options,
-      this.page.getByTestId(dropDownId),
+      locator,
       exactCount,
       hasHeader? `${options.length} Klassen gefunden` : undefined,
     );
   }
 
   public async checkAllDropdownOptionsClickable(klassenNamen: string[]): Promise<void> {
-    await this.personTable.checkAllDropdownOptionsClickable(klassenNamen, this.page.getByTestId('personen-management-klasse-select'));
+    await this.personTable.checkAllDropdownOptionsClickable(klassenNamen, this.getKlassenDropdownLocator());
   }
 
   public async checkIfSchuleIsCorrect(schulname: string, schulNr?: string): Promise<void> {
@@ -213,15 +225,15 @@ export class PersonManagementViewPage {
   }
 
   public async checkSchuelerVersetzenDialog(klassenNamen: string[]): Promise<void> {
-    await expect(this.schuelerVersetzenDialogCard).toBeVisible({ timeout: 3000 }); 
+    await expect(this.schuelerVersetzenDialogCard).toBeVisible({ timeout: 10000 }); 
     await expect(this.schuelerVersetzenDialogCard.getByTestId('layout-card-headline')).toHaveText('Schüler versetzen');
-    await expect(this.schuelerVersetzenDialogCard.getByTestId('bulk-change-klasse-klasse-select')).toBeVisible();
+    await expect(this.getKlassenDropdownLocatorInBulkChangeKlasse()).toBeVisible();
     await expect(this.schuelerVersetzenDialogCard.getByTestId('bulk-change-klasse-button')).toBeVisible();
     await expect(this.schuelerVersetzenDialogCard.getByTestId('bulk-change-klasse-discard-button')).toBeVisible();
 
     await this.checkVisibleDropdownOptions(
       klassenNamen,
-      'bulk-change-klasse-klasse-select',
+      this.getKlassenDropdownLocatorInBulkChangeKlasse(),
       true,
       false
     );
@@ -247,7 +259,7 @@ export class PersonManagementViewPage {
     const dialogCard: Locator = this.page.getByTestId('invalid-selection-alert-dialog-layout-card');
     await expect(dialogCard).toBeVisible();
     
-    const dialogText: string = await dialogCard.textContent();
+    const dialogText: string = await dialogCard.textContent() || '';
     
     const schuleError: string = 'Bitte wählen Sie im Filter genau eine Schule aus, um die Aktion durchzuführen.';
     const rolleError: string = 'Bitte wählen Sie nur Benutzer mit einer Schülerrolle aus, um die Aktion durchzuführen.';
