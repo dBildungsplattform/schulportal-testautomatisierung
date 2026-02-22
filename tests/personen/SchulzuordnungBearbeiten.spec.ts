@@ -2,7 +2,6 @@ import { PlaywrightTestArgs, test } from '@playwright/test';
 import {
   createRolleAndPersonWithPersonenkontext,
   setTimeLimitPersonenkontext,
-  freshLoginPage,
   UserInfo
 } from '../../base/api/personApi';
 import { getServiceProviderId } from '../../base/api/serviceProviderApi';
@@ -15,23 +14,18 @@ import {
   formatDateDMY
 } from '../../base/utils/generateTestdata';
 import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.neu.page';
-import { LoginViewPage } from '../../pages/LoginView.neu.page';
-import { StartViewPage } from '../../pages/StartView.neu.page';
 import { RollenArt } from '../../base/api/generated';
 import { PersonDetailsViewPage } from '../../pages/admin/personen/details/PersonDetailsView.neu.page';
 import { email } from '../../base/sp';
+import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
 
 test.describe(
   `Testfälle für Schulzuordnung bearbeiten: ENV: ${process.env.ENV} URL: ${process.env.FRONTEND_URL}`,
   () => {
-    let startPage: StartViewPage;
     let personManagementView: PersonManagementViewPage;
 
     test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
-      const loginPage: LoginViewPage = await freshLoginPage(page);
-      startPage = await loginPage.login(process.env.USER, process.env.PW);
-      await startPage.waitForPageLoad();
-      personManagementView = await startPage.goToAdministration();
+      personManagementView =  await loginAndNavigateToAdministration(page);
     });
 
     test(

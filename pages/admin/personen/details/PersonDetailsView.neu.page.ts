@@ -20,7 +20,7 @@ interface LockValidationParams {
 interface AddSchulzuordnungParams {
   schuleName: string;
   rolleName: string;
-  befristung: 'unbefristet' | 'schuljahresende';
+  befristung: undefined | 'schuljahresende';
   /** Expected role name shown in the confirmation dialog, defaults to rolleName */
   confirmationRolleName?: string;
 }
@@ -238,6 +238,8 @@ export class PersonDetailsViewPage {
 
     await this.selectOrganisation(schuleName);
     await this.selectRolle(rolleName);
+
+    await this.buttonBefristetSchuljahresende.waitFor({ state: 'visible' });
 
     if (befristung === 'schuljahresende') {
       await this.buttonBefristetSchuljahresende.click();
