@@ -7,9 +7,10 @@ export class LandingViewPage {
   constructor(private readonly page: Page) {}
 
   /* actions */
-  public async waitForPageLoad(): Promise<void> {
+  public async waitForPageLoad(): Promise<LandingViewPage> {
     await this.page.getByTestId('landing-headline').waitFor({ state: 'visible' });
     await expect(this.page.getByTestId('landing-headline')).toHaveText('Willkommen im Schulportal SH.');
+    return this;
   }
 
   public async navigateToLogin(): Promise<LoginViewPage> {

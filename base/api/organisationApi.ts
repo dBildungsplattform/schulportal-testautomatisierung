@@ -27,7 +27,7 @@ export async function getOrganisationId(page: Page, organisationName: string): P
     const organisationApi: OrganisationenApi = constructOrganisationApi(page);
     const response: ApiResponse<OrganisationResponse[]> =
       await organisationApi.organisationControllerFindOrganizationsRaw(requestParameters);
-    await expect(response.raw.status).toBe(200);
+    expect(response.raw.status).toBe(200);
 
     const organisations: OrganisationResponse[] = await response.value();
 
@@ -57,7 +57,7 @@ export async function deleteKlasse(page: Page, klasseId: string): Promise<void> 
     const response: ApiResponse<void> = await organisationApi.organisationControllerDeleteOrganisationRaw(
       requestParameters
     );
-    await expect(response.raw.status).toBe(204);
+    expect(response.raw.status).toBe(204);
   } catch (error) {
     console.error('[ERROR] deleteKlasse failed:', error);
     throw error;
@@ -82,7 +82,7 @@ export async function getKlasseId(page: Page, klassennname: string): Promise<str
     const organisationApi: OrganisationenApi = constructOrganisationApi(page);
     const response: ApiResponse<OrganisationResponse[]> =
       await organisationApi.organisationControllerFindOrganizationsRaw(requestParameters);
-    await expect(response.raw.status).toBe(200);
+    expect(response.raw.status).toBe(200);
 
     const organisations: OrganisationResponse[] = await response.value();
     if (!organisations || organisations.length === 0) {
@@ -112,7 +112,7 @@ export async function createKlasse(page: Page, schuleId: string, name: string): 
     const organisationApi: OrganisationenApi = constructOrganisationApi(page);
     const response: ApiResponse<OrganisationResponse> =
       await organisationApi.organisationControllerCreateOrganisationRaw(requestParameters);
-    await expect(response.raw.status).toBe(201);
+    expect(response.raw.status).toBe(201);
 
     const createdKlasse: OrganisationResponse = await response.value();
     return createdKlasse.id;

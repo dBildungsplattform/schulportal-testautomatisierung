@@ -69,7 +69,7 @@ export class Autocomplete {
     await expect(this.loadingLocator.getByRole('progressbar')).toBeHidden();
   }
 
-  public async searchByTitle(searchString: string, exactMatch: boolean, endpoint?: string): Promise<void> {
+  public async searchByTitle(searchString: string, exactMatch: boolean = false, endpoint?: string): Promise<void> {
     const currentValue: string | null = await this.inputLocator.textContent();
     if (currentValue === searchString) {
       return;
@@ -108,7 +108,7 @@ export class Autocomplete {
   }
 
   /* assertions */
-  public async validateItemNotExists(searchString: string, exactMatch: boolean): Promise<void> {
+  public async validateItemNotExists(searchString: string, exactMatch: boolean = false): Promise<void> {
     await this.inputLocator.click();
     await this.inputLocator.fill(searchString);
     let item: Locator;
@@ -128,7 +128,7 @@ export class Autocomplete {
     await expect(item).toBeHidden();
   }
 
-  public async validateItemExists(searchString: string, exactMatch: boolean): Promise<void> {
+  public async validateItemExists(searchString: string, exactMatch: boolean = false): Promise<void> {
     await this.inputLocator.click();
     await this.inputLocator.fill(searchString);
     let item: Locator;
