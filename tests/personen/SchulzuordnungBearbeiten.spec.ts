@@ -11,10 +11,11 @@ import {
   generateVorname,
   generateRolleName,
   generateCurrentDate,
-  formatDateDMY
+  formatDateDMY,
+  generateKopersNr
 } from '../../base/utils/generateTestdata';
 import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.neu.page';
-import { RollenArt } from '../../base/api/generated';
+import { RollenArt, RollenMerkmal } from '../../base/api/generated';
 import { PersonDetailsViewPage } from '../../pages/admin/personen/details/PersonDetailsView.neu.page';
 import { email } from '../../base/sp';
 import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
@@ -111,6 +112,44 @@ test.describe(
         });
       }
     );
+
+    test(
+      'Prüfen, dass eine Person mit einer befristeten Rolle wie z.B. LiV, nicht die Option "Unbefristet" bekommen kann wenn man eine Befristung bearbeitet',
+      async ({ page }: PlaywrightTestArgs) => {
+        let userInfoLehrer: UserInfo;
+        const nameRolle: string = generateRolleName();
+
+        await test.step('Testdaten: Lehrer mit einer Rolle (LiV) mit den Merkmalen "BefristungsPflicht" und "KopersPflicht" und einer Schulzuordnung anlegen', async () => {
+          userInfoLehrer = await createRolleAndPersonWithPersonenkontext(
+            page,
+            testschuleName,
+            RollenArt.Lehr,
+            generateNachname(),
+            generateVorname(),
+            [await getServiceProviderId(page, email)],
+            nameRolle,
+            generateKopersNr(),
+            undefined,
+            new Set<RollenMerkmal>([RollenMerkmal.BefristungPflicht, RollenMerkmal.KopersPflicht])
+          );
+        });
+
+        const personDetailsView: PersonDetailsViewPage = await test.step('Gesamtübersicht öffnen', async () => {
+          const view: PersonDetailsViewPage = await personManagementView.searchAndOpenGesamtuebersicht(userInfoLehrer.username);
+          await view.waitForPageLoad();
+          return view;
+        });
+
+        await test.step('Schulzuordnung im Bearbeitungsmodus öffnen', async () => {
+          await personDetailsView.editZuordnungen();
+          await personDetailsView.selectSchulzuordnungCheckbox(testschuleName);
+        });
+
+        await test.step('Befristung im Bearbeitungsmodus öffnen und prüfen, dass "Unbefristet" deaktiviert ist', async () => {
+          await personDetailsView.openBefristungDialog();
+          await personDetailsView.checkUnbefristetIsDisabled();
+        });
+      }
+    );
   }
 );
-

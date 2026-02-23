@@ -151,6 +151,12 @@ export class PersonDetailsViewPage {
     await expect(this.errorTextInputBefristung).toBeHidden();
   }
 
+  public async checkUnbefristetIsDisabled(): Promise<void> {
+    await expect(this.radioButtonBefristungSchuljahresende).toBeVisible();
+    await expect(this.radioButtonUnbefristet).toBeVisible();
+    await expect(this.radioButtonUnbefristet).toBeDisabled();
+  }
+
   /** Fills the final Befristung date and asserts no error is shown */
   public async setFinalBefristung(date: string): Promise<void> {
     await this.inputBefristung.fill(date);
