@@ -97,7 +97,8 @@ export class PersonDetailsViewPage {
 
   public async selectRolle(rolle: string): Promise<void> {
     const rolleAutocomplete: Autocomplete = new Autocomplete(this.page, this.page.getByTestId('rolle-select'));
-    await rolleAutocomplete.searchByTitle(rolle, true, 'personenkontext-workflow/**');
+    await rolleAutocomplete.searchByTitle(rolle, true);
+    await expect(this.radioButtonUnbefristet).toBeVisible();
   }
 
   public async changePassword(fullName: string): Promise<void> {
@@ -183,12 +184,12 @@ export class PersonDetailsViewPage {
 
     // old date shown in red (removed)
     await this.validateEntireNameSchulzuordnung(
-      dstNr, schuleName, nameRolle, 'rgb(244, 67, 54)', oldDate, 'person-zuordnungen-section-edit'
+      dstNr, schuleName, nameRolle, 'rgb(244, 67, 54)', 'person-zuordnungen-section-edit', oldDate
     );
 
     // new date shown in green (added)
     await this.validateEntireNameSchulzuordnung(
-      dstNr, schuleName, nameRolle, 'rgb(76, 175, 80)', newDate, 'person-zuordnungen-section-edit'
+      dstNr, schuleName, nameRolle, 'rgb(76, 175, 80)', 'person-zuordnungen-section-edit', newDate
     );
 
     await this.buttonBefristungAendernSave.click();

@@ -105,8 +105,8 @@ test.describe(
             testschuleName,
             nameRolle,
             'rgb(0, 30, 73)',
+            'person-zuordnungen-section-view',
             timeLimitTeacherRolleNew,
-            'person-zuordnungen-section-view'
           );
         });
       }
