@@ -147,7 +147,7 @@ test.describe(
 
         await test.step('Befristung im Bearbeitungsmodus öffnen und prüfen, dass "Unbefristet" deaktiviert ist', async () => {
           await personDetailsView.openBefristungDialog();
-          await personDetailsView.checkUnbefristetIsDisabled();
+          await personDetailsView.assertUnbefristetIsDisabled();
         });
       }
     );

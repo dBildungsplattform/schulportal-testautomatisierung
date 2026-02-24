@@ -419,7 +419,7 @@ export class PersonDetailsViewPage {
     ).toHaveCSS('color', textColor);
   }
 
-    public async checkUnbefristetIsDisabled(): Promise<void> {
+    public async assertUnbefristetIsDisabled(): Promise<void> {
     await expect(this.radioButtonBefristungSchuljahresende).toBeVisible();
     await expect(this.radioButtonUnbefristet).toBeVisible();
     await expect(this.radioButtonUnbefristet).toBeDisabled();
