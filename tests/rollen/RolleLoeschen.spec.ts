@@ -1,15 +1,15 @@
 import { PlaywrightTestArgs, test } from '@playwright/test';
+
 import { getOrganisationId } from '../../base/api/organisationApi';
-import { createPersonWithPersonenkontext, freshLoginPage } from '../../base/api/personApi';
+import { createPersonWithPersonenkontext } from '../../base/api/personApi';
 import { createRolle, RollenArt } from '../../base/api/rolleApi';
 import { testschuleName } from '../../base/organisation';
+import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
 import { generateRolleName } from '../../base/utils/generateTestdata';
 import { Alert } from '../../pages/components/Alert';
 import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.neu.page';
 import { RolleDetailsViewPage } from '../../pages/admin/rollen/RolleDetailsView.page';
 import { RolleManagementViewPage } from '../../pages/admin/rollen/RolleManagementView.page';
-import { LoginViewPage } from '../../pages/LoginView.neu.page';
-import { StartViewPage } from '../../pages/StartView.neu.page';
 import { HeaderPage } from '../../pages/components/Header.neu.page';
 
 test.describe(`Testfälle für die Rollenlöschung: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
@@ -19,15 +19,11 @@ test.describe(`Testfälle für die Rollenlöschung: Umgebung: ${process.env.ENV}
   let rolleManagementViewPage: RolleManagementViewPage;
 
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
-    const loginPage: LoginViewPage = await freshLoginPage(page);
-    const startPage: StartViewPage = await loginPage.login(process.env.USER, process.env.PW);
-    await startPage.waitForPageLoad();
+    personManagementView = await loginAndNavigateToAdministration(page);
     const organisationId: string = await getOrganisationId(page, testschuleName);
-
-
     rolleName = generateRolleName();
     await createRolle(page, RollenArt.Leit, organisationId, rolleName);
-    personManagementView = await startPage.goToAdministration();
+
     rolleManagementViewPage = await personManagementView.menu.navigateToRolleManagement();
     await rolleManagementViewPage.setPageSize(300);
     rolleDetailsView = await rolleManagementViewPage.openGesamtuebersicht(rolleName);

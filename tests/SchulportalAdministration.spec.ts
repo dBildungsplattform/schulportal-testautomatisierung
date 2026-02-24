@@ -1,4 +1,5 @@
 import { expect, PlaywrightTestArgs, test } from '@playwright/test';
+
 import { getOrganisationId } from '../base/api/organisationApi';
 import {
   createPerson,
@@ -28,6 +29,7 @@ import {
 } from '../base/sp';
 import { DEV, STAGE } from '../base/tags';
 import { deletePersonById, deleteRolleById } from '../base/testHelperDeleteTestdata';
+import { loginAndNavigateToAdministration } from '../base/testHelperUtils';
 import {
   formatDateDMY,
   generateCurrentDate,
@@ -37,13 +39,9 @@ import {
   generateVorname,
 } from '../base/utils/generateTestdata';
 import { HeaderPage } from '../pages/components/Header.page';
-import FromAnywhere from '../pages/FromAnywhere';
 import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
 import { StartPage } from '../pages/StartView.page';
-
-const PW: string | undefined = process.env.PW;
-const ADMIN: string | undefined = process.env.USER;
 
 // The created test data will be deleted in the afterEach block
 let personIds: string[] = [];
@@ -56,31 +54,20 @@ let logoutViaStartPage: boolean = false;
 test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
     await test.step(`Login`, async () => {
-      const startPage: StartPage = await FromAnywhere(page)
-        .start()
-        .then((landing: LandingPage) => landing.goToLogin())
-        .then((login: LoginPage) => login.login())
-        .then((startseite: StartPage) => startseite.validateStartPageIsLoaded());
-
-      return startPage;
+      await loginAndNavigateToAdministration(page);
     });
   });
 
   test.afterEach(async ({ page }: PlaywrightTestArgs) => {
     if (!currentUserIsLandesadministrator) {
       const header: HeaderPage = new HeaderPage(page);
-      const landing: LandingPage = new LandingPage(page);
-      const startseite: StartPage = new StartPage(page);
-      const login: LoginPage = new LoginPage(page);
 
       if (logoutViaStartPage) {
         await header.logout({ logoutViaStartPage: true });
       } else {
         await header.logout({ logoutViaStartPage: false });
       }
-      await landing.buttonAnmelden.click();
-      await login.login(ADMIN, PW);
-      await startseite.validateStartPageIsLoaded();
+      await loginAndNavigateToAdministration(page);
     }
 
     await test.step(`Testdaten löschen via API`, async () => {
