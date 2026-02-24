@@ -102,7 +102,7 @@ export class DataTable {
     return pageData;
   }
 
-  public async getColumn(columnIndex: number): Promise<Locator> {
+  public getColumn(columnIndex: number): Locator {
     const rows: Locator = this.getRows();
     return rows.locator(`td.v-data-table__td:nth-child(${columnIndex + 1})`); // nth-child is 1-based
   }
@@ -173,7 +173,7 @@ export class DataTable {
   }
 
   public async checkIfColumnDataSorted(columnIndex: number, sortOrder: 'ascending' | 'descending'): Promise<void> {
-    const columnLocator: Locator = await this.getColumn(columnIndex);
+    const columnLocator: Locator = this.getColumn(columnIndex);
     const sortedData: string[] = (await this.getColumnData(columnIndex))
       .sort((a: string, b: string): number => {
       const comparison: number = a.localeCompare(b, 'de', { numeric: true });
