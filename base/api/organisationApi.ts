@@ -30,7 +30,6 @@ export async function getOrganisationId(page: Page, organisationName: string): P
     const response: ApiResponse<OrganisationResponse[]> =
       await organisationApi.organisationControllerFindOrganizationsRaw(requestParameters);
     expect(response.raw.status).toBe(200);
-    expect(response.raw.status).toBe(200);
 
     const organisations: OrganisationResponse[] = await response.value();
 
