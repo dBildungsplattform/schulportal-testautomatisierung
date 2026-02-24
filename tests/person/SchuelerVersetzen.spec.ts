@@ -20,8 +20,8 @@ import { ZuordnungenPage } from '../../pages/admin/personen/details/Zuordnungen.
 import { DEV, STAGE } from '../../base/tags';
 import { LoginViewPage } from '../../pages/LoginView.neu.page';
 
-const ADMIN: string | undefined = process.env.USER;
-const PASSWORD: string | undefined = process.env.PW;
+const ADMIN: string = process.env.USER || 'admin';
+const PASSWORD: string = process.env.PW || 'admin';
 
 describe(`Schüler versetzen, Umgebung ${process.env.ENV}, URL: ${process.env.FRONTEND_URL}`, () => {
     let userInfoSchueler: UserInfo;
@@ -68,7 +68,7 @@ describe(`Schüler versetzen, Umgebung ${process.env.ENV}, URL: ${process.env.FR
         const personDetailsView: PersonDetailsViewPage = await test.step('Gesamtübersicht Schüler öffnen', async () => {
           const startPage: StartViewPage = new StartViewPage(page);
           const personManagementView: PersonManagementViewPage = await startPage
-            .goToAdministration()
+            .navigateToAdministration()
             .then((p: PersonManagementViewPage) => p.menu)
             .then((menu: MenuBarPage) => menu.navigateToPersonManagement());
           return await personManagementView.searchAndOpenGesamtuebersicht(userInfoSchueler.username);
