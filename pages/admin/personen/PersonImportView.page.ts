@@ -1,4 +1,5 @@
 import { Download, expect, Page } from '@playwright/test';
+import { readFile } from 'node:fs/promises';
 import { Autocomplete } from '../../components/Autocomplete';
 import { AbstractAdminPage } from '../AbstractAdmin.page';
 import { PersonManagementViewPage } from './PersonManagementView.page';
@@ -16,7 +17,10 @@ export class PersonImportViewPage extends AbstractAdminPage {
   }
 
   public async selectSchule(schule: string): Promise<void> {
-    const schuleAutocomplete: Autocomplete = new Autocomplete(this.page, this.page.getByTestId('person-import-schule-select'));
+    const schuleAutocomplete: Autocomplete = new Autocomplete(
+      this.page,
+      this.page.getByTestId('person-import-schule-select'),
+    );
     await schuleAutocomplete.searchByTitle(schule, false);
   }
 
@@ -48,17 +52,35 @@ export class PersonImportViewPage extends AbstractAdminPage {
   /* assertions */
   public async uploadCompletedSuccessfully(expectedCount: number): Promise<void> {
     await expect(this.page.getByTestId('person-upload-success-text')).toHaveText(
-      `Die Datei wurde erfolgreich hochgeladen. ${expectedCount} Datensätze stehen zum Import bereit.`
+      `Die Datei wurde erfolgreich hochgeladen. ${expectedCount} Datensätze stehen zum Import bereit.`,
     );
   }
 
   public async importCompletedSuccessfully(): Promise<void> {
     await expect(this.page.getByTestId('person-import-success-text')).toHaveText(
-      'Die Daten wurden erfolgreich importiert. Die importierten Daten stehen zum Download bereit.'
+      'Die Daten wurden erfolgreich importiert. Die importierten Daten stehen zum Download bereit.',
     );
   }
 
   public verifyFileName(download: Download, fileName: string = 'Benutzerdaten.txt'): void {
     expect(download.suggestedFilename()).toBe(fileName);
+  }
+
+  public async assertDownloadedFileContent(
+    download: Download,
+    schuleName: string,
+    usersToBeImported: { nachname: string; vorname: string; klasse: string }[],
+    rolle: string = 'itslearning-Schüler',
+  ): Promise<void> {
+    const downloadedContent: string = await readFile(await download.path(), 'utf-8');
+    const downloadedLines: string[] = downloadedContent.split('\n').map((line: string) => line.trim());
+    expect(downloadedLines).toContainEqual(`Schule:;${schuleName};Rolle:;${rolle};`);
+    expect(downloadedLines).toContainEqual('Die folgenden Benutzer wurden erfolgreich importiert:;;;;');
+    expect(downloadedLines).toContainEqual('Klasse;Vorname;Nachname;Benutzername;Passwort');
+    for (const user of usersToBeImported) {
+      expect(
+        downloadedLines.find((line: string) => line.includes(`${user.klasse};${user.vorname};${user.nachname};`)),
+      ).toBeTruthy();
+    }
   }
 }

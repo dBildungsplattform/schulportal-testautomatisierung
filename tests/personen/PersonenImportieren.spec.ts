@@ -109,16 +109,7 @@ test.describe(`Als Landesadmin Benutzer importieren`, () => {
       return download;
     });
     await test.step('Inhalt der Download-Datei überprüfen', async () => {
-      const downloadedContent: string = await readFile(await download.path(), 'utf-8');
-      const downloadedLines: string[] = downloadedContent.split('\n').map((line: string) => line.trim());
-      expect(downloadedLines).toContainEqual(`Schule:;${schuleName};Rolle:;itslearning-Schüler;`);
-      expect(downloadedLines).toContainEqual('Die folgenden Benutzer wurden erfolgreich importiert:;;;;');
-      expect(downloadedLines).toContainEqual('Klasse;Vorname;Nachname;Benutzername;Passwort');
-      for (const user of usersToBeImported) {
-        expect(
-          downloadedLines.find((line: string) => line.includes(`${user.klasse};${user.vorname};${user.nachname};`)),
-        ).toBeTruthy();
-      }
+      await personImportPage.assertDownloadedFileContent(download, schuleName, usersToBeImported);
     });
     await test.step('Angelegte Personen in der Personenliste finden', async () => {
       const personManagementPage: PersonManagementViewPage = await new MenuBarPage(page).navigateToPersonManagement();
