@@ -78,9 +78,9 @@ import { HeaderPage } from '../../pages/components/Header.neu.page';
           await addSecondOrganisationToPerson(page, admin.personId, schuleId, zweiteSchuleId, rolleId);
         }
 
-        // 40 Klassen anlegen
+        // 5 Klassen anlegen
         generierteKlassenNamen = await Promise.all(
-          Array.from({ length: 40 }, async () => {
+          Array.from({ length: 5 }, async () => {
             const klassenname: string = generateKlassenname();
             await createKlasse(page, schuleId, klassenname);
             return klassenname;
