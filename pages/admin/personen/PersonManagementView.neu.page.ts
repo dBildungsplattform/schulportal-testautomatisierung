@@ -35,7 +35,7 @@ export class PersonManagementViewPage extends AbstractAdminPage {
   }
 
   /* actions */
-  public override async waitForPageLoad(): Promise<PersonManagementViewPage> {
+  public async waitForPageLoad(): Promise<PersonManagementViewPage> {
     await this.page.getByTestId('admin-headline').waitFor({ state: 'visible' });
     await expect(this.page.getByTestId('person-management-headline')).toHaveText('Benutzerverwaltung');
     await expect(this.page.getByTestId('person-table')).not.toContainText('Keine Daten');
