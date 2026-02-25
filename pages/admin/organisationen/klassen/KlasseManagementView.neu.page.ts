@@ -11,13 +11,13 @@ export class KlasseManagementViewPage {
   private readonly klasseTable: DataTable;
   private readonly searchFilter: SearchFilter;
   private readonly table: Locator;
-  private readonly klasseSelect: Locator;
+  private readonly klasseSelect: Autocomplete;
 
   constructor(protected readonly page: Page) {
     this.table = this.page.getByTestId('klasse-table');
     this.klasseTable = new DataTable(this.page, this.table);
     this.searchFilter = new SearchFilter(this.page);
-    this.klasseSelect = this.page.getByTestId('klassen-management-klasse-select');
+    this.klasseSelect = new Autocomplete(this.page, this.page.getByTestId('klassen-management-klasse-select'));
   }
 
   /* actions */
@@ -46,8 +46,7 @@ export class KlasseManagementViewPage {
   }
 
   public async filterByKlasse(klassenname: string): Promise<void> {
-    const filter: Autocomplete = new Autocomplete(this.page, this.klasseSelect);
-    await filter.searchByTitle(klassenname, false);
+    await this.klasseSelect.searchByTitle(klassenname, false);
   }
 
   public async clickColumnHeader(columnName: string): Promise<void> {
@@ -120,16 +119,15 @@ export class KlasseManagementViewPage {
   }
 
   public async checkAllDropdownOptionsVisible(klassen: string[]): Promise<void> {
-    await this.klasseTable.checkVisibleDropdownOptions(
+    await this.klasseSelect.checkVisibleDropdownOptions(
       klassen,
-      this.klasseSelect,
       true,
       `${klassen.length} Klassen gefunden`
     );
   }
 
   public async checkAllDropdownOptionsClickable(klassen: string[]): Promise<void> {
-    await this.klasseTable.checkAllDropdownOptionsClickable(klassen, this.klasseSelect);
+    await this.klasseSelect.checkAllDropdownOptionsClickable(klassen);
   }
 
   public async checkHeaders(expectedHeaders: string[]): Promise<void> {

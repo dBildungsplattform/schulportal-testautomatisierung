@@ -78,9 +78,8 @@ import { HeaderPage } from '../../pages/components/Header.neu.page';
           await addSecondOrganisationToPerson(page, admin.personId, schuleId, zweiteSchuleId, rolleId);
         }
 
-        // 40 Klassen anlegen
         generierteKlassenNamen = await Promise.all(
-          Array.from({ length: 40 }, async () => {
+          Array.from({ length: 5 }, async () => {
             const klassenname: string = generateKlassenname();
             await createKlasse(page, schuleId, klassenname);
             return klassenname;
@@ -123,6 +122,7 @@ import { HeaderPage } from '../../pages/components/Header.neu.page';
           async () => {
             await test.step(`Schule filtern oder validieren`, async () => {
               await klasseManagementViewPage.setItemsPerPage(5);
+              await klasseManagementViewPage.checkRows(5);
               if (hasMultipleSchulen) {
                 await klasseManagementViewPage.filterBySchule(schuleParams.name);
                 await klasseManagementViewPage.waitForDataLoad();

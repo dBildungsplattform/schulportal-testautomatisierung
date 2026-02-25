@@ -7,12 +7,23 @@ import { landSH, testschuleDstNr, testschuleName } from '../../base/organisation
 import { landesadminRolle, lehrkraftOeffentlichRolle, schuladminOeffentlichRolle } from '../../base/rollen';
 import { DEV, STAGE } from '../../base/tags';
 import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
-import { generateDienststellenNr, generateKlassenname, generateKopersNr, generateNachname, generateSchulname, generateVorname } from '../../base/utils/generateTestdata';
+import {
+  generateDienststellenNr,
+  generateKlassenname,
+  generateKopersNr,
+  generateNachname,
+  generateSchulname,
+  generateVorname,
+} from '../../base/utils/generateTestdata';
 import { LandingViewPage } from '../../pages/LandingView.neu.page';
 import { LoginViewPage } from '../../pages/LoginView.neu.page';
 import { StartViewPage } from '../../pages/StartView.neu.page';
 import { SchuleCreationSuccessPage } from '../../pages/admin/organisationen/schulen/SchuleCreationSuccess.page';
-import { SchuleCreationParams, SchuleCreationViewPage, Schulform } from '../../pages/admin/organisationen/schulen/SchuleCreationView.neu.page';
+import {
+  SchuleCreationParams,
+  SchuleCreationViewPage,
+  Schulform,
+} from '../../pages/admin/organisationen/schulen/SchuleCreationView.neu.page';
 import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.neu.page';
 import { HeaderPage } from '../../pages/components/Header.neu.page';
 
@@ -50,21 +61,22 @@ interface AdminFixture {
         rolleName,
         undefined,
         undefined,
-        generateDienststellenNr()
+        generateDienststellenNr(),
       );
 
-      const schuleCreationViewPage: SchuleCreationViewPage = await personManagementViewPage.menu.navigateToSchuleCreation();
+      const schuleCreationViewPage: SchuleCreationViewPage =
+        await personManagementViewPage.menu.navigateToSchuleCreation();
       schuleParams = {
         name: generateSchulname(),
         dienststellenNr: generateDienststellenNr(),
-        schulform: Schulform.Oeffentlich
+        schulform: Schulform.Oeffentlich,
       };
       const schuleSuccessPage: SchuleCreationSuccessPage = await schuleCreationViewPage.createSchule(schuleParams);
       await schuleSuccessPage.waitForPageLoad();
       const schuleId1: string = await getOrganisationId(page, organisationsName);
       schuleId2 = await getOrganisationId(page, schuleParams.name);
       const rolleId: string = await getRolleId(page, rolleName);
-      if(rolleName === schuladminOeffentlichRolle){
+      if (rolleName === schuladminOeffentlichRolle) {
         await addSecondOrganisationToPerson(page, admin.personId, schuleId1, schuleId2, rolleId);
       }
       landingPage = await header.logout();
@@ -75,18 +87,20 @@ interface AdminFixture {
       await startPage.waitForPageLoad();
 
       // Navigation zur Ergebnisliste von Benutzern
-      personManagementViewPage = await startPage.navigateToAdministration();  
+      personManagementViewPage = await startPage.navigateToAdministration();
     });
 
     test.describe('UI-Tests ohne Datenanlage', () => {
-
       // SPSH-2923
       test(`Als ${bezeichnung}: Benutzer Ergebnisliste: UI prüfen`, { tag: [STAGE, DEV] }, async () => {
         await personManagementViewPage.checkManagementPage();
       });
 
       // SPSH-2925
-      test.describe(`Als ${bezeichnung}: In der Ergebnisliste die Suchfunktion benutzen`, { tag: [STAGE, DEV] }, async () => {
+      test.describe(
+        `Als ${bezeichnung}: In der Ergebnisliste die Suchfunktion benutzen`,
+        { tag: [STAGE, DEV] },
+        async () => {
           for (const [key, getValue] of [
             ['Nachname', (): string => admin.nachname],
             ['Vorname', (): string => admin.vorname],
@@ -111,7 +125,7 @@ interface AdminFixture {
             await personManagementViewPage.checkIfPersonExists('Keine Daten gefunden.');
             await personManagementViewPage.checkRowCount(0);
           });
-        }
+        },
       );
 
       // SPSH-2926
@@ -119,14 +133,14 @@ interface AdminFixture {
         `Als ${bezeichnung}: In der Ergebnisliste die Filterfunktion der Schulen benutzen`,
         { tag: [STAGE, DEV] },
         async () => {
-          if(rolleName === schuladminOeffentlichRolle){
-          await personManagementViewPage.filterBySchule(organisationsName, false);
+          if (rolleName === schuladminOeffentlichRolle) {
+            await personManagementViewPage.filterBySchule(organisationsName, false);
           } else {
             // The searchstring for land matches multiple organisations, so we need to use exactMatch=true
-          await personManagementViewPage.filterBySchule(organisationsName, true);
+            await personManagementViewPage.filterBySchule(organisationsName, true);
           }
           await personManagementViewPage.checkIfSchuleIsCorrect(organisationsName, dienststellenNr);
-        }
+        },
       );
     });
 
@@ -145,23 +159,30 @@ interface AdminFixture {
 
       // SPSH-3056
       test.describe('Klassenfilter-Tests', () => {
-        test(`Als ${bezeichnung}: Alle Klassen im Drop-Down des Klassenfilters anzeigen`, { tag: [STAGE, DEV] }, async () => {
-          await personManagementViewPage.filterBySchule(schuleParams.name);
-          await personManagementViewPage.checkIfKlassenAreVisibleInDropdown(klassenNamen);
-        });
+        test(
+          `Als ${bezeichnung}: Alle Klassen im Drop-Down des Klassenfilters anzeigen`,
+          { tag: [STAGE, DEV] },
+          async () => {
+            await personManagementViewPage.filterBySchule(schuleParams.name);
+            await personManagementViewPage.checkIfKlassenAreVisibleInDropdown(klassenNamen);
+          },
+        );
 
-        test(`Als ${bezeichnung}: Alle Klassen im Drop-Down des Klassenfilters anklickbar`, { tag: [STAGE, DEV] }, async () => {
-          await personManagementViewPage.filterBySchule(schuleParams.name);
-          await personManagementViewPage.checkAllDropdownOptionsClickable(klassenNamen);
-        });
+        test(
+          `Als ${bezeichnung}: Alle Klassen im Drop-Down des Klassenfilters anklickbar`,
+          { tag: [STAGE, DEV] },
+          async () => {
+            await personManagementViewPage.filterBySchule(schuleParams.name);
+            await personManagementViewPage.checkAllKlassenOptionsClickable(klassenNamen);
+          },
+        );
       });
-    });     
-    
+    });
+
     if (rolleName === landesadminRolle) {
       test.describe('Mit Personendatenanlage', () => {
-
         test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
-          // 5 Personen anlegen zum Sortieren 
+          // 5 Personen anlegen zum Sortieren
           for (let i: number = 0; i < 5; i++) {
             await createPersonWithPersonenkontext(
               page,
@@ -169,16 +190,20 @@ interface AdminFixture {
               lehrkraftOeffentlichRolle,
               generateVorname(),
               generateNachname(),
-              generateKopersNr()
+              generateKopersNr(),
             );
           }
         });
-          // SPSH-2174
-          test.describe('Sortierungs-Tests', () => {
-            test(`Als ${bezeichnung}: Ergebnisliste Benutzer nach Spalten sortieren können`, { tag: [DEV, STAGE] }, async () => {
+        // SPSH-2174
+        test.describe('Sortierungs-Tests', () => {
+          test(
+            `Als ${bezeichnung}: Ergebnisliste Benutzer nach Spalten sortieren können`,
+            { tag: [DEV, STAGE] },
+            async () => {
               await test.step(`Schule filtern`, async () => {
                 await personManagementViewPage.setItemsPerPage(5);
                 await personManagementViewPage.filterBySchule(schuleParams.name);
+                await personManagementViewPage.checkIfSchuleIsCorrect(schuleParams.name, schuleParams.dienststellenNr);
                 await personManagementViewPage.waitForDataLoad();
               });
 
@@ -198,22 +223,25 @@ interface AdminFixture {
                   await personManagementViewPage.checkIfColumnDataSorted(column.cellIndex, 'descending');
 
                   await personManagementViewPage.toggleColumnSort(column.name);
-                  await personManagementViewPage.checkIfColumnDataSorted(column.cellIndex, 'ascending');            
+                  await personManagementViewPage.checkIfColumnDataSorted(column.cellIndex, 'ascending');
                 });
               }
-            });
+            },
+          );
 
-            test(`Als ${bezeichnung}: Ergebnisliste Benutzer: nicht sortierbare Spalten prüfen`, { tag: [DEV, STAGE] }, async () => {
+          test(
+            `Als ${bezeichnung}: Ergebnisliste Benutzer: nicht sortierbare Spalten prüfen`,
+            { tag: [DEV, STAGE] },
+            async () => {
               await test.step(`Püfen, dass kein Sortier-Icon vorhanden ist`, async () => {
                 await personManagementViewPage.checkIfColumnHeaderSorted('Rolle', 'not-sortable');
                 await personManagementViewPage.checkIfColumnHeaderSorted('Schulzuordnung(en)', 'not-sortable');
                 await personManagementViewPage.checkIfColumnHeaderSorted('Klasse', 'not-sortable');
               });
-            });
-          });
+            },
+          );
+        });
       });
     }
-
-
-    });   
+  });
 });
