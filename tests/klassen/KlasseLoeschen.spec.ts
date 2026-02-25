@@ -77,7 +77,7 @@ let admin : UserInfo;
         const schuelerNachname: string = generateNachname();
         const schuelerIdSPs: string[] = [await getServiceProviderId(page, itslearning)];
         const schuelerRolleName: string = generateRolleName();
-        const klasseId: string = await getKlasseId(page, klasseParams.klassenname);
+        const klasseId: string | undefined = await getKlasseId(page, klasseParams.klassenname);
 
         await createRolleAndPersonWithPersonenkontext(
           page, 
@@ -105,7 +105,7 @@ let admin : UserInfo;
         const schuelerNachname: string = generateNachname();
         const schuelerIdSPs: string[] = [await getServiceProviderId(page, itslearning)];
         const schuelerRolleName: string = generateRolleName();
-        const klasseId: string = await getKlasseId(page, klasseParams.klassenname);
+        const klasseId: string | undefined = await getKlasseId(page, klasseParams.klassenname);
 
         await createRolleAndPersonWithPersonenkontext(
           page, 

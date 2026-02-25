@@ -1,14 +1,14 @@
 import { Locator, Page } from '@playwright/test';
 import { KlasseCreationViewPage } from '../admin/organisationen/klassen/KlasseCreationView.neu.page';
 import { KlasseManagementViewPage } from '../admin/organisationen/klassen/KlasseManagementView.neu.page';
-import { PersonCreationViewPage } from '../admin/personen/creation/PersonCreationView.neu.page';
-import { PersonImportViewPage } from '../admin/personen/PersonImportView.neu.page';
-import { PersonManagementViewPage } from '../admin/personen/PersonManagementView.neu.page';
-import { RolleCreationViewPage } from '../admin/rollen/RolleCreationView.page';
-import { RolleManagementViewPage } from '../admin/rollen/RolleManagementView.page';
 import { SchuleCreationViewPage } from '../admin/organisationen/schulen/SchuleCreationView.neu.page';
 import { SchuleManagementViewPage } from '../admin/organisationen/schulen/SchuleManagementView.neu.page';
+import { PersonCreationViewPage } from '../admin/personen/creation/PersonCreationView.neu.page';
+import { PersonImportViewPage } from '../admin/personen/PersonImportView.page';
+import { PersonManagementViewPage } from '../admin/personen/PersonManagementView.neu.page';
 import { LandesbedienstetenSearchFormPage } from '../admin/personen/search/LandesbedienstetenSearchForm.page';
+import { RolleCreationViewPage } from '../admin/rollen/RolleCreationView.page';
+import { RolleManagementViewPage } from '../admin/rollen/RolleManagementView.page';
 import { StartViewPage } from '../StartView.neu.page';
 
 export class MenuBarPage {
