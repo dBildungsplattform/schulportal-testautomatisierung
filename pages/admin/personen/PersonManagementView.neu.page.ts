@@ -136,10 +136,6 @@ export class PersonManagementViewPage extends AbstractAdminPage {
     return downloadPromise;
   }
 
-  private getKlassenDropdownLocator(): Locator {
-    return this.page.getByTestId('personen-management-klasse-select');
-  }
-
   private getKlassenDropdownLocatorInBulkChangeKlasse(): Locator {
     return this.page.getByTestId('bulk-change-klasse-klasse-select');
   }
