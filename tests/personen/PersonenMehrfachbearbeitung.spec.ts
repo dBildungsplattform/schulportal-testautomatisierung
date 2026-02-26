@@ -160,6 +160,7 @@ interface AdminFixture {
 
         await test.step(`Passwort zurücksetzen-Dialog prüfen und anschließend zurücksetzen`, async () => {
           await personManagementViewPage.setItemsPerPage(5);
+          await personManagementViewPage.checkRowCount(5);
           await personManagementViewPage.toggleSelectAllRows(true);
           await personManagementViewPage.selectMehrfachauswahl('Passwort zurücksetzen');
           await personManagementViewPage.checkPasswortZuruecksetzenDialog();
