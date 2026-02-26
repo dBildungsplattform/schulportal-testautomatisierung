@@ -1,14 +1,16 @@
 import { Page, expect } from '@playwright/test';
+import { oeffentlichLandSH } from '../organisation';
+import { generateDienststellenNr } from '../utils/generateTestdata';
 import { FRONTEND_URL } from './baseApi';
-import { ApiResponse, Configuration } from './generated/runtime';
-import { makeFetchWithPlaywright } from './playwrightFetchAdapter';
 import {
   OrganisationControllerCreateOrganisationRequest,
   OrganisationControllerDeleteOrganisationRequest,
   OrganisationControllerFindOrganizationsRequest,
   OrganisationenApi,
 } from './generated/apis/OrganisationenApi';
-import { CreateOrganisationBodyParams, OrganisationResponse } from './generated/models';
+import { CreateOrganisationBodyParams, OrganisationResponse, OrganisationsTyp } from './generated/models';
+import { ApiResponse, Configuration } from './generated/runtime';
+import { makeFetchWithPlaywright } from './playwrightFetchAdapter';
 
 export function constructOrganisationApi(page: Page): OrganisationenApi {
   const config: Configuration = new Configuration({
@@ -96,13 +98,41 @@ export async function getKlasseId(page: Page, klassennname: string): Promise<str
   }
 }
 
+export async function createSchule(page: Page, name: string, kennung?: string): Promise<string> {
+  try {
+    const traegerId: string = await getOrganisationId(page, oeffentlichLandSH);
+    const createOrganisationBodyParams: CreateOrganisationBodyParams = {
+      administriertVon: traegerId,
+      zugehoerigZu: traegerId,
+      name: name,
+      kennung: kennung ?? generateDienststellenNr(),
+      typ: OrganisationsTyp.Schule,
+    };
+
+    const requestParameters: OrganisationControllerCreateOrganisationRequest = {
+      createOrganisationBodyParams,
+    };
+
+    const organisationApi: OrganisationenApi = constructOrganisationApi(page);
+    const response: ApiResponse<OrganisationResponse> =
+      await organisationApi.organisationControllerCreateOrganisationRaw(requestParameters);
+    expect(response.raw.status).toBe(201);
+
+    const createdSchule: OrganisationResponse = await response.value();
+    return createdSchule.id;
+  } catch (error) {
+    console.error('[ERROR] createSchule failed:', error);
+    throw error;
+  }
+}
+
 export async function createKlasse(page: Page, schuleId: string, name: string): Promise<string> {
   try {
     const createOrganisationBodyParams: CreateOrganisationBodyParams = {
       administriertVon: schuleId,
       zugehoerigZu: schuleId,
       name: name,
-      typ: 'KLASSE',
+      typ: OrganisationsTyp.Klasse,
     };
 
     const requestParameters: OrganisationControllerCreateOrganisationRequest = {
