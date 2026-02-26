@@ -9,7 +9,7 @@ import { constructPersonenApi, constructPersonenFrontendApi } from '../base/api/
 import { constructRolleApi } from '../base/api/rolleApi';
 
 const FRONTEND_URL: string = process.env.FRONTEND_URL ?? '';
-const searchString: string = 'TAuto';
+const testDataPrefix: string = 'TAuto';
 const limit: number = 100;
 const batchSize: number = 20;
 
@@ -63,7 +63,7 @@ export default async function globalTeardown(): Promise<void> {
     await cleanup(
       async () => {
         const resp: PersonFrontendControllerFindPersons200Response = await personFrontendApi.personFrontendControllerFindPersons({
-          suchFilter: searchString,
+          suchFilter: testDataPrefix,
           limit,
         });
         console.log(`${resp.total} personen to delete`)
@@ -80,7 +80,7 @@ export default async function globalTeardown(): Promise<void> {
     await cleanup(
       async () => {
         const wrappedResponse: ApiResponse<RolleWithServiceProvidersResponse[]> = await rolleApi.rolleControllerFindRollenRaw({
-          searchStr: searchString,
+          searchStr: testDataPrefix,
           limit,
         });
         console.log(`${wrappedResponse.raw.headers.get('X-Paging-Total')} rollen to delete`);
@@ -97,7 +97,7 @@ export default async function globalTeardown(): Promise<void> {
     await cleanup(
       async () => {
         const wrappedResponse: ApiResponse<OrganisationResponse[]> = await organisationApi.organisationControllerFindOrganizationsRaw({
-          searchString,
+          searchString: testDataPrefix,
           typ: OrganisationsTyp.Klasse,
           limit,
         });
@@ -115,7 +115,7 @@ export default async function globalTeardown(): Promise<void> {
     await cleanup(
       async () => {
         const wrappedResponse: ApiResponse<OrganisationResponse[]> = await organisationApi.organisationControllerFindOrganizationsRaw({
-          searchString,
+          searchString: testDataPrefix,
           typ: OrganisationsTyp.Schule,
           limit,
         });

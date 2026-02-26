@@ -6,29 +6,32 @@ import { DataTable } from '../../components/DataTable.neu.page';
 import { MenuBarPage } from '../../components/MenuBar.neu.page';
 import { PersonDetailsViewPage } from './details/PersonDetailsView.neu.page';
 import { UserInfo } from '../../../base/api/personApi';
+import { AbstractAdminPage } from '../AbstractAdmin.page';
 
-export class PersonManagementViewPage {
+export class PersonManagementViewPage extends AbstractAdminPage {
   private readonly personTable: DataTable;
   private readonly searchFilter: SearchFilter;
   private readonly organisationAutocomplete: Autocomplete;
   private readonly rolleAutocomplete: Autocomplete;
+  private readonly klasseAutocomplete: Autocomplete;
+  private readonly klasseAutocompleteInBulkVersetzen: Autocomplete;
   public readonly menu: MenuBarPage;
   private readonly table: Locator;
   private readonly schuelerVersetzenDialogCard: Locator;
   private readonly passwortZuruecksetzenDialogCard: Locator;
 
   constructor(protected readonly page: Page) {
+    super(page);
     this.table = this.page.getByTestId('person-table');
     this.personTable = new DataTable(this.page, this.table);
     this.searchFilter = new SearchFilter(this.page);
     this.organisationAutocomplete = new Autocomplete(
       this.page,
-      this.page.getByTestId('person-management-organisation-select')
+      this.page.getByTestId('person-management-organisation-select'),
     );
-    this.rolleAutocomplete = new Autocomplete(
-      this.page,
-      this.page.getByTestId('rolle-select')
-    );
+    this.rolleAutocomplete = new Autocomplete(this.page, this.page.getByTestId('rolle-select'));
+    this.klasseAutocomplete = new Autocomplete(this.page, this.page.getByTestId('personen-management-klasse-select'));
+    this.klasseAutocompleteInBulkVersetzen = new Autocomplete(this.page, this.page.getByTestId('bulk-change-klasse-klasse-select'));
     this.menu = new MenuBarPage(this.page);
     this.schuelerVersetzenDialogCard = this.page.getByTestId('change-klasse-layout-card');
     this.passwortZuruecksetzenDialogCard = this.page.getByTestId('password-reset-layout-card');
@@ -65,7 +68,11 @@ export class PersonManagementViewPage {
   }
 
   public async filterByKlasse(klasse: string): Promise<void> {
-    await this.filterByText(klasse, this.getKlassenDropdownLocator());
+    await this.klasseAutocomplete.searchByTitle(klasse, true);
+  }
+
+  public async resetKlasseFilter(): Promise<void> {
+    await this.klasseAutocomplete.clickClearIcon();
   }
 
   public async filterByStatus(status: string): Promise<void> {
@@ -106,7 +113,8 @@ export class PersonManagementViewPage {
 
   public async selectMehrfachauswahl(option: string): Promise<void> {
     await this.page.getByTestId('benutzer-edit-select').click();
-    await this.personTable.clickDropdownOption(option);
+    const locator: Locator = this.page.getByRole('option', { name: option, exact: false });
+    await locator.click();
   }
 
   public async closeDialog(buttonId: string): Promise<void> {
@@ -114,8 +122,7 @@ export class PersonManagementViewPage {
   }
 
   public async versetzeSchueler(klassenname: string): Promise<void> {
-    await this.getKlassenDropdownLocatorInBulkChangeKlasse().click();
-    await this.page.getByRole('option', { name: klassenname, exact: true }).click();
+    await this.klasseAutocompleteInBulkVersetzen.selectByName(klassenname);
     await this.page.getByTestId('bulk-change-klasse-button').click();
   }
 
@@ -144,7 +151,7 @@ export class PersonManagementViewPage {
     await expect(this.page.getByTestId('reset-filter-button')).toBeVisible();
     await this.organisationAutocomplete.isVisible();
     await expect(this.page.getByTestId('rolle-select')).toBeVisible();
-    await expect(this.getKlassenDropdownLocator()).toBeVisible();
+    await this.klasseAutocomplete.isVisible();
     await expect(this.page.getByTestId('status-select')).toBeVisible();
     await expect(this.page.getByTestId('benutzer-edit-select')).toBeVisible();
     await expect(this.page.getByTestId('search-filter-input')).toBeVisible();
@@ -185,34 +192,32 @@ export class PersonManagementViewPage {
   }
 
   public async checkIfKlassenAreVisibleInDropdown(klassenNamen: string[]): Promise<void> {
-      return this.checkVisibleDropdownOptions(klassenNamen, this.getKlassenDropdownLocator(), true, true);
-  }
-
-  private async checkVisibleDropdownOptions(options: string[], locator: Locator, exactCount: boolean = false, hasHeader?: boolean): Promise<void> {
-    await this.personTable.checkVisibleDropdownOptions(
-      options,
-      locator,
-      exactCount,
-      hasHeader? `${options.length} Klassen gefunden` : undefined,
+    return this.klasseAutocomplete.checkVisibleDropdownOptions(
+      klassenNamen,
+      true,
+      `${klassenNamen.length} Klassen gefunden`,
     );
   }
 
-  public async checkAllDropdownOptionsClickable(klassenNamen: string[]): Promise<void> {
-    await this.personTable.checkAllDropdownOptionsClickable(klassenNamen, this.getKlassenDropdownLocator());
+  public async checkAllKlassenOptionsClickable(klassenNamen: string[]): Promise<void> {
+    await this.klasseAutocomplete.checkAllDropdownOptionsClickable(klassenNamen);
   }
 
   public async checkIfSchuleIsCorrect(schulname: string, schulNr?: string): Promise<void> {
     const expected: string = schulNr ? `${schulNr} (${schulname})` : schulname;
     await this.organisationAutocomplete.checkText(expected);
-    await this.checkIfColumnAlwaysContainsText(7, schulNr ? schulNr : schulname)
+    await this.checkIfColumnAlwaysContainsText(6, schulNr ? schulNr : schulname);
   }
 
   public async checkIfRolleIsCorrect(rolleName: string): Promise<void> {
     await this.rolleAutocomplete.checkText(rolleName);
-    await this.checkIfColumnAlwaysContainsText(6, rolleName)
+    await this.checkIfColumnAlwaysContainsText(5, rolleName);
   }
 
-  public async checkIfColumnHeaderSorted(columnName: string, sortingStatus: 'ascending' | 'descending' | 'not-sortable'): Promise<void> {
+  public async checkIfColumnHeaderSorted(
+    columnName: string,
+    sortingStatus: 'ascending' | 'descending' | 'not-sortable',
+  ): Promise<void> {
     await this.personTable.checkIfColumnHeaderSorted(columnName, sortingStatus);
   }
 
@@ -231,12 +236,7 @@ export class PersonManagementViewPage {
     await expect(this.schuelerVersetzenDialogCard.getByTestId('bulk-change-klasse-button')).toBeVisible();
     await expect(this.schuelerVersetzenDialogCard.getByTestId('bulk-change-klasse-discard-button')).toBeVisible();
 
-    await this.checkVisibleDropdownOptions(
-      klassenNamen,
-      this.getKlassenDropdownLocatorInBulkChangeKlasse(),
-      true,
-      false
-    );
+    await this.klasseAutocompleteInBulkVersetzen.checkVisibleDropdownOptions(klassenNamen, true);
   }
 
   public async checkSchuelerVersetzenInProgress(): Promise<void> {
@@ -263,18 +263,18 @@ export class PersonManagementViewPage {
     
     const schuleError: string = 'Bitte wählen Sie im Filter genau eine Schule aus, um die Aktion durchzuführen.';
     const rolleError: string = 'Bitte wählen Sie nur Benutzer mit einer Schülerrolle aus, um die Aktion durchzuführen.';
-    
+
     if (expectedErrors === 'schule') {
-      await expect(dialogText).toContain(schuleError);
-      await expect(dialogText).not.toContain(rolleError);
+      expect(dialogText).toContain(schuleError);
+      expect(dialogText).not.toContain(rolleError);
     } else if (expectedErrors === 'rolle') {
-      await expect(dialogText).toContain(rolleError);
-      await expect(dialogText).not.toContain(schuleError);
+      expect(dialogText).toContain(rolleError);
+      expect(dialogText).not.toContain(schuleError);
     } else {
-      await expect(dialogText).toContain(schuleError);
-      await expect(dialogText).toContain(rolleError);
+      expect(dialogText).toContain(schuleError);
+      expect(dialogText).toContain(rolleError);
     }
-    
+
     await expect(this.page.getByTestId('invalid-selection-alert-dialog-cancel-button')).toBeVisible();
   }
 
