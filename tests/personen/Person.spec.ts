@@ -393,6 +393,9 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     'Eine Lehrkraft anlegen und Ihren Kontext entfernen dann wieder hinzufügen und den LDAP Inhalt vollständig prüfen',
     { tag: [DEV] },
     async ({ page }: PlaywrightTestArgs) => {
+
+      test.slow();
+
       const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
       let personDetailsView: PersonDetailsViewPage = new PersonDetailsViewPage(page);
       const rolle: string = 'Lehrkraft';
@@ -454,6 +457,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       });
 
       const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
+      await personManagementView.waitForData();
       personDetailsView = await test.step(`Kontextlose Person suchen und Gesamtübersicht öffnen`, async () => {
         await personManagementView.searchBySuchfeld(createdBenutzername);
         return await personManagementView.openGesamtuebersichtPerson(page, createdBenutzername);
@@ -492,6 +496,9 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     'Eine Lehrkraft anlegen in der Rolle Landesadmin und die Bestätigungsseite sowie den LDAP Inhalt vollständig prüfen',
     { tag: [DEV] },
     async ({ page }: PlaywrightTestArgs) => {
+
+      test.slow();
+
       const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
       const rolleNames: string[] = ['Lehrkraft'];
       const vorname: string = generateVorname();

@@ -10,7 +10,7 @@ export interface TestIdsType {
   klasseSelect: string;
 }
 
-export abstract class BaseWorkflowPage {
+export abstract class BaseZuordnungWorkflowPage {
   protected abstract readonly ENDPOINT: string;
   protected abstract readonly TEST_IDS: TestIdsType;
 
@@ -44,14 +44,12 @@ export abstract class BaseWorkflowPage {
   public async submit(): Promise<ZuordnungenPage> {
     const submitButton: Locator = this.page.getByTestId(this.getSubmitButtonTestId());
     await submitButton.click();
-    await this.waitForResponse();
     return new ZuordnungenPage(this.page);
   }
 
   public async confirm(): Promise<ZuordnungenPage> {
     const confirmButton: Locator = this.page.getByTestId(this.getConfirmButtonTestId());
     await confirmButton.click();
-    await this.waitForResponse();
     return new ZuordnungenPage(this.page);
   }
 

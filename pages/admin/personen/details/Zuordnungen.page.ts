@@ -2,7 +2,7 @@ import { expect, Page } from '@playwright/test';
 import { AddZuordnungWorkflowPage } from './zuordnung-workflows/AddZuordnungWorkflow.page';
 import { BefristungWorkflowPage } from './zuordnung-workflows/BefristungWorkflow.page';
 import { VersetzenWorkflowPage } from './zuordnung-workflows/VersetzenWorkflow.page';
-import { BaseWorkflowPage } from './zuordnung-workflows/BaseWorkflow.page';
+import { BaseZuordnungWorkflowPage } from './zuordnung-workflows/BaseWorkflow.page';
 
 export interface ZuordnungCreationParams {
   rolle: string;
@@ -11,19 +11,20 @@ export interface ZuordnungCreationParams {
   kopers?: string;
   befristung?: string;
 }
+
 export interface ZuordnungValidationParams {
   organisation: string;
   dstNr?: string;
   rolle?: string;
+  klasse?: string;
   befristung?: string;
   status?: 'unchanged' | 'delete' | 'create';
 }
 
 export class ZuordnungenPage {
-
   public constructor(private readonly page: Page,
-  private readonly befristungWorkflowFactory: (page: Page) => BefristungWorkflowPage = (p: Page) => new BefristungWorkflowPage(p),
   private readonly addZuordnungWorkflowFactory: (page: Page) => AddZuordnungWorkflowPage = (p: Page) => new AddZuordnungWorkflowPage(p),
+  private readonly befristungWorkflowFactory: (page: Page) => BefristungWorkflowPage = (p: Page) => new BefristungWorkflowPage(p),
   private readonly versetzenWorkflowFactory: (page: Page) => VersetzenWorkflowPage = (p: Page) => new VersetzenWorkflowPage(p)
 ) {}
 
@@ -77,9 +78,9 @@ export class ZuordnungenPage {
     await this.savePendingChanges(workflowPage);
   }
 
-  public async changeKlasse(from: string, to: string): Promise<void> {
+  public async changeKlasse(dstNr: string , schule: string, rollename: string, from: string, to: string): Promise<void> {
     await this.editZuordnungen();
-    await this.selectZuordnungToEdit({ organisation: from });
+    await this.selectZuordnungToEdit({dstNr, organisation: schule, rolle: rollename, klasse: from });
 
     const workflowPage: VersetzenWorkflowPage = await this.startVersetzenWorkflow();
     await workflowPage.selectKlasse(to);
@@ -89,7 +90,7 @@ export class ZuordnungenPage {
     await this.savePendingChanges(workflowPage);
   }
 
-  private async savePendingChanges(workflowPage: BaseWorkflowPage): Promise<void> {
+  private async savePendingChanges(workflowPage: BaseZuordnungWorkflowPage): Promise<void> {
     await this.page.getByTestId('zuordnung-changes-save-button').click();
     await workflowPage.closeSuccessDialog();
   }
@@ -103,6 +104,9 @@ export class ZuordnungenPage {
     }
     if (params.rolle) {
       expectedText += ` ${params.rolle}`;
+    }
+    if(params.klasse) {
+      expectedText += ` ${params.klasse}`;
     }
     if (params.befristung) {
       expectedText += ` (befristet bis ${params.befristung})`;

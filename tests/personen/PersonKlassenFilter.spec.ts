@@ -28,7 +28,6 @@ import { HeaderPage } from '../../pages/components/Header.neu.page';
 ].forEach(({ rolleName, bezeichnung }: { rolleName: string; bezeichnung: string }) => {
   test.describe(`Testfälle für den Klassenfilter als ${bezeichnung}: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
     let header: HeaderPage;
-    let loginPage: LoginViewPage;
     let personManagementViewPage: PersonManagementViewPage;
     let schuleParams: SchuleCreationParams;
     let schuleId: string;
