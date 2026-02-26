@@ -2,7 +2,7 @@ import { expect, Page } from '@playwright/test';
 import { AddZuordnungWorkflowPage } from './zuordnung-workflows/AddZuordnungWorkflow.page';
 import { BefristungWorkflowPage } from './zuordnung-workflows/BefristungWorkflow.page';
 import { VersetzenWorkflowPage } from './zuordnung-workflows/VersetzenWorkflow.page';
-import { BaseWorkflowPage } from './zuordnung-workflows/BaseWorkflow.page';
+import { BaseZuordnungWorkflowPage } from './zuordnung-workflows/BaseWorkflow.page';
 
 export interface ZuordnungCreationParams {
   rolle: string;
@@ -90,7 +90,7 @@ export class ZuordnungenPage {
     await this.savePendingChanges(workflowPage);
   }
 
-  private async savePendingChanges(workflowPage: BaseWorkflowPage): Promise<void> {
+  private async savePendingChanges(workflowPage: BaseZuordnungWorkflowPage): Promise<void> {
     await this.page.getByTestId('zuordnung-changes-save-button').click();
     await workflowPage.closeSuccessDialog();
   }

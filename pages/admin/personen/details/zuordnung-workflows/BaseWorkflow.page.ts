@@ -10,7 +10,7 @@ export interface TestIdsType {
   klasseSelect: string;
 }
 
-export abstract class BaseWorkflowPage {
+export abstract class BaseZuordnungWorkflowPage {
   protected abstract readonly ENDPOINT: string;
   protected abstract readonly TEST_IDS: TestIdsType;
 

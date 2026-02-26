@@ -1,8 +1,8 @@
 import { expect, Page } from '@playwright/test';
-import { BaseWorkflowPage, TestIdsType } from './BaseWorkflow.page';
+import { BaseZuordnungWorkflowPage, TestIdsType } from './BaseWorkflow.page';
 import { Autocomplete } from '../../../../components/Autocomplete';
 
-export class VersetzenWorkflowPage extends BaseWorkflowPage {
+export class VersetzenWorkflowPage extends BaseZuordnungWorkflowPage {
   /* add global locators here */
   private readonly schule: Autocomplete;
   private readonly klasse: Autocomplete;
