@@ -1,6 +1,6 @@
-import test, { Download, expect, PlaywrightTestArgs } from '@playwright/test';
+import test, { Download, PlaywrightTestArgs } from '@playwright/test';
 import { mkdtempSync } from 'node:fs';
-import { readFile, writeFile } from 'node:fs/promises';
+import { writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, sep } from 'node:path';
 import { createKlasse, createSchule } from '../../base/api/organisationApi';
