@@ -5,6 +5,7 @@ import { PersonCreationSuccessPage } from './PersonCreationSuccess.page';
 
 export interface PersonCreationParams {
   organisation: string;
+  dstNr?: string;
   rollen: string[];
   vorname: string;
   nachname: string;
@@ -31,7 +32,11 @@ export class PersonCreationViewPage {
     const vornameInput: Locator = this.page.getByTestId('vorname-input').locator('.v-field__input');
     const nachnameInput: Locator = this.page.getByTestId('familienname-input').locator('.v-field__input');
 
-    await this.organisationAutocomplete.searchByTitle(params.organisation, false, PersonCreationViewPage.ENDPOINT);
+    if (params.dstNr) {
+      await this.organisationAutocomplete.searchByTitle(params.organisation, false, PersonCreationViewPage.ENDPOINT);
+    } else {
+      await this.organisationAutocomplete.searchByTitle(params.organisation, true, PersonCreationViewPage.ENDPOINT);
+    }
 
     await Promise.all(
       params.rollen.map((rolle: string) => this.rolleAutocomplete.searchByTitle(rolle, true, PersonCreationViewPage.ENDPOINT))

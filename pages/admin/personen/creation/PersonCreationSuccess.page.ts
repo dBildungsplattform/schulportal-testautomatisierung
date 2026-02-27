@@ -1,16 +1,20 @@
 import { expect, Locator, Page } from '@playwright/test';
 import { PersonCreationParams } from './PersonCreationView.neu.page';
+import { AbstractAdminPage } from '../../AbstractAdmin.page';
 
 export type PersonCreationSuccessValidationParams = PersonCreationParams & {
   dstNr?: string;
 };
 
-export class PersonCreationSuccessPage {
-  constructor(protected readonly page: Page) {}
+export class PersonCreationSuccessPage extends AbstractAdminPage {
+  constructor(protected readonly page: Page) {
+    super(page);
+  }
 
   /* actions */
-  public async waitForPageLoad(): Promise<void> {
+  public async waitForPageLoad(): Promise<typeof this> {
     await this.page.getByTestId('person-success-text').waitFor({ state: 'visible' });
+    return this;
   }
 
   private getBenutzernameField(): Locator{
@@ -18,8 +22,18 @@ export class PersonCreationSuccessPage {
   }
 
   public async getBenutzername(): Promise<string> {
-    const benutzernameField: Locator = await this.getBenutzernameField();
+    const benutzernameField: Locator = this.getBenutzernameField();
     return benutzernameField.innerText();
+  }
+
+  private getPasswordField(): Locator{
+    return this.page.getByTestId('password-output-field').locator('input');
+  }
+
+  public async getPassword(): Promise<string> {
+    await this.page.getByTestId('show-password-icon').click();
+    const passwordField: Locator = this.getPasswordField();
+    return passwordField.inputValue();
   }
 
   /* assertions */
@@ -45,7 +59,7 @@ export class PersonCreationSuccessPage {
     await expect(this.getBenutzernameField()).toContainText('tautopw');
 
     await expect(this.page.getByTestId('created-person-start-password-label')).toBeVisible();
-    await expect(this.page.getByTestId('password-output-field').locator('input')).toBeVisible();
+    await expect(this.getPasswordField()).toBeVisible();
 
     await expect(this.page.getByTestId('created-person-organisation-label')).toBeVisible();
     if (params.dstNr)
