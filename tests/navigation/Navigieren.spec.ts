@@ -14,8 +14,6 @@ ROLLEN_CASES.forEach((rolle: {
   test.describe(
     `MenuBar – ${rolle.name}: ENV=${process.env.ENV}`,
     () => {
-
-
       test.beforeEach(async ({ page }: { page: Page }) => {
 
         const loginPage: LoginViewPage = await freshLoginPage(page);
