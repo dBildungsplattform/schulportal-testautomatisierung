@@ -1,7 +1,7 @@
 import { expect, type Locator, Page } from '@playwright/test';
-import { BaseWorkflowPage, TestIdsType } from './BaseWorkflow.page';
+import { BaseZuordnungWorkflowPage, TestIdsType } from './BaseWorkflow.page';
 
-export class BefristungWorkflowPage extends BaseWorkflowPage {
+export class BefristungWorkflowPage extends BaseZuordnungWorkflowPage {
   /* add global locators here */
   private readonly unbefristetRadioButton: Locator;
   private readonly schuljahresendeRadioButton: Locator;
