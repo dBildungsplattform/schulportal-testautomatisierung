@@ -42,7 +42,7 @@ describe(`Schüler versetzen, Umgebung ${process.env.ENV}, URL: ${process.env.FR
         klasseNameNew = generateKlassenname();
       });
 
-      await test.step('Schüler mit Rolle und 2 Klassen anlegen', async () => {
+      await test.step('Schüler in aktueller Klasse anlegen, neue Zielklasse erstellen', async () => {
         const idSchule: string = await getOrganisationId(page, testschuleName);
         const klasseIdCurrent: string = await createKlasse(page, idSchule, klasseNameCurrent);
         
