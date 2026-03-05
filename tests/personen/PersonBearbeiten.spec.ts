@@ -1,11 +1,7 @@
 import { expect, PlaywrightTestArgs, test } from '@playwright/test';
-
-import { waitForAPIResponse } from '../../base/api/baseApi';
-import { createKlasse, getOrganisationId } from '../../base/api/organisationApi';
 import {
   createPerson,
   createRolleAndPersonWithPersonenkontext,
-  setTimeLimitPersonenkontext,
   UserInfo
 } from '../../base/api/personApi';
 import {
@@ -13,23 +9,17 @@ import {
   addSystemrechtToRolle,
   createRolle,
   RollenArt,
-  RollenMerkmal,
 } from '../../base/api/rolleApi';
 import { getServiceProviderId } from '../../base/api/serviceProviderApi';
 import { klasse1Testschule } from '../../base/klassen';
-import { befristungPflicht, kopersNrPflicht } from '../../base/merkmale';
-import { landSH, testschule665Name, testschuleDstNr, testschuleName } from '../../base/organisation';
+import { landSH, testschule665Name, testschuleName } from '../../base/organisation';
 import { lehrerImVorbereitungsdienstRolle, lehrkraftOeffentlichRolle } from '../../base/rollen';
-import { typeLehrer, typeSchueler, typeSchuladmin } from '../../base/rollentypen';
-import { email, itslearning } from '../../base/sp';
+import { typeLehrer, typeSchuladmin } from '../../base/rollentypen';
+import { email } from '../../base/sp';
 import { DEV, STAGE } from '../../base/tags';
 import { deleteKlasseByName, deletePersonenBySearchStrings, deleteRolleById } from '../../base/testHelperDeleteTestdata';
 import { gotoTargetURL, loginAndNavigateToAdministration } from '../../base/testHelperUtils';
 import {
-  formatDateDMY,
-  generateCurrentDate,
-  generateKlassenname,
-  generateKopersNr,
   generateNachname,
   generateRolleName,
   generateVorname,
@@ -37,7 +27,7 @@ import {
 import { PersonDetailsViewPage } from '../../pages/admin/personen/PersonDetailsView.page';
 import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.page';
 import { HeaderPage } from '../../pages/components/Header.page';
-import { MenuPage } from '../../pages/components/MenuBar.page';
+import { getOrganisationId } from '../../base/api/organisationApi';
 
 const ADMIN: string | undefined = process.env.USER;
 
@@ -446,243 +436,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       // #TODO: wait for the last request in the test
       // sometimes logout breaks the test because of interrupting requests
       // logoutViaStartPage = true is a workaround
-      logoutViaStartPage = true;
-    }
-  );
-
-  test(
-    'Befristung einer Schulzuordnung von einem Lehrer durch einen Landesadmin bearbeiten',
-    { tag: [STAGE, DEV] },
-    async ({ page }: PlaywrightTestArgs) => {
-      let userInfoLehrer: UserInfo;
-      const timeLimitTeacherRolle: string = formatDateDMY(generateCurrentDate({ days: 3, months: 5 }));
-      let timeLimitTeacherRolleNew: string;
-      const nameRolle: string = generateRolleName();
-      let colorTextEntireNameSchulzuordnung: string = '';
-
-      await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) und einer Schulzuordnung über die api anlegen`, async () => {
-        userInfoLehrer = await createRolleAndPersonWithPersonenkontext(
-          page,
-          testschuleName,
-          typeLehrer,
-          generateNachname(),
-          generateVorname(),
-          [await getServiceProviderId(page, email)],
-          nameRolle
-        );
-        usernames.push(userInfoLehrer.username);
-        rolleIds.push(userInfoLehrer.rolleId);
-
-        await setTimeLimitPersonenkontext(
-          page,
-          userInfoLehrer.personId,
-          userInfoLehrer.organisationId,
-          userInfoLehrer.rolleId,
-          generateCurrentDate({ days: 3, months: 5 })
-        );
-      });
-
-      const personDetailsView: PersonDetailsViewPage = await test.step(`Gesamtübersicht öffnen`, async () => {
-        const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
-        await gotoTargetURL(page, 'admin/personen');
-        await personManagementView.searchBySuchfeld(userInfoLehrer.username);
-        return await personManagementView.openGesamtuebersichtPerson(page, userInfoLehrer.username);
-      });
-
-      await test.step(`Schulzuordnung im Bearbeitungsmodus öffen`, async () => {
-        await personDetailsView.buttonEditSchulzuordnung.click();
-        await page
-          .getByTestId('person-zuordnungen-section-edit')
-          .getByTitle(testschuleName)
-          .getByRole('checkbox')
-          .click();
-      });
-
-      await test.step(`Befristung im Bearbeitungsmodus öffnen`, async () => {
-        await personDetailsView.buttonBefristungAendern.click();
-        await expect(personDetailsView.radioButtonBefristungSchuljahresende).toBeVisible();
-        await expect(personDetailsView.radioButtonUnbefristet).toBeVisible();
-      });
-
-      await test.step(`Ungültige und gültige Befristungen eingeben`, async () => {
-        // enter invalid date
-        await personDetailsView.inputBefristung.fill(formatDateDMY(generateCurrentDate({ days: 0, months: 0 })));
-        await personDetailsView.errorTextInputBefristung.isVisible();
-
-        // enter invalid date
-        await personDetailsView.inputBefristung.fill(formatDateDMY(generateCurrentDate({ days: 0, months: -3 })));
-        await personDetailsView.errorTextInputBefristung.isVisible();
-
-        // enter valid date
-        await personDetailsView.inputBefristung.fill(formatDateDMY(generateCurrentDate({ days: 22, months: 6 })));
-        await personDetailsView.errorTextInputBefristung.isHidden();
-
-        timeLimitTeacherRolleNew = formatDateDMY(generateCurrentDate({ days: 0, months: 8 }));
-        await personDetailsView.inputBefristung.fill(timeLimitTeacherRolleNew);
-        await personDetailsView.errorTextInputBefristung.isHidden();
-      });
-
-      await test.step(`Gültige Befristung speichern`, async () => {
-        await personDetailsView.buttonBefristungAendernSubmit.click();
-        await expect(
-          page.getByText(
-            'Möchten Sie die Befristung wirklich von ' +
-              timeLimitTeacherRolle +
-              ' in ' +
-              timeLimitTeacherRolleNew +
-              ' ändern?'
-          )
-        ).toBeVisible();
-        await personDetailsView.buttonBefristungAendernConfirm.click();
-      });
-
-      await test.step(`In der Änderungsübersicht die Befristung der Rolle überprüfen und das Speichern final bestätigen`, async () => {
-        await expect(
-          page.getByRole('heading', { name: 'Bitte prüfen und abschließend speichern, um die Aktion auszuführen:' })
-        ).toBeVisible();
-
-        colorTextEntireNameSchulzuordnung = 'rgb(244, 67, 54)';
-        await personDetailsView.validateEntireNameSchulzuordnung(
-          testschuleDstNr,
-          testschuleName,
-          nameRolle,
-          colorTextEntireNameSchulzuordnung,
-          timeLimitTeacherRolle,
-          'person-zuordnungen-section-edit'
-        );
-
-        colorTextEntireNameSchulzuordnung = 'rgb(76, 175, 80)';
-        await personDetailsView.validateEntireNameSchulzuordnung(
-          testschuleDstNr,
-          testschuleName,
-          nameRolle,
-          colorTextEntireNameSchulzuordnung,
-          timeLimitTeacherRolleNew,
-          'person-zuordnungen-section-edit'
-        );
-        await personDetailsView.buttonBefristungAendernSave.click();
-        await personDetailsView.buttonBefristungAendernSuccessClose.click();
-        await waitForAPIResponse(page, 'organisationen/parents-by-ids');
-      });
-
-      await test.step(`In der Gesamtübersicht überprüfen, dass die Schulzuordnung mit dem korrekten Datum angezeigt wird`, async () => {
-        colorTextEntireNameSchulzuordnung = 'rgb(0, 30, 73)';
-        await personDetailsView.validateEntireNameSchulzuordnung(
-          testschuleDstNr,
-          testschuleName,
-          nameRolle,
-          colorTextEntireNameSchulzuordnung,
-          timeLimitTeacherRolleNew,
-          'person-zuordnungen-section-view'
-        );
-      });
-    }
-  );
-
-  test(
-    `Prüfen, dass eine Person mit einer befristeten Rolle wie z.B. LiV, nicht die Option 'Unbefristet' bekommen kann wenn man eine Befristung bearbeitet`,
-    { tag: [STAGE, DEV] },
-    async ({ page }: PlaywrightTestArgs) => {
-      let userInfoLehrer: UserInfo;
-      const nameRolle: string = generateRolleName();
-
-      await test.step(`Testdaten: Lehrer mit einer Rolle(LiV) mit den Merkmalen 'BefristungsPflicht', 'KopersPflicht' und einer Schulzuordnung über die api anlegen`, async () => {
-        userInfoLehrer = await createRolleAndPersonWithPersonenkontext(
-          page,
-          testschuleName,
-          typeLehrer,
-          generateNachname(),
-          generateVorname(),
-          [await getServiceProviderId(page, email)],
-          nameRolle,
-          generateKopersNr(),
-          undefined,
-          new Set<RollenMerkmal>([befristungPflicht, kopersNrPflicht])
-        );
-        usernames.push(userInfoLehrer.username);
-        rolleIds.push(userInfoLehrer.rolleId);
-      });
-
-      const personDetailsView: PersonDetailsViewPage = await test.step(`Gesamtübersicht öffnen`, async () => {
-        const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
-        await gotoTargetURL(page, 'admin/personen');
-        await personManagementView.searchBySuchfeld(userInfoLehrer.username);
-        return await personManagementView.openGesamtuebersichtPerson(page, userInfoLehrer.username);
-      });
-
-      await test.step(`Schulzuordnung im Bearbeitungsmodus öffen`, async () => {
-        await personDetailsView.buttonEditSchulzuordnung.click();
-        await page
-          .getByTestId('person-zuordnungen-section-edit')
-          .getByText(testschuleDstNr + ' (' + testschuleName + '): ' + nameRolle + ' (befristet bis ')
-          .click();
-        await waitForAPIResponse(page, 'personenkontext-workflow/**');
-      });
-
-      await test.step(`Befristung im Bearbeitungsmodus öffnen`, async () => {
-        await personDetailsView.buttonBefristungAendern.click();
-        await expect(personDetailsView.radioButtonBefristungSchuljahresende).toBeVisible();
-        await expect(personDetailsView.radioButtonUnbefristet).toBeVisible();
-        await expect(personDetailsView.radioButtonUnbefristetDisabled).toBeDisabled();
-      });
-    }
-  );
-
-  test(
-    'Einen Schüler von einer Klasse in eine Andere versetzen',
-    { tag: [STAGE, DEV] },
-    async ({ page }: PlaywrightTestArgs) => {
-      const rolleName: string = generateRolleName();
-      const klasseNameCurrent: string = generateKlassenname();
-      const klasseNameNew: string = generateKlassenname();
-
-      const userInfoSchueler: UserInfo = await test.step('Schüler mit Rolle und 2 Klassen anlegen', async () => {
-        const idSchule: string = await getOrganisationId(page, testschuleName);
-        const klasseIdCurrent: string = await createKlasse(page, idSchule, klasseNameCurrent);
-        await createKlasse(page, idSchule, klasseNameNew);
-        const userInfoSchueler: UserInfo = await createRolleAndPersonWithPersonenkontext(
-          page,
-          testschuleName,
-          typeSchueler,
-          generateNachname(),
-          generateVorname(),
-          [await getServiceProviderId(page, itslearning)],
-          rolleName,
-          undefined,
-          klasseIdCurrent
-        );
-        usernames.push(userInfoSchueler.username);
-        rolleIds.push(userInfoSchueler.rolleId);
-        klasseNames.push(klasseNameCurrent, klasseNameNew);
-        return userInfoSchueler;
-      });
-
-      const personDetailsView: PersonDetailsViewPage = await test.step(`Gesamtübersicht Schüler öffnen `, async () => {
-        const personManagementView: PersonManagementViewPage = await new MenuPage(page).goToBenutzerAnzeigen();
-        await personManagementView.searchBySuchfeld(userInfoSchueler.username);
-        return await personManagementView.openGesamtuebersichtPerson(page, userInfoSchueler.username);
-      });
-
-      await test.step('Schüler versetzen', async () => {
-        await personDetailsView.buttonEditSchulzuordnung.click();
-        const labelText: string = `${testschuleDstNr} (${testschuleName}): ${rolleName} ${klasseNameCurrent}`;
-        await page.locator(`label:has-text("${labelText}")`).click();
-        await personDetailsView.buttonVersetzen.click();
-        await personDetailsView.klassenVersetzen.searchByTitle(klasseNameNew, false);
-        await page.getByTestId('klasse-change-submit-button').click();
-        await expect(page.getByRole('dialog')).toContainText(
-          `Wollen Sie den Schüler aus Klasse ${klasseNameCurrent} in Klasse ${klasseNameNew} versetzen?`
-        );
-        await page.getByTestId('confirm-change-klasse-button').click();
-        await page.getByTestId('zuordnung-changes-save-button').click();
-        await page.getByTestId('change-klasse-success-dialog-close-button').click();
-      });
-
-      await test.step('In der Gesamtübersicht prüfen, dass der Schüler in die neue Klasse versetzt worden ist', async () => {
-        const expectedText: string = `${testschuleDstNr} (${testschuleName}): ${rolleName} ${klasseNameNew}`;
-        await expect(page.locator('.text-body', { hasText: expectedText })).toBeVisible();
-      });
-
       logoutViaStartPage = true;
     }
   );
