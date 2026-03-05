@@ -1,12 +1,12 @@
-import { expect, Locator, Page, Download } from '@playwright/test';
-import * as fs from 'fs';
+import { Download, expect, Locator, Page } from '@playwright/test';
+import * as fs from 'node:fs';
+import { UserInfo } from '../../../base/api/personApi';
 import { Autocomplete } from '../../components/Autocomplete';
-import { SearchFilter } from '../../components/SearchFilter';
 import { DataTable } from '../../components/DataTable.neu.page';
 import { MenuBarPage } from '../../components/MenuBar.neu.page';
-import { PersonDetailsViewPage } from './details/PersonDetailsView.neu.page';
-import { UserInfo } from '../../../base/api/personApi';
+import { SearchFilter } from '../../components/SearchFilter';
 import { AbstractAdminPage } from '../AbstractAdmin.page';
+import { PersonDetailsViewPage } from './details/PersonDetailsView.neu.page';
 
 export class PersonManagementViewPage extends AbstractAdminPage {
   private readonly personTable: DataTable;
