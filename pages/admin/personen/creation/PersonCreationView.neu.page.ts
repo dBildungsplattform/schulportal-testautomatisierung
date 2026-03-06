@@ -1,6 +1,6 @@
 import { expect, type Locator, Page } from '@playwright/test';
-import { Autocomplete } from '../../../components/Autocomplete';
 import { waitForAPIResponse } from '../../../../base/api/baseApi';
+import { Autocomplete } from '../../../components/Autocomplete';
 import { PersonCreationSuccessPage } from './PersonCreationSuccess.page';
 
 export interface PersonCreationParams {
@@ -60,11 +60,7 @@ export class PersonCreationViewPage {
       }
     }
 
-    await Promise.all(
-      params.rollen.map((rolle: string) =>
-        this.rolleAutocomplete.searchByTitle(rolle, true, PersonCreationViewPage.ENDPOINT),
-      ),
-    );
+    await this.rolleAutocomplete.searchAndSelectMultipleByTitle(params.rollen);
 
     await vornameInput.waitFor({ state: 'visible' });
     await vornameInput.fill(params.vorname);

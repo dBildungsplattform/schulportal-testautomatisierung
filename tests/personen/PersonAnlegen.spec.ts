@@ -1,6 +1,7 @@
 import test, { PlaywrightTestArgs } from '@playwright/test';
-import { createKlasse, createSchule } from '../../base/api/organisationApi';
+import { createKlasse, createSchule, getOrganisationId } from '../../base/api/organisationApi';
 import { createPersonWithPersonenkontext, UserInfo } from '../../base/api/personApi';
+import { createRolle, RollenArt } from '../../base/api/rolleApi';
 import { landSH } from '../../base/organisation';
 import {
   landesadminRolle,
@@ -16,6 +17,7 @@ import {
   generateKlassenname,
   generateKopersNr,
   generateNachname,
+  generateRolleName,
   generateSchulname,
   generateVorname,
 } from '../../base/utils/generateTestdata';
@@ -126,6 +128,80 @@ test.describe(`Testfälle für die Anlage von Personen`, () => {
           });
         },
       );
+
+      test('Mehrere Benutzer hintereinander anlegen', { tag: [DEV, STAGE] }, async ({ page }: PlaywrightTestArgs) => {
+        const personenParameters: PersonCreationSuccessValidationParams[] = [
+          {
+            nachname: generateNachname(),
+            vorname: generateVorname(),
+            rollen: [schuelerRolle],
+            organisation: schuleName,
+            dstNr: schuleDstNr,
+            klasse: generateKlassenname(),
+          },
+          {
+            nachname: generateNachname(),
+            vorname: generateVorname(),
+            rollen: [lehrkraftOeffentlichRolle],
+            organisation: schuleName,
+            dstNr: schuleDstNr,
+            kopersnr: generateKopersNr(),
+          },
+          {
+            nachname: generateNachname(),
+            vorname: generateVorname(),
+            rollen: [lehrkraftOeffentlichRolle],
+            organisation: schuleName,
+            dstNr: schuleDstNr,
+            kopersnr: generateKopersNr(),
+          },
+        ];
+        await test.step('Klasse anlegen', async () => {
+          await Promise.all(
+            personenParameters.map(
+              (params: PersonCreationSuccessValidationParams) =>
+                params.klasse && createKlasse(page, schuleId, params.klasse),
+            ),
+          );
+        });
+
+        for (const [index, params] of personenParameters.entries()) {
+          await test.step(`Nutzer ${index + 1} anlegen und prüfen`, async () => {
+            await personCreationViewPage.fillForm(params);
+            const successPage: PersonCreationSuccessPage = await personCreationViewPage.submit();
+            await successPage.assertSuccessfulCreation(params);
+            personCreationViewPage = await successPage.createAnotherPerson();
+          });
+        }
+      });
+
+      test('Benutzer mit mehreren Rollen anlegen', { tag: [DEV, STAGE] }, async ({ page }: PlaywrightTestArgs) => {
+        const params: PersonCreationSuccessValidationParams = {
+          nachname: generateNachname(),
+          vorname: generateVorname(),
+          rollen: [generateRolleName(), generateRolleName(), generateRolleName()],
+          organisation: schuleName,
+          dstNr: schuleDstNr,
+        };
+
+        await test.step('Rollen anlegen', async () => {
+          const orgaId: string = await getOrganisationId(page, schuleName);
+          await Promise.all(params.rollen.map((name: string) => createRolle(page, RollenArt.Lehr, orgaId, name)));
+        });
+
+        const personManagementViewPage: PersonManagementViewPage =
+          await test.step(`Nutzer anlegen und prüfen`, async () => {
+            await personCreationViewPage.fillForm(params);
+            const successPage: PersonCreationSuccessPage = await personCreationViewPage.submit();
+            await successPage.assertSuccessfulCreation(params);
+            return successPage.backToList();
+          });
+
+        await test.step('Neuen Benutzer in Übersicht prüfen', async () => {
+          await personManagementViewPage.searchByText(params.vorname);
+          await personManagementViewPage.assertThatPersonExists(params.vorname);
+        });
+      });
     });
 
     test.describe(`Landesspezifische Rollen anlegen`, () => {

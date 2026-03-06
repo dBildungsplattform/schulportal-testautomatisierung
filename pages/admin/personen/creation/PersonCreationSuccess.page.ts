@@ -1,6 +1,7 @@
 import { expect, Locator, Page } from '@playwright/test';
-import { PersonCreationMode, PersonCreationParams } from './PersonCreationView.neu.page';
 import { AbstractAdminPage } from '../../AbstractAdmin.page';
+import { PersonManagementViewPage } from '../PersonManagementView.neu.page';
+import { PersonCreationMode, PersonCreationParams, PersonCreationViewPage } from './PersonCreationView.neu.page';
 
 export type PersonCreationSuccessValidationParams = PersonCreationParams & {
   organisation: string;
@@ -38,6 +39,16 @@ export class PersonCreationSuccessPage extends AbstractAdminPage {
     await this.page.getByTestId('show-password-icon').click();
     const passwordField: Locator = this.getPasswordField();
     return passwordField.inputValue();
+  }
+
+  public async backToList(): Promise<PersonManagementViewPage> {
+    await this.page.getByTestId('back-to-list-button').click();
+    return new PersonManagementViewPage(this.page).waitForPageLoad();
+  }
+
+  public async createAnotherPerson(): Promise<PersonCreationViewPage> {
+    await this.page.getByTestId('create-another-person-button').click();
+    return new PersonCreationViewPage(this.page, this.mode).waitForPageLoad();
   }
 
   /* assertions */
