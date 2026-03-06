@@ -1,7 +1,7 @@
 import { expect, Page } from '@playwright/test';
 import { PersonManagementViewPage } from '../PersonManagementView.neu.page';
 import { AddZuordnungWorkflowPage } from './zuordnung-workflows/AddZuordnungWorkflow.page';
-import { BaseWorkflowPage } from './zuordnung-workflows/BaseWorkflow.page';
+import { BaseZuordnungWorkflowPage } from './zuordnung-workflows/BaseWorkflow.page';
 import { BefristungWorkflowPage } from './zuordnung-workflows/BefristungWorkflow.page';
 import { VersetzenWorkflowPage } from './zuordnung-workflows/VersetzenWorkflow.page';
 
@@ -12,10 +12,12 @@ export interface ZuordnungCreationParams {
   kopers?: string;
   befristung?: string;
 }
+
 export interface ZuordnungValidationParams {
   organisation: string;
   dstNr?: string;
   rolle?: string;
+  klasse?: string;
   befristung?: string;
   status?: 'unchanged' | 'delete' | 'create';
 }
@@ -88,9 +90,9 @@ export class ZuordnungenPage {
     await this.savePendingChanges(workflowPage);
   }
 
-  public async changeKlasse(from: string, to: string): Promise<void> {
+  public async changeKlasse(dstNr: string , schule: string, rollename: string, from: string, to: string): Promise<void> {
     await this.editZuordnungen();
-    await this.selectZuordnungToEdit({ organisation: from });
+    await this.selectZuordnungToEdit({dstNr, organisation: schule, rolle: rollename, klasse: from });
 
     const workflowPage: VersetzenWorkflowPage = await this.startVersetzenWorkflow();
     await workflowPage.selectKlasse(to);
@@ -100,7 +102,7 @@ export class ZuordnungenPage {
     await this.savePendingChanges(workflowPage);
   }
 
-  private async savePendingChanges(workflowPage: BaseWorkflowPage): Promise<void> {
+  private async savePendingChanges(workflowPage: BaseZuordnungWorkflowPage): Promise<void> {
     await this.page.getByTestId('zuordnung-changes-save-button').click();
     await workflowPage.closeSuccessDialog();
   }
@@ -114,6 +116,9 @@ export class ZuordnungenPage {
     }
     if (params.rolle) {
       expectedText += ` ${params.rolle}`;
+    }
+    if(params.klasse) {
+      expectedText += ` ${params.klasse}`;
     }
     if (params.befristung) {
       expectedText += ` (befristet bis ${params.befristung})`;
