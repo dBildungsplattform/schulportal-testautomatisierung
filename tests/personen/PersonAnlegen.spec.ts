@@ -54,6 +54,7 @@ test.describe(`Testfälle für die Anlage von Personen`, () => {
             const isSchueler: boolean = userRolle === schuelerRolle;
             const isLehrer: boolean =
               userRolle === lehrerImVorbereitungsdienstRolle || userRolle === lehrkraftOeffentlichRolle;
+            const isBefristet: boolean = userRolle === lehrerImVorbereitungsdienstRolle;
             let klasseName: string = generateKlassenname();
 
             const validationParameters: PersonCreationSuccessValidationParams = {
@@ -73,6 +74,15 @@ test.describe(`Testfälle für die Anlage von Personen`, () => {
 
             if (isLehrer) {
               validationParameters.kopersnr = generateKopersNr();
+              if (isBefristet) {
+                const currentYear: number = new Date().getFullYear();
+                let yearForBefristung: number = currentYear;
+                const today: Date = new Date();
+                if (today.getMonth() >= 8 || (today.getMonth() === 7 && today.getDate() === 31)) {
+                  yearForBefristung = currentYear + 1;
+                }
+                validationParameters.befristung = '31.7.' + yearForBefristung;
+              }
             }
 
             const creationParameters: PersonCreationParams = { ...validationParameters };
