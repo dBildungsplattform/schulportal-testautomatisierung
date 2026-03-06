@@ -116,7 +116,7 @@ test.describe(`Als Landesadmin Benutzer importieren`, () => {
       await personManagementPage.filterBySchule(schuleName);
       for (const user of usersToBeImported) {
         await personManagementPage.filterByKlasse(user.klasse);
-        await personManagementPage.checkIfPersonExists(user.nachname);
+        await personManagementPage.assertThatPersonExists(user.nachname);
         await personManagementPage.resetKlasseFilter();
       }
     });

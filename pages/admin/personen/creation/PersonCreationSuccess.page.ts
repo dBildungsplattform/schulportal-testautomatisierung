@@ -41,7 +41,7 @@ export class PersonCreationSuccessPage extends AbstractAdminPage {
   }
 
   /* assertions */
-  public async checkSuccessfulCreation(params: PersonCreationSuccessValidationParams): Promise<void> {
+  public async assertSuccessfulCreation(params: PersonCreationSuccessValidationParams): Promise<void> {
     await expect(this.page.getByTestId('person-success-text')).toHaveText(
       `${params.vorname} ${params.nachname} wurde erfolgreich ${this.mode === PersonCreationMode.ADD_ANOTHER_STATE_EMPLOYEE ? 'angelegt' : 'hinzugefügt'}.`,
     );

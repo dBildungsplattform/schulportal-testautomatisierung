@@ -87,7 +87,7 @@ test.describe(`Testfälle für die Anlage von Personen`, () => {
 
             const { benutzername, startpasswort }: { benutzername: string; startpasswort: string } =
               await test.step('Erfolgsmeldung prüfen', async () => {
-                await successPage.checkSuccessfulCreation(validationParameters);
+                await successPage.assertSuccessfulCreation(validationParameters);
                 return {
                   benutzername: await successPage.getBenutzername(),
                   startpasswort: await successPage.getPassword(),
@@ -100,7 +100,7 @@ test.describe(`Testfälle für die Anlage von Personen`, () => {
 
             await test.step('Neuen Benutzer in Übersicht prüfen', async () => {
               await personManagementViewPage.searchByText(benutzername);
-              await personManagementViewPage.checkIfPersonExists(benutzername);
+              await personManagementViewPage.assertThatPersonExists(benutzername);
             });
 
             const landingPage: LandingViewPage = await test.step('Abmelden', async () => {
@@ -144,7 +144,7 @@ test.describe(`Testfälle für die Anlage von Personen`, () => {
           personCreationViewPage.submit());
 
         const benutzername: string = await test.step('Erfolgsmeldung prüfen', async () => {
-          await successPage.checkSuccessfulCreation(validationParameters);
+          await successPage.assertSuccessfulCreation(validationParameters);
           return successPage.getBenutzername();
         });
 
@@ -154,7 +154,7 @@ test.describe(`Testfälle für die Anlage von Personen`, () => {
 
         await test.step('Neuen Benutzer in Übersicht prüfen', async () => {
           await personManagementViewPage.searchByText(benutzername);
-          await personManagementViewPage.checkIfPersonExists(benutzername);
+          await personManagementViewPage.assertThatPersonExists(benutzername);
         });
       });
     });
@@ -209,7 +209,7 @@ test.describe(`Testfälle für die Anlage von Personen`, () => {
             organisation: schuleName,
             dstNr: schuleDstNr,
           };
-          await successPage.checkSuccessfulCreation(validationParams);
+          await successPage.assertSuccessfulCreation(validationParams);
           return {
             benutzername: await successPage.getBenutzername(),
             startpasswort: await successPage.getPassword(),
@@ -221,7 +221,7 @@ test.describe(`Testfälle für die Anlage von Personen`, () => {
 
       await test.step('Neuen Benutzer in Übersicht prüfen', async () => {
         await personManagementViewPage.searchByText(benutzername);
-        await personManagementViewPage.checkIfPersonExists(benutzername);
+        await personManagementViewPage.assertThatPersonExists(benutzername);
       });
 
       const landingPage: LandingViewPage = await test.step('Abmelden', async () => {

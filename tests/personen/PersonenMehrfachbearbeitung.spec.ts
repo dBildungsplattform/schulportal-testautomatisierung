@@ -113,7 +113,7 @@ interface AdminFixture {
       await test.step(`Nur Schüler auswählen`, async () => {
         await personManagementViewPage.toggleSelectAllRows(false);
         for (const schueler of testData[0].schuelerSchule) {
-          await personManagementViewPage.checkIfPersonExists(`${schueler.nachname}`);
+          await personManagementViewPage.assertThatPersonExists(`${schueler.nachname}`);
           await personManagementViewPage.selectPerson(`${schueler.nachname}`);
           await personManagementViewPage.checkPersonSelected(`${schueler.nachname}`);
         }
