@@ -4,7 +4,7 @@ import { waitForAPIResponse } from '../../../../base/api/baseApi';
 import { PersonCreationSuccessPage } from './PersonCreationSuccess.page';
 
 export interface PersonCreationParams {
-  organisation: string;
+  organisation?: string;
   dstNr?: string;
   rollen: string[];
   vorname: string;
@@ -14,17 +14,37 @@ export interface PersonCreationParams {
   befristung?: string;
 }
 
+export enum PersonCreationMode {
+  CREATE_PERSON = 'create-person',
+  ADD_ANOTHER_STATE_EMPLOYEE = 'add-another-state-employee',
+}
+
 export class PersonCreationViewPage {
   private static readonly ENDPOINT: string = 'personenkontext-workflow/**';
-  private readonly organisationAutocomplete: Autocomplete = new Autocomplete(this.page, this.page.getByTestId('personenkontext-create-organisation-select'));
-  private readonly rolleAutocomplete: Autocomplete = new Autocomplete(this.page, this.page.getByTestId('rollen-select'));
 
-  constructor(protected readonly page: Page) {}
+  private readonly organisationAutocomplete: Autocomplete = new Autocomplete(
+    this.page,
+    this.page.getByTestId('personenkontext-create-organisation-select'),
+  );
+  private readonly rolleAutocomplete: Autocomplete = new Autocomplete(
+    this.page,
+    this.page.getByTestId('rollen-select'),
+  );
+
+  constructor(
+    protected readonly page: Page,
+    private readonly mode: PersonCreationMode = PersonCreationMode.CREATE_PERSON,
+  ) {}
 
   /* actions */
-  public async waitForPageLoad(expectedHeadline?: string): Promise<PersonCreationViewPage> {
-    await this.page.getByTestId('create-person-headline').waitFor({ state: 'visible' });
-    await expect(this.page.getByTestId('create-person-headline')).toHaveText(expectedHeadline || 'Neuen Benutzer hinzufügen');
+  public async waitForPageLoad(): Promise<PersonCreationViewPage> {
+    const headline: Locator = this.getHeadline();
+    await headline.waitFor({ state: 'visible' });
+    await expect(headline).toHaveText(
+      this.mode === PersonCreationMode.ADD_ANOTHER_STATE_EMPLOYEE
+        ? 'Andere Person (neu anlegen)'
+        : 'Neuen Benutzer hinzufügen',
+    );
     return this;
   }
 
@@ -32,14 +52,18 @@ export class PersonCreationViewPage {
     const vornameInput: Locator = this.page.getByTestId('vorname-input').locator('.v-field__input');
     const nachnameInput: Locator = this.page.getByTestId('familienname-input').locator('.v-field__input');
 
-    if (params.dstNr) {
-      await this.organisationAutocomplete.searchByTitle(params.organisation, false, PersonCreationViewPage.ENDPOINT);
-    } else {
-      await this.organisationAutocomplete.searchByTitle(params.organisation, true, PersonCreationViewPage.ENDPOINT);
+    if (params.organisation) {
+      if (params.dstNr) {
+        await this.organisationAutocomplete.searchByTitle(params.organisation, false, PersonCreationViewPage.ENDPOINT);
+      } else {
+        await this.organisationAutocomplete.searchByTitle(params.organisation, true, PersonCreationViewPage.ENDPOINT);
+      }
     }
 
     await Promise.all(
-      params.rollen.map((rolle: string) => this.rolleAutocomplete.searchByTitle(rolle, true, PersonCreationViewPage.ENDPOINT))
+      params.rollen.map((rolle: string) =>
+        this.rolleAutocomplete.searchByTitle(rolle, true, PersonCreationViewPage.ENDPOINT),
+      ),
     );
 
     await vornameInput.waitFor({ state: 'visible' });
@@ -49,7 +73,10 @@ export class PersonCreationViewPage {
     await nachnameInput.fill(params.nachname);
 
     if (params.klasse) {
-      const autocomplete: Autocomplete = new Autocomplete(this.page, this.page.getByTestId('personenkontext-create-klasse-select'));
+      const autocomplete: Autocomplete = new Autocomplete(
+        this.page,
+        this.page.getByTestId('personenkontext-create-klasse-select'),
+      );
       await autocomplete.searchByTitle(params.klasse, true);
     }
     if (params.kopersnr) {
@@ -69,7 +96,16 @@ export class PersonCreationViewPage {
 
   public async submit(): Promise<PersonCreationSuccessPage> {
     await this.page.getByTestId('person-creation-form-submit-button').click();
-    return new PersonCreationSuccessPage(this.page);
+    return new PersonCreationSuccessPage(this.page, this.mode).waitForPageLoad();
+  }
+
+  private getHeadline(): Locator {
+    switch (this.mode) {
+      case PersonCreationMode.CREATE_PERSON:
+        return this.page.getByTestId('create-person-headline');
+      case PersonCreationMode.ADD_ANOTHER_STATE_EMPLOYEE:
+        return this.page.getByTestId('add-another-state-employee-headline');
+    }
   }
 
   /* assertions */
@@ -82,4 +118,3 @@ export class PersonCreationViewPage {
     }
   }
 }
-

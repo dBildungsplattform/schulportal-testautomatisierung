@@ -23,7 +23,10 @@ import { LandingViewPage } from '../../pages/LandingView.neu.page';
 import { LoginViewPage } from '../../pages/LoginView.neu.page';
 import { StartViewPage } from '../../pages/StartView.neu.page';
 import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.neu.page';
-import { PersonCreationSuccessPage } from '../../pages/admin/personen/creation/PersonCreationSuccess.page';
+import {
+  PersonCreationSuccessPage,
+  PersonCreationSuccessValidationParams,
+} from '../../pages/admin/personen/creation/PersonCreationSuccess.page';
 import {
   PersonCreationParams,
   PersonCreationViewPage,
@@ -52,6 +55,7 @@ test.describe(`Testfälle für die Anlage von Personen`, () => {
             const isLehrer: boolean =
               userRolle === lehrerImVorbereitungsdienstRolle || userRolle === lehrkraftOeffentlichRolle;
             let klasseName: string;
+
             if (isSchueler) {
               await test.step('Klasse anlegen', async () => {
                 klasseName = generateKlassenname();
@@ -59,13 +63,15 @@ test.describe(`Testfälle für die Anlage von Personen`, () => {
               });
             }
 
-            const creationParameters: PersonCreationParams = {
+            const validationParameters: PersonCreationSuccessValidationParams = {
               nachname: generateNachname(),
               vorname: generateVorname(),
               rollen: [userRolle],
               organisation: schuleName,
               dstNr: schuleDstNr,
             };
+
+            const creationParameters: PersonCreationParams = { ...validationParameters };
             await test.step('Formular ausfüllen', async () => {
               if (isSchueler) {
                 creationParameters.klasse = klasseName;
@@ -75,26 +81,32 @@ test.describe(`Testfälle für die Anlage von Personen`, () => {
               }
               await personCreationViewPage.fillForm(creationParameters);
             });
+
             const successPage: PersonCreationSuccessPage = await test.step('Abschicken', async () =>
               personCreationViewPage.submit());
+
             const { benutzername, startpasswort }: { benutzername: string; startpasswort: string } =
               await test.step('Erfolgsmeldung prüfen', async () => {
-                await successPage.checkSuccessfulCreation(creationParameters);
+                await successPage.checkSuccessfulCreation(validationParameters);
                 return {
                   benutzername: await successPage.getBenutzername(),
                   startpasswort: await successPage.getPassword(),
                 };
               });
+
             const personManagementViewPage: PersonManagementViewPage =
               await test.step('Zurück zur Personenübersicht', async () =>
                 successPage.getMenu().navigateToPersonManagement());
+
             await test.step('Neuen Benutzer in Übersicht prüfen', async () => {
               await personManagementViewPage.searchByText(benutzername);
               await personManagementViewPage.checkIfPersonExists(benutzername);
             });
+
             const landingPage: LandingViewPage = await test.step('Abmelden', async () => {
               return personManagementViewPage.getHeader().logout();
             });
+
             await test.step('Einloggen mit neu angelegtem Benutzer', async () => {
               const loginPage: LoginViewPage = await landingPage.navigateToLogin();
               const startPage: StartViewPage = await loginPage.loginNewUserWithPasswordChange(
@@ -116,24 +128,30 @@ test.describe(`Testfälle für die Anlage von Personen`, () => {
       });
 
       test(`${landesadminRolle} anlegen`, { tag: [DEV, STAGE] }, async () => {
-        const creationParameters: PersonCreationParams = {
+        const validationParameters: PersonCreationSuccessValidationParams = {
           nachname: generateNachname(),
           vorname: generateVorname(),
           rollen: [landesadminRolle],
           organisation: landSH,
         };
+
+        const creationParameters: PersonCreationParams = { ...validationParameters };
         await test.step('Formular ausfüllen', async () => {
           await personCreationViewPage.fillForm(creationParameters);
         });
+
         const successPage: PersonCreationSuccessPage = await test.step('Abschicken', async () =>
           personCreationViewPage.submit());
+
         const benutzername: string = await test.step('Erfolgsmeldung prüfen', async () => {
-          await successPage.checkSuccessfulCreation(creationParameters);
+          await successPage.checkSuccessfulCreation(validationParameters);
           return successPage.getBenutzername();
         });
+
         const personManagementViewPage: PersonManagementViewPage =
           await test.step('Zurück zur Personenübersicht', async () =>
             successPage.getMenu().navigateToPersonManagement());
+
         await test.step('Neuen Benutzer in Übersicht prüfen', async () => {
           await personManagementViewPage.searchByText(benutzername);
           await personManagementViewPage.checkIfPersonExists(benutzername);
@@ -174,32 +192,42 @@ test.describe(`Testfälle für die Anlage von Personen`, () => {
         nachname: generateNachname(),
         vorname: generateVorname(),
         rollen: [schuelerRolle],
-        organisation: schuleName,
-        dstNr: schuleDstNr,
         klasse: klasseName,
       };
+
       await test.step('Formular ausfüllen', async () => {
         await personCreationViewPage.fillForm(creationParameters);
       });
+
       const successPage: PersonCreationSuccessPage = await test.step('Abschicken', async () =>
         personCreationViewPage.submit());
+
       const { benutzername, startpasswort }: { benutzername: string; startpasswort: string } =
         await test.step('Erfolgsmeldung prüfen', async () => {
-          await successPage.checkSuccessfulCreation(creationParameters);
+          const validationParams: PersonCreationSuccessValidationParams = {
+            ...creationParameters,
+            organisation: schuleName,
+            dstNr: schuleDstNr,
+          };
+          await successPage.checkSuccessfulCreation(validationParams);
           return {
             benutzername: await successPage.getBenutzername(),
             startpasswort: await successPage.getPassword(),
           };
         });
+
       const personManagementViewPage: PersonManagementViewPage =
         await test.step('Zurück zur Personenübersicht', async () => successPage.getMenu().navigateToPersonManagement());
+
       await test.step('Neuen Benutzer in Übersicht prüfen', async () => {
         await personManagementViewPage.searchByText(benutzername);
         await personManagementViewPage.checkIfPersonExists(benutzername);
       });
+
       const landingPage: LandingViewPage = await test.step('Abmelden', async () => {
         return personManagementViewPage.getHeader().logout();
       });
+
       await test.step('Einloggen mit neu angelegtem Benutzer', async () => {
         const loginPage: LoginViewPage = await landingPage.navigateToLogin();
         const startPage: StartViewPage = await loginPage.loginNewUserWithPasswordChange(benutzername, startpasswort);

@@ -1,13 +1,17 @@
 import { expect, Locator, Page } from '@playwright/test';
-import { PersonCreationParams } from './PersonCreationView.neu.page';
+import { PersonCreationMode, PersonCreationParams } from './PersonCreationView.neu.page';
 import { AbstractAdminPage } from '../../AbstractAdmin.page';
 
 export type PersonCreationSuccessValidationParams = PersonCreationParams & {
+  organisation: string;
   dstNr?: string;
 };
 
 export class PersonCreationSuccessPage extends AbstractAdminPage {
-  constructor(protected readonly page: Page) {
+  constructor(
+    protected readonly page: Page,
+    private readonly mode: PersonCreationMode = PersonCreationMode.CREATE_PERSON,
+  ) {
     super(page);
   }
 
@@ -17,7 +21,7 @@ export class PersonCreationSuccessPage extends AbstractAdminPage {
     return this;
   }
 
-  private getBenutzernameField(): Locator{
+  private getBenutzernameField(): Locator {
     return this.page.getByTestId('created-person-username');
   }
 
@@ -26,7 +30,7 @@ export class PersonCreationSuccessPage extends AbstractAdminPage {
     return benutzernameField.innerText();
   }
 
-  private getPasswordField(): Locator{
+  private getPasswordField(): Locator {
     return this.page.getByTestId('password-output-field').locator('input');
   }
 
@@ -39,7 +43,7 @@ export class PersonCreationSuccessPage extends AbstractAdminPage {
   /* assertions */
   public async checkSuccessfulCreation(params: PersonCreationSuccessValidationParams): Promise<void> {
     await expect(this.page.getByTestId('person-success-text')).toHaveText(
-      `${params.vorname} ${params.nachname} wurde erfolgreich hinzugefügt.`
+      `${params.vorname} ${params.nachname} wurde erfolgreich ${this.mode === PersonCreationMode.ADD_ANOTHER_STATE_EMPLOYEE ? 'angelegt' : 'hinzugefügt'}.`,
     );
     await expect(this.page.getByTestId('person-success-icon')).toBeVisible();
     await expect(this.page.getByTestId('following-data-created-text')).toBeVisible();
@@ -64,7 +68,7 @@ export class PersonCreationSuccessPage extends AbstractAdminPage {
     await expect(this.page.getByTestId('created-person-organisation-label')).toBeVisible();
     if (params.dstNr)
       await expect(this.page.getByTestId('created-person-organisation')).toHaveText(
-        `${params.dstNr} (${params.organisation})`
+        `${params.dstNr} (${params.organisation})`,
       );
     else await expect(this.page.getByTestId('created-person-organisation')).toHaveText(params.organisation);
 
