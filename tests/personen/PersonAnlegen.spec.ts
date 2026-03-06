@@ -319,8 +319,7 @@ test.describe(`Testfälle für die Anlage von Personen`, () => {
 
             await test.step(`Prüfen, dass eine Mail weiterhin existiert und zugeordnet ist`, async () => {
               const mailPrimaryAddress: string = await ldapHelper.getMailPrimaryAddress(createdBenutzername);
-              expect(mailPrimaryAddress).toContain('schule-sh.de');
-              expect(mailPrimaryAddress.length).toBeGreaterThan(5);
+              expect(mailPrimaryAddress).toEqual(generatedPrimaryMailAddress);
             });
           },
         );
