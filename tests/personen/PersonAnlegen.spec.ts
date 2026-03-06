@@ -54,14 +54,7 @@ test.describe(`Testfälle für die Anlage von Personen`, () => {
             const isSchueler: boolean = userRolle === schuelerRolle;
             const isLehrer: boolean =
               userRolle === lehrerImVorbereitungsdienstRolle || userRolle === lehrkraftOeffentlichRolle;
-            let klasseName: string;
-
-            if (isSchueler) {
-              await test.step('Klasse anlegen', async () => {
-                klasseName = generateKlassenname();
-                await createKlasse(page, schuleId, klasseName);
-              });
-            }
+            let klasseName: string = generateKlassenname();
 
             const validationParameters: PersonCreationSuccessValidationParams = {
               nachname: generateNachname(),
@@ -71,14 +64,19 @@ test.describe(`Testfälle für die Anlage von Personen`, () => {
               dstNr: schuleDstNr,
             };
 
+            if (isSchueler) {
+              await test.step('Klasse anlegen', async () => {
+                await createKlasse(page, schuleId, klasseName);
+                validationParameters.klasse = klasseName;
+              });
+            }
+
+            if (isLehrer) {
+              validationParameters.kopersnr = generateKopersNr();
+            }
+
             const creationParameters: PersonCreationParams = { ...validationParameters };
             await test.step('Formular ausfüllen', async () => {
-              if (isSchueler) {
-                creationParameters.klasse = klasseName;
-              }
-              if (isLehrer) {
-                creationParameters.kopersnr = generateKopersNr();
-              }
               await personCreationViewPage.fillForm(creationParameters);
             });
 
