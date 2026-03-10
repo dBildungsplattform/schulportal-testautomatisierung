@@ -11,8 +11,8 @@ import { StartViewPage } from '../pages/StartView.neu.page';
 import { HeaderPage } from '../pages/components/Header.neu.page';
 import { loginAndNavigateToAdministration } from '../base/testHelperUtils';
 
-const ADMIN: string | undefined = process.env.USER;
-const PASSWORD: string | undefined = process.env.PW;
+const ADMIN: string = process.env.USER!;
+const PASSWORD: string = process.env.PW!;
 
 test.describe(`Testfälle für den Login: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   let landingPage: LandingViewPage;

@@ -75,9 +75,11 @@ export class LoginViewPage {
   /* assertions */
   public async loginFailedWithWrongCredentials(): Promise<void> {
     const inputErrorSpan: Locator = this.page.getByTestId('input-error-message');
+    const usernameInput: Locator = this.page.getByTestId('username-input');
 
     await expect(inputErrorSpan).toBeVisible();
     await expect(inputErrorSpan).toHaveText('Ungültiger Benutzername oder Passwort.');
+    await expect(usernameInput).toBeEditable();
   }
 
   public async loginFailedWithLockedUser(): Promise<void> {
