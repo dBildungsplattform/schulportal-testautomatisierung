@@ -7,8 +7,7 @@ import FromAnywhere from '../../pages/FromAnywhere.neu';
 import { befristungPflicht } from '../merkmale';
 import { getOrganisationId } from './organisationApi';
 import { addServiceProvidersToRolle, createRolle, getRolleId } from './rolleApi';
-import { HeaderPage } from '../../pages/components/Header.page';
-import { LoginPage } from '../../pages/LoginView.page';
+import { HeaderPage } from '../../pages/components/Header.neu.page';
 import { testschuleName } from '../organisation';
 import { typeLehrer } from '../rollentypen';
 import { getServiceProviderId } from './serviceProviderApi';
@@ -333,7 +332,6 @@ export async function getPersonId(page: Page, searchString: string): Promise<str
 
 export async function createTeacherAndLogin(page: Page): Promise<UserInfo> {
   const header: HeaderPage = new HeaderPage(page);
-  const login: LoginPage = new LoginPage(page);
   const userInfo: UserInfo = await createRolleAndPersonWithPersonenkontext(
     page,
     testschuleName,
@@ -349,12 +347,11 @@ export async function createTeacherAndLogin(page: Page): Promise<UserInfo> {
     generateKopersNr()
   );
 
-  await header.logout({ logoutViaStartPage: true });
-  await header.buttonLogin.click();
-  await login.login(userInfo.username, userInfo.password);
-  await login.updatePW();
-  await expect(header.iconMyProfil).toBeVisible();
-  await expect(header.iconLogout).toBeVisible();
+  await header.logout();
+  const loginPage = await header.navigateToLogin();
+  await loginPage.login(userInfo.username, userInfo.password);
+  await loginPage.updatePassword();
+  await header.checkIfIconsAreVisible();
   return userInfo;
 }
 
