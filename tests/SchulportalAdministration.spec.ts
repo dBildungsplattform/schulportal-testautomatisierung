@@ -40,8 +40,8 @@ import {
 } from '../base/utils/generateTestdata';
 import { HeaderPage } from '../pages/components/Header.neu.page';
 import { LandingPage } from '../pages/LandingView.page';
-import { LoginPage } from '../pages/LoginView.page';
-import { StartPage } from '../pages/StartView.page';
+import { LoginViewPage } from '../pages/LoginView.neu.page';
+import { StartViewPage } from '../pages/StartView.neu.page';
 
 // The created test data will be deleted in the afterEach block
 let personIds: string[] = [];
@@ -88,9 +88,9 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
     { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const landing: LandingPage = new LandingPage(page);
-      const login: LoginPage = new LoginPage(page);
+      const login: LoginViewPage = new LoginViewPage(page);
       const header: HeaderPage = new HeaderPage(page);
-      const startseite: StartPage = new StartPage(page);
+      const startseite: StartViewPage = new StartViewPage(page);
 
       // Testdaten erstellen
       const idSPs: string[] = [await getServiceProviderId(page, 'E-Mail')];
@@ -111,12 +111,12 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
       // Test durchführen
       await landing.buttonAnmelden.click();
       await login.login(userInfo.username, userInfo.password);
-      await login.updatePW();
+      await login.updatePassword();
       currentUserIsLandesadministrator = false;
-      await startseite.validateStartPageIsLoaded();
+      await startseite.waitForPageLoad();
       await test.step(`Prüfen, dass die Kachel E-Mail angezeigt wird und die Kachel Schulportal-Administration nicht angezeigt wird`, async () => {
-        await expect(startseite.cardItemSchulportalAdministration).toBeHidden();
-        await startseite.checkSpIsVisible([email]);
+        await startseite.checkSpIsHidden([schulportaladmin]);
+        await startseite.serviceProvidersAreVisible([email]);
       });
     }
   );
@@ -126,9 +126,9 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
     { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const landing: LandingPage = new LandingPage(page);
-      const login: LoginPage = new LoginPage(page);
+      const login: LoginViewPage = new LoginViewPage(page);
       const header: HeaderPage = new HeaderPage(page);
-      const startseite: StartPage = new StartPage(page);
+      const startseite: StartViewPage = new StartViewPage(page);
 
       // Testdaten erstellen
       const schuleId: string = await getOrganisationId(page, testschuleName);
@@ -153,12 +153,12 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
       // Test durchführen
       await landing.buttonAnmelden.click();
       await login.login(userInfo.username, userInfo.password);
-      await login.updatePW();
+      await login.updatePassword();
       currentUserIsLandesadministrator = false;
-      await startseite.validateStartPageIsLoaded();
+      await startseite.waitForPageLoad();
       await test.step(`Prüfen, dass die Kachel E-Mail angezeigt wird und die Kachel Schulportal-Administration nicht angezeigt wird`, async () => {
-        await expect(startseite.cardItemSchulportalAdministration).toBeHidden();
-        await startseite.checkSpIsVisible([itslearning]);
+        await startseite.checkSpIsHidden([schulportaladmin]);
+        await startseite.serviceProvidersAreVisible([itslearning]);
       });
     }
   );
@@ -168,9 +168,9 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
     { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const landing: LandingPage = new LandingPage(page);
-      const login: LoginPage = new LoginPage(page);
+      const login: LoginViewPage = new LoginViewPage(page);
       const header: HeaderPage = new HeaderPage(page);
-      const startseite: StartPage = new StartPage(page);
+      const startseite: StartViewPage = new StartViewPage(page);
 
       // Testdaten erstellen
       const idSPs: string[] = [await getServiceProviderId(page, 'Schulportal-Administration')];
@@ -192,12 +192,12 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
       // Test durchführen
       await landing.buttonAnmelden.click();
       await login.login(userInfo.username, userInfo.password);
-      await login.updatePW();
+      await login.updatePassword();
       currentUserIsLandesadministrator = false;
-      await startseite.validateStartPageIsLoaded();
+      await startseite.waitForPageLoad();
       await test.step(`Prüfen, dass die Kachel E-Mail nicht angezeigt wird und die Kachel Schulportal-Administration angezeigt wird`, async () => {
-        await startseite.checkSpIsVisible([schulportaladmin]);
-        await expect(startseite.cardItemEmail).toBeHidden();
+        await startseite.serviceProvidersAreVisible([schulportaladmin]);
+        await startseite.checkSpIsHidden([email]);
       });
     }
   );
@@ -211,7 +211,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
     const colorRed: string = 'rgb(255, 85, 85)';
 
       const headerPage: HeaderPage = new HeaderPage(page);
-      const loginPage: LoginPage = new LoginPage(page);
+      const loginPage: LoginViewPage = new LoginViewPage(page);
 
     await test.step(`Testdaten: Lehrer1 mit einer befristeten Schulzuordnung(noch 50 Tage gültig) und Lehrer2 mit einer befristeten Schulzuordnung(noch 12 Tage gültig) über die api anlegen`, async () => {
       // Lehrer1: Schulzuordnung noch 50 Tage gültig
@@ -266,9 +266,9 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         await headerPage.logout();
         const landingPage: LandingPage = new LandingPage(page);
         await landingPage.buttonAnmelden.click();
-        const startView: StartPage = await loginPage.login(userInfoLehrer1.username, userInfoLehrer1.password);
-        await loginPage.updatePW();
-        await startView.validateStartPageIsLoaded();
+        const startView: StartViewPage = await loginPage.login(userInfoLehrer1.username, userInfoLehrer1.password);
+        await loginPage.updatePassword();
+        await startView.waitForPageLoad();
         currentUserIsLandesadministrator = false;
 
         await expect(page.getByText(alertText)).toBeVisible();
@@ -284,9 +284,9 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         await headerPage.logout();
         const landingPage: LandingPage = new LandingPage(page);
         await landingPage.buttonAnmelden.click();
-        const startView: StartPage = await loginPage.login(userInfoLehrer2.username, userInfoLehrer2.password);
-        await loginPage.updatePW();
-        await startView.validateStartPageIsLoaded();
+        const startView: StartViewPage = await loginPage.login(userInfoLehrer2.username, userInfoLehrer2.password);
+        await loginPage.updatePassword();
+        await startView.waitForPageLoad();
         currentUserIsLandesadministrator = false;
 
         await expect(page.getByText(alertText)).toBeVisible();
@@ -332,11 +332,12 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         const header: HeaderPage = new HeaderPage(page);
         currentUserIsLandesadministrator = false;
         await header.logout();
-        const loginPage: LoginPage = await new LandingPage(page).goToLogin();
-        const startPage: StartPage = await loginPage.login(userInfo.username, userInfo.password);
-        await loginPage.updatePW();
+        await new LandingPage(page).buttonAnmelden.click();
+        const loginPage: LoginViewPage = new LoginViewPage(page);
+        const startPage: StartViewPage = await loginPage.login(userInfo.username, userInfo.password);
+        await loginPage.updatePassword();
 
-        await startPage.checkSpIsVisible(expectedSps);
+        await startPage.serviceProvidersAreVisible(expectedSps);
         await startPage.checkSpIsHidden(unexpectedSps);
       });
     }
@@ -365,11 +366,12 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         const header: HeaderPage = new HeaderPage(page);
         currentUserIsLandesadministrator = false;
         await header.logout();
-        const loginPage: LoginPage = await new LandingPage(page).goToLogin();
-        const startPage: StartPage = await loginPage.login(userInfo.username, userInfo.password);
-        await loginPage.updatePW();
+        await new LandingPage(page).buttonAnmelden.click();
+        const loginPage: LoginViewPage = new LoginViewPage(page);
+        const startPage: StartViewPage = await loginPage.login(userInfo.username, userInfo.password);
+        await loginPage.updatePassword();
 
-        await startPage.checkSpIsVisible([itslearning]);
+        await startPage.serviceProvidersAreVisible([itslearning]);
         await startPage.checkSpIsHidden([schulportaladmin, email]);
       });
     }
@@ -413,10 +415,11 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         const header: HeaderPage = new HeaderPage(page);
         currentUserIsLandesadministrator = false;
         await header.logout();
-        const loginPage: LoginPage = await new LandingPage(page).goToLogin();
-        const startPage: StartPage = await loginPage.login(userInfo.username, userInfo.password);
-        await loginPage.updatePW();
-        await startPage.checkSpIsVisible(expected);
+        await new LandingPage(page).buttonAnmelden.click();
+        const loginPage: LoginViewPage = new LoginViewPage(page);
+        const startPage: StartViewPage = await loginPage.login(userInfo.username, userInfo.password);
+        await loginPage.updatePassword();
+        await startPage.serviceProvidersAreVisible(expected);
         await startPage.checkSpIsHidden([schulportaladmin, itslearning]);
       });
     }
@@ -459,11 +462,12 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         const header: HeaderPage = new HeaderPage(page);
         currentUserIsLandesadministrator = false;
         await header.logout();
-        const loginPage: LoginPage = await new LandingPage(page).goToLogin();
-        const startPage: StartPage = await loginPage.login(userInfo.username, userInfo.password);
-        await loginPage.updatePW();
+        await new LandingPage(page).buttonAnmelden.click();
+        const loginPage: LoginViewPage = new LoginViewPage(page);
+        const startPage: StartViewPage = await loginPage.login(userInfo.username, userInfo.password);
+        await loginPage.updatePassword();
 
-        await startPage.checkSpIsVisible(expected);
+        await startPage.serviceProvidersAreVisible(expected);
         await startPage.checkSpIsHidden([schulportaladmin, opSH, itslearning]);
       });
     }
@@ -508,11 +512,12 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         const header: HeaderPage = new HeaderPage(page);
         currentUserIsLandesadministrator = false;
         await header.logout();
-        const loginPage: LoginPage = await new LandingPage(page).goToLogin();
-        const startPage: StartPage = await loginPage.login(userInfo.username, userInfo.password);
-        await loginPage.updatePW();
+        await new LandingPage(page).buttonAnmelden.click();
+        const loginPage: LoginViewPage = new LoginViewPage(page);
+        const startPage: StartViewPage = await loginPage.login(userInfo.username, userInfo.password);
+        await loginPage.updatePassword();
 
-        await startPage.checkSpIsVisible(expected);
+        await startPage.serviceProvidersAreVisible(expected);
         await startPage.checkSpIsHidden([schulportaladmin]);
       });
     }
@@ -557,11 +562,12 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         const header: HeaderPage = new HeaderPage(page);
         currentUserIsLandesadministrator = false;
         await header.logout();
-        const loginPage: LoginPage = await new LandingPage(page).goToLogin();
-        const startPage: StartPage = await loginPage.login(userInfo.username, userInfo.password);
-        await loginPage.updatePW();
+        await new LandingPage(page).buttonAnmelden.click();
+        const loginPage: LoginViewPage = new LoginViewPage(page);
+        const startPage: StartViewPage = await loginPage.login(userInfo.username, userInfo.password);
+        await loginPage.updatePassword();
 
-        await startPage.checkSpIsVisible(expected);
+        await startPage.serviceProvidersAreVisible(expected);
         await startPage.checkSpIsHidden([schulportaladmin]);
       });
     }
@@ -605,11 +611,12 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         const header: HeaderPage = new HeaderPage(page);
         currentUserIsLandesadministrator = false;
         await header.logout();
-        const loginPage: LoginPage = await new LandingPage(page).goToLogin();
-        const startPage: StartPage = await loginPage.login(userInfo.username, userInfo.password);
-        await loginPage.updatePW();
+        await new LandingPage(page).buttonAnmelden.click();
+        const loginPage: LoginViewPage = new LoginViewPage(page);
+        const startPage: StartViewPage = await loginPage.login(userInfo.username, userInfo.password);
+        await loginPage.updatePassword();
 
-        await startPage.checkSpIsVisible(expected);
+        await startPage.serviceProvidersAreVisible(expected);
         await startPage.checkSpIsHidden([schulportaladmin, itslearning]);
       });
     }
@@ -653,11 +660,12 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         const header: HeaderPage = new HeaderPage(page);
         currentUserIsLandesadministrator = false;
         await header.logout();
-        const loginPage: LoginPage = await new LandingPage(page).goToLogin();
-        const startPage: StartPage = await loginPage.login(userInfo.username, userInfo.password);
-        await loginPage.updatePW();
+        await new LandingPage(page).buttonAnmelden.click();
+        const loginPage: LoginViewPage = new LoginViewPage(page);
+        const startPage: StartViewPage = await loginPage.login(userInfo.username, userInfo.password);
+        await loginPage.updatePassword();
 
-        await startPage.checkSpIsVisible(expected);
+        await startPage.serviceProvidersAreVisible(expected);
         await startPage.checkSpIsHidden([schulportaladmin, itslearning]);
       });
     }

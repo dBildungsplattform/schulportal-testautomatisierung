@@ -1,6 +1,6 @@
 import { expect, type Locator, Page } from '@playwright/test';
 import generator from 'generate-password-ts';
-import { StartPage } from './StartView.page';
+import { StartViewPage } from './StartView.neu.page';
 
 export class LoginPage {
   readonly page: Page;
@@ -42,7 +42,7 @@ export class LoginPage {
   async login(
     username: string = process.env.USER as string,
     password: string = process.env.PW as string
-  ): Promise<StartPage> {
+  ): Promise<StartViewPage> {
     await expect(this.titleAnmeldung).toHaveText('Anmeldung');
     await expect(this.textInfoLogin).toHaveText('Bitte geben Sie Ihre persönlichen Zugangsdaten ein.');
     await this.inputUsername.click();
@@ -50,7 +50,7 @@ export class LoginPage {
     await this.inputPassword.click();
     await this.inputPassword.fill(password);
     await this.buttonLogin.click();
-    return new StartPage(this.page);
+    return new StartViewPage(this.page);
   }
 
   async loginCurrentUser(username: string, password: string): Promise<void> {
