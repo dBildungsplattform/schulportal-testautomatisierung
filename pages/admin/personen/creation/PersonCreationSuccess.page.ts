@@ -1,31 +1,60 @@
 import { expect, Locator, Page } from '@playwright/test';
-import { PersonCreationParams } from './PersonCreationView.neu.page';
+import { AbstractAdminPage } from '../../AbstractAdmin.page';
+import { PersonManagementViewPage } from '../PersonManagementView.neu.page';
+import { PersonCreationMode, PersonCreationParams, PersonCreationViewPage } from './PersonCreationView.neu.page';
 
 export type PersonCreationSuccessValidationParams = PersonCreationParams & {
+  organisation: string;
   dstNr?: string;
 };
 
-export class PersonCreationSuccessPage {
-  constructor(protected readonly page: Page) {}
-
-  /* actions */
-  public async waitForPageLoad(): Promise<void> {
-    await this.page.getByTestId('person-success-text').waitFor({ state: 'visible' });
+export class PersonCreationSuccessPage extends AbstractAdminPage {
+  constructor(
+    protected readonly page: Page,
+    private readonly mode: PersonCreationMode = PersonCreationMode.CREATE_PERSON,
+  ) {
+    super(page);
   }
 
-  private getBenutzernameField(): Locator{
+  /* actions */
+  public async waitForPageLoad(): Promise<typeof this> {
+    await this.page.getByTestId('person-success-text').waitFor({ state: 'visible' });
+    return this;
+  }
+
+  private getBenutzernameField(): Locator {
     return this.page.getByTestId('created-person-username');
   }
 
   public async getBenutzername(): Promise<string> {
-    const benutzernameField: Locator = await this.getBenutzernameField();
+    const benutzernameField: Locator = this.getBenutzernameField();
     return benutzernameField.innerText();
   }
 
+  private getPasswordField(): Locator {
+    return this.page.getByTestId('password-output-field').locator('input');
+  }
+
+  public async getPassword(): Promise<string> {
+    await this.page.getByTestId('show-password-icon').click();
+    const passwordField: Locator = this.getPasswordField();
+    return passwordField.inputValue();
+  }
+
+  public async backToList(): Promise<PersonManagementViewPage> {
+    await this.page.getByTestId('back-to-list-button').click();
+    return new PersonManagementViewPage(this.page).waitForPageLoad();
+  }
+
+  public async createAnotherPerson(): Promise<PersonCreationViewPage> {
+    await this.page.getByTestId('create-another-person-button').click();
+    return new PersonCreationViewPage(this.page, this.mode).waitForPageLoad();
+  }
+
   /* assertions */
-  public async checkSuccessfulCreation(params: PersonCreationSuccessValidationParams): Promise<void> {
+  public async assertSuccessfulCreation(params: PersonCreationSuccessValidationParams): Promise<void> {
     await expect(this.page.getByTestId('person-success-text')).toHaveText(
-      `${params.vorname} ${params.nachname} wurde erfolgreich hinzugefügt.`
+      `${params.vorname} ${params.nachname} wurde erfolgreich ${this.mode === PersonCreationMode.ADD_ANOTHER_STATE_EMPLOYEE ? 'angelegt' : 'hinzugefügt'}.`,
     );
     await expect(this.page.getByTestId('person-success-icon')).toBeVisible();
     await expect(this.page.getByTestId('following-data-created-text')).toBeVisible();
@@ -45,12 +74,12 @@ export class PersonCreationSuccessPage {
     await expect(this.getBenutzernameField()).toContainText('tautopw');
 
     await expect(this.page.getByTestId('created-person-start-password-label')).toBeVisible();
-    await expect(this.page.getByTestId('password-output-field').locator('input')).toBeVisible();
+    await expect(this.getPasswordField()).toBeVisible();
 
     await expect(this.page.getByTestId('created-person-organisation-label')).toBeVisible();
     if (params.dstNr)
       await expect(this.page.getByTestId('created-person-organisation')).toHaveText(
-        `${params.dstNr} (${params.organisation})`
+        `${params.dstNr} (${params.organisation})`,
       );
     else await expect(this.page.getByTestId('created-person-organisation')).toHaveText(params.organisation);
 

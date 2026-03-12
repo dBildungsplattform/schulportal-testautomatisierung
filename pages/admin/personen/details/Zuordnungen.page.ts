@@ -1,8 +1,9 @@
 import { expect, Page } from '@playwright/test';
+import { PersonManagementViewPage } from '../PersonManagementView.neu.page';
 import { AddZuordnungWorkflowPage } from './zuordnung-workflows/AddZuordnungWorkflow.page';
+import { BaseZuordnungWorkflowPage } from './zuordnung-workflows/BaseWorkflow.page';
 import { BefristungWorkflowPage } from './zuordnung-workflows/BefristungWorkflow.page';
 import { VersetzenWorkflowPage } from './zuordnung-workflows/VersetzenWorkflow.page';
-import { BaseZuordnungWorkflowPage } from './zuordnung-workflows/BaseWorkflow.page';
 
 export interface ZuordnungCreationParams {
   rolle: string;
@@ -22,11 +23,15 @@ export interface ZuordnungValidationParams {
 }
 
 export class ZuordnungenPage {
-  public constructor(private readonly page: Page,
-  private readonly addZuordnungWorkflowFactory: (page: Page) => AddZuordnungWorkflowPage = (p: Page) => new AddZuordnungWorkflowPage(p),
-  private readonly befristungWorkflowFactory: (page: Page) => BefristungWorkflowPage = (p: Page) => new BefristungWorkflowPage(p),
-  private readonly versetzenWorkflowFactory: (page: Page) => VersetzenWorkflowPage = (p: Page) => new VersetzenWorkflowPage(p)
-) {}
+  public constructor(
+    private readonly page: Page,
+    private readonly befristungWorkflowFactory: (page: Page) => BefristungWorkflowPage = (p: Page) =>
+      new BefristungWorkflowPage(p),
+    private readonly addZuordnungWorkflowFactory: (page: Page) => AddZuordnungWorkflowPage = (p: Page) =>
+      new AddZuordnungWorkflowPage(p),
+    private readonly versetzenWorkflowFactory: (page: Page) => VersetzenWorkflowPage = (p: Page) =>
+      new VersetzenWorkflowPage(p),
+  ) {}
 
   /* actions */
   public async editZuordnungen(): Promise<void> {
@@ -41,6 +46,13 @@ export class ZuordnungenPage {
   public async startAddZuordnungWorkflow(): Promise<AddZuordnungWorkflowPage> {
     await this.page.getByTestId('zuordnung-create-button').click();
     return this.addZuordnungWorkflowFactory(this.page);
+  }
+
+  public async removeZuordnung(params: ZuordnungValidationParams): Promise<PersonManagementViewPage> {
+    await this.selectZuordnungToEdit(params);
+    await this.page.getByTestId('open-zuordnung-delete-dialog-button').click();
+    await this.page.getByTestId('zuordnung-delete-button').click();
+    return new PersonManagementViewPage(this.page).waitForPageLoad();
   }
 
   public async startBefristungWorkflow(): Promise<BefristungWorkflowPage> {
@@ -65,7 +77,7 @@ export class ZuordnungenPage {
   }
 
   public async editBefristung(
-    params: { option: 'unbefristet' | 'schuljahresende' } | { befristung: string }
+    params: { option: 'unbefristet' | 'schuljahresende' } | { befristung: string },
   ): Promise<void> {
     const workflowPage: BefristungWorkflowPage = await this.startBefristungWorkflow();
     if ('option' in params) {
@@ -145,10 +157,14 @@ export class ZuordnungenPage {
         await expect(this.page.getByTestId('person-zuordnungen-section-edit')).toContainText(expectedText);
         break;
       case 'delete':
-        await expect(this.page.getByTestId('person-zuordnungen-section-edit').locator('span.text-green')).toContainText(expectedText);
+        await expect(this.page.getByTestId('person-zuordnungen-section-edit').locator('span.text-green')).toContainText(
+          expectedText,
+        );
         break;
       case 'create':
-        await expect(this.page.getByTestId('person-zuordnungen-section-edit').locator('span.text-red')).toContainText(expectedText);
+        await expect(this.page.getByTestId('person-zuordnungen-section-edit').locator('span.text-red')).toContainText(
+          expectedText,
+        );
         break;
     }
   }
