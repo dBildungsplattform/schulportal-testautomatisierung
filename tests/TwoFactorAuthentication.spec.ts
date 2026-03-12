@@ -10,12 +10,11 @@ import { gotoTargetURL, loginAndNavigateToAdministration } from '../base/testHel
 import { generateNachname, generateRolleName, generateVorname } from '../base/utils/generateTestdata';
 import { PersonDetailsViewPage } from '../pages/admin/personen/PersonDetailsView.page';
 import { PersonManagementViewPage } from '../pages/admin/personen/PersonManagementView.page';
-import { HeaderPage } from '../pages/components/Header.page';
+import { HeaderPage } from '../pages/components/Header.neu.page';
 
 // The created test data will be deleted in the afterEach block
 let usernames: string[] = [];
 let rolleIds: string[] = [];
-let logoutViaStartPage: boolean = false;
 
 test.describe(`Testfälle für TwoFactorAuthentication": Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
@@ -38,11 +37,7 @@ test.describe(`Testfälle für TwoFactorAuthentication": Umgebung: ${process.env
 
     await test.step(`Abmelden`, async () => {
       const header: HeaderPage = new HeaderPage(page);
-      if (logoutViaStartPage) {
-        await header.logout({ logoutViaStartPage: true });
-      } else {
-        await header.logout({ logoutViaStartPage: false });
-      }
+      await header.logout();
     });
   });
 
@@ -95,10 +90,6 @@ test.describe(`Testfälle für TwoFactorAuthentication": Umgebung: ${process.env
 
         await expect(personDetailsView.textKeinTokenIstEingerichtet).toBeVisible();
       });
-      // #TODO: wait for the last request in the test
-      // sometimes logout breaks the test because of interrupting requests
-      // logoutViaStartPage = true is a workaround
-      logoutViaStartPage = true;
     }
   );
 });

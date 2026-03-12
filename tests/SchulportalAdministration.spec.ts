@@ -38,7 +38,7 @@ import {
   generateRolleName,
   generateVorname,
 } from '../base/utils/generateTestdata';
-import { HeaderPage } from '../pages/components/Header.page';
+import { HeaderPage } from '../pages/components/Header.neu.page';
 import { LandingPage } from '../pages/LandingView.page';
 import { LoginPage } from '../pages/LoginView.page';
 import { StartPage } from '../pages/StartView.page';
@@ -49,7 +49,6 @@ let rolleIds: string[] = [];
 
 // This variable must be set to false in the testcase when the logged in user is changed
 let currentUserIsLandesadministrator: boolean = true;
-let logoutViaStartPage: boolean = false;
 
 test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
@@ -62,11 +61,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
     if (!currentUserIsLandesadministrator) {
       const header: HeaderPage = new HeaderPage(page);
 
-      if (logoutViaStartPage) {
-        await header.logout({ logoutViaStartPage: true });
-      } else {
-        await header.logout({ logoutViaStartPage: false });
-      }
+      await header.logout();
       await loginAndNavigateToAdministration(page);
     }
 
@@ -84,11 +79,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
 
     await test.step(`Abmelden`, async () => {
       const header: HeaderPage = new HeaderPage(page);
-      if (logoutViaStartPage) {
-        await header.logout({ logoutViaStartPage: true });
-      } else {
-        await header.logout({ logoutViaStartPage: false });
-      }
+      await header.logout();
     });
   });
 
@@ -100,7 +91,6 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
       const login: LoginPage = new LoginPage(page);
       const header: HeaderPage = new HeaderPage(page);
       const startseite: StartPage = new StartPage(page);
-      logoutViaStartPage = true;
 
       // Testdaten erstellen
       const idSPs: string[] = [await getServiceProviderId(page, 'E-Mail')];
@@ -116,7 +106,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
 
       personIds.push(userInfo.personId);
       rolleIds.push(userInfo.rolleId);
-      await header.logout({ logoutViaStartPage: true });
+      await header.logout();
 
       // Test durchführen
       await landing.buttonAnmelden.click();
@@ -158,7 +148,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
       personIds.push(userInfo.personId);
       rolleIds.push(userInfo.rolleId);
 
-      await header.logout({ logoutViaStartPage: true });
+      await header.logout();
 
       // Test durchführen
       await landing.buttonAnmelden.click();
@@ -170,10 +160,6 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         await expect(startseite.cardItemSchulportalAdministration).toBeHidden();
         await startseite.checkSpIsVisible([itslearning]);
       });
-      // #TODO: wait for the last request in the test
-      // sometimes logout breaks the test because of interrupting requests
-      // logoutViaStartPage = true is a workaround
-      logoutViaStartPage = true;
     }
   );
 
@@ -201,7 +187,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
       rolleIds.push(userInfo.rolleId);
 
       await addSystemrechtToRolle(page, userInfo.rolleId, 'PERSONEN_VERWALTEN');
-      await header.logout({ logoutViaStartPage: true });
+      await header.logout();
 
       // Test durchführen
       await landing.buttonAnmelden.click();
@@ -213,10 +199,6 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         await startseite.checkSpIsVisible([schulportaladmin]);
         await expect(startseite.cardItemEmail).toBeHidden();
       });
-      // #TODO: wait for the last request in the test
-      // sometimes logout breaks the test because of interrupting requests
-      // logoutViaStartPage = true is a workaround
-      logoutViaStartPage = true;
     }
   );
 
@@ -281,7 +263,8 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
           `Hinweis: Die Zuordnung dieses Benutzerkontos zu der Schule "${testschuleName}" mit der Rolle "${rollenNameLehrer1}" ist bis zum ${timeLimitTeacherRolle1} befristet. ` +
           `Sollte dies nicht zutreffen, wenden Sie sich bitte an Ihre Schulleitung. Nach Ende der Zuordnung sind Funktionalitäten, die im Bezug zu dieser Schule und Rolle stehen, nicht mehr verfügbar.`;
 
-        const landingPage: LandingPage = await headerPage.logout({ logoutViaStartPage: true });
+        await headerPage.logout();
+        const landingPage: LandingPage = new LandingPage(page);
         await landingPage.buttonAnmelden.click();
         const startView: StartPage = await loginPage.login(userInfoLehrer1.username, userInfoLehrer1.password);
         await loginPage.updatePW();
@@ -298,7 +281,8 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
           `Hinweis: Die Zuordnung dieses Benutzerkontos zu der Schule "${testschuleName}" mit der Rolle "${rollenNameLehrer2}" ist bis zum ${timeLimitTeacherRolle2} befristet. ` +
           `Sollte dies nicht zutreffen, wenden Sie sich bitte an Ihre Schulleitung. Nach Ende der Zuordnung sind Funktionalitäten, die im Bezug zu dieser Schule und Rolle stehen, nicht mehr verfügbar.`;
 
-        const landingPage: LandingPage = await headerPage.logout({ logoutViaStartPage: true });
+        await headerPage.logout();
+        const landingPage: LandingPage = new LandingPage(page);
         await landingPage.buttonAnmelden.click();
         const startView: StartPage = await loginPage.login(userInfoLehrer2.username, userInfoLehrer2.password);
         await loginPage.updatePW();
@@ -347,8 +331,8 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
       await test.step('Anmelden und Startseite prüfen', async () => {
         const header: HeaderPage = new HeaderPage(page);
         currentUserIsLandesadministrator = false;
-        const landingPage: LandingPage = await header.logout({ logoutViaStartPage: false });
-        const loginPage: LoginPage = await landingPage.goToLogin();
+        await header.logout();
+        const loginPage: LoginPage = await new LandingPage(page).goToLogin();
         const startPage: StartPage = await loginPage.login(userInfo.username, userInfo.password);
         await loginPage.updatePW();
 
@@ -380,8 +364,8 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
       await test.step('Anmelden und Startseite prüfen', async () => {
         const header: HeaderPage = new HeaderPage(page);
         currentUserIsLandesadministrator = false;
-        const landingPage: LandingPage = await header.logout({ logoutViaStartPage: false });
-        const loginPage: LoginPage = await landingPage.goToLogin();
+        await header.logout();
+        const loginPage: LoginPage = await new LandingPage(page).goToLogin();
         const startPage: StartPage = await loginPage.login(userInfo.username, userInfo.password);
         await loginPage.updatePW();
 
@@ -428,8 +412,8 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
       await test.step('Anmelden und Startseite prüfen', async () => {
         const header: HeaderPage = new HeaderPage(page);
         currentUserIsLandesadministrator = false;
-        const landingPage: LandingPage = await header.logout({ logoutViaStartPage: false });
-        const loginPage: LoginPage = await landingPage.goToLogin();
+        await header.logout();
+        const loginPage: LoginPage = await new LandingPage(page).goToLogin();
         const startPage: StartPage = await loginPage.login(userInfo.username, userInfo.password);
         await loginPage.updatePW();
         await startPage.checkSpIsVisible(expected);
@@ -474,8 +458,8 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
       await test.step('Anmelden und Startseite prüfen', async () => {
         const header: HeaderPage = new HeaderPage(page);
         currentUserIsLandesadministrator = false;
-        const landingPage: LandingPage = await header.logout({ logoutViaStartPage: false });
-        const loginPage: LoginPage = await landingPage.goToLogin();
+        await header.logout();
+        const loginPage: LoginPage = await new LandingPage(page).goToLogin();
         const startPage: StartPage = await loginPage.login(userInfo.username, userInfo.password);
         await loginPage.updatePW();
 
@@ -523,8 +507,8 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
       await test.step('Anmelden und Startseite prüfen', async () => {
         const header: HeaderPage = new HeaderPage(page);
         currentUserIsLandesadministrator = false;
-        const landingPage: LandingPage = await header.logout({ logoutViaStartPage: false });
-        const loginPage: LoginPage = await landingPage.goToLogin();
+        await header.logout();
+        const loginPage: LoginPage = await new LandingPage(page).goToLogin();
         const startPage: StartPage = await loginPage.login(userInfo.username, userInfo.password);
         await loginPage.updatePW();
 
@@ -572,8 +556,8 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
       await test.step('Anmelden und Startseite prüfen', async () => {
         const header: HeaderPage = new HeaderPage(page);
         currentUserIsLandesadministrator = false;
-        const landingPage: LandingPage = await header.logout({ logoutViaStartPage: false });
-        const loginPage: LoginPage = await landingPage.goToLogin();
+        await header.logout();
+        const loginPage: LoginPage = await new LandingPage(page).goToLogin();
         const startPage: StartPage = await loginPage.login(userInfo.username, userInfo.password);
         await loginPage.updatePW();
 
@@ -620,8 +604,8 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
       await test.step('Anmelden und Startseite prüfen', async () => {
         const header: HeaderPage = new HeaderPage(page);
         currentUserIsLandesadministrator = false;
-        const landingPage: LandingPage = await header.logout({ logoutViaStartPage: false });
-        const loginPage: LoginPage = await landingPage.goToLogin();
+        await header.logout();
+        const loginPage: LoginPage = await new LandingPage(page).goToLogin();
         const startPage: StartPage = await loginPage.login(userInfo.username, userInfo.password);
         await loginPage.updatePW();
 
@@ -668,8 +652,8 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
       await test.step('Anmelden und Startseite prüfen', async () => {
         const header: HeaderPage = new HeaderPage(page);
         currentUserIsLandesadministrator = false;
-        const landingPage: LandingPage = await header.logout({ logoutViaStartPage: false });
-        const loginPage: LoginPage = await landingPage.goToLogin();
+        await header.logout();
+        const loginPage: LoginPage = await new LandingPage(page).goToLogin();
         const startPage: StartPage = await loginPage.login(userInfo.username, userInfo.password);
         await loginPage.updatePW();
 
