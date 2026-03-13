@@ -1,7 +1,7 @@
 import { expect, type Locator, Page } from '@playwright/test';
 import { KlasseCreationViewPage } from '../admin/organisationen/klassen/KlasseCreationView.page';
 import { KlasseManagementViewPage, KlasseManagementViewPageOptions } from '../admin/organisationen/klassen/KlasseManagementView.page';
-import { SchuleCreationViewPage } from '../admin/organisationen/schulen/SchuleCreationView.page';
+import { SchuleCreationViewPage } from '../admin/organisationen/schulen/SchuleCreationView.neu.page';
 import { SchuleManagementViewPage } from '../admin/organisationen/schulen/SchuleManagementView.page';
 import { PersonCreationViewPage } from '../admin/personen/PersonCreationView.page';
 import { PersonManagementViewPage } from '../admin/personen/PersonManagementView.page';
