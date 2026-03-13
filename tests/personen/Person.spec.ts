@@ -24,9 +24,8 @@ import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManag
 import { HeaderPage } from '../../pages/components/Header.neu.page';
 import { MenuPage } from '../../pages/components/MenuBar.page';
 import { LandingPage } from '../../pages/LandingView.page';
-import { LoginPage } from '../../pages/LoginView.page';
-import { StartViewPage as NewStartPage } from '../../pages/StartView.neu.page';
-import { StartPage } from '../../pages/StartView.page';
+import { LoginViewPage } from '../../pages/LoginView.neu.page';
+import { StartViewPage } from '../../pages/StartView.neu.page';
 
 const LDAP_URL: string = process.env.LDAP_URL;
 const LDAP_ADMIN_PASSWORD: string = process.env.LDAP_ADMIN_PASSWORD;
@@ -81,8 +80,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const landing: LandingPage = new LandingPage(page);
-      const startseite: StartPage = new StartPage(page);
-      const login: LoginPage = new LoginPage(page);
+      const startseite: StartViewPage = new StartViewPage(page);
+      const login: LoginViewPage = new LoginViewPage(page);
       const menue: MenuPage = new MenuPage(page);
       const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
       const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
@@ -128,9 +127,9 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await header.logout();
         await landing.buttonAnmelden.click();
         await login.login(usernames[0], einstiegspasswort);
-        await login.updatePW();
+        await login.updatePassword();
         currentUserIsLandesadministrator = false;
-        await startseite.validateStartPageIsLoaded();
+        await startseite.waitForPageLoad();
       });
     }
   );
@@ -205,8 +204,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     'Einen Benutzer mit der Rolle Schuladmin anlegen als Landesadmin und anschließend mit diesem Benutzer anmelden und einen weiteren Benutzer anlegen',
     { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
-      const startseite: StartPage = new StartPage(page);
-      const login: LoginPage = new LoginPage(page);
+      const startseite: StartViewPage = new StartViewPage(page);
+      const login: LoginViewPage = new LoginViewPage(page);
       const header: HeaderPage = new HeaderPage(page);
       const landing: LandingPage = new LandingPage(page);
 
@@ -236,8 +235,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await header.logout();
         await landing.buttonAnmelden.click();
         await login.login(userInfo.username, userInfo.password);
-        userInfo.password = await login.updatePW();
-        await startseite.validateStartPageIsLoaded();
+        userInfo.password = await login.updatePassword();
+        await startseite.waitForPageLoad();
         currentUserIsLandesadministrator = false;
       });
 
@@ -245,7 +244,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         const newVorname: string = generateVorname();
         const newNachname: string = generateNachname();
         const newKopersnr: string = generateKopersNr();
-        const newStartPage: NewStartPage = new NewStartPage(page);
+        const newStartPage: StartViewPage = new StartViewPage(page);
         await newStartPage.navigateToAdministration();
         const menu: MenuPage = new MenuPage(page);
         const personCreationView: PersonCreationViewPage = await menu.personAnlegen();
@@ -541,8 +540,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const landing: LandingPage = new LandingPage(page);
-      const startseite: StartPage = new StartPage(page);
-      const login: LoginPage = new LoginPage(page);
+      const startseite: StartViewPage = new StartViewPage(page);
+      const login: LoginViewPage = new LoginViewPage(page);
       const header: HeaderPage = new HeaderPage(page);
       const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
       let userInfo: UserInfo;
@@ -573,10 +572,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await header.logout();
         await landing.buttonAnmelden.click();
         await login.login(userInfo.username, userInfo.password);
-        userInfo.password = await login.updatePW();
+        userInfo.password = await login.updatePassword();
         currentUserIsLandesadministrator = false;
-        await startseite.validateStartPageIsLoaded();
-        const newStartPage: NewStartPage = new NewStartPage(page);
+        await startseite.waitForPageLoad();
+        const newStartPage: StartViewPage = new StartViewPage(page);
         await newStartPage.navigateToAdministration();
       });
 

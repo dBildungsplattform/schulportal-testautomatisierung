@@ -42,4 +42,10 @@ export class StartViewPage {
       })
     );
   }
+
+  public async checkSpIsHidden(spNames: string[]): Promise<void> {
+    for (const spName of spNames) {
+      await expect(this.page.locator('[data-testid^="service-provider-card"]', { hasText: spName })).toBeHidden();
+    }
+  }
 }
