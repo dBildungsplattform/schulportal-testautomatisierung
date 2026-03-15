@@ -1,0 +1,23 @@
+{
+  // Use the workspace Prettier
+  "prettier.prettierPath": "./node_modules/prettier",
+  
+  // Format files on save
+  "editor.formatOnSave": true,
+
+  // Set Prettier as default formatter
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+  // Optional: Enable ESLint auto fix on save
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+
+  // Optional: Only format TS/JS/TSX files on save
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
+}

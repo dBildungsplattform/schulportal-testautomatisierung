@@ -12,21 +12,23 @@
   "license": "EUPL-1.2",
   "scripts": {
     "generate-api": "openapi-generator-cli generate --generator-key backend --openapi-normalizer REFACTOR_ALLOF_WITH_PROPERTIES_ONLY=true",
-    "lint": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
-    "type-check": "tsc --noEmit"
+    "lint": "eslint . --fix",
+    "type-check": "tsc --noEmit",
+    "format": "prettier --write 'tests/**/*.{ts,tsx}' 'src/**/*.{ts,tsx}'",
+    "check-format": "prettier --check 'tests/**/*.{ts,tsx}' 'src/**/*.{ts,tsx}'"
   },
   "devDependencies": {
+    "@eslint/js": "^9.11.0",
     "@openapitools/openapi-generator-cli": "^2.23.4",
     "@playwright/test": "^1.58.0",
-    "@rushstack/eslint-patch": "^1.11.0",
     "@types/node": "^20.16.10",
     "@types/pngjs": "^6.0.5",
-    "@typescript-eslint/eslint-plugin": "^8.8.0",
-    "@typescript-eslint/parser": "^8.8.0",
     "dotenv": "^16.4.5",
-    "eslint": "^8.57.1",
-    "eslint-plugin-playwright": "^0.18.0",
-    "typescript": "^5.6.2"
+    "eslint": "^9.39.4",
+    "eslint-plugin-playwright": "^1.8.3",
+    "prettier": "^3.8.1",
+    "typescript": "^5.6.2",
+    "typescript-eslint": "^8.43.0"
   },
   "dependencies": {
     "@faker-js/faker": "^8.4.1",
