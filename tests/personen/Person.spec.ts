@@ -4,20 +4,19 @@ import { getOrganisationId } from '../../base/api/organisationApi';
 import { createRolleAndPersonWithPersonenkontext, UserInfo } from '../../base/api/personApi';
 import { addSystemrechtToRolle, createRolle } from '../../base/api/rolleApi';
 import { getServiceProviderId } from '../../base/api/serviceProviderApi';
-import {
-  ersatzLandSH,
-  landSH,
-  oeffentlichLandSH,
-  testschuleDstNr,
-  testschuleName,
-} from '../../base/organisation';
+import { ersatzLandSH, landSH, oeffentlichLandSH, testschuleDstNr, testschuleName } from '../../base/organisation';
 import { landesadminRolle, schuelerRolle, schuladminOeffentlichRolle } from '../../base/rollen';
 import { typeLehrer, typeSchueler } from '../../base/rollentypen';
 import { DEV, STAGE } from '../../base/tags';
 import { deletePersonenBySearchStrings, deleteRolleById, deleteRolleByName } from '../../base/testHelperDeleteTestdata';
 import { TestHelperLdap } from '../../base/testHelperLdap';
 import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
-import { generateKopersNr, generateNachname, generateRolleName, generateVorname } from '../../base/utils/generateTestdata';
+import {
+  generateKopersNr,
+  generateNachname,
+  generateRolleName,
+  generateVorname,
+} from '../../base/utils/generateTestdata';
 import { PersonCreationViewPage } from '../../pages/admin/personen/PersonCreationView.page';
 import { PersonDetailsViewPage } from '../../pages/admin/personen/PersonDetailsView.page';
 import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.page';
@@ -132,7 +131,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         currentUserIsLandesadministrator = false;
         await startseite.validateStartPageIsLoaded();
       });
-    }
+    },
   );
 
   test(
@@ -166,7 +165,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         usernames.push(await personCreationView.dataBenutzername.innerText());
         await expect(personCreationView.dataRolle).toHaveText(landesadminRolle);
       });
-    }
+    },
   );
 
   test(
@@ -198,7 +197,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         usernames.push(await personCreationView.dataBenutzername.innerText());
         await expect(personCreationView.dataRolle).toHaveText('LiV');
       });
-    }
+    },
   );
 
   test(
@@ -225,7 +224,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
           nachname,
           vorname,
           idSPs,
-          generateRolleName()
+          generateRolleName(),
         );
         await addSystemrechtToRolle(page, userInfo.rolleId, 'PERSONEN_VERWALTEN');
         await addSystemrechtToRolle(page, userInfo.rolleId, 'PERSONEN_ANLEGEN');
@@ -261,7 +260,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         // Save the username for cleanup
         usernames.push(await personCreationView.dataBenutzername.innerText());
       });
-    }
+    },
   );
 
   test(
@@ -299,7 +298,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         usernames.push(await personCreationView.dataBenutzername.innerText());
         await expect(personCreationView.dataRolle).toHaveText(schuelerRolle);
       });
-    }
+    },
   );
 
   test(
@@ -323,7 +322,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await personCreationView.searchAndSelectOrganisation(OrganisationLand, true);
         await personCreationView.checkRolleModal(
           [landesadminRolle],
-          [rolleLehr, rolleLiV, schuladminOeffentlichRolle, schuelerRolle]
+          [rolleLehr, rolleLiV, schuladminOeffentlichRolle, schuelerRolle],
         );
         await personCreationView.clearOrganisationSelection();
       });
@@ -332,7 +331,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await personCreationView.searchAndSelectOrganisation(OrganisationOeffentlicheSchule, true);
         await personCreationView.checkRolleModal(
           [landesadminRolle],
-          [rolleLehr, rolleLiV, schuladminOeffentlichRolle, schuelerRolle]
+          [rolleLehr, rolleLiV, schuladminOeffentlichRolle, schuelerRolle],
         );
         await personCreationView.clearOrganisationSelection();
       });
@@ -341,7 +340,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await personCreationView.searchAndSelectOrganisation(OrganisationErsatzschule, true);
         await personCreationView.checkRolleModal(
           [landesadminRolle],
-          [rolleLehr, rolleLiV, schuladminOeffentlichRolle, schuelerRolle]
+          [rolleLehr, rolleLiV, schuladminOeffentlichRolle, schuelerRolle],
         );
         await personCreationView.clearOrganisationSelection();
       });
@@ -350,17 +349,16 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await personCreationView.searchAndSelectOrganisation(OrganisationSchule, false);
         await personCreationView.checkRolleModal(
           [rolleLehr, rolleLiV, schuladminOeffentlichRolle, schuelerRolle],
-          [landesadminRolle]
+          [landesadminRolle],
         );
       });
-    }
+    },
   );
 
   test(
     'Eine Lehrkraft anlegen und Ihren Kontext entfernen dann wieder hinzufügen und den LDAP Inhalt vollständig prüfen',
     { tag: [DEV] },
     async ({ page }: PlaywrightTestArgs) => {
-
       test.slow();
 
       const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
@@ -456,14 +454,13 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         expect(mailPrimaryAddress).toContain('schule-sh.de');
         expect(mailPrimaryAddress.length).toBeGreaterThan(5);
       });
-    }
+    },
   );
 
   test(
     'Eine Lehrkraft anlegen in der Rolle Landesadmin und die Bestätigungsseite sowie den LDAP Inhalt vollständig prüfen',
     { tag: [DEV] },
     async ({ page }: PlaywrightTestArgs) => {
-
       test.slow();
 
       const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
@@ -490,7 +487,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
           nachname,
           rolleNames,
           testschuleDstNr,
-          schulstrukturknoten
+          schulstrukturknoten,
         );
         usernames.push(await personCreationView.dataBenutzername.innerText());
         createdBenutzername = await personCreationView.dataBenutzername.innerText();
@@ -507,7 +504,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(personCreationView.dataRolle).toContainText('Lehrkraft');
         await expect(personCreationView.labelOrganisationsebene).toHaveText('Organisationsebene:');
         await expect(personCreationView.dataOrganisationsebene).toHaveText(
-          dienststellenNr + ' (' + schulstrukturknoten + ')'
+          dienststellenNr + ' (' + schulstrukturknoten + ')',
         );
         await expect(personCreationView.buttonWeiterenBenutzerAnlegen).toBeVisible();
         await expect(personCreationView.buttonZurueckErgebnisliste).toBeVisible();
@@ -533,7 +530,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(personDetailsView.textH2BenutzerBearbeiten).toHaveText('Benutzer bearbeiten');
         await expect(personDetailsView.username).toHaveText(usernames[0]);
       });
-    }
+    },
   );
 
   test(
@@ -556,7 +553,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
           generateNachname(),
           generateVorname(),
           idSPs,
-          generateRolleName()
+          generateRolleName(),
         );
         await addSystemrechtToRolle(page, userInfo.rolleId, 'ROLLEN_VERWALTEN');
         await addSystemrechtToRolle(page, userInfo.rolleId, 'PERSONEN_SOFORT_LOESCHEN');
@@ -618,7 +615,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(personCreationView.textH2PersonAnlegen).toBeVisible();
         await expect(personCreationView.buttonSchliessen).toBeVisible();
         await expect(personCreationView.textSuccess).toHaveText(
-          vorname1 + ' ' + nachname1 + ' wurde erfolgreich hinzugefügt.'
+          vorname1 + ' ' + nachname1 + ' wurde erfolgreich hinzugefügt.',
         );
         // Benutzer wird im afterEach-Block gelöscht
         // gesteuert wird die Löschung über die Variable username
@@ -636,7 +633,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(personCreationView.dataRolle).toHaveText(schuelerRolle);
         await expect(personCreationView.labelOrganisationsebene).toHaveText('Organisationsebene:');
         await expect(personCreationView.dataOrganisationsebene).toHaveText(
-          testschuleDstNr + ' (' + schulstrukturknoten + ')'
+          testschuleDstNr + ' (' + schulstrukturknoten + ')',
         );
         await expect(personCreationView.labelKlasse).toHaveText('Klasse:');
         await expect(personCreationView.dataKlasse).toHaveText(klassenname);
@@ -660,7 +657,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(personCreationView.textH2PersonAnlegen).toBeVisible();
         await expect(personCreationView.buttonSchliessen).toBeVisible();
         await expect(personCreationView.textSuccess).toHaveText(
-          vorname2 + ' ' + nachname2 + ' wurde erfolgreich hinzugefügt.'
+          vorname2 + ' ' + nachname2 + ' wurde erfolgreich hinzugefügt.',
         );
         // Benutzer wird im afterEach-Block gelöscht
         // gesteuert wird die Löschung über die Variable username
@@ -678,7 +675,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(personCreationView.dataRolle).toHaveText(rolle2);
         await expect(personCreationView.labelOrganisationsebene).toHaveText('Organisationsebene:');
         await expect(personCreationView.dataOrganisationsebene).toHaveText(
-          testschuleDstNr + ' (' + schulstrukturknoten + ')'
+          testschuleDstNr + ' (' + schulstrukturknoten + ')',
         );
         await expect(personCreationView.buttonWeiterenBenutzerAnlegen).toBeVisible();
         await expect(personCreationView.buttonZurueckErgebnisliste).toBeVisible();
@@ -700,7 +697,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(personCreationView.textH2PersonAnlegen).toBeVisible();
         await expect(personCreationView.buttonSchliessen).toBeVisible();
         await expect(personCreationView.textSuccess).toHaveText(
-          vorname3 + ' ' + nachname3 + ' wurde erfolgreich hinzugefügt.'
+          vorname3 + ' ' + nachname3 + ' wurde erfolgreich hinzugefügt.',
         );
         // Benutzer wird im afterEach-Block gelöscht
         // gesteuert wird die Löschung über die Variable username
@@ -718,12 +715,12 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(personCreationView.dataRolle).toHaveText(rolle3);
         await expect(personCreationView.labelOrganisationsebene).toHaveText('Organisationsebene:');
         await expect(personCreationView.dataOrganisationsebene).toHaveText(
-          testschuleDstNr + ' (' + schulstrukturknoten + ')'
+          testschuleDstNr + ' (' + schulstrukturknoten + ')',
         );
         await expect(personCreationView.buttonWeiterenBenutzerAnlegen).toBeVisible();
         await expect(personCreationView.buttonZurueckErgebnisliste).toBeVisible();
       });
-    }
+    },
   );
 
   test(
@@ -760,7 +757,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await personCreationView.comboboxRolleInput.validateItemNotExists(rolleNames[2], true);
         await personCreationView.comboboxRolleInput.validateItemNotExists(rolleNames[3], true);
       });
-    }
+    },
   );
 
   test(`Neuen Benutzer mit mehreren Rollen anlegen`, { tag: [STAGE, DEV] }, async ({ page }: PlaywrightTestArgs) => {
@@ -781,8 +778,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
 
     const personCreationView: PersonCreationViewPage = await test.step(`Dialog "Person anlegen" öffnen`, async () => {
-        const menu: MenuPage = new MenuPage(page);
-        return await menu.personAnlegen();
+      const menu: MenuPage = new MenuPage(page);
+      return await menu.personAnlegen();
     });
 
     await test.step(`In der Combobox 'Organisation' eine Schule auswählen`, async () => {

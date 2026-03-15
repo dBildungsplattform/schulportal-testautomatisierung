@@ -101,7 +101,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         generateNachname(),
         generateVorname(),
         idSPs,
-        generateRolleName()
+        generateRolleName(),
       );
 
       personIds.push(userInfo.personId);
@@ -118,7 +118,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         await expect(startseite.cardItemSchulportalAdministration).toBeHidden();
         await startseite.checkSpIsVisible([email]);
       });
-    }
+    },
   );
 
   test(
@@ -143,7 +143,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         generateNachname(),
         generateVorname(),
         '',
-        klasseId
+        klasseId,
       );
       personIds.push(userInfo.personId);
       rolleIds.push(userInfo.rolleId);
@@ -160,7 +160,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         await expect(startseite.cardItemSchulportalAdministration).toBeHidden();
         await startseite.checkSpIsVisible([itslearning]);
       });
-    }
+    },
   );
 
   test(
@@ -181,7 +181,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         generateNachname(),
         generateVorname(),
         idSPs,
-        generateRolleName()
+        generateRolleName(),
       );
       personIds.push(userInfo.personId);
       rolleIds.push(userInfo.rolleId);
@@ -199,61 +199,64 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         await startseite.checkSpIsVisible([schulportaladmin]);
         await expect(startseite.cardItemEmail).toBeHidden();
       });
-    }
+    },
   );
 
-  test('News-Box bei befristeten Schulzuordnungen testen', { tag: [STAGE, DEV] }, async ({ page }: PlaywrightTestArgs) => {
-    let userInfoLehrer1: UserInfo;
-    let userInfoLehrer2: UserInfo;
-    const rollenNameLehrer1: string = generateRolleName();
-    const rollenNameLehrer2: string = generateRolleName();
-    const colorOrange: string = 'rgb(255, 152, 37)';
-    const colorRed: string = 'rgb(255, 85, 85)';
+  test(
+    'News-Box bei befristeten Schulzuordnungen testen',
+    { tag: [STAGE, DEV] },
+    async ({ page }: PlaywrightTestArgs) => {
+      let userInfoLehrer1: UserInfo;
+      let userInfoLehrer2: UserInfo;
+      const rollenNameLehrer1: string = generateRolleName();
+      const rollenNameLehrer2: string = generateRolleName();
+      const colorOrange: string = 'rgb(255, 152, 37)';
+      const colorRed: string = 'rgb(255, 85, 85)';
 
       const headerPage: HeaderPage = new HeaderPage(page);
       const loginPage: LoginPage = new LoginPage(page);
 
-    await test.step(`Testdaten: Lehrer1 mit einer befristeten Schulzuordnung(noch 50 Tage gültig) und Lehrer2 mit einer befristeten Schulzuordnung(noch 12 Tage gültig) über die api anlegen`, async () => {
-      // Lehrer1: Schulzuordnung noch 50 Tage gültig
-      userInfoLehrer1 = await createRolleAndPersonWithPersonenkontext(
-        page,
-        testschuleName,
-        typeLehrer,
-        generateNachname(),
-        generateVorname(),
-        [await getServiceProviderId(page, email)],
-        rollenNameLehrer1
-      );
-      personIds.push(userInfoLehrer1.personId);
-      rolleIds.push(userInfoLehrer1.rolleId);
+      await test.step(`Testdaten: Lehrer1 mit einer befristeten Schulzuordnung(noch 50 Tage gültig) und Lehrer2 mit einer befristeten Schulzuordnung(noch 12 Tage gültig) über die api anlegen`, async () => {
+        // Lehrer1: Schulzuordnung noch 50 Tage gültig
+        userInfoLehrer1 = await createRolleAndPersonWithPersonenkontext(
+          page,
+          testschuleName,
+          typeLehrer,
+          generateNachname(),
+          generateVorname(),
+          [await getServiceProviderId(page, email)],
+          rollenNameLehrer1,
+        );
+        personIds.push(userInfoLehrer1.personId);
+        rolleIds.push(userInfoLehrer1.rolleId);
 
         await setTimeLimitPersonenkontext(
           page,
           userInfoLehrer1.personId,
           userInfoLehrer1.organisationId,
           userInfoLehrer1.rolleId,
-          generateCurrentDate({ days: 50, months: 0 })
+          generateCurrentDate({ days: 50, months: 0 }),
         );
 
-      // Lehrer2: Schulzuordnung noch 12 Tage gültig
-      userInfoLehrer2 = await createRolleAndPersonWithPersonenkontext(
-        page,
-        testschuleName,
-        typeLehrer,
-        generateNachname(),
-        generateVorname(),
-        [await getServiceProviderId(page, email)],
-        rollenNameLehrer2
-      );
-      personIds.push(userInfoLehrer2.personId);
-      rolleIds.push(userInfoLehrer2.rolleId);
+        // Lehrer2: Schulzuordnung noch 12 Tage gültig
+        userInfoLehrer2 = await createRolleAndPersonWithPersonenkontext(
+          page,
+          testschuleName,
+          typeLehrer,
+          generateNachname(),
+          generateVorname(),
+          [await getServiceProviderId(page, email)],
+          rollenNameLehrer2,
+        );
+        personIds.push(userInfoLehrer2.personId);
+        rolleIds.push(userInfoLehrer2.rolleId);
 
         await setTimeLimitPersonenkontext(
           page,
           userInfoLehrer2.personId,
           userInfoLehrer2.organisationId,
           userInfoLehrer2.rolleId,
-          generateCurrentDate({ days: 12, months: 0 })
+          generateCurrentDate({ days: 12, months: 0 }),
         );
       });
 
@@ -292,7 +295,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         await expect(page.getByText(alertText)).toBeVisible();
         await expect(page.getByRole('alert')).toHaveCSS('background-color', colorRed);
       });
-    }
+    },
   );
 
   test(
@@ -321,7 +324,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
           generateNachname(),
           generateVorname(),
           await Promise.all(expectedSps.map((sp: string) => getServiceProviderId(page, sp))),
-          generateRolleName()
+          generateRolleName(),
         );
         personIds.push(userInfo.personId);
         rolleIds.push(userInfo.rolleId);
@@ -339,7 +342,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         await startPage.checkSpIsVisible(expectedSps);
         await startPage.checkSpIsHidden(unexpectedSps);
       });
-    }
+    },
   );
 
   test(
@@ -354,7 +357,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
           generateNachname(),
           generateVorname(),
           [await getServiceProviderId(page, itslearning)],
-          generateRolleName()
+          generateRolleName(),
         );
         personIds.push(userInfo.personId);
         rolleIds.push(userInfo.rolleId);
@@ -372,7 +375,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         await startPage.checkSpIsVisible([itslearning]);
         await startPage.checkSpIsHidden([schulportaladmin, email]);
       });
-    }
+    },
   );
 
   test(
@@ -402,7 +405,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
           generateRolleName(),
           generateKopersNr(),
           undefined,
-          new Set<RollenMerkmal>([kopersNrPflicht])
+          new Set<RollenMerkmal>([kopersNrPflicht]),
         );
         personIds.push(userInfo.personId);
         rolleIds.push(userInfo.rolleId);
@@ -419,7 +422,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         await startPage.checkSpIsVisible(expected);
         await startPage.checkSpIsHidden([schulportaladmin, itslearning]);
       });
-    }
+    },
   );
 
   test(
@@ -448,7 +451,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
           generateRolleName(),
           generateKopersNr(),
           undefined,
-          new Set<RollenMerkmal>([kopersNrPflicht])
+          new Set<RollenMerkmal>([kopersNrPflicht]),
         );
         personIds.push(userInfo.personId);
         rolleIds.push(userInfo.rolleId);
@@ -466,7 +469,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         await startPage.checkSpIsVisible(expected);
         await startPage.checkSpIsHidden([schulportaladmin, opSH, itslearning]);
       });
-    }
+    },
   );
 
   test(
@@ -497,7 +500,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
           generateRolleName(),
           generateKopersNr(),
           undefined,
-          new Set<RollenMerkmal>([kopersNrPflicht])
+          new Set<RollenMerkmal>([kopersNrPflicht]),
         );
         personIds.push(userInfo.personId);
         rolleIds.push(userInfo.rolleId);
@@ -515,7 +518,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         await startPage.checkSpIsVisible(expected);
         await startPage.checkSpIsHidden([schulportaladmin]);
       });
-    }
+    },
   );
 
   test(
@@ -546,7 +549,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
           generateRolleName(),
           undefined,
           undefined,
-          new Set<RollenMerkmal>([kopersNrPflicht])
+          new Set<RollenMerkmal>([kopersNrPflicht]),
         );
         personIds.push(userInfo.personId);
         rolleIds.push(userInfo.rolleId);
@@ -564,7 +567,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         await startPage.checkSpIsVisible(expected);
         await startPage.checkSpIsHidden([schulportaladmin]);
       });
-    }
+    },
   );
 
   test(
@@ -594,7 +597,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
           generateRolleName(),
           generateKopersNr(),
           undefined,
-          new Set<RollenMerkmal>([kopersNrPflicht])
+          new Set<RollenMerkmal>([kopersNrPflicht]),
         );
         personIds.push(userInfo.personId);
         rolleIds.push(userInfo.rolleId);
@@ -612,7 +615,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         await startPage.checkSpIsVisible(expected);
         await startPage.checkSpIsHidden([schulportaladmin, itslearning]);
       });
-    }
+    },
   );
 
   test(
@@ -642,7 +645,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
           generateRolleName(),
           generateKopersNr(),
           undefined,
-          new Set<RollenMerkmal>([kopersNrPflicht])
+          new Set<RollenMerkmal>([kopersNrPflicht]),
         );
         personIds.push(userInfo.personId);
         rolleIds.push(userInfo.rolleId);
@@ -660,6 +663,6 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         await startPage.checkSpIsVisible(expected);
         await startPage.checkSpIsHidden([schulportaladmin, itslearning]);
       });
-    }
+    },
   );
 });

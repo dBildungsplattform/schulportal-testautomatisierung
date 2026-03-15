@@ -30,7 +30,7 @@ async function setupAndGoToRolleCreationPage(page: PlaywrightTestArgs['page']): 
 
 async function createRolleStep(
   rolleCreationPage: RolleCreationViewPage,
-  params: RolleCreationParams
+  params: RolleCreationParams,
 ): Promise<RolleCreationSuccessPage> {
   return test.step('Rolle anlegen', async () => rolleCreationPage.createRolle(params));
 }
@@ -91,7 +91,7 @@ test.describe(`Testfälle für die Rollenanlage: Umgebung: ${process.env.ENV}: U
         const klasseId: string | undefined =
           params.rollenart === rollenArtLabel.LERN ? await getOrganisationId(page, klasse1Testschule) : undefined;
         const merkmalNames: Set<RollenMerkmal> = new Set<RollenMerkmal>(
-          params.merkmale.includes(rollenMerkmalLabel.BEFRISTUNG_PFLICHT) ? [RollenMerkmal.BefristungPflicht] : []
+          params.merkmale.includes(rollenMerkmalLabel.BEFRISTUNG_PFLICHT) ? [RollenMerkmal.BefristungPflicht] : [],
         );
 
         const user: UserInfo = await createPerson(
@@ -102,7 +102,7 @@ test.describe(`Testfälle für die Rollenanlage: Umgebung: ${process.env.ENV}: U
           undefined,
           undefined,
           klasseId,
-          merkmalNames
+          merkmalNames,
         );
         const header: HeaderPage = new HeaderPage(page);
         await header.logout();
@@ -159,7 +159,7 @@ test.describe(`Testfälle für die Rollenanlage: Umgebung: ${process.env.ENV}: U
     test('Rolle doppelt anlegen', async () => {
       const rolleCreationSuccessPage: RolleCreationSuccessPage = await test.step('Rolle anlegen', async () => {
         const rolleCreationSuccessPage: RolleCreationSuccessPage = await rolleCreationPage.createRolle(
-          rolleCreationParams[0]
+          rolleCreationParams[0],
         );
         return rolleCreationSuccessPage;
       });

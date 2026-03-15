@@ -64,14 +64,15 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
   for (const { actor, personalData, zuordnungen, serviceProviders } of testData) {
     test(
       `Als ${actor} das eigene Profil öffnen und auf Vollständigkeit prüfen`,
-      { tag: [STAGE, DEV, ] },
+      { tag: [STAGE, DEV] },
       async ({ page }: PlaywrightTestArgs) => {
         await test.step('Rolle und Nutzer anlegen und anmelden', async () => {
           const idSPs: string[] = await Promise.all(
-            serviceProviders.map(async (sp: string) => getServiceProviderId(page, sp))
+            serviceProviders.map(async (sp: string) => getServiceProviderId(page, sp)),
           );
-          const klasseId: string | undefined =
-            zuordnungen[0].klassenName ? await getOrganisationId(page, zuordnungen[0].klassenName) : undefined;
+          const klasseId: string | undefined = zuordnungen[0].klassenName
+            ? await getOrganisationId(page, zuordnungen[0].klassenName)
+            : undefined;
           const userInfo: UserInfo = await createRolleAndPersonWithPersonenkontext(
             page,
             zuordnungen[0].organisationsname,
@@ -81,7 +82,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
             idSPs,
             zuordnungen[0].rollenname,
             personalData.kopersnummer,
-            klasseId
+            klasseId,
           );
           personalData.username = userInfo.username;
 
@@ -110,7 +111,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
             await profileView.assert2FACard();
           }
         });
-      }
+      },
     );
   }
 });

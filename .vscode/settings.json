@@ -1,7 +1,7 @@
 {
   // Use the workspace Prettier
   "prettier.prettierPath": "./node_modules/prettier",
-  
+
   // Format files on save
   "editor.formatOnSave": true,
 
@@ -10,7 +10,7 @@
 
   // Optional: Enable ESLint auto fix on save
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
+    "source.fixAll.eslint": "explicit"
   },
 
   // Optional: Only format TS/JS/TSX files on save

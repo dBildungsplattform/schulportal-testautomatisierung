@@ -10,76 +10,98 @@ import { LandingViewPage } from '../../pages/LandingView.neu.page';
 import { LoginViewPage } from '../../pages/LoginView.neu.page';
 import { StartViewPage } from '../../pages/StartView.neu.page';
 import { KlasseCreationSuccessPage } from '../../pages/admin/organisationen/klassen/KlasseCreationSuccess.page';
-import { KlasseCreationParams, KlasseCreationViewPage } from '../../pages/admin/organisationen/klassen/KlasseCreationView.neu.page';
+import {
+  KlasseCreationParams,
+  KlasseCreationViewPage,
+} from '../../pages/admin/organisationen/klassen/KlasseCreationView.neu.page';
 import { KlasseManagementViewPage } from '../../pages/admin/organisationen/klassen/KlasseManagementView.neu.page';
 import { KlasseDetailsViewPage } from '../../pages/admin/organisationen/klassen/details/KlasseDetailsView.neu.page';
-import { PersonManagementViewPage } from "../../pages/admin/personen/PersonManagementView.neu.page";
+import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.neu.page';
 import { HeaderPage } from '../../pages/components/Header.neu.page';
 
 let personManagementViewPage: PersonManagementViewPage;
-let klasseAnlegenPage : KlasseCreationViewPage;
-let klasseErfolgreichAngelegtPage : KlasseCreationSuccessPage;
-let klasseErgebnislistePage : KlasseManagementViewPage;
-let klasseDetailsPage : KlasseDetailsViewPage;
-let klasseParams : KlasseCreationParams;
-let klasseParamsBearbeitet : KlasseCreationParams;
+let klasseAnlegenPage: KlasseCreationViewPage;
+let klasseErfolgreichAngelegtPage: KlasseCreationSuccessPage;
+let klasseErgebnislistePage: KlasseManagementViewPage;
+let klasseDetailsPage: KlasseDetailsViewPage;
+let klasseParams: KlasseCreationParams;
+let klasseParamsBearbeitet: KlasseCreationParams;
 
 [
   { organisationsName: landSH, rolleName: landesadminRolle, bezeichnung: 'Landesadmin' },
   { organisationsName: testschuleName, rolleName: schuladminOeffentlichRolle, bezeichnung: 'Schuladmin' },
-].forEach(({ organisationsName, rolleName, bezeichnung }: { organisationsName: string; rolleName: string; bezeichnung: string }) => {
-  test.describe(`Testfälle für das Bearbeiten von Klassen als ${bezeichnung}: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
-    test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
-      const header: HeaderPage = new HeaderPage(page);
-      await loginAndNavigateToAdministration(page);
+].forEach(
+  ({
+    organisationsName,
+    rolleName,
+    bezeichnung,
+  }: {
+    organisationsName: string;
+    rolleName: string;
+    bezeichnung: string;
+  }) => {
+    test.describe(`Testfälle für das Bearbeiten von Klassen als ${bezeichnung}: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
+      test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
+        const header: HeaderPage = new HeaderPage(page);
+        await loginAndNavigateToAdministration(page);
 
-      const admin: UserInfo = await createPersonWithPersonenkontext(page, organisationsName, rolleName);
+        const admin: UserInfo = await createPersonWithPersonenkontext(page, organisationsName, rolleName);
 
-      const landingPage: LandingViewPage = await header.logout();
-      const loginPage: LoginViewPage = await landingPage.navigateToLogin();
+        const landingPage: LandingViewPage = await header.logout();
+        const loginPage: LoginViewPage = await landingPage.navigateToLogin();
 
-      // Erstmalige Anmeldung mit Passwortänderung
-      const startPage: StartViewPage = await loginPage.loginNewUserWithPasswordChange(admin.username, admin.password)
-      await startPage.waitForPageLoad();
+        // Erstmalige Anmeldung mit Passwortänderung
+        const startPage: StartViewPage = await loginPage.loginNewUserWithPasswordChange(admin.username, admin.password);
+        await startPage.waitForPageLoad();
 
-      // Navigation zur Klassenanlage
-      personManagementViewPage = await startPage.navigateToAdministration();
-      klasseAnlegenPage = await personManagementViewPage.menu.navigateToKlasseCreation(); 
+        // Navigation zur Klassenanlage
+        personManagementViewPage = await startPage.navigateToAdministration();
+        klasseAnlegenPage = await personManagementViewPage.menu.navigateToKlasseCreation();
 
-      // Testdaten vorbereiten
-      klasseParams = {
-        schulname: testschuleName,
-        klassenname: generateKlassenname(),
-        schulNr: testschuleDstNr
-      };
+        // Testdaten vorbereiten
+        klasseParams = {
+          schulname: testschuleName,
+          klassenname: generateKlassenname(),
+          schulNr: testschuleDstNr,
+        };
 
-      klasseParamsBearbeitet = {
-        schulname: testschuleName,
-        klassenname: generateKlassenname(),
-        schulNr: testschuleDstNr
-      };
+        klasseParamsBearbeitet = {
+          schulname: testschuleName,
+          klassenname: generateKlassenname(),
+          schulNr: testschuleDstNr,
+        };
+      });
+
+      // SPSH-2856 & SPSH-2857
+      test(`Klasse bearbeiten als ${bezeichnung}`, { tag: [STAGE, DEV] }, async () => {
+        await test.step(`Klasse anlegen`, async () => {
+          klasseErfolgreichAngelegtPage = await klasseAnlegenPage.createKlasse(
+            rolleName == landesadminRolle,
+            klasseParams,
+          );
+          await klasseErfolgreichAngelegtPage.waitForPageLoad();
+          await klasseErfolgreichAngelegtPage.checkSuccessPage(klasseParams);
+        });
+
+        await test.step(`Klasse öffnen`, async () => {
+          klasseErgebnislistePage = await klasseErfolgreichAngelegtPage.goBackToList();
+          await klasseErgebnislistePage.waitForDataLoad();
+          klasseDetailsPage = await klasseErgebnislistePage.searchAndOpenGesamtuebersicht(
+            rolleName == landesadminRolle,
+            klasseParams,
+          );
+        });
+
+        await test.step(`Klasse bearbeiten und Bestätigungsseite prüfen`, async () => {
+          await klasseDetailsPage.checkDetailsForm();
+          await klasseDetailsPage.editKlasse(klasseParamsBearbeitet.klassenname);
+          await klasseDetailsPage.klasseSuccessfullyEdited(
+            klasseParamsBearbeitet.schulname,
+            testschuleDstNr,
+            klasseParamsBearbeitet.klassenname,
+          );
+        });
+      });
     });
-
-    // SPSH-2856 & SPSH-2857
-    test(`Klasse bearbeiten als ${bezeichnung}`, { tag: [STAGE, DEV] },  async () => {
-      await test.step(`Klasse anlegen`, async () => {
-        klasseErfolgreichAngelegtPage = await klasseAnlegenPage.createKlasse(rolleName == landesadminRolle, klasseParams);
-        await klasseErfolgreichAngelegtPage.waitForPageLoad();
-        await klasseErfolgreichAngelegtPage.checkSuccessPage(klasseParams);
-      });
-
-      await test.step(`Klasse öffnen`, async () => {
-        klasseErgebnislistePage = await klasseErfolgreichAngelegtPage.goBackToList();
-        await klasseErgebnislistePage.waitForDataLoad();
-        klasseDetailsPage = await klasseErgebnislistePage.searchAndOpenGesamtuebersicht(rolleName == landesadminRolle, klasseParams);
-      });
-
-      await test.step(`Klasse bearbeiten und Bestätigungsseite prüfen`, async () => {
-        await klasseDetailsPage.checkDetailsForm();
-        await klasseDetailsPage.editKlasse(klasseParamsBearbeitet.klassenname);
-        await klasseDetailsPage.klasseSuccessfullyEdited(klasseParamsBearbeitet.schulname, testschuleDstNr, klasseParamsBearbeitet.klassenname);
-      });
-
-    });
-  });
-});
+  },
+);

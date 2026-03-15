@@ -4,7 +4,12 @@ import { createRolleAndPersonWithPersonenkontext, UserInfo } from '../../base/ap
 import { typeSchueler } from '../../base/rollentypen';
 import { getServiceProviderId } from '../../base/api/serviceProviderApi';
 import { itslearning } from '../../base/sp';
-import { generateKlassenname, generateNachname, generateRolleName, generateVorname } from '../../base/utils/generateTestdata';
+import {
+  generateKlassenname,
+  generateNachname,
+  generateRolleName,
+  generateVorname,
+} from '../../base/utils/generateTestdata';
 import { SchuleCreationParams } from '../../pages/admin/organisationen/schulen/SchuleCreationView.neu.page';
 
 export interface KlassenAndSchuelerData {
@@ -32,21 +37,21 @@ interface Schule {
 
 export async function createKlassenAndSchuelerForSchulen(
   page: Page,
-  schulen: Schule[]
+  schulen: Schule[],
 ): Promise<KlassenAndSchuelerData[]> {
   return Promise.all(
     schulen.map(async (schule: Schule): Promise<KlassenAndSchuelerData> => {
-      const klassenNamenSchule: string[] = await createKlassenForSchule(page, { id: schule.schuleId, klassenCount: schule.klassenCount });
-      const schuelerSchule: UserInfo[] = await createSchuelerForSchule(
-        page,
-        {
-          schuleName: schule.params.name,
-          klassenName: klassenNamenSchule[0],
-          count: schule.schuelerCount
-        }
-      );
+      const klassenNamenSchule: string[] = await createKlassenForSchule(page, {
+        id: schule.schuleId,
+        klassenCount: schule.klassenCount,
+      });
+      const schuelerSchule: UserInfo[] = await createSchuelerForSchule(page, {
+        schuleName: schule.params.name,
+        klassenName: klassenNamenSchule[0],
+        count: schule.schuelerCount,
+      });
       return { klassenNamenSchule, schuelerSchule };
-    })
+    }),
   );
 }
 
@@ -59,17 +64,14 @@ async function createKlassenForSchule(page: Page, klasse: Klassen): Promise<stri
       const klassenname: string = generateKlassenname();
       await createKlasse(page, klasse.id, klassenname);
       return klassenname;
-    })
+    }),
   );
 }
 
 /**
  * Erstellt Schüler für eine Schule und ordnet sie einer Klasse zu
  */
-async function createSchuelerForSchule(
-  page: Page,
-  schueler: Schueler
-): Promise<UserInfo[]> {
+async function createSchuelerForSchule(page: Page, schueler: Schueler): Promise<UserInfo[]> {
   return Promise.all(
     Array.from({ length: schueler.count }, async () => {
       const klasseId: string = await getKlasseId(page, schueler.klassenName);
@@ -84,9 +86,8 @@ async function createSchuelerForSchule(
         [serviceProviderId],
         generateRolleName(),
         undefined,
-        klasseId
+        klasseId,
       );
-    })
+    }),
   );
 }
-

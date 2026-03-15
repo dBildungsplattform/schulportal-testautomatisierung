@@ -7,7 +7,12 @@ import { typeLehrer } from '../../base/rollentypen';
 import { email } from '../../base/sp';
 import { DEV, STAGE } from '../../base/tags';
 import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
-import { generateKopersNr, generateNachname, generateRolleName, generateVorname } from '../../base/utils/generateTestdata';
+import {
+  generateKopersNr,
+  generateNachname,
+  generateRolleName,
+  generateVorname,
+} from '../../base/utils/generateTestdata';
 import { HeaderPage } from '../../pages/components/Header.neu.page';
 import { LandingViewPage } from '../../pages/LandingView.neu.page';
 import { LoginViewPage } from '../../pages/LoginView.neu.page';
@@ -27,78 +32,77 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
     });
   });
 
-    test.afterEach(async ({ page }: PlaywrightTestArgs) => {
-      const header: HeaderPage = new HeaderPage(page);
-      const landing: LandingViewPage = new LandingViewPage(page);
-      const login: LoginViewPage = new LoginViewPage(page);
-      const startseite: StartViewPage = new StartViewPage(page);
-
-      // Always: Close open dialogs if present
-      await test.step('Offene Dialoge schließen', async () => {
-        try {
-          await page.keyboard.press('Escape');
-        } catch {
-          // ignore if no dialog open
-        }
-      });
-
-      // If not logged in as Landesadministrator, reset to admin session
-      if (!currentUserIsLandesadministrator) {
-        await test.step('Zurück zum Admin wechseln', async () => {
-          await header.logout();
-          await landing.navigateToLogin();
-          await login.login(ADMIN, PW);
-          await startseite.serviceProvidersAreLoaded();
-        });
-      }
-
-      // Final cleanup: ensure logged out (safety net)
-      await test.step('Endgültig abmelden', async () => {
-        try {
-          await header.logout();
-        } catch {
-          // ignore if already logged out
-        }
-      });
-    });
-
-
-test(
-  'Inbetriebnahme-Passwort als Lehrer über das eigene Profil erzeugen',
-  { tag: [STAGE, DEV] },
-  async ({ page }: PlaywrightTestArgs) => {
+  test.afterEach(async ({ page }: PlaywrightTestArgs) => {
     const header: HeaderPage = new HeaderPage(page);
+    const landing: LandingViewPage = new LandingViewPage(page);
     const login: LoginViewPage = new LoginViewPage(page);
-    const profileView: ProfileViewPage = new ProfileViewPage(page);
-    let userInfoLehrer: UserInfo;
+    const startseite: StartViewPage = new StartViewPage(page);
 
-    await test.step('Testdaten: Lehrer mit einer Rolle (LEHR) über die API anlegen und mit diesem anmelden', async () => {
-      userInfoLehrer = await createRolleAndPersonWithPersonenkontext(
-        page,
-        testschuleName,
-        typeLehrer,
-        generateNachname(),
-        generateVorname(),
-        [await getServiceProviderId(page, email)],
-        generateRolleName(),
-        generateKopersNr()
-      );
-
-      await header.logout();
-      await header.navigateToLogin();
-      await login.login(userInfoLehrer.username, userInfoLehrer.password);
-      await login.updatePassword();
-      currentUserIsLandesadministrator = false;
+    // Always: Close open dialogs if present
+    await test.step('Offene Dialoge schließen', async () => {
+      try {
+        await page.keyboard.press('Escape');
+      } catch {
+        // ignore if no dialog open
+      }
     });
 
-    await test.step('Profil öffnen', async () => {
-      await header.navigateToProfile();
-      await profileView.waitForPageLoad();
-    });
+    // If not logged in as Landesadministrator, reset to admin session
+    if (!currentUserIsLandesadministrator) {
+      await test.step('Zurück zum Admin wechseln', async () => {
+        await header.logout();
+        await landing.navigateToLogin();
+        await login.login(ADMIN, PW);
+        await startseite.serviceProvidersAreLoaded();
+      });
+    }
 
-    await test.step('Inbetriebnahme-Passwort für LK-Endgerät erzeugen', async () => {
-      await profileView.resetDevicePassword();
+    // Final cleanup: ensure logged out (safety net)
+    await test.step('Endgültig abmelden', async () => {
+      try {
+        await header.logout();
+      } catch {
+        // ignore if already logged out
+      }
     });
-  }
-);
+  });
+
+  test(
+    'Inbetriebnahme-Passwort als Lehrer über das eigene Profil erzeugen',
+    { tag: [STAGE, DEV] },
+    async ({ page }: PlaywrightTestArgs) => {
+      const header: HeaderPage = new HeaderPage(page);
+      const login: LoginViewPage = new LoginViewPage(page);
+      const profileView: ProfileViewPage = new ProfileViewPage(page);
+      let userInfoLehrer: UserInfo;
+
+      await test.step('Testdaten: Lehrer mit einer Rolle (LEHR) über die API anlegen und mit diesem anmelden', async () => {
+        userInfoLehrer = await createRolleAndPersonWithPersonenkontext(
+          page,
+          testschuleName,
+          typeLehrer,
+          generateNachname(),
+          generateVorname(),
+          [await getServiceProviderId(page, email)],
+          generateRolleName(),
+          generateKopersNr(),
+        );
+
+        await header.logout();
+        await header.navigateToLogin();
+        await login.login(userInfoLehrer.username, userInfoLehrer.password);
+        await login.updatePassword();
+        currentUserIsLandesadministrator = false;
+      });
+
+      await test.step('Profil öffnen', async () => {
+        await header.navigateToProfile();
+        await profileView.waitForPageLoad();
+      });
+
+      await test.step('Inbetriebnahme-Passwort für LK-Endgerät erzeugen', async () => {
+        await profileView.resetDevicePassword();
+      });
+    },
+  );
 });

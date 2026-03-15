@@ -7,40 +7,32 @@ import { freshLoginPage } from '../../base/api/personApi';
 import { prepareAndLoginUserWithPermissions } from '../helpers/prepareAndLoginUserWithPermissions';
 import { ROLLEN_CASES } from '../../base/rollen';
 
-ROLLEN_CASES.forEach((rolle: {
-  name: string;
-  permissions: RollenSystemRecht[];
-}) => {
-  test.describe(
-    `MenuBar – ${rolle.name}: ENV=${process.env.ENV}`,
-    () => {
-      test.beforeEach(async ({ page }: { page: Page }) => {
+ROLLEN_CASES.forEach((rolle: { name: string; permissions: RollenSystemRecht[] }) => {
+  test.describe(`MenuBar – ${rolle.name}: ENV=${process.env.ENV}`, () => {
+    test.beforeEach(async ({ page }: { page: Page }) => {
+      const loginPage: LoginViewPage = await freshLoginPage(page);
+      await loginPage.login(process.env.USER!, process.env.PW!);
 
-        const loginPage: LoginViewPage = await freshLoginPage(page);
-        await loginPage.login(process.env.USER!, process.env.PW!);
+      await prepareAndLoginUserWithPermissions(page, rolle.permissions);
+    });
 
-        await prepareAndLoginUserWithPermissions(page, rolle.permissions);
+    test('Menu Sichtbarkeit und Navigation', async ({ page }: { page: Page }) => {
+      const menu: MenuBarPage = new MenuBarPage(page);
 
-      });
+      for (const item of MENU_TEST_CASES) {
+        const locator: Locator = page.getByTestId(item.testId);
+        const shouldBeVisible: boolean = item.requiredPermissions.every((p: RollenSystemRecht) =>
+          rolle.permissions.includes(p),
+        );
 
-      test('Menu Sichtbarkeit und Navigation', async ({ page }: { page: Page }) => {
-        const menu: MenuBarPage = new MenuBarPage(page);
-
-        for (const item of MENU_TEST_CASES) {
-          const locator: Locator = page.getByTestId(item.testId);
-          const shouldBeVisible: boolean = item.requiredPermissions.every(
-            (p: RollenSystemRecht) => rolle.permissions.includes(p),
-          );
-
-          if (shouldBeVisible) {
-            await expect(locator).toBeVisible();
-            await item.navigate(menu);
-            await expect(page).toHaveURL(new RegExp(`${item.route}$`));
-          } else {
-            await expect(locator).toHaveCount(0);
-          }
+        if (shouldBeVisible) {
+          await expect(locator).toBeVisible();
+          await item.navigate(menu);
+          await expect(page).toHaveURL(new RegExp(`${item.route}$`));
+        } else {
+          await expect(locator).toHaveCount(0);
         }
-      });
-    },
-  );
+      }
+    });
+  });
 });

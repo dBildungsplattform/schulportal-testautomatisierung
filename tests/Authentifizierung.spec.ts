@@ -39,10 +39,10 @@ test.describe(`Testfälle für den Login: Umgebung: ${process.env.ENV}: URL: ${p
     await loginAndNavigateToAdministration(page);
 
     /* create locked user */
-    const testSchuleId: string = await getOrganisationId(page, testschuleName)
+    const testSchuleId: string = await getOrganisationId(page, testschuleName);
     const rolleName: string = generateRolleName();
     const rolleId: string = await createRolle(page, RollenArt.Lehr, testSchuleId, rolleName);
-    const userinfo: UserInfo = await createPerson(page, testSchuleId, rolleId)
+    const userinfo: UserInfo = await createPerson(page, testSchuleId, rolleId);
     await lockPerson(page, userinfo.personId, testSchuleId);
 
     await header.logout();

@@ -13,8 +13,7 @@ import { LandingViewPage } from '../../pages/LandingView.neu.page';
 import { LoginViewPage } from '../../pages/LoginView.neu.page';
 import { StartViewPage } from '../../pages/StartView.neu.page';
 
-test.describe('Passwort-Reset für Lehrer', () => { 
-
+test.describe('Passwort-Reset für Lehrer', () => {
   let lehrkraft: UserInfo;
   let personManagementViewPage: PersonManagementViewPage;
   let loginPage: LoginViewPage;
@@ -27,23 +26,24 @@ test.describe('Passwort-Reset für Lehrer', () => {
       lehrkraftOeffentlichRolle,
       undefined,
       undefined,
-      generateKopersNr()
+      generateKopersNr(),
     );
   });
 
-  test('Passwort Reset für einen Lehrer als Landesadmin',{ tag: [STAGE, DEV] },
+  test(
+    'Passwort Reset für einen Lehrer als Landesadmin',
+    { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
-    const personDetails: PersonDetailsViewPage = await personManagementViewPage.searchAndOpenGesamtuebersicht(lehrkraft.nachname);
-    const newPassword: string = await personDetails.resetPasswordAndCopyNew();
+      const personDetails: PersonDetailsViewPage = await personManagementViewPage.searchAndOpenGesamtuebersicht(
+        lehrkraft.nachname,
+      );
+      const newPassword: string = await personDetails.resetPasswordAndCopyNew();
 
-    const header: HeaderPage = new HeaderPage(page);
-    const landingPage: LandingViewPage = await header.logout();
-    loginPage = await landingPage.navigateToLogin();
-    const startPage: StartViewPage = await loginPage.loginNewUserWithPasswordChange(
-      lehrkraft.username,
-      newPassword
-    );
-    await startPage.waitForPageLoad();
-    }
+      const header: HeaderPage = new HeaderPage(page);
+      const landingPage: LandingViewPage = await header.logout();
+      loginPage = await landingPage.navigateToLogin();
+      const startPage: StartViewPage = await loginPage.loginNewUserWithPasswordChange(lehrkraft.username, newPassword);
+      await startPage.waitForPageLoad();
+    },
   );
 });

@@ -10,18 +10,22 @@ import { LandingViewPage } from '../../pages/LandingView.neu.page';
 import { LoginViewPage } from '../../pages/LoginView.neu.page';
 import { StartViewPage } from '../../pages/StartView.neu.page';
 import { SchuleCreationSuccessPage } from '../../pages/admin/organisationen/schulen/SchuleCreationSuccess.page';
-import { SchuleCreationParams, SchuleCreationViewPage, Schulform } from '../../pages/admin/organisationen/schulen/SchuleCreationView.neu.page';
+import {
+  SchuleCreationParams,
+  SchuleCreationViewPage,
+  Schulform,
+} from '../../pages/admin/organisationen/schulen/SchuleCreationView.neu.page';
 import { SchuleManagementViewPage } from '../../pages/admin/organisationen/schulen/SchuleManagementView.neu.page';
-import { PersonManagementViewPage } from "../../pages/admin/personen/PersonManagementView.neu.page";
+import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.neu.page';
 import { HeaderPage } from '../../pages/components/Header.neu.page';
 
 test.describe(`Testfälle für das Anlegen von Schulen als Landesadmin: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   let header: HeaderPage;
   let personManagementViewPage: PersonManagementViewPage;
-  let schuleCreationPage : SchuleCreationViewPage;
+  let schuleCreationPage: SchuleCreationViewPage;
   let landesadmin: UserInfo;
-  let schuleCreationSuccessPage : SchuleCreationSuccessPage;
-  let schuleManagementViewPage : SchuleManagementViewPage;
+  let schuleCreationSuccessPage: SchuleCreationSuccessPage;
+  let schuleManagementViewPage: SchuleManagementViewPage;
 
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
     header = new HeaderPage(page);
@@ -33,15 +37,18 @@ test.describe(`Testfälle für das Anlegen von Schulen als Landesadmin: Umgebung
     const loginPage: LoginViewPage = await landingPage.navigateToLogin();
 
     // Erstmalige Anmeldung mit Passwortänderung
-    const startPage: StartViewPage = await loginPage.loginNewUserWithPasswordChange(landesadmin.username, landesadmin.password)
+    const startPage: StartViewPage = await loginPage.loginNewUserWithPasswordChange(
+      landesadmin.username,
+      landesadmin.password,
+    );
     await startPage.waitForPageLoad();
 
     // Navigation zur Anlage von Schulen
-    personManagementViewPage = await startPage.navigateToAdministration();  
+    personManagementViewPage = await startPage.navigateToAdministration();
     schuleCreationPage = await personManagementViewPage.menu.navigateToSchuleCreation();
   });
 
-  test(`Schulen Anlage: UI prüfen`, { tag: [DEV, STAGE] },  async () => {
+  test(`Schulen Anlage: UI prüfen`, { tag: [DEV, STAGE] }, async () => {
     await schuleCreationPage.checkCreateForm();
   });
 
@@ -53,21 +60,25 @@ test.describe(`Testfälle für das Anlegen von Schulen als Landesadmin: Umgebung
       schuleParams1 = {
         name: generateSchulname(),
         dienststellenNr: generateDienststellenNr(),
-        schulform: Schulform.Oeffentlich
+        schulform: Schulform.Oeffentlich,
       };
     });
 
     // SPSH-2954
-    test(`Eine Schule anlegen als Landesadmin und die Bestätigungsseite vollständig prüfen`, { tag: [DEV, STAGE] },  async () => {
-      await test.step(`Schule anlegen`, async () => {
-        schuleCreationSuccessPage = await schuleCreationPage.createSchule(schuleParams1);
-      });
+    test(
+      `Eine Schule anlegen als Landesadmin und die Bestätigungsseite vollständig prüfen`,
+      { tag: [DEV, STAGE] },
+      async () => {
+        await test.step(`Schule anlegen`, async () => {
+          schuleCreationSuccessPage = await schuleCreationPage.createSchule(schuleParams1);
+        });
 
-      await test.step(`Bestätigungsseite prüfen`, async () => {
-        await schuleCreationSuccessPage.waitForPageLoad();
-        await schuleCreationSuccessPage.checkSuccessfulCreation(schuleParams1);
-      });
-    });
+        await test.step(`Bestätigungsseite prüfen`, async () => {
+          await schuleCreationSuccessPage.waitForPageLoad();
+          await schuleCreationSuccessPage.checkSuccessfulCreation(schuleParams1);
+        });
+      },
+    );
   });
 
   test.describe('Mehrere Schulen anlegen', () => {
@@ -79,18 +90,18 @@ test.describe(`Testfälle für das Anlegen von Schulen als Landesadmin: Umgebung
       schuleParams1 = {
         name: generateSchulname(),
         dienststellenNr: generateDienststellenNr(),
-        schulform: Schulform.Oeffentlich
+        schulform: Schulform.Oeffentlich,
       };
 
       schuleParams2 = {
         name: generateSchulname(),
         dienststellenNr: generateDienststellenNr(),
-        schulform: Schulform.Ersatz
+        schulform: Schulform.Ersatz,
       };
     });
 
     // SPSH-2952
-    test(`2 Schulen nacheinander anlegen als Landesadmin`, { tag: [DEV, STAGE] },  async () => {
+    test(`2 Schulen nacheinander anlegen als Landesadmin`, { tag: [DEV, STAGE] }, async () => {
       await test.step(`Erste Schule anlegen`, async () => {
         schuleCreationSuccessPage = await schuleCreationPage.createSchule(schuleParams1);
         await schuleCreationSuccessPage.waitForPageLoad();

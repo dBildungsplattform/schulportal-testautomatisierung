@@ -92,21 +92,23 @@ export default async function globalSetup(): Promise<void> {
         SharedCredentialManager.setUsername(userInfo.username, index);
         SharedCredentialManager.setPassword(password, index);
 
-        const initTokenResponse: string = await twoFactorApi.privacyIdeaAdministrationControllerInitializeSoftwareToken({
-          tokenInitBodyParams: {
-            personId: userInfo.personId,
+        const initTokenResponse: string = await twoFactorApi.privacyIdeaAdministrationControllerInitializeSoftwareToken(
+          {
+            tokenInitBodyParams: {
+              personId: userInfo.personId,
+            },
           },
-        });
+        );
         const otpSecret: string | null = getSecretFromTokenQRCode(initTokenResponse);
-        if (!otpSecret) throw new Error(`Setting up 2FA for ${userInfo.username} failed`)
+        if (!otpSecret) throw new Error(`Setting up 2FA for ${userInfo.username} failed`);
 
-        const otp: { otp: string, expires: number } = await TOTP.generate(otpSecret!);
+        const otp: { otp: string; expires: number } = await TOTP.generate(otpSecret!);
         await twoFactorApi.privacyIdeaAdministrationControllerVerifyTokenRaw({
           tokenVerifyBodyParams: {
             personId: userInfo.personId,
             otp: otp.otp,
           },
-        })
+        });
         SharedCredentialManager.setOtpSeed(otpSecret!, index);
 
         const header: HeaderPage = new HeaderPage(page);

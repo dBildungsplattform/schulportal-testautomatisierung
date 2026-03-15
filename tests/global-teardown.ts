@@ -2,7 +2,18 @@
 
 import { Browser, BrowserContext, chromium, Page } from '@playwright/test';
 
-import { ApiResponse, OrganisationenApi, OrganisationResponse, OrganisationsTyp, PersonenApi, PersonendatensatzResponse, PersonenFrontendApi, PersonFrontendControllerFindPersons200Response, RolleApi, RolleWithServiceProvidersResponse } from '../base/api/generated';
+import {
+  ApiResponse,
+  OrganisationenApi,
+  OrganisationResponse,
+  OrganisationsTyp,
+  PersonenApi,
+  PersonendatensatzResponse,
+  PersonenFrontendApi,
+  PersonFrontendControllerFindPersons200Response,
+  RolleApi,
+  RolleWithServiceProvidersResponse,
+} from '../base/api/generated';
 import { constructOrganisationApi } from '../base/api/organisationApi';
 import { loginAndNavigateToAdministration } from '../base/testHelperUtils';
 import { constructPersonenApi, constructPersonenFrontendApi } from '../base/api/personApi';
@@ -20,12 +31,15 @@ async function cleanup<T>(get: () => Promise<T[]>, del: (item: T) => Promise<voi
       await promise;
     }
     items = await get();
-  } while (items.length > 0)
+  } while (items.length > 0);
 }
 
-function* getBatchedDelPromise<T>(arr: T[], del: (item: T) => Promise<void>): Generator<Promise<PromiseSettledResult<void>[]>> {
+function* getBatchedDelPromise<T>(
+  arr: T[],
+  del: (item: T) => Promise<void>,
+): Generator<Promise<PromiseSettledResult<void>[]>> {
   for (let start = 0; start < arr.length; start += batchSize) {
-    yield Promise.allSettled(arr.slice(start, start + batchSize).map(del))
+    yield Promise.allSettled(arr.slice(start, start + batchSize).map(del));
   }
 }
 
@@ -62,14 +76,16 @@ export default async function globalTeardown(): Promise<void> {
 
     await cleanup(
       async () => {
-        const resp: PersonFrontendControllerFindPersons200Response = await personFrontendApi.personFrontendControllerFindPersons({
-          suchFilter: testDataPrefix,
-          limit,
-        });
-        console.log(`${resp.total} personen to delete`)
+        const resp: PersonFrontendControllerFindPersons200Response =
+          await personFrontendApi.personFrontendControllerFindPersons({
+            suchFilter: testDataPrefix,
+            limit,
+          });
+        console.log(`${resp.total} personen to delete`);
         return resp.items;
       },
-      async (item: PersonendatensatzResponse) => await personApi.personControllerDeletePersonById({ personId: item.person.id }),
+      async (item: PersonendatensatzResponse) =>
+        await personApi.personControllerDeletePersonById({ personId: item.person.id }),
     );
 
     // ---------------------------------------------------------------------
@@ -79,14 +95,16 @@ export default async function globalTeardown(): Promise<void> {
 
     await cleanup(
       async () => {
-        const wrappedResponse: ApiResponse<RolleWithServiceProvidersResponse[]> = await rolleApi.rolleControllerFindRollenRaw({
-          searchStr: testDataPrefix,
-          limit,
-        });
+        const wrappedResponse: ApiResponse<RolleWithServiceProvidersResponse[]> =
+          await rolleApi.rolleControllerFindRollenRaw({
+            searchStr: testDataPrefix,
+            limit,
+          });
         console.log(`${wrappedResponse.raw.headers.get('X-Paging-Total')} rollen to delete`);
         return wrappedResponse.value();
       },
-      async (item: RolleWithServiceProvidersResponse) => await rolleApi.rolleControllerDeleteRolle({ rolleId: item.id })
+      async (item: RolleWithServiceProvidersResponse) =>
+        await rolleApi.rolleControllerDeleteRolle({ rolleId: item.id }),
     );
 
     // ---------------------------------------------------------------------
@@ -96,15 +114,17 @@ export default async function globalTeardown(): Promise<void> {
 
     await cleanup(
       async () => {
-        const wrappedResponse: ApiResponse<OrganisationResponse[]> = await organisationApi.organisationControllerFindOrganizationsRaw({
-          searchString: testDataPrefix,
-          typ: OrganisationsTyp.Klasse,
-          limit,
-        });
-        console.log(`${wrappedResponse.raw.headers.get('X-Paging-Total')} klassen to delete`)
-        return wrappedResponse.value()
+        const wrappedResponse: ApiResponse<OrganisationResponse[]> =
+          await organisationApi.organisationControllerFindOrganizationsRaw({
+            searchString: testDataPrefix,
+            typ: OrganisationsTyp.Klasse,
+            limit,
+          });
+        console.log(`${wrappedResponse.raw.headers.get('X-Paging-Total')} klassen to delete`);
+        return wrappedResponse.value();
       },
-      async (item: OrganisationResponse) => organisationApi.organisationControllerDeleteOrganisation({ organisationId: item.id }),
+      async (item: OrganisationResponse) =>
+        organisationApi.organisationControllerDeleteOrganisation({ organisationId: item.id }),
     );
 
     // ---------------------------------------------------------------------
@@ -114,15 +134,17 @@ export default async function globalTeardown(): Promise<void> {
 
     await cleanup(
       async () => {
-        const wrappedResponse: ApiResponse<OrganisationResponse[]> = await organisationApi.organisationControllerFindOrganizationsRaw({
-          searchString: testDataPrefix,
-          typ: OrganisationsTyp.Schule,
-          limit,
-        });
-        console.log(`${wrappedResponse.raw.headers.get('X-Paging-Total')} schulen to delete`)
+        const wrappedResponse: ApiResponse<OrganisationResponse[]> =
+          await organisationApi.organisationControllerFindOrganizationsRaw({
+            searchString: testDataPrefix,
+            typ: OrganisationsTyp.Schule,
+            limit,
+          });
+        console.log(`${wrappedResponse.raw.headers.get('X-Paging-Total')} schulen to delete`);
         return wrappedResponse.value();
       },
-      async (item: OrganisationResponse) => organisationApi.organisationControllerDeleteOrganisation({ organisationId: item.id }),
+      async (item: OrganisationResponse) =>
+        organisationApi.organisationControllerDeleteOrganisation({ organisationId: item.id }),
     );
 
     console.log('Global teardown finished successfully');

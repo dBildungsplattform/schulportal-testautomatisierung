@@ -9,9 +9,7 @@ export class LandingViewPage {
   /* actions */
   public async waitForPageLoad(): Promise<LandingViewPage> {
     await this.page.getByTestId('landing-headline').waitFor({ state: 'visible' });
-    await expect(this.page.getByTestId('landing-headline')).toHaveText(
-      'Willkommen im Schulportal SH.',
-    );
+    await expect(this.page.getByTestId('landing-headline')).toHaveText('Willkommen im Schulportal SH.');
     return this;
   }
 
