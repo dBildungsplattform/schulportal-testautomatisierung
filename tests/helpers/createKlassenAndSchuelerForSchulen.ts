@@ -74,7 +74,7 @@ async function createKlassenForSchule(page: Page, klasse: Klassen): Promise<stri
 async function createSchuelerForSchule(page: Page, schueler: Schueler): Promise<UserInfo[]> {
   return Promise.all(
     Array.from({ length: schueler.count }, async () => {
-      const klasseId: string = await getKlasseId(page, schueler.klassenName);
+      const klasseId: string | undefined = await getKlasseId(page, schueler.klassenName);
       const serviceProviderId: string = await getServiceProviderId(page, itslearning);
 
       return createRolleAndPersonWithPersonenkontext(

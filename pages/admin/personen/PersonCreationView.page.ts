@@ -19,7 +19,6 @@ export class PersonCreationViewPage {
   readonly textSuccess: Locator;
   readonly iconSuccess: Locator;
   readonly textDatenGespeichert: Locator;
-  readonly textBestaetigungsseiteBenutzernachname: Locator;
   readonly inputEinstiegsPasswort: Locator;
   readonly labelEinstiegsPasswort: Locator;
   readonly buttonZurueckErgebnisliste: Locator;
@@ -53,13 +52,17 @@ export class PersonCreationViewPage {
     this.buttonSchliessen = page.getByTestId('close-layout-card-button');
     this.comboboxRolle = page.getByTestId('rollen-select').locator('.v-field__input');
     this.comboboxRolleClear = page.getByTestId('rollen-select').getByLabel('leeren');
-    this.comboboxSchulstrukturknotenClear = page.getByTestId('personenkontext-create-organisation-select').getByLabel('leeren');
+    this.comboboxSchulstrukturknotenClear = page
+      .getByTestId('personenkontext-create-organisation-select')
+      .getByLabel('leeren');
     this.organisation = page.getByTestId('personenkontext-create-organisation-select').locator('.v-field');
     this.organisationInput = page.getByTestId('personenkontext-create-organisation-select');
     this.inputVorname = page.getByTestId('vorname-input').locator('.v-field__input');
     this.inputNachname = page.getByTestId('familienname-input').locator('.v-field__input');
     this.inputKopersnr = page.getByTestId('kopersnr-input').locator('.v-field__input');
-    this.comboboxSchulstrukturknoten = page.getByTestId('personenkontext-create-organisation-select').locator('.v-field__input');
+    this.comboboxSchulstrukturknoten = page
+      .getByTestId('personenkontext-create-organisation-select')
+      .locator('.v-field__input');
     this.comboboxKlasse = page.getByTestId('personenkontext-create-klasse-select').locator('.v-field__input');
     this.buttonPersonAnlegen = page.getByTestId('person-creation-form-submit-button');
     this.comboboxOrganisationInput = new Autocomplete(this.page, this.organisationInput);
@@ -96,7 +99,7 @@ export class PersonCreationViewPage {
     lastName: string,
     rolleNames: string[],
     officeNo: string,
-    organisation: string
+    organisation: string,
   ): Promise<void> {
     await expect(this.textH2PersonAnlegen).toBeVisible();
     await expect(this.buttonSchliessen).toBeVisible();
@@ -125,7 +128,7 @@ export class PersonCreationViewPage {
     rolle: string,
     firstName: string,
     lastnName: string,
-    koPersNr?: string
+    koPersNr?: string,
   ): Promise<void> {
     await this.comboboxOrganisationInput.searchByTitle(organisation, false);
 
@@ -146,7 +149,7 @@ export class PersonCreationViewPage {
   public async searchAndSelectOrganisation(organisation: string, exact: boolean): Promise<void> {
     await this.comboboxOrganisationInput.searchByTitle(organisation, exact, 'personenkontext-workflow/**');
   }
-  
+
   public async checkRolleModal(includes: string[], excludes: string[]): Promise<void> {
     await this.comboboxRolleInput.openModal();
     for (const role of includes) {

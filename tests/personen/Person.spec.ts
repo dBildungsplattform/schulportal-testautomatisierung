@@ -27,8 +27,8 @@ import { LoginPage } from '../../pages/LoginView.page';
 import { StartViewPage as NewStartPage } from '../../pages/StartView.neu.page';
 import { StartPage } from '../../pages/StartView.page';
 
-const LDAP_URL: string = process.env.LDAP_URL;
-const LDAP_ADMIN_PASSWORD: string = process.env.LDAP_ADMIN_PASSWORD;
+const LDAP_URL: string | undefined = process.env.LDAP_URL;
+const LDAP_ADMIN_PASSWORD: string | undefined = process.env.LDAP_ADMIN_PASSWORD;
 
 // The created test data will be deleted in the afterEach block
 let usernames: string[] = [];
@@ -369,7 +369,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const kopersnr: string = generateKopersNr();
       const schulstrukturknoten: string = testschuleName;
       const dienststellenNr: string = '1111111';
-      const testHelperLdap: TestHelperLdap = new TestHelperLdap(LDAP_URL, LDAP_ADMIN_PASSWORD);
+      const testHelperLdap: TestHelperLdap = new TestHelperLdap(LDAP_URL!, LDAP_ADMIN_PASSWORD!);
       let createdBenutzername: string;
 
       await test.step(`Dialog Person anlegen öffnen`, async () => {
@@ -470,7 +470,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const kopersnr: string = generateKopersNr();
       const schulstrukturknoten: string = testschuleName;
       const dienststellenNr: string = '1111111';
-      const testHelperLdap: TestHelperLdap = new TestHelperLdap(LDAP_URL, LDAP_ADMIN_PASSWORD);
+      const testHelperLdap: TestHelperLdap = new TestHelperLdap(LDAP_URL!, LDAP_ADMIN_PASSWORD!);
       let createdBenutzername: string;
 
       await test.step(`Dialog Person anlegen öffnen`, async () => {

@@ -15,7 +15,6 @@ export class KlasseManagementViewPage {
   readonly comboboxFilterKlasse: Autocomplete;
   readonly tableHeaderDienststellennummer: Locator;
   readonly tableHeaderKlassenname: Locator;
-  readonly iconKlasseLoeschen: Locator;
   readonly buttonKlasseLoeschen: Locator;
   readonly buttonSchliesseKlasseLoeschenDialog: Locator;
   readonly tableRows: Locator;
@@ -60,7 +59,7 @@ export class KlasseManagementViewPage {
 
   private async checkTableRow(
     i: number,
-    hasDienststellenNummerColumn: boolean = this.currentUserIsLandesadministrator
+    hasDienststellenNummerColumn: boolean = this.currentUserIsLandesadministrator,
   ): Promise<void> {
     const klassennameCell: Locator = this.tableRows
       .nth(i)
@@ -106,7 +105,7 @@ export class KlasseManagementViewPage {
 
   public async checkDeleteClassFailed(): Promise<void> {
     await expect(this.textAlertDeleteKlasse).toHaveText(
-      'Die Klasse kann nicht gelöscht werden, da noch Benutzer zugeordnet sind.'
+      'Die Klasse kann nicht gelöscht werden, da noch Benutzer zugeordnet sind.',
     );
   }
 

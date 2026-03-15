@@ -53,7 +53,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       await test.step('Zurück zum Admin wechseln', async () => {
         await header.logout();
         await landing.navigateToLogin();
-        await login.login(ADMIN, PW);
+        await login.login(ADMIN!, PW!);
         await startseite.serviceProvidersAreLoaded();
       });
     }

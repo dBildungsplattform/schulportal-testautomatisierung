@@ -16,7 +16,7 @@ export class Alert<T> {
       title: 'spsh-alert-title',
       text: 'spsh-alert-text',
       button: 'spsh-alert-button',
-    }
+    },
   ) {
     this.locators = {
       title: this.page.getByTestId(locatorTestIds.title),
@@ -32,9 +32,9 @@ export class Alert<T> {
 
   public async assertExpectedTexts(): Promise<void> {
     await Promise.all(
-      Object.entries(this.expectedTexts).map(([key, expectedText]: [Keys, string]) =>
-        expect(this.locators[key]).toHaveText(expectedText)
-      )
+      (Object.entries(this.expectedTexts) as [Keys, string][]).map(([key, expectedText]: [Keys, string]) =>
+        expect(this.locators[key]).toHaveText(expectedText),
+      ),
     );
   }
 }

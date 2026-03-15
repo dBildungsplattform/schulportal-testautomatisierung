@@ -90,7 +90,7 @@ let admin: UserInfo;
           await klasseErgebnislistePage.klasseSuccessfullyDeleted(
             klasseParams.schulname,
             klasseParams.klassenname,
-            klasseParams.schulNr,
+            klasseParams.schulNr!,
           );
         },
       );
