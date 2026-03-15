@@ -1,4 +1,4 @@
-import { Locator, Page } from '@playwright/test';
+import { expect, Locator, Page } from '@playwright/test';
 import { KlasseCreationViewPage } from '../admin/organisationen/klassen/KlasseCreationView.neu.page';
 import { KlasseManagementViewPage } from '../admin/organisationen/klassen/KlasseManagementView.neu.page';
 import { SchuleCreationViewPage } from '../admin/organisationen/schulen/SchuleCreationView.neu.page';
@@ -35,7 +35,10 @@ export class MenuBarPage {
   }
 
   public async navigateToPersonCreation(): Promise<PersonCreationViewPage> {
-    return this.navigateTo('person-creation-menu-item', new PersonCreationViewPage(this.page).waitForPageLoad('Neuen Benutzer hinzufügen'));
+    return this.navigateTo(
+      'person-creation-menu-item',
+      new PersonCreationViewPage(this.page).waitForPageLoad('Neuen Benutzer hinzufügen'),
+    );
   }
 
   public async navigateToPersonImport(): Promise<PersonImportViewPage> {
@@ -43,14 +46,20 @@ export class MenuBarPage {
   }
 
   public async navigateToLandesbedienstetenSuchenUndHinzufuegen(): Promise<LandesbedienstetenSearchFormPage> {
-    return this.navigateTo('person-search-menu-item', new LandesbedienstetenSearchFormPage(this.page).waitForPageLoad());
+    return this.navigateTo(
+      'person-search-menu-item',
+      new LandesbedienstetenSearchFormPage(this.page).waitForPageLoad(),
+    );
   }
 
   public async navigateToPersonAdd(): Promise<PersonCreationViewPage> {
-    return this.navigateTo('person-add-menu-item', new PersonCreationViewPage(this.page).waitForPageLoad('Andere Person (neu anlegen)'));
+    return this.navigateTo(
+      'person-add-menu-item',
+      new PersonCreationViewPage(this.page).waitForPageLoad('Andere Person (neu anlegen)'),
+    );
   }
 
-  public async navigateToKlasseManagement(): Promise<KlasseManagementViewPage> {  
+  public async navigateToKlasseManagement(): Promise<KlasseManagementViewPage> {
     return this.navigateTo('klasse-management-menu-item', new KlasseManagementViewPage(this.page).waitForPageLoad());
   }
 
@@ -69,7 +78,7 @@ export class MenuBarPage {
   }
 
   public async navigateToRolleCreation(): Promise<RolleCreationViewPage> {
-    return this.navigateTo('rolle-creation-menu-item', new RolleCreationViewPage(this.page).waitForPageLoad())
+    return this.navigateTo('rolle-creation-menu-item', new RolleCreationViewPage(this.page).waitForPageLoad());
   }
 
   public async navigateToSchuleManagement(): Promise<SchuleManagementViewPage> {
@@ -84,4 +93,19 @@ export class MenuBarPage {
   }
 
   /* assertions */
+  // MenuBar.neu.page.ts
+  async checkMenuItemVisibility(
+    locator: Locator,
+    shouldBeVisible: boolean,
+    navigate: (menu: MenuBarPage) => Promise<unknown>,
+    route?: string,
+  ): Promise<void> {
+    if (shouldBeVisible) {
+      await expect(locator).toBeVisible();
+      await navigate(this);
+      await expect(this.page).toHaveURL(new RegExp(`${route}$`));
+    } else {
+      await expect(locator).toHaveCount(0);
+    }
+  }
 }
