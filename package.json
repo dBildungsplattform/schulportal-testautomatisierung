@@ -14,8 +14,8 @@
     "generate-api": "openapi-generator-cli generate --generator-key backend --openapi-normalizer REFACTOR_ALLOF_WITH_PROPERTIES_ONLY=true",
     "lint": "eslint . --fix",
     "type-check": "tsc --noEmit",
-    "format": "prettier --write 'tests/**/*.{ts,tsx}' 'src/**/*.{ts,tsx}'",
-    "check-format": "prettier --check 'tests/**/*.{ts,tsx}' 'src/**/*.{ts,tsx}'"
+    "format": "prettier --write 'tests/**/*.ts' 'src/**/*.ts'",
+    "check-format": "prettier --check 'tests/**/*.ts' 'src/**/*.ts'"
   },
   "devDependencies": {
     "@eslint/js": "^9.11.0",
