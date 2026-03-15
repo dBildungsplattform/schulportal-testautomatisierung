@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+ 
 
 import { Browser, BrowserContext, chromium, Page, Request, Response } from '@playwright/test';
 import path from 'node:path';

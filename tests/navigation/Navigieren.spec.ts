@@ -25,11 +25,15 @@ ROLLEN_CASES.forEach((rolle: { name: string; permissions: RollenSystemRecht[] })
           rolle.permissions.includes(p),
         );
 
+        // intentionally testing both visible and hidden states based on permissions, which requires conditional expects by design.
         if (shouldBeVisible) {
+          // eslint-disable-next-line playwright/no-conditional-expect
           await expect(locator).toBeVisible();
           await item.navigate(menu);
+          // eslint-disable-next-line playwright/no-conditional-expect
           await expect(page).toHaveURL(new RegExp(`${item.route}$`));
         } else {
+          // eslint-disable-next-line playwright/no-conditional-expect
           await expect(locator).toHaveCount(0);
         }
       }

@@ -208,7 +208,7 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
     async ({ page }: PlaywrightTestArgs) => {
       let userInfoLehrer1: UserInfo;
       let userInfoLehrer2: UserInfo;
-      const rollenNameLehrer1: string = generateRolleName();
+      const rollenNameLehrer1 = generateRolleName();
       const rollenNameLehrer2: string = generateRolleName();
       const colorOrange: string = 'rgb(255, 152, 37)';
       const colorRed: string = 'rgb(255, 85, 85)';

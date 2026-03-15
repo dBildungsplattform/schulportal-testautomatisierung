@@ -194,6 +194,7 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
       person: UserInfo,
     ) => Promise<SearchResultErrorDialog>;
   }
+
   const popupFixtures: PopupFixture[] = [
     {
       //SPSH-2747 Step 1
@@ -203,8 +204,12 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
       formFunction: async (
         landesbedienstetenSearchFormPage: LandesbedienstetenSearchFormPage,
         person: UserInfo,
-      ): Promise<SearchResultErrorDialog> =>
-        landesbedienstetenSearchFormPage.clickLandesbedienstetenSuchenWithInvalidName(person.vorname, person.nachname),
+      ): Promise<SearchResultErrorDialog> => {
+        return landesbedienstetenSearchFormPage.clickLandesbedienstetenSuchenWithInvalidName(
+          person.vorname,
+          person.nachname,
+        );
+      },
     },
     {
       //SPSH-2747 Step 2
@@ -224,8 +229,9 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
       formFunction: async (
         landesbedienstetenSearchFormPage: LandesbedienstetenSearchFormPage,
         person: UserInfo,
-      ): Promise<SearchResultErrorDialog> =>
-        landesbedienstetenSearchFormPage.clickLandesbedienstetenSuchenWithInvalidBenutzername(person.username),
+      ): Promise<SearchResultErrorDialog> => {
+        return landesbedienstetenSearchFormPage.clickLandesbedienstetenSuchenWithInvalidBenutzername(person.username);
+      },
     },
     {
       //SPSH-2747 Step 3
@@ -249,11 +255,12 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
       formFunction: async (
         landesbedienstetenSearchFormPage: LandesbedienstetenSearchFormPage,
         person: UserInfo,
-      ): Promise<SearchResultErrorDialog> =>
-        landesbedienstetenSearchFormPage.clickLandesbedienstetenSuchenWithDuplicateName(
+      ): Promise<SearchResultErrorDialog> => {
+        return landesbedienstetenSearchFormPage.clickLandesbedienstetenSuchenWithDuplicateName(
           person.vorname,
           person.nachname,
-        ),
+        );
+      },
     },
   ];
 

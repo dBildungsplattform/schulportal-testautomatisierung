@@ -97,36 +97,32 @@ interface AdminFixture {
       });
 
       // SPSH-2925
-      test.describe(
-        `Als ${bezeichnung}: In der Ergebnisliste die Suchfunktion benutzen`,
-        { tag: [STAGE, DEV] },
-        async () => {
-          for (const [key, getValue] of [
-            ['Nachname', (): string => admin.nachname],
-            ['Vorname', (): string => admin.vorname],
-            ['Benutzername', (): string => admin.username],
-            ['Kopersnummer', (): string => admin.kopersnummer],
-          ] as [string, () => string][]) {
-            test(`Suche nach ${key}`, async () => {
-              const value: string = getValue();
-              await personManagementViewPage.searchByText(value);
-              await personManagementViewPage.checkIfPersonExists(value);
-            });
-          }
-
-          // searching for rolle in search-field makes no sense
-          test(`Suche nach Rolle`, async () => {
-            await personManagementViewPage.filterByRolle(rolleName);
-            await personManagementViewPage.checkIfRolleIsCorrect(rolleName);
+      test.describe(`Als ${bezeichnung}: In der Ergebnisliste die Suchfunktion benutzen`, { tag: [STAGE, DEV] }, () => {
+        for (const [key, getValue] of [
+          ['Nachname', (): string => admin.nachname],
+          ['Vorname', (): string => admin.vorname],
+          ['Benutzername', (): string => admin.username],
+          ['Kopersnummer', (): string => admin.kopersnummer],
+        ] as [string, () => string][]) {
+          test(`Suche nach ${key}`, async () => {
+            const value: string = getValue();
+            await personManagementViewPage.searchByText(value);
+            await personManagementViewPage.checkIfPersonExists(value);
           });
+        }
 
-          test(`Suche nach einem nicht existierenden Eintrag`, async () => {
-            await personManagementViewPage.searchByText('NichtExistierenderEintrag');
-            await personManagementViewPage.checkIfPersonExists('Keine Daten gefunden.');
-            await personManagementViewPage.checkRowCount(0);
-          });
-        },
-      );
+        // searching for rolle in search-field makes no sense
+        test(`Suche nach Rolle`, async () => {
+          await personManagementViewPage.filterByRolle(rolleName);
+          await personManagementViewPage.checkIfRolleIsCorrect(rolleName);
+        });
+
+        test(`Suche nach einem nicht existierenden Eintrag`, async () => {
+          await personManagementViewPage.searchByText('NichtExistierenderEintrag');
+          await personManagementViewPage.checkIfPersonExists('Keine Daten gefunden.');
+          await personManagementViewPage.checkRowCount(0);
+        });
+      });
 
       // SPSH-2926
       test(
