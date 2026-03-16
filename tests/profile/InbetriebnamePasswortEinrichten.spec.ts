@@ -48,7 +48,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
           await header.logout();
           await landing.navigateToLogin();
           await login.login(ADMIN, PW);
-          await startseite.serviceProvidersAreLoaded();
+          await startseite.assertServiceProvidersAreLoaded();
         });
       }
 

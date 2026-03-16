@@ -115,8 +115,8 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
       currentUserIsLandesadministrator = false;
       await startseite.waitForPageLoad();
       await test.step(`Prüfen, dass die Kachel E-Mail angezeigt wird und die Kachel Schulportal-Administration nicht angezeigt wird`, async () => {
-        await startseite.checkSpIsHidden([schulportaladmin]);
-        await startseite.serviceProvidersAreVisible([email]);
+        await startseite.assertServiceProviderIsHidden([schulportaladmin]);
+        await startseite.assertServiceProvidersAreVisible([email]);
       });
     }
   );
@@ -157,8 +157,8 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
       currentUserIsLandesadministrator = false;
       await startseite.waitForPageLoad();
       await test.step(`Prüfen, dass die Kachel E-Mail angezeigt wird und die Kachel Schulportal-Administration nicht angezeigt wird`, async () => {
-        await startseite.checkSpIsHidden([schulportaladmin]);
-        await startseite.serviceProvidersAreVisible([itslearning]);
+        await startseite.assertServiceProviderIsHidden([schulportaladmin]);
+        await startseite.assertServiceProvidersAreVisible([itslearning]);
       });
     }
   );
@@ -196,8 +196,8 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
       currentUserIsLandesadministrator = false;
       await startseite.waitForPageLoad();
       await test.step(`Prüfen, dass die Kachel E-Mail nicht angezeigt wird und die Kachel Schulportal-Administration angezeigt wird`, async () => {
-        await startseite.serviceProvidersAreVisible([schulportaladmin]);
-        await startseite.checkSpIsHidden([email]);
+        await startseite.assertServiceProvidersAreVisible([schulportaladmin]);
+        await startseite.assertServiceProviderIsHidden([email]);
       });
     }
   );
@@ -337,8 +337,8 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         const startPage: StartViewPage = await loginPage.login(userInfo.username, userInfo.password);
         await loginPage.updatePassword();
 
-        await startPage.serviceProvidersAreVisible(expectedSps);
-        await startPage.checkSpIsHidden(unexpectedSps);
+        await startPage.assertServiceProvidersAreVisible(expectedSps);
+        await startPage.assertServiceProviderIsHidden(unexpectedSps);
       });
     }
   );
@@ -371,8 +371,8 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         const startPage: StartViewPage = await loginPage.login(userInfo.username, userInfo.password);
         await loginPage.updatePassword();
 
-        await startPage.serviceProvidersAreVisible([itslearning]);
-        await startPage.checkSpIsHidden([schulportaladmin, email]);
+        await startPage.assertServiceProvidersAreVisible([itslearning]);
+        await startPage.assertServiceProviderIsHidden([schulportaladmin, email]);
       });
     }
   );
@@ -419,8 +419,8 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         const loginPage: LoginViewPage = new LoginViewPage(page);
         const startPage: StartViewPage = await loginPage.login(userInfo.username, userInfo.password);
         await loginPage.updatePassword();
-        await startPage.serviceProvidersAreVisible(expected);
-        await startPage.checkSpIsHidden([schulportaladmin, itslearning]);
+        await startPage.assertServiceProvidersAreVisible(expected);
+        await startPage.assertServiceProviderIsHidden([schulportaladmin, itslearning]);
       });
     }
   );
@@ -467,8 +467,8 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         const startPage: StartViewPage = await loginPage.login(userInfo.username, userInfo.password);
         await loginPage.updatePassword();
 
-        await startPage.serviceProvidersAreVisible(expected);
-        await startPage.checkSpIsHidden([schulportaladmin, opSH, itslearning]);
+        await startPage.assertServiceProvidersAreVisible(expected);
+        await startPage.assertServiceProviderIsHidden([schulportaladmin, opSH, itslearning]);
       });
     }
   );
@@ -517,8 +517,8 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         const startPage: StartViewPage = await loginPage.login(userInfo.username, userInfo.password);
         await loginPage.updatePassword();
 
-        await startPage.serviceProvidersAreVisible(expected);
-        await startPage.checkSpIsHidden([schulportaladmin]);
+        await startPage.assertServiceProvidersAreVisible(expected);
+        await startPage.assertServiceProviderIsHidden([schulportaladmin]);
       });
     }
   );
@@ -567,8 +567,8 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         const startPage: StartViewPage = await loginPage.login(userInfo.username, userInfo.password);
         await loginPage.updatePassword();
 
-        await startPage.serviceProvidersAreVisible(expected);
-        await startPage.checkSpIsHidden([schulportaladmin]);
+        await startPage.assertServiceProvidersAreVisible(expected);
+        await startPage.assertServiceProviderIsHidden([schulportaladmin]);
       });
     }
   );
@@ -616,8 +616,8 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         const startPage: StartViewPage = await loginPage.login(userInfo.username, userInfo.password);
         await loginPage.updatePassword();
 
-        await startPage.serviceProvidersAreVisible(expected);
-        await startPage.checkSpIsHidden([schulportaladmin, itslearning]);
+        await startPage.assertServiceProvidersAreVisible(expected);
+        await startPage.assertServiceProviderIsHidden([schulportaladmin, itslearning]);
       });
     }
   );
@@ -665,8 +665,8 @@ test.describe(`Testfälle für Schulportal Administration": Umgebung: ${process.
         const startPage: StartViewPage = await loginPage.login(userInfo.username, userInfo.password);
         await loginPage.updatePassword();
 
-        await startPage.serviceProvidersAreVisible(expected);
-        await startPage.checkSpIsHidden([schulportaladmin, itslearning]);
+        await startPage.assertServiceProvidersAreVisible(expected);
+        await startPage.assertServiceProviderIsHidden([schulportaladmin, itslearning]);
       });
     }
   );
