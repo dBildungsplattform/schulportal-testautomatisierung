@@ -22,7 +22,7 @@ import { PersonCreationViewPage } from '../../pages/admin/personen/PersonCreatio
 import { PersonDetailsViewPage } from '../../pages/admin/personen/PersonDetailsView.page';
 import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.page';
 import { HeaderPage } from '../../pages/components/Header.neu.page';
-import { MenuPage } from '../../pages/components/MenuBar.page';
+import { MenuBarPage } from '../../pages/components/MenuBar.neu.page';
 import { LandingPage } from '../../pages/LandingView.page';
 import { LoginViewPage } from '../../pages/LoginView.neu.page';
 import { StartViewPage } from '../../pages/StartView.neu.page';
@@ -82,7 +82,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const landing: LandingPage = new LandingPage(page);
       const startseite: StartViewPage = new StartViewPage(page);
       const login: LoginViewPage = new LoginViewPage(page);
-      const menue: MenuPage = new MenuPage(page);
+      const menue: MenuBarPage = new MenuBarPage(page);
       const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
       const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
       const header: HeaderPage = new HeaderPage(page);
@@ -95,8 +95,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       let einstiegspasswort: string = '';
 
       await test.step(`Dialog Person anlegen öffnen`, async () => {
-        await menue.menueItemBenutzerAnlegen.click();
-        await expect(personCreationView.textH2PersonAnlegen).toHaveText('Neuen Benutzer hinzufügen');
+        await menue.navigateToPersonCreation();
       });
 
       await test.step(`Lehrer mit Kopers Nummer anlegen`, async () => {
@@ -143,10 +142,9 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const schulstrukturknoten: string = 'Öffentliche Schulen Land Schleswig-Holstein';
 
       const personCreationView: PersonCreationViewPage = await test.step(`Dialog Person anlegen öffnen`, async () => {
-        const menu: MenuPage = new MenuPage(page);
-        const personCreationView: PersonCreationViewPage = await menu.personAnlegen();
-        await expect(personCreationView.textH2PersonAnlegen).toHaveText('Neuen Benutzer hinzufügen');
-        return personCreationView;
+        const menu: MenuBarPage = new MenuBarPage(page);
+        await menu.navigateToPersonCreation();
+        return new PersonCreationViewPage(page);
       });
 
       await test.step(`Benutzer anlegen`, async () => {
@@ -172,7 +170,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     'Einen Benutzer mit der Rolle LiV anlegen als Landesadmin',
     { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
-      const menue: MenuPage = new MenuPage(page);
+      const menue: MenuBarPage = new MenuBarPage(page);
       const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
 
       const rolle: string = 'LiV';
@@ -182,8 +180,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const schulstrukturknoten: string = testschuleName;
 
       await test.step(`Dialog Person anlegen öffnen`, async () => {
-        await menue.menueItemBenutzerAnlegen.click();
-        await expect(personCreationView.textH2PersonAnlegen).toHaveText('Neuen Benutzer hinzufügen');
+        await menue.navigateToPersonCreation();
       });
 
       await test.step(`Benutzer anlegen`, async () => {
@@ -246,9 +243,9 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         const newKopersnr: string = generateKopersNr();
         const newStartPage: StartViewPage = new StartViewPage(page);
         await newStartPage.navigateToAdministration();
-        const menu: MenuPage = new MenuPage(page);
-        const personCreationView: PersonCreationViewPage = await menu.personAnlegen();
-        await expect(personCreationView.textH2PersonAnlegen).toHaveText('Neuen Benutzer hinzufügen');
+        const menu: MenuBarPage = new MenuBarPage(page);
+        await menu.navigateToPersonCreation();
+        const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
         await personCreationView.comboboxRolle.click();
         await page.getByText(rolle, { exact: true }).click();
         await personCreationView.inputVorname.fill(newVorname);
@@ -267,7 +264,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     'Einen Benutzer mit der Rolle Schueler anlegen als Landesadmin',
     { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
-      const menue: MenuPage = new MenuPage(page);
+      const menue: MenuBarPage = new MenuBarPage(page);
       const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
 
       const vorname: string = generateVorname();
@@ -276,8 +273,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const klasse: string = 'Playwright3a';
 
       await test.step(`Dialog Person anlegen öffnen`, async () => {
-        await menue.menueItemBenutzerAnlegen.click();
-        await expect(personCreationView.textH2PersonAnlegen).toHaveText('Neuen Benutzer hinzufügen');
+        await menue.navigateToPersonCreation();
       });
 
       await test.step(`Benutzer anlegen`, async () => {
@@ -314,8 +310,9 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const rolleLiV: string = 'LiV';
 
       const personCreationView: PersonCreationViewPage = await test.step(`Dialog Person anlegen öffnen`, async () => {
-        const menu: MenuPage = new MenuPage(page);
-        return await menu.personAnlegen();
+        const menu: MenuBarPage = new MenuBarPage(page);
+        await menu.navigateToPersonCreation();
+        return new PersonCreationViewPage(page);
       });
 
       await test.step(`Organisation 'Land Schleswig-Holstein' auswählen und Dropdown 'Rolle' prüfen`, async () => {
@@ -745,8 +742,9 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       });
 
       const personCreationView: PersonCreationViewPage = await test.step(`Dialog "Person anlegen" öffnen`, async () => {
-        const menu: MenuPage = new MenuPage(page);
-        return await menu.personAnlegen();
+        const menu: MenuBarPage = new MenuBarPage(page);
+        await menu.navigateToPersonCreation();
+        return new PersonCreationViewPage(page);
       });
 
       await test.step(`In der Combobox 'Organisation' eine Schule auswählen`, async () => {
@@ -780,8 +778,9 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
 
     const personCreationView: PersonCreationViewPage = await test.step(`Dialog "Person anlegen" öffnen`, async () => {
-        const menu: MenuPage = new MenuPage(page);
-        return await menu.personAnlegen();
+        const menu: MenuBarPage = new MenuBarPage(page);
+        await menu.navigateToPersonCreation();
+        return new PersonCreationViewPage(page);
     });
 
     await test.step(`In der Combobox 'Organisation' eine Schule auswählen`, async () => {
