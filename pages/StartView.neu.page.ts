@@ -23,7 +23,7 @@ export class StartViewPage {
   }
 
   /* assertions */
-  public async serviceProvidersAreLoaded(): Promise<void> {
+  public async assertServiceProvidersAreLoaded(): Promise<void> {
     await this.page.waitForResponse(
       (response: Response) => response.url().includes('/api/provider') && response.status() === 200
     );
@@ -31,7 +31,7 @@ export class StartViewPage {
     await expect(this.page.getByTestId('all-service-provider-title')).toBeVisible();
   }
 
-  public async serviceProvidersAreVisible(serviceProviderNames: string[]): Promise<void> {
+  public async assertServiceProvidersAreVisible(serviceProviderNames: string[]): Promise<void> {
     await Promise.all(
       serviceProviderNames.map(async (serviceProviderName: string) => {
         const serviceProviderCard: Locator = this.page.locator(`[data-testid^="service-provider-card"]`, {
@@ -41,5 +41,11 @@ export class StartViewPage {
         await expect(serviceProviderCard.locator('img')).toBeVisible();
       })
     );
+  }
+
+  public async assertServiceProviderIsHidden(spNames: string[]): Promise<void> {
+    for (const spName of spNames) {
+      await expect(this.page.locator('[data-testid^="service-provider-card"]', { hasText: spName })).toBeHidden();
+    }
   }
 }
