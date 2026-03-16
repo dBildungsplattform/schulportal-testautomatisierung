@@ -55,11 +55,10 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       await test.step('Zurück zum Admin wechseln', async () => {
         await header.logout();
         await landing.navigateToLogin();
-        await login.login(ADMIN ?? '', PW ?? '');
-        await startseite.serviceProvidersAreLoaded();
+        await login.login(ADMIN!, PW!);
+        await startseite.assertServiceProvidersAreLoaded();
       });
     }
-
     // Final cleanup: ensure logged out (safety net)
     await test.step('Endgültig abmelden', async () => {
       try {
@@ -138,7 +137,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await header.logout();
         await header.navigateToLogin();
         const startView: StartViewPage = await loginView.login(userInfoSchueler.username, newPassword);
-        await startView.serviceProvidersAreVisible([itslearning]);
+        await startView.assertServiceProvidersAreVisible([itslearning]);
       });
     },
   );

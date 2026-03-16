@@ -47,7 +47,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await header.logout();
         await landing.navigateToLogin();
         await login.login(ADMIN!, PW!);
-        await startseite.serviceProvidersAreLoaded();
+        await startseite.assertServiceProvidersAreLoaded();
       });
     }
 
@@ -92,7 +92,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
           const startViewPage: StartViewPage = await LoginViewPage.login(userInfo.username, userInfo.password);
           userInfo.password = await LoginViewPage.updatePassword();
           currentUserIsLandesadministrator = false;
-          await startViewPage.serviceProvidersAreVisible(serviceProviders);
+          await startViewPage.assertServiceProvidersAreVisible(serviceProviders);
         });
 
         const profileView: ProfileViewPage = await test.step('Profil öffnen', async () => {
