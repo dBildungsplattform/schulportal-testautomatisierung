@@ -51,7 +51,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
           await header.logout();
           await landing.navigateToLogin();
           await login.login(ADMIN, PW);
-          await startseite.serviceProvidersAreLoaded();
+          await startseite.assertServiceProvidersAreLoaded();
         });
       }
 
@@ -133,7 +133,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await header.logout();
         await header.navigateToLogin();
         const startView: StartViewPage = await loginView.login(userInfoSchueler.username, newPassword);
-        await startView.serviceProvidersAreVisible([itslearning]);
+        await startView.assertServiceProvidersAreVisible([itslearning]);
       });
     }
   );

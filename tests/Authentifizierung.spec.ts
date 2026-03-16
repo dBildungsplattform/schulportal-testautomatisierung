@@ -27,7 +27,7 @@ test.describe(`Testfälle für den Login: Umgebung: ${process.env.ENV}: URL: ${p
   test('Erfolgreicher Login', { tag: [SMOKE, DEV, STAGE] }, async () => {
     const startPage: StartViewPage = await loginPage.login(ADMIN, PASSWORD);
     await startPage.waitForPageLoad();
-    await startPage.serviceProvidersAreLoaded();
+    await startPage.assertServiceProvidersAreLoaded();
   });
 
   test('Fehlgeschlagener Login mit falschen Daten', { tag: [SMOKE, DEV, STAGE] }, async () => {

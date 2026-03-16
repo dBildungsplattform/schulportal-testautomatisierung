@@ -1,6 +1,6 @@
 import { expect, type Locator, Page } from '@playwright/test';
 import { KlasseCreationViewPage } from '../admin/organisationen/klassen/KlasseCreationView.page';
-import { KlasseManagementViewPage, KlasseManagementViewPageOptions } from '../admin/organisationen/klassen/KlasseManagementView.page';
+import { KlasseManagementViewPage } from '../admin/organisationen/klassen/KlasseManagementView.neu.page';
 import { SchuleCreationViewPage } from '../admin/organisationen/schulen/SchuleCreationView.neu.page';
 import { SchuleManagementViewPage } from '../admin/organisationen/schulen/SchuleManagementView.neu.page';
 import { PersonCreationViewPage } from '../admin/personen/PersonCreationView.page';
@@ -62,9 +62,9 @@ export class MenuPage {
     return new SchuleCreationViewPage(this.page);
   }
 
-  public async alleKlassenAnzeigen(options?: KlasseManagementViewPageOptions): Promise<KlasseManagementViewPage> {
+  public async alleKlassenAnzeigen(): Promise<KlasseManagementViewPage> {
     await this.menueItemAlleKlassenAnzeigen.click();
-    return new KlasseManagementViewPage(this.page, options);
+    return new KlasseManagementViewPage(this.page);
   }
 
   public async klasseAnlegen(): Promise<KlasseCreationViewPage> {
