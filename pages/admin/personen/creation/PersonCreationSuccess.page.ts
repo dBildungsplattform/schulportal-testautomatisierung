@@ -1,5 +1,5 @@
 import { expect, Locator, Page } from '@playwright/test';
-import { PersonCreationParams } from './PersonCreationView.neu.page';
+import { PersonCreationParams, PersonCreationViewPage } from './PersonCreationView.neu.page';
 
 export type PersonCreationSuccessValidationParams = PersonCreationParams & {
   dstNr?: string;
@@ -20,6 +20,23 @@ export class PersonCreationSuccessPage {
   public async getBenutzername(): Promise<string> {
     const benutzernameField: Locator = await this.getBenutzernameField();
     return benutzernameField.innerText();
+  }
+
+  public async getEinstiegsPasswort(): Promise<string> {
+    return this.page.getByTestId('password-output-field').locator('input').inputValue();
+  }
+
+  public async navigateToCreateAnother(): Promise<PersonCreationViewPage> {
+    await this.page.getByTestId('create-another-person-button').click();
+    return new PersonCreationViewPage(this.page).waitForPageLoad();
+  }
+
+  public async navigateToPersonDetails(): Promise<void> {
+    await this.page.getByTestId('go-to-details-button').click();
+  }
+
+  public async navigateBack(): Promise<void> {
+    await this.page.getByTestId('back-to-list-button').click();
   }
 
   /* assertions */

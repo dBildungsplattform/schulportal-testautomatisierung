@@ -57,6 +57,14 @@ export class PersonCreationViewPage {
     }
   }
 
+  public async searchOrganisation(org: string, exact: boolean): Promise<void> {
+    await this.organisationAutocomplete.searchByTitle(org, exact, PersonCreationViewPage.ENDPOINT);
+  }
+
+  public async addRolle(rolle: string): Promise<void> {
+    await this.rolleAutocomplete.searchByTitle(rolle, true, PersonCreationViewPage.ENDPOINT);
+  }
+
   public async clearOrganisation(): Promise<void> {
     await this.organisationAutocomplete.clear();
     await waitForAPIResponse(this.page, PersonCreationViewPage.ENDPOINT);
