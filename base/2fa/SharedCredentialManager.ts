@@ -1,4 +1,4 @@
-import { FileStorageStrategy } from "./FileStorageStrategy";
+import { FileStorageStrategy } from './FileStorageStrategy';
 
 enum CustomEnvKeys {
   USER = 'USER',

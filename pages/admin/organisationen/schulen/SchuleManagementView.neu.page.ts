@@ -12,7 +12,7 @@ export class SchuleManagementViewPage {
   public readonly menu: MenuBarPage;
 
   constructor(protected readonly page: Page) {
-    this.table = this.page.getByTestId('schule-table'); 
+    this.table = this.page.getByTestId('schule-table');
     this.schuleTable = new DataTable(this.page, this.table);
     this.searchFilter = new SearchFilter(this.page);
     this.headline = this.page.getByTestId('schule-management-headline');
@@ -36,11 +36,15 @@ export class SchuleManagementViewPage {
 
   public async searchAndSyncItslearning(schulname: string): Promise<void> {
     await this.searchByText(schulname);
-    
+
     await this.page.getByTestId('open-schule-itslearning-sync-dialog-icon').click();
-    await expect(this.page.getByTestId('schule-activate-in-itslearning-confirmation-text')).toHaveText(`Wollen Sie die Daten der Schule ${schulname} an itslearning übertragen?`);
+    await expect(this.page.getByTestId('schule-activate-in-itslearning-confirmation-text')).toHaveText(
+      `Wollen Sie die Daten der Schule ${schulname} an itslearning übertragen?`,
+    );
     await this.page.getByTestId('schule-itslearning-sync-button').click();
-    await expect(this.page.getByTestId('activate-schule-sync-itslearning-success-text')).toHaveText(`Die Schule ${schulname} wird in itslearning angelegt.`);
+    await expect(this.page.getByTestId('activate-schule-sync-itslearning-success-text')).toHaveText(
+      `Die Schule ${schulname} wird in itslearning angelegt.`,
+    );
     await this.page.getByTestId('close-schule-sync-itslearning-dialog-button').click();
     await this.waitForPageLoad();
   }

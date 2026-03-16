@@ -1,10 +1,10 @@
-import jsQR, { QRCode } from "jsqr";
-import { PNG } from "pngjs";
+import jsQR, { QRCode } from 'jsqr';
+import { PNG } from 'pngjs';
 
-export { SharedCredentialManager } from "./SharedCredentialManager";
+export { SharedCredentialManager } from './SharedCredentialManager';
 
 export function getSecretFromTokenQRCode(imageSrc: string): string | null {
-  const base64Data: string = (imageSrc).replace('data:image/png;base64,', '');
+  const base64Data: string = imageSrc.replace('data:image/png;base64,', '');
   const buffer: Buffer = Buffer.from(base64Data, 'base64');
   const img: PNG = PNG.sync.read(buffer);
 
@@ -21,4 +21,3 @@ export function getSecretFromTokenQRCode(imageSrc: string): string | null {
   }
   return otpSecret;
 }
-

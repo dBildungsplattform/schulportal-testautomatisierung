@@ -23,9 +23,11 @@ export class TestHelperLdap {
    * @param ldapAdminPassword the password that is used at the bind-dn
    * @param retries specifies the amount of retries used for methods which are using retries (see method-docs), defaults is 3
    */
-  public constructor(private ldapUrl: string, private ldapAdminPassword: string, private retries: number = TestHelperLdap.DEFAULT_RETRIES) {
-
-  }
+  public constructor(
+    private ldapUrl: string,
+    private ldapAdminPassword: string,
+    private retries: number = TestHelperLdap.DEFAULT_RETRIES,
+  ) {}
 
   //** PUBLIC methods for direct usage in tests */
 
@@ -35,20 +37,24 @@ export class TestHelperLdap {
    * Uses retries for enhanced reliability of the LDAP-request and its result.
    * @param username
    */
-  public async validateUserExists(username: string, maxAttempts: number = 10, delayMs: number = 1000): Promise<boolean> {
+  public async validateUserExists(
+    username: string,
+    maxAttempts: number = 10,
+    delayMs: number = 1000,
+  ): Promise<boolean> {
     for (let attempt: number = 1; attempt <= maxAttempts; attempt++) {
       const res: Result<Entry> = await this.executeWithRetry(() => this.getUser(username));
-      
+
       if (res.ok && !!res.value) {
         return true;
       }
-      
+
       // If this wasn't the last attempt, wait before trying again
       if (attempt < maxAttempts) {
         await new Promise((resolve: (value: unknown) => void) => setTimeout(resolve, delayMs));
       }
     }
-    
+
     return false;
   }
 
@@ -92,7 +98,9 @@ export class TestHelperLdap {
    * @param orgaKennung
    */
   public async validateUserIsInGroupOfNames(username: string, orgaKennung: string): Promise<boolean> {
-    const res: Result<boolean> = await this.executeWithRetry(() => this.checkUserIsInGroupOfNames(username, orgaKennung));
+    const res: Result<boolean> = await this.executeWithRetry(() =>
+      this.checkUserIsInGroupOfNames(username, orgaKennung),
+    );
 
     return res.ok && res.value;
   }
@@ -104,22 +112,31 @@ export class TestHelperLdap {
    * @param clearPassword the password non-encoded as clear string (for comparison response from an API-Call)
    */
   public async validatePasswordMatchesUEMPassword(username: string, clearPassword: string): Promise<boolean> {
-    const res: Result<boolean> = await this.executeWithRetry(() => this.checkUserPasswordMatchesPassword(username, clearPassword));
+    const res: Result<boolean> = await this.executeWithRetry(() =>
+      this.checkUserPasswordMatchesPassword(username, clearPassword),
+    );
 
     return res.ok && res.value;
   }
 
   // Polls for the primary email address of a user in LDAP until the email is not empty (This is necessary because email creation is asynchronous and could return an empty if we dont wait)
-  public async getMailPrimaryAddress(username: string, maxAttempts: number = 10, delayMs: number = 1000): Promise<string> {
+  public async getMailPrimaryAddress(
+    username: string,
+    maxAttempts: number = 10,
+    delayMs: number = 1000,
+  ): Promise<string> {
     for (let attempt: number = 1; attempt <= maxAttempts; attempt++) {
-    const res: Result<Entry> = await this.executeWithRetry(() => this.getUser(username));
-    
-    if (!res.ok) {
-      throw new Error(`Failed to retrieve user ${username} from LDAP: ${(res as { ok: false; error: Error }).error.message}`);
-    }
+      const res: Result<Entry> = await this.executeWithRetry(() => this.getUser(username));
 
-    const mailPrimaryAddress: string | Buffer<ArrayBufferLike> | Buffer<ArrayBufferLike>[] | string[] = res.value['mailPrimaryAddress'];
-      
+      if (!res.ok) {
+        throw new Error(
+          `Failed to retrieve user ${username} from LDAP: ${(res as { ok: false; error: Error }).error.message}`,
+        );
+      }
+
+      const mailPrimaryAddress: string | Buffer<ArrayBufferLike> | Buffer<ArrayBufferLike>[] | string[] =
+        res.value['mailPrimaryAddress'];
+
       let emailString: string;
       if (Array.isArray(mailPrimaryAddress)) {
         const firstValue: string | Buffer<ArrayBufferLike> = mailPrimaryAddress[0];
@@ -127,18 +144,18 @@ export class TestHelperLdap {
       } else {
         emailString = Buffer.isBuffer(mailPrimaryAddress) ? mailPrimaryAddress.toString() : mailPrimaryAddress;
       }
-      
+
       // If we got a non-empty email, return it
       if (emailString && emailString.trim() !== '') {
         return emailString;
       }
-      
+
       // If this wasn't the last attempt, wait before trying again
       if (attempt < maxAttempts) {
         await new Promise((resolve: (value: unknown) => void) => setTimeout(resolve, delayMs));
       }
     }
-    
+
     // If we get here, we never found a non-empty email
     return '';
   }
@@ -168,8 +185,8 @@ export class TestHelperLdap {
         ok: true,
         value: searchResultLehrer.searchEntries[0],
       };
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch(ex: unknown) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (ex: unknown) {
       await this.unbind();
       return {
         ok: false,
@@ -191,8 +208,8 @@ export class TestHelperLdap {
         ok: true,
         value: searchResultOrgUnit.searchEntries[0],
       };
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  } catch(ex: unknown) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (ex: unknown) {
       await this.unbind();
       return {
         ok: false,
@@ -215,8 +232,8 @@ export class TestHelperLdap {
         ok: true,
         value: searchResultOrgRole.searchEntries[0],
       };
-       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      } catch(ex: unknown) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (ex: unknown) {
       await this.unbind();
       return {
         ok: false,
@@ -239,8 +256,8 @@ export class TestHelperLdap {
         ok: true,
         value: searchResultGroupOfNames.searchEntries[0],
       };
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      } catch(ex: unknown) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (ex: unknown) {
       await this.unbind();
       return {
         ok: false,
@@ -261,8 +278,8 @@ export class TestHelperLdap {
         ok: true,
         value: isUserInGroup,
       };
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      } catch(ex: unknown) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (ex: unknown) {
       await this.unbind();
       return {
         ok: false,
@@ -348,8 +365,8 @@ export class TestHelperLdap {
         } else {
           throw new Error(`Function returned error: ${(result as { ok: false; error: Error }).error.message}`);
         }
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      } catch(error: unknown) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (error: unknown) {
         const currentDelay: number = delay * Math.pow(currentAttempt, 3);
         console.warn(
           `Attempt ${currentAttempt} failed. Retrying in ${currentDelay}ms... Remaining retries: ${retries - currentAttempt}`,
@@ -360,14 +377,11 @@ export class TestHelperLdap {
       }
       currentAttempt++;
     }
-    console.error(`All ${retries} attempts failed. Exiting with failure.`)
+    console.error(`All ${retries} attempts failed. Exiting with failure.`);
     return result;
   }
 
   private async sleep(ms: number): Promise<void> {
     return new Promise<void>((resolve: () => void) => setTimeout(resolve, ms));
   }
-
 }
-
-

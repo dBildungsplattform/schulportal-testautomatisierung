@@ -15,8 +15,8 @@
     "lint": "eslint . --fix",
     "lint:ci": "eslint .",
     "type-check": "tsc --noEmit",
-    "format": "prettier --write 'tests/**/*.ts' 'src/**/*.ts'",
-    "check-format": "prettier --check 'tests/**/*.ts' 'src/**/*.ts'"
+    "format": "prettier --write **/*.ts",
+    "check-format": "prettier --check **/*.ts"
   },
   "devDependencies": {
     "@eslint/js": "^9.11.0",

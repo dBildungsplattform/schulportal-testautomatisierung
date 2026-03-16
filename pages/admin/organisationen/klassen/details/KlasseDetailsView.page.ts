@@ -67,10 +67,10 @@ export class KlasseDetailsViewPage {
     await this.buttonKlasseLoeschenDialog.click();
     await this.buttonKlasseLoeschen.click();
   }
-  
+
   public async checkDeleteClassFailed(): Promise<void> {
     await expect(this.textAlertDeleteKlasse).toHaveText(
-      'Die Klasse kann nicht gelöscht werden, da noch Benutzer zugeordnet sind.'
+      'Die Klasse kann nicht gelöscht werden, da noch Benutzer zugeordnet sind.',
     );
   }
 

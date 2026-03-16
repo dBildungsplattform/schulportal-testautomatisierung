@@ -7,11 +7,14 @@ export class DataTable {
   /* since the table is within Vuetify's jurisdiction,
       we cannot specify test ids for Playwright and heavily rely on classes as locators */
   readonly tableLocator: Locator;
-  readonly footer: Locator
+  readonly footer: Locator;
 
-  constructor(protected readonly page: Page, locator: Locator) {
-      this.tableLocator = locator;
-      this.footer = this.page.locator('.v-data-table-footer');
+  constructor(
+    protected readonly page: Page,
+    locator: Locator,
+  ) {
+    this.tableLocator = locator;
+    this.footer = this.page.locator('.v-data-table-footer');
   }
 
   /* actions */
@@ -26,7 +29,7 @@ export class DataTable {
 
   public async toggleSelectAllRows(select: boolean): Promise<void> {
     const checkbox: Locator = this.tableLocator.locator('thead input[type="checkbox"]').first();
-    
+
     // Checkbox has 3 states (checked, unchecked, mixed), so max 2 clicks needed to reach desired state
     for (let i: number = 0; i < 2; i++) {
       if ((await checkbox.isChecked()) === select) break;
@@ -34,7 +37,7 @@ export class DataTable {
     }
   }
 
-  public async selectRow(text: string): Promise<void> {    
+  public async selectRow(text: string): Promise<void> {
     const row: Locator = this.getRow(text);
     const rowCheckbox: Locator = row.locator('.v-selection-control');
     await rowCheckbox.click();
@@ -43,7 +46,7 @@ export class DataTable {
   public async clickColumnHeader(columnName: string, endpoint?: string): Promise<void> {
     const header: Locator = this.tableLocator.locator('th').filter({ hasText: columnName });
     await header.click();
-    
+
     if (endpoint) {
       await waitForAPIResponse(this.page, endpoint);
     }
@@ -84,8 +87,8 @@ export class DataTable {
 
   /**
    * NOTE: This function DOES NOT WAIT and returns what is on screen immediately!
-   * @param columnIndex 
-   * @returns 
+   * @param columnIndex
+   * @returns
    */
   public async getColumnData(columnIndex: number): Promise<string[]> {
     await this.waitForDataLoad();
@@ -127,7 +130,7 @@ export class DataTable {
     expect(tableHeadersCount).toEqual(expectedHeaders.length);
 
     for (let i: number = 0; i < tableHeadersCount; i++) {
-      const cell: Locator = tableHeaders[i+1].locator('.v-data-table-header__content');
+      const cell: Locator = tableHeaders[i + 1].locator('.v-data-table-header__content');
 
       await expect(cell).toBeVisible();
       await expect(cell).toHaveText(expectedHeaders[i]);
@@ -160,9 +163,14 @@ export class DataTable {
     await expect(this.tableLocator.getByRole('cell', { name: expectedText, exact: true })).toBeVisible();
   }
 
-  public async checkIfColumnHeaderSorted(columnName: string, sortingStatus: 'ascending' | 'descending' | 'not-sortable'): Promise<void> {
-    const header: Locator = this.tableLocator.locator('th').filter({ has: this.page.getByText(columnName, { exact: true }) });
-    
+  public async checkIfColumnHeaderSorted(
+    columnName: string,
+    sortingStatus: 'ascending' | 'descending' | 'not-sortable',
+  ): Promise<void> {
+    const header: Locator = this.tableLocator
+      .locator('th')
+      .filter({ has: this.page.getByText(columnName, { exact: true }) });
+
     if (sortingStatus === 'ascending') {
       await expect(header.locator('.mdi-arrow-up')).toBeVisible();
     } else if (sortingStatus === 'descending') {
@@ -174,8 +182,7 @@ export class DataTable {
 
   public async checkIfColumnDataSorted(columnIndex: number, sortOrder: 'ascending' | 'descending'): Promise<void> {
     const columnLocator: Locator = this.getColumn(columnIndex);
-    const sortedData: string[] = (await this.getColumnData(columnIndex))
-      .sort((a: string, b: string): number => {
+    const sortedData: string[] = (await this.getColumnData(columnIndex)).sort((a: string, b: string): number => {
       const comparison: number = a.localeCompare(b, 'de', { numeric: true });
       return sortOrder === 'ascending' ? comparison : -comparison;
     });

@@ -4,9 +4,9 @@ import { KlasseCreationSuccessPage } from './KlasseCreationSuccess.page';
 import { KlasseManagementViewPage } from './KlasseManagementView.neu.page';
 
 export interface KlasseCreationParams {
-    schulname: string,
-    klassenname: string,
-    schulNr?: string
+  schulname: string;
+  klassenname: string;
+  schulNr?: string;
 }
 
 export class KlasseCreationViewPage {
@@ -14,11 +14,11 @@ export class KlasseCreationViewPage {
 
   private readonly adminHeadline: Locator = this.page.getByTestId('admin-headline');
   private readonly layoutCardHeadline: Locator = this.page.getByTestId('klasse-creation-headline');
-  private readonly schuleName : Locator = this.page.getByTestId('klasse-form-schule-select');
-  private readonly schuleNameInput : Locator = this.page.getByTestId('klasse-form-schule-select').locator('input');
-  private readonly klasseNameInput : Locator = this.page.getByTestId('klassenname-input').locator('input');
-  private readonly klasseVerwerfenButton : Locator = this.page.getByTestId('klasse-form-discard-button');
-  private readonly klasseAnlegenButton : Locator = this.page.getByTestId('klasse-form-submit-button');
+  private readonly schuleName: Locator = this.page.getByTestId('klasse-form-schule-select');
+  private readonly schuleNameInput: Locator = this.page.getByTestId('klasse-form-schule-select').locator('input');
+  private readonly klasseNameInput: Locator = this.page.getByTestId('klassenname-input').locator('input');
+  private readonly klasseVerwerfenButton: Locator = this.page.getByTestId('klasse-form-discard-button');
+  private readonly klasseAnlegenButton: Locator = this.page.getByTestId('klasse-form-submit-button');
 
   constructor(protected readonly page: Page) {}
 
@@ -28,7 +28,10 @@ export class KlasseCreationViewPage {
     return this;
   }
 
-  public async createKlasse(hasMultipleSchulen : boolean, params: KlasseCreationParams): Promise<KlasseCreationSuccessPage> {
+  public async createKlasse(
+    hasMultipleSchulen: boolean,
+    params: KlasseCreationParams,
+  ): Promise<KlasseCreationSuccessPage> {
     if (hasMultipleSchulen) {
       const schuleNameAutocomplete: Autocomplete = new Autocomplete(this.page, this.schuleName);
       await schuleNameAutocomplete.searchByTitle(params.schulname, false);

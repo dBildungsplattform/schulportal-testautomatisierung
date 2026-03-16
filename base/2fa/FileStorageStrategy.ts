@@ -1,9 +1,9 @@
-import { mkdirSync, mkdtempSync, PathOrFileDescriptor, readFileSync, writeFileSync } from "fs";
-import { tmpdir } from "os";
-import { join } from "path/posix";
+import { mkdirSync, mkdtempSync, PathOrFileDescriptor, readFileSync, writeFileSync } from 'fs';
+import { tmpdir } from 'os';
+import { join } from 'path/posix';
 
-import { workers } from "../../playwright.config";
-import { SharedCredentialStorageStrategy } from "./SharedCredentialManager";
+import { workers } from '../../playwright.config';
+import { SharedCredentialStorageStrategy } from './SharedCredentialManager';
 
 export class FileStorageStrategy implements SharedCredentialStorageStrategy {
   private static readonly credentialPath: string = 'TEST_CREDENTIALS_PATH';
@@ -17,11 +17,8 @@ export class FileStorageStrategy implements SharedCredentialStorageStrategy {
   }
 
   create(prefix: string, value: string, index?: string | number): void {
-    if (index !== undefined)
-      writeFileSync(this.computePath(index, prefix), value);
-
-    else
-      process.env[prefix] = value;
+    if (index !== undefined) writeFileSync(this.computePath(index, prefix), value);
+    else process.env[prefix] = value;
   }
 
   read(prefix: string, index?: string | number): string | undefined {
@@ -33,10 +30,7 @@ export class FileStorageStrategy implements SharedCredentialStorageStrategy {
         console.error(error);
         return undefined;
       }
-    }
-
-    else
-      return process.env[prefix];
+    } else return process.env[prefix];
   }
 
   private computePath(index: string | number, prefix: string): PathOrFileDescriptor {

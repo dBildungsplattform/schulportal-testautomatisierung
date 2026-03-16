@@ -41,8 +41,8 @@ export class VersetzenWorkflowPage extends BaseZuordnungWorkflowPage {
   }
 
   public async checkConfirmation(from: string, to: string): Promise<void> {
-    await expect(
-      this.page.getByTestId('change-klasse-confirmation-dialog-text')
-    ).toContainText(`Wollen Sie den Schüler aus Klasse ${from} in Klasse ${to} versetzen?`);
+    await expect(this.page.getByTestId('change-klasse-confirmation-dialog-text')).toContainText(
+      `Wollen Sie den Schüler aus Klasse ${from} in Klasse ${to} versetzen?`,
+    );
   }
 }

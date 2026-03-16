@@ -2,7 +2,7 @@ import { expect, Locator, Page } from '@playwright/test';
 import { KlasseCreationParams, KlasseCreationViewPage } from './KlasseCreationView.neu.page';
 import { KlasseManagementViewPage } from './KlasseManagementView.neu.page';
 
-export class KlasseCreationSuccessPage  {
+export class KlasseCreationSuccessPage {
   /* add global locators here */
   private readonly headline: Locator = this.page.getByTestId('klasse-creation-headline');
 
@@ -24,9 +24,7 @@ export class KlasseCreationSuccessPage  {
   }
 
   /* assertions */
-  public async checkSuccessPage(
-    params: KlasseCreationParams
-  ): Promise<void> {
+  public async checkSuccessPage(params: KlasseCreationParams): Promise<void> {
     /* header */
     await expect(this.headline).toHaveText('Neue Klasse hinzufügen');
     await expect(this.page.getByTestId('klasse-success-icon')).toBeVisible();
@@ -43,9 +41,7 @@ export class KlasseCreationSuccessPage  {
     await expect(this.page.getByTestId('created-klasse-name-label')).toBeVisible();
 
     /* value column */
-    await expect(this.page.getByTestId('created-klasse-schule'))
-      .toContainText(params.schulname);
-    await expect(this.page.getByTestId('created-klasse-name'))
-      .toHaveText(params.klassenname);
+    await expect(this.page.getByTestId('created-klasse-schule')).toContainText(params.schulname);
+    await expect(this.page.getByTestId('created-klasse-name')).toHaveText(params.klassenname);
   }
 }

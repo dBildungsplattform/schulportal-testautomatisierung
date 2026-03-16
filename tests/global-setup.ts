@@ -1,5 +1,3 @@
- 
-
 import { Browser, BrowserContext, chromium, Page, Request, Response } from '@playwright/test';
 import path from 'node:path';
 import { TOTP } from 'totp-generator';
