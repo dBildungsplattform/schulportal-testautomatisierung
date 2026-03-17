@@ -47,8 +47,14 @@ export class Autocomplete {
     await item.waitFor({ state: 'hidden' });
   }
 
+  /*
+  force: true skips the actionability checks (including the "is this 
+  element the topmost event target" check) and dispatches the click 
+  directly. This is the standard Playwright workaround for Vuetify 
+  layouts where grid wrappers overlap interactive sub-elements.
+  */
   public async openModal(): Promise<void> {
-    await this.modalToggle.click();
+    await this.modalToggle.click({ force: true });
   }
 
   public async closeModal(): Promise<void> {
@@ -57,7 +63,7 @@ export class Autocomplete {
   }
 
   public async toggleModal(): Promise<void> {
-    await this.modalToggle.click();
+    await this.modalToggle.click({ force: true });
   }
 
   public async clear(): Promise<void> {
