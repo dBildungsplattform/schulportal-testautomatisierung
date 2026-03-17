@@ -126,7 +126,7 @@ test.describe(`Testfälle für die Anlage von Personen`, () => {
                 benutzername,
                 startpasswort,
               );
-              await startPage.serviceProvidersAreLoaded();
+              await startPage.assertServiceProvidersAreLoaded();
             });
           });
         },
@@ -438,7 +438,7 @@ test.describe(`Testfälle für die Anlage von Personen`, () => {
       await test.step('Einloggen mit neu angelegtem Benutzer', async () => {
         const loginPage: LoginViewPage = await landingPage.navigateToLogin();
         const startPage: StartViewPage = await loginPage.loginNewUserWithPasswordChange(benutzername, startpasswort);
-        await startPage.serviceProvidersAreLoaded();
+        await startPage.assertServiceProvidersAreLoaded();
       });
     });
   });
