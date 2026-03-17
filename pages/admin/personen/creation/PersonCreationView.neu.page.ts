@@ -32,9 +32,9 @@ export class PersonCreationViewPage {
     const nachnameInput: Locator = this.page.getByTestId('familienname-input').locator('.v-field__input');
     if (params.organisation) await this.organisationAutocomplete.searchByTitle(params.organisation, false, PersonCreationViewPage.ENDPOINT);
     
-    await Promise.all(
-      params.rollen.map((rolle: string) => this.rolleAutocomplete.searchByTitle(rolle, true, PersonCreationViewPage.ENDPOINT))
-    );
+    for (const rolle of params.rollen) {
+      await this.rolleAutocomplete.searchByTitle(rolle, true, PersonCreationViewPage.ENDPOINT);
+    }
 
     await vornameInput.waitFor({ state: 'visible' });
     await vornameInput.fill(params.vorname);
