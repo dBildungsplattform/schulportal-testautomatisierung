@@ -82,8 +82,8 @@ export class Autocomplete {
     }
     await this.openModal();
     await this.clear();
-    await this.waitForData();
     await this.inputLocator.pressSequentially(searchString);
+    await this.waitForData();
     let item: Locator;
 
     if (exactMatch) {
