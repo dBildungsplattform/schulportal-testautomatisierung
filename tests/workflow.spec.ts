@@ -5,7 +5,7 @@ import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelp
 import { loginAndNavigateToAdministration } from '../base/testHelperUtils';
 import { LandingPage } from '../pages/LandingView.page';
 import { StartPage } from '../pages/StartView.page';
-import { HeaderPage } from '../pages/components/Header.page';
+import { HeaderPage } from '../pages/components/Header.neu.page';
 import { CalendarPage } from '../pages/components/service-provider-cards/Calendar.page';
 import { DirectoryPage } from '../pages/components/service-provider-cards/Directory.page';
 import { Email } from '../pages/components/service-provider-cards/Email.page';
@@ -15,7 +15,6 @@ let usernames: string[] = [];
 let rolleIds: string[] = [];
 // This variable must be set to false in the testcase when the logged in user is changed
 let currentUserIsLandesadministrator: boolean = true;
-let logoutViaStartPage: boolean = false;
 
 const isStageTest = (): boolean => process.env.ENV === 'stage' || process.env.TAG === 'stage';
 
@@ -31,11 +30,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
       const header: HeaderPage = new HeaderPage(page);
       const landing: LandingPage = new LandingPage(page);
 
-      if (logoutViaStartPage) {
-        await header.logout({ logoutViaStartPage: true });
-      } else {
-        await header.logout({ logoutViaStartPage: false });
-      }
+      await header.logout();
       await landing.buttonAnmelden.click();
       await loginAndNavigateToAdministration(page);
     }
@@ -54,11 +49,7 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
 
     await test.step(`Abmelden`, async () => {
       const header: HeaderPage = new HeaderPage(page);
-      if (logoutViaStartPage) {
-        await header.logout({ logoutViaStartPage: true });
-      } else {
-        await header.logout({ logoutViaStartPage: false });
-      }
+      await header.logout();
     });
   });
 
@@ -119,9 +110,5 @@ test.describe(`Testfälle für den Test von workflows: Umgebung: ${process.env.E
     await test.step(`Prüfen, dass die Startseite noch geöffnet ist`, async () => {
       await expect(startseite.textH2Ueberschrift).toBeVisible();
     });
-    // #TODO: wait for the last request in the test
-    // sometimes logout breaks the test because of interrupting requests
-    // logoutViaStartPage = true is a workaround
-    logoutViaStartPage = true;
   });
 });

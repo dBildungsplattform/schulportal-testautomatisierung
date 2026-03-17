@@ -226,7 +226,7 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
       setupPerson: async (page: Page): Promise<UserInfo> => {
         const vornameDoppelt: string = generateVorname();
         const nachnameDoppelt: string = generateNachname();
-        let person: UserInfo;
+        let person!: UserInfo;
         for (let i: number = 0; i < 2; i++) {
           person = await createPersonWithPersonenkontext(
             page,

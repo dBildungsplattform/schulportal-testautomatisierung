@@ -39,7 +39,7 @@ USER='xxx' PW='xxx' FRONTEND_URL='https://main.dev.spsh.dbildungsplattform.de/' 
 
 #### Alle Tests auf main ausführen
 
-USER="xxx" PW="xxx" npx playwright test login.spec.ts
+USER="xxx" PW="xxx" npx playwright test <Test-Dateiname>
 
 #### Einen bestimmten Testfall innerhalb einer Datei ausführen:
 

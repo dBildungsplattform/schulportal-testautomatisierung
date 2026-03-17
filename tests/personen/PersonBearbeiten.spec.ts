@@ -26,7 +26,7 @@ import {
 } from '../../base/utils/generateTestdata';
 import { PersonDetailsViewPage } from '../../pages/admin/personen/PersonDetailsView.page';
 import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.page';
-import { HeaderPage } from '../../pages/components/Header.page';
+import { HeaderPage } from '../../pages/components/Header.neu.page';
 import { getOrganisationId } from '../../base/api/organisationApi';
 
 const ADMIN: string | undefined = process.env.USER;
@@ -37,7 +37,6 @@ let rolleIds: string[] = [];
 let klasseNames: string[] = [];
 // This variable must be set to false in the testcase when the logged in user is changed
 const currentUserIsLandesadministrator: boolean = true;
-let logoutViaStartPage: boolean = false;
 
 test.describe(`Testfälle für die Administration von Personen": Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
@@ -50,11 +49,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     if (!currentUserIsLandesadministrator) {
       const header: HeaderPage = new HeaderPage(page);
 
-      if (logoutViaStartPage) {
-        await header.logout({ logoutViaStartPage: true });
-      } else {
-        await header.logout({ logoutViaStartPage: false });
-      }
+      await header.logout();
       await loginAndNavigateToAdministration(page);
     }
 
@@ -77,11 +72,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
     await test.step(`Abmelden`, async () => {
       const header: HeaderPage = new HeaderPage(page);
-      if (logoutViaStartPage) {
-        await header.logout({ logoutViaStartPage: true });
-      } else {
-        await header.logout({ logoutViaStartPage: false });
-      }
+      await header.logout();
     });
   });
 
@@ -92,7 +83,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       let userInfoLehrer: UserInfo;
       const unbefristeteRolle: string = lehrkraftOeffentlichRolle;
       const befristeteRolle: string = lehrerImVorbereitungsdienstRolle;
-      logoutViaStartPage = true;
 
       await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) und SP(email) über die api anlegen ${ADMIN}`, async () => {
         userInfoLehrer = await createRolleAndPersonWithPersonenkontext(
@@ -189,7 +179,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       let userInfoLehrer: UserInfo;
-      logoutViaStartPage = true;
 
       await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) über die api anlegen ${ADMIN}`, async () => {
         userInfoLehrer = await createRolleAndPersonWithPersonenkontext(
@@ -229,7 +218,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const adminRollenart: RollenArt = typeSchuladmin;
       const adminOrganisation: string = testschule665Name;
       let userInfoAdmin: UserInfo;
-      logoutViaStartPage = true;
 
       await test.step(`Testdaten: Schuladmin mit einer Rolle(LEIT) über die api anlegen ${ADMIN}`, async () => {
         userInfoAdmin = await createRolleAndPersonWithPersonenkontext(
@@ -271,7 +259,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const rollenart: RollenArt = 'SYSADMIN';
 
       let userInfoAdmin: UserInfo;
-      logoutViaStartPage = true;
 
       await test.step(`Testdaten: Landesadmin mit einer Rolle(SYSADMIN) über die api anlegen ${ADMIN}`, async () => {
         userInfoAdmin = await createRolleAndPersonWithPersonenkontext(
@@ -322,7 +309,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const adminRollenart: RollenArt = typeSchuladmin;
       const adminOrganisation: string = testschule665Name;
       let userInfoAdmin: UserInfo;
-      logoutViaStartPage = true;
 
       await test.step(`Testdaten: Schuladmin mit einer Rolle(LEIT) über die api anlegen ${ADMIN}`, async () => {
         userInfoAdmin = await createRolleAndPersonWithPersonenkontext(
@@ -395,10 +381,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(personDetailsView.textTokenIstEingerichtetInfo).toBeVisible();
         await expect(personDetailsView.textNeuenTokenEinrichtenInfo).toBeVisible();
       });
-      // #TODO: wait for the last request in the test
-      // sometimes logout breaks the test because of interrupting requests
-      // logoutViaStartPage = true is a workaround
-      logoutViaStartPage = true;
     }
   );
 
@@ -433,10 +415,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await test.step(`Inbetriebnahme-Passwort für LK-Endgerät setzen`, async () => {
         await personDetailsView.createIbnPassword();
       });
-      // #TODO: wait for the last request in the test
-      // sometimes logout breaks the test because of interrupting requests
-      // logoutViaStartPage = true is a workaround
-      logoutViaStartPage = true;
     }
   );
 });

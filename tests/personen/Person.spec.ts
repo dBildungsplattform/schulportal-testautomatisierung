@@ -8,28 +8,21 @@ import {
   ersatzLandSH,
   landSH,
   oeffentlichLandSH,
-  testschuleDstNr,
   testschuleName,
 } from '../../base/organisation';
 import { landesadminRolle, schuelerRolle, schuladminOeffentlichRolle } from '../../base/rollen';
 import { typeLehrer, typeSchueler } from '../../base/rollentypen';
 import { DEV, STAGE } from '../../base/tags';
 import { deletePersonenBySearchStrings, deleteRolleById, deleteRolleByName } from '../../base/testHelperDeleteTestdata';
-import { TestHelperLdap } from '../../base/testHelperLdap';
 import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
 import { generateKopersNr, generateNachname, generateRolleName, generateVorname } from '../../base/utils/generateTestdata';
 import { PersonCreationViewPage } from '../../pages/admin/personen/PersonCreationView.page';
-import { PersonDetailsViewPage } from '../../pages/admin/personen/PersonDetailsView.page';
-import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.page';
-import { HeaderPage } from '../../pages/components/Header.page';
+import { HeaderPage } from '../../pages/components/Header.neu.page';
 import { MenuPage } from '../../pages/components/MenuBar.page';
 import { LandingPage } from '../../pages/LandingView.page';
 import { LoginPage } from '../../pages/LoginView.page';
 import { StartViewPage as NewStartPage } from '../../pages/StartView.neu.page';
 import { StartPage } from '../../pages/StartView.page';
-
-const LDAP_URL: string = process.env.LDAP_URL;
-const LDAP_ADMIN_PASSWORD: string = process.env.LDAP_ADMIN_PASSWORD;
 
 // The created test data will be deleted in the afterEach block
 let usernames: string[] = [];
@@ -37,7 +30,6 @@ let rolleIds: string[] = [];
 let rolleNames: string[] = [];
 // This variable must be set to false in the testcase when the logged in user is changed
 let currentUserIsLandesadministrator: boolean = true;
-let logoutViaStartPage: boolean = false;
 
 test.describe(`Testfälle für die Administration von Personen": Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
@@ -50,11 +42,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     if (!currentUserIsLandesadministrator) {
       const header: HeaderPage = new HeaderPage(page);
 
-      if (logoutViaStartPage) {
-        await header.logout({ logoutViaStartPage: true });
-      } else {
-        await header.logout({ logoutViaStartPage: false });
-      }
+      await header.logout();
       await loginAndNavigateToAdministration(page);
     }
 
@@ -77,11 +65,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
     await test.step(`Abmelden`, async () => {
       const header: HeaderPage = new HeaderPage(page);
-      if (logoutViaStartPage) {
-        await header.logout({ logoutViaStartPage: true });
-      } else {
-        await header.logout({ logoutViaStartPage: false });
-      }
+      await header.logout();
     });
   });
 
@@ -117,7 +101,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         usernames.push(userInfo.username);
         rolleIds.push(userInfo.rolleId);
 
-        await header.logout({ logoutViaStartPage: true });
+        await header.logout();
         await landing.buttonAnmelden.click();
         await login.login(userInfo.username, userInfo.password);
         userInfo.password = await login.updatePW();
@@ -145,10 +129,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         // Save the username for cleanup
         usernames.push(await personCreationView.dataBenutzername.innerText());
       });
-      // #TODO: wait for the last request in the test
-      // sometimes logout breaks the test because of interrupting requests
-      // logoutViaStartPage = true is a workaround
-      logoutViaStartPage = true;
     }
   );
 
@@ -203,10 +183,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
           [landesadminRolle]
         );
       });
-      // #TODO: wait for the last request in the test
-      // sometimes logout breaks the test because of interrupting requests
-      // logoutViaStartPage = true is a workaround
-      logoutViaStartPage = true;
     }
   );
 
@@ -244,7 +220,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await personCreationView.comboboxRolleInput.validateItemNotExists(rolleNames[2], true);
         await personCreationView.comboboxRolleInput.validateItemNotExists(rolleNames[3], true);
       });
-      logoutViaStartPage = true;
     }
   );
 });

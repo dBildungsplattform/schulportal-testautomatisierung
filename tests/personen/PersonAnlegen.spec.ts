@@ -60,7 +60,7 @@ test.describe(`Testfälle für die Anlage von Personen`, () => {
             const isLehrer: boolean =
               userRolle === lehrerImVorbereitungsdienstRolle || userRolle === lehrkraftOeffentlichRolle;
             const isBefristet: boolean = userRolle === lehrerImVorbereitungsdienstRolle;
-            let klasseName: string = generateKlassenname();
+            const klasseName: string = generateKlassenname();
 
             const validationParameters: PersonCreationSuccessValidationParams = {
               nachname: generateNachname(),
@@ -207,7 +207,7 @@ test.describe(`Testfälle für die Anlage von Personen`, () => {
       });
 
       test.describe(`LDAP-Integration`, () => {
-        test('Lehrer anlegen und LDAP-Daten prüfen', { tag: [DEV] }, async ({ page }: PlaywrightTestArgs) => {
+        test('Lehrer anlegen und LDAP-Daten prüfen', { tag: [DEV] }, async () => {
           const params: PersonCreationSuccessValidationParams = {
             nachname: generateNachname(),
             vorname: generateVorname(),
@@ -246,7 +246,7 @@ test.describe(`Testfälle für die Anlage von Personen`, () => {
         test(
           'Lehrer anlegen, Kontext entfernen und wiederherstellen und LDAP-Daten prüfen',
           { tag: [DEV] },
-          async ({ page }: PlaywrightTestArgs) => {
+          async () => {
             const params: PersonCreationSuccessValidationParams = {
               nachname: generateNachname(),
               vorname: generateVorname(),
@@ -261,7 +261,7 @@ test.describe(`Testfälle für die Anlage von Personen`, () => {
               process.env.LDAP_ADMIN_PASSWORD!,
             );
 
-            let [createdBenutzername, personManagementView]: [string, PersonManagementViewPage] =
+            const [createdBenutzername, initialPersonManagementView]: [string, PersonManagementViewPage] =
               await test.step('Nutzer anlegen', async () => {
                 await personCreationViewPage.fillForm(params);
                 const successPage: PersonCreationSuccessPage = await personCreationViewPage.submit();
@@ -269,6 +269,7 @@ test.describe(`Testfälle für die Anlage von Personen`, () => {
 
                 return [await successPage.getBenutzername(), await successPage.backToList()];
               });
+            let personManagementView: PersonManagementViewPage = initialPersonManagementView;
 
             await test.step(`Prüfen, dass Lehrkraft im LDAP angelegt wurde`, async () => {
               expect(await ldapHelper.validateUserExists(createdBenutzername, 10, 1000)).toBeTruthy();
