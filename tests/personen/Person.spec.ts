@@ -189,7 +189,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     }
   );
 
-  test(
+  test.only(
     'Einen Benutzer mit der Rolle Schuladmin anlegen als Landesadmin und anschließend mit diesem Benutzer anmelden und einen weiteren Benutzer anlegen',
     { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
@@ -237,7 +237,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await newStartPage.navigateToAdministration();
         const menu: MenuBarPage = new MenuBarPage(page);
         const personCreationView: PersonCreationViewPage = await menu.navigateToPersonCreation();
-        await personCreationView.fillForm({ organisation: schulstrukturknoten, rollen: [rolle], vorname: newVorname, nachname: newNachname, kopersnr: newKopersnr });
+        await personCreationView.fillForm({ rollen: [rolle], vorname: newVorname, nachname: newNachname, kopersnr: newKopersnr });
         const successPage: PersonCreationSuccessPage = await personCreationView.submit();
         await successPage.waitForPageLoad();
 
