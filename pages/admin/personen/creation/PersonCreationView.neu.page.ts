@@ -4,10 +4,10 @@ import { waitForAPIResponse } from '../../../../base/api/baseApi';
 import { PersonCreationSuccessPage } from './PersonCreationSuccess.page';
 
 export interface PersonCreationParams {
-  organisation: string;
   rollen: string[];
   vorname: string;
   nachname: string;
+  organisation?: string;
   klasse?: string;
   kopersnr?: string;
   befristung?: string;
@@ -30,9 +30,8 @@ export class PersonCreationViewPage {
   public async fillForm(params: PersonCreationParams): Promise<void> {
     const vornameInput: Locator = this.page.getByTestId('vorname-input').locator('.v-field__input');
     const nachnameInput: Locator = this.page.getByTestId('familienname-input').locator('.v-field__input');
-
-    await this.organisationAutocomplete.searchByTitle(params.organisation, false, PersonCreationViewPage.ENDPOINT);
-
+    if (params.organisation) await this.organisationAutocomplete.searchByTitle(params.organisation, false, PersonCreationViewPage.ENDPOINT);
+    
     await Promise.all(
       params.rollen.map((rolle: string) => this.rolleAutocomplete.searchByTitle(rolle, true, PersonCreationViewPage.ENDPOINT))
     );
