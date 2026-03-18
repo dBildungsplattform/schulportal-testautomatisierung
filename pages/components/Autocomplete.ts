@@ -1,5 +1,4 @@
-import { expect, type Locator, Page } from '@playwright/test';
-import { waitForAPIResponse } from '../../base/api/baseApi';
+import { expect, type Locator, type Response, Page } from '@playwright/test';
 
 const noDataMessage: string = 'Keine Daten gefunden.';
 export class Autocomplete {
@@ -82,6 +81,8 @@ export class Autocomplete {
     }
     await this.openModal();
     await this.clear();
+    // Start listening BEFORE typing so we don't miss the response
+    const responsePromise: Promise<Response> | null = endpoint ? this.page.waitForResponse('/api/' + endpoint + '*') : null;
     await this.inputLocator.pressSequentially(searchString);
     await this.waitForData();
     let item: Locator;
@@ -100,8 +101,8 @@ export class Autocomplete {
     // because in that case the API call takes longer than in other cases.
     // This only occurs in the test case 'Einen Benutzer mit der Rolle Landesadmin anlegen' (Person.spec.ts),
     // in all other test cases we don't need the parameter 'endpoint'
-    if (endpoint) {
-      await waitForAPIResponse(this.page, endpoint);
+    if (responsePromise) {
+      await responsePromise;
     }
     await item.click();
     await this.closeModal();
