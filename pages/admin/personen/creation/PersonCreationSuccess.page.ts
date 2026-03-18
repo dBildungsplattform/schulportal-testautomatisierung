@@ -40,7 +40,7 @@ export class PersonCreationSuccessPage {
   }
 
   /* assertions */
-  public async checkSuccessfulCreation(params: PersonCreationSuccessValidationParams): Promise<void> {
+  public async assertSuccessfulCreation(params: PersonCreationSuccessValidationParams): Promise<void> {
     await expect(this.page.getByTestId('person-success-text')).toHaveText(
       `${params.vorname} ${params.nachname} wurde erfolgreich hinzugefügt.`
     );

@@ -296,7 +296,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
       await test.step(`Organisation 'Land Schleswig-Holstein' auswählen und Dropdown 'Rolle' prüfen`, async () => {
         await personCreationView.searchOrganisation(OrganisationLand, true);
-        await personCreationView.checkAvailableRollen(
+        await personCreationView.assertAvailableRollen(
           [landesadminRolle],
           [rolleLehr, rolleLiV, schuladminOeffentlichRolle, schuelerRolle]
         );
@@ -305,7 +305,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
       await test.step(`Organisation 'Öffentliche Schulen Land Schleswig-Holstein' auswählen und Dropdown 'Rolle' prüfen`, async () => {
         await personCreationView.searchOrganisation(OrganisationOeffentlicheSchule, true);
-        await personCreationView.checkAvailableRollen(
+        await personCreationView.assertAvailableRollen(
           [landesadminRolle],
           [rolleLehr, rolleLiV, schuladminOeffentlichRolle, schuelerRolle]
         );
@@ -314,7 +314,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
       await test.step(`Organisation 'Ersatzschulen Land Schleswig-Holstein' auswählen und Dropdown 'Rolle' prüfen`, async () => {
         await personCreationView.searchOrganisation(OrganisationErsatzschule, true);
-        await personCreationView.checkAvailableRollen(
+        await personCreationView.assertAvailableRollen(
           [landesadminRolle],
           [rolleLehr, rolleLiV, schuladminOeffentlichRolle, schuelerRolle]
         );
@@ -323,7 +323,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
       await test.step(`Organisation 'Schule' auswählen und Dropdown 'Rolle' prüfen`, async () => {
         await personCreationView.searchOrganisation(OrganisationSchule, false);
-        await personCreationView.checkAvailableRollen(
+        await personCreationView.assertAvailableRollen(
           [rolleLehr, rolleLiV, schuladminOeffentlichRolle, schuelerRolle],
           [landesadminRolle]
         );
@@ -462,7 +462,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       });
 
       await test.step(`Bestätigungsseite prüfen`, async () => {
-        await successPage.checkSuccessfulCreation({ organisation: schulstrukturknoten, rollen: rolleNames, vorname, nachname, kopersnr, dstNr: testschuleDstNr });
+        await successPage.assertSuccessfulCreation({ organisation: schulstrukturknoten, rollen: rolleNames, vorname, nachname, kopersnr, dstNr: testschuleDstNr });
         usernames.push(await successPage.getBenutzername());
         createdBenutzername = await successPage.getBenutzername();
         await expect(page.getByTestId('create-another-person-button')).toBeVisible();
@@ -565,7 +565,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       });
 
       await test.step(`Bestätigungsseite Schüler prüfen`, async () => {
-        await successPage1.checkSuccessfulCreation({
+        await successPage1.assertSuccessfulCreation({
           organisation: schulstrukturknoten,
           rollen: [schuelerRolle],
           vorname: vorname1,
@@ -588,7 +588,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       });
 
       await test.step(`Bestätigungsseite Lehrer1 prüfen`, async () => {
-        await successPage2.checkSuccessfulCreation({
+        await successPage2.assertSuccessfulCreation({
           organisation: schulstrukturknoten,
           rollen: [rolle2],
           vorname: vorname2,
@@ -608,7 +608,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       });
 
       await test.step(`Bestätigungsseite Lehrer2 prüfen`, async () => {
-        await successPage3.checkSuccessfulCreation({
+        await successPage3.assertSuccessfulCreation({
           organisation: schulstrukturknoten,
           rollen: [rolle3],
           vorname: vorname3,
@@ -654,7 +654,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await test.step(`In der Combobox 'Rolle' 2 Rollen vom Typ LEHR selektieren und prüfen, dass danach keine Rollen mehr vom Type LERN angezeigt werden in der Combobox`, async () => {
         await personCreationView.addRolle(rolleNames[0]);
         await personCreationView.addRolle(rolleNames[1]);
-        await personCreationView.checkAvailableRollen([], [rolleNames[2], rolleNames[3]]);
+        await personCreationView.assertAvailableRollen([], [rolleNames[2], rolleNames[3]]);
       });
     }
   );
@@ -687,7 +687,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
     await test.step(`Auf der Bestätigungsseite prüfen, dass die 3 Rollen dem neuen Benutzer korrekt zugeordnet wurden`, async () => {
       const successPage: PersonCreationSuccessPage = await personCreationView.submit();
-      await successPage.checkSuccessfulCreation({ organisation: testschuleName, rollen: rolleNames, vorname, nachname, dstNr: testschuleDstNr });
+      await successPage.assertSuccessfulCreation({ organisation: testschuleName, rollen: rolleNames, vorname, nachname, dstNr: testschuleDstNr });
       usernames.push(await successPage.getBenutzername());
     });
   });

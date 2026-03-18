@@ -75,7 +75,7 @@ export class PersonCreationViewPage {
   }
 
   /* assertions */
-  public async checkAvailableRollen(includes: string[], excludes: string[]): Promise<void> {
+  public async assertAvailableRollen(includes: string[], excludes: string[]): Promise<void> {
     for (const includedRolle of includes) {
       await this.rolleAutocomplete.validateItemExists(includedRolle, true);
     }
