@@ -1,9 +1,7 @@
-import { expect, PlaywrightTestArgs, test } from '@playwright/test';
+import { PlaywrightTestArgs, test } from '@playwright/test';
 
 import { getOrganisationId } from '../../base/api/organisationApi';
-import { createRolleAndPersonWithPersonenkontext, UserInfo } from '../../base/api/personApi';
-import { addSystemrechtToRolle, createRolle } from '../../base/api/rolleApi';
-import { getServiceProviderId } from '../../base/api/serviceProviderApi';
+import { createRolle } from '../../base/api/rolleApi';
 import {
   ersatzLandSH,
   landSH,
@@ -15,13 +13,10 @@ import { typeLehrer, typeSchueler } from '../../base/rollentypen';
 import { DEV, STAGE } from '../../base/tags';
 import { deletePersonenBySearchStrings, deleteRolleById, deleteRolleByName } from '../../base/testHelperDeleteTestdata';
 import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
-import { generateKopersNr, generateNachname, generateRolleName, generateVorname } from '../../base/utils/generateTestdata';
+import { generateRolleName } from '../../base/utils/generateTestdata';
 import { PersonCreationViewPage } from '../../pages/admin/personen/PersonCreationView.page';
 import { HeaderPage } from '../../pages/components/Header.neu.page';
 import { MenuPage } from '../../pages/components/MenuBar.page';
-import { LandingPage } from '../../pages/LandingView.page';
-import { LoginViewPage } from '../../pages/LoginView.neu.page';
-import { StartViewPage } from '../../pages/StartView.neu.page';
 
 // The created test data will be deleted in the afterEach block
 let usernames: string[] = [];
