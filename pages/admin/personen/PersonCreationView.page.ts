@@ -19,7 +19,6 @@ export class PersonCreationViewPage {
   readonly textSuccess: Locator;
   readonly iconSuccess: Locator;
   readonly textDatenGespeichert: Locator;
-  readonly textBestaetigungsseiteBenutzernachname: Locator;
   readonly inputEinstiegsPasswort: Locator;
   readonly labelEinstiegsPasswort: Locator;
   readonly buttonZurueckErgebnisliste: Locator;
