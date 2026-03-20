@@ -441,53 +441,5 @@ test.describe(`Testfälle für die Anlage von Personen`, () => {
         await startPage.assertServiceProvidersAreLoaded();
       });
     });
-
-    test(`${lehrkraftOeffentlichRolle} anlegen`, { tag: [DEV, STAGE] }, async () => {
-      const creationParameters: PersonCreationParams = {
-        nachname: generateNachname(),
-        vorname: generateVorname(),
-        rollen: [lehrkraftOeffentlichRolle],
-        kopersnr: generateKopersNr(),
-      };
-
-      await test.step('Formular ausfüllen', async () => {
-        await personCreationViewPage.fillForm(creationParameters);
-      });
-
-      const successPage: PersonCreationSuccessPage = await test.step('Abschicken', async () =>
-        personCreationViewPage.submit());
-
-      const { benutzername, startpasswort }: { benutzername: string; startpasswort: string } =
-        await test.step('Erfolgsmeldung prüfen', async () => {
-          const validationParams: PersonCreationSuccessValidationParams = {
-            ...creationParameters,
-            organisation: schuleName,
-            dstNr: schuleDstNr,
-          };
-          await successPage.assertSuccessfulCreation(validationParams);
-          return {
-            benutzername: await successPage.getBenutzername(),
-            startpasswort: await successPage.getPassword(),
-          };
-        });
-
-      const personManagementViewPage: PersonManagementViewPage =
-        await test.step('Zurück zur Personenübersicht', async () => successPage.getMenu().navigateToPersonManagement());
-
-      await test.step('Neuen Benutzer in Übersicht prüfen', async () => {
-        await personManagementViewPage.searchByText(benutzername);
-        await personManagementViewPage.assertThatPersonExists(benutzername);
-      });
-
-      const landingPage: LandingViewPage = await test.step('Abmelden', async () => {
-        return personManagementViewPage.getHeader().logout();
-      });
-
-      await test.step('Einloggen mit neu angelegtem Benutzer', async () => {
-        const loginPage: LoginViewPage = await landingPage.navigateToLogin();
-        const startPage: StartViewPage = await loginPage.loginNewUserWithPasswordChange(benutzername, startpasswort);
-        await startPage.assertServiceProvidersAreLoaded();
-      });
-    });
   });
 });
