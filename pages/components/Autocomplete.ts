@@ -74,6 +74,7 @@ export class Autocomplete {
 
   public async searchAndSelectMultipleByTitle(titles: string[]): Promise<void> {
     await this.openModal();
+    await this.overlayLocator.waitFor({ state: 'visible' });
     await this.waitForData();
     for (const title of titles) {
       await this.inputLocator.pressSequentially(title);
