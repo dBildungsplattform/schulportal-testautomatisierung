@@ -358,7 +358,6 @@ export class TestHelperLdap {
 
     while (currentAttempt <= retries) {
       try {
-         
         result = await func();
         if (result.ok) {
           return result;
@@ -372,7 +371,6 @@ export class TestHelperLdap {
           `Attempt ${currentAttempt} failed. Retrying in ${currentDelay}ms... Remaining retries: ${retries - currentAttempt}`,
         );
 
-         
         await this.sleep(currentDelay);
       }
       currentAttempt++;
