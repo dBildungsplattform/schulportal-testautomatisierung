@@ -153,7 +153,7 @@ export class TwoFactorWorkflowPage {
       // we may need to wait for the next token, since repeated entry is not allowed
       const currentTime: number = Date.now();
       const timeLeft: number = this.expires - currentTime;
-      // eslint-disable-next-line playwright/no-wait-for-timeout
+
       await this.page.waitForTimeout(timeLeft + 100);
     }
 

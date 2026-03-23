@@ -1,4 +1,3 @@
-import { describe } from 'node:test';
 import { PlaywrightTestArgs, test } from '@playwright/test';
 import {
   generateKlassenname,
@@ -23,7 +22,7 @@ import { LoginViewPage } from '../../pages/LoginView.neu.page';
 const ADMIN: string = process.env.USER || 'admin';
 const PASSWORD: string = process.env.PW || 'admin';
 
-describe(`Schüler versetzen, Umgebung ${process.env.ENV}, URL: ${process.env.FRONTEND_URL}`, () => {
+test.describe(`Schüler versetzen, Umgebung ${process.env.ENV}, URL: ${process.env.FRONTEND_URL}`, () => {
   let userInfoSchueler: UserInfo;
   let rolleName: string;
   let klasseNameCurrent: string;

@@ -358,7 +358,7 @@ export class TestHelperLdap {
 
     while (currentAttempt <= retries) {
       try {
-        // eslint-disable-next-line no-await-in-loop
+         
         result = await func();
         if (result.ok) {
           return result;
@@ -372,7 +372,7 @@ export class TestHelperLdap {
           `Attempt ${currentAttempt} failed. Retrying in ${currentDelay}ms... Remaining retries: ${retries - currentAttempt}`,
         );
 
-        // eslint-disable-next-line no-await-in-loop
+         
         await this.sleep(currentDelay);
       }
       currentAttempt++;
