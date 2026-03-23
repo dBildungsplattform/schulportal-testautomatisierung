@@ -76,12 +76,14 @@ export class Autocomplete {
     await this.openModal();
     await this.waitForData();
     for (const title of titles) {
-      await this.inputLocator.fill(title);
+      await this.inputLocator.pressSequentially(title);
       const item: Locator = this.itemsLocator.filter({
         has: this.page.getByText(title, { exact: true }),
       });
+      await item.waitFor({ state: 'visible' });
       await item.click();
-      await this.inputLocator.fill('');
+      await this.inputLocator.clear();
+      await this.waitForData();
     }
     await this.closeModal();
   }
