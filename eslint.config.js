@@ -16,7 +16,7 @@ export default tseslint.config(
 
   // TypeScript rules for all TS files
   {
-    files: ['src/**/*.ts', 'tests/**/*.ts'],
+    files: ['**/*.ts'],
     extends: [...tseslint.configs.recommended, ...tseslint.configs.stylistic],
     languageOptions: {
       parser: tsParser,
@@ -36,6 +36,7 @@ export default tseslint.config(
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/explicit-function-return-type': 'error',
       '@typescript-eslint/no-inferrable-types': 'off',
+      '@typescript-eslint/no-floating-promises': 'error',
       '@typescript-eslint/no-unused-vars': [
         'error',
         {
