@@ -1,8 +1,8 @@
 import { expect, type Locator, Page } from '@playwright/test';
 import { KlasseCreationViewPage } from '../admin/organisationen/klassen/KlasseCreationView.page';
 import { KlasseManagementViewPage } from '../admin/organisationen/klassen/KlasseManagementView.neu.page';
-import { SchuleCreationViewPage } from '../admin/organisationen/schulen/SchuleCreationView.page';
-import { SchuleManagementViewPage } from '../admin/organisationen/schulen/SchuleManagementView.page';
+import { SchuleCreationViewPage } from '../admin/organisationen/schulen/SchuleCreationView.neu.page';
+import { SchuleManagementViewPage } from '../admin/organisationen/schulen/SchuleManagementView.neu.page';
 import { PersonCreationViewPage } from '../admin/personen/PersonCreationView.page';
 import { PersonManagementViewPage } from '../admin/personen/PersonManagementView.page';
 
@@ -52,7 +52,9 @@ export class MenuPage {
 
   public async alleSchulenAnzeigen(): Promise<SchuleManagementViewPage> {
     await this.menueItemAlleSchulenAnzeigen.click();
-    return new SchuleManagementViewPage(this.page);
+    const schuleManagementViewPage: SchuleManagementViewPage = new SchuleManagementViewPage(this.page);
+    await schuleManagementViewPage.waitForPageLoad();
+    return schuleManagementViewPage;
   }
 
   public async schuleAnlegen(): Promise<SchuleCreationViewPage> {
