@@ -15,15 +15,23 @@ export interface PersonCreationParams {
 
 export class PersonCreationViewPage {
   private static readonly ENDPOINT: string = 'personenkontext-workflow/**';
-  private readonly organisationAutocomplete: Autocomplete = new Autocomplete(this.page, this.page.getByTestId('personenkontext-create-organisation-select'));
-  private readonly rolleAutocomplete: Autocomplete = new Autocomplete(this.page, this.page.getByTestId('rollen-select'));
+  private readonly organisationAutocomplete: Autocomplete = new Autocomplete(
+    this.page,
+    this.page.getByTestId('personenkontext-create-organisation-select'),
+  );
+  private readonly rolleAutocomplete: Autocomplete = new Autocomplete(
+    this.page,
+    this.page.getByTestId('rollen-select'),
+  );
 
   constructor(protected readonly page: Page) {}
 
   /* actions */
   public async waitForPageLoad(expectedHeadline?: string): Promise<PersonCreationViewPage> {
     await this.page.getByTestId('create-person-headline').waitFor({ state: 'visible' });
-    await expect(this.page.getByTestId('create-person-headline')).toHaveText(expectedHeadline || 'Neuen Benutzer hinzufügen');
+    await expect(this.page.getByTestId('create-person-headline')).toHaveText(
+      expectedHeadline || 'Neuen Benutzer hinzufügen',
+    );
     return this;
   }
 
@@ -34,7 +42,9 @@ export class PersonCreationViewPage {
     await this.organisationAutocomplete.searchByTitle(params.organisation, false, PersonCreationViewPage.ENDPOINT);
 
     await Promise.all(
-      params.rollen.map((rolle: string) => this.rolleAutocomplete.searchByTitle(rolle, true, PersonCreationViewPage.ENDPOINT))
+      params.rollen.map((rolle: string) =>
+        this.rolleAutocomplete.searchByTitle(rolle, true, PersonCreationViewPage.ENDPOINT),
+      ),
     );
 
     await vornameInput.waitFor({ state: 'visible' });
@@ -44,7 +54,10 @@ export class PersonCreationViewPage {
     await nachnameInput.fill(params.nachname);
 
     if (params.klasse) {
-      const autocomplete: Autocomplete = new Autocomplete(this.page, this.page.getByTestId('personenkontext-create-klasse-select'));
+      const autocomplete: Autocomplete = new Autocomplete(
+        this.page,
+        this.page.getByTestId('personenkontext-create-klasse-select'),
+      );
       await autocomplete.searchByTitle(params.klasse, true);
     }
     if (params.kopersnr) {
@@ -77,4 +90,3 @@ export class PersonCreationViewPage {
     }
   }
 }
-

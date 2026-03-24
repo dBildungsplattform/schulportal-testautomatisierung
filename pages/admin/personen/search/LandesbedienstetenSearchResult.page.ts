@@ -1,6 +1,6 @@
-import { expect, Locator, Page } from "@playwright/test";
-import { LandesbedienstetenSearchFormPage } from "./LandesbedienstetenSearchForm.page";
-import { LandesbedienstetenHinzufuegenPage } from "./LandesbedienstetenHinzufuegen.page";
+import { expect, Locator, Page } from '@playwright/test';
+import { LandesbedienstetenSearchFormPage } from './LandesbedienstetenSearchForm.page';
+import { LandesbedienstetenHinzufuegenPage } from './LandesbedienstetenHinzufuegen.page';
 
 export class LandesbedienstetenSearchResultPage {
   /* add global locators here */
@@ -24,7 +24,10 @@ export class LandesbedienstetenSearchResultPage {
   }
 
   public async checkPersonalDataCard(
-    fullName: string, username: string, kopersnummer: string, email?: string
+    fullName: string,
+    username: string,
+    kopersnummer: string,
+    email?: string,
   ): Promise<void> {
     const pCardEmail: Locator = this.page.getByTestId('person-email-value');
     await expect(this.page.getByTestId('layout-card-headline-personal-data')).toHaveText('Persönliche Daten');
@@ -47,7 +50,9 @@ export class LandesbedienstetenSearchResultPage {
 
   public async clickZurueckZurSuche(): Promise<LandesbedienstetenSearchFormPage> {
     await this.zurueckZurSucheButton.click();
-    const landesbedienstetenSearchFormPage: LandesbedienstetenSearchFormPage = new LandesbedienstetenSearchFormPage(this.page);
+    const landesbedienstetenSearchFormPage: LandesbedienstetenSearchFormPage = new LandesbedienstetenSearchFormPage(
+      this.page,
+    );
     await landesbedienstetenSearchFormPage.waitForPageLoad();
     await expect(this.headline).toBeHidden();
     return landesbedienstetenSearchFormPage;
@@ -55,7 +60,9 @@ export class LandesbedienstetenSearchResultPage {
 
   public async clickLandesbedienstetenHinzufuegen(): Promise<LandesbedienstetenHinzufuegenPage> {
     await this.landesbedienstetenHinzufuegenButton.click();
-    const landesbedienstetenHinzufuegenPage: LandesbedienstetenHinzufuegenPage = new LandesbedienstetenHinzufuegenPage(this.page);
+    const landesbedienstetenHinzufuegenPage: LandesbedienstetenHinzufuegenPage = new LandesbedienstetenHinzufuegenPage(
+      this.page,
+    );
     await landesbedienstetenHinzufuegenPage.waitForPageLoad();
     await expect(this.headline).toBeHidden();
     return landesbedienstetenHinzufuegenPage;

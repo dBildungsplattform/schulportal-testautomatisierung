@@ -71,7 +71,7 @@ export class ProfileViewPage {
     await expect(this.page.getByTestId('password-reset-dialog-header')).toHaveText('Inbetriebnahme-Passwort erzeugen');
     await expect(this.page.getByTestId('password-reset-info-text')).toHaveText(
       'Bitte notieren Sie sich das Passwort oder drucken Sie es aus. Nach dem Schließen des Dialogs wird das Passwort' +
-        ' nicht mehr angezeigt. Sie benötigen dieses Passwort ausschließlich zur erstmaligen Anmeldung an Ihrem neuen LK-Endgerät.'
+        ' nicht mehr angezeigt. Sie benötigen dieses Passwort ausschließlich zur erstmaligen Anmeldung an Ihrem neuen LK-Endgerät.',
     );
     await this.page.getByTestId('password-reset-button').click();
 
@@ -116,7 +116,7 @@ export class ProfileViewPage {
   public async submitEmptyOtpAndCheckError(): Promise<void> {
     await this.page.getByTestId('proceed-two-factor-authentication-dialog').click();
     await expect(this.page.getByTestId('self-service-otp-error-text')).toHaveText(
-      'Das Einmalpasswort muss angegeben werden.'
+      'Das Einmalpasswort muss angegeben werden.',
     );
   }
 
@@ -124,7 +124,7 @@ export class ProfileViewPage {
     await expect(this.page.getByTestId('layout-card-headline-persoenliche-daten')).toHaveText('Persönliche Daten');
     await expect(this.page.getByTestId('fullname-label')).toHaveText('Vor- und Nachname:');
     await expect(this.page.getByTestId('fullname-value')).toHaveText(
-      persoenlicheDaten.vorname + ' ' + persoenlicheDaten.nachname
+      persoenlicheDaten.vorname + ' ' + persoenlicheDaten.nachname,
     );
     await expect(this.page.getByTestId('username-label')).toHaveText('Benutzername:');
     await expect(this.page.getByTestId('username-value')).toHaveText(persoenlicheDaten.username);
@@ -147,7 +147,7 @@ export class ProfileViewPage {
 
       await Promise.all([
         expect(this.page.getByTestId(`zuordnung-card-${index}-headline`)).toHaveText(
-          zuordnungen.length === 1 ? 'Schulzuordnung' : `Schulzuordnung ${index}`
+          zuordnungen.length === 1 ? 'Schulzuordnung' : `Schulzuordnung ${index}`,
         ),
         expect(this.page.getByTestId(`schule-label-${index}`)).toHaveText('Schule:'),
         expect(this.page.getByTestId(`schule-value-${index}`)).toHaveText(zuordnung.organisationsname),
@@ -170,7 +170,9 @@ export class ProfileViewPage {
       if (['LEIT', 'LEHR', 'LERN', 'SCHULADMIN'].includes(zuordnung.rollenart)) {
         await Promise.all([
           expect(this.page.getByTestId(`dienststellennummer-label-${index}`)).toHaveText('DStNr.:'),
-          expect(this.page.getByTestId(`dienststellennummer-value-${index}`)).toHaveText(zuordnung.dienststellennummer),
+          expect(this.page.getByTestId(`dienststellennummer-value-${index}`)).toHaveText(
+            zuordnung.dienststellennummer!,
+          ),
         ]);
       }
     }
@@ -228,7 +230,7 @@ export class ProfileViewPage {
     await expect(this.page.getByTestId('layout-card-headline')).toHaveText('2FA einrichten');
     await expect(this.page.getByTestId('self-service-dialog-info-text')).toContainText('QR-Code generiert');
     await expect(this.page.getByTestId('self-service-dialog-warning-text')).toContainText(
-      'App auf Ihrem Endgerät installiert'
+      'App auf Ihrem Endgerät installiert',
     );
     await expect(this.page.getByTestId('proceed-two-factor-authentication-dialog')).toHaveText('Weiter');
     await expect(this.page.getByTestId('close-two-factor-authentication-dialog')).toHaveText('Abbrechen');
@@ -237,7 +239,7 @@ export class ProfileViewPage {
   public async assert2FAQrCodeDisplayed(): Promise<void> {
     await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Software-Token einrichten');
     await expect(this.page.getByTestId('self-service-dialog-qr-info-text')).toHaveText(
-      'Bitte scannen Sie den QR-Code mit Ihrer 2FA-App (z.B. FreeOTP).'
+      'Bitte scannen Sie den QR-Code mit Ihrer 2FA-App (z.B. FreeOTP).',
     );
     await expect(this.page.getByTestId('software-token-dialog-qr-code')).toBeVisible();
   }
@@ -245,7 +247,7 @@ export class ProfileViewPage {
   public async assert2FAOtpEntryPrompt(): Promise<void> {
     await expect(this.page.getByTestId('layout-card-headline')).toHaveText('Zwei-Faktor-Authentifizierung (2FA)');
     await expect(this.page.getByTestId('self-service-otp-entry-info-text')).toHaveText(
-      'Bitte geben Sie das angezeigte Einmalpasswort ein, um die Einrichtung abzuschließen.'
+      'Bitte geben Sie das angezeigte Einmalpasswort ein, um die Einrichtung abzuschließen.',
     );
     await expect(this.page.getByTestId('self-service-otp-input')).toBeVisible();
   }

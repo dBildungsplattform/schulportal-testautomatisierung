@@ -1,15 +1,6 @@
 import { expect, PlaywrightTestArgs, test } from '@playwright/test';
-import {
-  createPerson,
-  createRolleAndPersonWithPersonenkontext,
-  UserInfo
-} from '../../base/api/personApi';
-import {
-  addServiceProvidersToRolle,
-  addSystemrechtToRolle,
-  createRolle,
-  RollenArt,
-} from '../../base/api/rolleApi';
+import { createPerson, createRolleAndPersonWithPersonenkontext, UserInfo } from '../../base/api/personApi';
+import { addServiceProvidersToRolle, addSystemrechtToRolle, createRolle, RollenArt } from '../../base/api/rolleApi';
 import { getServiceProviderId } from '../../base/api/serviceProviderApi';
 import { klasse1Testschule } from '../../base/klassen';
 import { landSH, testschule665Name, testschuleName } from '../../base/organisation';
@@ -17,13 +8,13 @@ import { lehrerImVorbereitungsdienstRolle, lehrkraftOeffentlichRolle } from '../
 import { typeLehrer, typeSchuladmin } from '../../base/rollentypen';
 import { email } from '../../base/sp';
 import { DEV, STAGE } from '../../base/tags';
-import { deleteKlasseByName, deletePersonenBySearchStrings, deleteRolleById } from '../../base/testHelperDeleteTestdata';
-import { gotoTargetURL, loginAndNavigateToAdministration } from '../../base/testHelperUtils';
 import {
-  generateNachname,
-  generateRolleName,
-  generateVorname,
-} from '../../base/utils/generateTestdata';
+  deleteKlasseByName,
+  deletePersonenBySearchStrings,
+  deleteRolleById,
+} from '../../base/testHelperDeleteTestdata';
+import { gotoTargetURL, loginAndNavigateToAdministration } from '../../base/testHelperUtils';
+import { generateNachname, generateRolleName, generateVorname } from '../../base/utils/generateTestdata';
 import { PersonDetailsViewPage } from '../../pages/admin/personen/PersonDetailsView.page';
 import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.page';
 import { HeaderPage } from '../../pages/components/Header.neu.page';
@@ -92,7 +83,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
           generateNachname(),
           generateVorname(),
           [await getServiceProviderId(page, email)],
-          generateRolleName()
+          generateRolleName(),
         );
         usernames.push(userInfoLehrer.username);
         rolleIds.push(userInfoLehrer.rolleId);
@@ -121,7 +112,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await personDetailsView.rollen.selectByTitle(unbefristeteRolle);
         await expect(personDetailsView.buttonBefristungUnbefristet).toBeChecked();
       });
-    }
+    },
   );
 
   test(
@@ -143,7 +134,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
           generateNachname(),
           generateVorname(),
           '',
-          klasseId
+          klasseId,
         );
         usernames.push(userInfoSchueler.username);
         rolleIds.push(userInfoSchueler.rolleId);
@@ -171,7 +162,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(personDetailsView.textKeinTokenIstEingerichtet).toBeHidden();
         await expect(personDetailsView.button2FAEinrichten).toBeHidden();
       });
-    }
+    },
   );
 
   test(
@@ -188,7 +179,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
           generateNachname(),
           generateVorname(),
           [await getServiceProviderId(page, email)],
-          generateRolleName()
+          generateRolleName(),
         );
         usernames.push(userInfoLehrer.username);
         rolleIds.push(userInfoLehrer.rolleId);
@@ -206,7 +197,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(personDetailsView.textH3TwoFA).toBeVisible();
         await expect(personDetailsView.textKeinTokenIstEingerichtet).toBeVisible();
       });
-    }
+    },
   );
 
   test(
@@ -227,7 +218,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
           addminVorname,
           adminNachname,
           [await getServiceProviderId(page, 'Schulportal-Administration')],
-          generateRolleName()
+          generateRolleName(),
         );
         await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'PERSONEN_VERWALTEN');
         usernames.push(userInfoAdmin.username);
@@ -246,7 +237,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(personDetailsView.textH3TwoFA).toBeVisible();
         await expect(personDetailsView.textKeinTokenIstEingerichtet).toBeVisible();
       });
-    }
+    },
   );
 
   test(
@@ -268,7 +259,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
           addminVorname,
           adminNachname,
           [await getServiceProviderId(page, 'Schulportal-Administration')],
-          generateRolleName()
+          generateRolleName(),
         );
         await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'ROLLEN_VERWALTEN');
         await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'PERSONEN_SOFORT_LOESCHEN');
@@ -299,7 +290,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(personDetailsView.textTokenIstEingerichtetInfo).toBeVisible();
         await expect(personDetailsView.textNeuenTokenEinrichtenInfo).toBeVisible();
       });
-    }
+    },
   );
 
   test(
@@ -318,7 +309,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
           generateNachname(),
           generateVorname(),
           [await getServiceProviderId(page, 'Schulportal-Administration')],
-          generateRolleName()
+          generateRolleName(),
         );
         await addSystemrechtToRolle(page, userInfoAdmin.rolleId, 'PERSONEN_VERWALTEN');
         usernames.push(userInfoAdmin.username);
@@ -342,7 +333,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(personDetailsView.textTokenIstEingerichtetInfo).toBeVisible();
         await expect(personDetailsView.textNeuenTokenEinrichtenInfo).toBeVisible();
       });
-    }
+    },
   );
 
   test(
@@ -358,7 +349,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
           generateNachname(),
           generateVorname(),
           [await getServiceProviderId(page, email)],
-          generateRolleName()
+          generateRolleName(),
         );
         usernames.push(userInfoLehrer.username);
         rolleIds.push(userInfoLehrer.rolleId);
@@ -381,7 +372,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(personDetailsView.textTokenIstEingerichtetInfo).toBeVisible();
         await expect(personDetailsView.textNeuenTokenEinrichtenInfo).toBeVisible();
       });
-    }
+    },
   );
 
   test(
@@ -398,7 +389,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
           generateNachname(),
           generateVorname(),
           [await getServiceProviderId(page, email)],
-          generateRolleName()
+          generateRolleName(),
         );
         usernames.push(userInfoLehrer.username);
         rolleIds.push(userInfoLehrer.rolleId);
@@ -415,6 +406,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await test.step(`Inbetriebnahme-Passwort für LK-Endgerät setzen`, async () => {
         await personDetailsView.createIbnPassword();
       });
-    }
+    },
   );
 });

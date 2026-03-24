@@ -47,11 +47,12 @@ test.describe(`Testfälle für das Personen sperren: Umgebung: ${process.env.ENV
 
   lockOptions.forEach(({ description, until, expectUntil }: LockOption) => {
     test(`Person via Gesamtübersicht ${description}`, async ({ page }: PlaywrightTestArgs) => {
-      const personDetailsViewPage: PersonDetailsViewPage = await test.step(`Zur Gesamtübersicht navigieren`, async () => {
-        const personenManagementViewPage: PersonManagementViewPage = new PersonManagementViewPage(page);
-        await personenManagementViewPage.waitForPageLoad();
-        return personenManagementViewPage.searchAndOpenGesamtuebersicht(userInfo.username);
-      });
+      const personDetailsViewPage: PersonDetailsViewPage =
+        await test.step(`Zur Gesamtübersicht navigieren`, async () => {
+          const personenManagementViewPage: PersonManagementViewPage = new PersonManagementViewPage(page);
+          await personenManagementViewPage.waitForPageLoad();
+          return personenManagementViewPage.searchAndOpenGesamtuebersicht(userInfo.username);
+        });
 
       await test.step(`Person sperren (${description})`, async () => {
         await personDetailsViewPage.lockPerson(until);

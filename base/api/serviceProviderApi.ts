@@ -7,13 +7,13 @@ import { ServiceProviderResponse } from './generated/models';
 const FRONTEND_URL: string | undefined = process.env.FRONTEND_URL || '';
 
 export interface ServiceProviderFromRolleResponse {
-  id: string,
-  name: string
+  id: string;
+  name: string;
 }
 
 export function constructProviderApi(page: Page): ProviderApi {
   const config: Configuration = new Configuration({
-    basePath: FRONTEND_URL.replace(/\/$/, ''),
+    basePath: FRONTEND_URL?.replace(/\/$/, ''),
     fetchApi: makeFetchWithPlaywright(page),
   });
   return new ProviderApi(config);
@@ -22,7 +22,8 @@ export function constructProviderApi(page: Page): ProviderApi {
 export async function getServiceProviderId(page: Page, serviceProviderName: string): Promise<string> {
   try {
     const providerApi: ProviderApi = constructProviderApi(page);
-    const response: ApiResponse<ServiceProviderResponse[]> = await providerApi.providerControllerGetAllServiceProvidersRaw();
+    const response: ApiResponse<ServiceProviderResponse[]> =
+      await providerApi.providerControllerGetAllServiceProvidersRaw();
     await expect(response.raw.status).toBe(200);
 
     const fetchedServiceProviders: ServiceProviderResponse[] = await response.value();

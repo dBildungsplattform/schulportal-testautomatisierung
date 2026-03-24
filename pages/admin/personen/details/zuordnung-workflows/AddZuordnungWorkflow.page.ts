@@ -7,7 +7,7 @@ export class AddZuordnungWorkflowPage extends BaseZuordnungWorkflowPage {
   private readonly organisationen: Autocomplete;
   private readonly rollen: Autocomplete;
   protected readonly ENDPOINT: string = 'personenkontext-workflow/**';
-  
+
   protected readonly TEST_IDS: TestIdsType = {
     submitButton: 'zuordnung-creation-submit-button',
     confirmButton: 'confirm-zuordnung-dialog-addition',
@@ -18,7 +18,10 @@ export class AddZuordnungWorkflowPage extends BaseZuordnungWorkflowPage {
 
   constructor(protected readonly page: Page) {
     super(page);
-    this.organisationen = new Autocomplete(this.page, this.page.getByTestId('personenkontext-create-organisation-select'));
+    this.organisationen = new Autocomplete(
+      this.page,
+      this.page.getByTestId('personenkontext-create-organisation-select'),
+    );
     this.rollen = new Autocomplete(this.page, this.page.getByTestId('rolle-select'));
   }
 

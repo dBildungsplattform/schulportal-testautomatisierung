@@ -5,7 +5,10 @@ export class StartViewPage {
   /* add global locators here */
   readonly startCardHeadline: Locator;
 
-  constructor(protected readonly page: Page, private readonly username?: string) {
+  constructor(
+    protected readonly page: Page,
+    private readonly username?: string,
+  ) {
     this.startCardHeadline = this.page.locator('[data-testid="start-card-headline"]');
   }
 
@@ -16,7 +19,10 @@ export class StartViewPage {
   }
 
   public async navigateToAdministration(): Promise<PersonManagementViewPage> {
-    await this.page.locator('[data-testid^="service-provider-card"]').filter({ hasText: 'Schulportal-Administration' }).click();
+    await this.page
+      .locator('[data-testid^="service-provider-card"]')
+      .filter({ hasText: 'Schulportal-Administration' })
+      .click();
 
     const twoFactorWorkflowPage: TwoFactorWorkflowPage = new TwoFactorWorkflowPage(this.page, this.username);
     return twoFactorWorkflowPage.completeTwoFactorAuthentication();
@@ -25,7 +31,7 @@ export class StartViewPage {
   /* assertions */
   public async assertServiceProvidersAreLoaded(): Promise<void> {
     await this.page.waitForResponse(
-      (response: Response) => response.url().includes('/api/provider') && response.status() === 200
+      (response: Response) => response.url().includes('/api/provider') && response.status() === 200,
     );
     await this.page.waitForResponse('/api/provider/**/logo');
     await expect(this.page.getByTestId('all-service-provider-title')).toBeVisible();
@@ -39,7 +45,7 @@ export class StartViewPage {
         });
         await expect(serviceProviderCard).toBeVisible();
         await expect(serviceProviderCard.locator('img')).toBeVisible();
-      })
+      }),
     );
   }
 

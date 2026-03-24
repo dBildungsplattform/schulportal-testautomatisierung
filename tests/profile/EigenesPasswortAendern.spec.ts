@@ -10,7 +10,12 @@ import { typeLehrer } from '../../base/rollentypen';
 import { email, itslearning } from '../../base/sp';
 import { DEV, STAGE } from '../../base/tags';
 import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
-import { generateKopersNr, generateNachname, generateRolleName, generateVorname } from '../../base/utils/generateTestdata';
+import {
+  generateKopersNr,
+  generateNachname,
+  generateRolleName,
+  generateVorname,
+} from '../../base/utils/generateTestdata';
 import { HeaderPage } from '../../pages/components/Header.neu.page';
 import { LandingViewPage } from '../../pages/LandingView.neu.page';
 import { LoginViewPage } from '../../pages/LoginView.neu.page';
@@ -30,40 +35,39 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
     });
   });
 
-    test.afterEach(async ({ page }: PlaywrightTestArgs) => {
-      const header: HeaderPage = new HeaderPage(page);
-      const landing: LandingViewPage = new LandingViewPage(page);
-      const login: LoginViewPage = new LoginViewPage(page);
-      const startseite: StartViewPage = new StartViewPage(page);
+  test.afterEach(async ({ page }: PlaywrightTestArgs) => {
+    const header: HeaderPage = new HeaderPage(page);
+    const landing: LandingViewPage = new LandingViewPage(page);
+    const login: LoginViewPage = new LoginViewPage(page);
+    const startseite: StartViewPage = new StartViewPage(page);
 
-      // Always: Close open dialogs if present
-      await test.step('Offene Dialoge schließen', async () => {
-        try {
-          await page.keyboard.press('Escape');
-        } catch {
-          // ignore if no dialog open
-        }
-      });
-
-      // If not logged in as Landesadministrator, reset to admin session
-      if (!currentUserIsLandesadministrator) {
-        await test.step('Zurück zum Admin wechseln', async () => {
-          await header.logout();
-          await landing.navigateToLogin();
-          await login.login(ADMIN, PW);
-          await startseite.assertServiceProvidersAreLoaded();
-        });
+    // Always: Close open dialogs if present
+    await test.step('Offene Dialoge schließen', async () => {
+      try {
+        await page.keyboard.press('Escape');
+      } catch {
+        // ignore if no dialog open
       }
-
-      // Final cleanup: ensure logged out (safety net)
-      await test.step('Endgültig abmelden', async () => {
-        try {
-          await header.logout();
-        } catch {
-          // ignore if already logged out
-        }
-      });
     });
+
+    // If not logged in as Landesadministrator, reset to admin session
+    if (!currentUserIsLandesadministrator) {
+      await test.step('Zurück zum Admin wechseln', async () => {
+        await header.logout();
+        await landing.navigateToLogin();
+        await login.login(ADMIN!, PW!);
+        await startseite.assertServiceProvidersAreLoaded();
+      });
+    }
+    // Final cleanup: ensure logged out (safety net)
+    await test.step('Endgültig abmelden', async () => {
+      try {
+        await header.logout();
+      } catch {
+        // ignore if already logged out
+      }
+    });
+  });
 
   test(
     'Im Profil das eigene Passwort ändern als Lehrer und Schüler (Schüler meldet sich anschließend mit dem neuen PW an)',
@@ -84,7 +88,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
           generateVorname(),
           [await getServiceProviderId(page, email)],
           generateRolleName(),
-          generateKopersNr()
+          generateKopersNr(),
         );
 
         const schuleId: string = await getOrganisationId(page, testschuleName);
@@ -99,7 +103,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
           generateNachname(),
           generateVorname(),
           '',
-          klasseId
+          klasseId,
         );
       });
 
@@ -135,7 +139,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         const startView: StartViewPage = await loginView.login(userInfoSchueler.username, newPassword);
         await startView.assertServiceProvidersAreVisible([itslearning]);
       });
-    }
+    },
   );
 
   test(
@@ -161,7 +165,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
           generateVorname(),
           idSPs,
           generateRolleName(),
-          kopersnummer
+          kopersnummer,
         );
 
         username = userInfo.username;
@@ -189,6 +193,6 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await profileView.navigateBackToProfile();
         await profileView.assertPasswordCardVisible();
       });
-    }
+    },
   );
 });

@@ -11,10 +11,17 @@ import { LandingViewPage } from '../../pages/LandingView.neu.page';
 import { LoginViewPage } from '../../pages/LoginView.neu.page';
 import { StartViewPage } from '../../pages/StartView.neu.page';
 import { SchuleCreationSuccessPage } from '../../pages/admin/organisationen/schulen/SchuleCreationSuccess.page';
-import { SchuleCreationParams, SchuleCreationViewPage, Schulform } from '../../pages/admin/organisationen/schulen/SchuleCreationView.neu.page';
+import {
+  SchuleCreationParams,
+  SchuleCreationViewPage,
+  Schulform,
+} from '../../pages/admin/organisationen/schulen/SchuleCreationView.neu.page';
 import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.neu.page';
 import { HeaderPage } from '../../pages/components/Header.neu.page';
-import { createKlassenAndSchuelerForSchulen, KlassenAndSchuelerData } from '../helpers/createKlassenAndSchuelerForSchulen';
+import {
+  createKlassenAndSchuelerForSchulen,
+  KlassenAndSchuelerData,
+} from '../helpers/createKlassenAndSchuelerForSchulen';
 
 interface AdminFixture {
   organisationsName?: string;
@@ -40,11 +47,12 @@ interface AdminFixture {
       const header: HeaderPage = new HeaderPage(page);
       personManagementViewPage = await loginAndNavigateToAdministration(page);
       // Schule anlegen
-      let schuleCreationViewPage: SchuleCreationViewPage = await personManagementViewPage.menu.navigateToSchuleCreation();
+      let schuleCreationViewPage: SchuleCreationViewPage =
+        await personManagementViewPage.menu.navigateToSchuleCreation();
       schule1Params = {
         name: generateSchulname(),
         dienststellenNr: generateDienststellenNr(),
-        schulform: Schulform.Oeffentlich
+        schulform: Schulform.Oeffentlich,
       };
       let schuleSuccessPage: SchuleCreationSuccessPage = await schuleCreationViewPage.createSchule(schule1Params);
       await schuleSuccessPage.waitForPageLoad();
@@ -58,7 +66,7 @@ interface AdminFixture {
         schule2Params = {
           name: generateSchulname(),
           dienststellenNr: generateDienststellenNr(),
-          schulform: Schulform.Oeffentlich
+          schulform: Schulform.Oeffentlich,
         };
         schuleCreationViewPage = await schuleSuccessPage.goBackToCreateAnotherSchule();
         schuleSuccessPage = await schuleCreationViewPage.createSchule(schule2Params);
@@ -79,110 +87,129 @@ interface AdminFixture {
       personManagementViewPage = await startPage.navigateToAdministration();
     });
 
-    test(`Als ${bezeichnung}: Schüler versetzen als Mehrfachbearbeitung prüfen`, { tag: [STAGE, DEV] }, async ({ page }: PlaywrightTestArgs) => {
-      let testData: KlassenAndSchuelerData[];
-
-      await test.step(`Testdaten erstellen`, async () => {
-        testData = await createKlassenAndSchuelerForSchulen(page, [
-          { params: schule1Params, schuleId, klassenCount: 26, schuelerCount: 3 },
-          ...(hasMultipleSchulen ? [{ params: schule2Params, schuleId: schuleId2, klassenCount: 2, schuelerCount: 2 }] : [])
-        ]);
-      });
-
-      if (hasMultipleSchulen) {
-        await test.step(`Fehlermeldungen für Schule und Schülerrolle testen`, async () => {
-          await personManagementViewPage.setItemsPerPage(50);
-          await personManagementViewPage.toggleSelectAllRows(true);
-          await personManagementViewPage.selectMehrfachauswahl('Schüler versetzen');
-          await personManagementViewPage.checkSchuelerVersetzenErrorDialog('all');
-          await personManagementViewPage.closeDialog('invalid-selection-alert-dialog-cancel-button');
-
-          await personManagementViewPage.filterBySchule(schule1Params.name);
-        });
-      }
-
-      await test.step(`Fehlermeldungen nur für Schülerrolle testen`, async () => {
-        await personManagementViewPage.setItemsPerPage(5);
-        await personManagementViewPage.checkRowCount(4);
-        await personManagementViewPage.toggleSelectAllRows(true);
-        await personManagementViewPage.selectMehrfachauswahl('Schüler versetzen');
-        await personManagementViewPage.checkSchuelerVersetzenErrorDialog('rolle');
-        await personManagementViewPage.closeDialog('invalid-selection-alert-dialog-cancel-button');
-      });
-    
-      await test.step(`Nur Schüler auswählen`, async () => {
-        await personManagementViewPage.toggleSelectAllRows(false);
-        for (const schueler of testData[0].schuelerSchule) {
-          await personManagementViewPage.checkIfPersonExists(`${schueler.nachname}`);
-          await personManagementViewPage.selectPerson(`${schueler.nachname}`);
-          await personManagementViewPage.checkPersonSelected(`${schueler.nachname}`);
-        }
-      });
-
-      await test.step(`Schüler versetzen-Dialog prüfen und anschließend versetzen`, async () => {
-        await personManagementViewPage.selectMehrfachauswahl('Schüler versetzen');
-        await personManagementViewPage.checkSchuelerVersetzenDialog(testData[0].klassenNamenSchule);
-        await personManagementViewPage.versetzeSchueler(testData[0].klassenNamenSchule[0]);
-      });
-
-      await test.step(`Progressbar und Erfolgsdialog prüfen`, async () => {
-        await personManagementViewPage.checkSchuelerVersetzenInProgress();
-        await personManagementViewPage.checkSchuelerVersetzenSuccessDialog();
-        await personManagementViewPage.closeDialog('bulk-change-klasse-close-button');
-      });
-
-      await test.step(`Aktualisierte Ergebnisliste prüfen`, async () => {
-        await personManagementViewPage.checkNewKlasseNachVersetzen(testData[0].schuelerSchule, testData[0].klassenNamenSchule[0]);
-      });
-    });
-
-    if (bezeichnung !== 'Schuladmin (2 Schulen)') {
-      test(`Als ${bezeichnung}: Passwörter zurücksetzen als Mehrfachbearbeitung prüfen`, { tag: [STAGE, DEV] }, async ({ page }: PlaywrightTestArgs) => {
+    test(
+      `Als ${bezeichnung}: Schüler versetzen als Mehrfachbearbeitung prüfen`,
+      { tag: [STAGE, DEV] },
+      async ({ page }: PlaywrightTestArgs) => {
         let testData: KlassenAndSchuelerData[];
 
         await test.step(`Testdaten erstellen`, async () => {
           testData = await createKlassenAndSchuelerForSchulen(page, [
-            { params: schule1Params, schuleId, klassenCount: 1, schuelerCount: 4 },
-            ...(hasMultipleSchulen ? [{ params: schule2Params, schuleId: schuleId2, klassenCount: 1, schuelerCount: 1 }] : [])
+            { params: schule1Params, schuleId, klassenCount: 26, schuelerCount: 3 },
+            ...(hasMultipleSchulen
+              ? [{ params: schule2Params, schuleId: schuleId2, klassenCount: 2, schuelerCount: 2 }]
+              : []),
           ]);
         });
 
         if (hasMultipleSchulen) {
-          await test.step(`Fehlermeldungen für Schule testen`, async () => {
+          await test.step(`Fehlermeldungen für Schule und Schülerrolle testen`, async () => {
             await personManagementViewPage.setItemsPerPage(50);
             await personManagementViewPage.toggleSelectAllRows(true);
-            await personManagementViewPage.selectMehrfachauswahl('Passwort zurücksetzen');
-            await personManagementViewPage.checkPasswortZuruecksetzenErrorDialog();
+            await personManagementViewPage.selectMehrfachauswahl('Schüler versetzen');
+            await personManagementViewPage.checkSchuelerVersetzenErrorDialog('all');
             await personManagementViewPage.closeDialog('invalid-selection-alert-dialog-cancel-button');
+
             await personManagementViewPage.filterBySchule(schule1Params.name);
           });
         }
 
-        await test.step(`Passwort zurücksetzen-Dialog prüfen und anschließend zurücksetzen`, async () => {
+        await test.step(`Fehlermeldungen nur für Schülerrolle testen`, async () => {
           await personManagementViewPage.setItemsPerPage(5);
-          await personManagementViewPage.checkRowCount(5);
+          await personManagementViewPage.checkRowCount(4);
           await personManagementViewPage.toggleSelectAllRows(true);
-          await personManagementViewPage.selectMehrfachauswahl('Passwort zurücksetzen');
-          await personManagementViewPage.checkPasswortZuruecksetzenDialog();
-          await personManagementViewPage.resetPassword();
+          await personManagementViewPage.selectMehrfachauswahl('Schüler versetzen');
+          await personManagementViewPage.checkSchuelerVersetzenErrorDialog('rolle');
+          await personManagementViewPage.closeDialog('invalid-selection-alert-dialog-cancel-button');
+        });
+
+        await test.step(`Nur Schüler auswählen`, async () => {
+          await personManagementViewPage.toggleSelectAllRows(false);
+          for (const schueler of testData[0].schuelerSchule) {
+            await personManagementViewPage.checkIfPersonExists(`${schueler.nachname}`);
+            await personManagementViewPage.selectPerson(`${schueler.nachname}`);
+            await personManagementViewPage.checkPersonSelected(`${schueler.nachname}`);
+          }
+        });
+
+        await test.step(`Schüler versetzen-Dialog prüfen und anschließend versetzen`, async () => {
+          await personManagementViewPage.selectMehrfachauswahl('Schüler versetzen');
+          await personManagementViewPage.checkSchuelerVersetzenDialog(testData[0].klassenNamenSchule);
+          await personManagementViewPage.versetzeSchueler(testData[0].klassenNamenSchule[0]);
         });
 
         await test.step(`Progressbar und Erfolgsdialog prüfen`, async () => {
-          await personManagementViewPage.checkPasswortZuruecksetzenInProgress();
-          await personManagementViewPage.checkPasswortZuruecksetzenSuccessDialog();
-          await personManagementViewPage.closeDialog('password-reset-close-button');
+          await personManagementViewPage.checkSchuelerVersetzenInProgress();
+          await personManagementViewPage.checkSchuelerVersetzenSuccessDialog();
+          await personManagementViewPage.closeDialog('bulk-change-klasse-close-button');
         });
 
-        await test.step(`Hinweis zur Passwortdatei prüfen und anschließend Datei herunterladen `, async () => {
-          await personManagementViewPage.checkPasswortdateiHinweis();
-          await personManagementViewPage.closeDialog('password-reset-download-confirmation-button');
-          const download: Download = await personManagementViewPage.downloadPasswordFile();
-          const users: UserInfo[] = [...testData[0].schuelerSchule, admin];
-          await personManagementViewPage.checkPasswortdatei(download, schule1Params.dienststellenNr, users, hasMultipleSchulen);
-          await personManagementViewPage.closeDialog('password-reset-close-button');
+        await test.step(`Aktualisierte Ergebnisliste prüfen`, async () => {
+          await personManagementViewPage.checkNewKlasseNachVersetzen(
+            testData[0].schuelerSchule,
+            testData[0].klassenNamenSchule[0],
+          );
         });
-      });
+      },
+    );
+
+    if (bezeichnung !== 'Schuladmin (2 Schulen)') {
+      test(
+        `Als ${bezeichnung}: Passwörter zurücksetzen als Mehrfachbearbeitung prüfen`,
+        { tag: [STAGE, DEV] },
+        async ({ page }: PlaywrightTestArgs) => {
+          let testData: KlassenAndSchuelerData[];
+
+          await test.step(`Testdaten erstellen`, async () => {
+            testData = await createKlassenAndSchuelerForSchulen(page, [
+              { params: schule1Params, schuleId, klassenCount: 1, schuelerCount: 4 },
+              ...(hasMultipleSchulen
+                ? [{ params: schule2Params, schuleId: schuleId2, klassenCount: 1, schuelerCount: 1 }]
+                : []),
+            ]);
+          });
+
+          if (hasMultipleSchulen) {
+            await test.step(`Fehlermeldungen für Schule testen`, async () => {
+              await personManagementViewPage.setItemsPerPage(50);
+              await personManagementViewPage.toggleSelectAllRows(true);
+              await personManagementViewPage.selectMehrfachauswahl('Passwort zurücksetzen');
+              await personManagementViewPage.checkPasswortZuruecksetzenErrorDialog();
+              await personManagementViewPage.closeDialog('invalid-selection-alert-dialog-cancel-button');
+              await personManagementViewPage.filterBySchule(schule1Params.name);
+            });
+          }
+
+          await test.step(`Passwort zurücksetzen-Dialog prüfen und anschließend zurücksetzen`, async () => {
+            await personManagementViewPage.setItemsPerPage(5);
+            await personManagementViewPage.checkRowCount(5);
+            await personManagementViewPage.toggleSelectAllRows(true);
+            await personManagementViewPage.selectMehrfachauswahl('Passwort zurücksetzen');
+            await personManagementViewPage.checkPasswortZuruecksetzenDialog();
+            await personManagementViewPage.resetPassword();
+          });
+
+          await test.step(`Progressbar und Erfolgsdialog prüfen`, async () => {
+            await personManagementViewPage.checkPasswortZuruecksetzenInProgress();
+            await personManagementViewPage.checkPasswortZuruecksetzenSuccessDialog();
+            await personManagementViewPage.closeDialog('password-reset-close-button');
+          });
+
+          await test.step(`Hinweis zur Passwortdatei prüfen und anschließend Datei herunterladen `, async () => {
+            await personManagementViewPage.checkPasswortdateiHinweis();
+            await personManagementViewPage.closeDialog('password-reset-download-confirmation-button');
+            const download: Download = await personManagementViewPage.downloadPasswordFile();
+            const users: UserInfo[] = [...testData[0].schuelerSchule, admin];
+            await personManagementViewPage.checkPasswortdatei(
+              download,
+              schule1Params.dienststellenNr,
+              users,
+              hasMultipleSchulen,
+            );
+            await personManagementViewPage.closeDialog('password-reset-close-button');
+          });
+        },
+      );
     }
   });
 });
-

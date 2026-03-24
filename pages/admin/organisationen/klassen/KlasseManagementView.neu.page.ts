@@ -35,7 +35,7 @@ export class KlasseManagementViewPage {
   public async setItemsPerPage(entries: 5 | 30 | 50 | 100 | 300): Promise<void> {
     await this.klasseTable.setItemsPerPage(entries);
   }
-    
+
   private async filterByText(text: string, testId: string, exact: boolean = false): Promise<void> {
     const filter: Autocomplete = new Autocomplete(this.page, this.page.getByTestId(testId));
     await filter.searchByTitle(text, exact);
@@ -59,7 +59,6 @@ export class KlasseManagementViewPage {
 
   public async goToFirstPage(): Promise<void> {
     await this.klasseTable.goToFirstPage();
-    
   }
 
   public async goToLastPage(): Promise<void> {
@@ -69,19 +68,22 @@ export class KlasseManagementViewPage {
   public async hasMultiplePages(): Promise<boolean> {
     return await this.klasseTable.hasMultiplePages();
   }
-  
+
   public async openGesamtuebersicht(klassenname: string): Promise<KlasseDetailsViewPage> {
     await this.klasseTable.getRow(klassenname).click();
     const klasseDetailsViewPage: KlasseDetailsViewPage = new KlasseDetailsViewPage(this.page);
     await klasseDetailsViewPage.waitForPageLoad();
     return klasseDetailsViewPage;
   }
-  
-  public async searchAndOpenGesamtuebersicht(hasMultipleSchulen: boolean, klasseParams: KlasseCreationParams): Promise<KlasseDetailsViewPage> {
+
+  public async searchAndOpenGesamtuebersicht(
+    hasMultipleSchulen: boolean,
+    klasseParams: KlasseCreationParams,
+  ): Promise<KlasseDetailsViewPage> {
     if (hasMultipleSchulen) {
       await this.filterBySchule(klasseParams.schulname);
     } else {
-      await this.checkIfSchuleIsCorrect(klasseParams.schulname, klasseParams.schulNr);
+      await this.checkIfSchuleIsCorrect(klasseParams.schulname, klasseParams.schulNr!);
     }
     await this.filterByKlasse(klasseParams.klassenname);
     await this.checkIfKlasseExists(klasseParams.klassenname);
@@ -93,13 +95,15 @@ export class KlasseManagementViewPage {
     if (hasMultipleSchulen) {
       await this.filterBySchule(klasseParams.schulname);
     } else {
-      await this.checkIfSchuleIsCorrect(klasseParams.schulname, klasseParams.schulNr);
+      await this.checkIfSchuleIsCorrect(klasseParams.schulname, klasseParams.schulNr!);
     }
     await this.filterByKlasse(klasseParams.klassenname);
     await this.checkIfKlasseExists(klasseParams.klassenname);
 
     await this.page.getByTestId('open-klasse-delete-dialog-icon').click();
-    await expect(this.page.getByTestId('klasse-delete-confirmation-text')).toHaveText(`Wollen Sie die Klasse ${klasseParams.klassenname} an der Schule ${klasseParams.schulNr} (${klasseParams.schulname}) wirklich entfernen?`);
+    await expect(this.page.getByTestId('klasse-delete-confirmation-text')).toHaveText(
+      `Wollen Sie die Klasse ${klasseParams.klassenname} an der Schule ${klasseParams.schulNr} (${klasseParams.schulname}) wirklich entfernen?`,
+    );
     await this.page.getByTestId('klasse-delete-button').click();
   }
 
@@ -109,7 +113,9 @@ export class KlasseManagementViewPage {
     await expect(this.page.getByTestId('klasse-management-headline')).toHaveText('Klassenverwaltung');
     await expect(this.page.getByTestId('klassen-management-schule-select')).toBeVisible();
     await expect(this.page.getByTestId('klassen-management-klasse-select')).toBeVisible();
-    const expectedHeaders: string[] = hasMultipleSchulen ? ['Dienststellennummer', 'Klasse', 'Aktion'] : ['Klasse', 'Aktion'];
+    const expectedHeaders: string[] = hasMultipleSchulen
+      ? ['Dienststellennummer', 'Klasse', 'Aktion']
+      : ['Klasse', 'Aktion'];
     await this.checkHeaders(expectedHeaders);
   }
 
@@ -119,11 +125,7 @@ export class KlasseManagementViewPage {
   }
 
   public async checkAllDropdownOptionsVisible(klassen: string[]): Promise<void> {
-    await this.klasseSelect.checkVisibleDropdownOptions(
-      klassen,
-      true,
-      `${klassen.length} Klassen gefunden`
-    );
+    await this.klasseSelect.checkVisibleDropdownOptions(klassen, true, `${klassen.length} Klassen gefunden`);
   }
 
   public async checkAllDropdownOptionsClickable(klassen: string[]): Promise<void> {
@@ -138,8 +140,10 @@ export class KlasseManagementViewPage {
     await this.klasseTable.checkRowCount(rowCount);
   }
 
-  public async checkIfSchuleIsCorrect(schulname: string,  schulNr: string): Promise<void> {
-    await expect(this.page.getByTestId('klassen-management-schule-select')).toHaveText(schulNr + ' (' + schulname + ')');
+  public async checkIfSchuleIsCorrect(schulname: string, schulNr: string): Promise<void> {
+    await expect(this.page.getByTestId('klassen-management-schule-select')).toHaveText(
+      schulNr + ' (' + schulname + ')',
+    );
   }
 
   public async checkIfKlasseExists(klassenname: string): Promise<void> {
@@ -156,7 +160,7 @@ export class KlasseManagementViewPage {
 
   private async checkTableRow(row: Locator, hasMultipleSchulen: boolean): Promise<void> {
     const cells: Locator = row.locator('td');
-    
+
     const klassennameCell: Locator = cells.nth(hasMultipleSchulen ? 2 : 1);
     await expect(klassennameCell).toBeVisible();
     await expect(klassennameCell).not.toBeEmpty();
@@ -165,23 +169,33 @@ export class KlasseManagementViewPage {
     const dienststellennummerCell: Locator = cells.nth(1);
     await expect(dienststellennummerCell).toBeVisible();
     await expect(dienststellennummerCell).toHaveText(/\S{1,255} \(\S{1,255}\)/);
-  } 
+  }
 
   public async klasseSuccessfullyDeleted(schulname: string, klassenname: string, schulNr: string): Promise<void> {
-    await expect(this.page.getByTestId('klasse-delete-success-text')).toHaveText(`Die Klasse ${klassenname} an der Schule ${schulNr} (${schulname}) wurde erfolgreich gelöscht.`);
+    await expect(this.page.getByTestId('klasse-delete-success-text')).toHaveText(
+      `Die Klasse ${klassenname} an der Schule ${schulNr} (${schulname}) wurde erfolgreich gelöscht.`,
+    );
     await this.page.getByTestId('close-klasse-delete-success-dialog-button').click();
   }
 
   public async klasseDeletionFailed(): Promise<void> {
-    await expect(this.page.getByTestId('klasse-management-error-alert-text')).toHaveText('Die Klasse kann nicht gelöscht werden, da noch Benutzer zugeordnet sind.');
+    await expect(this.page.getByTestId('klasse-management-error-alert-text')).toHaveText(
+      'Die Klasse kann nicht gelöscht werden, da noch Benutzer zugeordnet sind.',
+    );
     await this.page.getByTestId('klasse-management-error-alert-button').click();
   }
 
-  public async checkIfColumnHeaderSorted(columnName: string, sortingStatus: 'ascending' | 'descending' | 'not-sortable'): Promise<void> {
+  public async checkIfColumnHeaderSorted(
+    columnName: string,
+    sortingStatus: 'ascending' | 'descending' | 'not-sortable',
+  ): Promise<void> {
     await this.klasseTable.checkIfColumnHeaderSorted(columnName, sortingStatus);
   }
 
-  public async checkIfColumnDataSorted(hasMultipleSchulen: boolean, sortOrder: 'ascending' | 'descending'): Promise<void> {
+  public async checkIfColumnDataSorted(
+    hasMultipleSchulen: boolean,
+    sortOrder: 'ascending' | 'descending',
+  ): Promise<void> {
     const cellIndex: number = hasMultipleSchulen ? 2 : 1;
 
     await this.checkIfColumnHeaderSorted('Klasse', sortOrder);

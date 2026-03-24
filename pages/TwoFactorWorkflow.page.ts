@@ -16,7 +16,7 @@ export class TwoFactorWorkflowPage {
   constructor(
     protected readonly page: Page,
     private readonly username?: string,
-  ) { }
+  ) {}
 
   public async completeTwoFactorAuthentication(): Promise<PersonManagementViewPage> {
     const setupButton: Locator = this.getSecondFactorSetupButtonLocator();
@@ -103,7 +103,7 @@ export class TwoFactorWorkflowPage {
   /**
    * Saves the OTP secret in the environment, if the current user matches the worker's designated root user.
    * This should only be called during first-time 2FA setup, and not during regular login.
-   * @param otpSecret 
+   * @param otpSecret
    */
   private saveOtpSecretInEnv(otpSecret: string): void {
     if (this.username) {
@@ -143,7 +143,9 @@ export class TwoFactorWorkflowPage {
     }
 
     if (!key) {
-      throw new Error(`No OTP seed found for user ${this.username} and TEST_PARALLEL_INDEX ${process.env.TEST_PARALLEL_INDEX}`);
+      throw new Error(
+        `No OTP seed found for user ${this.username} and TEST_PARALLEL_INDEX ${process.env.TEST_PARALLEL_INDEX}`,
+      );
     }
 
     if (this.expires) {
@@ -151,7 +153,7 @@ export class TwoFactorWorkflowPage {
       // we may need to wait for the next token, since repeated entry is not allowed
       const currentTime: number = Date.now();
       const timeLeft: number = this.expires - currentTime;
-      // eslint-disable-next-line playwright/no-wait-for-timeout
+
       await this.page.waitForTimeout(timeLeft + 100);
     }
 

@@ -1,6 +1,6 @@
-import { Page } from "@playwright/test";
-import { HeaderPage } from "../components/Header.neu.page";
-import { MenuBarPage } from "../components/MenuBar.neu.page";
+import { Page } from '@playwright/test';
+import { HeaderPage } from '../components/Header.neu.page';
+import { MenuBarPage } from '../components/MenuBar.neu.page';
 
 export abstract class AbstractAdminPage {
   protected header: HeaderPage;
@@ -16,7 +16,7 @@ export abstract class AbstractAdminPage {
   getHeader(): HeaderPage {
     return this.header;
   }
-  
+
   getMenu(): MenuBarPage {
     return this.menu;
   }

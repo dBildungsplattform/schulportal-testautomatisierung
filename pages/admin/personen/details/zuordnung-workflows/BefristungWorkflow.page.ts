@@ -44,7 +44,7 @@ export class BefristungWorkflowPage extends BaseZuordnungWorkflowPage {
 
   public async checkConfirmation(oldValue: string, newValue: string): Promise<void> {
     await expect(
-      this.page.getByText(`Möchten Sie die Befristung wirklich von ${oldValue} in ${newValue} ändern?`)
+      this.page.getByText(`Möchten Sie die Befristung wirklich von ${oldValue} in ${newValue} ändern?`),
     ).toBeVisible();
   }
 

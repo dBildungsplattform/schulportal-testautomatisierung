@@ -22,11 +22,15 @@ export interface ZuordnungValidationParams {
 }
 
 export class ZuordnungenPage {
-  public constructor(private readonly page: Page,
-  private readonly addZuordnungWorkflowFactory: (page: Page) => AddZuordnungWorkflowPage = (p: Page) => new AddZuordnungWorkflowPage(p),
-  private readonly befristungWorkflowFactory: (page: Page) => BefristungWorkflowPage = (p: Page) => new BefristungWorkflowPage(p),
-  private readonly versetzenWorkflowFactory: (page: Page) => VersetzenWorkflowPage = (p: Page) => new VersetzenWorkflowPage(p)
-) {}
+  public constructor(
+    private readonly page: Page,
+    private readonly addZuordnungWorkflowFactory: (page: Page) => AddZuordnungWorkflowPage = (p: Page) =>
+      new AddZuordnungWorkflowPage(p),
+    private readonly befristungWorkflowFactory: (page: Page) => BefristungWorkflowPage = (p: Page) =>
+      new BefristungWorkflowPage(p),
+    private readonly versetzenWorkflowFactory: (page: Page) => VersetzenWorkflowPage = (p: Page) =>
+      new VersetzenWorkflowPage(p),
+  ) {}
 
   /* actions */
   public async editZuordnungen(): Promise<void> {
@@ -65,7 +69,7 @@ export class ZuordnungenPage {
   }
 
   public async editBefristung(
-    params: { option: 'unbefristet' | 'schuljahresende' } | { befristung: string }
+    params: { option: 'unbefristet' | 'schuljahresende' } | { befristung: string },
   ): Promise<void> {
     const workflowPage: BefristungWorkflowPage = await this.startBefristungWorkflow();
     if ('option' in params) {
@@ -78,9 +82,9 @@ export class ZuordnungenPage {
     await this.savePendingChanges(workflowPage);
   }
 
-  public async changeKlasse(dstNr: string , schule: string, rollename: string, from: string, to: string): Promise<void> {
+  public async changeKlasse(dstNr: string, schule: string, rollename: string, from: string, to: string): Promise<void> {
     await this.editZuordnungen();
-    await this.selectZuordnungToEdit({dstNr, organisation: schule, rolle: rollename, klasse: from });
+    await this.selectZuordnungToEdit({ dstNr, organisation: schule, rolle: rollename, klasse: from });
 
     const workflowPage: VersetzenWorkflowPage = await this.startVersetzenWorkflow();
     await workflowPage.selectKlasse(to);
@@ -105,7 +109,7 @@ export class ZuordnungenPage {
     if (params.rolle) {
       expectedText += ` ${params.rolle}`;
     }
-    if(params.klasse) {
+    if (params.klasse) {
       expectedText += ` ${params.klasse}`;
     }
     if (params.befristung) {
@@ -145,10 +149,14 @@ export class ZuordnungenPage {
         await expect(this.page.getByTestId('person-zuordnungen-section-edit')).toContainText(expectedText);
         break;
       case 'delete':
-        await expect(this.page.getByTestId('person-zuordnungen-section-edit').locator('span.text-green')).toContainText(expectedText);
+        await expect(this.page.getByTestId('person-zuordnungen-section-edit').locator('span.text-green')).toContainText(
+          expectedText,
+        );
         break;
       case 'create':
-        await expect(this.page.getByTestId('person-zuordnungen-section-edit').locator('span.text-red')).toContainText(expectedText);
+        await expect(this.page.getByTestId('person-zuordnungen-section-edit').locator('span.text-red')).toContainText(
+          expectedText,
+        );
         break;
     }
   }
