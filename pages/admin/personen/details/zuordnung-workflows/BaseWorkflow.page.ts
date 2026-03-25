@@ -66,7 +66,9 @@ export abstract class BaseZuordnungWorkflowPage {
 
   /* assertions */
   public async checkKlasseDropdownVisibleAndClickable(items: string[]): Promise<void> {
-    const sortedItems: string[] = [...items].sort((a: string, b: string) => a.localeCompare(b, 'de', { numeric: true }));
+    const sortedItems: string[] = [...items].sort((a: string, b: string) =>
+      a.localeCompare(b, 'de', { numeric: true }),
+    );
     for (const item of sortedItems) {
       await this.page.getByTestId(this.getKlasseSelectTestId()).click();
       const option: Locator = this.page.getByRole('option', { name: item, exact: false });

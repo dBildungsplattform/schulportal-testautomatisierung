@@ -1,10 +1,9 @@
-import { describe } from 'node:test';
 import { PlaywrightTestArgs, test } from '@playwright/test';
 import {
   generateKlassenname,
   generateNachname,
   generateRolleName,
-  generateVorname
+  generateVorname,
 } from '../../base/utils/generateTestdata';
 import { createRolleAndPersonWithPersonenkontext, freshLoginPage, UserInfo } from '../../base/api/personApi';
 import { createKlasse, getOrganisationId } from '../../base/api/organisationApi';
@@ -23,71 +22,66 @@ import { LoginViewPage } from '../../pages/LoginView.neu.page';
 const ADMIN: string = process.env.USER || 'admin';
 const PASSWORD: string = process.env.PW || 'admin';
 
-describe(`Schüler versetzen, Umgebung ${process.env.ENV}, URL: ${process.env.FRONTEND_URL}`, () => {
-    let userInfoSchueler: UserInfo;
-    let rolleName: string;
-    let klasseNameCurrent: string;
-    let klasseNameNew: string;
+test.describe(`Schüler versetzen, Umgebung ${process.env.ENV}, URL: ${process.env.FRONTEND_URL}`, () => {
+  let userInfoSchueler: UserInfo;
+  let rolleName: string;
+  let klasseNameCurrent: string;
+  let klasseNameNew: string;
 
-    test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
-      await test.step('Anmelden', async () => {
-        const loginPage: LoginViewPage = await freshLoginPage(page);
-        const startPage: StartViewPage = await loginPage.login(ADMIN, PASSWORD);
-        await startPage.waitForPageLoad();
-      });
-
-      await test.step('Rollennamen und Klassennamen generieren', async () => {
-        rolleName = generateRolleName();
-        klasseNameCurrent = generateKlassenname();
-        klasseNameNew = generateKlassenname();
-      });
-
-      await test.step('Schüler in aktueller Klasse anlegen, neue Zielklasse erstellen', async () => {
-        const idSchule: string = await getOrganisationId(page, testschuleName);
-        const klasseIdCurrent: string = await createKlasse(page, idSchule, klasseNameCurrent);
-        
-        userInfoSchueler = await createRolleAndPersonWithPersonenkontext(
-          page,
-          testschuleName,
-          typeSchueler,
-          generateNachname(),
-          generateVorname(),
-          [await getServiceProviderId(page, itslearning)],
-          rolleName,
-          undefined,
-          klasseIdCurrent
-        );
-        await createKlasse(page, idSchule, klasseNameNew);
-      });
+  test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
+    await test.step('Anmelden', async () => {
+      const loginPage: LoginViewPage = await freshLoginPage(page);
+      const startPage: StartViewPage = await loginPage.login(ADMIN, PASSWORD);
+      await startPage.waitForPageLoad();
     });
 
-    test(
-      'von einer Klasse in eine andere',
-      { tag: [DEV, STAGE] },
-      async ({ page }: PlaywrightTestArgs) => {
-        const personDetailsView: PersonDetailsViewPage = await test.step('Gesamtübersicht Schüler öffnen', async () => {
-          const startPage: StartViewPage = new StartViewPage(page);
-          const personManagementView: PersonManagementViewPage = await startPage
-            .navigateToAdministration()
-            .then((p: PersonManagementViewPage) => p.menu)
-            .then((menu: MenuBarPage) => menu.navigateToPersonManagement());
-          return await personManagementView.searchAndOpenGesamtuebersicht(userInfoSchueler.username);
-        });
+    await test.step('Rollennamen und Klassennamen generieren', async () => {
+      rolleName = generateRolleName();
+      klasseNameCurrent = generateKlassenname();
+      klasseNameNew = generateKlassenname();
+    });
 
-        await test.step('Schüler in neue Klasse versetzen', async () => {
-          const zuordnungenPage: ZuordnungenPage = new ZuordnungenPage(page);
-          await zuordnungenPage.changeKlasse(testschuleDstNr, testschuleName, rolleName, klasseNameCurrent, klasseNameNew);
-        });
+    await test.step('Schüler in aktueller Klasse anlegen, neue Zielklasse erstellen', async () => {
+      const idSchule: string = await getOrganisationId(page, testschuleName);
+      const klasseIdCurrent: string = await createKlasse(page, idSchule, klasseNameCurrent);
 
-        await test.step('Prüfen, dass Schüler in neuer Klasse zugeordnet ist', async () => {
-          await personDetailsView.checkZuordnungExists({
-            dstNr: testschuleDstNr,
-            organisation: testschuleName,
-            rolle: rolleName,
-            klasse: klasseNameNew
-          });
-        });
-      }
-    );
-  }
-);
+      userInfoSchueler = await createRolleAndPersonWithPersonenkontext(
+        page,
+        testschuleName,
+        typeSchueler,
+        generateNachname(),
+        generateVorname(),
+        [await getServiceProviderId(page, itslearning)],
+        rolleName,
+        undefined,
+        klasseIdCurrent,
+      );
+      await createKlasse(page, idSchule, klasseNameNew);
+    });
+  });
+
+  test('von einer Klasse in eine andere', { tag: [DEV, STAGE] }, async ({ page }: PlaywrightTestArgs) => {
+    const personDetailsView: PersonDetailsViewPage = await test.step('Gesamtübersicht Schüler öffnen', async () => {
+      const startPage: StartViewPage = new StartViewPage(page);
+      const personManagementView: PersonManagementViewPage = await startPage
+        .navigateToAdministration()
+        .then((p: PersonManagementViewPage) => p.menu)
+        .then((menu: MenuBarPage) => menu.navigateToPersonManagement());
+      return await personManagementView.searchAndOpenGesamtuebersicht(userInfoSchueler.username);
+    });
+
+    await test.step('Schüler in neue Klasse versetzen', async () => {
+      const zuordnungenPage: ZuordnungenPage = new ZuordnungenPage(page);
+      await zuordnungenPage.changeKlasse(testschuleDstNr, testschuleName, rolleName, klasseNameCurrent, klasseNameNew);
+    });
+
+    await test.step('Prüfen, dass Schüler in neuer Klasse zugeordnet ist', async () => {
+      await personDetailsView.checkZuordnungExists({
+        dstNr: testschuleDstNr,
+        organisation: testschuleName,
+        rolle: rolleName,
+        klasse: klasseNameNew,
+      });
+    });
+  });
+});

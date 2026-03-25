@@ -84,7 +84,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await personCreationView.searchAndSelectOrganisation(OrganisationLand, true);
         await personCreationView.checkRolleModal(
           [landesadminRolle],
-          [rolleLehr, rolleLiV, schuladminOeffentlichRolle, schuelerRolle]
+          [rolleLehr, rolleLiV, schuladminOeffentlichRolle, schuelerRolle],
         );
         await personCreationView.clearOrganisationSelection();
       });
@@ -93,7 +93,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await personCreationView.searchAndSelectOrganisation(OrganisationOeffentlicheSchule, true);
         await personCreationView.checkRolleModal(
           [landesadminRolle],
-          [rolleLehr, rolleLiV, schuladminOeffentlichRolle, schuelerRolle]
+          [rolleLehr, rolleLiV, schuladminOeffentlichRolle, schuelerRolle],
         );
         await personCreationView.clearOrganisationSelection();
       });
@@ -102,7 +102,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await personCreationView.searchAndSelectOrganisation(OrganisationErsatzschule, true);
         await personCreationView.checkRolleModal(
           [landesadminRolle],
-          [rolleLehr, rolleLiV, schuladminOeffentlichRolle, schuelerRolle]
+          [rolleLehr, rolleLiV, schuladminOeffentlichRolle, schuelerRolle],
         );
         await personCreationView.clearOrganisationSelection();
       });
@@ -111,10 +111,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await personCreationView.searchAndSelectOrganisation(OrganisationSchule, false);
         await personCreationView.checkRolleModal(
           [rolleLehr, rolleLiV, schuladminOeffentlichRolle, schuelerRolle],
-          [landesadminRolle]
+          [landesadminRolle],
         );
       });
-    }
+    },
   );
 
   test(
@@ -151,6 +151,6 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await personCreationView.comboboxRolleInput.validateItemNotExists(rolleNames[2], true);
         await personCreationView.comboboxRolleInput.validateItemNotExists(rolleNames[3], true);
       });
-    }
+    },
   );
 });

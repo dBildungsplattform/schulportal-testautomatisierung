@@ -14,7 +14,7 @@ export class RolleCreationSuccessPage {
   public async waitForPageLoad(): Promise<RolleCreationSuccessPage> {
     await expect(this.page.getByTestId('rolle-creation-headline')).toHaveText('Neue Rolle hinzufügen');
     await expect(this.page.getByTestId('following-rolle-data-created-text')).toHaveText(
-      'Folgende Daten wurden gespeichert:'
+      'Folgende Daten wurden gespeichert:',
     );
     await expect(this.page.getByTestId('rolle-success-text')).toBeVisible();
     await expect(this.page.getByTestId('rolle-success-icon')).toBeVisible();

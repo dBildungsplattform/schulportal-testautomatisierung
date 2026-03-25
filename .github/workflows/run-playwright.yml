@@ -123,6 +123,12 @@ jobs:
           sudo apt-get update || true
       - name: Install dependencies
         run: npm ci
+      - name: TypeScript type check
+        run: npm run type-check
+      - name: Lint check
+        run: npm run lint:ci
+      - name: Prettier check
+        run: npm run check-format
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
 

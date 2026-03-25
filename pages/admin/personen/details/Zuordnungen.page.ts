@@ -25,10 +25,10 @@ export interface ZuordnungValidationParams {
 export class ZuordnungenPage {
   public constructor(
     private readonly page: Page,
-    private readonly befristungWorkflowFactory: (page: Page) => BefristungWorkflowPage = (p: Page) =>
-      new BefristungWorkflowPage(p),
     private readonly addZuordnungWorkflowFactory: (page: Page) => AddZuordnungWorkflowPage = (p: Page) =>
       new AddZuordnungWorkflowPage(p),
+    private readonly befristungWorkflowFactory: (page: Page) => BefristungWorkflowPage = (p: Page) =>
+      new BefristungWorkflowPage(p),
     private readonly versetzenWorkflowFactory: (page: Page) => VersetzenWorkflowPage = (p: Page) =>
       new VersetzenWorkflowPage(p),
   ) {}
@@ -90,9 +90,9 @@ export class ZuordnungenPage {
     await this.savePendingChanges(workflowPage);
   }
 
-  public async changeKlasse(dstNr: string , schule: string, rollename: string, from: string, to: string): Promise<void> {
+  public async changeKlasse(dstNr: string, schule: string, rollename: string, from: string, to: string): Promise<void> {
     await this.editZuordnungen();
-    await this.selectZuordnungToEdit({dstNr, organisation: schule, rolle: rollename, klasse: from });
+    await this.selectZuordnungToEdit({ dstNr, organisation: schule, rolle: rollename, klasse: from });
 
     const workflowPage: VersetzenWorkflowPage = await this.startVersetzenWorkflow();
     await workflowPage.selectKlasse(to);
@@ -117,7 +117,7 @@ export class ZuordnungenPage {
     if (params.rolle) {
       expectedText += ` ${params.rolle}`;
     }
-    if(params.klasse) {
+    if (params.klasse) {
       expectedText += ` ${params.klasse}`;
     }
     if (params.befristung) {

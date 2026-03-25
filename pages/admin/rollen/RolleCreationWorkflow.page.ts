@@ -64,7 +64,7 @@ export class RolleCreationWorkflow {
         button: 'Zurück zur Rollenanlage',
         text: 'Der Rollenname ist bereits vergeben. Bitte korrigieren Sie Ihre Eingabe.',
       },
-      new RolleCreationViewPage(this.page)
+      new RolleCreationViewPage(this.page),
     );
   }
 

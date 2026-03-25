@@ -3,7 +3,7 @@ import { SchuleCreationSuccessPage } from './SchuleCreationSuccess.page';
 
 export enum Schulform {
   Oeffentlich = 'öffentlich',
-  Ersatz = 'ersatz'
+  Ersatz = 'ersatz',
 }
 
 export interface SchuleCreationParams {
@@ -20,7 +20,6 @@ export class SchuleCreationViewPage {
   private readonly schulnameInputContainer: Locator = this.page.getByTestId('schulname-input');
   private readonly schuleVerwerfenButton: Locator = this.page.getByTestId('schule-creation-form-discard-button');
   private readonly schuleAnlegenButton: Locator = this.page.getByTestId('schule-creation-form-submit-button');
-  private selectedSchultraegerName: string;
 
   constructor(protected readonly page: Page) {}
 
@@ -37,10 +36,8 @@ export class SchuleCreationViewPage {
 
     if (params.schulform === Schulform.Oeffentlich) {
       await this.oeffentlicheSchuleOption.click();
-      this.selectedSchultraegerName = await this.oeffentlicheSchuleOption.innerText();
     } else {
       await this.ersatzSchuleOption.click();
-      this.selectedSchultraegerName = await this.ersatzSchuleOption.innerText();
     }
 
     await dienststellenNrInput.waitFor({ state: 'visible' });
@@ -65,7 +62,9 @@ export class SchuleCreationViewPage {
     await expect(this.page.getByTestId('admin-headline')).toHaveText('Administrationsbereich');
     await expect(this.headline).toHaveText('Neue Schule hinzufügen');
     await expect(this.page.getByTestId('close-layout-card-button')).toBeVisible();
-    await expect(this.page.getByTestId('mandatory-fields-notice')).toHaveText('Mit * markierte Felder sind Pflichtangaben.');
+    await expect(this.page.getByTestId('mandatory-fields-notice')).toHaveText(
+      'Mit * markierte Felder sind Pflichtangaben.',
+    );
 
     await expect(this.page.getByText('1. Schulform zuordnen', { exact: false })).toBeVisible();
     await expect(this.oeffentlicheSchuleOption).toBeVisible();

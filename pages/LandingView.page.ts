@@ -8,8 +8,8 @@ export class LandingPage {
 
   constructor(page: Page) {
     this.page = page;
-    this.textWillkommen = page.getByTestId("landing-headline");
-    this.buttonAnmelden = page.getByTestId("login-button");
+    this.textWillkommen = page.getByTestId('landing-headline');
+    this.buttonAnmelden = page.getByTestId('login-button');
   }
 
   public async goToLogin(): Promise<LoginPage> {

@@ -29,7 +29,7 @@ test.describe(`Testfälle für die Ergebnisliste von Schulen als Landesadmin: Um
     // Erstmalige Anmeldung mit Passwortänderung
     const startPage: StartViewPage = await loginPage.loginNewUserWithPasswordChange(
       landesadmin.username,
-      landesadmin.password
+      landesadmin.password,
     );
     await startPage.waitForPageLoad();
 

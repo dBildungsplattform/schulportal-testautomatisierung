@@ -1,4 +1,4 @@
-import { Locator, Page } from '@playwright/test';
+import { expect, Locator, Page } from '@playwright/test';
 import { KlasseCreationViewPage } from '../admin/organisationen/klassen/KlasseCreationView.neu.page';
 import { KlasseManagementViewPage } from '../admin/organisationen/klassen/KlasseManagementView.neu.page';
 import { SchuleCreationViewPage } from '../admin/organisationen/schulen/SchuleCreationView.neu.page';
@@ -90,4 +90,18 @@ export class MenuBarPage {
   }
 
   /* assertions */
+  async checkMenuItemVisibility(
+    locator: Locator,
+    shouldBeVisible: boolean,
+    navigate: (menu: MenuBarPage) => Promise<unknown>,
+    route?: string,
+  ): Promise<void> {
+    if (shouldBeVisible) {
+      await expect(locator).toBeVisible();
+      await navigate(this);
+      await expect(this.page).toHaveURL(new RegExp(`${route}$`));
+    } else {
+      await expect(locator).toHaveCount(0);
+    }
+  }
 }

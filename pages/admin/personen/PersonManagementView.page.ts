@@ -62,9 +62,8 @@ export class PersonManagementViewPage {
     // Triggers the click and starts listening for the response at the same time
     // Guarantees that the response is awaited only after the click and that it won't be missed even if it happens fast
     await Promise.all([
-      this.page.waitForResponse((response) =>
-        response.url().includes('/api/dbiam/personenuebersicht') &&
-        response.status() === 201
+      this.page.waitForResponse(
+        (response) => response.url().includes('/api/dbiam/personenuebersicht') && response.status() === 201,
       ),
       this.buttonSuchen.click(),
     ]);

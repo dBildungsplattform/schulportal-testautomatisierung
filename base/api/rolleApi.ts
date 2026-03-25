@@ -1,7 +1,21 @@
 import { Page, expect } from '@playwright/test';
 import { FRONTEND_URL } from './baseApi';
-import { CreateRolleBodyParams, RollenArt, RollenMerkmal, RolleResponse, RolleWithServiceProvidersResponse, ServiceProviderResponse } from './generated/models';
-import { RolleApi, RolleControllerAddSystemRechtRequest, RolleControllerCreateRolleRequest, RolleControllerDeleteRolleRequest, RolleControllerFindRollenRequest, RolleControllerUpdateServiceProvidersByIdRequest } from './generated/apis/RolleApi';
+import {
+  CreateRolleBodyParams,
+  RollenArt,
+  RollenMerkmal,
+  RolleResponse,
+  RolleWithServiceProvidersResponse,
+  ServiceProviderResponse,
+} from './generated/models';
+import {
+  RolleApi,
+  RolleControllerAddSystemRechtRequest,
+  RolleControllerCreateRolleRequest,
+  RolleControllerDeleteRolleRequest,
+  RolleControllerFindRollenRequest,
+  RolleControllerUpdateServiceProvidersByIdRequest,
+} from './generated/apis/RolleApi';
 import { makeFetchWithPlaywright } from './playwrightFetchAdapter';
 import { ApiResponse, Configuration } from './generated/runtime';
 import { RollenSystemRecht } from './generated/models/RollenSystemRecht';
@@ -11,19 +25,19 @@ export { RollenMerkmal };
 
 export function constructRolleApi(page: Page): RolleApi {
   const config: Configuration = new Configuration({
-    basePath: FRONTEND_URL.replace(/\/$/, ''),
+    basePath: FRONTEND_URL?.replace(/\/$/, ''),
     fetchApi: makeFetchWithPlaywright(page),
   });
   return new RolleApi(config);
 }
 
 /**
- * 
- * @param page 
- * @param rollenArt 
- * @param organisationId 
- * @param rolleName 
- * @param merkmale 
+ *
+ * @param page
+ * @param rollenArt
+ * @param organisationId
+ * @param rolleName
+ * @param merkmale
  * @returns id of created Rolle
  */
 export async function createRolle(
@@ -31,7 +45,7 @@ export async function createRolle(
   rollenArt: RollenArt,
   organisationId: string,
   rolleName: string,
-  merkmale?: Set<RollenMerkmal>
+  merkmale?: Set<RollenMerkmal>,
 ): Promise<string> {
   try {
     const createRolleBodyParams: CreateRolleBodyParams = {
@@ -62,18 +76,23 @@ export async function createRolle(
   }
 }
 
-export async function addServiceProvidersToRolle(page: Page, rolleId: string, serviceProviderIds: string[]): Promise<void> {
+export async function addServiceProvidersToRolle(
+  page: Page,
+  rolleId: string,
+  serviceProviderIds: string[],
+): Promise<void> {
   try {
     const requestParameters: RolleControllerUpdateServiceProvidersByIdRequest = {
       rolleId,
       rolleServiceProviderBodyParams: {
         serviceProviderIds: serviceProviderIds,
         version: 1,
-      }
-    }
+      },
+    };
 
     const rolleApi: RolleApi = constructRolleApi(page);
-    const response: ApiResponse<ServiceProviderResponse[]> = await rolleApi.rolleControllerUpdateServiceProvidersByIdRaw(requestParameters);
+    const response: ApiResponse<ServiceProviderResponse[]> =
+      await rolleApi.rolleControllerUpdateServiceProvidersByIdRaw(requestParameters);
     expect(response.raw.status).toBe(201);
 
     const addedServiceProviders: ServiceProviderResponse[] = await response.value();
@@ -84,14 +103,18 @@ export async function addServiceProvidersToRolle(page: Page, rolleId: string, se
   }
 }
 
-export async function addSystemrechtToRolle(page: Page, rolleId: string, systemRecht: RollenSystemRecht): Promise<void> {
+export async function addSystemrechtToRolle(
+  page: Page,
+  rolleId: string,
+  systemRecht: RollenSystemRecht,
+): Promise<void> {
   try {
     const requestParameters: RolleControllerAddSystemRechtRequest = {
       rolleId,
       addSystemrechtBodyParams: {
         systemRecht,
-      }
-    }
+      },
+    };
 
     const rolleApi: RolleApi = constructRolleApi(page);
     const response: ApiResponse<void> = await rolleApi.rolleControllerAddSystemRechtRaw(requestParameters);
@@ -105,8 +128,8 @@ export async function addSystemrechtToRolle(page: Page, rolleId: string, systemR
 export async function deleteRolle(page: Page, rolleId: string): Promise<void> {
   try {
     const requestParameters: RolleControllerDeleteRolleRequest = {
-      rolleId
-    }
+      rolleId,
+    };
 
     const rolleApi: RolleApi = constructRolleApi(page);
     const response: ApiResponse<void> = await rolleApi.rolleControllerDeleteRolleRaw(requestParameters);
@@ -120,11 +143,12 @@ export async function deleteRolle(page: Page, rolleId: string): Promise<void> {
 export async function getRolleId(page: Page, rollenname: string): Promise<string> {
   try {
     const requestParameters: RolleControllerFindRollenRequest = {
-      searchStr: rollenname
-    }
+      searchStr: rollenname,
+    };
 
     const rolleApi: RolleApi = constructRolleApi(page);
-    const response: ApiResponse<RolleWithServiceProvidersResponse[]> = await rolleApi.rolleControllerFindRollenRaw(requestParameters);
+    const response: ApiResponse<RolleWithServiceProvidersResponse[]> =
+      await rolleApi.rolleControllerFindRollenRaw(requestParameters);
     expect(response.raw.status).toBe(200);
 
     const fetchedRollen: RolleWithServiceProvidersResponse[] = await response.value();

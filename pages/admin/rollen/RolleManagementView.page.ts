@@ -30,7 +30,7 @@ export class RolleManagementViewPage {
     await expect(this.page.getByTestId('rolle-management-headline')).toHaveText('Rollenverwaltung');
     await this.checkHeaders(['Rollenname', 'Rollenart', 'Merkmale', 'Angebote', 'Administrationsebene']);
   }
-  
+
   public async checkHeaders(expectedHeaders: string[]): Promise<void> {
     await this.rolleTable.checkHeaders(expectedHeaders);
   }
