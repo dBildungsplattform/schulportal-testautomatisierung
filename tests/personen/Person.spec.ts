@@ -23,7 +23,7 @@ let usernames: string[] = [];
 let rolleIds: string[] = [];
 let rolleNames: string[] = [];
 // This variable must be set to false in the testcase when the logged in user is changed
-let currentUserIsLandesadministrator: boolean = true;
+const currentUserIsLandesadministrator: boolean = true;
 
 test.describe(`Testfälle für die Administration von Personen": Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
