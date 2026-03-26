@@ -1,10 +1,23 @@
-import { systemrechtLabel } from "../../base/berechtigungen";
-import { rollenMerkmalLabel } from "../../base/merkmale";
-import { testschuleName } from "../../base/organisation";
-import { rollenArtLabel } from "../../base/rollentypen";
-import { adressbuch, anleitungen, email, helpdeskKontaktieren, itslearning, kalender, opSH, psychosozialesBeratungsangebot, schoolSH, schulportaladmin, schulrechtAZ, webUntis } from "../../base/sp";
-import { generateRolleName } from "../../base/utils/generateTestdata";
-import { RolleCreationParams } from "../../pages/admin/rollen/RolleCreationView.page";
+import { systemrechtLabel } from '../../base/berechtigungen';
+import { rollenMerkmalLabel } from '../../base/merkmale';
+import { testschuleName } from '../../base/organisation';
+import { rollenArtLabel } from '../../base/rollentypen';
+import {
+  adressbuch,
+  anleitungen,
+  email,
+  helpdeskKontaktieren,
+  itslearning,
+  kalender,
+  opSH,
+  psychosozialesBeratungsangebot,
+  schoolSH,
+  schulportaladmin,
+  schulrechtAZ,
+  webUntis,
+} from '../../base/sp';
+import { generateRolleName } from '../../base/utils/generateTestdata';
+import { RolleCreationParams } from '../../pages/admin/rollen/RolleCreationView.page';
 
 export const rolleCreationParams: RolleCreationParams[] = [
   {

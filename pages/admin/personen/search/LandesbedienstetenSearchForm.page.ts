@@ -1,4 +1,4 @@
-import { expect, Locator, Page } from "@playwright/test";
+import { expect, Locator, Page } from '@playwright/test';
 import { SearchResultErrorDialog } from '../../../components/SearchResultErrorDialog';
 import { LandesbedienstetenSearchResultPage } from './LandesbedienstetenSearchResult.page';
 
@@ -7,24 +7,26 @@ export class LandesbedienstetenSearchFormPage {
   /* add global locators here */
   private readonly headline: Locator = this.page.getByTestId('admin-headline');
   private readonly searchCardHeadline: Locator = this.page.getByTestId('search-state-employee-headline');
-  
+
   /* Landesbediensteten Suchen  */
-  private readonly kopersRadioInput : Locator = this.page.getByTestId('kopers-radio-button').locator('input');
-  private readonly emailRadioInput : Locator = this.page.getByTestId('email-radio-button').locator('input');
-  private readonly usernameRadioInput : Locator = this.page.getByTestId('username-radio-button').locator('input');
-  private readonly nameRadioInput : Locator = this.page.getByTestId('name-radio-button').locator('input');
-  private readonly kopersInput : Locator = this.page.getByTestId('kopers-input').locator('input');
-  private readonly emailInput : Locator = this.page.getByTestId('email-input').locator('input');
-  private readonly usernameInput : Locator = this.page.getByTestId('username-input').locator('input');
-  private readonly vornameInput : Locator = this.page.getByTestId('vorname-input').locator('input');
-  private readonly nachnameInput : Locator = this.page.getByTestId('nachname-input').locator('input');
+  private readonly kopersRadioInput: Locator = this.page.getByTestId('kopers-radio-button').locator('input');
+  private readonly emailRadioInput: Locator = this.page.getByTestId('email-radio-button').locator('input');
+  private readonly usernameRadioInput: Locator = this.page.getByTestId('username-radio-button').locator('input');
+  private readonly nameRadioInput: Locator = this.page.getByTestId('name-radio-button').locator('input');
+  private readonly kopersInput: Locator = this.page.getByTestId('kopers-input').locator('input');
+  private readonly emailInput: Locator = this.page.getByTestId('email-input').locator('input');
+  private readonly usernameInput: Locator = this.page.getByTestId('username-input').locator('input');
+  private readonly vornameInput: Locator = this.page.getByTestId('vorname-input').locator('input');
+  private readonly nachnameInput: Locator = this.page.getByTestId('nachname-input').locator('input');
   /* the reset search button's id is not properly named due to automated name generation in forms,
      and a different usage of that button in the search form */
-  private readonly zuruecksetzenButton : Locator = this.page.getByTestId('person-search-form-discard-button');
-  private readonly landesbedienstetenSuchenButton : Locator = this.page.getByTestId('person-search-form-submit-button');
+  private readonly zuruecksetzenButton: Locator = this.page.getByTestId('person-search-form-discard-button');
+  private readonly landesbedienstetenSuchenButton: Locator = this.page.getByTestId('person-search-form-submit-button');
 
-  private readonly searchResultErrorDialogKeineTrefferText: string = "Es wurde leider kein Treffer gefunden. Bitte prüfen Sie Ihre Eingabe. Sollten Sie Hilfe benötigen, eröffnen Sie ein Störungsticket über den IQSH-Helpdesk.";
-  private readonly searchResultErrorDialogDoppelteTrefferText: string = "Es wurde mehr als ein Treffer gefunden. Bitte verwenden Sie zur Suche die KoPers.-Nr., die Landes-Mailadresse oder den Benutzernamen. Sollten Sie Hilfe benötigen, eröffnen Sie ein Störungsticket über den IQSH-Helpdesk.";
+  private readonly searchResultErrorDialogKeineTrefferText: string =
+    'Es wurde leider kein Treffer gefunden. Bitte prüfen Sie Ihre Eingabe. Sollten Sie Hilfe benötigen, eröffnen Sie ein Störungsticket über den IQSH-Helpdesk.';
+  private readonly searchResultErrorDialogDoppelteTrefferText: string =
+    'Es wurde mehr als ein Treffer gefunden. Bitte verwenden Sie zur Suche die KoPers.-Nr., die Landes-Mailadresse oder den Benutzernamen. Sollten Sie Hilfe benötigen, eröffnen Sie ein Störungsticket über den IQSH-Helpdesk.';
 
   /* actions */
   public async waitForPageLoad(): Promise<LandesbedienstetenSearchFormPage> {
@@ -67,10 +69,14 @@ export class LandesbedienstetenSearchFormPage {
     await this.fillVornameNachname(vorname, nachname);
     await this.clickLandesbedienstetenSuchen();
     if (vorname === '') {
-      await expect(this.page.getByTestId('vorname-input').locator('.v-messages__message')).toHaveText('Der Vorname ist erforderlich.');
+      await expect(this.page.getByTestId('vorname-input').locator('.v-messages__message')).toHaveText(
+        'Der Vorname ist erforderlich.',
+      );
     }
     if (nachname === '') {
-      await expect(this.page.getByTestId('nachname-input').locator('.v-messages__message')).toHaveText('Der Nachname ist erforderlich.');
+      await expect(this.page.getByTestId('nachname-input').locator('.v-messages__message')).toHaveText(
+        'Der Nachname ist erforderlich.',
+      );
     }
   }
 
@@ -78,34 +84,62 @@ export class LandesbedienstetenSearchFormPage {
     await this.landesbedienstetenSuchenButton.click();
   }
 
-  public async clickLandesbedienstetenSuchenWithDuplicateName(vorname: string, nachname: string): Promise<SearchResultErrorDialog> {
+  public async clickLandesbedienstetenSuchenWithDuplicateName(
+    vorname: string,
+    nachname: string,
+  ): Promise<SearchResultErrorDialog> {
     await this.fillVornameNachname(vorname, nachname);
     await this.landesbedienstetenSuchenButton.click();
-    return new SearchResultErrorDialog(this.page, this.page.getByTestId('person-search-error-dialog'), this.searchResultErrorDialogDoppelteTrefferText);
+    return new SearchResultErrorDialog(
+      this.page,
+      this.page.getByTestId('person-search-error-dialog'),
+      this.searchResultErrorDialogDoppelteTrefferText,
+    );
   }
 
-  public async clickLandesbedienstetenSuchenWithInvalidName(vorname: string, nachname: string): Promise<SearchResultErrorDialog> {
+  public async clickLandesbedienstetenSuchenWithInvalidName(
+    vorname: string,
+    nachname: string,
+  ): Promise<SearchResultErrorDialog> {
     await this.fillVornameNachname(vorname, nachname);
     await this.landesbedienstetenSuchenButton.click();
-    return new SearchResultErrorDialog(this.page, this.page.getByTestId('person-search-error-dialog'), this.searchResultErrorDialogKeineTrefferText);
+    return new SearchResultErrorDialog(
+      this.page,
+      this.page.getByTestId('person-search-error-dialog'),
+      this.searchResultErrorDialogKeineTrefferText,
+    );
   }
 
   public async clickLandesbedienstetenSuchenWithInvalidKoPers(kopers: string): Promise<SearchResultErrorDialog> {
     await this.fillKopersNr(kopers);
     await this.landesbedienstetenSuchenButton.click();
-    return new SearchResultErrorDialog(this.page, this.page.getByTestId('person-search-error-dialog'), this.searchResultErrorDialogKeineTrefferText);
+    return new SearchResultErrorDialog(
+      this.page,
+      this.page.getByTestId('person-search-error-dialog'),
+      this.searchResultErrorDialogKeineTrefferText,
+    );
   }
 
   public async clickLandesbedienstetenSuchenWithInvalidMail(eMail: string): Promise<SearchResultErrorDialog> {
     await this.fillEmail(eMail);
     await this.landesbedienstetenSuchenButton.click();
-    return new SearchResultErrorDialog(this.page, this.page.getByTestId('person-search-error-dialog'), this.searchResultErrorDialogKeineTrefferText);
+    return new SearchResultErrorDialog(
+      this.page,
+      this.page.getByTestId('person-search-error-dialog'),
+      this.searchResultErrorDialogKeineTrefferText,
+    );
   }
 
-  public async clickLandesbedienstetenSuchenWithInvalidBenutzername(benutzername: string): Promise<SearchResultErrorDialog> {
+  public async clickLandesbedienstetenSuchenWithInvalidBenutzername(
+    benutzername: string,
+  ): Promise<SearchResultErrorDialog> {
     await this.fillBenutzername(benutzername);
     await this.landesbedienstetenSuchenButton.click();
-    return new SearchResultErrorDialog(this.page, this.page.getByTestId('person-search-error-dialog'), this.searchResultErrorDialogKeineTrefferText);
+    return new SearchResultErrorDialog(
+      this.page,
+      this.page.getByTestId('person-search-error-dialog'),
+      this.searchResultErrorDialogKeineTrefferText,
+    );
   }
 
   public async searchLandesbedienstetenViaKopers(kopers: string): Promise<LandesbedienstetenSearchResultPage> {
@@ -117,21 +151,27 @@ export class LandesbedienstetenSearchFormPage {
   public async searchLandesbedienstetenViaEmail(email: string): Promise<LandesbedienstetenSearchResultPage> {
     await this.fillEmail(email);
     await this.clickLandesbedienstetenSuchen();
-    const landesbedienstetenSearchResultPage: LandesbedienstetenSearchResultPage = new LandesbedienstetenSearchResultPage(this.page);
+    const landesbedienstetenSearchResultPage: LandesbedienstetenSearchResultPage =
+      new LandesbedienstetenSearchResultPage(this.page);
     return landesbedienstetenSearchResultPage;
   }
 
   public async searchLandesbedienstetenViaUsername(benutzername: string): Promise<LandesbedienstetenSearchResultPage> {
     await this.fillBenutzername(benutzername);
     await this.clickLandesbedienstetenSuchen();
-    const landesbedienstetenSearchResultPage: LandesbedienstetenSearchResultPage = new LandesbedienstetenSearchResultPage(this.page);
+    const landesbedienstetenSearchResultPage: LandesbedienstetenSearchResultPage =
+      new LandesbedienstetenSearchResultPage(this.page);
     return landesbedienstetenSearchResultPage;
   }
 
-  public async searchLandesbedienstetenViaName(vorname: string, nachname: string): Promise<LandesbedienstetenSearchResultPage> {
+  public async searchLandesbedienstetenViaName(
+    vorname: string,
+    nachname: string,
+  ): Promise<LandesbedienstetenSearchResultPage> {
     await this.fillVornameNachname(vorname, nachname);
     await this.clickLandesbedienstetenSuchen();
-    const landesbedienstetenSearchResultPage: LandesbedienstetenSearchResultPage = new LandesbedienstetenSearchResultPage(this.page);
+    const landesbedienstetenSearchResultPage: LandesbedienstetenSearchResultPage =
+      new LandesbedienstetenSearchResultPage(this.page);
     return landesbedienstetenSearchResultPage;
   }
 
@@ -141,14 +181,25 @@ export class LandesbedienstetenSearchFormPage {
       expect: () => Promise<void>;
     }
     const testCases: ResetTestCase[] = [
-      { fill: async () => await this.fillKopersNr('123456'), expect: async () => await expect(this.kopersInput).toBeEmpty() },
-      { fill: async () => await this.fillEmail('test@example.com'), expect: async () => await expect(this.emailInput).toBeEmpty() },
-      { fill: async () => await this.fillBenutzername('testuser'), expect: async () => await expect(this.usernameInput).toBeEmpty() },
-      { fill: async () => await this.fillVornameNachname('Max', 'Mustermann'), expect: async (): Promise<void> => {
+      {
+        fill: async () => await this.fillKopersNr('123456'),
+        expect: async () => await expect(this.kopersInput).toBeEmpty(),
+      },
+      {
+        fill: async () => await this.fillEmail('test@example.com'),
+        expect: async () => await expect(this.emailInput).toBeEmpty(),
+      },
+      {
+        fill: async () => await this.fillBenutzername('testuser'),
+        expect: async () => await expect(this.usernameInput).toBeEmpty(),
+      },
+      {
+        fill: async () => await this.fillVornameNachname('Max', 'Mustermann'),
+        expect: async (): Promise<void> => {
           await expect(this.vornameInput).toBeEmpty();
           await expect(this.nachnameInput).toBeEmpty();
-        }
-      }
+        },
+      },
     ];
     for (const test of testCases) {
       await test.fill();
@@ -162,7 +213,9 @@ export class LandesbedienstetenSearchFormPage {
     await expect(this.headline).toHaveText('Landesbediensteten (suchen und hinzufügen)');
     await expect(this.page.getByTestId('search-state-employee-headline')).toHaveText('Landesbediensteten suchen');
     await expect(this.page.getByTestId('close-layout-card-button')).toBeVisible();
-    await expect(this.page.getByText('Bitte wählen Sie, wie Sie nach dem Landesbediensteten suchen möchten.', { exact: false })).toBeVisible();
+    await expect(
+      this.page.getByText('Bitte wählen Sie, wie Sie nach dem Landesbediensteten suchen möchten.', { exact: false }),
+    ).toBeVisible();
     await expect(this.kopersRadioInput).toBeChecked();
     await expect(this.kopersInput).toBeVisible();
     await expect(this.emailRadioInput).toBeVisible();

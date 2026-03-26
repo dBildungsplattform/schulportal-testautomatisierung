@@ -4,13 +4,7 @@ import { getOrganisationId } from '../../base/api/organisationApi';
 import { createRolleAndPersonWithPersonenkontext, UserInfo } from '../../base/api/personApi';
 import { addSystemrechtToRolle, createRolle } from '../../base/api/rolleApi';
 import { getServiceProviderId } from '../../base/api/serviceProviderApi';
-import {
-  ersatzLandSH,
-  landSH,
-  oeffentlichLandSH,
-  testschuleDstNr,
-  testschuleName,
-} from '../../base/organisation';
+import { ersatzLandSH, landSH, oeffentlichLandSH, testschuleDstNr, testschuleName } from '../../base/organisation';
 import { landesadminRolle, schuelerRolle, schuladminOeffentlichRolle } from '../../base/rollen';
 import { typeLehrer, typeSchueler } from '../../base/rollentypen';
 import { DEV, STAGE } from '../../base/tags';
@@ -28,8 +22,8 @@ import { LandingPage } from '../../pages/LandingView.page';
 import { LoginViewPage } from '../../pages/LoginView.neu.page';
 import { StartViewPage } from '../../pages/StartView.neu.page';
 
-const LDAP_URL: string = process.env.LDAP_URL;
-const LDAP_ADMIN_PASSWORD: string = process.env.LDAP_ADMIN_PASSWORD;
+const LDAP_URL: string | undefined = process.env.LDAP_URL;
+const LDAP_ADMIN_PASSWORD: string | undefined = process.env.LDAP_ADMIN_PASSWORD;
 
 // The created test data will be deleted in the afterEach block
 let usernames: string[] = [];
@@ -44,7 +38,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await loginAndNavigateToAdministration(page);
     });
   });
-
+  
   test.afterEach(async ({ page }: PlaywrightTestArgs) => {
     if (!currentUserIsLandesadministrator) {
       const header: HeaderPage = new HeaderPage(page);
@@ -125,7 +119,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         currentUserIsLandesadministrator = false;
         await startseite.waitForPageLoad();
       });
-    }
+    },
   );
 
   test(
@@ -155,7 +149,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         usernames.push(await successPage.getBenutzername());
         await expect(successPage.dataRolle).toHaveText(landesadminRolle);
       });
-    }
+    },
   );
 
   test(
@@ -186,7 +180,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         usernames.push(await successPage.getBenutzername());
         await expect(successPage.dataRolle).toHaveText('LiV');
       });
-    }
+    },
   );
 
   test(
@@ -213,7 +207,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
           nachname,
           vorname,
           idSPs,
-          generateRolleName()
+          generateRolleName(),
         );
         await addSystemrechtToRolle(page, userInfo.rolleId, 'PERSONEN_VERWALTEN');
         await addSystemrechtToRolle(page, userInfo.rolleId, 'PERSONEN_ANLEGEN');
@@ -244,7 +238,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         // Save the username for cleanup
         usernames.push(await successPage.getBenutzername());
       });
-    }
+    },
   );
 
   test(
@@ -274,7 +268,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         usernames.push(await successPage.getBenutzername());
         await expect(successPage.dataRolle).toHaveText(schuelerRolle);
       });
-    }
+    },
   );
 
   test(
@@ -298,7 +292,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await personCreationView.searchOrganisation(OrganisationLand, true);
         await personCreationView.assertAvailableRollen(
           [landesadminRolle],
-          [rolleLehr, rolleLiV, schuladminOeffentlichRolle, schuelerRolle]
+          [rolleLehr, rolleLiV, schuladminOeffentlichRolle, schuelerRolle],
         );
         await personCreationView.clearOrganisation();
       });
@@ -307,7 +301,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await personCreationView.searchOrganisation(OrganisationOeffentlicheSchule, true);
         await personCreationView.assertAvailableRollen(
           [landesadminRolle],
-          [rolleLehr, rolleLiV, schuladminOeffentlichRolle, schuelerRolle]
+          [rolleLehr, rolleLiV, schuladminOeffentlichRolle, schuelerRolle],
         );
         await personCreationView.clearOrganisation();
       });
@@ -316,7 +310,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await personCreationView.searchOrganisation(OrganisationErsatzschule, true);
         await personCreationView.assertAvailableRollen(
           [landesadminRolle],
-          [rolleLehr, rolleLiV, schuladminOeffentlichRolle, schuelerRolle]
+          [rolleLehr, rolleLiV, schuladminOeffentlichRolle, schuelerRolle],
         );
         await personCreationView.clearOrganisation();
       });
@@ -325,17 +319,16 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await personCreationView.searchOrganisation(OrganisationSchule, false);
         await personCreationView.assertAvailableRollen(
           [rolleLehr, rolleLiV, schuladminOeffentlichRolle, schuelerRolle],
-          [landesadminRolle]
+          [landesadminRolle],
         );
       });
-    }
+    },
   );
 
   test(
     'Eine Lehrkraft anlegen und Ihren Kontext entfernen dann wieder hinzufügen und den LDAP Inhalt vollständig prüfen',
     { tag: [DEV] },
     async ({ page }: PlaywrightTestArgs) => {
-
       test.slow();
 
       const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
@@ -346,7 +339,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const kopersnr: string = generateKopersNr();
       const schulstrukturknoten: string = testschuleName;
       const dienststellenNr: string = '1111111';
-      const testHelperLdap: TestHelperLdap = new TestHelperLdap(LDAP_URL, LDAP_ADMIN_PASSWORD);
+      const testHelperLdap: TestHelperLdap = new TestHelperLdap(LDAP_URL!, LDAP_ADMIN_PASSWORD!);
       let createdBenutzername: string;
 
       await test.step(`Dialog Person anlegen öffnen`, async () => {
@@ -429,14 +422,13 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         expect(mailPrimaryAddress).toContain('schule-sh.de');
         expect(mailPrimaryAddress.length).toBeGreaterThan(5);
       });
-    }
+    },
   );
 
   test(
     'Eine Lehrkraft anlegen in der Rolle Landesadmin und die Bestätigungsseite sowie den LDAP Inhalt vollständig prüfen',
     { tag: [DEV] },
     async ({ page }: PlaywrightTestArgs) => {
-
       test.slow();
 
       const personCreationView: PersonCreationViewPage = new PersonCreationViewPage(page);
@@ -446,7 +438,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const kopersnr: string = generateKopersNr();
       const schulstrukturknoten: string = testschuleName;
       const dienststellenNr: string = '1111111';
-      const testHelperLdap: TestHelperLdap = new TestHelperLdap(LDAP_URL, LDAP_ADMIN_PASSWORD);
+      const testHelperLdap: TestHelperLdap = new TestHelperLdap(LDAP_URL!, LDAP_ADMIN_PASSWORD!);
       let createdBenutzername: string;
 
       await test.step(`Dialog Person anlegen öffnen`, async () => {
@@ -489,7 +481,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await expect(personDetailsView.textH2BenutzerBearbeiten).toHaveText('Benutzer bearbeiten');
         await expect(personDetailsView.username).toHaveText(usernames[0]);
       });
-    }
+    },
   );
 
   test(
@@ -512,7 +504,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
           generateNachname(),
           generateVorname(),
           idSPs,
-          generateRolleName()
+          generateRolleName(),
         );
         await addSystemrechtToRolle(page, userInfo.rolleId, 'ROLLEN_VERWALTEN');
         await addSystemrechtToRolle(page, userInfo.rolleId, 'PERSONEN_SOFORT_LOESCHEN');
@@ -635,7 +627,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await personCreationView.addRolle(rolleNames[1]);
         await personCreationView.assertAvailableRollen([], [rolleNames[2], rolleNames[3]]);
       });
-    }
+    },
   );
 
   test(`Neuen Benutzer mit mehreren Rollen anlegen`, { tag: [STAGE, DEV] }, async ({ page }: PlaywrightTestArgs) => {

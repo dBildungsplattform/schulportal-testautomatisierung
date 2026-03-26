@@ -14,7 +14,7 @@ import { makeFetchWithPlaywright } from './playwrightFetchAdapter';
 
 export function constructOrganisationApi(page: Page): OrganisationenApi {
   const config: Configuration = new Configuration({
-    basePath: FRONTEND_URL.replace(/\/$/, ''),
+    basePath: FRONTEND_URL?.replace(/\/$/, ''),
     fetchApi: makeFetchWithPlaywright(page),
   });
   return new OrganisationenApi(config);
@@ -56,9 +56,8 @@ export async function deleteKlasse(page: Page, klasseId: string): Promise<void> 
     };
 
     const organisationApi: OrganisationenApi = constructOrganisationApi(page);
-    const response: ApiResponse<void> = await organisationApi.organisationControllerDeleteOrganisationRaw(
-      requestParameters
-    );
+    const response: ApiResponse<void> =
+      await organisationApi.organisationControllerDeleteOrganisationRaw(requestParameters);
     expect(response.raw.status).toBe(204);
   } catch (error) {
     console.error('[ERROR] deleteKlasse failed:', error);

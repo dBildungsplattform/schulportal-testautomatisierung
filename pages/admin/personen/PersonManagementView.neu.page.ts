@@ -31,7 +31,10 @@ export class PersonManagementViewPage extends AbstractAdminPage {
     );
     this.rolleAutocomplete = new Autocomplete(this.page, this.page.getByTestId('rolle-select'));
     this.klasseAutocomplete = new Autocomplete(this.page, this.page.getByTestId('personen-management-klasse-select'));
-    this.klasseAutocompleteInBulkVersetzen = new Autocomplete(this.page, this.page.getByTestId('bulk-change-klasse-klasse-select'));
+    this.klasseAutocompleteInBulkVersetzen = new Autocomplete(
+      this.page,
+      this.page.getByTestId('bulk-change-klasse-klasse-select'),
+    );
     this.menu = new MenuBarPage(this.page);
     this.schuelerVersetzenDialogCard = this.page.getByTestId('change-klasse-layout-card');
     this.passwortZuruecksetzenDialogCard = this.page.getByTestId('password-reset-layout-card');
@@ -226,7 +229,7 @@ export class PersonManagementViewPage extends AbstractAdminPage {
   }
 
   public async checkSchuelerVersetzenDialog(klassenNamen: string[]): Promise<void> {
-    await expect(this.schuelerVersetzenDialogCard).toBeVisible({ timeout: 10000 }); 
+    await expect(this.schuelerVersetzenDialogCard).toBeVisible({ timeout: 10000 });
     await expect(this.schuelerVersetzenDialogCard.getByTestId('layout-card-headline')).toHaveText('Schüler versetzen');
     await expect(this.getKlassenDropdownLocatorInBulkChangeKlasse()).toBeVisible();
     await expect(this.schuelerVersetzenDialogCard.getByTestId('bulk-change-klasse-button')).toBeVisible();
@@ -238,25 +241,27 @@ export class PersonManagementViewPage extends AbstractAdminPage {
   public async checkSchuelerVersetzenInProgress(): Promise<void> {
     const progressbar: Locator = this.schuelerVersetzenDialogCard.getByTestId('bulk-change-klasse-progressbar');
     await expect(progressbar).toBeVisible();
-    await expect(this.schuelerVersetzenDialogCard.getByTestId('bulk-change-klasse-close-button')).toBeHidden(); 
+    await expect(this.schuelerVersetzenDialogCard.getByTestId('bulk-change-klasse-close-button')).toBeHidden();
     // Warte bis Progressbar zu 100% abgeschlossen ist
     await expect(progressbar).toHaveAttribute('aria-valuenow', '100', { timeout: 10000 });
   }
 
   public async checkSchuelerVersetzenSuccessDialog(): Promise<void> {
-    await expect(this.schuelerVersetzenDialogCard).toBeVisible(); 
+    await expect(this.schuelerVersetzenDialogCard).toBeVisible();
     await expect(this.schuelerVersetzenDialogCard.getByTestId('layout-card-headline')).toHaveText('Schüler versetzen');
-    await expect(this.schuelerVersetzenDialogCard.getByTestId('bulk-change-klasse-success-text')).toHaveText('Die ausgewählten Schülerinnen und Schüler wurden erfolgreich versetzt.');
+    await expect(this.schuelerVersetzenDialogCard.getByTestId('bulk-change-klasse-success-text')).toHaveText(
+      'Die ausgewählten Schülerinnen und Schüler wurden erfolgreich versetzt.',
+    );
     await expect(this.schuelerVersetzenDialogCard.getByTestId('bulk-change-klasse-progressbar')).toHaveText('100%');
-    await expect(this.schuelerVersetzenDialogCard.getByTestId('bulk-change-klasse-close-button')).toBeVisible(); 
+    await expect(this.schuelerVersetzenDialogCard.getByTestId('bulk-change-klasse-close-button')).toBeVisible();
   }
 
   public async checkSchuelerVersetzenErrorDialog(expectedErrors: 'all' | 'schule' | 'rolle'): Promise<void> {
     const dialogCard: Locator = this.page.getByTestId('invalid-selection-alert-dialog-layout-card');
     await expect(dialogCard).toBeVisible();
-    
-    const dialogText: string = await dialogCard.textContent() || '';
-    
+
+    const dialogText: string = (await dialogCard.textContent()) || '';
+
     const schuleError: string = 'Bitte wählen Sie im Filter genau eine Schule aus, um die Aktion durchzuführen.';
     const rolleError: string = 'Bitte wählen Sie nur Benutzer mit einer Schülerrolle aus, um die Aktion durchzuführen.';
 
@@ -281,18 +286,24 @@ export class PersonManagementViewPage extends AbstractAdminPage {
   }
 
   public async checkPasswortZuruecksetzenDialog(): Promise<void> {
-    await expect(this.passwortZuruecksetzenDialogCard).toBeVisible({ timeout: 3000 }); 
-    await expect(this.passwortZuruecksetzenDialogCard.getByTestId('layout-card-headline')).toHaveText('Passwort zurücksetzen');
-    await expect(this.passwortZuruecksetzenDialogCard.getByTestId('password-reset-confirmation-text')).toHaveText('Sind Sie sicher, dass Sie das Passwort für die ausgewählten Benutzer zurücksetzen möchten?');
+    await expect(this.passwortZuruecksetzenDialogCard).toBeVisible({ timeout: 3000 });
+    await expect(this.passwortZuruecksetzenDialogCard.getByTestId('layout-card-headline')).toHaveText(
+      'Passwort zurücksetzen',
+    );
+    await expect(this.passwortZuruecksetzenDialogCard.getByTestId('password-reset-confirmation-text')).toHaveText(
+      'Sind Sie sicher, dass Sie das Passwort für die ausgewählten Benutzer zurücksetzen möchten?',
+    );
     await expect(this.passwortZuruecksetzenDialogCard.getByTestId('password-reset-discard-button')).toBeVisible();
     await expect(this.passwortZuruecksetzenDialogCard.getByTestId('password-reset-submit-button')).toBeVisible();
   }
 
   public async checkPasswortZuruecksetzenErrorDialog(): Promise<void> {
     const dialogCard: Locator = this.page.getByTestId('invalid-selection-alert-dialog-layout-card');
-    await expect(dialogCard).toBeVisible({ timeout: 3000 }); 
+    await expect(dialogCard).toBeVisible({ timeout: 3000 });
     await expect(dialogCard.getByTestId('layout-card-headline')).toHaveText('Passwort zurücksetzen');
-    await expect(dialogCard.getByTestId('invalid-selection-alert-dialog-text')).toHaveText('Bitte wählen Sie im Filter genau eine Schule aus, um die Aktion durchzuführen.');
+    await expect(dialogCard.getByTestId('invalid-selection-alert-dialog-text')).toHaveText(
+      'Bitte wählen Sie im Filter genau eine Schule aus, um die Aktion durchzuführen.',
+    );
     await expect(dialogCard.getByTestId('invalid-selection-alert-dialog-cancel-button')).toBeVisible();
   }
 
@@ -300,33 +311,44 @@ export class PersonManagementViewPage extends AbstractAdminPage {
     const dialogCard: Locator = this.page.getByTestId('password-reset-layout-card');
     await expect(dialogCard).toBeVisible();
     await expect(dialogCard.getByTestId('layout-card-headline')).toHaveText('Passwort zurücksetzen');
-    await expect(dialogCard.getByTestId('password-reset-progressing-notice')).toHaveText('Bitte den Browser während der Bearbeitung nicht schließen!');
+    await expect(dialogCard.getByTestId('password-reset-progressing-notice')).toHaveText(
+      'Bitte den Browser während der Bearbeitung nicht schließen!',
+    );
 
     const progressbar: Locator = dialogCard.getByTestId('password-reset-progressbar');
     await expect(progressbar).toBeVisible();
   }
 
   public async checkPasswortZuruecksetzenSuccessDialog(): Promise<void> {
-    await expect(this.passwortZuruecksetzenDialogCard).toBeVisible(); 
-    await expect(this.passwortZuruecksetzenDialogCard.getByTestId('layout-card-headline')).toHaveText('Passwort zurücksetzen');
+    await expect(this.passwortZuruecksetzenDialogCard).toBeVisible();
+    await expect(this.passwortZuruecksetzenDialogCard.getByTestId('layout-card-headline')).toHaveText(
+      'Passwort zurücksetzen',
+    );
     await expect(this.passwortZuruecksetzenDialogCard.getByTestId('password-reset-success-text')).toHaveText(
       'Bitte laden Sie die Benutzerdaten herunter und teilen Sie den Benutzern das temporäre Passwort mit. ' +
-      'Nach dem Schließen des Dialogs werden die Passwörter aus Sicherheitsgründen nicht mehr angezeigt.');
-    await expect(this.passwortZuruecksetzenDialogCard.getByTestId('password-reset-close-button')).toBeVisible(); 
-    await expect(this.passwortZuruecksetzenDialogCard.getByTestId('download-result-button')).toBeVisible(); 
+        'Nach dem Schließen des Dialogs werden die Passwörter aus Sicherheitsgründen nicht mehr angezeigt.',
+    );
+    await expect(this.passwortZuruecksetzenDialogCard.getByTestId('password-reset-close-button')).toBeVisible();
+    await expect(this.passwortZuruecksetzenDialogCard.getByTestId('download-result-button')).toBeVisible();
   }
 
   public async checkPasswortdateiHinweis(): Promise<void> {
     const dialogCard: Locator = this.page.getByTestId('password-reset-download-confirmation-layout-card');
-    await expect(dialogCard).toBeVisible({ timeout: 3000 }); 
+    await expect(dialogCard).toBeVisible({ timeout: 3000 });
     await expect(dialogCard.getByTestId('layout-card-headline')).toHaveText('Passwort zurücksetzen');
     await expect(dialogCard.getByTestId('password-reset-download-confirmation-text')).toHaveText(
       'Bitte stellen Sie sicher, dass Sie die Datei mit den temporären Passwörtern erfolgreich heruntergeladen haben. ' +
-      'Dies ist zu einem späteren Zeitpunkt aus Sicherheitsgründen nicht mehr möglich.');
+        'Dies ist zu einem späteren Zeitpunkt aus Sicherheitsgründen nicht mehr möglich.',
+    );
     await expect(dialogCard.getByTestId('password-reset-download-confirmation-button')).toBeVisible();
   }
 
-  public async checkPasswortdatei(download: Download, schulNummer: string, users: UserInfo[], hasMultipleSchulen: boolean): Promise<void> {
+  public async checkPasswortdatei(
+    download: Download,
+    schulNummer: string,
+    users: UserInfo[],
+    hasMultipleSchulen: boolean,
+  ): Promise<void> {
     // Überprüfe Dateinamen (Format: PW_<Schulnummer>.txt oder PW.txt)
     const filename: string = download.suggestedFilename();
     const expectedFilename: string = hasMultipleSchulen ? `PW_${schulNummer}.txt` : 'PW.txt';

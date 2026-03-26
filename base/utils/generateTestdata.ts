@@ -50,16 +50,10 @@ export function generateDienststellenNr(): string {
   return '0' + faker.number.bigInt({ min: 10000000, max: 100000000 });
 }
 
-export function generateCurrentDate({
-  days,
-  months,
-}: {
-  days: number;
-  months: number;
-}): Date {
+export function generateCurrentDate({ days, months }: { days: number; months: number }): Date {
   // creates current date and adds days + month to the current date
   const newDate: Date = addDays(addMonths(new Date(), months), days);
-  
+
   return newDate;
 }
 

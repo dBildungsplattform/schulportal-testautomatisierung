@@ -55,7 +55,7 @@ test.describe(`Testfälle für TwoFactorAuthentication": Umgebung: ${process.env
           generateNachname(),
           generateVorname(),
           [await getServiceProviderId(page, email)],
-          generateRolleName()
+          generateRolleName(),
         );
         usernames.push(userInfoLehrer.username);
         rolleIds.push(userInfoLehrer.rolleId);
@@ -90,6 +90,6 @@ test.describe(`Testfälle für TwoFactorAuthentication": Umgebung: ${process.env
 
         await expect(personDetailsView.textKeinTokenIstEingerichtet).toBeVisible();
       });
-    }
+    },
   );
 });

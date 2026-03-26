@@ -53,7 +53,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       await test.step('Zurück zum Admin wechseln', async () => {
         await header.logout();
         await landing.navigateToLogin();
-        await login.login(ADMIN, PW);
+        await login.login(ADMIN!, PW!);
         await startseite.assertServiceProvidersAreLoaded();
       });
     }
@@ -91,7 +91,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
           generateVorname(),
           idSPs,
           generateRolleName(),
-          kopersnummer
+          kopersnummer,
         );
         username = userInfo.username;
 
@@ -130,6 +130,6 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         await profileView.close2FADialog();
         await profileView.assert2FACard();
       });
-    }
+    },
   );
 });

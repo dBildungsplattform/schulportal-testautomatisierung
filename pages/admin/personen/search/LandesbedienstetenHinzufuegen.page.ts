@@ -1,6 +1,6 @@
-import { expect, Locator, Page } from "@playwright/test";
-import { Autocomplete } from "../../../components/Autocomplete";
-import { LandesbedienstetenSuccessPage } from "./LandesbedienstetenSucess.page";
+import { expect, Locator, Page } from '@playwright/test';
+import { Autocomplete } from '../../../components/Autocomplete';
+import { LandesbedienstetenSuccessPage } from './LandesbedienstetenSucess.page';
 
 export class LandesbedienstetenHinzufuegenPage {
   constructor(protected readonly page: Page) {}
@@ -13,15 +13,25 @@ export class LandesbedienstetenHinzufuegenPage {
   private readonly hasNoKopersCheckbox: Locator = this.form.getByTestId('has-no-kopersnr-checkbox');
   // Inputfelder für die Dateneingabe bzw. Überprüfung der Werte
   private readonly vornameTextInputfield: Locator = this.form.getByTestId('add-person-vorname-input').locator('input');
-  private readonly nachnameTextInputfield: Locator = this.form.getByTestId('add-person-familienname-input').locator('input');
+  private readonly nachnameTextInputfield: Locator = this.form
+    .getByTestId('add-person-familienname-input')
+    .locator('input');
   private readonly kopersTextInputfield: Locator = this.form.getByTestId('kopersnr-input').locator('input');
- 
-  private readonly organisationAutocomplete: Autocomplete = new Autocomplete(this.page, this.page.getByTestId('personenkontext-create-organisation-select'));
 
-  private readonly rolleAutocomplete: Autocomplete = new Autocomplete(this.page, this.page.getByTestId('rollen-select'));
+  private readonly organisationAutocomplete: Autocomplete = new Autocomplete(
+    this.page,
+    this.page.getByTestId('personenkontext-create-organisation-select'),
+  );
+
+  private readonly rolleAutocomplete: Autocomplete = new Autocomplete(
+    this.page,
+    this.page.getByTestId('rollen-select'),
+  );
 
   private readonly unbefristetRadio: Locator = this.form.getByTestId('unbefristet-radio-button');
-  private readonly bisSchuljahresendeRadioInput: Locator = this.page.locator('input[type="radio"][value="schuljahresende"][aria-label^="Bis Schuljahresende"]');
+  private readonly bisSchuljahresendeRadioInput: Locator = this.page.locator(
+    'input[type="radio"][value="schuljahresende"][aria-label^="Bis Schuljahresende"]',
+  );
 
   //Headlines
   private readonly personalInfoHeadline: Locator = this.form.getByTestId('personal-info-headline');
@@ -30,14 +40,19 @@ export class LandesbedienstetenHinzufuegenPage {
   private readonly befristungHeadline: Locator = this.form.getByTestId('befristung-assign-headline');
   //Buttons
   private readonly abbrechenButton: Locator = this.form.getByTestId('person-creation-form-discard-button');
-  private readonly landesbedienstetenHinzufuegenButton: Locator = this.form.getByTestId('person-creation-form-submit-button');
+  private readonly landesbedienstetenHinzufuegenButton: Locator = this.form.getByTestId(
+    'person-creation-form-submit-button',
+  );
 
   /* Bestaetigungspopup */
   private readonly confirmPopupHeadline: Locator = this.page.getByTestId('add-person-confirmation-dialog-headline');
   private readonly confirmPopupText: Locator = this.page.getByTestId('add-person-confirmation-text');
-  private readonly confirmPopupAbbrechenButton: Locator = this.page.getByTestId('cancel-add-person-confirmation-button');
-  private readonly confirmPopupLandesbedienstetenHinzufuegenButton: Locator = this.page.getByTestId('confirm-add-person-button');
-   
+  private readonly confirmPopupAbbrechenButton: Locator = this.page.getByTestId(
+    'cancel-add-person-confirmation-button',
+  );
+  private readonly confirmPopupLandesbedienstetenHinzufuegenButton: Locator =
+    this.page.getByTestId('confirm-add-person-button');
+
   /* actions */
   public async waitForPageLoad(): Promise<void> {
     await expect(this.headline).toHaveText('Landesbediensteten hinzufügen');
@@ -45,7 +60,7 @@ export class LandesbedienstetenHinzufuegenPage {
     await expect(this.personalInfoHeadline).toHaveText('1. Persönliche Informationen');
   }
 
-  public async checkInitialFormState(vorname : string, nachname: string, kopers: string): Promise<void> {
+  public async checkInitialFormState(vorname: string, nachname: string, kopers: string): Promise<void> {
     await expect(this.headline).toHaveText('Landesbediensteten hinzufügen');
     await expect(this.mandatoryFieldsNotice).toHaveText('Mit * markierte Felder sind Pflichtangaben.');
     await expect(this.closeButtonX).toBeVisible();
@@ -63,7 +78,7 @@ export class LandesbedienstetenHinzufuegenPage {
     await this.personalDataAreFilled(vorname, nachname, kopers);
   }
 
-  public async additionalCheckInitialFormState(organisation : string): Promise<void> {
+  public async additionalCheckInitialFormState(organisation: string): Promise<void> {
     await expect(this.rolleHeadline).toBeVisible();
     expect(this.rolleAutocomplete.isVisible()).toBeTruthy();
     await this.organisationIsFilledAndDisabled(organisation);
@@ -134,7 +149,7 @@ export class LandesbedienstetenHinzufuegenPage {
   }
 
   public async clickLandesbedienstetenHinzufügenOnConfirmationPopup(): Promise<LandesbedienstetenSuccessPage> {
-    const landesbedienstetenSuccessPage : LandesbedienstetenSuccessPage = new LandesbedienstetenSuccessPage(this.page);
+    const landesbedienstetenSuccessPage: LandesbedienstetenSuccessPage = new LandesbedienstetenSuccessPage(this.page);
     await this.confirmPopupLandesbedienstetenHinzufuegenButton.click();
     await landesbedienstetenSuccessPage.waitForPageLoad();
     return landesbedienstetenSuccessPage;

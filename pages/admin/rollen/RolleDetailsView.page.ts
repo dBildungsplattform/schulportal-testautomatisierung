@@ -3,7 +3,6 @@ import { Alert } from '../../components/Alert';
 import { RolleCreationParams } from './RolleCreationView.page';
 import { RolleManagementViewPage } from './RolleManagementView.page';
 
-
 export class RolleDetailsViewPage {
   constructor(protected readonly page: Page) {}
 
@@ -19,7 +18,9 @@ export class RolleDetailsViewPage {
   private readonly editSubmitButton: Locator = this.page.getByTestId('rolle-changes-save-button');
   private readonly deleteConfirmText: Locator = this.page.getByTestId('rolle-delete-confirmation-text');
   private readonly deleteConfirmButton: Locator = this.page.getByTestId('rolle-delete-button');
-  private readonly deleteSuccessCloseButton: Locator = this.page.getByTestId('close-rolle-delete-success-dialog-button');
+  private readonly deleteSuccessCloseButton: Locator = this.page.getByTestId(
+    'close-rolle-delete-success-dialog-button',
+  );
   private readonly successText: Locator = this.page.getByTestId('rolle-success-text');
   private readonly successIcon: Locator = this.page.getByTestId('rolle-success-icon');
   private readonly updatedRolleName: Locator = this.page.getByTestId('updated-rolle-name');
@@ -61,7 +62,7 @@ export class RolleDetailsViewPage {
         title: 'rolle-details-error-alert-title',
         text: 'rolle-details-error-alert-text',
         button: 'rolle-details-error-alert-button',
-      }
+      },
     );
     return alert;
   }

@@ -41,7 +41,7 @@ export class LoginPage {
 
   async login(
     username: string = process.env.USER as string,
-    password: string = process.env.PW as string
+    password: string = process.env.PW as string,
   ): Promise<StartViewPage> {
     await expect(this.titleAnmeldung).toHaveText('Anmeldung');
     await expect(this.textInfoLogin).toHaveText('Bitte geben Sie Ihre persönlichen Zugangsdaten ein.');

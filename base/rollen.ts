@@ -1,4 +1,4 @@
-import { RollenSystemRecht } from "./api/generated/models/RollenSystemRecht";
+import { RollenSystemRecht } from './api/generated/models/RollenSystemRecht';
 
 export const schuelerRolle: string = 'itslearning-Schüler';
 export const landesadminRolle: string = 'Landesadministrator';

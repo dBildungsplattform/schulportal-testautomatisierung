@@ -1,15 +1,19 @@
-import { Page } from "@playwright/test";
-import { addSecondOrganisationToPerson, createRolleAndPersonWithPersonenkontext, UserInfo } from "../../base/api/personApi";
-import { addSystemrechtToRolle } from "../../base/api/rolleApi";
-import { getServiceProviderId } from "../../base/api/serviceProviderApi";
-import { testschule665Name, testschuleName } from "../../base/organisation";
-import { generateNachname, generateVorname, generateRolleName } from "../../base/utils/generateTestdata";
-import { LoginViewPage } from "../../pages/LoginView.neu.page";
-import { StartViewPage } from "../../pages/StartView.neu.page";
-import { RollenSystemRecht } from "../../base/api/generated/models/RollenSystemRecht";
-import { HeaderPage } from "../../pages/components/Header.neu.page";
-import { LandingViewPage } from "../../pages/LandingView.neu.page";
-import { getOrganisationId } from "../../base/api/organisationApi";
+import { Page } from '@playwright/test';
+import {
+  addSecondOrganisationToPerson,
+  createRolleAndPersonWithPersonenkontext,
+  UserInfo,
+} from '../../base/api/personApi';
+import { addSystemrechtToRolle } from '../../base/api/rolleApi';
+import { getServiceProviderId } from '../../base/api/serviceProviderApi';
+import { testschule665Name, testschuleName } from '../../base/organisation';
+import { generateNachname, generateVorname, generateRolleName } from '../../base/utils/generateTestdata';
+import { LoginViewPage } from '../../pages/LoginView.neu.page';
+import { StartViewPage } from '../../pages/StartView.neu.page';
+import { RollenSystemRecht } from '../../base/api/generated/models/RollenSystemRecht';
+import { HeaderPage } from '../../pages/components/Header.neu.page';
+import { LandingViewPage } from '../../pages/LandingView.neu.page';
+import { getOrganisationId } from '../../base/api/organisationApi';
 
 /**
  * Prepares a test user with the specified system rights and logs them into the application.
@@ -33,14 +37,9 @@ import { getOrganisationId } from "../../base/api/organisationApi";
  * ]);
  * ```
  */
-export async function prepareAndLoginUserWithPermissions(
-  page: Page,
-  permissions: RollenSystemRecht[],
-): Promise<void> {
+export async function prepareAndLoginUserWithPermissions(page: Page, permissions: RollenSystemRecht[]): Promise<void> {
   // Get the service provider ID for Schulportal Administration
-  const idSPs: string[] = [
-    await getServiceProviderId(page, 'Schulportal-Administration'),
-  ];
+  const idSPs: string[] = [await getServiceProviderId(page, 'Schulportal-Administration')];
 
   // Create a new user with role and person context
   const userInfo: UserInfo = await createRolleAndPersonWithPersonenkontext(
@@ -70,10 +69,7 @@ export async function prepareAndLoginUserWithPermissions(
   // Navigate to login page and login with the newly created user
   const landingPage: LandingViewPage = new LandingViewPage(page);
   const loginPage: LoginViewPage = await landingPage.navigateToLogin();
-  const startPage: StartViewPage = await loginPage.loginNewUserWithPasswordChange(
-    userInfo.username,
-    userInfo.password,
-  );
+  const startPage: StartViewPage = await loginPage.loginNewUserWithPasswordChange(userInfo.username, userInfo.password);
 
   // Wait for the start page to load and go to administration
   await startPage.waitForPageLoad();

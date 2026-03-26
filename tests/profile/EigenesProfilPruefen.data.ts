@@ -1,10 +1,15 @@
-import { RollenArt } from "../../base/api/generated";
-import { klasse1Testschule } from "../../base/klassen";
-import { landSH, testschuleName, testschuleDstNr } from "../../base/organisation";
-import { typeLandesadmin, typeLehrer, typeSchuladmin } from "../../base/rollentypen";
-import { schulportaladmin, email, itslearning } from "../../base/sp";
-import { generateVorname, generateNachname, generateRolleName, generateKopersNr } from "../../base/utils/generateTestdata";
-import { PersoenlicheDaten, Zuordnung } from "../../pages/ProfileView.neu.page";
+import { RollenArt } from '../../base/api/generated';
+import { klasse1Testschule } from '../../base/klassen';
+import { landSH, testschuleName, testschuleDstNr } from '../../base/organisation';
+import { typeLandesadmin, typeLehrer, typeSchuladmin } from '../../base/rollentypen';
+import { schulportaladmin, email, itslearning } from '../../base/sp';
+import {
+  generateVorname,
+  generateNachname,
+  generateRolleName,
+  generateKopersNr,
+} from '../../base/utils/generateTestdata';
+import { PersoenlicheDaten, Zuordnung } from '../../pages/ProfileView.neu.page';
 
 interface TestData {
   actor: string;

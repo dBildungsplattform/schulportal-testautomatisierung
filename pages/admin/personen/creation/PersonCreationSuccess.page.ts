@@ -21,7 +21,7 @@ export class PersonCreationSuccessPage {
     await this.page.getByTestId('person-success-text').waitFor({ state: 'visible' });
   }
 
-  private getBenutzernameField(): Locator{
+  private getBenutzernameField(): Locator {
     return this.page.getByTestId('created-person-username');
   }
 
@@ -54,7 +54,7 @@ export class PersonCreationSuccessPage {
   }
   public async assertSuccessfulCreation(params: PersonCreationSuccessValidationParams): Promise<void> {
     await expect(this.page.getByTestId('person-success-text')).toHaveText(
-      `${params.vorname} ${params.nachname} wurde erfolgreich hinzugefügt.`
+      `${params.vorname} ${params.nachname} wurde erfolgreich hinzugefügt.`,
     );
     await expect(this.page.getByTestId('person-success-icon')).toBeVisible();
     await expect(this.page.getByTestId('following-data-created-text')).toBeVisible();
@@ -79,7 +79,7 @@ export class PersonCreationSuccessPage {
     await expect(this.page.getByTestId('created-person-organisation-label')).toBeVisible();
     if (params.dstNr)
       await expect(this.page.getByTestId('created-person-organisation')).toHaveText(
-        `${params.dstNr} (${params.organisation})`
+        `${params.dstNr} (${params.organisation})`,
       );
     else if (params.organisation) 
       await expect(this.page.getByTestId('created-person-organisation')).toHaveText(params.organisation);

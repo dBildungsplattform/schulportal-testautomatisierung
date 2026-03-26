@@ -66,9 +66,7 @@ export class PersonDetailsViewPage {
     this.buttonBefristungAendernSave = page.getByTestId('zuordnung-changes-save-button');
     this.buttonBefristungAendernSuccessClose = page.getByTestId('change-befristung-success-dialog-close-button');
     this.inputBefristung = page.locator('[data-testid="befristung-input"] input');
-    this.errorTextInputBefristung = page.getByText(
-      'Das eingegebene Datum darf nicht in der Vergangenheit liegen.'
-    );
+    this.errorTextInputBefristung = page.getByText('Das eingegebene Datum darf nicht in der Vergangenheit liegen.');
     this.radioButtonBefristungSchuljahresende = page.getByTestId('schuljahresende-radio-button');
     this.radioButtonUnbefristet = page.getByTestId('unbefristet-radio-button');
 
@@ -91,7 +89,10 @@ export class PersonDetailsViewPage {
   }
 
   public async selectOrganisation(organisation: string): Promise<void> {
-    const organisationAutocomplete: Autocomplete = new Autocomplete(this.page, this.page.getByTestId('personenkontext-create-organisation-select'));
+    const organisationAutocomplete: Autocomplete = new Autocomplete(
+      this.page,
+      this.page.getByTestId('personenkontext-create-organisation-select'),
+    );
     await organisationAutocomplete.searchByTitle(organisation, false, 'personenkontext-workflow/**');
   }
 
@@ -105,7 +106,7 @@ export class PersonDetailsViewPage {
     await this.page.getByTestId('open-password-reset-dialog-button').click();
     const successText: Locator = this.page.getByTestId('password-reset-info-text');
     await expect(successText).toContainText(
-      `Sind Sie sicher, dass Sie das Passwort für ${fullName} zurücksetzen möchten?`
+      `Sind Sie sicher, dass Sie das Passwort für ${fullName} zurücksetzen möchten?`,
     );
     await this.page.getByTestId('password-reset-button').click();
     await expect(successText).toContainText(`Das Passwort wurde erfolgreich zurückgesetzt.`);
@@ -118,11 +119,7 @@ export class PersonDetailsViewPage {
   }
 
   public async selectSchulzuordnungCheckbox(schuleName: string): Promise<void> {
-    await this.page
-      .getByTestId('person-zuordnungen-section-edit')
-      .getByTitle(schuleName)
-      .getByRole('checkbox')
-      .click();
+    await this.page.getByTestId('person-zuordnungen-section-edit').getByTitle(schuleName).getByRole('checkbox').click();
   }
 
   /** Opens the Befristung dialog and asserts the radio button options are visible */
@@ -161,7 +158,7 @@ export class PersonDetailsViewPage {
   public async submitBefristungChange(oldDate: string, newDate: string): Promise<void> {
     await this.buttonBefristungAendernSubmit.click();
     await expect(
-      this.page.getByText(`Möchten Sie die Befristung wirklich von ${oldDate} in ${newDate} ändern?`)
+      this.page.getByText(`Möchten Sie die Befristung wirklich von ${oldDate} in ${newDate} ändern?`),
     ).toBeVisible();
     await this.buttonBefristungAendernConfirm.click();
   }
@@ -179,17 +176,27 @@ export class PersonDetailsViewPage {
     await expect(
       this.page.getByRole('heading', {
         name: 'Bitte prüfen und abschließend speichern, um die Aktion auszuführen:',
-      })
+      }),
     ).toBeVisible();
 
     // old date shown in red (removed)
     await this.validateEntireNameSchulzuordnung(
-      dstNr, schuleName, nameRolle, 'rgb(244, 67, 54)', 'person-zuordnungen-section-edit', oldDate
+      dstNr,
+      schuleName,
+      nameRolle,
+      'rgb(244, 67, 54)',
+      'person-zuordnungen-section-edit',
+      oldDate,
     );
 
     // new date shown in green (added)
     await this.validateEntireNameSchulzuordnung(
-      dstNr, schuleName, nameRolle, 'rgb(76, 175, 80)', 'person-zuordnungen-section-edit', newDate
+      dstNr,
+      schuleName,
+      nameRolle,
+      'rgb(76, 175, 80)',
+      'person-zuordnungen-section-edit',
+      newDate,
     );
 
     await this.buttonBefristungAendernSave.click();
@@ -197,7 +204,7 @@ export class PersonDetailsViewPage {
     await waitForAPIResponse(this.page, 'organisationen/parents-by-ids');
   }
 
-    /** Asserts the new Schulzuordnung appears in green, then saves and closes */
+  /** Asserts the new Schulzuordnung appears in green, then saves and closes */
   public async reviewAndSaveZuordnungAddition(params: {
     dstNr: string;
     schuleName: string;
@@ -208,12 +215,16 @@ export class PersonDetailsViewPage {
     await expect(
       this.page.getByRole('heading', {
         name: 'Bitte prüfen und abschließend speichern, um die Aktion auszuführen:',
-      })
+      }),
     ).toBeVisible();
 
     // new zuordnung shown in green (wird hinzugefügt)
     await this.validateEntireNameSchulzuordnung(
-      dstNr, schuleName, nameRolle, 'rgb(76, 175, 80)', 'person-zuordnungen-section-edit'
+      dstNr,
+      schuleName,
+      nameRolle,
+      'rgb(76, 175, 80)',
+      'person-zuordnungen-section-edit',
     );
 
     await this.buttonSaveZuordnung.click();
@@ -253,9 +264,7 @@ export class PersonDetailsViewPage {
     await this.buttonSubmitAddSchulzuordnung.click();
 
     const dialogRolleName: string = confirmationRolleName ?? rolleName;
-    await expect(
-      this.page.getByText(`Wollen Sie die Schulzuordnung als ${dialogRolleName} hinzufügen?`)
-    ).toBeVisible();
+    await expect(this.page.getByText(`Wollen Sie die Schulzuordnung als ${dialogRolleName} hinzufügen?`)).toBeVisible();
     await this.buttonConfirmAddSchulzuordnung.click();
   }
 
@@ -268,7 +277,7 @@ export class PersonDetailsViewPage {
     await expect(dialogHeadline).toHaveText('Zwei-Faktor-Authentifizierung einrichten');
     await expect(this.page.getByTestId('software-token-radio-button')).toHaveText('Software-Token einrichten');
     await expect(
-      this.page.getByText('Ein QR-Code wird generiert, welcher direkt eingescannt oder ausgedruckt werden kann.')
+      this.page.getByText('Ein QR-Code wird generiert, welcher direkt eingescannt oder ausgedruckt werden kann.'),
     ).toBeVisible();
     await this.page.getByTestId('proceed-two-factor-authentication-dialog-button').click();
     await waitForAPIResponse(this.page, '2fa-token/**/');
@@ -282,7 +291,7 @@ export class PersonDetailsViewPage {
     await this.page.getByTestId('password-reset-button').click();
     await waitForAPIResponse(this.page, 'personen/**/uem-password');
     await expect(this.page.getByTestId('password-reset-info-text')).toContainText(
-      'Das Passwort wurde erfolgreich erzeugt.'
+      'Das Passwort wurde erfolgreich erzeugt.',
     );
     await this.page.getByTestId('close-password-reset-dialog-button').click();
     await this.waitForPageLoad();
@@ -290,14 +299,14 @@ export class PersonDetailsViewPage {
 
   public async lockPerson(until?: string): Promise<void> {
     await this.page.getByTestId('open-lock-dialog-button').click();
-    await expect(
-      this.page.getByTestId('person-lock-card').getByTestId('layout-card-headline')
-    ).toHaveText('Benutzer sperren');
-    await expect(
-      this.page.getByTestId('person-lock-card').getByRole('combobox', { name: 'Öffnen' })
-    ).toHaveValue('Land Schleswig-Holstein');
+    await expect(this.page.getByTestId('person-lock-card').getByTestId('layout-card-headline')).toHaveText(
+      'Benutzer sperren',
+    );
+    await expect(this.page.getByTestId('person-lock-card').getByRole('combobox', { name: 'Öffnen' })).toHaveValue(
+      'Land Schleswig-Holstein',
+    );
     await expect(this.page.getByTestId('lock-user-info-text')).toHaveText(
-      'Für die Dauer der Sperre hat der Benutzer keinen Zugriff mehr auf das Schulportal SH und die daran angeschlossenen Dienste.'
+      'Für die Dauer der Sperre hat der Benutzer keinen Zugriff mehr auf das Schulportal SH und die daran angeschlossenen Dienste.',
     );
     const befristungInput: Locator = this.page.getByTestId('befristung-input').getByPlaceholder('TT.MM.JJJJ');
     if (until) {
@@ -414,12 +423,10 @@ export class PersonDetailsViewPage {
       ? `${dstNr} (${schuleName}): ${nameRolle} (befristet bis ${befristungLehrerRolle})`
       : `${dstNr} (${schuleName}): ${nameRolle}`;
 
-    await expect(
-      this.page.getByTestId(sectionTestId).getByText(expectedText)
-    ).toHaveCSS('color', textColor);
+    await expect(this.page.getByTestId(sectionTestId).getByText(expectedText)).toHaveCSS('color', textColor);
   }
 
-    public async assertUnbefristetIsDisabled(): Promise<void> {
+  public async assertUnbefristetIsDisabled(): Promise<void> {
     await expect(this.radioButtonBefristungSchuljahresende).toBeVisible();
     await expect(this.radioButtonUnbefristet).toBeVisible();
     await expect(this.radioButtonUnbefristet).toBeDisabled();

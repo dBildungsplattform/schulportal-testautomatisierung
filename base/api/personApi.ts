@@ -53,7 +53,7 @@ export interface UserInfo {
 
 export function constructPersonenkontextApi(page: Page): PersonenkontextApi {
   const config: Configuration = new Configuration({
-    basePath: FRONTEND_URL.replace(/\/$/, ''),
+    basePath: FRONTEND_URL?.replace(/\/$/, ''),
     fetchApi: makeFetchWithPlaywright(page),
   });
   return new PersonenkontextApi(config);
@@ -61,7 +61,7 @@ export function constructPersonenkontextApi(page: Page): PersonenkontextApi {
 
 export function constructPersonenApi(page: Page): PersonenApi {
   const config: Configuration = new Configuration({
-    basePath: FRONTEND_URL.replace(/\/$/, ''),
+    basePath: FRONTEND_URL?.replace(/\/$/, ''),
     fetchApi: makeFetchWithPlaywright(page),
   });
   return new PersonenApi(config);
@@ -69,7 +69,7 @@ export function constructPersonenApi(page: Page): PersonenApi {
 
 export function constructPersonenFrontendApi(page: Page): PersonenFrontendApi {
   const config: Configuration = new Configuration({
-    basePath: FRONTEND_URL.replace(/\/$/, ''),
+    basePath: FRONTEND_URL?.replace(/\/$/, ''),
     fetchApi: makeFetchWithPlaywright(page),
   });
   return new PersonenFrontendApi(config);
@@ -77,7 +77,7 @@ export function constructPersonenFrontendApi(page: Page): PersonenFrontendApi {
 
 export function construct2FAApi(page: Page): Class2FAApi {
   const config: Configuration = new Configuration({
-    basePath: FRONTEND_URL.replace(/\/$/, ''),
+    basePath: FRONTEND_URL?.replace(/\/$/, ''),
     fetchApi: makeFetchWithPlaywright(page),
   });
   return new Class2FAApi(config);
@@ -95,7 +95,7 @@ export async function createPerson(
   vorname?: string,
   koPersNr?: string,
   klasseId?: string,
-  merkmalNames?: Set<RollenMerkmal>
+  merkmalNames?: Set<RollenMerkmal>,
 ): Promise<UserInfo> {
   try {
     const createPersonBodyParams: DbiamCreatePersonWithPersonenkontexteBodyParams = {
@@ -135,20 +135,20 @@ export async function createPerson(
     const personenkontextApi: PersonenkontextApi = constructPersonenkontextApi(page);
     const response: ApiResponse<DBiamPersonResponse> =
       await personenkontextApi.dbiamPersonenkontextWorkflowControllerCreatePersonWithPersonenkontexteRaw(
-        requestParameters
+        requestParameters,
       );
     expect(response.raw.status).toBe(201);
     const createdPerson: DBiamPersonResponse = await response.value();
 
     return {
-      username: createdPerson.person.username,
+      username: createdPerson.person.username!,
       password: createdPerson.person.startpasswort,
       rolleId: rolleId,
       organisationId: organisationId,
       personId: createdPerson.person.id,
       vorname: createdPerson.person.name.vorname,
       nachname: createdPerson.person.name.familienname,
-      kopersnummer: koPersNr,
+      kopersnummer: koPersNr ?? '',
     };
   } catch (error) {
     console.error('[ERROR] createPerson failed:', error);
@@ -162,7 +162,7 @@ export async function createPersonWithPersonenkontext(
   rolleName: string,
   vorname?: string,
   familienname?: string,
-  koPersNr?: string
+  koPersNr?: string,
 ): Promise<UserInfo> {
   // Organisation wird nicht angelegt, da diese zur Zeit nicht gelöscht werden kann
   const organisationId: string = await getOrganisationId(page, organisationName);
@@ -181,7 +181,7 @@ export async function createRolleAndPersonWithPersonenkontext(
   rolleName: string,
   koPersNr?: string,
   klasseId?: string,
-  merkmaleName?: Set<RollenMerkmal>
+  merkmaleName?: Set<RollenMerkmal>,
 ): Promise<UserInfo> {
   // Organisation wird nicht angelegt, da diese zur Zeit nicht gelöscht werden kann
   const organisationId: string = await getOrganisationId(page, organisationName);
@@ -196,7 +196,7 @@ export async function createRolleAndPersonWithPersonenkontext(
     vorname,
     koPersNr,
     klasseId,
-    merkmaleName
+    merkmaleName,
   );
   return userInfo;
 }
@@ -239,9 +239,8 @@ export async function lockPerson(page: Page, personId: string, organisationId: s
     };
 
     const personenApi: PersonenApi = constructPersonenApi(page);
-    const response: ApiResponse<PersonLockResponse> = await personenApi.personControllerLockPersonRaw(
-      requestParameters
-    );
+    const response: ApiResponse<PersonLockResponse> =
+      await personenApi.personControllerLockPersonRaw(requestParameters);
     expect(response.raw.status).toBe(202);
 
     const lockMessage: PersonLockResponse = await response.value();
@@ -257,7 +256,7 @@ export async function addSecondOrganisationToPerson(
   personId: string,
   organisationId1: string,
   organisationId2: string,
-  rolleId: string
+  rolleId: string,
 ): Promise<void> {
   try {
     const dbiamUpdatePersonenkontexteBodyParams: DbiamUpdatePersonenkontexteBodyParams = {
@@ -344,7 +343,7 @@ export async function createTeacherAndLogin(page: Page): Promise<UserInfo> {
       await getServiceProviderId(page, adressbuch),
     ],
     generateRolleName(),
-    generateKopersNr()
+    generateKopersNr(),
   );
 
   await header.logout();
@@ -367,9 +366,8 @@ export async function setUEMPassword(page: Page, personId: string): Promise<stri
     };
 
     const personenApi: PersonenApi = constructPersonenApi(page);
-    const response: ApiResponse<string> = await personenApi.personControllerResetUEMPasswordByPersonIdRaw(
-      requestParameters
-    );
+    const response: ApiResponse<string> =
+      await personenApi.personControllerResetUEMPasswordByPersonIdRaw(requestParameters);
     expect(response.raw.status).toBe(202);
 
     const newPassword: string = await response.value();
@@ -385,7 +383,7 @@ export async function setTimeLimitPersonenkontext(
   personId: string,
   organisationId: string,
   rolleId: string,
-  timeLimit: Date
+  timeLimit: Date,
 ): Promise<void> {
   try {
     const dbiamUpdatePersonenkontexteBodyParams: DbiamUpdatePersonenkontexteBodyParams = {

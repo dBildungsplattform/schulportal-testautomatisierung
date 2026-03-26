@@ -8,7 +8,10 @@ export class Autocomplete {
   private readonly inputLocator: Locator;
   private readonly loadingLocator: Locator;
 
-  constructor(private readonly page: Page, private readonly locator: Locator) {
+  constructor(
+    private readonly page: Page,
+    private readonly locator: Locator,
+  ) {
     this.overlayLocator = this.page.locator('div.v-overlay.v-menu');
     this.itemsLocator = this.page.locator('.v-overlay .v-list-item');
     this.modalToggle = this.locator.locator('.v-field__append-inner');
@@ -107,7 +110,7 @@ export class Autocomplete {
     await item.click();
     await this.closeModal();
   }
-  
+
   public async selectByName(name: string): Promise<void> {
     const option: Locator = this.itemsLocator.filter({
       hasText: name,
@@ -171,16 +174,22 @@ export class Autocomplete {
 
   public async isVisible(): Promise<void> {
     await expect(this.locator).toBeVisible();
-  }  
+  }
 
   public async isDisabled(): Promise<void> {
     await expect(this.inputLocator).toBeDisabled();
   }
 
-  public async checkVisibleDropdownOptions(items: string[], exactCount: boolean = false, filterHeaderText?: string): Promise<void> {
+  public async checkVisibleDropdownOptions(
+    items: string[],
+    exactCount: boolean = false,
+    filterHeaderText?: string,
+  ): Promise<void> {
     await this.inputLocator.click();
     // Sortiere Items alphanumerisch wie sie im Dropdown angeordnet sind (Zeitersparnis beim Testlauf)
-    const sortedItems: string[] = [...items].sort((a: string, b: string) => a.localeCompare(b, 'de', { numeric: true }));
+    const sortedItems: string[] = [...items].sort((a: string, b: string) =>
+      a.localeCompare(b, 'de', { numeric: true }),
+    );
     if (filterHeaderText) {
       await expect(this.page.locator('.filter-header')).toContainText(filterHeaderText);
     }
@@ -199,7 +208,9 @@ export class Autocomplete {
   public async checkAllDropdownOptionsClickable(items: string[]): Promise<void> {
     await this.inputLocator.click();
     // Sortiere Items alphanumerisch wie sie im Dropdown angeordnet sind (Zeitersparnis beim Testlauf)
-    const sortedItems: string[] = [...items].sort((a: string, b: string) => a.localeCompare(b, 'de', { numeric: true }));
+    const sortedItems: string[] = [...items].sort((a: string, b: string) =>
+      a.localeCompare(b, 'de', { numeric: true }),
+    );
     for (const item of sortedItems) {
       await this.clickDropdownOption(item);
     }

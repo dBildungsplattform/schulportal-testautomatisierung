@@ -7,12 +7,12 @@ export class KlasseDetailsViewPage {
   /* add global locators here */
 
   private readonly adminHeadline: Locator = this.page.getByTestId('admin-headline');
-  private readonly schuleNameInput : Locator = this.page.getByTestId('klasse-form-schule-select').locator('input');
-  private readonly klasseNameInput : Locator = this.page.getByTestId('klassenname-input').locator('input');
-  private readonly klasseLoeschenButton : Locator = this.page.getByTestId('open-klasse-delete-dialog-button');
-  private readonly klasseBearbeitenButton : Locator = this.page.getByTestId('klasse-edit-button');
-  private readonly klasseSpeichernButton : Locator = this.page.getByTestId('klasse-form-submit-button');
-  private readonly abbrechenButton : Locator = this.page.getByTestId('klasse-form-discard-button');
+  private readonly schuleNameInput: Locator = this.page.getByTestId('klasse-form-schule-select').locator('input');
+  private readonly klasseNameInput: Locator = this.page.getByTestId('klassenname-input').locator('input');
+  private readonly klasseLoeschenButton: Locator = this.page.getByTestId('open-klasse-delete-dialog-button');
+  private readonly klasseBearbeitenButton: Locator = this.page.getByTestId('klasse-edit-button');
+  private readonly klasseSpeichernButton: Locator = this.page.getByTestId('klasse-form-submit-button');
+  private readonly abbrechenButton: Locator = this.page.getByTestId('klasse-form-discard-button');
 
   constructor(protected readonly page: Page) {
     this.deletionWorkflow = new KlasseDeletionWorkflowPage(page, this);
@@ -26,11 +26,17 @@ export class KlasseDetailsViewPage {
 
   public async successfullyDeleteKlasse(schulname: string, klassenname: string): Promise<KlasseManagementViewPage> {
     await this.deletionWorkflow.deleteKlasse(schulname, klassenname);
-    const klasseManagementViewPage: KlasseManagementViewPage = await this.deletionWorkflow.klasseSuccessfullyDeleted(schulname, klassenname);
+    const klasseManagementViewPage: KlasseManagementViewPage = await this.deletionWorkflow.klasseSuccessfullyDeleted(
+      schulname,
+      klassenname,
+    );
     return klasseManagementViewPage;
   }
 
-  public async unsuccessfullyDeleteKlasse(schulname: string, klassenname: string): Promise<KlasseManagementViewPage | KlasseDetailsViewPage> {
+  public async unsuccessfullyDeleteKlasse(
+    schulname: string,
+    klassenname: string,
+  ): Promise<KlasseManagementViewPage | KlasseDetailsViewPage> {
     await this.deletionWorkflow.deleteKlasse(schulname, klassenname);
     return await this.deletionWorkflow.klasseDeletionFailed();
   }
@@ -77,7 +83,11 @@ export class KlasseDetailsViewPage {
     await expect(this.abbrechenButton).toBeEnabled();
   }
 
-  public async klasseSuccessfullyEdited(schulname: string, dienststellennummer: string, klassenname: string): Promise<void> {
+  public async klasseSuccessfullyEdited(
+    schulname: string,
+    dienststellennummer: string,
+    klassenname: string,
+  ): Promise<void> {
     await expect(this.page.getByTestId('klasse-success-text')).toHaveText('Die Klasse wurde erfolgreich geändert.');
     await this.page.getByTestId('klasse-success-icon').isVisible();
     await expect(this.page.getByTestId('created-klasse-schule')).toHaveText(`${dienststellennummer} (${schulname})`);

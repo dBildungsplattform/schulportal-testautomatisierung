@@ -79,7 +79,6 @@ export class PersonDetailsViewPage {
   readonly textNeuenTokenEinrichtenInfo: Locator;
   readonly textKeinTokenIstEingerichtet: Locator;
   readonly button2FAEinrichten: Locator;
-  readonly text2FAInfo: Locator;
   readonly dialog2FAEinrichten: Locator;
   readonly textH2TwoFACardheadline: Locator;
   readonly selectOption2FASoftwareToken: Locator;
@@ -118,9 +117,7 @@ export class PersonDetailsViewPage {
 
     // Schulzuordnungen
     this.textH3SchulzuordnungHeadline = page.getByText('Schulzuordnung(en)');
-    this.buttonEditSchulzuordnung = page
-      .locator('div')
-      .getByTestId('zuordnung-edit-button');
+    this.buttonEditSchulzuordnung = page.locator('div').getByTestId('zuordnung-edit-button');
     this.buttonAddSchulzuordnung = page.getByTestId('zuordnung-create-button');
     this.button_closeZuordnungSuccess = page.getByTestId('close-zuordnung-delete-success-button');
     this.comboboxOrganisationDialogBenutzerSperren = page.getByTestId('person-lock-card').locator('.v-field__input');
@@ -172,16 +169,16 @@ export class PersonDetailsViewPage {
     this.textH3TwoFA = page.getByText('Zwei-Faktor-Authentifizierung (2FA)');
     this.textKeinTokenIstEingerichtet = page.getByText('Für diesen Benutzer ist aktuell keine 2FA eingerichtet.');
     this.textTokenIstEingerichtetInfo = page.getByText(
-      'Für diesen Benutzer ist aktuell ein Software-Token eingerichtet.'
+      'Für diesen Benutzer ist aktuell ein Software-Token eingerichtet.',
     );
     this.textNeuenTokenEinrichtenInfo = page.getByText(
-      'Um einen neuen Token einzurichten, muss der aktuelle Token durch die schulischen Administratorinnen und Administratoren zurückgesetzt werden.'
+      'Um einen neuen Token einzurichten, muss der aktuelle Token durch die schulischen Administratorinnen und Administratoren zurückgesetzt werden.',
     );
     this.button2FAEinrichten = page.getByTestId('open-2FA-dialog-icon');
     this.dialog2FAEinrichten = page.getByTestId('two-factor-authentication-dialog');
     this.textH2TwoFACardheadline = this.dialog2FAEinrichten.getByTestId('layout-card-headline');
     this.text2FASoftwareTokenInfo = page.getByText(
-      'Ein QR-Code wird generiert, welcher direkt eingescannt oder ausgedruckt werden kann.'
+      'Ein QR-Code wird generiert, welcher direkt eingescannt oder ausgedruckt werden kann.',
     );
     this.selectOption2FASoftwareToken = page.getByTestId('software-token-radio-button');
     this.button2FAEinrichtenWeiter = page.getByTestId('proceed-two-factor-authentication-dialog-button');
@@ -208,7 +205,7 @@ export class PersonDetailsViewPage {
     await expect(this.textH2DialogBenutzerSperren).toHaveText('Benutzer sperren');
     await expect(this.comboboxOrganisationDialogBenutzerSperren).toHaveText('Land Schleswig-Holstein');
     await expect(this.textInfoLockedUser).toHaveText(
-      'Für die Dauer der Sperre hat der Benutzer keinen Zugriff mehr auf das Schulportal SH und die daran angeschlossenen Dienste.'
+      'Für die Dauer der Sperre hat der Benutzer keinen Zugriff mehr auf das Schulportal SH und die daran angeschlossenen Dienste.',
     );
     await expect(this.inputBefristungSperre).toBeHidden();
     await this.buttonLockPersonConfirm.click();
@@ -219,7 +216,7 @@ export class PersonDetailsViewPage {
     await expect(this.textH2DialogBenutzerSperren).toHaveText('Benutzer sperren');
     await expect(this.comboboxOrganisationDialogBenutzerSperren).toHaveText('Land Schleswig-Holstein');
     await expect(this.textInfoLockedUser).toHaveText(
-      'Für die Dauer der Sperre hat der Benutzer keinen Zugriff mehr auf das Schulportal SH und die daran angeschlossenen Dienste.'
+      'Für die Dauer der Sperre hat der Benutzer keinen Zugriff mehr auf das Schulportal SH und die daran angeschlossenen Dienste.',
     );
     await this.radioButtonBefristet.click();
     await expect(this.inputBefristungSperre).toBeVisible();
@@ -267,12 +264,14 @@ export class PersonDetailsViewPage {
     nameRolle: string,
     textColor: string,
     befristungLehrerRolle: string,
-    sectionTestId: string
+    sectionTestId: string,
   ): Promise<void> {
     await expect(
       this.page
         .getByTestId(sectionTestId)
-        .getByText(dstNr + ' (' + testschuleName + '): ' + nameRolle + ' (befristet bis ' + befristungLehrerRolle + ')')
+        .getByText(
+          dstNr + ' (' + testschuleName + '): ' + nameRolle + ' (befristet bis ' + befristungLehrerRolle + ')',
+        ),
     ).toHaveCSS('color', textColor);
   }
 }
