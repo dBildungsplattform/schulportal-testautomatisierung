@@ -292,7 +292,7 @@ test.describe(`Testfälle für die Anlage von Personen`, () => {
               });
 
             let personDetailsViewPage: PersonDetailsViewPage = await test.step(`Gesamtübersicht öffnen`, async () => {
-              return personManagementView.openGesamtuebersicht(createdBenutzername);
+              return personManagementView.searchAndOpenGesamtuebersicht(createdBenutzername);
             });
             personManagementView = await test.step(`Personenkontext entfernen`, async () => {
               const zuordnungenPage: ZuordnungenPage = await personDetailsViewPage.editZuordnungen();
