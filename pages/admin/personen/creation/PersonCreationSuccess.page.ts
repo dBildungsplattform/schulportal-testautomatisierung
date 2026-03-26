@@ -6,7 +6,15 @@ export type PersonCreationSuccessValidationParams = PersonCreationParams & {
 };
 
 export class PersonCreationSuccessPage {
-  constructor(protected readonly page: Page) {}
+  readonly dataRolle: Locator;
+  readonly buttonBackToList: Locator;
+  readonly buttonCreateAnother: Locator;
+
+  constructor(protected readonly page: Page) {
+    this.dataRolle = page.getByTestId('created-person-rolle');
+    this.buttonBackToList = page.getByTestId('back-to-list-button');
+    this.buttonCreateAnother = page.getByTestId('create-another-person-button');
+  }
 
   /* actions */
   public async waitForPageLoad(): Promise<void> {
@@ -27,7 +35,7 @@ export class PersonCreationSuccessPage {
   }
 
   public async navigateToCreateAnother(): Promise<PersonCreationViewPage> {
-    await this.page.getByTestId('create-another-person-button').click();
+    await this.buttonCreateAnother.click();
     return new PersonCreationViewPage(this.page).waitForPageLoad();
   }
 
@@ -36,10 +44,14 @@ export class PersonCreationSuccessPage {
   }
 
   public async navigateBack(): Promise<void> {
-    await this.page.getByTestId('back-to-list-button').click();
+    await this.buttonBackToList.click();
   }
 
   /* assertions */
+  public async assertNavigationButtonsVisible(): Promise<void> {
+    await expect(this.buttonCreateAnother).toBeVisible();
+    await expect(this.buttonBackToList).toBeVisible();
+  }
   public async assertSuccessfulCreation(params: PersonCreationSuccessValidationParams): Promise<void> {
     await expect(this.page.getByTestId('person-success-text')).toHaveText(
       `${params.vorname} ${params.nachname} wurde erfolgreich hinzugefügt.`

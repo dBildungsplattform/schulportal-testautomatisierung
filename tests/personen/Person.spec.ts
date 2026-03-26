@@ -146,14 +146,14 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await test.step(`Benutzer anlegen`, async () => {
         await personCreationView.fillForm({ organisation: schulstrukturknoten, rollen: [landesadminRolle], vorname, nachname });
         successPage = await personCreationView.submit();
+        await successPage.waitForPageLoad();
       });
 
       await test.step(`Prüfen dass der Benutzer mit der Rolle Landesadmin angelegt wurde`, async () => {
-        await successPage.waitForPageLoad();
         // Benutzer wird im afterEach-Block gelöscht
         // gesteuert wird die Löschung über die Variable username
         usernames.push(await successPage.getBenutzername());
-        await expect(page.getByTestId('created-person-rolle')).toHaveText(landesadminRolle);
+        await expect(successPage.dataRolle).toHaveText(landesadminRolle);
       });
     }
   );
@@ -184,7 +184,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         // Benutzer wird im afterEach-Block gelöscht
         // gesteuert wird die Löschung über die Variable usernames
         usernames.push(await successPage.getBenutzername());
-        await expect(page.getByTestId('created-person-rolle')).toHaveText('LiV');
+        await expect(successPage.dataRolle).toHaveText('LiV');
       });
     }
   );
@@ -272,7 +272,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         // Benutzer wird im afterEach-Block gelöscht
         // gesteuert wird die Löschung über die Variable username
         usernames.push(await successPage.getBenutzername());
-        await expect(page.getByTestId('created-person-rolle')).toHaveText(schuelerRolle);
+        await expect(successPage.dataRolle).toHaveText(schuelerRolle);
       });
     }
   );
@@ -359,13 +359,13 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await test.step(`Benutzer anlegen`, async () => {
         await personCreationView.fillForm({ organisation: schulstrukturknoten, rollen: [rolle], vorname, nachname, kopersnr });
         successPage = await personCreationView.submit();
+        await successPage.waitForPageLoad();
       });
 
       await test.step(`Auf Bestätigungsseite warten`, async () => {
-        await successPage.waitForPageLoad();
         usernames.push(await successPage.getBenutzername());
         createdBenutzername = await successPage.getBenutzername();
-        await expect(page.getByTestId('back-to-list-button')).toBeVisible();
+        await expect(successPage.buttonBackToList).toBeVisible();
       });
 
       await test.step(`Prüfen, dass Lehrkraft im LDAP angelegt wurde`, async () => {
@@ -459,14 +459,14 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await test.step(`Benutzer anlegen`, async () => {
         await personCreationView.fillForm({ organisation: schulstrukturknoten, rollen: rolleNames, vorname, nachname, kopersnr });
         successPage = await personCreationView.submit();
+        await successPage.waitForPageLoad();
       });
 
       await test.step(`Bestätigungsseite prüfen`, async () => {
         await successPage.assertSuccessfulCreation({ organisation: schulstrukturknoten, rollen: rolleNames, vorname, nachname, kopersnr, dstNr: testschuleDstNr });
         usernames.push(await successPage.getBenutzername());
         createdBenutzername = await successPage.getBenutzername();
-        await expect(page.getByTestId('create-another-person-button')).toBeVisible();
-        await expect(page.getByTestId('back-to-list-button')).toBeVisible();
+        await successPage.assertNavigationButtonsVisible();
       });
 
       await test.step(`Prüfen, dass Lehrkraft im LDAP angelegt wurde`, async () => {
@@ -557,69 +557,48 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await personCreationView.waitForPageLoad();
       });
 
-      let successPage1: PersonCreationSuccessPage;
+      interface UserCreationData {
+        rolle: string;
+        vorname: string;
+        nachname: string;
+        klasse: string | undefined;
+        kopersnr: string | undefined;
+      }
+      const users: UserCreationData[] = [
+        { rolle: schuelerRolle, vorname: vorname1, nachname: nachname1, klasse: klassenname, kopersnr: undefined },
+        { rolle: rolle2, vorname: vorname2, nachname: nachname2, klasse: undefined, kopersnr: kopersnr2 },
+        { rolle: rolle3, vorname: vorname3, nachname: nachname3, klasse: undefined, kopersnr: kopersnr3 },
+      ];
 
-      await test.step(`Benutzer Schüler anlegen`, async () => {
-        await personCreationView.fillForm({ organisation: schulstrukturknoten, rollen: [schuelerRolle], vorname: vorname1, nachname: nachname1, klasse: klassenname });
-        successPage1 = await personCreationView.submit();
-      });
+      let currentCreationView: PersonCreationViewPage = personCreationView;
 
-      await test.step(`Bestätigungsseite Schüler prüfen`, async () => {
-        await successPage1.assertSuccessfulCreation({
+      for (let i: number = 0; i < users.length; i++) {
+        const user: UserCreationData = users[i];
+        await currentCreationView.fillForm({
           organisation: schulstrukturknoten,
-          rollen: [schuelerRolle],
-          vorname: vorname1,
-          nachname: nachname1,
-          klasse: klassenname,
+          rollen: [user.rolle],
+          vorname: user.vorname,
+          nachname: user.nachname,
+          klasse: user.klasse,
+          kopersnr: user.kopersnr,
+        });
+        const successPage: PersonCreationSuccessPage = await currentCreationView.submit();
+        await successPage.assertSuccessfulCreation({
+          organisation: schulstrukturknoten,
+          rollen: [user.rolle],
+          vorname: user.vorname,
+          nachname: user.nachname,
+          klasse: user.klasse,
+          kopersnr: user.kopersnr,
           dstNr: testschuleDstNr,
         });
         // Benutzer wird im afterEach-Block gelöscht
         // gesteuert wird die Löschung über die Variable username
-        usernames.push(await successPage1.getBenutzername());
-      });
-
-      let successPage2: PersonCreationSuccessPage;
-      let successPage3: PersonCreationSuccessPage;
-
-      await test.step(`Weiteren Benutzer Lehrer1 anlegen`, async () => {
-        const personCreationView2: PersonCreationViewPage = await successPage1.navigateToCreateAnother();
-        await personCreationView2.fillForm({ organisation: schulstrukturknoten, rollen: [rolle2], vorname: vorname2, nachname: nachname2, kopersnr: kopersnr2 });
-        successPage2 = await personCreationView2.submit();
-      });
-
-      await test.step(`Bestätigungsseite Lehrer1 prüfen`, async () => {
-        await successPage2.assertSuccessfulCreation({
-          organisation: schulstrukturknoten,
-          rollen: [rolle2],
-          vorname: vorname2,
-          nachname: nachname2,
-          kopersnr: kopersnr2,
-          dstNr: testschuleDstNr,
-        });
-        // Benutzer wird im afterEach-Block gelöscht
-        // gesteuert wird die Löschung über die Variable username
-        usernames.push(await successPage2.getBenutzername());
-      });
-
-      await test.step(`Weiteren Benutzer Lehrer2 anlegen`, async () => {
-        const personCreationView3: PersonCreationViewPage = await successPage2.navigateToCreateAnother();
-        await personCreationView3.fillForm({ organisation: schulstrukturknoten, rollen: [rolle3], vorname: vorname3, nachname: nachname3, kopersnr: kopersnr3 });
-        successPage3 = await personCreationView3.submit();
-      });
-
-      await test.step(`Bestätigungsseite Lehrer2 prüfen`, async () => {
-        await successPage3.assertSuccessfulCreation({
-          organisation: schulstrukturknoten,
-          rollen: [rolle3],
-          vorname: vorname3,
-          nachname: nachname3,
-          kopersnr: kopersnr3,
-          dstNr: testschuleDstNr,
-        });
-        // Benutzer wird im afterEach-Block gelöscht
-        // gesteuert wird die Löschung über die Variable username
-        usernames.push(await successPage3.getBenutzername());
-      });
+        usernames.push(await successPage.getBenutzername());
+        if (i < users.length - 1) {
+          currentCreationView = await successPage.navigateToCreateAnother();
+        }
+      }
     }
   );
 
