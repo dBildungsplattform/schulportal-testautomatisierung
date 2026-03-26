@@ -81,7 +81,8 @@ export class PersonCreationSuccessPage {
       await expect(this.page.getByTestId('created-person-organisation')).toHaveText(
         `${params.dstNr} (${params.organisation})`
       );
-    else await expect(this.page.getByTestId('created-person-organisation')).toHaveText(params.organisation);
+    else if (params.organisation) 
+      await expect(this.page.getByTestId('created-person-organisation')).toHaveText(params.organisation);
 
     await expect(this.page.getByTestId('created-person-rolle-label')).toBeVisible();
     for (const rolle of params.rollen) {
