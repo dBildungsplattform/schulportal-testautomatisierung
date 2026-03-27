@@ -49,9 +49,11 @@ export class StartViewPage {
     );
   }
 
-  public async assertServiceProviderIsHidden(spNames: string[]): Promise<void> {
-    for (const spName of spNames) {
-      await expect(this.page.locator('[data-testid^="service-provider-card"]', { hasText: spName })).toBeHidden();
+  public async assertServiceProvidersAreHidden(serviceProviderNames: string[]): Promise<void> {
+    for (const serviceProviderName of serviceProviderNames) {
+      await expect(
+        this.page.locator('[data-testid^="service-provider-card"]', { hasText: serviceProviderName }),
+      ).toBeHidden();
     }
   }
 }
