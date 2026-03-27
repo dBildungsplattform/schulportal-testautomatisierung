@@ -97,6 +97,13 @@ export async function getKlasseId(page: Page, klassennname: string): Promise<str
   }
 }
 
+/**
+ *
+ * @param page
+ * @param name
+ * @param kennung
+ * @returns id of created schule
+ */
 export async function createSchule(page: Page, name: string, kennung?: string): Promise<string> {
   try {
     const traegerId: string = await getOrganisationId(page, oeffentlichLandSH);
