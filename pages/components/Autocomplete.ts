@@ -83,6 +83,7 @@ export class Autocomplete {
       });
       await expect(item).toBeVisible();
       await item.click();
+      await expect(item).toHaveAttribute('aria-selected', 'true');
       await this.inputLocator.clear();
       await this.waitUntilLoadingIsDone();
       await expect(this.itemsLocator.first()).toBeVisible();

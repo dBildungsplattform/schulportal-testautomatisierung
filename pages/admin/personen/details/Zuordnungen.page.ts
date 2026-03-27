@@ -52,6 +52,7 @@ export class ZuordnungenPage {
     await this.selectZuordnungToEdit(params);
     await this.page.getByTestId('open-zuordnung-delete-dialog-button').click();
     await this.page.getByTestId('zuordnung-delete-button').click();
+    await this.page.getByTestId('close-zuordnung-delete-success-button').click();
     return new PersonManagementViewPage(this.page).waitForPageLoad();
   }
 
