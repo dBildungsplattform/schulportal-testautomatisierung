@@ -1,8 +1,9 @@
 import { expect, Page } from '@playwright/test';
+import { PersonManagementViewPage } from '../PersonManagementView.neu.page';
 import { AddZuordnungWorkflowPage } from './zuordnung-workflows/AddZuordnungWorkflow.page';
+import { BaseZuordnungWorkflowPage } from './zuordnung-workflows/BaseWorkflow.page';
 import { BefristungWorkflowPage } from './zuordnung-workflows/BefristungWorkflow.page';
 import { VersetzenWorkflowPage } from './zuordnung-workflows/VersetzenWorkflow.page';
-import { BaseZuordnungWorkflowPage } from './zuordnung-workflows/BaseWorkflow.page';
 
 export interface ZuordnungCreationParams {
   rolle: string;
@@ -45,6 +46,15 @@ export class ZuordnungenPage {
   public async startAddZuordnungWorkflow(): Promise<AddZuordnungWorkflowPage> {
     await this.page.getByTestId('zuordnung-create-button').click();
     return this.addZuordnungWorkflowFactory(this.page);
+  }
+
+  public async removeLastZuordnung(params: ZuordnungValidationParams): Promise<PersonManagementViewPage> {
+    await this.selectZuordnungToEdit(params);
+    await this.page.getByTestId('open-zuordnung-delete-dialog-button').click();
+    await this.page.getByTestId('zuordnung-delete-button').click();
+    await this.page.getByTestId('zuordnung-changes-save-button').click();
+    await this.page.getByTestId('close-zuordnung-delete-success-button').click();
+    return new PersonManagementViewPage(this.page).waitForPageLoad();
   }
 
   public async startBefristungWorkflow(): Promise<BefristungWorkflowPage> {
