@@ -277,7 +277,7 @@ test.describe('Funktions- und UI Testfälle zu Landesbediensteten suchen und hin
           schuladminOeffentlichRolle,
         );
       });
-      
+
       test('Popup wird angezeigt und ist vollständig', { tag: [STAGE, DEV] }, async () => {
         searchResultErrorDialog = await formFunction(landesbedienstetenSearchFormPage, person);
         await searchResultErrorDialog.checkPopupCompleteness();
