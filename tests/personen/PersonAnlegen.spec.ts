@@ -296,7 +296,7 @@ test.describe(`Testfälle für die Anlage von Personen`, () => {
             });
             personManagementView = await test.step(`Personenkontext entfernen`, async () => {
               const zuordnungenPage: ZuordnungenPage = await personDetailsViewPage.editZuordnungen();
-              return zuordnungenPage.removeZuordnung({ organisation: schuleName, dstNr: schuleDstNr });
+              return zuordnungenPage.removeLastZuordnung({ organisation: schuleName, dstNr: schuleDstNr });
             });
 
             personDetailsViewPage = await test.step('Person suchen und Gesamtübersicht erneut öffnen', async () => {

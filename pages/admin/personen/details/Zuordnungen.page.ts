@@ -48,10 +48,11 @@ export class ZuordnungenPage {
     return this.addZuordnungWorkflowFactory(this.page);
   }
 
-  public async removeZuordnung(params: ZuordnungValidationParams): Promise<PersonManagementViewPage> {
+  public async removeLastZuordnung(params: ZuordnungValidationParams): Promise<PersonManagementViewPage> {
     await this.selectZuordnungToEdit(params);
     await this.page.getByTestId('open-zuordnung-delete-dialog-button').click();
     await this.page.getByTestId('zuordnung-delete-button').click();
+    await this.page.getByTestId('zuordnung-changes-save-button').click();
     await this.page.getByTestId('close-zuordnung-delete-success-button').click();
     return new PersonManagementViewPage(this.page).waitForPageLoad();
   }
