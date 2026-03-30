@@ -15,7 +15,7 @@ import { generateKopersNr, generateNachname, generateRolleName, generateVorname 
 import { PersonCreationViewPage } from '../../pages/admin/personen/creation/PersonCreationView.neu.page';
 import { PersonCreationSuccessPage } from '../../pages/admin/personen/creation/PersonCreationSuccess.page';
 import { PersonDetailsViewPage } from '../../pages/admin/personen/PersonDetailsView.page';
-import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.page';
+import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.neu.page';
 import { HeaderPage } from '../../pages/components/Header.neu.page';
 import { MenuBarPage } from '../../pages/components/MenuBar.neu.page';
 import { LandingPage } from '../../pages/LandingView.page';
@@ -105,9 +105,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await test.step(`In der Ergebnisliste prüfen dass der neue Benutzer ${nachname} angezeigt wird`, async () => {
         // Der Klick auf die Ergebnisliste funktioniert nicht zuverlaessig, darum der direkte Sprung in die Ergebnisliste via URL
         await page.goto('/' + 'admin/personen');
-        await expect(personManagementView.textH2Benutzerverwaltung).toHaveText('Benutzerverwaltung');
-        await personManagementView.inputSuchfeld.fill(nachname);
-        await personManagementView.buttonSuchen.click();
+        await personManagementView.checkManagementPage();
+        await personManagementView.searchByText(nachname);
         await expect(page.getByRole('cell', { name: nachname, exact: true })).toBeVisible();
       });
 
@@ -390,10 +389,10 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       });
 
       const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
-      await personManagementView.waitForData();
+      await personManagementView.waitForDataLoad();
       personDetailsView = await test.step(`Kontextlose Person suchen und Gesamtübersicht öffnen`, async () => {
-        await personManagementView.searchBySuchfeld(createdBenutzername);
-        return await personManagementView.openGesamtuebersichtPerson(page, createdBenutzername);
+        await personManagementView.searchAndOpenGesamtuebersicht(createdBenutzername);
+        return new PersonDetailsViewPage(page);
       });
 
       await test.step(`Schulzuordnung wieder hinzufügen`, async () => {
