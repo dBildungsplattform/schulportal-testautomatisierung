@@ -51,7 +51,17 @@ export const testFixtures: TestFixture[] = [
     ],
   },
   {
+    rollenArt: RollenArt.Orgadmin,
+    serviceProviderNames: [schulportaladmin, anleitungen, helpdeskKontaktieren],
+  },
+  {
     rollenArt: RollenArt.Sysadmin,
-    serviceProviderNames: [schulportaladmin],
+    serviceProviderNames: [
+      schulportaladmin,
+      anleitungen,
+      helpdeskKontaktieren,
+      psychosozialesBeratungsangebot,
+      schulrechtAZ,
+    ],
   },
 ];
