@@ -1,4 +1,4 @@
-import { RollenArt } from '../../base/api/generated';
+import { OrganisationsTyp, RollenArt } from '../../base/api/generated';
 import {
   email,
   itslearning,
@@ -16,12 +16,14 @@ import {
 
 interface TestFixture {
   rollenArt: RollenArt;
+  organisationsTyp: OrganisationsTyp;
   serviceProviderNames: string[];
 }
 
 export const testFixtures: TestFixture[] = [
   {
     rollenArt: RollenArt.Lehr,
+    organisationsTyp: OrganisationsTyp.Schule,
     serviceProviderNames: [
       email,
       itslearning,
@@ -38,10 +40,12 @@ export const testFixtures: TestFixture[] = [
   },
   {
     rollenArt: RollenArt.Lern,
+    organisationsTyp: OrganisationsTyp.Schule,
     serviceProviderNames: [itslearning, webUntis],
   },
   {
     rollenArt: RollenArt.Leit,
+    organisationsTyp: OrganisationsTyp.Schule,
     serviceProviderNames: [
       schulportaladmin,
       anleitungen,
@@ -52,10 +56,12 @@ export const testFixtures: TestFixture[] = [
   },
   {
     rollenArt: RollenArt.Orgadmin,
+    organisationsTyp: OrganisationsTyp.Traeger,
     serviceProviderNames: [schulportaladmin, anleitungen, helpdeskKontaktieren],
   },
   {
     rollenArt: RollenArt.Sysadmin,
+    organisationsTyp: OrganisationsTyp.Land,
     serviceProviderNames: [
       schulportaladmin,
       anleitungen,

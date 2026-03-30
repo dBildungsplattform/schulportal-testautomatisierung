@@ -1,9 +1,10 @@
 import test, { PlaywrightTestArgs } from '@playwright/test';
 
-import { RollenArt } from '../../base/api/generated';
-import { createKlasse, createSchule } from '../../base/api/organisationApi';
+import { OrganisationResponse, RollenArt } from '../../base/api/generated';
+import { createKlasse, createOrganisation, getOrganisationId } from '../../base/api/organisationApi';
 import { createRolleAndPersonWithPersonenkontext, UserInfo } from '../../base/api/personApi';
 import { getServiceProviderIds } from '../../base/api/serviceProviderApi';
+import { landSH } from '../../base/organisation';
 import {
   adressbuch,
   anleitungen,
@@ -49,21 +50,26 @@ const allProviderNames: string[] = [
 ];
 
 test.describe('ServiceProvider auf Startseite', () => {
-  for (const { rollenArt, serviceProviderNames } of testFixtures) {
+  for (const { rollenArt, organisationsTyp, serviceProviderNames } of testFixtures) {
     test(
       `Als ${rollenArt} prüfen, dass die richtigen ServiceProvider sichtbar sind`,
       { tag: [STAGE, DEV] },
       async ({ page }: PlaywrightTestArgs) => {
         const startPage: StartViewPage = await test.step('Daten anlegen', async () => {
           const personManagementViewPage: PersonManagementViewPage = await loginAndNavigateToAdministration(page);
-          const schulName: string = generateSchulname();
-          const schuleId: string = await createSchule(page, schulName);
+          const traegerId: string = await getOrganisationId(page, landSH);
+          const orga: OrganisationResponse = await createOrganisation(page, {
+            name: generateSchulname(),
+            typ: organisationsTyp,
+            administriertVon: traegerId,
+            zugehoerigZu: traegerId,
+          });
           const klasseId: string | null =
-            rollenArt === RollenArt.Lern ? await createKlasse(page, schuleId, generateKlassenname()) : null;
+            rollenArt === RollenArt.Lern ? await createKlasse(page, orga.id, generateKlassenname()) : null;
 
           const userInfo: UserInfo = await createRolleAndPersonWithPersonenkontext(
             page,
-            schulName,
+            orga.name,
             rollenArt,
             generateNachname(),
             generateVorname(),

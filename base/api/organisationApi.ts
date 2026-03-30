@@ -1,6 +1,6 @@
 import { Page, expect } from '@playwright/test';
 import { oeffentlichLandSH } from '../organisation';
-import { generateDienststellenNr } from '../utils/generateTestdata';
+import { generateDienststellenNr, generateSchulname } from '../utils/generateTestdata';
 import { FRONTEND_URL } from './baseApi';
 import {
   OrganisationControllerCreateOrganisationRequest,
@@ -93,6 +93,34 @@ export async function getKlasseId(page: Page, klassennname: string): Promise<str
     return organisations[0].id;
   } catch (error) {
     console.error('[ERROR] getKlasseId failed:', error);
+    throw error;
+  }
+}
+
+export async function createOrganisation(
+  page: Page,
+  params: OrganisationControllerCreateOrganisationRequest['createOrganisationBodyParams'],
+): Promise<OrganisationResponse> {
+  try {
+    const createOrganisationBodyParams: CreateOrganisationBodyParams = {
+      ...params,
+      name: params.name ?? generateSchulname(),
+      kennung: params.kennung ?? generateDienststellenNr(),
+      typ: params.typ ?? OrganisationsTyp.Schule,
+    };
+
+    const requestParameters: OrganisationControllerCreateOrganisationRequest = {
+      createOrganisationBodyParams,
+    };
+
+    const organisationApi: OrganisationenApi = constructOrganisationApi(page);
+    const response: ApiResponse<OrganisationResponse> =
+      await organisationApi.organisationControllerCreateOrganisationRaw(requestParameters);
+    expect(response.raw.status).toBe(201);
+
+    return response.value();
+  } catch (error) {
+    console.error('[ERROR] createSchule failed:', error);
     throw error;
   }
 }
