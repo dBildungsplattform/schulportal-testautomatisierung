@@ -1,12 +1,20 @@
 import { expect, Locator, Page } from '@playwright/test';
-import { PersonCreationParams } from './PersonCreationView.neu.page';
+import { PersonCreationParams, PersonCreationViewPage } from './PersonCreationView.neu.page';
 
 export type PersonCreationSuccessValidationParams = PersonCreationParams & {
   dstNr?: string;
 };
 
 export class PersonCreationSuccessPage {
-  constructor(protected readonly page: Page) {}
+  readonly dataRolle: Locator;
+  readonly buttonBackToList: Locator;
+  readonly buttonCreateAnother: Locator;
+
+  constructor(protected readonly page: Page) {
+    this.dataRolle = page.getByTestId('created-person-rolle');
+    this.buttonBackToList = page.getByTestId('back-to-list-button');
+    this.buttonCreateAnother = page.getByTestId('create-another-person-button');
+  }
 
   /* actions */
   public async waitForPageLoad(): Promise<void> {
@@ -22,8 +30,29 @@ export class PersonCreationSuccessPage {
     return benutzernameField.innerText();
   }
 
+  public async getEinstiegsPasswort(): Promise<string> {
+    return this.page.getByTestId('password-output-field').locator('input').inputValue();
+  }
+
+  public async navigateToCreateAnother(): Promise<PersonCreationViewPage> {
+    await this.buttonCreateAnother.click();
+    return new PersonCreationViewPage(this.page).waitForPageLoad();
+  }
+
+  public async navigateToPersonDetails(): Promise<void> {
+    await this.page.getByTestId('go-to-details-button').click();
+  }
+
+  public async navigateBack(): Promise<void> {
+    await this.buttonBackToList.click();
+  }
+
   /* assertions */
-  public async checkSuccessfulCreation(params: PersonCreationSuccessValidationParams): Promise<void> {
+  public async assertNavigationButtonsVisible(): Promise<void> {
+    await expect(this.buttonCreateAnother).toBeVisible();
+    await expect(this.buttonBackToList).toBeVisible();
+  }
+  public async assertSuccessfulCreation(params: PersonCreationSuccessValidationParams): Promise<void> {
     await expect(this.page.getByTestId('person-success-text')).toHaveText(
       `${params.vorname} ${params.nachname} wurde erfolgreich hinzugefügt.`,
     );
@@ -52,7 +81,8 @@ export class PersonCreationSuccessPage {
       await expect(this.page.getByTestId('created-person-organisation')).toHaveText(
         `${params.dstNr} (${params.organisation})`,
       );
-    else await expect(this.page.getByTestId('created-person-organisation')).toHaveText(params.organisation);
+    else if (params.organisation) 
+      await expect(this.page.getByTestId('created-person-organisation')).toHaveText(params.organisation);
 
     await expect(this.page.getByTestId('created-person-rolle-label')).toBeVisible();
     for (const rolle of params.rollen) {
