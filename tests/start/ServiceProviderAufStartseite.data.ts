@@ -14,12 +14,12 @@ import {
   schulrechtAZ,
 } from '../../base/sp';
 
-type TestFixture = {
+interface TestFixture {
   rollenArt: RollenArt;
-  serviceProviderNames: Array<string>;
-};
+  serviceProviderNames: string[];
+}
 
-export const testFixtures: Array<TestFixture> = [
+export const testFixtures: TestFixture[] = [
   {
     rollenArt: RollenArt.Lehr,
     serviceProviderNames: [

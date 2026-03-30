@@ -1,7 +1,8 @@
 import test, { PlaywrightTestArgs } from '@playwright/test';
 
+import { RollenArt } from '../../base/api/generated';
 import { createKlasse, createSchule } from '../../base/api/organisationApi';
-import { createRolleAndPersonWithPersonenkontext, freshLoginPage, UserInfo } from '../../base/api/personApi';
+import { createRolleAndPersonWithPersonenkontext, UserInfo } from '../../base/api/personApi';
 import { getServiceProviderId } from '../../base/api/serviceProviderApi';
 import {
   adressbuch,
@@ -26,13 +27,12 @@ import {
   generateVorname,
 } from '../../base/utils/generateTestdata';
 import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.neu.page';
+import { LandingViewPage } from '../../pages/LandingView.neu.page';
 import { LoginViewPage } from '../../pages/LoginView.neu.page';
 import { StartViewPage } from '../../pages/StartView.neu.page';
 import { testFixtures } from './ServiceProviderAufStartseite.data';
-import { LandingViewPage } from '../../pages/LandingView.neu.page';
-import { RollenArt } from '../../base/api/generated';
 
-const allProviderNames: Array<string> = [
+const allProviderNames: string[] = [
   email,
   itslearning,
   kalender,
