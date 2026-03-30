@@ -3,7 +3,7 @@ import test, { PlaywrightTestArgs } from '@playwright/test';
 import { RollenArt } from '../../base/api/generated';
 import { createKlasse, createSchule } from '../../base/api/organisationApi';
 import { createRolleAndPersonWithPersonenkontext, UserInfo } from '../../base/api/personApi';
-import { getServiceProviderId } from '../../base/api/serviceProviderApi';
+import { getServiceProviderIds } from '../../base/api/serviceProviderApi';
 import {
   adressbuch,
   anleitungen,
@@ -18,6 +18,7 @@ import {
   schulrechtAZ,
   webUntis,
 } from '../../base/sp';
+import { DEV, STAGE } from '../../base/tags';
 import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
 import {
   generateKlassenname,
@@ -31,7 +32,6 @@ import { LandingViewPage } from '../../pages/LandingView.neu.page';
 import { LoginViewPage } from '../../pages/LoginView.neu.page';
 import { StartViewPage } from '../../pages/StartView.neu.page';
 import { testFixtures } from './ServiceProviderAufStartseite.data';
-import { DEV, STAGE } from '../../base/tags';
 
 const allProviderNames: string[] = [
   email,
@@ -67,7 +67,7 @@ test.describe('ServiceProvider auf Startseite', () => {
             rollenArt,
             generateNachname(),
             generateVorname(),
-            await Promise.all(serviceProviderNames.map((name: string) => getServiceProviderId(page, name))),
+            Array.from((await getServiceProviderIds(page, serviceProviderNames)).values()),
             generateRolleName(),
             undefined,
             klasseId ? klasseId : undefined,
