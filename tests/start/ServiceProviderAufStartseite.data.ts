@@ -50,4 +50,8 @@ export const testFixtures: Array<TestFixture> = [
       schulrechtAZ,
     ],
   },
+  {
+    rollenArt: RollenArt.Sysadmin,
+    serviceProviderNames: [schulportaladmin],
+  },
 ];
