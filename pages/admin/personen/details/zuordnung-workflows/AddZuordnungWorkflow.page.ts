@@ -6,6 +6,7 @@ export class AddZuordnungWorkflowPage extends BaseZuordnungWorkflowPage {
   /* add global locators here */
   private readonly organisationen: Autocomplete;
   private readonly rollen: Autocomplete;
+  private readonly klasse: Autocomplete;
   protected readonly ENDPOINT: string = 'personenkontext-workflow/**';
 
   protected readonly TEST_IDS: TestIdsType = {
@@ -23,6 +24,7 @@ export class AddZuordnungWorkflowPage extends BaseZuordnungWorkflowPage {
       this.page.getByTestId('personenkontext-create-organisation-select'),
     );
     this.rollen = new Autocomplete(this.page, this.page.getByTestId('rolle-select'));
+    this.klasse = new Autocomplete(this.page, this.page.getByTestId('personenkontext-create-klasse-select'));
   }
 
   /* actions */
@@ -45,6 +47,10 @@ export class AddZuordnungWorkflowPage extends BaseZuordnungWorkflowPage {
   /* assertions */
   public async checkSelectedOrganisation(organisation: string): Promise<void> {
     await this.organisationen.checkText(organisation);
+  }
+
+  public async checkSelectedKlasse(klasse: string): Promise<void> {
+    await this.klasse.checkText(klasse);
   }
 
   public async checkSelectedBefristungOption(option: 'unbefristet' | 'schuljahresende'): Promise<void> {
