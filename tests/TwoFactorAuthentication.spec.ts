@@ -9,7 +9,7 @@ import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelp
 import { gotoTargetURL, loginAndNavigateToAdministration } from '../base/testHelperUtils';
 import { generateNachname, generateRolleName, generateVorname } from '../base/utils/generateTestdata';
 import { PersonDetailsViewPage } from '../pages/admin/personen/PersonDetailsView.page';
-import { PersonManagementViewPage } from '../pages/admin/personen/PersonManagementView.page';
+import { PersonManagementViewPage } from '../pages/admin/personen/PersonManagementView.neu.page';
 import { HeaderPage } from '../pages/components/Header.neu.page';
 
 // The created test data will be deleted in the afterEach block
@@ -65,8 +65,8 @@ test.describe(`Testfälle für TwoFactorAuthentication": Umgebung: ${process.env
 
       const personDetailsView: PersonDetailsViewPage = await test.step(`Gesamtübersicht öffnen`, async () => {
         await gotoTargetURL(page, 'admin/personen');
-        await personManagementView.searchBySuchfeld(userInfoLehrer.username);
-        return await personManagementView.openGesamtuebersichtPerson(page, userInfoLehrer.username);
+        await personManagementView.searchAndOpenGesamtuebersicht(userInfoLehrer.username);
+        return new PersonDetailsViewPage(page);
       });
 
       await test.step(`Token einrichten`, async () => {

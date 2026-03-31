@@ -16,7 +16,7 @@ import {
 import { gotoTargetURL, loginAndNavigateToAdministration } from '../../base/testHelperUtils';
 import { generateNachname, generateRolleName, generateVorname } from '../../base/utils/generateTestdata';
 import { PersonDetailsViewPage } from '../../pages/admin/personen/PersonDetailsView.page';
-import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.page';
+import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.neu.page';
 import { HeaderPage } from '../../pages/components/Header.neu.page';
 import { getOrganisationId } from '../../base/api/organisationApi';
 
@@ -94,8 +94,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const personDetailsView: PersonDetailsViewPage =
         await test.step(`Zu testenden Lehrer suchen und Gesamtübersicht öffnen`, async () => {
           await gotoTargetURL(page, 'admin/personen'); // Die Navigation ist nicht Bestandteil des Tests
-          await personManagementView.searchBySuchfeld(userInfoLehrer.username);
-          return await personManagementView.openGesamtuebersichtPerson(page, userInfoLehrer.username); // Klick auf den Benutzernamen
+          await personManagementView.searchAndOpenGesamtuebersicht(userInfoLehrer.username);
+          return new PersonDetailsViewPage(page);
         });
 
       await test.step(`Ansicht für neuen Personenkontext öffnen`, async () => {
@@ -144,8 +144,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
       const personDetailsView: PersonDetailsViewPage = await test.step(`Gesamtübersicht öffnen`, async () => {
         await gotoTargetURL(page, 'admin/personen');
-        await personManagementView.searchBySuchfeld(userInfoSchueler.username);
-        return await personManagementView.openGesamtuebersichtPerson(page, userInfoSchueler.username);
+        await personManagementView.searchAndOpenGesamtuebersicht(userInfoSchueler.username);
+        return new PersonDetailsViewPage(page);
       });
 
       await test.step(`Gesamtübersicht Abschnitte prüfen`, async () => {
@@ -189,8 +189,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
       const personDetailsView: PersonDetailsViewPage = await test.step(`Gesamtübersicht öffnen`, async () => {
         await gotoTargetURL(page, 'admin/personen');
-        await personManagementView.searchBySuchfeld(userInfoLehrer.username);
-        return await personManagementView.openGesamtuebersichtPerson(page, userInfoLehrer.username);
+        await personManagementView.searchAndOpenGesamtuebersicht(userInfoLehrer.username);
+        return new PersonDetailsViewPage(page);
       });
 
       await test.step(`2FA Status prüfen dass kein Token eingerichtet ist`, async () => {
@@ -229,8 +229,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
       const personDetailsView: PersonDetailsViewPage = await test.step(`Gesamtübersicht öffnen`, async () => {
         await gotoTargetURL(page, 'admin/personen');
-        await personManagementView.searchBySuchfeld(userInfoAdmin.username);
-        return await personManagementView.openGesamtuebersichtPerson(page, userInfoAdmin.username);
+        await personManagementView.searchAndOpenGesamtuebersicht(userInfoAdmin.username);
+        return new PersonDetailsViewPage(page);
       });
 
       await test.step(`2FA Status prüfen dass kein Token eingerichtet ist`, async () => {
@@ -277,8 +277,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
       const personDetailsView: PersonDetailsViewPage = await test.step(`Gesamtübersicht öffnen`, async () => {
         await gotoTargetURL(page, 'admin/personen');
-        await personManagementView.searchBySuchfeld(userInfoAdmin.username);
-        return await personManagementView.openGesamtuebersichtPerson(page, userInfoAdmin.username);
+        await personManagementView.searchAndOpenGesamtuebersicht(userInfoAdmin.username);
+        return new PersonDetailsViewPage(page);
       });
 
       await test.step(`2FA Token einrichten`, async () => {
@@ -320,8 +320,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
       const personDetailsView: PersonDetailsViewPage = await test.step(`Gesamtübersicht öffnen`, async () => {
         await gotoTargetURL(page, 'admin/personen');
-        await personManagementView.searchBySuchfeld(userInfoAdmin.username);
-        return await personManagementView.openGesamtuebersichtPerson(page, userInfoAdmin.username);
+        await personManagementView.searchAndOpenGesamtuebersicht(userInfoAdmin.username);
+        return new PersonDetailsViewPage(page);
       });
 
       await test.step(`2FA Token einrichten`, async () => {
@@ -359,8 +359,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
       const personDetailsView: PersonDetailsViewPage = await test.step(`Gesamtübersicht öffnen`, async () => {
         await gotoTargetURL(page, 'admin/personen');
-        await personManagementView.searchBySuchfeld(userInfoLehrer.username);
-        return await personManagementView.openGesamtuebersichtPerson(page, userInfoLehrer.username);
+        await personManagementView.searchAndOpenGesamtuebersicht(userInfoLehrer.username);
+        return new PersonDetailsViewPage(page);
       });
 
       await test.step(`2FA Token einrichten`, async () => {
@@ -399,8 +399,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
       const personDetailsView: PersonDetailsViewPage = await test.step(`Gesamtübersicht öffnen`, async () => {
         await gotoTargetURL(page, 'admin/personen');
-        await personManagementView.searchBySuchfeld(userInfoLehrer.username);
-        return await personManagementView.openGesamtuebersichtPerson(page, userInfoLehrer.username);
+        await personManagementView.searchAndOpenGesamtuebersicht(userInfoLehrer.username);
+        return new PersonDetailsViewPage(page);
       });
 
       await test.step(`Inbetriebnahme-Passwort für LK-Endgerät setzen`, async () => {
