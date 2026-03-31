@@ -341,6 +341,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     { tag: [STAGE, DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       let userInfoLehrer: UserInfo;
+
       await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) über die api anlegen ${ADMIN}`, async () => {
         userInfoLehrer = await createRolleAndPersonWithPersonenkontext(
           page,

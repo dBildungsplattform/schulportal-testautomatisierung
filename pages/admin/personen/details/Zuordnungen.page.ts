@@ -105,6 +105,7 @@ export class ZuordnungenPage {
   }
 
   private async savePendingChanges(workflowPage: BaseZuordnungWorkflowPage): Promise<void> {
+    await workflowPage.confirm();
     await this.page.getByTestId('zuordnung-changes-save-button').click();
     await workflowPage.closeSuccessDialog();
   }
