@@ -22,16 +22,7 @@ export function constructOrganisationApi(page: Page): OrganisationenApi {
 
 export async function getOrganisationId(page: Page, organisationName: string): Promise<string> {
   try {
-    const requestParameters: OrganisationControllerFindOrganizationsRequest = {
-      name: organisationName,
-    };
-
-    const organisationApi: OrganisationenApi = constructOrganisationApi(page);
-    const response: ApiResponse<OrganisationResponse[]> =
-      await organisationApi.organisationControllerFindOrganizationsRaw(requestParameters);
-    expect(response.raw.status).toBe(200);
-
-    const organisations: OrganisationResponse[] = await response.value();
+    const organisations: OrganisationResponse[] = await getOrganisations(page, { name: organisationName });
 
     if (!organisations || organisations.length === 0) {
       throw new Error(`No organisations found with name: "${organisationName}"`);
@@ -45,6 +36,22 @@ export async function getOrganisationId(page: Page, organisationName: string): P
     return fetchedOrganisationId;
   } catch (error) {
     console.error('[ERROR] getOrganisationId failed:', error);
+    throw error;
+  }
+}
+
+export async function getOrganisations(
+  page: Page,
+  params: OrganisationControllerFindOrganizationsRequest,
+): Promise<OrganisationResponse[]> {
+  try {
+    const organisationApi: OrganisationenApi = constructOrganisationApi(page);
+    const response: ApiResponse<OrganisationResponse[]> =
+      await organisationApi.organisationControllerFindOrganizationsRaw(params);
+    expect(response.raw.status).toBe(200);
+    return response.value();
+  } catch (error) {
+    console.error('[ERROR] getOrganisations failed:', error);
     throw error;
   }
 }

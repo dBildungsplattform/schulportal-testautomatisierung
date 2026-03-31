@@ -1,10 +1,10 @@
 import test, { PlaywrightTestArgs } from '@playwright/test';
 
-import { OrganisationResponse, RollenArt } from '../../base/api/generated';
-import { createKlasse, createOrganisation, getOrganisationId } from '../../base/api/organisationApi';
+import { OrganisationResponse, OrganisationsTyp, RollenArt } from '../../base/api/generated';
+import { createKlasse, createOrganisation, getOrganisationId, getOrganisations } from '../../base/api/organisationApi';
 import { createRolleAndPersonWithPersonenkontext, UserInfo } from '../../base/api/personApi';
 import { getServiceProviderIds } from '../../base/api/serviceProviderApi';
-import { landSH } from '../../base/organisation';
+import { landSH, oeffentlichLandSH } from '../../base/organisation';
 import {
   adressbuch,
   anleitungen,
@@ -57,13 +57,22 @@ test.describe('ServiceProvider auf Startseite', () => {
       async ({ page }: PlaywrightTestArgs) => {
         const startPage: StartViewPage = await test.step('Daten anlegen', async () => {
           const personManagementViewPage: PersonManagementViewPage = await loginAndNavigateToAdministration(page);
-          const traegerId: string = await getOrganisationId(page, landSH);
-          const orga: OrganisationResponse = await createOrganisation(page, {
-            name: generateSchulname(),
-            typ: organisationsTyp,
-            administriertVon: traegerId,
-            zugehoerigZu: traegerId,
-          });
+          let orga: OrganisationResponse;
+          if (rollenArt === RollenArt.Sysadmin) {
+            orga = (await getOrganisations(page, { name: landSH }))[0];
+            if (!orga) throw Error('Fetching land failed');
+          } else {
+            const traegerId: string = await getOrganisationId(
+              page,
+              organisationsTyp === OrganisationsTyp.Traeger ? oeffentlichLandSH : landSH,
+            );
+            orga = await createOrganisation(page, {
+              name: generateSchulname(),
+              typ: organisationsTyp,
+              administriertVon: traegerId,
+              zugehoerigZu: traegerId,
+            });
+          }
           const klasseId: string | null =
             rollenArt === RollenArt.Lern ? await createKlasse(page, orga.id, generateKlassenname()) : null;
 
