@@ -4,10 +4,10 @@ import { waitForAPIResponse } from '../../../../base/api/baseApi';
 import { PersonCreationSuccessPage } from './PersonCreationSuccess.page';
 
 export interface PersonCreationParams {
-  organisation: string;
   rollen: string[];
   vorname: string;
   nachname: string;
+  organisation?: string;
   klasse?: string;
   kopersnr?: string;
   befristung?: string;
@@ -38,14 +38,11 @@ export class PersonCreationViewPage {
   public async fillForm(params: PersonCreationParams): Promise<void> {
     const vornameInput: Locator = this.page.getByTestId('vorname-input').locator('.v-field__input');
     const nachnameInput: Locator = this.page.getByTestId('familienname-input').locator('.v-field__input');
-
-    await this.organisationAutocomplete.searchByTitle(params.organisation, false, PersonCreationViewPage.ENDPOINT);
-
-    await Promise.all(
-      params.rollen.map((rolle: string) =>
-        this.rolleAutocomplete.searchByTitle(rolle, true, PersonCreationViewPage.ENDPOINT),
-      ),
-    );
+    if (params.organisation) 
+      await this.organisationAutocomplete.searchByTitle(params.organisation, false, PersonCreationViewPage.ENDPOINT);
+    for (const rolle of params.rollen) {
+      await this.rolleAutocomplete.searchByTitle(rolle, true, PersonCreationViewPage.ENDPOINT);
+    }
 
     await vornameInput.waitFor({ state: 'visible' });
     await vornameInput.fill(params.vorname);
@@ -70,6 +67,14 @@ export class PersonCreationViewPage {
     }
   }
 
+  public async searchOrganisation(org: string, exact: boolean): Promise<void> {
+    await this.organisationAutocomplete.searchByTitle(org, exact, PersonCreationViewPage.ENDPOINT);
+  }
+
+  public async addRolle(rolle: string): Promise<void> {
+    await this.rolleAutocomplete.searchByTitle(rolle, true, PersonCreationViewPage.ENDPOINT);
+  }
+
   public async clearOrganisation(): Promise<void> {
     await this.organisationAutocomplete.clear();
     await waitForAPIResponse(this.page, PersonCreationViewPage.ENDPOINT);
@@ -81,7 +86,7 @@ export class PersonCreationViewPage {
   }
 
   /* assertions */
-  public async checkAvailableRollen(includes: string[], excludes: string[]): Promise<void> {
+  public async assertAvailableRollen(includes: string[], excludes: string[]): Promise<void> {
     for (const includedRolle of includes) {
       await this.rolleAutocomplete.validateItemExists(includedRolle, true);
     }
