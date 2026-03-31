@@ -226,7 +226,10 @@ test.describe(`Testfälle für die Anlage von Personen`, () => {
             return successPage.getBenutzername();
           });
 
-          const ldapHelper: TestHelperLdap = new TestHelperLdap('127.0.0.1:389', 'JWZyYRttBS5oJPDoZc1eaYnhhIqcSG');
+          const ldapHelper: TestHelperLdap = new TestHelperLdap(
+            process.env.LDAP_URL!,
+            process.env.LDAP_ADMIN_PASSWORD!,
+          );
 
           await test.step(`Prüfen, dass Lehrkraft im LDAP angelegt wurde`, async () => {
             expect(await ldapHelper.validateUserExists(createdBenutzername, 10, 1000)).toBeTruthy();
@@ -257,8 +260,8 @@ test.describe(`Testfälle für die Anlage von Personen`, () => {
             };
 
             const ldapHelper: TestHelperLdap = new TestHelperLdap(
-              'ldap://127.0.0.1:389',
-              'JWZyYRttBS5oJPDoZc1eaYnhhIqcSG',
+              process.env.LDAP_URL!,
+              process.env.LDAP_ADMIN_PASSWORD!,
             );
 
             const [createdBenutzername, initialPersonManagementView]: [string, PersonManagementViewPage] =
