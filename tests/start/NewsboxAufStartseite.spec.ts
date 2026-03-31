@@ -1,30 +1,15 @@
 import { PlaywrightTestArgs, test } from '@playwright/test';
-import {
-  createPerson,
-  createRolleAndPersonWithPersonenkontext,
-  setTimeLimitPersonenkontext,
-  UserInfo,
-} from '../../base/api/personApi';
-import { testschuleName } from '../../base/organisation';
-import { typeLehrer } from '../../base/rollentypen';
+import { RollenMerkmal } from '../../base/api/generated';
+import { createSchule } from '../../base/api/organisationApi';
+import { createPerson, setTimeLimitPersonenkontext, UserInfo } from '../../base/api/personApi';
+import { createRolle, RollenArt } from '../../base/api/rolleApi';
 import { DEV, STAGE } from '../../base/tags';
-import { login, loginAndNavigateToAdministration } from '../../base/testHelperUtils';
-import {
-  formatDateDMY,
-  generateCurrentDate,
-  generateNachname,
-  generateRolleName,
-  generateSchulname,
-  generateVorname,
-} from '../../base/utils/generateTestdata';
+import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
+import { generateCurrentDate, generateRolleName, generateSchulname } from '../../base/utils/generateTestdata';
 import { HeaderPage } from '../../pages/components/Header.neu.page';
 import { LandingViewPage } from '../../pages/LandingView.neu.page';
 import { LoginViewPage } from '../../pages/LoginView.neu.page';
-import { createSchule } from '../../base/api/organisationApi';
-import { createRolle, RollenArt } from '../../base/api/rolleApi';
-import { OrganisationResponse, RollenMerkmal } from '../../base/api/generated';
 import { StartViewPage } from '../../pages/StartView.neu.page';
-import { start } from 'repl';
 
 interface TestFixture {
   timeLimit: Date;
@@ -52,9 +37,9 @@ test.describe('Newsbox auf Startseite', () => {
 
     schulName = generateSchulname();
     rollenName = generateRolleName();
-    const rollenMerkmale: Set<RollenMerkmal> = new Set([RollenMerkmal.BefristungPflicht]);
-    let schuleId: string = await createSchule(page, schulName);
-    let rolleId: string = await createRolle(page, RollenArt.Lehr, schuleId, rollenName, rollenMerkmale);
+    const rollenMerkmale = new Set<RollenMerkmal>([RollenMerkmal.BefristungPflicht]);
+    const schuleId: string = await createSchule(page, schulName);
+    const rolleId: string = await createRolle(page, RollenArt.Lehr, schuleId, rollenName, rollenMerkmale);
     userInfo = await createPerson(page, schuleId, rolleId, undefined, undefined, undefined, undefined, rollenMerkmale);
   });
 

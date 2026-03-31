@@ -38,7 +38,7 @@ export class PersonCreationViewPage {
   public async fillForm(params: PersonCreationParams): Promise<void> {
     const vornameInput: Locator = this.page.getByTestId('vorname-input').locator('.v-field__input');
     const nachnameInput: Locator = this.page.getByTestId('familienname-input').locator('.v-field__input');
-    if (params.organisation) 
+    if (params.organisation)
       await this.organisationAutocomplete.searchByTitle(params.organisation, false, PersonCreationViewPage.ENDPOINT);
     for (const rolle of params.rollen) {
       await this.rolleAutocomplete.searchByTitle(rolle, true, PersonCreationViewPage.ENDPOINT);
