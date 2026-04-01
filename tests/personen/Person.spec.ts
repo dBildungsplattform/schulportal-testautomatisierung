@@ -14,9 +14,9 @@ import { DEV, STAGE } from '../../base/tags';
 import { deletePersonenBySearchStrings, deleteRolleById, deleteRolleByName } from '../../base/testHelperDeleteTestdata';
 import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
 import { generateRolleName } from '../../base/utils/generateTestdata';
-import { PersonCreationViewPage } from '../../pages/admin/personen/PersonCreationView.page';
+import { PersonCreationViewPage } from '../../pages/admin/personen/creation/PersonCreationView.neu.page';
 import { HeaderPage } from '../../pages/components/Header.neu.page';
-import { MenuPage } from '../../pages/components/MenuBar.page';
+import { MenuBarPage } from '../../pages/components/MenuBar.neu.page';
 
 // The created test data will be deleted in the afterEach block
 let usernames: string[] = [];
@@ -31,7 +31,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await loginAndNavigateToAdministration(page);
     });
   });
-
+  
   test.afterEach(async ({ page }: PlaywrightTestArgs) => {
     if (!currentUserIsLandesadministrator) {
       const header: HeaderPage = new HeaderPage(page);
@@ -76,40 +76,40 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const rolleLiV: string = 'LiV';
 
       const personCreationView: PersonCreationViewPage = await test.step(`Dialog Person anlegen öffnen`, async () => {
-        const menu: MenuPage = new MenuPage(page);
-        return await menu.personAnlegen();
+        const menu: MenuBarPage = new MenuBarPage(page);
+        return await menu.navigateToPersonCreation();
       });
 
       await test.step(`Organisation 'Land Schleswig-Holstein' auswählen und Dropdown 'Rolle' prüfen`, async () => {
-        await personCreationView.searchAndSelectOrganisation(OrganisationLand, true);
-        await personCreationView.checkRolleModal(
+        await personCreationView.searchOrganisation(OrganisationLand, true);
+        await personCreationView.assertAvailableRollen(
           [landesadminRolle],
           [rolleLehr, rolleLiV, schuladminOeffentlichRolle, schuelerRolle],
         );
-        await personCreationView.clearOrganisationSelection();
+        await personCreationView.clearOrganisation();
       });
 
       await test.step(`Organisation 'Öffentliche Schulen Land Schleswig-Holstein' auswählen und Dropdown 'Rolle' prüfen`, async () => {
-        await personCreationView.searchAndSelectOrganisation(OrganisationOeffentlicheSchule, true);
-        await personCreationView.checkRolleModal(
+        await personCreationView.searchOrganisation(OrganisationOeffentlicheSchule, true);
+        await personCreationView.assertAvailableRollen(
           [landesadminRolle],
           [rolleLehr, rolleLiV, schuladminOeffentlichRolle, schuelerRolle],
         );
-        await personCreationView.clearOrganisationSelection();
+        await personCreationView.clearOrganisation();
       });
 
       await test.step(`Organisation 'Ersatzschulen Land Schleswig-Holstein' auswählen und Dropdown 'Rolle' prüfen`, async () => {
-        await personCreationView.searchAndSelectOrganisation(OrganisationErsatzschule, true);
-        await personCreationView.checkRolleModal(
+        await personCreationView.searchOrganisation(OrganisationErsatzschule, true);
+        await personCreationView.assertAvailableRollen(
           [landesadminRolle],
           [rolleLehr, rolleLiV, schuladminOeffentlichRolle, schuelerRolle],
         );
-        await personCreationView.clearOrganisationSelection();
+        await personCreationView.clearOrganisation();
       });
 
       await test.step(`Organisation 'Schule' auswählen und Dropdown 'Rolle' prüfen`, async () => {
-        await personCreationView.searchAndSelectOrganisation(OrganisationSchule, false);
-        await personCreationView.checkRolleModal(
+        await personCreationView.searchOrganisation(OrganisationSchule, false);
+        await personCreationView.assertAvailableRollen(
           [rolleLehr, rolleLiV, schuladminOeffentlichRolle, schuelerRolle],
           [landesadminRolle],
         );
@@ -137,19 +137,18 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       });
 
       const personCreationView: PersonCreationViewPage = await test.step(`Dialog "Person anlegen" öffnen`, async () => {
-        const menu: MenuPage = new MenuPage(page);
-        return await menu.personAnlegen();
+        const menu: MenuBarPage = new MenuBarPage(page);
+        return await menu.navigateToPersonCreation();
       });
 
       await test.step(`In der Combobox 'Organisation' eine Schule auswählen`, async () => {
-        await personCreationView.searchAndSelectOrganisation(testschuleName, false);
+        await personCreationView.searchOrganisation(testschuleName, false);
       });
 
       await test.step(`In der Combobox 'Rolle' 2 Rollen vom Typ LEHR selektieren und prüfen, dass danach keine Rollen mehr vom Type LERN angezeigt werden in der Combobox`, async () => {
-        await personCreationView.comboboxRolleInput.searchByTitle(rolleNames[0], true);
-        await personCreationView.comboboxRolleInput.searchByTitle(rolleNames[1], true);
-        await personCreationView.comboboxRolleInput.validateItemNotExists(rolleNames[2], true);
-        await personCreationView.comboboxRolleInput.validateItemNotExists(rolleNames[3], true);
+        await personCreationView.addRolle(rolleNames[0]);
+        await personCreationView.addRolle(rolleNames[1]);
+        await personCreationView.assertAvailableRollen([], [rolleNames[2], rolleNames[3]]);
       });
     },
   );
