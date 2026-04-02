@@ -3,7 +3,7 @@ import { KlasseCreationViewPage } from '../admin/organisationen/klassen/KlasseCr
 import { KlasseManagementViewPage } from '../admin/organisationen/klassen/KlasseManagementView.neu.page';
 import { SchuleCreationViewPage } from '../admin/organisationen/schulen/SchuleCreationView.neu.page';
 import { SchuleManagementViewPage } from '../admin/organisationen/schulen/SchuleManagementView.neu.page';
-import { PersonCreationViewPage } from '../admin/personen/creation/PersonCreationView.neu.page';
+import { PersonCreationMode, PersonCreationViewPage } from '../admin/personen/creation/PersonCreationView.neu.page';
 import { PersonImportViewPage } from '../admin/personen/PersonImportView.page';
 import { PersonManagementViewPage } from '../admin/personen/PersonManagementView.neu.page';
 import { LandesbedienstetenSearchFormPage } from '../admin/personen/search/LandesbedienstetenSearchForm.page';
@@ -35,10 +35,7 @@ export class MenuBarPage {
   }
 
   public async navigateToPersonCreation(): Promise<PersonCreationViewPage> {
-    return this.navigateTo(
-      'person-creation-menu-item',
-      new PersonCreationViewPage(this.page).waitForPageLoad('Neuen Benutzer hinzufügen'),
-    );
+    return this.navigateTo('person-creation-menu-item', new PersonCreationViewPage(this.page).waitForPageLoad());
   }
 
   public async navigateToPersonImport(): Promise<PersonImportViewPage> {
@@ -55,7 +52,7 @@ export class MenuBarPage {
   public async navigateToPersonAdd(): Promise<PersonCreationViewPage> {
     return this.navigateTo(
       'person-add-menu-item',
-      new PersonCreationViewPage(this.page).waitForPageLoad('Andere Person (neu anlegen)'),
+      new PersonCreationViewPage(this.page, PersonCreationMode.ADD_ANOTHER_STATE_EMPLOYEE).waitForPageLoad(),
     );
   }
 
@@ -93,7 +90,6 @@ export class MenuBarPage {
   }
 
   /* assertions */
-  // MenuBar.neu.page.ts
   async checkMenuItemVisibility(
     locator: Locator,
     shouldBeVisible: boolean,
