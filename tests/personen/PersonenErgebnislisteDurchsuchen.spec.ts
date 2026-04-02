@@ -241,3 +241,45 @@ interface AdminFixture {
     }
   });
 });
+
+// SPSH-3494
+test.describe(`Schulfilter in der Benutzerübersicht für Schuladmin mit einer Schule: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
+  test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
+    header = new HeaderPage(page);
+    personManagementViewPage = await loginAndNavigateToAdministration(page);
+
+    const schuladmin: UserInfo = await createPersonWithPersonenkontext(
+      page,
+      testschuleName,
+      schuladminOeffentlichRolle,
+      undefined,
+      undefined,
+      generateDienststellenNr(),
+    );
+
+    landingPage = await header.logout();
+    const loginPage: LoginViewPage = await landingPage.navigateToLogin();
+
+    const startPage: StartViewPage = await loginPage.loginNewUserWithPasswordChange(
+      schuladmin.username,
+      schuladmin.password,
+    );
+    await startPage.waitForPageLoad();
+
+    personManagementViewPage = await startPage.navigateToAdministration();
+  });
+
+  test(
+    `Als Schuladmin mit einer Schule: Schulfilter ist vorausgewählt und nicht änderbar`,
+    { tag: [STAGE, DEV] },
+    async () => {
+      await test.step(`Schulfilter ist mit der Schule des Nutzers vorbelegt`, async () => {
+        await personManagementViewPage.checkIfSchuleIsCorrect(testschuleName, testschuleDstNr);
+      });
+
+      await test.step(`Schulfilter kann nicht geändert werden`, async () => {
+        await personManagementViewPage.assertSchuleFilterIsDisabled();
+      });
+    },
+  );
+});
