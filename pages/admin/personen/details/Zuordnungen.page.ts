@@ -100,7 +100,6 @@ export class ZuordnungenPage {
     await workflowPage.selectKlasse(to);
     await workflowPage.submit();
     await workflowPage.checkConfirmation(from, to);
-    await workflowPage.confirm();
     await this.savePendingChanges(workflowPage);
   }
 
