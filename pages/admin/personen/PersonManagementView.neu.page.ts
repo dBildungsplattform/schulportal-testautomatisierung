@@ -208,6 +208,10 @@ export class PersonManagementViewPage extends AbstractAdminPage {
     await this.checkIfColumnAlwaysContainsText(6, schulNr ? schulNr : schulname);
   }
 
+  public async assertSchuleFilterIsDisabled(): Promise<void> {
+    await this.organisationAutocomplete.isDisabled();
+  }
+
   public async checkIfRolleIsCorrect(rolleName: string): Promise<void> {
     await this.rolleAutocomplete.checkText(rolleName);
     await this.checkIfColumnAlwaysContainsText(5, rolleName);
