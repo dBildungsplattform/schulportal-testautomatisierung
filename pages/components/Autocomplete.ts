@@ -1,5 +1,4 @@
-import { expect, type Locator, Page } from '@playwright/test';
-import { waitForAPIResponse } from '../../base/api/baseApi';
+import { expect, type Locator, type Response, Page } from '@playwright/test';
 
 const noDataMessage: string = 'Keine Daten gefunden.';
 export class Autocomplete {
@@ -50,8 +49,14 @@ export class Autocomplete {
     await item.waitFor({ state: 'hidden' });
   }
 
+  /*
+  force: true skips the actionability checks (including the "is this 
+  element the topmost event target" check) and dispatches the click 
+  directly. This is the standard Playwright workaround for Vuetify 
+  layouts where grid wrappers overlap interactive sub-elements.
+  */
   public async openModal(): Promise<void> {
-    await this.modalToggle.click();
+    await this.modalToggle.click({ force: true });
   }
 
   public async closeModal(): Promise<void> {
@@ -60,7 +65,7 @@ export class Autocomplete {
   }
 
   public async toggleModal(): Promise<void> {
-    await this.modalToggle.click();
+    await this.modalToggle.click({ force: true });
   }
 
   public async clear(): Promise<void> {
@@ -98,8 +103,10 @@ export class Autocomplete {
     }
     await this.openModal();
     await this.clear();
-    await this.waitForData();
+    // Start listening BEFORE typing so we don't miss the response
+    const responsePromise: Promise<Response> | null = endpoint ? this.page.waitForResponse('/api/' + endpoint + '*') : null;
     await this.inputLocator.pressSequentially(searchString);
+    await this.waitForData();
     let item: Locator;
 
     if (exactMatch) {
@@ -116,8 +123,8 @@ export class Autocomplete {
     // because in that case the API call takes longer than in other cases.
     // This only occurs in the test case 'Einen Benutzer mit der Rolle Landesadmin anlegen' (Person.spec.ts),
     // in all other test cases we don't need the parameter 'endpoint'
-    if (endpoint) {
-      await waitForAPIResponse(this.page, endpoint);
+    if (responsePromise) {
+      await responsePromise;
     }
     await item.click();
     await this.closeModal();

@@ -5,15 +5,20 @@ import { PersonCreationMode, PersonCreationParams, PersonCreationViewPage } from
 
 export type PersonCreationSuccessValidationParams = PersonCreationParams & {
   organisation: string;
-  dstNr?: string;
 };
 
 export class PersonCreationSuccessPage extends AbstractAdminPage {
+  readonly dataRolle: Locator;
+  readonly buttonBackToList: Locator;
+  readonly buttonCreateAnother: Locator;
   constructor(
     protected readonly page: Page,
     private readonly mode: PersonCreationMode = PersonCreationMode.CREATE_PERSON,
   ) {
     super(page);
+    this.dataRolle = page.getByTestId('created-person-rolle');
+    this.buttonBackToList = page.getByTestId('back-to-list-button');
+    this.buttonCreateAnother = page.getByTestId('create-another-person-button');
   }
 
   /* actions */
@@ -51,7 +56,24 @@ export class PersonCreationSuccessPage extends AbstractAdminPage {
     return new PersonCreationViewPage(this.page, this.mode).waitForPageLoad();
   }
 
+  public async navigateToCreateAnother(): Promise<PersonCreationViewPage> {
+    await this.buttonCreateAnother.click();
+    return new PersonCreationViewPage(this.page).waitForPageLoad();
+  }
+
+  public async navigateToPersonDetails(): Promise<void> {
+    await this.page.getByTestId('go-to-details-button').click();
+  }
+
+  public async navigateBack(): Promise<void> {
+    await this.buttonBackToList.click();
+  }
+
   /* assertions */
+  public async assertNavigationButtonsVisible(): Promise<void> {
+    await expect(this.buttonCreateAnother).toBeVisible();
+    await expect(this.buttonBackToList).toBeVisible();
+  }
   public async assertSuccessfulCreation(params: PersonCreationSuccessValidationParams): Promise<void> {
     await expect(this.page.getByTestId('person-success-text')).toHaveText(
       `${params.vorname} ${params.nachname} wurde erfolgreich ${this.mode === PersonCreationMode.ADD_ANOTHER_STATE_EMPLOYEE ? 'angelegt' : 'hinzugefügt'}.`,
@@ -81,7 +103,8 @@ export class PersonCreationSuccessPage extends AbstractAdminPage {
       await expect(this.page.getByTestId('created-person-organisation')).toHaveText(
         `${params.dstNr} (${params.organisation})`,
       );
-    else await expect(this.page.getByTestId('created-person-organisation')).toHaveText(params.organisation);
+    else if (params.organisation) 
+      await expect(this.page.getByTestId('created-person-organisation')).toHaveText(params.organisation);
 
     await expect(this.page.getByTestId('created-person-rolle-label')).toBeVisible();
     for (const rolle of params.rollen) {

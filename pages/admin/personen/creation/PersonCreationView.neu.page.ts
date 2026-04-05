@@ -4,11 +4,11 @@ import { Autocomplete } from '../../../components/Autocomplete';
 import { PersonCreationSuccessPage } from './PersonCreationSuccess.page';
 
 export interface PersonCreationParams {
-  organisation?: string;
-  dstNr?: string;
   rollen: string[];
   vorname: string;
   nachname: string;
+  dstNr?: string;
+  organisation?: string;
   klasse?: string;
   kopersnr?: string;
   befristung?: string;
@@ -85,6 +85,14 @@ export class PersonCreationViewPage {
     }
   }
 
+  public async searchOrganisation(org: string, exact: boolean): Promise<void> {
+    await this.organisationAutocomplete.searchByTitle(org, exact, PersonCreationViewPage.ENDPOINT);
+  }
+
+  public async addRolle(rolle: string): Promise<void> {
+    await this.rolleAutocomplete.searchByTitle(rolle, true, PersonCreationViewPage.ENDPOINT);
+  }
+
   public async clearOrganisation(): Promise<void> {
     await this.organisationAutocomplete.clear();
     await waitForAPIResponse(this.page, PersonCreationViewPage.ENDPOINT);
@@ -105,7 +113,7 @@ export class PersonCreationViewPage {
   }
 
   /* assertions */
-  public async checkAvailableRollen(includes: string[], excludes: string[]): Promise<void> {
+  public async assertAvailableRollen(includes: string[], excludes: string[]): Promise<void> {
     for (const includedRolle of includes) {
       await this.rolleAutocomplete.validateItemExists(includedRolle, true);
     }

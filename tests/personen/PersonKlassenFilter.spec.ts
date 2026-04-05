@@ -102,7 +102,6 @@ import { HeaderPage } from '../../pages/components/Header.neu.page';
         }
 
         // Schüler anlegen
-        const schuelerKopers: string = generateDienststellenNr();
         schueler = await createRolleAndPersonWithPersonenkontext(
           page,
           schuleParams.name,
@@ -111,7 +110,7 @@ import { HeaderPage } from '../../pages/components/Header.neu.page';
           generateVorname(),
           [await getServiceProviderId(page, itslearning)],
           generateRolleName(),
-          schuelerKopers,
+          undefined,
           await getKlasseId(page, klassenNamen[0]),
         );
 
@@ -121,7 +120,7 @@ import { HeaderPage } from '../../pages/components/Header.neu.page';
         } else {
           await personManagementViewPage.checkIfSchuleIsCorrect(schuleParams.name, schuleParams.dienststellenNr);
         }
-        personDetailsViewPage = await personManagementViewPage.searchAndOpenGesamtuebersicht(schueler.kopersnummer);
+        personDetailsViewPage = await personManagementViewPage.searchAndOpenGesamtuebersicht(schueler.username);
         await personDetailsViewPage.waitForPageLoad();
       });
 
@@ -170,6 +169,7 @@ import { HeaderPage } from '../../pages/components/Header.neu.page';
               );
             }
             await addZuordnungWorkflowPage.selectRolle(schuelerRolle);
+            await addZuordnungWorkflowPage.checkSelectedKlasse(klassenNamen[0]);
           });
 
           await test.step(`Klassen-Drop-Down überprüfen`, async () => {
