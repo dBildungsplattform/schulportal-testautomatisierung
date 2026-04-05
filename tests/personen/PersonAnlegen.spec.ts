@@ -325,7 +325,8 @@ test.describe(`Testfälle für die Anlage von Personen`, () => {
 
             await test.step(`Prüfen, dass eine Mail weiterhin existiert und zugeordnet ist`, async () => {
               const mailPrimaryAddress: string = await ldapHelper.getMailPrimaryAddress(createdBenutzername);
-              expect(mailPrimaryAddress.startsWith(generatedPrimaryMailAddress)).toBeTruthy();
+              const expected: string = generatedPrimaryMailAddress.replace('@', '1@');
+              expect(mailPrimaryAddress).toBe(expected);
             });
           },
         );
