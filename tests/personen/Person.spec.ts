@@ -11,7 +11,12 @@ import { DEV, STAGE } from '../../base/tags';
 import { deletePersonenBySearchStrings, deleteRolleById, deleteRolleByName } from '../../base/testHelperDeleteTestdata';
 import { TestHelperLdap } from '../../base/testHelperLdap';
 import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
-import { generateKopersNr, generateNachname, generateRolleName, generateVorname } from '../../base/utils/generateTestdata';
+import {
+  generateKopersNr,
+  generateNachname,
+  generateRolleName,
+  generateVorname,
+} from '../../base/utils/generateTestdata';
 import { PersonCreationViewPage } from '../../pages/admin/personen/creation/PersonCreationView.neu.page';
 import { PersonCreationSuccessPage } from '../../pages/admin/personen/creation/PersonCreationSuccess.page';
 import { PersonDetailsViewPage } from '../../pages/admin/personen/PersonDetailsView.page';
@@ -38,7 +43,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await loginAndNavigateToAdministration(page);
     });
   });
-  
+
   test.afterEach(async ({ page }: PlaywrightTestArgs) => {
     if (!currentUserIsLandesadministrator) {
       const header: HeaderPage = new HeaderPage(page);
@@ -93,7 +98,13 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       });
 
       await test.step(`Lehrer mit Kopers Nummer anlegen`, async () => {
-        await personCreationView.fillForm({ organisation: schulstrukturknoten, rollen: [rolle], vorname, nachname, kopersnr });
+        await personCreationView.fillForm({
+          organisation: schulstrukturknoten,
+          rollen: [rolle],
+          vorname,
+          nachname,
+          kopersnr,
+        });
         const successPage: PersonCreationSuccessPage = await personCreationView.submit();
         await successPage.waitForPageLoad();
         // Benutzer wird im afterEach-Block gelöscht
@@ -137,7 +148,12 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       let successPage: PersonCreationSuccessPage;
 
       await test.step(`Benutzer anlegen`, async () => {
-        await personCreationView.fillForm({ organisation: schulstrukturknoten, rollen: [landesadminRolle], vorname, nachname });
+        await personCreationView.fillForm({
+          organisation: schulstrukturknoten,
+          rollen: [landesadminRolle],
+          vorname,
+          nachname,
+        });
         successPage = await personCreationView.submit();
         await successPage.waitForPageLoad();
       });
@@ -168,7 +184,13 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       });
 
       await test.step(`Benutzer anlegen`, async () => {
-        await personCreationView.fillForm({ organisation: schulstrukturknoten, rollen: [rolle], vorname, nachname, kopersnr });
+        await personCreationView.fillForm({
+          organisation: schulstrukturknoten,
+          rollen: [rolle],
+          vorname,
+          nachname,
+          kopersnr,
+        });
       });
 
       await test.step(`Prüfen dass der Benutzer mit der Rolle Landesadmin angelegt wurde`, async () => {
@@ -230,7 +252,12 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         await newStartPage.navigateToAdministration();
         const menu: MenuBarPage = new MenuBarPage(page);
         const personCreationView: PersonCreationViewPage = await menu.navigateToPersonCreation();
-        await personCreationView.fillForm({ rollen: [rolle], vorname: newVorname, nachname: newNachname, kopersnr: newKopersnr });
+        await personCreationView.fillForm({
+          rollen: [rolle],
+          vorname: newVorname,
+          nachname: newNachname,
+          kopersnr: newKopersnr,
+        });
         const successPage: PersonCreationSuccessPage = await personCreationView.submit();
         await successPage.waitForPageLoad();
 
@@ -256,7 +283,13 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       });
 
       await test.step(`Benutzer anlegen`, async () => {
-        await personCreationView.fillForm({ organisation: schulstrukturknoten, rollen: [schuelerRolle], vorname, nachname, klasse });
+        await personCreationView.fillForm({
+          organisation: schulstrukturknoten,
+          rollen: [schuelerRolle],
+          vorname,
+          nachname,
+          klasse,
+        });
       });
 
       await test.step(`Prüfen dass der Benutzer mit der rolle Landesadmin angelegt wurde`, async () => {
@@ -349,7 +382,13 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       let successPage: PersonCreationSuccessPage;
 
       await test.step(`Benutzer anlegen`, async () => {
-        await personCreationView.fillForm({ organisation: schulstrukturknoten, rollen: [rolle], vorname, nachname, kopersnr });
+        await personCreationView.fillForm({
+          organisation: schulstrukturknoten,
+          rollen: [rolle],
+          vorname,
+          nachname,
+          kopersnr,
+        });
         successPage = await personCreationView.submit();
         await successPage.waitForPageLoad();
       });
@@ -448,13 +487,26 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       let successPage: PersonCreationSuccessPage;
 
       await test.step(`Benutzer anlegen`, async () => {
-        await personCreationView.fillForm({ organisation: schulstrukturknoten, rollen: rolleNames, vorname, nachname, kopersnr });
+        await personCreationView.fillForm({
+          organisation: schulstrukturknoten,
+          rollen: rolleNames,
+          vorname,
+          nachname,
+          kopersnr,
+        });
         successPage = await personCreationView.submit();
         await successPage.waitForPageLoad();
       });
 
       await test.step(`Bestätigungsseite prüfen`, async () => {
-        await successPage.assertSuccessfulCreation({ organisation: schulstrukturknoten, rollen: rolleNames, vorname, nachname, kopersnr, dstNr: testschuleDstNr });
+        await successPage.assertSuccessfulCreation({
+          organisation: schulstrukturknoten,
+          rollen: rolleNames,
+          vorname,
+          nachname,
+          kopersnr,
+          dstNr: testschuleDstNr,
+        });
         usernames.push(await successPage.getBenutzername());
         createdBenutzername = await successPage.getBenutzername();
         await successPage.assertNavigationButtonsVisible();
@@ -590,7 +642,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
           currentCreationView = await successPage.navigateToCreateAnother();
         }
       }
-    }
+    },
   );
 
   test(
@@ -647,8 +699,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
     });
 
     const personCreationView: PersonCreationViewPage = await test.step(`Dialog "Person anlegen" öffnen`, async () => {
-        const menu: MenuBarPage = new MenuBarPage(page);
-        return await menu.navigateToPersonCreation();
+      const menu: MenuBarPage = new MenuBarPage(page);
+      return await menu.navigateToPersonCreation();
     });
 
     await test.step(`Formular ausfüllen und speichern`, async () => {
@@ -657,7 +709,13 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
 
     await test.step(`Auf der Bestätigungsseite prüfen, dass die 3 Rollen dem neuen Benutzer korrekt zugeordnet wurden`, async () => {
       const successPage: PersonCreationSuccessPage = await personCreationView.submit();
-      await successPage.assertSuccessfulCreation({ organisation: testschuleName, rollen: rolleNames, vorname, nachname, dstNr: testschuleDstNr });
+      await successPage.assertSuccessfulCreation({
+        organisation: testschuleName,
+        rollen: rolleNames,
+        vorname,
+        nachname,
+        dstNr: testschuleDstNr,
+      });
       usernames.push(await successPage.getBenutzername());
     });
   });
