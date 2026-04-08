@@ -37,6 +37,17 @@ import {
 import { PersonDetailsViewPage } from '../../pages/admin/personen/details/PersonDetailsView.neu.page';
 import { ZuordnungenPage } from '../../pages/admin/personen/details/Zuordnungen.page';
 
+function calculateBefristung(): string {
+  const currentYear: number = new Date().getFullYear();
+  let yearForBefristung: number = currentYear;
+  const today: Date = new Date();
+
+  if (today.getMonth() >= 8 || (today.getMonth() === 7 && today.getDate() === 31)) {
+    yearForBefristung = currentYear + 1;
+  }
+  return '31.7.' + yearForBefristung;
+}
+
 test.describe(`Testfälle für die Anlage von Personen`, () => {
   test.describe(`Als ${landesadminRolle}`, () => {
     let schuleId: string;
@@ -80,13 +91,7 @@ test.describe(`Testfälle für die Anlage von Personen`, () => {
             if (isLehrer) {
               validationParameters.kopersnr = generateKopersNr();
               if (isBefristet) {
-                const currentYear: number = new Date().getFullYear();
-                let yearForBefristung: number = currentYear;
-                const today: Date = new Date();
-                if (today.getMonth() >= 8 || (today.getMonth() === 7 && today.getDate() === 31)) {
-                  yearForBefristung = currentYear + 1;
-                }
-                validationParameters.befristung = '31.7.' + yearForBefristung;
+                validationParameters.befristung = calculateBefristung();
               }
             }
 
@@ -391,15 +396,12 @@ test.describe(`Testfälle für die Anlage von Personen`, () => {
       schuleId = await createSchule(page, schuleName, schuleDstNr);
       await createKlasse(page, schuleId, klasseName);
       adminUserInfo = await createPersonWithPersonenkontext(page, schuleName, schuladminOeffentlichRolle);
-      personCreationViewPage = await personManagementViewPage
-        .getHeader()
-        .logout()
-        .then((landingPage: LandingViewPage) => landingPage.navigateToLogin())
-        .then((loginPage: LoginViewPage) =>
-          loginPage.loginNewUserWithPasswordChange(adminUserInfo.username, adminUserInfo.password),
-        )
-        .then((startPage: StartViewPage) => startPage.navigateToAdministration())
-        .then((adminViewPage: PersonManagementViewPage) => adminViewPage.getMenu().navigateToPersonAdd());
+
+      const landingPage = await personManagementViewPage.getHeader().logout();
+      const loginPage = await landingPage.navigateToLogin();
+      const startPage = await loginPage.loginNewUserWithPasswordChange(adminUserInfo.username, adminUserInfo.password);
+      const adminViewPage = await startPage.navigateToAdministration();
+      personCreationViewPage = await adminViewPage.getMenu().navigateToPersonAdd();
     });
 
     test(`${schuelerRolle} anlegen`, { tag: [DEV, STAGE] }, async () => {
