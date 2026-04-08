@@ -91,28 +91,20 @@ export class ServiceProviderDetailsBySchuleViewPage {
     await expect(this.headline).toHaveText(`Angebot bearbeiten ${schulname}`);
   }
 
-  public async assertName(expected: string): Promise<void> {
-    await expect(this.nameField).toHaveText(expected);
-  }
-
-  public async assertAdministrationsebene(expected: string): Promise<void> {
-    await expect(this.administrationsebeneField).toHaveText(expected);
-  }
-
-  public async assertRequires2fa(expected: string): Promise<void> {
-    await expect(this.requires2faField).toHaveText(expected);
-  }
-
-  public async assertKategorie(expected: string): Promise<void> {
-    await expect(this.kategorieField).toHaveText(expected);
-  }
-
-  public async assertLink(expected: string): Promise<void> {
-    await expect(this.linkField).toHaveText(expected);
-  }
-
-  public async assertRollenerweiterung(expected: string): Promise<void> {
-    await expect(this.rollenerweiterungField).toHaveText(expected);
+  public async assertServiceProviderDetails(expected: {
+    name?: string;
+    administrationsebene?: string;
+    requires2fa?: string;
+    kategorie?: string;
+    link?: string;
+    rollenerweiterung?: string;
+  }): Promise<void> {
+    if (expected.name) await expect(this.nameField).toHaveText(expected.name);
+    if (expected.administrationsebene) await expect(this.administrationsebeneField).toHaveText(expected.administrationsebene);
+    if (expected.requires2fa) await expect(this.requires2faField).toHaveText(expected.requires2fa);
+    if (expected.kategorie) await expect(this.kategorieField).toHaveText(expected.kategorie);
+    if (expected.link) await expect(this.linkField).toHaveText(expected.link);
+    if (expected.rollenerweiterung) await expect(this.rollenerweiterungField).toHaveText(expected.rollenerweiterung);
   }
 
   public async assertRollenerweiterungen(expected: string): Promise<void> {
