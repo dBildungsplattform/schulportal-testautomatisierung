@@ -1,26 +1,23 @@
 import { PlaywrightTestArgs, test } from '@playwright/test';
+import { createKlasse, getOrganisationId } from '../../base/api/organisationApi';
+import { createRolleAndPersonWithPersonenkontext, UserInfo } from '../../base/api/personApi';
+import { getServiceProviderId } from '../../base/api/serviceProviderApi';
+import { testschuleDstNr, testschuleName } from '../../base/organisation';
+import { typeSchueler } from '../../base/rollentypen';
+import { itslearning } from '../../base/sp';
+import { DEV, STAGE } from '../../base/tags';
+import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
 import {
   generateKlassenname,
   generateNachname,
   generateRolleName,
   generateVorname,
 } from '../../base/utils/generateTestdata';
-import { createRolleAndPersonWithPersonenkontext, freshLoginPage, UserInfo } from '../../base/api/personApi';
-import { createKlasse, getOrganisationId } from '../../base/api/organisationApi';
-import { testschuleDstNr, testschuleName } from '../../base/organisation';
-import { typeSchueler } from '../../base/rollentypen';
-import { getServiceProviderId } from '../../base/api/serviceProviderApi';
-import { itslearning } from '../../base/sp';
 import { StartViewPage } from '../../pages/StartView.neu.page';
 import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.neu.page';
-import { MenuBarPage } from '../../pages/components/MenuBar.neu.page';
 import { PersonDetailsViewPage } from '../../pages/admin/personen/details/PersonDetailsView.neu.page';
 import { ZuordnungenPage } from '../../pages/admin/personen/details/Zuordnungen.page';
-import { DEV, STAGE } from '../../base/tags';
-import { LoginViewPage } from '../../pages/LoginView.neu.page';
-
-const ADMIN: string = process.env.USER || 'admin';
-const PASSWORD: string = process.env.PW || 'admin';
+import { MenuBarPage } from '../../pages/components/MenuBar.neu.page';
 
 test.describe(`Schüler versetzen, Umgebung ${process.env.ENV}, URL: ${process.env.FRONTEND_URL}`, () => {
   let userInfoSchueler: UserInfo;
@@ -30,9 +27,7 @@ test.describe(`Schüler versetzen, Umgebung ${process.env.ENV}, URL: ${process.e
 
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
     await test.step('Anmelden', async () => {
-      const loginPage: LoginViewPage = await freshLoginPage(page);
-      const startPage: StartViewPage = await loginPage.login(ADMIN, PASSWORD);
-      await startPage.waitForPageLoad();
+      await loginAndNavigateToAdministration(page);
     });
 
     await test.step('Rollennamen und Klassennamen generieren', async () => {
