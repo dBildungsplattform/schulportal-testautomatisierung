@@ -13,7 +13,7 @@ export class AddZuordnungWorkflowPage extends BaseZuordnungWorkflowPage {
     submitButton: 'zuordnung-creation-submit-button',
     confirmButton: 'confirm-zuordnung-dialog-addition',
     discardButton: 'zuordnung-creation-discard-button',
-    closeSuccessDialog: 'change-klasse-success-dialog-close-button',
+    closeSuccessDialog: 'close-zuordnung-create-success-button',
     klasseSelect: 'personenkontext-create-klasse-select',
   } as const;
 

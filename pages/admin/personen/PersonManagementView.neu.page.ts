@@ -167,7 +167,7 @@ export class PersonManagementViewPage extends AbstractAdminPage {
     ]);
   }
 
-  public async checkIfPersonExists(name: string): Promise<void> {
+  public async assertThatPersonExists(name: string): Promise<void> {
     await this.personTable.checkIfItemIsVisible(name);
   }
 
@@ -206,6 +206,10 @@ export class PersonManagementViewPage extends AbstractAdminPage {
     const expected: string = schulNr ? `${schulNr} (${schulname})` : schulname;
     await this.organisationAutocomplete.checkText(expected);
     await this.checkIfColumnAlwaysContainsText(6, schulNr ? schulNr : schulname);
+  }
+
+  public async assertSchuleFilterIsDisabled(): Promise<void> {
+    await this.organisationAutocomplete.isDisabled();
   }
 
   public async checkIfRolleIsCorrect(rolleName: string): Promise<void> {

@@ -77,6 +77,25 @@ export class Autocomplete {
     await expect(this.loadingLocator.getByRole('progressbar')).toBeHidden();
   }
 
+  public async searchAndSelectMultipleByTitle(titles: string[]): Promise<void> {
+    await this.openModal();
+    await expect(this.itemsLocator.first()).toBeVisible();
+    for (const title of titles) {
+      await this.inputLocator.pressSequentially(title);
+      await this.waitUntilLoadingIsDone();
+      const item: Locator = this.itemsLocator.filter({
+        has: this.page.getByText(title, { exact: true }),
+      });
+      await expect(item).toBeVisible();
+      await item.click();
+      await expect(item).toHaveAttribute('aria-selected', 'true');
+      await this.inputLocator.clear();
+      await this.waitUntilLoadingIsDone();
+      await expect(this.itemsLocator.first()).toBeVisible();
+    }
+    await this.closeModal();
+  }
+
   public async searchByTitle(searchString: string, exactMatch: boolean = false, endpoint?: string): Promise<void> {
     const currentValue: string | null = await this.inputLocator.textContent();
     if (currentValue === searchString) {
