@@ -107,7 +107,7 @@ interface AdminFixture {
           test(`Suche nach ${key}`, async () => {
             const value: string = getValue();
             await personManagementViewPage.searchByText(value);
-            await personManagementViewPage.checkIfPersonExists(value);
+            await personManagementViewPage.assertThatPersonExists(value);
           });
         }
 
@@ -119,7 +119,7 @@ interface AdminFixture {
 
         test(`Suche nach einem nicht existierenden Eintrag`, async () => {
           await personManagementViewPage.searchByText('NichtExistierenderEintrag');
-          await personManagementViewPage.checkIfPersonExists('Keine Daten gefunden.');
+          await personManagementViewPage.assertThatPersonExists('Keine Daten gefunden.');
           await personManagementViewPage.checkRowCount(0);
         });
       });
