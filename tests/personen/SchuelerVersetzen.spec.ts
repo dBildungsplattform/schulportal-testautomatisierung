@@ -13,21 +13,20 @@ import {
   generateRolleName,
   generateVorname,
 } from '../../base/utils/generateTestdata';
-import { StartViewPage } from '../../pages/StartView.neu.page';
 import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.neu.page';
 import { PersonDetailsViewPage } from '../../pages/admin/personen/details/PersonDetailsView.neu.page';
 import { ZuordnungenPage } from '../../pages/admin/personen/details/Zuordnungen.page';
-import { MenuBarPage } from '../../pages/components/MenuBar.neu.page';
 
 test.describe(`Schüler versetzen, Umgebung ${process.env.ENV}, URL: ${process.env.FRONTEND_URL}`, () => {
   let userInfoSchueler: UserInfo;
   let rolleName: string;
   let klasseNameCurrent: string;
   let klasseNameNew: string;
+  let personManagementView: PersonManagementViewPage;
 
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
     await test.step('Anmelden', async () => {
-      await loginAndNavigateToAdministration(page);
+      personManagementView = await loginAndNavigateToAdministration(page);
     });
 
     await test.step('Rollennamen und Klassennamen generieren', async () => {
@@ -57,11 +56,6 @@ test.describe(`Schüler versetzen, Umgebung ${process.env.ENV}, URL: ${process.e
 
   test('von einer Klasse in eine andere', { tag: [DEV, STAGE] }, async ({ page }: PlaywrightTestArgs) => {
     const personDetailsView: PersonDetailsViewPage = await test.step('Gesamtübersicht Schüler öffnen', async () => {
-      const startPage: StartViewPage = new StartViewPage(page);
-      const personManagementView: PersonManagementViewPage = await startPage
-        .navigateToAdministration()
-        .then((p: PersonManagementViewPage) => p.menu)
-        .then((menu: MenuBarPage) => menu.navigateToPersonManagement());
       return await personManagementView.searchAndOpenGesamtuebersicht(userInfoSchueler.username);
     });
 
