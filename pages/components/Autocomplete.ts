@@ -84,7 +84,7 @@ export class Autocomplete {
       await this.inputLocator.pressSequentially(title);
       await this.waitUntilLoadingIsDone();
       const item: Locator = this.itemsLocator.filter({
-        has: this.page.getByText(title, { exact: true }),
+        hasText: new RegExp(`^${title}$`),
       });
       await expect(item).toBeVisible();
       await item.click();
