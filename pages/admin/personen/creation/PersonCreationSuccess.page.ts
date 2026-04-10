@@ -103,7 +103,7 @@ export class PersonCreationSuccessPage extends AbstractAdminPage {
       await expect(this.page.getByTestId('created-person-organisation')).toHaveText(
         `${params.dstNr} (${params.organisation})`,
       );
-    else if (params.organisation) 
+    else if (params.organisation)
       await expect(this.page.getByTestId('created-person-organisation')).toHaveText(params.organisation);
 
     await expect(this.page.getByTestId('created-person-rolle-label')).toBeVisible();

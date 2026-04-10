@@ -31,7 +31,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       await loginAndNavigateToAdministration(page);
     });
   });
-  
+
   test.afterEach(async ({ page }: PlaywrightTestArgs) => {
     if (!currentUserIsLandesadministrator) {
       const header: HeaderPage = new HeaderPage(page);

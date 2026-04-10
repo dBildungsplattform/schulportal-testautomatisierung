@@ -24,7 +24,7 @@ export async function getServiceProviderId(page: Page, serviceProviderName: stri
     const providerApi: ProviderApi = constructProviderApi(page);
     const response: ApiResponse<ServiceProviderResponse[]> =
       await providerApi.providerControllerGetAllServiceProvidersRaw();
-    await expect(response.raw.status).toBe(200);
+    expect(response.raw.status).toBe(200);
 
     const fetchedServiceProviders: ServiceProviderResponse[] = await response.value();
     let serviceProviderId: string = '';
@@ -36,6 +36,38 @@ export async function getServiceProviderId(page: Page, serviceProviderName: stri
     }
 
     return serviceProviderId;
+  } catch (error) {
+    console.error('[ERROR] getServiceProviderId failed:', error);
+    throw error;
+  }
+}
+
+/**
+ *
+ * @param page
+ * @param serviceProviderNames
+ * @returns a map of names to ids for the given service provider names. If a name is not found, it will not be included in the map.
+ */
+export async function getServiceProviderIds(page: Page, serviceProviderNames: string[]): Promise<Map<string, string>> {
+  try {
+    const providerApi: ProviderApi = constructProviderApi(page);
+    const response: ApiResponse<ServiceProviderResponse[]> =
+      await providerApi.providerControllerGetAllServiceProvidersRaw();
+    expect(response.raw.status).toBe(200);
+
+    const fetchedServiceProviders: ServiceProviderResponse[] = await response.value();
+    const mappedServiceProviderIds = new Map<string, string>();
+
+    for (const name of serviceProviderNames) {
+      const serviceProvider: ServiceProviderResponse | undefined = fetchedServiceProviders.find(
+        (sp) => sp.name === name,
+      );
+      if (serviceProvider) {
+        mappedServiceProviderIds.set(name, serviceProvider.id);
+      }
+    }
+
+    return mappedServiceProviderIds;
   } catch (error) {
     console.error('[ERROR] getServiceProviderId failed:', error);
     throw error;

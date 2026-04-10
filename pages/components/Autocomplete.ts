@@ -104,7 +104,9 @@ export class Autocomplete {
     await this.openModal();
     await this.clear();
     // Start listening BEFORE typing so we don't miss the response
-    const responsePromise: Promise<Response> | null = endpoint ? this.page.waitForResponse('/api/' + endpoint + '*') : null;
+    const responsePromise: Promise<Response> | null = endpoint
+      ? this.page.waitForResponse('/api/' + endpoint + '*')
+      : null;
     await this.inputLocator.pressSequentially(searchString);
     await this.waitForData();
     let item: Locator;

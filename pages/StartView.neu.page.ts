@@ -1,6 +1,7 @@
 import { expect, Locator, Page, Response } from '@playwright/test';
 import { PersonManagementViewPage } from './admin/personen/PersonManagementView.neu.page';
 import { TwoFactorWorkflowPage } from './TwoFactorWorkflow.page';
+import { formatDateDMY } from '../base/utils/generateTestdata';
 export class StartViewPage {
   /* add global locators here */
   readonly startCardHeadline: Locator;
@@ -49,9 +50,29 @@ export class StartViewPage {
     );
   }
 
-  public async assertServiceProviderIsHidden(spNames: string[]): Promise<void> {
-    for (const spName of spNames) {
-      await expect(this.page.locator('[data-testid^="service-provider-card"]', { hasText: spName })).toBeHidden();
+  public async assertServiceProvidersAreHidden(serviceProviderNames: string[]): Promise<void> {
+    for (const serviceProviderName of serviceProviderNames) {
+      await expect(
+        this.page.locator('[data-testid^="service-provider-card"]', { hasText: serviceProviderName }),
+      ).toBeHidden();
+    }
+  }
+
+  public async assertNewsbox(
+    textParameters: {
+      schulName: string;
+      rollenName: string;
+      timeLimit: Date;
+    },
+    expectedColor: 'red' | 'orange',
+  ): Promise<void> {
+    const expectedText: string = `Hinweis: Die Zuordnung dieses Benutzerkontos zu der Schule "${textParameters.schulName}" mit der Rolle "${textParameters.rollenName}" ist bis zum ${formatDateDMY(textParameters.timeLimit)} befristet. Sollte dies nicht zutreffen, wenden Sie sich bitte an Ihre Schulleitung. Nach Ende der Zuordnung sind Funktionalitäten, die im Bezug zu dieser Schule und Rolle stehen, nicht mehr verfügbar.`;
+    await expect(this.page.getByText(expectedText)).toBeVisible();
+    if (expectedColor === 'red') {
+      await expect(this.page.getByRole('alert')).toHaveCSS('background-color', 'rgb(255, 85, 85)');
+    }
+    if (expectedColor === 'orange') {
+      await expect(this.page.getByRole('alert')).toHaveCSS('background-color', 'rgb(255, 152, 37)');
     }
   }
 }
