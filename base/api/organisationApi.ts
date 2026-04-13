@@ -1,6 +1,6 @@
 import { Page, expect } from '@playwright/test';
 import { oeffentlichLandSH } from '../organisation';
-import { generateDienststellenNr } from '../utils/generateTestdata';
+import { generateDienststellenNr, generateSchulname } from '../utils/generateTestdata';
 import { FRONTEND_URL } from './baseApi';
 import {
   OrganisationControllerCreateOrganisationRequest,
@@ -22,16 +22,7 @@ export function constructOrganisationApi(page: Page): OrganisationenApi {
 
 export async function getOrganisationId(page: Page, organisationName: string): Promise<string> {
   try {
-    const requestParameters: OrganisationControllerFindOrganizationsRequest = {
-      name: organisationName,
-    };
-
-    const organisationApi: OrganisationenApi = constructOrganisationApi(page);
-    const response: ApiResponse<OrganisationResponse[]> =
-      await organisationApi.organisationControllerFindOrganizationsRaw(requestParameters);
-    expect(response.raw.status).toBe(200);
-
-    const organisations: OrganisationResponse[] = await response.value();
+    const organisations: OrganisationResponse[] = await getOrganisations(page, { name: organisationName });
 
     if (!organisations || organisations.length === 0) {
       throw new Error(`No organisations found with name: "${organisationName}"`);
@@ -45,6 +36,22 @@ export async function getOrganisationId(page: Page, organisationName: string): P
     return fetchedOrganisationId;
   } catch (error) {
     console.error('[ERROR] getOrganisationId failed:', error);
+    throw error;
+  }
+}
+
+export async function getOrganisations(
+  page: Page,
+  params: OrganisationControllerFindOrganizationsRequest,
+): Promise<OrganisationResponse[]> {
+  try {
+    const organisationApi: OrganisationenApi = constructOrganisationApi(page);
+    const response: ApiResponse<OrganisationResponse[]> =
+      await organisationApi.organisationControllerFindOrganizationsRaw(params);
+    expect(response.raw.status).toBe(200);
+    return response.value();
+  } catch (error) {
+    console.error('[ERROR] getOrganisations failed:', error);
     throw error;
   }
 }
@@ -97,6 +104,41 @@ export async function getKlasseId(page: Page, klassennname: string): Promise<str
   }
 }
 
+export async function createOrganisation(
+  page: Page,
+  params: OrganisationControllerCreateOrganisationRequest['createOrganisationBodyParams'],
+): Promise<OrganisationResponse> {
+  try {
+    const createOrganisationBodyParams: CreateOrganisationBodyParams = {
+      ...params,
+      name: params.name ?? generateSchulname(),
+      kennung: params.kennung ?? generateDienststellenNr(),
+      typ: params.typ ?? OrganisationsTyp.Schule,
+    };
+
+    const requestParameters: OrganisationControllerCreateOrganisationRequest = {
+      createOrganisationBodyParams,
+    };
+
+    const organisationApi: OrganisationenApi = constructOrganisationApi(page);
+    const response: ApiResponse<OrganisationResponse> =
+      await organisationApi.organisationControllerCreateOrganisationRaw(requestParameters);
+    expect(response.raw.status).toBe(201);
+
+    return response.value();
+  } catch (error) {
+    console.error('[ERROR] createSchule failed:', error);
+    throw error;
+  }
+}
+
+/**
+ *
+ * @param page
+ * @param name
+ * @param kennung
+ * @returns id of created schule
+ */
 export async function createSchule(page: Page, name: string, kennung?: string): Promise<string> {
   try {
     const traegerId: string = await getOrganisationId(page, oeffentlichLandSH);
