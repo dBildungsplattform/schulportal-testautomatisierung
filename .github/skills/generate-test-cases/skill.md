@@ -1,22 +1,21 @@
 ---
 name: generate-test-cases
-description: 'Derives manual test cases from a requirement and outputs them as a reviewable Markdown table. This is the canonical basis for all export formats (e.g. Xray CSV). Use when asked to create, derive, or write manual test cases from a requirement, user story, or ticket.'
+description: 'Derives manual test cases from a requirement and saves them directly as a CSV file optimized for Xray import. Use when asked to create, derive, or write manual test cases from a requirement, user story, or ticket.'
 ---
 
 # Generate Manual Test Cases
 
-Dieser Skill leitet aus einer Anforderung manuelle Testfälle ab und gibt sie als **Markdown-Tabelle** aus. Die Tabelle ist die kanonische, reviewierbare Basis für alle weiteren Exportformate (z.B. Xray-CSV via `export-xray-csv`).
+Dieser Skill leitet aus einer Anforderung manuelle Testfälle ab und speichert sie direkt als **CSV-Datei für den Xray-Import**. Im Chat erscheint kein Markdown und keine Tabelle — einziges Ergebnis ist die gespeicherte CSV-Datei.
 
 ## Use When
 - Du sollst manuelle Testfälle aus einer Anforderung, User Story oder einem Ticket erstellen
-- Du sollst bestehende Testfälle in die Tabellenstruktur überführen
+- Du sollst bestehende Testfälle in das CSV-Format überführen
 - Du wirst gebeten, Testfälle für einen bestimmten Funktionsbereich abzuleiten
 
 ## Do Not Use When
 - Es sollen Playwright-/automatisierte Tests in TypeScript geschrieben werden (normaler Coding-Workflow)
 - Es wird nur eine Erklärung oder Analyse einer Anforderung gewünscht, keine Testfälle
 - Es sollen Gherkin-Tests geschrieben werden
-- Es soll direkt eine CSV-Datei für Xray erzeugt werden (→ danach `export-xray-csv` verwenden)
 
 ---
 
@@ -68,9 +67,13 @@ Leite aus der Anforderung einzelne Testfälle ab. Beachte dabei:
 
 ---
 
-## Step 2 — Als Markdown-Tabelle ausgeben
+## Step 2 — Intern als Markdown aufbauen und direkt in CSV konvertieren (kein Chat-Output)
 
-Gib die Testfälle als Markdown-Tabelle mit exakt diesen Spalten in dieser Reihenfolge aus:
+> **Dieser gesamte Step wird intern ausgeführt — es erscheint keine Ausgabe im Chat.**
+
+**2a — Interne Markdown-Tabelle aufbauen**
+
+Baue die Testfälle als interne Markdown-Tabelle mit exakt diesen Spalten in dieser Reihenfolge auf:
 
 ```
 TCID | tests | Zusammenfassung | Beschreibung | Aktion | Data | Erwartetes Ergebnis | Testplan | Autor | Stichwort | [Stichwort | ...] | Prio | Repo
@@ -78,28 +81,57 @@ TCID | tests | Zusammenfassung | Beschreibung | Aktion | Data | Erwartetes Ergeb
 
 > Jedes vom User angegebene Stichwort erhält eine eigene Spalte, alle mit der Überschrift **Stichwort**.
 
-**Tabellenregeln:**
+Tabellenregeln:
 
 - **TCID**: Fortlaufende Nummer, startet bei `1`. Ein Testfall kann mehrere Zeilen haben — alle Zeilen desselben Tests erhalten dieselbe TCID.
 - **Metadaten-Regel**: Die Felder tests, Zusammenfassung, Beschreibung, Testplan, Autor, Stichwörter, Prio und Repo stehen **nur in der ersten Zeile** eines Tests — Folgezeilen dieser Spalten bleiben leer. Das Feld **Data** wird in jeder Zeile ausgefüllt (mindestens `-`).
-- **Zusammenfassung**: Format `<tests>: <kurze Testbeschreibung>` (z.B. `SPSH-234: Login mit gültigen Daten`).
+- **Zusammenfassung**: Format `<tests>: <kurze Testbeschreibung>` (z.B. `SPSH-234: Login mit gueltigen Daten`).
 - **Aktion**: Alle Schritte des Testszenarios, jeder präfixiert mit `# `. Beginnt mit Vorbereitungsschritten (Anmelden, Navigation), endet mit der fachlich relevanten Aktion. Beim Anmelde-Schritt steht **ausschließlich die Rollenbezeichnung** (z.B. `# Als Schuladmin anmelden`). **Niemals** Systemrechte oder Account-Details in die Aktion — diese gehören in **Data**. Unter-Schritte werden mit `## ` präfixiert.
-  Formatierungskonventionen:
-  - **Buttons** → `*...*`: z.B. `*Schließen* klicken`
-  - **UI-Elemente, Eigennamen, Seitentitel** → `_..._`: z.B. `_Klassenverwaltung_ öffnen`
-  - **Gesuchte Texte, Meldungen** → `_..._`: z.B. `_Erfolgsmeldung: Der Vorgang wurde ausgeführt._`
+  Formatierungskonventionen (innerhalb der Aktion-Zelle, Schritte durch `<br>` getrennt):
+  - **Buttons** → `*...*`: z.B. `*Schliessen* klicken`
+  - **UI-Elemente, Eigennamen, Seitentitel** → `_..._`: z.B. `_Klassenverwaltung_ oeffnen`
+  - **Gesuchte Texte, Meldungen** → `_..._`: z.B. `_Erfolgsmeldung: Der Vorgang wurde ausgefuehrt._`
 - **Data**: Testdaten passend zum Aktionsschritt dieser Zeile. Wenn keine Daten relevant sind: `-`.
 - **Erwartetes Ergebnis**: Das fachlich relevante Prüfergebnis der Zeile, **ohne** `# ` Präfix. Pro Tabellenzeile genau ein Erwartetes Ergebnis — das des letzten anforderungsrelevanten Schritts.
 
-**Abschluss:** Füge nach der Tabelle folgenden Hinweis ein:
+**2b — Direkt in CSV konvertieren**
 
-> → Für den Xray-Import: `export-xray-csv`-Skill auf diese Tabelle anwenden.
+Wende auf die interne Tabelle folgende Konvertierungsregeln an:
+
+- **Trennzeichen** zwischen Spalten: `;`
+- **Semikolons (`;`) in Zellwerten** werden durch ein Komma (`,`) ersetzt — da `;` als Trennzeichen reserviert ist.
+- **`<br>` in Zellwerten** wird durch einen **echten Zeilenumbruch** (newline) ersetzt. Das entspricht dem Alt+Enter-Verhalten in Excel.
+- **Anführungszeichen-Escaping**: Doppelte Anführungszeichen (`"`) innerhalb eines Zellwerts werden als `""` kodiert.
+- **Zellen einschließen**: Eine Zelle wird **nur** in `"..."` eingeschlossen, wenn sie mindestens eines der folgenden Zeichen enthält: echten Zeilenumbruch oder ein doppeltes Anführungszeichen (`"`). Alle anderen Zellen werden **ohne** Anführungszeichen ausgegeben.
+- **Metadaten-Regel**: Die Felder tests, Zusammenfassung, Beschreibung, Testplan, Autor, Stichwörter, Prio und Repo stehen **nur in der ersten Zeile** je TCID — Folgezeilen dieser Spalten bleiben leer. Das Feld **Data** wird in jeder Zeile ausgefüllt (mindestens `-`).
 
 ---
 
 ## Step 3 — Self-Check (intern — keine Ausgabe)
 
-Prüfe Vollständigkeit und Konsistenz der Tabelle intern und korrigiere Fehler. Gib diesen Check **nicht** aus.
+Prüfe intern und korrigiere Fehler. Gib diesen Check **nicht** aus:
+
+- Alle `<br>` in Zellwerten wurden in echte Zeilenumbrüche umgewandelt
+- Alle `;` in Zellwerten wurden durch `,` ersetzt
+- Zellen mit echtem Zeilenumbruch oder `"` sind in `"..."` eingeschlossen; alle anderen ohne Anführungszeichen
+- `"` in Zellen sind korrekt als `""` escaped
+- Metadaten stehen nur in der ersten Zeile je TCID; Data ist in jeder Zeile ausgefüllt
+- Die Spaltenanzahl ist in jeder CSV-Zeile konsistent
+
+---
+
+## Step 4 — CSV-Datei speichern
+
+Speichere die fertige CSV immer als Datei im Workspace. Die Datei wird bei jeder Ausführung überschrieben.
+
+- **Pfad**: `.github/manual_tests/<TICKET-ID>-testfaelle.csv`
+  - `<TICKET-ID>`: Ticket-ID in Originalschreibweise, z.B. `SPSH-3353`
+  - Beispiel: `.github/manual_tests/SPSH-3353-testfaelle.csv`
+- Die Datei wird mit `create_file` angelegt bzw. mit dem passenden Edit-Tool überschrieben, falls sie bereits existiert.
+
+**Abschluss-Output im Chat** (einzige Ausgabe nach dem Speichern):
+
+> CSV gespeichert: `.github/manual_tests/<TICKET-ID>-testfaelle.csv`
 
 ---
 
