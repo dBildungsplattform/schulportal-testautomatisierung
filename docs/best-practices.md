@@ -14,6 +14,8 @@ Jede View im Frontend (schulportal-client) wird als Page in Playwright abgebilde
 
 Pages beinhalten Actions und Assertions. Actions sind die Methoden zur Funktionslogik der Frontend-Views. Assertions sind die Überprüfungen (expects). Die Assertions beginnen alle mit dem Präfix "assert", bspw. `assertPersonalData()`.
 
+Zusammengehörige Assertions sollen in einer gemeinsamen Methode zusammengefasst werden, sofern kein fachlicher Grund besteht, sie einzeln aufzurufen. Nur wenn eine Assertion separat und gezielt aufgerufen werden soll (z.B. weil sie einen eigenen Parameter benötigt wie `assertHeadline(schulname: string)`), wird sie als eigenständige Methode ausgelagert. Solche spezifischen Assertions können dann innerhalb einer übergeordneten Assertion-Methode aufgerufen werden.
+
 Alle Variablen, die Lokatoren verwenden, sollen readonly sein und nur innerhalb der Page benutzt werden. Dadurch verringern wir den Wartungsaufwand bei Änderungen erheblich, da die Änderungen nur an einer Stelle erfolgen müssen.
 
 Alle Methoden, die Funktionslogik beinhalten, dürfen (aber müssen nicht) public sein und in den Tests verwendet werden. Die Tests sollen nur so wenig Parameter wie möglich (aber so viele wie nötig) an die Page-Funktionen übergeben.
