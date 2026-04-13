@@ -187,12 +187,12 @@ test.describe(`Testfälle für den Login: Umgebung: ${process.env.ENV}: URL: ${p
 
   // Ein konkreter Testfall wird mit test() ausgeführt
   // Im Idealfall sind die einzelnen Tests sehr schlank, da sie nur die einzelnen Schritte der Funktionslogik aus den Pages aufrufen
-  // Hier werden bspw. nur 2 Methoden aufgerufen, loginPage.login() und startPage.serviceProvidersAreLoaded()
+  // Hier werden bspw. nur 2 Methoden aufgerufen, loginPage.login() und startPage.assertServiceProvidersAreLoaded()
   test('Erfolgreicher Login', async () => {
     // In diesem Fall wird die StartPage bereits durch den Login zurückgegeben und muss deshalb nicht erneut beim waitForPageLoad gespeichert werden
     const startPage: StartViewPage = await loginPage.login(ADMIN, PASSWORD);
     await startPage.waitForPageLoad();
-    await startPage.serviceProvidersAreLoaded();
+    await startPage.assertServiceProvidersAreLoaded();
   });
 
   // Tip: Zum Debugging eines einzelnen Tests kann es hilfreich sein, nur diesen Test mit Hilfe von test.only() auszuführen
