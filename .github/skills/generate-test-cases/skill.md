@@ -9,7 +9,6 @@ Dieser Skill leitet aus einer Anforderung manuelle Testfälle ab und speichert s
 
 ## Use When
 - Du sollst manuelle Testfälle aus einer Anforderung, User Story oder einem Ticket erstellen
-- Du sollst bestehende Testfälle in das CSV-Format überführen
 - Du wirst gebeten, Testfälle für einen bestimmten Funktionsbereich abzuleiten
 
 ## Do Not Use When
