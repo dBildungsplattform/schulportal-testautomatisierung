@@ -25,6 +25,7 @@ import {
 export interface PersonAdministrationControllerFindRollenRequest {
     rolleName?: string;
     limit?: number;
+    organisationIds?: Array<string>;
 }
 
 /**
@@ -38,6 +39,7 @@ export interface PersonAdministrationApiInterface {
      * 
      * @param {string} [rolleName] Rolle name used to filter for rollen in personenkontext.
      * @param {number} [limit] The limit of items for the request.
+     * @param {Array<string>} [organisationIds] OrganisationIDs to filter rollen
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PersonAdministrationApiInterface
@@ -66,6 +68,10 @@ export class PersonAdministrationApi extends runtime.BaseAPI implements PersonAd
 
         if (requestParameters.limit !== undefined) {
             queryParameters['limit'] = requestParameters.limit;
+        }
+
+        if (requestParameters.organisationIds) {
+            queryParameters['organisationIds'] = requestParameters.organisationIds;
         }
 
         const headerParameters: runtime.HTTPHeaders = {};

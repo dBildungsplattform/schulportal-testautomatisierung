@@ -37,6 +37,18 @@ export interface FeatureFlagResponse {
      * @memberof FeatureFlagResponse
      */
     rolleErweiternEnabled: boolean;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof FeatureFlagResponse
+     */
+    setUemPasswordEnabled: boolean;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof FeatureFlagResponse
+     */
+    schulischeAngeboteErstellen: boolean;
 }
 
 /**
@@ -47,6 +59,8 @@ export function instanceOfFeatureFlagResponse(value: object): boolean {
     isInstance = isInstance && "rolleBearbeitenEnabled" in value;
     isInstance = isInstance && "befristungBearbeitenEnabled" in value;
     isInstance = isInstance && "rolleErweiternEnabled" in value;
+    isInstance = isInstance && "setUemPasswordEnabled" in value;
+    isInstance = isInstance && "schulischeAngeboteErstellen" in value;
 
     return isInstance;
 }
@@ -64,6 +78,8 @@ export function FeatureFlagResponseFromJSONTyped(json: any, ignoreDiscriminator:
         'rolleBearbeitenEnabled': json['rolleBearbeitenEnabled'],
         'befristungBearbeitenEnabled': json['befristungBearbeitenEnabled'],
         'rolleErweiternEnabled': json['rolleErweiternEnabled'],
+        'setUemPasswordEnabled': json['setUemPasswordEnabled'],
+        'schulischeAngeboteErstellen': json['schulischeAngeboteErstellen'],
     };
 }
 
@@ -79,6 +95,8 @@ export function FeatureFlagResponseToJSON(value?: FeatureFlagResponse | null): a
         'rolleBearbeitenEnabled': value.rolleBearbeitenEnabled,
         'befristungBearbeitenEnabled': value.befristungBearbeitenEnabled,
         'rolleErweiternEnabled': value.rolleErweiternEnabled,
+        'setUemPasswordEnabled': value.setUemPasswordEnabled,
+        'schulischeAngeboteErstellen': value.schulischeAngeboteErstellen,
     };
 }
 
