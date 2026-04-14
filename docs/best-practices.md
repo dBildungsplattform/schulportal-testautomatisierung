@@ -1,30 +1,37 @@
 # TLDR
-- Code soll Typescript Best Practices folgen
+- Code soll TypeScript Best Practices folgen
 - Frontend-Views werden als Pages abgebildet
 - Funktionslogik (Actions und Assertions) als Methoden in Pages
-- Navigation läuft über Pages laufen und die `waitForPageLoad()`-Funktion wird aufgerufen
+- Navigation läuft über Pages und die `waitForPageLoad()`-Funktion wird aufgerufen
 - Testlogik (inkl. Aufruf der Page-Methoden) in Tests
-- Alle definierten Variablen in Pages sind mit `private readonly` deklariert und werden nur in den lokalen Methoden benutzt
+- Lokatoren werden in Pages gekapselt und bevorzugt methodenlokal verwendet. Tests greifen ausschließlich auf Page-Methoden zu
 - API-Funktionen werden mit Hilfe einer generierten API und Playwright-Fetch-Wrapper implementiert
 - Die API muss bei jeder Aktualisierung im Backend auch in Playwright aktualisiert werden
-- Um Daten via API anzulegen muss bis ins Portal navigiert werden, damit gegebenenfalls 2FA ausgeführt werden kann.
+- Um Daten via API anzulegen, muss bis ins Portal navigiert werden, damit gegebenenfalls 2FA ausgeführt werden kann.
 
 # Pages
 Jede View im Frontend (schulportal-client) wird als Page in Playwright abgebildet.
 
-Pages beinhalten Actions und Assertions. Actions sind die Methoden zur Funktionslogik der Frontend-Views. Assertions sind die Überprüfungen (expects). Die Assertions beginnen alle mit dem Präfix "assert", bspw. `assertPersonalData()`.
+Pages beinhalten drei Sektionen: Lokatoren, Actions und Assertions. Lokatoren dienen der Auffindbarkeit von Elementen in der Anwendung. Actions sind die Methoden zur Funktionslogik der Frontend-Views. Assertions sind die Überprüfungen (expects). Assertions beginnen mit dem Präfix "assert", bspw. `assertPersonalData()`.
 
-Zusammengehörige Assertions sollen in einer gemeinsamen Methode zusammengefasst werden, sofern kein fachlicher Grund besteht, sie einzeln aufzurufen. Nur wenn eine Assertion separat und gezielt aufgerufen werden soll (z.B. weil sie einen eigenen Parameter benötigt wie `assertHeadline(schulname: string)`), wird sie als eigenständige Methode ausgelagert. Solche spezifischen Assertions können dann innerhalb einer übergeordneten Assertion-Methode aufgerufen werden.
-
-Alle Variablen, die Lokatoren verwenden, sollen readonly sein und nur innerhalb der Page benutzt werden. Dadurch verringern wir den Wartungsaufwand bei Änderungen erheblich, da die Änderungen nur an einer Stelle erfolgen müssen.
-
-Alle Methoden, die Funktionslogik beinhalten, dürfen (aber müssen nicht) public sein und in den Tests verwendet werden. Die Tests sollen nur so wenig Parameter wie möglich (aber so viele wie nötig) an die Page-Funktionen übergeben.
+## Lokatoren
+Lokatoren sollen nur innerhalb der Page benutzt werden. Die Tests dürfen niemals direkt auf Page-Lokatoren zugreifen, sondern nur auf Page-Methoden. Lokatoren werden bevorzugt lokal in der jeweiligen Methode erzeugt. Dadurch entfällt die Notwendigkeit von Klassenfeldern bei einmalig genutzten Lokatoren und die Kapselung bleibt erhalten. Methodenübergreifende Lokatoren werden global definiert.
 
 Die Namen der Locator-Variablen orientieren sich an den Benennungen der Test-Ids im Frontend.
+
+## Actions
+Methoden, die in Tests verwendet werden, müssen public sein. Methoden, die nur intern genutzt werden, sollen private sein. Die Tests sollen nur so wenig Parameter wie möglich (aber so viele wie nötig) an die Page-Funktionen übergeben.
 
 Jede Page besitzt eine Methode waitForPageLoad(), die mindestens eine eindeutige Headline (oder ähnliches Element) der Seite überprüft und die Page anschließend zurückgibt.
 
 Innerhalb der Pages beschreibt die Bezeichnung 'Workflow' einen fachlichen Ablauf, der im Frontend durchgeführt wird und in Playwright aus mehreren Einheiten (z.B. Actions, Pages, etc.) zusammengesetzt wird.
+
+## Assertions
+- Web-first Assertions bevorzugen: `await expect(locator).toBeVisible()` statt separatem `waitFor(...)` plus zusätzlichem `expect`.
+- `expect.soft()` für nicht-kritische Mehrfachprüfungen nutzen.
+- `toPass()` für polling-basierte Verifikation verwenden, statt manueller Retry-Loops.
+
+Zusammengehörige Assertions sollen in einer gemeinsamen Methode zusammengefasst werden, sofern kein fachlicher Grund besteht, sie einzeln aufzurufen. Nur wenn eine Assertion separat und gezielt aufgerufen werden soll (z.B. weil sie einen eigenen Parameter benötigt wie `assertHeadline(schulname: string)`), wird sie als eigenständige Methode ausgelagert. Solche spezifischen Assertions können dann innerhalb einer übergeordneten Assertion-Methode aufgerufen werden.
 
 ## Test-Ids
 Jedes sinnvoll mit Playwright zu testende HTML-Element im Frontend bekommt eine Test-Id über das HTML-Attribut data-testid. Dieses Attribut kann mit der Playwright-Funktion .getByTestId() ausgelesen werden. Vorzugsweise erfolgt die Benennung im Frontend in kebab-case nach dem Schema <Funktion>-<Element>, bspw. `data-testid="username-input"`.
@@ -45,6 +52,19 @@ Alle Testsuiten (Dateien) sind Use-Case bezogen. Eine Testsuite beinhaltet **nur
 Die Tests beinhalten keine Funktionslogik. Logik, Aktionen und Überprüfungen finden nur in den Pages statt.
 
 Ein Top-Level describe-Block ist nicht nötig, wenn aus dem Dateinamen klar wird, was im Test inbegriffen ist.
+
+Describe-Block-Namen sollen kurz und fachlich sein, z.B. `Testfälle für die Anlage von Personen`. Umgebungsinformationen wie `Umgebung`, `URL` oder `process.env.*` gehören nicht in den Describe-Namen, da diese Informationen bereits in Playwright-Reports und der Konfiguration vorhanden sind.
+
+## Parallele Sicherheit
+Module-Level mutable State (z.B. `let usernames: string[] = []`) ist bei parallelen Test-Workern fehleranfällig. Deshalb gilt:
+- Variablen nur test-lokal (`test`) oder suite-lokal (`test.describe`) verwenden.
+- Keine globalen Sammel-Arrays/Objekte für erstellte Daten nutzen.
+- Für wiederverwendbares Setup/Teardown mittel- bis langfristig Playwright Custom Fixtures (`test.extend`) einsetzen.
+
+## test.step() Richtlinien
+- `test.step()` nur für fachliche Hauptphasen einsetzen (Setup, Aktion, Verifikation).
+- Step-Namen kurz halten, auf Deutsch, und das Was beschreiben.
+- Rückgabewerte aus Steps nutzen, um Daten klar an Folgeschritte zu übergeben.
 
 # Namensgebung
 | Element             | Empfohlener Case     | Endung   | Beispiel                 | Besonderheit                                      |
@@ -76,6 +96,17 @@ Mit Tags können wir die Ausführung der Tests gezielt steuern. So können beisp
 | stage | x               |      | x            |       |
 | smoke |                 |      |              | x     |
 
+Tags werden immer alphabetisch sortiert angegeben: `{ tag: [DEV, STAGE] }`, nicht `{ tag: [STAGE, DEV] }`. Konsistente Reihenfolge erleichtert Suche und Review.
+
+# Aufräumen (Cleanup)
+Aktueller Projektstandard ist ein zweistufiges Vorgehen:
+1. `afterEach`: gezieltes Löschen der im Test erstellten Daten und Logout.
+2. Global Teardown: Fangnetz für verbliebene Testdaten (z.B. Prefix `TAuto`).
+
+Jeder Test soll mindestens ein `afterEach` mit Logout enthalten. Wenn ein Test Entitäten erstellt, ist gezieltes Cleanup im `afterEach` verpflichtend.
+
+Langfristig ist die Migration auf Playwright Custom Fixtures mit automatischem Teardown pro Test der bevorzugte Weg.
+
 # API
 Für die Erhaltung der Stabilität und Wartbarkeit der automatisierten Tests wurden auch die API-Calls in eigenen Klassen definiert. Es gibt einmal die von uns erstellten API-Klassen, bspw. base/api/personApi.ts (selbst vergebener Name, Modelname im Singular), in denen wir die Methoden zur Verwendung in Pages und Tests definieren. Dort benutzen wir die zugehörige generierte API-Klasse, bspw. base/api/generated/personenApi.ts (Name aus der API vom Backend vergeben). Diese wird aus dem Swagger Doc der Backend-API generiert.
 
@@ -83,7 +114,7 @@ Vor dem Refactoring gab es Helper-Klassen, die sowohl Funktionslogik, als auch A
 
 Bei jeder Änderung der API im Backend-Repo muss die API auch in Playwright neu generiert werden. Der Befehl dazu lautet im Playwright-Repo `npm run generate-api`.
 
-## Github Workflows
+# Github Workflows
 Es gibt einen Github Workflow (run-playwright.yml), der sich um die Ausführung kümmert und Parameter für Umgebung, Browser und Testumfang (Tags) annimmt. Damit ist es möglich, jede mögliche Kombination von Parametern manuell und geplant auszuführen.
 
 Die weiteren Github Workflows rufen run-playwright.yml parametrisiert auf.
@@ -109,7 +140,6 @@ export class LoginViewPage {
   // Jede Page benötigt eine Methode waitForPageLoad(), die public ist und in Tests verwendet werden kann
   // Indem this zurückgegeben wird, können wir den aufrufenden Code etwas verschlanken
   public async waitForPageLoad(): Promise<LoginViewPage> {
-    await this.page.getByTestId('login-page-title').waitFor({ state: 'visible' });
     await expect(this.page.getByTestId('login-page-title')).toHaveText('Anmeldung');
 	return this;
   }
@@ -134,13 +164,13 @@ export class LoginViewPage {
     await expect(this.page.getByTestId('login-page-title')).toHaveText('Anmeldung');
     await expect(this.page.getByTestId('login-prompt-text')).toHaveText('Bitte geben Sie Ihre persönlichen Zugangsdaten ein.');
 
-    await usernameInput.waitFor({ state: 'visible' });
+    await expect(usernameInput).toBeVisible();
     await usernameInput.fill(username);
 
-    await passwordInput.waitFor({ state: 'visible' });
+    await expect(passwordInput).toBeVisible();
     await passwordInput.fill(password);
 
-    await loginButton.waitFor({ state: 'visible' });
+    await expect(loginButton).toBeVisible();
     await loginButton.click();
     return new StartViewPage(this.page);
   }
@@ -172,7 +202,7 @@ const PASSWORD: string | undefined = process.env.PW;
 
 // Mit test.describe() werden einzelne Testsuites definiert.
 // Ein Spec-File behandelt in unserem Projekt einen konkreten Anwendungsfall des Schulportals und kann mehrere Testsuites enthalten
-test.describe(`Testfälle für den Login: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
+test.describe('Testfälle für den Login', () => {
   // Lokale Variablen des Testfalls
   let landingPage: LandingViewPage;
   let loginPage: LoginViewPage;
@@ -195,13 +225,13 @@ test.describe(`Testfälle für den Login: Umgebung: ${process.env.ENV}: URL: ${p
     await startPage.assertServiceProvidersAreLoaded();
   });
 
-  // Tip: Zum Debugging eines einzelnen Tests kann es hilfreich sein, nur diesen Test mit Hilfe von test.only() auszuführen
-  test.only('Fehlgeschlagener Login mit falschen Daten', async () => {
+  // Tipp: Zum Debugging kann test.only() genutzt werden, um nur diesen Test auszuführen. test.only() darf nicht committed werden.
+  test('Fehlgeschlagener Login mit falschen Daten', async () => {
     await loginPage.login('anakin', 'obi-wan');
-    await expect(loginPage.loginFailedWithWrongCredentials()).toBeTruthy();
+    await loginPage.loginFailedWithWrongCredentials();
   });
 
-  // Tip: Sollte ein einzelner Test zu Problemen führen, kann er mit test.skip() geskippt werden
+  // Tipp: Sollte ein einzelner Test zu Problemen führen, kann er mit test.skip() geskippt werden
   // Das darf aber maximal eine Übergangslösung sein und ist eher zu vermeiden
   test.skip('Fehlgeschlagener Login mit gesperrtem Benutzer', async ({ page }: { page: Page }) => {
     const startPage: StartViewPage = await loginPage.login(ADMIN, PASSWORD);
@@ -218,7 +248,7 @@ test.describe(`Testfälle für den Login: Umgebung: ${process.env.ENV}: URL: ${p
     await header.logout();
     loginPage = await freshLoginPage(page);
     await loginPage.login(userinfo.username, userinfo.password);
-    await expect(loginPage.loginFailedWithLockedUser()).toBeTruthy();
+    await loginPage.loginFailedWithLockedUser();
   });
 
   test('Erfolgreicher Logout', async () => {
@@ -226,7 +256,7 @@ test.describe(`Testfälle für den Login: Umgebung: ${process.env.ENV}: URL: ${p
     await startPage.waitForPageLoad();
 
     await header.logout();
-    await expect(landingPage.waitForPageLoad()).toBeTruthy();
+    await landingPage.waitForPageLoad();
   });
 });
 ```
