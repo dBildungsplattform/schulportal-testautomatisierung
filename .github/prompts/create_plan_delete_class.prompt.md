@@ -1,5 +1,5 @@
-wir wollen die datei löschen: pages\LoginView.page.ts
-Die neue Datei ist: pages\LoginView.neu.page.ts
+wir wollen die datei löschen: pages\admin\personen\PersonDetailsView.page.ts
+Die neue Datei ist: pages\admin\personen\details\PersonDetailsView.neu.page.ts
 Erstelle einen Plan, was wir machen müssen, damit wir die Datei löschen können. 
 
 Zeige alle Verweise und Aufrufe auf und finde Lösungen, was wir anpassen sollten.

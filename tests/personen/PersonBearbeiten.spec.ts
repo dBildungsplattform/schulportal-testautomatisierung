@@ -1,4 +1,4 @@
-import { expect, PlaywrightTestArgs, test } from '@playwright/test';
+import { PlaywrightTestArgs, test } from '@playwright/test';
 import { createPerson, createRolleAndPersonWithPersonenkontext, UserInfo } from '../../base/api/personApi';
 import { addServiceProvidersToRolle, addSystemrechtToRolle, createRolle, RollenArt } from '../../base/api/rolleApi';
 import { getServiceProviderId } from '../../base/api/serviceProviderApi';
@@ -15,7 +15,7 @@ import {
 } from '../../base/testHelperDeleteTestdata';
 import { gotoTargetURL, loginAndNavigateToAdministration } from '../../base/testHelperUtils';
 import { generateNachname, generateRolleName, generateVorname } from '../../base/utils/generateTestdata';
-import { PersonDetailsViewPage } from '../../pages/admin/personen/PersonDetailsView.page';
+import { PersonDetailsViewPage } from '../../pages/admin/personen/details/PersonDetailsView.neu.page';
 import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.neu.page';
 import { HeaderPage } from '../../pages/components/Header.neu.page';
 import { getOrganisationId } from '../../base/api/organisationApi';
@@ -99,18 +99,18 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
         });
 
       await test.step(`Ansicht für neuen Personenkontext öffnen`, async () => {
-        await personDetailsView.waitForPageToBeLoaded();
-        await personDetailsView.buttonEditSchulzuordnung.click();
-        await personDetailsView.buttonAddSchulzuordnung.click();
-        await personDetailsView.organisationen.searchByTitle(testschuleName, false);
+        await personDetailsView.waitForPageLoad();
+        const zuordnungen = await personDetailsView.editZuordnungen();
+        await zuordnungen.startAddZuordnungWorkflow();
+        await personDetailsView.selectOrganisation(testschuleName);
       });
 
       await test.step(`Befristung bei ${unbefristeteRolle} und ${befristeteRolle} überprüfen`, async () => {
-        await personDetailsView.rollen.selectByTitle(befristeteRolle);
-        await expect(personDetailsView.buttonBefristetSchuljahresende).toBeChecked();
-        await personDetailsView.rollen.clear();
-        await personDetailsView.rollen.selectByTitle(unbefristeteRolle);
-        await expect(personDetailsView.buttonBefristungUnbefristet).toBeChecked();
+        await personDetailsView.selectRolle(befristeteRolle);
+        await personDetailsView.checkBefristungAutoSelection('schuljahresende');
+        await personDetailsView.clearRolle();
+        await personDetailsView.selectRolle(unbefristeteRolle);
+        await personDetailsView.checkBefristungAutoSelection('unbefristet');
       });
     },
   );
@@ -149,18 +149,12 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       });
 
       await test.step(`Gesamtübersicht Abschnitte prüfen`, async () => {
-        await expect(personDetailsView.textH2BenutzerBearbeiten).toHaveText('Benutzer bearbeiten');
-        await expect(personDetailsView.textH3PasswortHeadline).toBeVisible();
-        await expect(personDetailsView.textH3SchulzuordnungHeadline).toBeVisible();
-        await expect(personDetailsView.textH3LockPersonHeadline).toBeVisible();
+        await personDetailsView.waitForPageLoad();
+        await personDetailsView.checkSections();
       });
 
       await test.step(`Unsichtbarkeit des 2FA Abschnitts prüfen`, async () => {
-        await expect(personDetailsView.textH3TwoFA).toBeHidden();
-        await expect(personDetailsView.textTokenIstEingerichtetInfo).toBeHidden();
-        await expect(personDetailsView.textNeuenTokenEinrichtenInfo).toBeHidden();
-        await expect(personDetailsView.textKeinTokenIstEingerichtet).toBeHidden();
-        await expect(personDetailsView.button2FAEinrichten).toBeHidden();
+        await personDetailsView.checkSectionsNotVisible({ twoFactor: true });
       });
     },
   );
@@ -194,8 +188,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       });
 
       await test.step(`2FA Status prüfen dass kein Token eingerichtet ist`, async () => {
-        await expect(personDetailsView.textH3TwoFA).toBeVisible();
-        await expect(personDetailsView.textKeinTokenIstEingerichtet).toBeVisible();
+        await personDetailsView.checkSections({ twoFactor: true });
+        await personDetailsView.check2FASetup(false);
       });
     },
   );
@@ -234,8 +228,8 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       });
 
       await test.step(`2FA Status prüfen dass kein Token eingerichtet ist`, async () => {
-        await expect(personDetailsView.textH3TwoFA).toBeVisible();
-        await expect(personDetailsView.textKeinTokenIstEingerichtet).toBeVisible();
+        await personDetailsView.checkSections({ twoFactor: true });
+        await personDetailsView.check2FASetup(false);
       });
     },
   );
@@ -282,13 +276,12 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       });
 
       await test.step(`2FA Token einrichten`, async () => {
-        await expect(personDetailsView.textH3TwoFA).toBeVisible();
-        await personDetailsView.softwareTokenEinrichten();
+        await personDetailsView.checkSections({ twoFactor: true });
+        await personDetailsView.addSoftwareToken();
       });
 
       await test.step(`2FA Status prüfen dass ein Token eingerichtet ist`, async () => {
-        await expect(personDetailsView.textTokenIstEingerichtetInfo).toBeVisible();
-        await expect(personDetailsView.textNeuenTokenEinrichtenInfo).toBeVisible();
+        await personDetailsView.check2FASetup(true);
       });
     },
   );
@@ -325,13 +318,12 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       });
 
       await test.step(`2FA Token einrichten`, async () => {
-        await expect(personDetailsView.textH3TwoFA).toBeVisible();
-        await personDetailsView.softwareTokenEinrichten();
+        await personDetailsView.checkSections({ twoFactor: true });
+        await personDetailsView.addSoftwareToken();
       });
 
       await test.step(`2FA Status prüfen dass ein Token eingerichtet ist`, async () => {
-        await expect(personDetailsView.textTokenIstEingerichtetInfo).toBeVisible();
-        await expect(personDetailsView.textNeuenTokenEinrichtenInfo).toBeVisible();
+        await personDetailsView.check2FASetup(true);
       });
     },
   );
@@ -365,13 +357,12 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       });
 
       await test.step(`2FA Token einrichten`, async () => {
-        await expect(personDetailsView.textH3TwoFA).toBeVisible();
-        await personDetailsView.softwareTokenEinrichten();
+        await personDetailsView.checkSections({ twoFactor: true });
+        await personDetailsView.addSoftwareToken();
       });
 
       await test.step(`2FA Status prüfen dass ein Token eingerichtet ist`, async () => {
-        await expect(personDetailsView.textTokenIstEingerichtetInfo).toBeVisible();
-        await expect(personDetailsView.textNeuenTokenEinrichtenInfo).toBeVisible();
+        await personDetailsView.check2FASetup(true);
       });
     },
   );
@@ -405,7 +396,7 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       });
 
       await test.step(`Inbetriebnahme-Passwort für LK-Endgerät setzen`, async () => {
-        await personDetailsView.createIbnPassword();
+        await personDetailsView.createInbetriebnahmePasswort();
       });
     },
   );

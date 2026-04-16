@@ -1,4 +1,4 @@
-import { expect, PlaywrightTestArgs, test } from '@playwright/test';
+import { PlaywrightTestArgs, test } from '@playwright/test';
 import { createRolleAndPersonWithPersonenkontext, UserInfo } from '../base/api/personApi';
 import { getServiceProviderId } from '../base/api/serviceProviderApi';
 import { testschuleName } from '../base/organisation';
@@ -8,7 +8,7 @@ import { DEV, STAGE } from '../base/tags';
 import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata';
 import { gotoTargetURL, loginAndNavigateToAdministration } from '../base/testHelperUtils';
 import { generateNachname, generateRolleName, generateVorname } from '../base/utils/generateTestdata';
-import { PersonDetailsViewPage } from '../pages/admin/personen/PersonDetailsView.page';
+import { PersonDetailsViewPage } from '../pages/admin/personen/details/PersonDetailsView.neu.page';
 import { PersonManagementViewPage } from '../pages/admin/personen/PersonManagementView.neu.page';
 import { HeaderPage } from '../pages/components/Header.neu.page';
 
@@ -70,25 +70,16 @@ test.describe(`Testfälle für TwoFactorAuthentication": Umgebung: ${process.env
       });
 
       await test.step(`Token einrichten`, async () => {
-        await personDetailsView.softwareTokenEinrichten();
+        await personDetailsView.addSoftwareToken();
       });
 
       await test.step(`2FA Status prüfen dass ein Token eingerichtet ist`, async () => {
-        await expect(personDetailsView.textTokenIstEingerichtetInfo).toBeVisible();
-        await expect(personDetailsView.textNeuenTokenEinrichtenInfo).toBeVisible();
+        await personDetailsView.check2FASetup(true);
       });
 
       await test.step(`Token zurücksetzen`, async () => {
-        await expect(personDetailsView.button2FAEinrichten).toHaveText('Token zurücksetzen');
-        await personDetailsView.button2FAEinrichten.click();
-
-        await expect(personDetailsView.button2FAZuruecksetzenWeiter).toHaveText('Zurücksetzen');
-        await personDetailsView.button2FAZuruecksetzenWeiter.click();
-
-        await expect(personDetailsView.button2FAZuruecksetzenWeiter).toHaveText('Schließen');
-        await personDetailsView.button2FAZuruecksetzenWeiter.click();
-
-        await expect(personDetailsView.textKeinTokenIstEingerichtet).toBeVisible();
+        await personDetailsView.resetSoftwareToken();
+        await personDetailsView.check2FASetup(false);
       });
     },
   );
