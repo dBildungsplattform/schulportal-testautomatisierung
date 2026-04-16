@@ -1,6 +1,6 @@
 import { expect, Page } from '@playwright/test';
-import { SchuleCreationViewPage, Schulform, type SchuleCreationParams } from './SchuleCreationView.neu.page';
-import { SchuleManagementViewPage } from './SchuleManagementView.neu.page';
+import { SchuleCreationViewPage, Schulform, type SchuleCreationParams } from './SchuleCreationView.page';
+import { SchuleManagementViewPage } from './SchuleManagementView.page';
 
 export class SchuleCreationSuccessPage {
   /* add global locators here */

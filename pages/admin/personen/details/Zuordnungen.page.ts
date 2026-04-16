@@ -1,5 +1,5 @@
 import { expect, Page } from '@playwright/test';
-import { PersonManagementViewPage } from '../PersonManagementView.neu.page';
+import { PersonManagementViewPage } from '../PersonManagementView.page';
 import { AddZuordnungWorkflowPage } from './zuordnung-workflows/AddZuordnungWorkflow.page';
 import { BaseZuordnungWorkflowPage } from './zuordnung-workflows/BaseWorkflow.page';
 import { BefristungWorkflowPage } from './zuordnung-workflows/BefristungWorkflow.page';

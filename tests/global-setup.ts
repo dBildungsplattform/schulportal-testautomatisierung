@@ -11,11 +11,11 @@ import { landSH } from '../base/organisation';
 import { landesadminRolle } from '../base/rollen';
 import { loginAndNavigateToAdministration } from '../base/testHelperUtils';
 import { generateNachname, generateVorname } from '../base/utils/generateTestdata';
-import { HeaderPage } from '../pages/components/Header.neu.page';
-import FromAnywhere from '../pages/FromAnywhere.neu';
-import { LandingViewPage } from '../pages/LandingView.neu.page';
-import { LoginViewPage } from '../pages/LoginView.neu.page';
-import { StartViewPage } from '../pages/StartView.neu.page';
+import { HeaderPage } from '../pages/components/Header.page';
+import FromAnywhere from '../pages/FromAnywhere';
+import { LandingViewPage } from '../pages/LandingView.page';
+import { LoginViewPage } from '../pages/LoginView.page';
+import { StartViewPage } from '../pages/StartView.page';
 import { workers } from '../playwright.config';
 
 const FRONTEND_URL: string = process.env.FRONTEND_URL ?? '';

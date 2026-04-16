@@ -5,10 +5,10 @@ import { createRolle, RollenArt } from '../base/api/rolleApi';
 import { testschuleName } from '../base/organisation';
 import { DEV, SMOKE, STAGE } from '../base/tags';
 import { generateRolleName } from '../base/utils/generateTestdata';
-import { LandingViewPage } from '../pages/LandingView.neu.page';
-import { LoginViewPage } from '../pages/LoginView.neu.page';
-import { StartViewPage } from '../pages/StartView.neu.page';
-import { HeaderPage } from '../pages/components/Header.neu.page';
+import { LandingViewPage } from '../pages/LandingView.page';
+import { LoginViewPage } from '../pages/LoginView.page';
+import { StartViewPage } from '../pages/StartView.page';
+import { HeaderPage } from '../pages/components/Header.page';
 import { loginAndNavigateToAdministration } from '../base/testHelperUtils';
 
 const ADMIN: string = process.env.USER!;

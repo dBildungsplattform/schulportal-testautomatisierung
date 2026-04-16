@@ -8,9 +8,9 @@ import { DEV, STAGE } from '../base/tags';
 import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata';
 import { gotoTargetURL, loginAndNavigateToAdministration } from '../base/testHelperUtils';
 import { generateNachname, generateRolleName, generateVorname } from '../base/utils/generateTestdata';
-import { PersonDetailsViewPage } from '../pages/admin/personen/details/PersonDetailsView.neu.page';
-import { PersonManagementViewPage } from '../pages/admin/personen/PersonManagementView.neu.page';
-import { HeaderPage } from '../pages/components/Header.neu.page';
+import { PersonDetailsViewPage } from '../pages/admin/personen/details/PersonDetailsView.page';
+import { PersonManagementViewPage } from '../pages/admin/personen/PersonManagementView.page';
+import { HeaderPage } from '../pages/components/Header.page';
 
 // The created test data will be deleted in the afterEach block
 let usernames: string[] = [];

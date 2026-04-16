@@ -1,15 +1,15 @@
 import { expect, Locator, Page } from '@playwright/test';
-import { KlasseCreationViewPage } from '../admin/organisationen/klassen/KlasseCreationView.neu.page';
-import { KlasseManagementViewPage } from '../admin/organisationen/klassen/KlasseManagementView.neu.page';
-import { SchuleCreationViewPage } from '../admin/organisationen/schulen/SchuleCreationView.neu.page';
-import { SchuleManagementViewPage } from '../admin/organisationen/schulen/SchuleManagementView.neu.page';
-import { PersonCreationMode, PersonCreationViewPage } from '../admin/personen/creation/PersonCreationView.neu.page';
+import { KlasseCreationViewPage } from '../admin/organisationen/klassen/KlasseCreationView.page';
+import { KlasseManagementViewPage } from '../admin/organisationen/klassen/KlasseManagementView.page';
+import { SchuleCreationViewPage } from '../admin/organisationen/schulen/SchuleCreationView.page';
+import { SchuleManagementViewPage } from '../admin/organisationen/schulen/SchuleManagementView.page';
+import { PersonCreationMode, PersonCreationViewPage } from '../admin/personen/creation/PersonCreationView.page';
 import { PersonImportViewPage } from '../admin/personen/PersonImportView.page';
-import { PersonManagementViewPage } from '../admin/personen/PersonManagementView.neu.page';
+import { PersonManagementViewPage } from '../admin/personen/PersonManagementView.page';
 import { LandesbedienstetenSearchFormPage } from '../admin/personen/search/LandesbedienstetenSearchForm.page';
 import { RolleCreationViewPage } from '../admin/rollen/RolleCreationView.page';
 import { RolleManagementViewPage } from '../admin/rollen/RolleManagementView.page';
-import { StartViewPage } from '../StartView.neu.page';
+import { StartViewPage } from '../StartView.page';
 
 export class MenuBarPage {
   /* add global locators here */

@@ -2,7 +2,7 @@ import { expect, Locator, Page } from '@playwright/test';
 import { waitForAPIResponse } from '../../../../base/api/baseApi';
 import { formatDateDMY, generateCurrentDate } from '../../../../base/utils/generateTestdata';
 import { ZuordnungenPage, ZuordnungValidationParams } from './Zuordnungen.page';
-import { PersonManagementViewPage } from '../PersonManagementView.neu.page';
+import { PersonManagementViewPage } from '../PersonManagementView.page';
 import { Autocomplete } from '../../../components/Autocomplete';
 
 interface PersonDetailsValidationParams {

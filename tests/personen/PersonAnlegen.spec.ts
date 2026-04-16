@@ -22,10 +22,10 @@ import {
   generateSchulname,
   generateVorname,
 } from '../../base/utils/generateTestdata';
-import { LandingViewPage } from '../../pages/LandingView.neu.page';
-import { LoginViewPage } from '../../pages/LoginView.neu.page';
-import { StartViewPage } from '../../pages/StartView.neu.page';
-import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.neu.page';
+import { LandingViewPage } from '../../pages/LandingView.page';
+import { LoginViewPage } from '../../pages/LoginView.page';
+import { StartViewPage } from '../../pages/StartView.page';
+import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.page';
 import {
   PersonCreationSuccessPage,
   PersonCreationSuccessValidationParams,
@@ -33,8 +33,8 @@ import {
 import {
   PersonCreationParams,
   PersonCreationViewPage,
-} from '../../pages/admin/personen/creation/PersonCreationView.neu.page';
-import { PersonDetailsViewPage } from '../../pages/admin/personen/details/PersonDetailsView.neu.page';
+} from '../../pages/admin/personen/creation/PersonCreationView.page';
+import { PersonDetailsViewPage } from '../../pages/admin/personen/details/PersonDetailsView.page';
 import { ZuordnungenPage } from '../../pages/admin/personen/details/Zuordnungen.page';
 
 function calculateBefristung(): string {

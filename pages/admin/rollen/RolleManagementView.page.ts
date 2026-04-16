@@ -1,6 +1,6 @@
 import { expect, Locator, type Page } from '@playwright/test';
 import { RolleDetailsViewPage } from './RolleDetailsView.page';
-import { DataTable } from '../../components/DataTable.neu.page';
+import { DataTable } from '../../components/DataTable.page';
 
 export class RolleManagementViewPage {
   /* globale Lokatoren */

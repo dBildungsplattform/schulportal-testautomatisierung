@@ -1,5 +1,5 @@
 import { Page } from '@playwright/test';
-import { LandingViewPage } from './LandingView.neu.page';
+import { LandingViewPage } from './LandingView.page';
 
 function FromAnywhere(page: Page): { start: () => Promise<LandingViewPage> } {
   return {

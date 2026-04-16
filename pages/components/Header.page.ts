@@ -1,7 +1,7 @@
 import { expect, Page } from '@playwright/test';
-import { LandingViewPage } from '../LandingView.neu.page';
-import { LoginViewPage } from '../LoginView.neu.page';
-import { ProfileViewPage } from '../ProfileView.neu.page';
+import { LandingViewPage } from '../LandingView.page';
+import { LoginViewPage } from '../LoginView.page';
+import { ProfileViewPage } from '../ProfileView.page';
 
 export class HeaderPage {
   /* add global locators here */

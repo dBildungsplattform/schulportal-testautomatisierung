@@ -7,10 +7,10 @@ import { testschuleName } from '../../base/organisation';
 import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
 import { generateRolleName } from '../../base/utils/generateTestdata';
 import { Alert } from '../../pages/components/Alert';
-import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.neu.page';
+import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.page';
 import { RolleDetailsViewPage } from '../../pages/admin/rollen/RolleDetailsView.page';
 import { RolleManagementViewPage } from '../../pages/admin/rollen/RolleManagementView.page';
-import { HeaderPage } from '../../pages/components/Header.neu.page';
+import { HeaderPage } from '../../pages/components/Header.page';
 
 test.describe(`Testfälle für die Rollenlöschung: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
   let rolleDetailsView: RolleDetailsViewPage;

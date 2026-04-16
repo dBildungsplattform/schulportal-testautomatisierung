@@ -1,7 +1,7 @@
 import { expect, Locator, Page } from '@playwright/test';
 import { AbstractAdminPage } from '../../AbstractAdmin.page';
-import { PersonManagementViewPage } from '../PersonManagementView.neu.page';
-import { PersonCreationMode, PersonCreationParams, PersonCreationViewPage } from './PersonCreationView.neu.page';
+import { PersonManagementViewPage } from '../PersonManagementView.page';
+import { PersonCreationMode, PersonCreationParams, PersonCreationViewPage } from './PersonCreationView.page';
 
 export type PersonCreationSuccessValidationParams = PersonCreationParams & {
   organisation: string;

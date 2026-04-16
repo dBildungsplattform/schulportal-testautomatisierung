@@ -1,6 +1,6 @@
 import { expect, type Locator, Page } from '@playwright/test';
 import { RollenArt } from '../base/api/generated';
-import { LoginViewPage } from './LoginView.neu.page';
+import { LoginViewPage } from './LoginView.page';
 
 export interface Zuordnung {
   dienststellennummer?: string;

@@ -14,9 +14,9 @@ import { DEV, STAGE } from '../../base/tags';
 import { deletePersonenBySearchStrings, deleteRolleById, deleteRolleByName } from '../../base/testHelperDeleteTestdata';
 import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
 import { generateRolleName } from '../../base/utils/generateTestdata';
-import { PersonCreationViewPage } from '../../pages/admin/personen/creation/PersonCreationView.neu.page';
-import { HeaderPage } from '../../pages/components/Header.neu.page';
-import { MenuBarPage } from '../../pages/components/MenuBar.neu.page';
+import { PersonCreationViewPage } from '../../pages/admin/personen/creation/PersonCreationView.page';
+import { HeaderPage } from '../../pages/components/Header.page';
+import { MenuBarPage } from '../../pages/components/MenuBar.page';
 
 // The created test data will be deleted in the afterEach block
 let usernames: string[] = [];

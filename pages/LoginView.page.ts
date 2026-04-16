@@ -1,7 +1,7 @@
 import { expect, type Locator, Page } from '@playwright/test';
 import generator from 'generate-password-ts';
 
-import { StartViewPage } from './StartView.neu.page';
+import { StartViewPage } from './StartView.page';
 
 export class LoginViewPage {
   /* add global locators here */

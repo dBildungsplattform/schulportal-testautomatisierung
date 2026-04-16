@@ -16,11 +16,11 @@ import {
   generateRolleName,
   generateVorname,
 } from '../../base/utils/generateTestdata';
-import { HeaderPage } from '../../pages/components/Header.neu.page';
-import { LandingViewPage } from '../../pages/LandingView.neu.page';
-import { LoginViewPage } from '../../pages/LoginView.neu.page';
-import { ProfileViewPage } from '../../pages/ProfileView.neu.page';
-import { StartViewPage } from '../../pages/StartView.neu.page';
+import { HeaderPage } from '../../pages/components/Header.page';
+import { LandingViewPage } from '../../pages/LandingView.page';
+import { LoginViewPage } from '../../pages/LoginView.page';
+import { ProfileViewPage } from '../../pages/ProfileView.page';
+import { StartViewPage } from '../../pages/StartView.page';
 
 const PW: string | undefined = process.env.PW;
 const ADMIN: string | undefined = process.env.USER;

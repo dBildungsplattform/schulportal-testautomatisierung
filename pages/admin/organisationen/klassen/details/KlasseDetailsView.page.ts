@@ -1,6 +1,6 @@
 import { expect, type Locator, Page } from '@playwright/test';
 import { KlasseDeletionWorkflowPage } from '../deletion-workflow/KlasseDeletionWorkflow.page';
-import { KlasseManagementViewPage } from '../KlasseManagementView.neu.page';
+import { KlasseManagementViewPage } from '../KlasseManagementView.page';
 
 export class KlasseDetailsViewPage {
   private readonly deletionWorkflow: KlasseDeletionWorkflowPage;

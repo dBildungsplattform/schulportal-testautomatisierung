@@ -2,11 +2,11 @@ import { Download, expect, Locator, Page } from '@playwright/test';
 import * as fs from 'node:fs';
 import { UserInfo } from '../../../base/api/personApi';
 import { Autocomplete } from '../../components/Autocomplete';
-import { DataTable } from '../../components/DataTable.neu.page';
-import { MenuBarPage } from '../../components/MenuBar.neu.page';
+import { DataTable } from '../../components/DataTable.page';
+import { MenuBarPage } from '../../components/MenuBar.page';
 import { SearchFilter } from '../../components/SearchFilter';
 import { AbstractAdminPage } from '../AbstractAdmin.page';
-import { PersonDetailsViewPage } from './details/PersonDetailsView.neu.page';
+import { PersonDetailsViewPage } from './details/PersonDetailsView.page';
 
 export class PersonManagementViewPage extends AbstractAdminPage {
   private readonly personTable: DataTable;

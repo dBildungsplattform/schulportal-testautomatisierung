@@ -8,11 +8,11 @@ import { addSystemrechtToRolle } from '../../base/api/rolleApi';
 import { getServiceProviderId } from '../../base/api/serviceProviderApi';
 import { testschule665Name, testschuleName } from '../../base/organisation';
 import { generateNachname, generateVorname, generateRolleName } from '../../base/utils/generateTestdata';
-import { LoginViewPage } from '../../pages/LoginView.neu.page';
-import { StartViewPage } from '../../pages/StartView.neu.page';
+import { LoginViewPage } from '../../pages/LoginView.page';
+import { StartViewPage } from '../../pages/StartView.page';
 import { RollenSystemRecht } from '../../base/api/generated/models/RollenSystemRecht';
-import { HeaderPage } from '../../pages/components/Header.neu.page';
-import { LandingViewPage } from '../../pages/LandingView.neu.page';
+import { HeaderPage } from '../../pages/components/Header.page';
+import { LandingViewPage } from '../../pages/LandingView.page';
 import { getOrganisationId } from '../../base/api/organisationApi';
 
 /**
