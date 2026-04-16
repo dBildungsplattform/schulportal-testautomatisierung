@@ -1,4 +1,4 @@
-import { RollenSystemRecht } from './api/generated/models/RollenSystemRecht';
+import { RollenSystemRechtEnum } from './api/generated/models/RollenSystemRechtEnum';
 
 export const schuelerRolle: string = 'itslearning-Schüler';
 export const landesadminRolle: string = 'Landesadministrator';
@@ -22,7 +22,7 @@ export const vertretungslehrkraftRolle: string = 'Vertretungslehrkraft';
  */
 export const ROLLEN_CASES: {
   name: string;
-  permissions: RollenSystemRecht[];
+  permissions: RollenSystemRechtEnum[];
 }[] = [
   {
     name: 'Rolle mit allen Systemrechte',
@@ -34,6 +34,13 @@ export const ROLLEN_CASES: {
       'ROLLEN_VERWALTEN',
       'SCHULEN_VERWALTEN',
       'LANDESBEDIENSTETE_SUCHEN_UND_HINZUFUEGEN',
+      'EINGESCHRAENKT_NEUE_BENUTZER_ERSTELLEN',
+      'SCHULTRAEGER_VERWALTEN',
+      'SCHULPORTAL_VERWALTEN',
+      'HINWEISE_BEARBEITEN',
+      'ROLLEN_ERWEITERN',
+      'ANGEBOTE_VERWALTEN',
+      'ANGEBOTE_EINGESCHRAENKT_VERWALTEN',
     ],
   },
   {

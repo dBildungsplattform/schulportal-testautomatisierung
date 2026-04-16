@@ -1,15 +1,23 @@
 import { expect, Locator, Page } from '@playwright/test';
 import { KlasseCreationViewPage } from '../admin/organisationen/klassen/KlasseCreationView.neu.page';
 import { KlasseManagementViewPage } from '../admin/organisationen/klassen/KlasseManagementView.neu.page';
+import { SchultraegerCreationViewPage } from '../admin/organisationen/schultraeger/SchultraegerCreationView.page';
+import { SchultraegerManagementViewPage } from '../admin/organisationen/schultraeger/SchultraegerManagementView.page';
 import { SchuleCreationViewPage } from '../admin/organisationen/schulen/SchuleCreationView.neu.page';
 import { SchuleManagementViewPage } from '../admin/organisationen/schulen/SchuleManagementView.neu.page';
-import { PersonCreationMode, PersonCreationViewPage } from '../admin/personen/creation/PersonCreationView.neu.page';
-import { PersonImportViewPage } from '../admin/personen/PersonImportView.page';
-import { PersonManagementViewPage } from '../admin/personen/PersonManagementView.neu.page';
+import type { PersonCreationViewPage } from '../admin/personen/creation/PersonCreationView.neu.page';
+import type { PersonImportViewPage } from '../admin/personen/PersonImportView.page';
+import type { PersonManagementViewPage } from '../admin/personen/PersonManagementView.neu.page';
 import { LandesbedienstetenSearchFormPage } from '../admin/personen/search/LandesbedienstetenSearchForm.page';
 import { RolleCreationViewPage } from '../admin/rollen/RolleCreationView.page';
 import { RolleManagementViewPage } from '../admin/rollen/RolleManagementView.page';
-import { StartViewPage } from '../StartView.neu.page';
+import { HinweiseCreationViewPage } from '../admin/hinweise/HinweiseCreationView.page';
+import { ServiceProviderCreationViewPage } from '../admin/service-provider/ServiceProviderCreationView.page';
+import { ServiceProviderManagementBySchuleViewPage } from '../admin/service-provider/ServiceProviderManagementBySchuleView.page';
+import { ServiceProviderManagementViewPage } from '../admin/service-provider/ServiceProviderManagementView.page';
+import type { StartViewPage } from '../StartView.neu.page';
+
+const PERSON_CREATION_MODE_ADD_ANOTHER_STATE_EMPLOYEE: string = 'ADD_ANOTHER_STATE_EMPLOYEE';
 
 export class MenuBarPage {
   /* add global locators here */
@@ -27,18 +35,22 @@ export class MenuBarPage {
   }
 
   public async navigateToStartPage(): Promise<StartViewPage> {
+    const { StartViewPage } = await import('../StartView.neu.page');
     return this.navigateTo('back-to-start-link', new StartViewPage(this.page).waitForPageLoad());
   }
 
   public async navigateToPersonManagement(): Promise<PersonManagementViewPage> {
+    const { PersonManagementViewPage } = await import('../admin/personen/PersonManagementView.neu.page');
     return this.navigateTo('person-management-menu-item', new PersonManagementViewPage(this.page).waitForPageLoad());
   }
 
   public async navigateToPersonCreation(): Promise<PersonCreationViewPage> {
+    const { PersonCreationViewPage } = await import('../admin/personen/creation/PersonCreationView.neu.page');
     return this.navigateTo('person-creation-menu-item', new PersonCreationViewPage(this.page).waitForPageLoad());
   }
 
   public async navigateToPersonImport(): Promise<PersonImportViewPage> {
+    const { PersonImportViewPage } = await import('../admin/personen/PersonImportView.page');
     return this.navigateTo('person-import-menu-item', new PersonImportViewPage(this.page).waitForPageLoad());
   }
 
@@ -50,9 +62,15 @@ export class MenuBarPage {
   }
 
   public async navigateToPersonAdd(): Promise<PersonCreationViewPage> {
+    const { PersonCreationMode, PersonCreationViewPage } = await import(
+      '../admin/personen/creation/PersonCreationView.neu.page'
+    );
     return this.navigateTo(
       'person-add-menu-item',
-      new PersonCreationViewPage(this.page, PersonCreationMode.ADD_ANOTHER_STATE_EMPLOYEE).waitForPageLoad(),
+      new PersonCreationViewPage(
+        this.page,
+        PersonCreationMode[PERSON_CREATION_MODE_ADD_ANOTHER_STATE_EMPLOYEE as keyof typeof PersonCreationMode],
+      ).waitForPageLoad(),
     );
   }
 
@@ -87,6 +105,45 @@ export class MenuBarPage {
 
   public async navigateToSchuleCreation(): Promise<SchuleCreationViewPage> {
     return this.navigateTo('schule-creation-menu-item', new SchuleCreationViewPage(this.page).waitForPageLoad());
+  }
+
+  public async navigateToSchultraegerManagement(): Promise<SchultraegerManagementViewPage> {
+    return this.navigateTo(
+      'schultraeger-management-menu-item',
+      new SchultraegerManagementViewPage(this.page).waitForPageLoad(),
+    );
+  }
+
+  public async navigateToSchultraegerCreation(): Promise<SchultraegerCreationViewPage> {
+    return this.navigateTo(
+      'schultraeger-creation-menu-item',
+      new SchultraegerCreationViewPage(this.page).waitForPageLoad(),
+    );
+  }
+
+  public async navigateToHinweiseEdit(): Promise<HinweiseCreationViewPage> {
+    return this.navigateTo('hinweise-edit-menu-item', new HinweiseCreationViewPage(this.page).waitForPageLoad());
+  }
+
+  public async navigateToAngebotManagement(): Promise<ServiceProviderManagementViewPage> {
+    return this.navigateTo(
+      'angebot-management-menu-item',
+      new ServiceProviderManagementViewPage(this.page).waitForPageLoad(),
+    );
+  }
+
+  public async navigateToAngebotSchulspezifisch(): Promise<ServiceProviderManagementBySchuleViewPage> {
+    return this.navigateTo(
+      'angebot-display-schulspezifisch-menu-item',
+      new ServiceProviderManagementBySchuleViewPage(this.page).waitForPageLoad(),
+    );
+  }
+
+  public async navigateToAngebotCreation(): Promise<ServiceProviderCreationViewPage> {
+    return this.navigateTo(
+      'angebot-creation-menu-item',
+      new ServiceProviderCreationViewPage(this.page).waitForPageLoad(),
+    );
   }
 
   /* assertions */

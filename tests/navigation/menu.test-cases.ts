@@ -1,4 +1,4 @@
-import { RollenSystemRecht } from '../../base/api/generated/models/RollenSystemRecht';
+import { RollenSystemRechtEnum } from '../../base/api/generated/models/RollenSystemRechtEnum';
 import { MenuBarPage } from '../../pages/components/MenuBar.neu.page';
 
 /**
@@ -16,7 +16,7 @@ export interface MenuTestCase {
   testId: string;
   navigate: (menu: MenuBarPage) => Promise<unknown>;
   route: string;
-  requiredPermissions: RollenSystemRecht[];
+  requiredPermissions: RollenSystemRechtEnum[];
 }
 
 /**
@@ -30,52 +30,129 @@ export interface MenuTestCase {
  */
 export const MENU_TEST_CASES: MenuTestCase[] = [
   {
-    name: 'Person management',
+    name: 'Zurück zur Startseite',
+    testId: 'back-to-start-link',
+    route: '/start',
+    requiredPermissions: [],
+    navigate: (menu: MenuBarPage) => menu.navigateToStartPage(),
+  },
+  {
+    name: 'Alle Personen anzeigen',
     testId: 'person-management-menu-item',
     route: '/admin/personen',
-    requiredPermissions: [RollenSystemRecht.PersonenVerwalten],
+    requiredPermissions: [RollenSystemRechtEnum.PersonenVerwalten],
     navigate: (menu: MenuBarPage) => menu.navigateToPersonManagement(),
   },
   {
-    name: 'Person creation',
+    name: 'Neue Person anlegen',
     testId: 'person-creation-menu-item',
     route: '/admin/personen/new',
-    requiredPermissions: [RollenSystemRecht.PersonenAnlegen],
+    requiredPermissions: [RollenSystemRechtEnum.PersonenAnlegen],
     navigate: (menu: MenuBarPage) => menu.navigateToPersonCreation(),
   },
   {
-    name: 'Person import',
+    name: 'Benutzer importieren',
     testId: 'person-import-menu-item',
     route: '/admin/personen/import',
-    requiredPermissions: [RollenSystemRecht.ImportDurchfuehren],
+    requiredPermissions: [RollenSystemRechtEnum.ImportDurchfuehren],
     navigate: (menu: MenuBarPage) => menu.navigateToPersonImport(),
   },
   {
-    name: 'Landesbedienstete search',
+    name: 'Landesbedienstete suchen und hinzufügen',
     testId: 'person-search-menu-item',
     route: '/admin/limited/personen/search',
-    requiredPermissions: [RollenSystemRecht.LandesbediensteteSuchenUndHinzufuegen],
+    requiredPermissions: [RollenSystemRechtEnum.LandesbediensteteSuchenUndHinzufuegen],
     navigate: (menu: MenuBarPage) => menu.navigateToLandesbedienstetenSuchenUndHinzufuegen(),
   },
   {
-    name: 'Klasse management',
+    name: 'Andere Person neu anlegen',
+    testId: 'person-add-menu-item',
+    route: '/admin/limited/personen/new',
+    requiredPermissions: [RollenSystemRechtEnum.EingeschraenktNeueBenutzerErstellen],
+    navigate: (menu: MenuBarPage) => menu.navigateToPersonAdd(),
+  },
+  {
+    name: 'Alle Klassen anzeigen',
     testId: 'klasse-management-menu-item',
     route: '/admin/klassen',
-    requiredPermissions: [RollenSystemRecht.KlassenVerwalten],
+    requiredPermissions: [RollenSystemRechtEnum.KlassenVerwalten],
     navigate: (menu: MenuBarPage) => menu.navigateToKlasseManagement(),
   },
   {
-    name: 'Rolle management',
+    name: 'Neue Klasse anlegen',
+    testId: 'klasse-creation-menu-item',
+    route: '/admin/klassen/new',
+    requiredPermissions: [RollenSystemRechtEnum.KlassenVerwalten],
+    navigate: (menu: MenuBarPage) => menu.navigateToKlasseCreation(),
+  },
+  {
+    name: 'Alle Rollen anzeigen',
     testId: 'rolle-management-menu-item',
     route: '/admin/rollen',
-    requiredPermissions: [RollenSystemRecht.RollenVerwalten],
+    requiredPermissions: [RollenSystemRechtEnum.RollenVerwalten],
     navigate: (menu: MenuBarPage) => menu.navigateToRolleManagement(),
   },
   {
-    name: 'Schule management',
+    name: 'Neue Rolle anlegen',
+    testId: 'rolle-creation-menu-item',
+    route: '/admin/rollen/new',
+    requiredPermissions: [RollenSystemRechtEnum.RollenVerwalten],
+    navigate: (menu: MenuBarPage) => menu.navigateToRolleCreation(),
+  },
+  {
+    name: 'Alle Angebote anzeigen',
+    testId: 'angebot-management-menu-item',
+    route: '/admin/angebote',
+    requiredPermissions: [RollenSystemRechtEnum.AngeboteVerwalten],
+    navigate: (menu: MenuBarPage) => menu.navigateToAngebotManagement(),
+  },
+  {
+    name: 'Schulische Angebote anzeigen',
+    testId: 'angebot-display-schulspezifisch-menu-item',
+    route: '/admin/angebote/schulspezifisch',
+    requiredPermissions: [RollenSystemRechtEnum.RollenErweitern],
+    navigate: (menu: MenuBarPage) => menu.navigateToAngebotSchulspezifisch(),
+  },
+  {
+    name: 'Neues Angebot anlegen',
+    testId: 'angebot-creation-menu-item',
+    route: '/admin/angebote/new',
+    requiredPermissions: [RollenSystemRechtEnum.AngeboteVerwalten],
+    navigate: (menu: MenuBarPage) => menu.navigateToAngebotCreation(),
+  },
+  {
+    name: 'Alle Schulen anzeigen',
     testId: 'schule-management-menu-item',
     route: '/admin/schulen',
-    requiredPermissions: [RollenSystemRecht.SchulenVerwalten],
+    requiredPermissions: [RollenSystemRechtEnum.SchulenVerwalten],
     navigate: (menu: MenuBarPage) => menu.navigateToSchuleManagement(),
+  },
+  {
+    name: 'Neue Schule anlegen',
+    testId: 'schule-creation-menu-item',
+    route: '/admin/schulen/new',
+    requiredPermissions: [RollenSystemRechtEnum.SchulenVerwalten],
+    navigate: (menu: MenuBarPage) => menu.navigateToSchuleCreation(),
+  },
+  {
+    name: 'Alle Schulträger anzeigen',
+    testId: 'schultraeger-management-menu-item',
+    route: '/admin/schultraeger',
+    requiredPermissions: [RollenSystemRechtEnum.SchultraegerVerwalten],
+    navigate: (menu: MenuBarPage) => menu.navigateToSchultraegerManagement(),
+  },
+  {
+    name: 'Neuen Schulträger anlegen',
+    testId: 'schultraeger-creation-menu-item',
+    route: '/admin/schultraeger/new',
+    requiredPermissions: [RollenSystemRechtEnum.SchultraegerVerwalten],
+    navigate: (menu: MenuBarPage) => menu.navigateToSchultraegerCreation(),
+  },
+  {
+    name: 'Hinweise bearbeiten',
+    testId: 'hinweise-edit-menu-item',
+    route: '/admin/hinweise/new',
+    requiredPermissions: [RollenSystemRechtEnum.SchulportalVerwalten, RollenSystemRechtEnum.HinweiseBearbeiten],
+    navigate: (menu: MenuBarPage) => menu.navigateToHinweiseEdit(),
   },
 ];

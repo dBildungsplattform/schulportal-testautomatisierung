@@ -10,7 +10,7 @@ import { testschule665Name, testschuleName } from '../../base/organisation';
 import { generateNachname, generateVorname, generateRolleName } from '../../base/utils/generateTestdata';
 import { LoginViewPage } from '../../pages/LoginView.neu.page';
 import { StartViewPage } from '../../pages/StartView.neu.page';
-import { RollenSystemRecht } from '../../base/api/generated/models/RollenSystemRecht';
+import { RollenSystemRechtEnum } from '../../base/api/generated/models/RollenSystemRechtEnum';
 import { HeaderPage } from '../../pages/components/Header.neu.page';
 import { LandingViewPage } from '../../pages/LandingView.neu.page';
 import { getOrganisationId } from '../../base/api/organisationApi';
@@ -37,7 +37,10 @@ import { getOrganisationId } from '../../base/api/organisationApi';
  * ]);
  * ```
  */
-export async function prepareAndLoginUserWithPermissions(page: Page, permissions: RollenSystemRecht[]): Promise<void> {
+export async function prepareAndLoginUserWithPermissions(
+  page: Page,
+  permissions: RollenSystemRechtEnum[],
+): Promise<void> {
   // Get the service provider ID for Schulportal Administration
   const idSPs: string[] = [await getServiceProviderId(page, 'Schulportal-Administration')];
 

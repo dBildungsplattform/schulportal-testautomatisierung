@@ -18,7 +18,7 @@ import {
 } from './generated/apis/RolleApi';
 import { makeFetchWithPlaywright } from './playwrightFetchAdapter';
 import { ApiResponse, Configuration } from './generated/runtime';
-import { RollenSystemRecht } from './generated/models/RollenSystemRecht';
+import { RollenSystemRechtEnum } from './generated/models/RollenSystemRechtEnum';
 
 export { RollenArt };
 export { RollenMerkmal };
@@ -53,7 +53,7 @@ export async function createRolle(
       administeredBySchulstrukturknoten: organisationId,
       rollenart: rollenArt,
       merkmale: new Set<RollenMerkmal>(),
-      systemrechte: new Set<RollenSystemRecht>(),
+      systemrechte: new Set<RollenSystemRechtEnum>(),
     };
 
     if (merkmale) {
@@ -106,7 +106,7 @@ export async function addServiceProvidersToRolle(
 export async function addSystemrechtToRolle(
   page: Page,
   rolleId: string,
-  systemRecht: RollenSystemRecht,
+  systemRecht: RollenSystemRechtEnum,
 ): Promise<void> {
   try {
     const requestParameters: RolleControllerAddSystemRechtRequest = {
