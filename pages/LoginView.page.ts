@@ -43,10 +43,10 @@ export class LoginViewPage {
     const newPassword: string = this.generateSecurePassword();
     const newPasswordInput: Locator = this.page.getByTestId('new-password-input');
     const newPasswordConfirmInput: Locator = this.page.getByTestId('new-password-confirm-input');
-    const buttonClosePWChangeDialogFromProfilView: Locator = this.page.getByTestId(
+    const closePasswordChangedDialogButton: Locator = this.page.getByTestId(
       'close-password-changed-dialog-button',
     );
-    const buttonSubmitPWChange: Locator = this.page.getByTestId('set-password-button');
+    const setPasswordButton: Locator = this.page.getByTestId('set-password-button');
 
     await expect(this.page.getByTestId('update-password-title')).toHaveText('Passwort festlegen');
     await expect(this.page.getByTestId('password-update-prompt')).toHaveText(
@@ -59,9 +59,9 @@ export class LoginViewPage {
     await newPasswordConfirmInput.waitFor({ state: 'visible' });
     await newPasswordConfirmInput.fill(newPassword);
 
-    await buttonSubmitPWChange.click();
+    await setPasswordButton.click();
     if (isEntryFromProfileView) {
-      await buttonClosePWChangeDialogFromProfilView.click();
+      await closePasswordChangedDialogButton.click();
     }
     return newPassword;
   }
