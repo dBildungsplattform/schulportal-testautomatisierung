@@ -17,8 +17,6 @@ import { ServiceProviderManagementBySchuleViewPage } from '../admin/service-prov
 import { ServiceProviderManagementViewPage } from '../admin/service-provider/ServiceProviderManagementView.page';
 import type { StartViewPage } from '../StartView.neu.page';
 
-const PERSON_CREATION_MODE_ADD_ANOTHER_STATE_EMPLOYEE: string = 'ADD_ANOTHER_STATE_EMPLOYEE';
-
 export class MenuBarPage {
   /* add global locators here */
   private klasseCreation: Locator = this.page.getByTestId('klasse-creation-menu-item');
@@ -67,10 +65,7 @@ export class MenuBarPage {
     );
     return this.navigateTo(
       'person-add-menu-item',
-      new PersonCreationViewPage(
-        this.page,
-        PersonCreationMode[PERSON_CREATION_MODE_ADD_ANOTHER_STATE_EMPLOYEE as keyof typeof PersonCreationMode],
-      ).waitForPageLoad(),
+      new PersonCreationViewPage(this.page, PersonCreationMode.ADD_ANOTHER_STATE_EMPLOYEE).waitForPageLoad(),
     );
   }
 
@@ -156,7 +151,7 @@ export class MenuBarPage {
     if (shouldBeVisible) {
       await expect(locator).toBeVisible();
       await navigate(this);
-      await expect(this.page).toHaveURL(new RegExp(`${route}$`));
+      await expect(this.page).toHaveURL(new RegExp(`${route}(\\?.*)?$`));
     } else {
       await expect(locator).toHaveCount(0);
     }

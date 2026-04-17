@@ -27,13 +27,13 @@ import { getOrganisationId } from '../../base/api/organisationApi';
  * 6. Navigates to the Administration view to ensure the user session is ready for tests.
  *
  * @param page - The Playwright `Page` object representing the browser page.
- * @param permissions - An array of `RollenSystemRecht` system rights to assign to the user.
+ * @param permissions - An array of `RollenSystemRechtEnum` system rights to assign to the user.
  *
  * @example
  * ```ts
  * await prepareAndLoginUserWithPermissions(page, [
- *   RollenSystemRecht.PERSONEN_VERWALTEN,
- *   RollenSystemRecht.KLASSEN_VERWALTEN,
+ *   RollenSystemRechtEnum.PersonenVerwalten,
+ *   RollenSystemRechtEnum.KlassenVerwalten,
  * ]);
  * ```
  */

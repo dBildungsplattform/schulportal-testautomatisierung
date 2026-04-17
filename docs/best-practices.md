@@ -141,7 +141,7 @@ export class LoginViewPage {
   // Indem this zurückgegeben wird, können wir den aufrufenden Code etwas verschlanken
   public async waitForPageLoad(): Promise<LoginViewPage> {
     await expect(this.page.getByTestId('login-page-title')).toHaveText('Anmeldung');
-	return this;
+    return this;
   }
 
   // Alle Methoden, die nicht in Tests verwendet werden müssen, sind als private deklariert und werden nur innerhalb der Page aufgerufen
