@@ -13,8 +13,8 @@ import {
   generateRolleName,
   generateVorname,
 } from '../../base/utils/generateTestdata';
-import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.neu.page';
-import { PersonDetailsViewPage } from '../../pages/admin/personen/details/PersonDetailsView.neu.page';
+import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.page';
+import { PersonDetailsViewPage } from '../../pages/admin/personen/details/PersonDetailsView.page';
 import { ZuordnungenPage } from '../../pages/admin/personen/details/Zuordnungen.page';
 
 test.describe(`Schüler versetzen, Umgebung ${process.env.ENV}, URL: ${process.env.FRONTEND_URL}`, () => {

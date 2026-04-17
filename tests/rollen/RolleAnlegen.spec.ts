@@ -10,15 +10,15 @@ import { rollenArtLabel } from '../../base/rollentypen';
 import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
 import { generateRolleName } from '../../base/utils/generateTestdata';
 import { Alert } from '../../pages/components/Alert';
-import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.neu.page';
+import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.page';
 import { RolleCreationSuccessPage } from '../../pages/admin/rollen/RolleCreationSuccess.page';
 import { RolleCreationParams, RolleCreationViewPage } from '../../pages/admin/rollen/RolleCreationView.page';
 import { RolleCreationWorkflow } from '../../pages/admin/rollen/RolleCreationWorkflow.page';
 import { RolleDetailsViewPage } from '../../pages/admin/rollen/RolleDetailsView.page';
 import { RolleManagementViewPage } from '../../pages/admin/rollen/RolleManagementView.page';
-import { HeaderPage } from '../../pages/components/Header.neu.page';
-import { LoginViewPage } from '../../pages/LoginView.neu.page';
-import { StartViewPage } from '../../pages/StartView.neu.page';
+import { HeaderPage } from '../../pages/components/Header.page';
+import { LoginViewPage } from '../../pages/LoginView.page';
+import { StartViewPage } from '../../pages/StartView.page';
 import { rolleCreationParams } from './RolleAnlegen.data';
 
 async function setupAndGoToRolleCreationPage(page: PlaywrightTestArgs['page']): Promise<RolleCreationViewPage> {

@@ -1,7 +1,7 @@
 import { expect, Locator, Page } from '@playwright/test';
-import { DataTable } from '../../../components/DataTable.neu.page';
+import { DataTable } from '../../../components/DataTable.page';
 import { SearchFilter } from '../../../components/SearchFilter';
-import { MenuBarPage } from '../../../components/MenuBar.neu.page';
+import { MenuBarPage } from '../../../components/MenuBar.page';
 
 export class SchuleManagementViewPage {
   /* add global locators here */

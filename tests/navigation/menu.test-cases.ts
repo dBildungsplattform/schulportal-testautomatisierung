@@ -1,5 +1,5 @@
 import { RollenSystemRechtEnum } from '../../base/api/generated/models/RollenSystemRechtEnum';
-import { MenuBarPage } from '../../pages/components/MenuBar.neu.page';
+import { MenuBarPage } from '../../pages/components/MenuBar.page';
 
 /**
  * Represents a single menu item test case for the MenuBar.

@@ -28,16 +28,16 @@ import {
 import { DEV, STAGE } from '../base/tags';
 import { loginAndNavigateToAdministration } from '../base/testHelperUtils';
 import { generateKopersNr, generateNachname, generateVorname } from '../base/utils/generateTestdata';
-import { PersonManagementViewPage } from '../pages/admin/personen/PersonManagementView.neu.page';
+import { PersonManagementViewPage } from '../pages/admin/personen/PersonManagementView.page';
 import { LandesbedienstetenHinzufuegenPage } from '../pages/admin/personen/search/LandesbedienstetenHinzufuegen.page';
 import { LandesbedienstetenSearchFormPage } from '../pages/admin/personen/search/LandesbedienstetenSearchForm.page';
 import { LandesbedienstetenSearchResultPage } from '../pages/admin/personen/search/LandesbedienstetenSearchResult.page';
 import { LandesbedienstetenSuccessPage } from '../pages/admin/personen/search/LandesbedienstetenSucess.page';
-import { HeaderPage } from '../pages/components/Header.neu.page';
+import { HeaderPage } from '../pages/components/Header.page';
 import { SearchResultErrorDialog } from '../pages/components/SearchResultErrorDialog';
-import { LandingViewPage } from '../pages/LandingView.neu.page';
-import { LoginViewPage } from '../pages/LoginView.neu.page';
-import { StartViewPage } from '../pages/StartView.neu.page';
+import { LandingViewPage } from '../pages/LandingView.page';
+import { LoginViewPage } from '../pages/LoginView.page';
+import { StartViewPage } from '../pages/StartView.page';
 
 let loginPage: LoginViewPage;
 let landingPage: LandingViewPage;

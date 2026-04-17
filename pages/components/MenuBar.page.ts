@@ -1,13 +1,13 @@
 import { expect, Locator, Page } from '@playwright/test';
-import { KlasseCreationViewPage } from '../admin/organisationen/klassen/KlasseCreationView.neu.page';
-import { KlasseManagementViewPage } from '../admin/organisationen/klassen/KlasseManagementView.neu.page';
+import { KlasseCreationViewPage } from '../admin/organisationen/klassen/KlasseCreationView.page';
+import { KlasseManagementViewPage } from '../admin/organisationen/klassen/KlasseManagementView.page';
 import { SchultraegerCreationViewPage } from '../admin/organisationen/schultraeger/SchultraegerCreationView.page';
 import { SchultraegerManagementViewPage } from '../admin/organisationen/schultraeger/SchultraegerManagementView.page';
-import { SchuleCreationViewPage } from '../admin/organisationen/schulen/SchuleCreationView.neu.page';
-import { SchuleManagementViewPage } from '../admin/organisationen/schulen/SchuleManagementView.neu.page';
-import type { PersonCreationViewPage } from '../admin/personen/creation/PersonCreationView.neu.page';
+import { SchuleCreationViewPage } from '../admin/organisationen/schulen/SchuleCreationView.page';
+import { SchuleManagementViewPage } from '../admin/organisationen/schulen/SchuleManagementView.page';
+import type { PersonCreationViewPage } from '../admin/personen/creation/PersonCreationView.page';
 import type { PersonImportViewPage } from '../admin/personen/PersonImportView.page';
-import type { PersonManagementViewPage } from '../admin/personen/PersonManagementView.neu.page';
+import type { PersonManagementViewPage } from '../admin/personen/PersonManagementView.page';
 import { LandesbedienstetenSearchFormPage } from '../admin/personen/search/LandesbedienstetenSearchForm.page';
 import { RolleCreationViewPage } from '../admin/rollen/RolleCreationView.page';
 import { RolleManagementViewPage } from '../admin/rollen/RolleManagementView.page';
@@ -15,7 +15,7 @@ import { HinweiseCreationViewPage } from '../admin/hinweise/HinweiseCreationView
 import { ServiceProviderCreationViewPage } from '../admin/service-provider/ServiceProviderCreationView.page';
 import { ServiceProviderManagementBySchuleViewPage } from '../admin/service-provider/ServiceProviderManagementBySchuleView.page';
 import { ServiceProviderManagementViewPage } from '../admin/service-provider/ServiceProviderManagementView.page';
-import type { StartViewPage } from '../StartView.neu.page';
+import type { StartViewPage } from '../StartView.page';
 
 export class MenuBarPage {
   /* add global locators here */
@@ -33,17 +33,17 @@ export class MenuBarPage {
   }
 
   public async navigateToStartPage(): Promise<StartViewPage> {
-    const { StartViewPage } = await import('../StartView.neu.page');
+    const { StartViewPage } = await import('../StartView.page');
     return this.navigateTo('back-to-start-link', new StartViewPage(this.page).waitForPageLoad());
   }
 
   public async navigateToPersonManagement(): Promise<PersonManagementViewPage> {
-    const { PersonManagementViewPage } = await import('../admin/personen/PersonManagementView.neu.page');
+    const { PersonManagementViewPage } = await import('../admin/personen/PersonManagementView.page');
     return this.navigateTo('person-management-menu-item', new PersonManagementViewPage(this.page).waitForPageLoad());
   }
 
   public async navigateToPersonCreation(): Promise<PersonCreationViewPage> {
-    const { PersonCreationViewPage } = await import('../admin/personen/creation/PersonCreationView.neu.page');
+    const { PersonCreationViewPage } = await import('../admin/personen/creation/PersonCreationView.page');
     return this.navigateTo('person-creation-menu-item', new PersonCreationViewPage(this.page).waitForPageLoad());
   }
 
@@ -61,7 +61,7 @@ export class MenuBarPage {
 
   public async navigateToPersonAdd(): Promise<PersonCreationViewPage> {
     const { PersonCreationMode, PersonCreationViewPage } = await import(
-      '../admin/personen/creation/PersonCreationView.neu.page'
+      '../admin/personen/creation/PersonCreationView.page'
     );
     return this.navigateTo(
       'person-add-menu-item',

@@ -2,7 +2,7 @@ import { Download, expect, Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { Autocomplete } from '../../components/Autocomplete';
 import { AbstractAdminPage } from '../AbstractAdmin.page';
-import { PersonManagementViewPage } from './PersonManagementView.neu.page';
+import { PersonManagementViewPage } from './PersonManagementView.page';
 
 export class PersonImportViewPage extends AbstractAdminPage {
   constructor(protected readonly page: Page) {

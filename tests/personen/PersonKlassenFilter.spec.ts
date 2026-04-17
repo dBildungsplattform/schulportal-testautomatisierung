@@ -21,21 +21,21 @@ import {
   generateSchulname,
   generateVorname,
 } from '../../base/utils/generateTestdata';
-import { LandingViewPage } from '../../pages/LandingView.neu.page';
-import { LoginViewPage } from '../../pages/LoginView.neu.page';
-import { StartViewPage } from '../../pages/StartView.neu.page';
+import { LandingViewPage } from '../../pages/LandingView.page';
+import { LoginViewPage } from '../../pages/LoginView.page';
+import { StartViewPage } from '../../pages/StartView.page';
 import { SchuleCreationSuccessPage } from '../../pages/admin/organisationen/schulen/SchuleCreationSuccess.page';
 import {
   SchuleCreationParams,
   SchuleCreationViewPage,
   Schulform,
-} from '../../pages/admin/organisationen/schulen/SchuleCreationView.neu.page';
-import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.neu.page';
-import { PersonDetailsViewPage } from '../../pages/admin/personen/details/PersonDetailsView.neu.page';
+} from '../../pages/admin/organisationen/schulen/SchuleCreationView.page';
+import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.page';
+import { PersonDetailsViewPage } from '../../pages/admin/personen/details/PersonDetailsView.page';
 import { ZuordnungenPage, ZuordnungValidationParams } from '../../pages/admin/personen/details/Zuordnungen.page';
 import { AddZuordnungWorkflowPage } from '../../pages/admin/personen/details/zuordnung-workflows/AddZuordnungWorkflow.page';
 import { VersetzenWorkflowPage } from '../../pages/admin/personen/details/zuordnung-workflows/VersetzenWorkflow.page';
-import { HeaderPage } from '../../pages/components/Header.neu.page';
+import { HeaderPage } from '../../pages/components/Header.page';
 
 [
   { rolleName: landesadminRolle, bezeichnung: 'Landesadmin' },

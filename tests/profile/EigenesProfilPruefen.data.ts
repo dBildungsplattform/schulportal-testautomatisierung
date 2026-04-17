@@ -9,7 +9,7 @@ import {
   generateRolleName,
   generateKopersNr,
 } from '../../base/utils/generateTestdata';
-import { PersoenlicheDaten, Zuordnung } from '../../pages/ProfileView.neu.page';
+import { PersoenlicheDaten, Zuordnung } from '../../pages/ProfileView.page';
 
 interface TestData {
   actor: string;

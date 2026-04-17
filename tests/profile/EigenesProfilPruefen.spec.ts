@@ -6,11 +6,11 @@ import { RollenArt } from '../../base/api/rolleApi';
 import { getServiceProviderId } from '../../base/api/serviceProviderApi';
 import { DEV, STAGE } from '../../base/tags';
 import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
-import { HeaderPage } from '../../pages/components/Header.neu.page';
-import { LandingViewPage } from '../../pages/LandingView.neu.page';
-import { LoginViewPage } from '../../pages/LoginView.neu.page';
-import { ProfileViewPage } from '../../pages/ProfileView.neu.page';
-import { StartViewPage } from '../../pages/StartView.neu.page';
+import { HeaderPage } from '../../pages/components/Header.page';
+import { LandingViewPage } from '../../pages/LandingView.page';
+import { LoginViewPage } from '../../pages/LoginView.page';
+import { ProfileViewPage } from '../../pages/ProfileView.page';
+import { StartViewPage } from '../../pages/StartView.page';
 import { testData } from './EigenesProfilPruefen.data';
 
 const PW: string | undefined = process.env.PW;

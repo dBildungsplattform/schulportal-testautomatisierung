@@ -10,7 +10,7 @@ import {
   generateRolleName,
   generateVorname,
 } from '../../base/utils/generateTestdata';
-import { SchuleCreationParams } from '../../pages/admin/organisationen/schulen/SchuleCreationView.neu.page';
+import { SchuleCreationParams } from '../../pages/admin/organisationen/schulen/SchuleCreationView.page';
 
 export interface KlassenAndSchuelerData {
   klassenNamenSchule: string[];

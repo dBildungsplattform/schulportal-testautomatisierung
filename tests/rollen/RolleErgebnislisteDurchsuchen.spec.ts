@@ -5,12 +5,12 @@ import { landSH } from '../../base/organisation';
 import { landesadminRolle } from '../../base/rollen';
 import { DEV, STAGE } from '../../base/tags';
 import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
-import { LandingViewPage } from '../../pages/LandingView.neu.page';
-import { LoginViewPage } from '../../pages/LoginView.neu.page';
-import { StartViewPage } from '../../pages/StartView.neu.page';
-import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.neu.page';
+import { LandingViewPage } from '../../pages/LandingView.page';
+import { LoginViewPage } from '../../pages/LoginView.page';
+import { StartViewPage } from '../../pages/StartView.page';
+import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.page';
 import { RolleManagementViewPage } from '../../pages/admin/rollen/RolleManagementView.page';
-import { HeaderPage } from '../../pages/components/Header.neu.page';
+import { HeaderPage } from '../../pages/components/Header.page';
 
 let header: HeaderPage;
 let rolleManagementViewPage: RolleManagementViewPage;

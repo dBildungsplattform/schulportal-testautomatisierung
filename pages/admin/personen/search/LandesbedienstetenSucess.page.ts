@@ -1,7 +1,7 @@
 import { expect, Locator, Page } from '@playwright/test';
 import { LandesbedienstetenSearchFormPage } from './LandesbedienstetenSearchForm.page';
-import { PersonDetailsViewPage } from '../details/PersonDetailsView.neu.page';
-import { PersonManagementViewPage } from '../PersonManagementView.neu.page';
+import { PersonDetailsViewPage } from '../details/PersonDetailsView.page';
+import { PersonManagementViewPage } from '../PersonManagementView.page';
 
 export class LandesbedienstetenSuccessPage {
   constructor(protected readonly page: Page) {}
