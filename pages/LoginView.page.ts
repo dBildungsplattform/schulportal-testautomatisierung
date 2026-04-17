@@ -43,9 +43,7 @@ export class LoginViewPage {
     const newPassword: string = this.generateSecurePassword();
     const newPasswordInput: Locator = this.page.getByTestId('new-password-input');
     const newPasswordConfirmInput: Locator = this.page.getByTestId('new-password-confirm-input');
-    const closePasswordChangedDialogButton: Locator = this.page.getByTestId(
-      'close-password-changed-dialog-button',
-    );
+    const closePasswordChangedDialogButton: Locator = this.page.getByTestId('close-password-changed-dialog-button');
     const setPasswordButton: Locator = this.page.getByTestId('set-password-button');
 
     await expect(this.page.getByTestId('update-password-title')).toHaveText('Passwort festlegen');
