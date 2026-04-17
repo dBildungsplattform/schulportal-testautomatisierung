@@ -2,7 +2,7 @@ import { expect, Locator, Page } from '@playwright/test';
 import { waitForAPIResponse } from '../../../../base/api/baseApi';
 import { formatDateDMY, generateCurrentDate } from '../../../../base/utils/generateTestdata';
 import { ZuordnungenPage, ZuordnungValidationParams } from './Zuordnungen.page';
-import { PersonManagementViewPage } from '../PersonManagementView.neu.page';
+import { PersonManagementViewPage } from '../PersonManagementView.page';
 import { Autocomplete } from '../../../components/Autocomplete';
 
 interface PersonDetailsValidationParams {
@@ -286,6 +286,25 @@ export class PersonDetailsViewPage {
     await this.page.getByTestId('close-software-token-dialog-button').click();
   }
 
+  public async resetSoftwareToken(): Promise<void> {
+    const button2FA: Locator = this.page.getByTestId('open-2FA-dialog-icon');
+    const buttonResetConfirm: Locator = this.page.getByTestId('two-way-authentification-set-up-button');
+
+    await expect(button2FA).toHaveText('Token zurücksetzen');
+    await button2FA.click();
+
+    await expect(buttonResetConfirm).toHaveText('Zurücksetzen');
+    await buttonResetConfirm.click();
+
+    await expect(buttonResetConfirm).toHaveText('Schließen');
+    await buttonResetConfirm.click();
+  }
+
+  public async clearRolle(): Promise<void> {
+    const rolleAutocomplete: Autocomplete = new Autocomplete(this.page, this.page.getByTestId('rolle-select'));
+    await rolleAutocomplete.clear();
+  }
+
   public async createInbetriebnahmePasswort(): Promise<void> {
     await this.page.getByTestId('open-device-password-dialog-button').click();
     await this.page.getByTestId('password-reset-button').click();
@@ -374,6 +393,26 @@ export class PersonDetailsViewPage {
       await expect(this.page.getByTestId('two-factor-reset-info-text')).toBeVisible();
     } else {
       await expect(this.page.getByTestId('two-factor-not-setup-text')).toBeVisible();
+    }
+  }
+
+  public async checkSectionsNotVisible(sections: {
+    twoFactor?: boolean;
+  }): Promise<void> {
+    if (sections.twoFactor) {
+      await expect(this.page.getByTestId('two-factor-section-headline')).toBeHidden();
+      await expect(this.page.getByTestId('software-factor-setup-text')).toBeHidden();
+      await expect(this.page.getByTestId('two-factor-reset-info-text')).toBeHidden();
+      await expect(this.page.getByTestId('two-factor-not-setup-text')).toBeHidden();
+      await expect(this.page.getByTestId('open-2FA-dialog-icon')).toBeHidden();
+    }
+  }
+
+  public async checkBefristungAutoSelection(option: 'unbefristet' | 'schuljahresende'): Promise<void> {
+    if (option === 'schuljahresende') {
+      await expect(this.buttonBefristetSchuljahresende).toBeChecked();
+    } else {
+      await expect(this.buttonBefristungUnbefristet).toBeChecked();
     }
   }
 

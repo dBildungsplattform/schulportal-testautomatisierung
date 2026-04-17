@@ -10,12 +10,12 @@ import { KlasseCreationSuccessPage } from '../../pages/admin/organisationen/klas
 import {
   KlasseCreationParams,
   KlasseCreationViewPage,
-} from '../../pages/admin/organisationen/klassen/KlasseCreationView.neu.page';
-import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.neu.page';
-import { HeaderPage } from '../../pages/components/Header.neu.page';
-import { LandingViewPage } from '../../pages/LandingView.neu.page';
-import { LoginViewPage } from '../../pages/LoginView.neu.page';
-import { StartViewPage } from '../../pages/StartView.neu.page';
+} from '../../pages/admin/organisationen/klassen/KlasseCreationView.page';
+import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.page';
+import { HeaderPage } from '../../pages/components/Header.page';
+import { LandingViewPage } from '../../pages/LandingView.page';
+import { LoginViewPage } from '../../pages/LoginView.page';
+import { StartViewPage } from '../../pages/StartView.page';
 
 let personManagementViewPage: PersonManagementViewPage;
 let klasseAnlegenPage: KlasseCreationViewPage;

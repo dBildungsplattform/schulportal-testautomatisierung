@@ -1,5 +1,5 @@
 import { expect, Locator, Page, Response } from '@playwright/test';
-import { PersonManagementViewPage } from './admin/personen/PersonManagementView.neu.page';
+import { PersonManagementViewPage } from './admin/personen/PersonManagementView.page';
 import { TwoFactorWorkflowPage } from './TwoFactorWorkflow.page';
 import { formatDateDMY } from '../base/utils/generateTestdata';
 export class StartViewPage {

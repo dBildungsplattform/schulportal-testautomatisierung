@@ -28,10 +28,10 @@ import {
   generateSchulname,
   generateVorname,
 } from '../../base/utils/generateTestdata';
-import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.neu.page';
-import { LandingViewPage } from '../../pages/LandingView.neu.page';
-import { LoginViewPage } from '../../pages/LoginView.neu.page';
-import { StartViewPage } from '../../pages/StartView.neu.page';
+import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.page';
+import { LandingViewPage } from '../../pages/LandingView.page';
+import { LoginViewPage } from '../../pages/LoginView.page';
+import { StartViewPage } from '../../pages/StartView.page';
 import { testFixtures } from './ServiceProviderAufStartseite.data';
 
 const allProviderNames: string[] = [

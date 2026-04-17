@@ -1,6 +1,6 @@
 import { expect, Page } from '@playwright/test';
 import { Alert } from '../../components/Alert';
-import { MenuBarPage } from '../../components/MenuBar.neu.page';
+import { MenuBarPage } from '../../components/MenuBar.page';
 import { RolleCreationSuccessPage } from './RolleCreationSuccess.page';
 import { RolleCreationWorkflow } from './RolleCreationWorkflow.page';
 

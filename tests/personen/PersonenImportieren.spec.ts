@@ -14,12 +14,12 @@ import {
   generateSchulname,
   generateVorname,
 } from '../../base/utils/generateTestdata';
-import { LandingViewPage } from '../../pages/LandingView.neu.page';
-import { LoginViewPage } from '../../pages/LoginView.neu.page';
-import { StartViewPage } from '../../pages/StartView.neu.page';
+import { LandingViewPage } from '../../pages/LandingView.page';
+import { LoginViewPage } from '../../pages/LoginView.page';
+import { StartViewPage } from '../../pages/StartView.page';
 import { PersonImportViewPage } from '../../pages/admin/personen/PersonImportView.page';
-import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.neu.page';
-import { MenuBarPage } from '../../pages/components/MenuBar.neu.page';
+import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.page';
+import { MenuBarPage } from '../../pages/components/MenuBar.page';
 
 interface ImportUser {
   nachname: string;

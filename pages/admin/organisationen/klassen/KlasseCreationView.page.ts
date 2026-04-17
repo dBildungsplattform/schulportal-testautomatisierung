@@ -1,7 +1,7 @@
 import { expect, type Locator, Page } from '@playwright/test';
 import { Autocomplete } from '../../../components/Autocomplete';
 import { KlasseCreationSuccessPage } from './KlasseCreationSuccess.page';
-import { KlasseManagementViewPage } from './KlasseManagementView.neu.page';
+import { KlasseManagementViewPage } from './KlasseManagementView.page';
 
 export interface KlasseCreationParams {
   schulname: string;

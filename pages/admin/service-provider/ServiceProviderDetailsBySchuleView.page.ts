@@ -1,5 +1,5 @@
 import { expect, Locator, Page } from '@playwright/test';
-import { MenuBarPage } from '../../components/MenuBar.neu.page';
+import { MenuBarPage } from '../../components/MenuBar.page';
 
 export class ServiceProviderDetailsBySchuleViewPage {
   private readonly card: Locator;

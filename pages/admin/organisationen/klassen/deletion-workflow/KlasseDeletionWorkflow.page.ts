@@ -1,6 +1,6 @@
 import { expect, type Page } from '@playwright/test';
-import { KlasseDetailsViewPage } from '../details/KlasseDetailsView.neu.page';
-import { KlasseManagementViewPage } from '../KlasseManagementView.neu.page';
+import { KlasseDetailsViewPage } from '../details/KlasseDetailsView.page';
+import { KlasseManagementViewPage } from '../KlasseManagementView.page';
 
 export class KlasseDeletionWorkflowPage {
   /* add global locators here */

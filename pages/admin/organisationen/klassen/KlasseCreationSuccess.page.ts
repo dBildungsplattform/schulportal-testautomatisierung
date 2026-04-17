@@ -1,6 +1,6 @@
 import { expect, Locator, Page } from '@playwright/test';
-import { KlasseCreationParams, KlasseCreationViewPage } from './KlasseCreationView.neu.page';
-import { KlasseManagementViewPage } from './KlasseManagementView.neu.page';
+import { KlasseCreationParams, KlasseCreationViewPage } from './KlasseCreationView.page';
+import { KlasseManagementViewPage } from './KlasseManagementView.page';
 
 export class KlasseCreationSuccessPage {
   /* add global locators here */

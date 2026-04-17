@@ -19,18 +19,18 @@ import {
   generateRolleName,
   generateVorname,
 } from '../../base/utils/generateTestdata';
-import { LandingViewPage } from '../../pages/LandingView.neu.page';
-import { LoginViewPage } from '../../pages/LoginView.neu.page';
-import { StartViewPage } from '../../pages/StartView.neu.page';
+import { LandingViewPage } from '../../pages/LandingView.page';
+import { LoginViewPage } from '../../pages/LoginView.page';
+import { StartViewPage } from '../../pages/StartView.page';
 import { KlasseCreationSuccessPage } from '../../pages/admin/organisationen/klassen/KlasseCreationSuccess.page';
 import {
   KlasseCreationParams,
   KlasseCreationViewPage,
-} from '../../pages/admin/organisationen/klassen/KlasseCreationView.neu.page';
-import { KlasseManagementViewPage } from '../../pages/admin/organisationen/klassen/KlasseManagementView.neu.page';
-import { KlasseDetailsViewPage } from '../../pages/admin/organisationen/klassen/details/KlasseDetailsView.neu.page';
-import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.neu.page';
-import { HeaderPage } from '../../pages/components/Header.neu.page';
+} from '../../pages/admin/organisationen/klassen/KlasseCreationView.page';
+import { KlasseManagementViewPage } from '../../pages/admin/organisationen/klassen/KlasseManagementView.page';
+import { KlasseDetailsViewPage } from '../../pages/admin/organisationen/klassen/details/KlasseDetailsView.page';
+import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.page';
+import { HeaderPage } from '../../pages/components/Header.page';
 
 let klasseAnlegenPage: KlasseCreationViewPage;
 let klasseErfolgreichAngelegtPage: KlasseCreationSuccessPage;

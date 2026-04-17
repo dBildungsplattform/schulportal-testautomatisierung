@@ -3,9 +3,9 @@ import { createRolleAndPersonWithPersonenkontext, UserInfo } from '../../base/ap
 import { getServiceProviderId } from '../../base/api/serviceProviderApi';
 import { testschuleName, testschuleDstNr } from '../../base/organisation';
 import { generateNachname, generateVorname, generateRolleName } from '../../base/utils/generateTestdata';
-import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.neu.page';
+import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.page';
 import { RollenArt } from '../../base/api/generated';
-import { PersonDetailsViewPage } from '../../pages/admin/personen/details/PersonDetailsView.neu.page';
+import { PersonDetailsViewPage } from '../../pages/admin/personen/details/PersonDetailsView.page';
 import { email } from '../../base/sp';
 import { createRolle } from '../../base/api/rolleApi';
 import { getOrganisationId } from '../../base/api/organisationApi';

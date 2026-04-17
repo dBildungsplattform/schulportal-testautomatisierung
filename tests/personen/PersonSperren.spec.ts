@@ -4,9 +4,9 @@ import { createPersonWithPersonenkontext, UserInfo } from '../../base/api/person
 import { testschuleName } from '../../base/organisation';
 import { lehrkraftOeffentlichRolle } from '../../base/rollen';
 import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
-import { PersonDetailsViewPage } from '../../pages/admin/personen/details/PersonDetailsView.neu.page';
-import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.neu.page';
-import { HeaderPage } from '../../pages/components/Header.neu.page';
+import { PersonDetailsViewPage } from '../../pages/admin/personen/details/PersonDetailsView.page';
+import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.page';
+import { HeaderPage } from '../../pages/components/Header.page';
 
 interface LockOption {
   description: string;

@@ -1,6 +1,6 @@
 import { Page } from '@playwright/test';
-import { HeaderPage } from '../components/Header.neu.page';
-import { MenuBarPage } from '../components/MenuBar.neu.page';
+import { HeaderPage } from '../components/Header.page';
+import { MenuBarPage } from '../components/MenuBar.page';
 
 export abstract class AbstractAdminPage {
   protected header: HeaderPage;

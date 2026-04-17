@@ -2,8 +2,8 @@ import { expect, Locator, Page } from '@playwright/test';
 import { TOTP } from 'totp-generator';
 
 import { getSecretFromTokenQRCode, SharedCredentialManager } from '../base/2fa';
-import { PersonManagementViewPage } from './admin/personen/PersonManagementView.neu.page';
-import { ProfileViewPage } from './ProfileView.neu.page';
+import { PersonManagementViewPage } from './admin/personen/PersonManagementView.page';
+import { ProfileViewPage } from './ProfileView.page';
 
 export interface TwoFactorSetupResult {
   page: ProfileViewPage;

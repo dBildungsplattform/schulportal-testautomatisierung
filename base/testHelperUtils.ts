@@ -1,8 +1,8 @@
 import { type Page } from '@playwright/test';
 
-import { LoginViewPage } from '../pages/LoginView.neu.page';
-import { StartViewPage } from '../pages/StartView.neu.page';
-import { PersonManagementViewPage } from '../pages/admin/personen/PersonManagementView.neu.page';
+import { LoginViewPage } from '../pages/LoginView.page';
+import { StartViewPage } from '../pages/StartView.page';
+import { PersonManagementViewPage } from '../pages/admin/personen/PersonManagementView.page';
 import { SharedCredentialManager } from './2fa';
 import { freshLoginPage } from './api/personApi';
 

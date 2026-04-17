@@ -1,19 +1,21 @@
-import { type Locator, Page } from '@playwright/test';
-import { LoginPage } from './LoginView.page';
+import { expect, Page } from '@playwright/test';
+import { LoginViewPage } from './LoginView.page';
 
-export class LandingPage {
-  readonly page: Page;
-  readonly textWillkommen: Locator;
-  readonly buttonAnmelden: Locator;
+export class LandingViewPage {
+  /* add global locators here */
 
-  constructor(page: Page) {
-    this.page = page;
-    this.textWillkommen = page.getByTestId('landing-headline');
-    this.buttonAnmelden = page.getByTestId('login-button');
+  constructor(private readonly page: Page) {}
+
+  /* actions */
+  public async waitForPageLoad(): Promise<LandingViewPage> {
+    await expect(this.page.getByTestId('landing-headline')).toHaveText('Willkommen im Schulportal SH.');
+    return this;
   }
 
-  public async goToLogin(): Promise<LoginPage> {
-    await this.buttonAnmelden.click();
-    return new LoginPage(this.page);
+  public async navigateToLogin(): Promise<LoginViewPage> {
+    await this.page.getByTestId('login-button').click();
+    return new LoginViewPage(this.page);
   }
+
+  /* assertions */
 }
