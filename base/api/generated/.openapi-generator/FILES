@@ -3,6 +3,7 @@ apis/Class2FAApi.ts
 apis/ConfigApi.ts
 apis/CronApi.ts
 apis/DbiamPersonenuebersichtApi.ts
+apis/EmailWebhookApi.ts
 apis/ImportApi.ts
 apis/KeycloakinternalApi.ts
 apis/LandesbediensteterApi.ts
@@ -22,18 +23,22 @@ apis/StatusApi.ts
 apis/index.ts
 index.ts
 models/AddSystemrechtBodyParams.ts
+models/ApplyRollenerweiterungBodyParams.ts
 models/AssignHardwareTokenBodyParams.ts
 models/AssignHardwareTokenResponse.ts
 models/CreateOrUpdateMeldungBodyParams.ts
 models/CreateOrganisationBodyParams.ts
 models/CreateRolleBodyParams.ts
 models/CreateRollenerweiterungBodyParams.ts
+models/CreateServiceProviderBodyParams.ts
 models/DBiamPersonResponse.ts
 models/DBiamPersonenkontextResponse.ts
 models/DBiamPersonenuebersichtControllerFindPersonenuebersichten200Response.ts
 models/DBiamPersonenuebersichtControllerFindPersonenuebersichten200ResponseAllOf.ts
 models/DBiamPersonenuebersichtResponse.ts
 models/DBiamPersonenzuordnungResponse.ts
+models/DbiamApplyRollenerweiterungMultiError.ts
+models/DbiamApplyRollenerweiterungMultiErrorRolleIdsWithI18nKeysInner.ts
 models/DbiamCreatePersonWithPersonenkontexteBodyParams.ts
 models/DbiamCreatePersonenkontextBodyParams.ts
 models/DbiamImportError.ts
@@ -46,6 +51,7 @@ models/DbiamRolleError.ts
 models/DbiamUpdatePersonenkontexteBodyParams.ts
 models/DeleteRevisionBodyParams.ts
 models/EmailAddressStatus.ts
+models/EmailChangedBodyParams.ts
 models/FeatureFlagResponse.ts
 models/FindRollenResponse.ts
 models/ImportDataItemResponse.ts
@@ -124,6 +130,7 @@ models/RollenArt.ts
 models/RollenMerkmal.ts
 models/RollenSystemRechtEnum.ts
 models/RollenSystemRechtServiceProviderIDResponse.ts
+models/RollenerweiterungForManageableServiceProviderResponse.ts
 models/RollenerweiterungResponse.ts
 models/RollenerweiterungWithExtendedDataResponse.ts
 models/ScopeOrder.ts
@@ -143,6 +150,7 @@ models/TraegerschaftTyp.ts
 models/UpdateOrganisationBodyParams.ts
 models/UpdatePersonBodyParams.ts
 models/UpdateRolleBodyParams.ts
+models/UpdateServiceProviderBodyParams.ts
 models/UserExeternalDataResponseItslearning.ts
 models/UserExeternalDataResponseOnlineDateiablage.ts
 models/UserExeternalDataResponseOpsh.ts

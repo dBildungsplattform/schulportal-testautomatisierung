@@ -25,6 +25,12 @@ import {
     RolleRefResponseFromJSONTyped,
     RolleRefResponseToJSON,
 } from './RolleRefResponse';
+import type { RollenerweiterungForManageableServiceProviderResponse } from './RollenerweiterungForManageableServiceProviderResponse';
+import {
+    RollenerweiterungForManageableServiceProviderResponseFromJSON,
+    RollenerweiterungForManageableServiceProviderResponseFromJSONTyped,
+    RollenerweiterungForManageableServiceProviderResponseToJSON,
+} from './RollenerweiterungForManageableServiceProviderResponse';
 import type { ServiceProviderKategorie } from './ServiceProviderKategorie';
 import {
     ServiceProviderKategorieFromJSON,
@@ -82,10 +88,10 @@ export interface ManageableServiceProviderListEntryResponse {
     merkmale: Array<ServiceProviderMerkmal>;
     /**
      * 
-     * @type {boolean}
+     * @type {Array<RollenerweiterungForManageableServiceProviderResponse>}
      * @memberof ManageableServiceProviderListEntryResponse
      */
-    hasRollenerweiterung: boolean;
+    rollenerweiterungen: Array<RollenerweiterungForManageableServiceProviderResponse>;
     /**
      * 
      * @type {Array<RolleRefResponse>}
@@ -105,7 +111,7 @@ export function instanceOfManageableServiceProviderListEntryResponse(value: obje
     isInstance = isInstance && "kategorie" in value;
     isInstance = isInstance && "requires2fa" in value;
     isInstance = isInstance && "merkmale" in value;
-    isInstance = isInstance && "hasRollenerweiterung" in value;
+    isInstance = isInstance && "rollenerweiterungen" in value;
     isInstance = isInstance && "rollen" in value;
 
     return isInstance;
@@ -127,7 +133,7 @@ export function ManageableServiceProviderListEntryResponseFromJSONTyped(json: an
         'kategorie': ServiceProviderKategorieFromJSON(json['kategorie']),
         'requires2fa': json['requires2fa'],
         'merkmale': ((json['merkmale'] as Array<any>).map(ServiceProviderMerkmalFromJSON)),
-        'hasRollenerweiterung': json['hasRollenerweiterung'],
+        'rollenerweiterungen': ((json['rollenerweiterungen'] as Array<any>).map(RollenerweiterungForManageableServiceProviderResponseFromJSON)),
         'rollen': ((json['rollen'] as Array<any>).map(RolleRefResponseFromJSON)),
     };
 }
@@ -147,7 +153,7 @@ export function ManageableServiceProviderListEntryResponseToJSON(value?: Managea
         'kategorie': ServiceProviderKategorieToJSON(value.kategorie),
         'requires2fa': value.requires2fa,
         'merkmale': ((value.merkmale as Array<any>).map(ServiceProviderMerkmalToJSON)),
-        'hasRollenerweiterung': value.hasRollenerweiterung,
+        'rollenerweiterungen': ((value.rollenerweiterungen as Array<any>).map(RollenerweiterungForManageableServiceProviderResponseToJSON)),
         'rollen': ((value.rollen as Array<any>).map(RolleRefResponseToJSON)),
     };
 }
