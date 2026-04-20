@@ -22,7 +22,7 @@ export class SchuleManagementViewPage {
   /* actions */
   public async waitForPageLoad(): Promise<SchuleManagementViewPage> {
     await expect(this.headline).toHaveText('Schulverwaltung');
-    await expect(this.table).not.toContainText('Keine Daten');
+    await expect(this.table).not.toContainText('Daten werden abgerufen...');
     return this;
   }
 

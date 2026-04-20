@@ -1,6 +1,6 @@
 import { expect, type Locator, type Response, Page } from '@playwright/test';
 
-const loadingMessage: string = 'Daten werden abgerufen...';
+const noDataMessage: string = 'Keine Daten gefunden.';
 export class Autocomplete {
   private readonly overlayLocator: Locator;
   private readonly itemsLocator: Locator;
@@ -20,7 +20,7 @@ export class Autocomplete {
   }
 
   private async waitForData(): Promise<void> {
-    await expect(this.overlayLocator).not.toHaveText(loadingMessage);
+    await expect(this.overlayLocator).not.toHaveText(noDataMessage);
   }
 
   public async selectByPosition(selection: number[]): Promise<string[]> {

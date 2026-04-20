@@ -20,7 +20,7 @@ export class DataTable {
   /* actions */
 
   public async waitForDataLoad(): Promise<void> {
-    await expect(this.tableLocator).not.toContainText('Keine Daten');
+    await expect(this.tableLocator).not.toContainText('Daten werden abgerufen...');
   }
 
   public getRow(expectedText: string): Locator {
