@@ -120,7 +120,7 @@ interface AdminFixture {
 
         test(`Suche nach einem nicht existierenden Eintrag`, async () => {
           await personManagementViewPage.searchByText('NichtExistierenderEintrag');
-          await personManagementViewPage.assertThatPersonExists('Daten werden abgerufen...');
+          await personManagementViewPage.assertThatPersonExists('Keine Daten gefunden.');
           await personManagementViewPage.checkRowCount(0);
         });
       });
