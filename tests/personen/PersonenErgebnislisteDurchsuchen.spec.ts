@@ -50,6 +50,7 @@ interface AdminFixture {
 ].forEach(({ organisationsName, dienststellenNr, rolleName, bezeichnung }: AdminFixture) => {
   let schuleId2: string;
   let schuleParams: SchuleCreationParams;
+
   test.describe(`Testfälle für die Ergebnisliste von Benutzern als ${bezeichnung}: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
     test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
       header = new HeaderPage(page);
@@ -119,7 +120,7 @@ interface AdminFixture {
 
         test(`Suche nach einem nicht existierenden Eintrag`, async () => {
           await personManagementViewPage.searchByText('NichtExistierenderEintrag');
-          await personManagementViewPage.assertThatPersonExists('Keine Daten gefunden.');
+          await personManagementViewPage.assertThatPersonExists('Daten werden abgerufen...');
           await personManagementViewPage.checkRowCount(0);
         });
       });
@@ -190,6 +191,7 @@ interface AdminFixture {
             );
           }
         });
+
         // SPSH-2174
         test.describe('Sortierungs-Tests', () => {
           test(
