@@ -22,12 +22,19 @@ ROLLEN_CASES.forEach((rolle: { name: string; permissions: RollenSystemRechtEnum[
 
       for (const item of MENU_TEST_CASES) {
         await test.step(`${item.name}`, async () => {
+          const previousUrl: string = page.url();
           const locator = page.getByTestId(item.testId);
           const shouldBeVisible: boolean = item.requiredPermissions.every((p: RollenSystemRechtEnum) =>
             rolle.permissions.includes(p),
           );
 
           await menu.checkMenuItemVisibility(locator, shouldBeVisible, item.navigate, item.route);
+
+          // Restore admin page if navigation left the admin area (e.g. back-to-start link)
+          if (shouldBeVisible && !page.url().includes('/admin')) {
+            await page.goto(previousUrl);
+            await page.waitForLoadState();
+          }
         });
       }
     });
