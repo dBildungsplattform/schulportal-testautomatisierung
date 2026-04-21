@@ -142,16 +142,9 @@ export class MenuBarPage {
   }
 
   /* assertions */
-  async checkMenuItemVisibility(
-    locator: Locator,
-    shouldBeVisible: boolean,
-    navigate: (menu: MenuBarPage) => Promise<unknown>,
-    route?: string,
-  ): Promise<void> {
+  async assertMenuItemVisibility(locator: Locator, shouldBeVisible: boolean): Promise<void> {
     if (shouldBeVisible) {
       await expect(locator).toBeVisible();
-      await navigate(this);
-      await expect(this.page).toHaveURL(new RegExp(`${route}(\\?.*)?$`));
     } else {
       await expect(locator).toHaveCount(0);
     }

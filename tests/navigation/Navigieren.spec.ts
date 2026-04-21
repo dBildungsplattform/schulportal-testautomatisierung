@@ -1,4 +1,4 @@
-import test, { Page } from '@playwright/test';
+import test, { expect, Page } from '@playwright/test';
 import { MenuBarPage } from '../../pages/components/MenuBar.page';
 import { MENU_TEST_CASES } from './menu.test-cases';
 import { RollenSystemRechtEnum } from '../../base/api/generated/models/RollenSystemRechtEnum';
@@ -28,10 +28,17 @@ ROLLEN_CASES.forEach((rolle: { name: string; permissions: RollenSystemRechtEnum[
             rolle.permissions.includes(p),
           );
 
-          await menu.checkMenuItemVisibility(locator, shouldBeVisible, item.navigate, item.route);
+          await menu.assertMenuItemVisibility(locator, shouldBeVisible);
+
+          if (!shouldBeVisible) {
+            return;
+          }
+
+          await item.navigate(menu);
+          await expect(page).toHaveURL(new RegExp(`${item.route}(\\?.*)?$`));
 
           // Restore admin page if navigation left the admin area (e.g. back-to-start link)
-          if (shouldBeVisible && !page.url().includes('/admin')) {
+          if (!page.url().includes('/admin')) {
             await page.goto(previousUrl);
             await page.waitForLoadState();
           }
