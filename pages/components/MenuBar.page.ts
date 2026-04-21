@@ -141,6 +141,10 @@ export class MenuBarPage {
     );
   }
 
+  public async navigateToMenuItem(navigate: (menu: MenuBarPage) => Promise<unknown>): Promise<void> {
+    await navigate(this);
+  }
+
   /* assertions */
   async assertMenuItemVisibility(locator: Locator, shouldBeVisible: boolean): Promise<void> {
     if (shouldBeVisible) {
@@ -148,5 +152,9 @@ export class MenuBarPage {
     } else {
       await expect(locator).toHaveCount(0);
     }
+  }
+
+  async assertCurrentRoute(route: string): Promise<void> {
+    await expect(this.page).toHaveURL(new RegExp(`${route}(\\?.*)?$`));
   }
 }
