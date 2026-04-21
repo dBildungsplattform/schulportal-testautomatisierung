@@ -21,8 +21,8 @@ export const ServiceProviderKategorie = {
     Email: 'EMAIL',
     Unterricht: 'UNTERRICHT',
     Verwaltung: 'VERWALTUNG',
-    Hinweise: 'HINWEISE',
-    Angebote: 'ANGEBOTE'
+    Schulisch: 'SCHULISCH',
+    Hinweise: 'HINWEISE'
 } as const;
 export type ServiceProviderKategorie = typeof ServiceProviderKategorie[keyof typeof ServiceProviderKategorie];
 

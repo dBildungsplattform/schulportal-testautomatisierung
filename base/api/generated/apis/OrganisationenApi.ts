@@ -127,7 +127,7 @@ export interface OrganisationControllerUpdateOrganisationNameRequest {
 export interface OrganisationenApiInterface {
     /**
      * 
-     * @param {string} organisationId The id of an organization
+     * @param {string} organisationId The ID of the parent organisation to which another organisation will be added as a subordinate.
      * @param {OrganisationByIdBodyParams} organisationByIdBodyParams The ID of the child organisation that will be assigned to the parent organisation.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}

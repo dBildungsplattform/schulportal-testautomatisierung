@@ -10,7 +10,7 @@ import { testschule665Name, testschuleName } from '../../base/organisation';
 import { generateNachname, generateVorname, generateRolleName } from '../../base/utils/generateTestdata';
 import { LoginViewPage } from '../../pages/LoginView.page';
 import { StartViewPage } from '../../pages/StartView.page';
-import { RollenSystemRecht } from '../../base/api/generated/models/RollenSystemRecht';
+import { RollenSystemRechtEnum } from '../../base/api/generated/models/RollenSystemRechtEnum';
 import { HeaderPage } from '../../pages/components/Header.page';
 import { LandingViewPage } from '../../pages/LandingView.page';
 import { getOrganisationId } from '../../base/api/organisationApi';
@@ -27,17 +27,20 @@ import { getOrganisationId } from '../../base/api/organisationApi';
  * 6. Navigates to the Administration view to ensure the user session is ready for tests.
  *
  * @param page - The Playwright `Page` object representing the browser page.
- * @param permissions - An array of `RollenSystemRecht` system rights to assign to the user.
+ * @param permissions - An array of `RollenSystemRechtEnum` system rights to assign to the user.
  *
  * @example
  * ```ts
  * await prepareAndLoginUserWithPermissions(page, [
- *   RollenSystemRecht.PERSONEN_VERWALTEN,
- *   RollenSystemRecht.KLASSEN_VERWALTEN,
+ *   RollenSystemRechtEnum.PersonenVerwalten,
+ *   RollenSystemRechtEnum.KlassenVerwalten,
  * ]);
  * ```
  */
-export async function prepareAndLoginUserWithPermissions(page: Page, permissions: RollenSystemRecht[]): Promise<void> {
+export async function prepareAndLoginUserWithPermissions(
+  page: Page,
+  permissions: RollenSystemRechtEnum[],
+): Promise<void> {
   // Get the service provider ID for Schulportal Administration
   const idSPs: string[] = [await getServiceProviderId(page, 'Schulportal-Administration')];
 

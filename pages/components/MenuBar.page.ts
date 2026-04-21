@@ -1,15 +1,21 @@
 import { expect, Locator, Page } from '@playwright/test';
 import { KlasseCreationViewPage } from '../admin/organisationen/klassen/KlasseCreationView.page';
 import { KlasseManagementViewPage } from '../admin/organisationen/klassen/KlasseManagementView.page';
+import { SchultraegerCreationViewPage } from '../admin/organisationen/schultraeger/SchultraegerCreationView.page';
+import { SchultraegerManagementViewPage } from '../admin/organisationen/schultraeger/SchultraegerManagementView.page';
 import { SchuleCreationViewPage } from '../admin/organisationen/schulen/SchuleCreationView.page';
 import { SchuleManagementViewPage } from '../admin/organisationen/schulen/SchuleManagementView.page';
-import { PersonCreationMode, PersonCreationViewPage } from '../admin/personen/creation/PersonCreationView.page';
-import { PersonImportViewPage } from '../admin/personen/PersonImportView.page';
-import { PersonManagementViewPage } from '../admin/personen/PersonManagementView.page';
+import type { PersonCreationViewPage } from '../admin/personen/creation/PersonCreationView.page';
+import type { PersonImportViewPage } from '../admin/personen/PersonImportView.page';
+import type { PersonManagementViewPage } from '../admin/personen/PersonManagementView.page';
 import { LandesbedienstetenSearchFormPage } from '../admin/personen/search/LandesbedienstetenSearchForm.page';
 import { RolleCreationViewPage } from '../admin/rollen/RolleCreationView.page';
 import { RolleManagementViewPage } from '../admin/rollen/RolleManagementView.page';
-import { StartViewPage } from '../StartView.page';
+import { HinweiseCreationViewPage } from '../admin/hinweise/HinweiseCreationView.page';
+import { ServiceProviderCreationViewPage } from '../admin/service-provider/ServiceProviderCreationView.page';
+import { ServiceProviderManagementBySchuleViewPage } from '../admin/service-provider/ServiceProviderManagementBySchuleView.page';
+import { ServiceProviderManagementViewPage } from '../admin/service-provider/ServiceProviderManagementView.page';
+import type { StartViewPage } from '../StartView.page';
 
 export class MenuBarPage {
   /* add global locators here */
@@ -27,18 +33,22 @@ export class MenuBarPage {
   }
 
   public async navigateToStartPage(): Promise<StartViewPage> {
+    const { StartViewPage } = await import('../StartView.page');
     return this.navigateTo('back-to-start-link', new StartViewPage(this.page).waitForPageLoad());
   }
 
   public async navigateToPersonManagement(): Promise<PersonManagementViewPage> {
+    const { PersonManagementViewPage } = await import('../admin/personen/PersonManagementView.page');
     return this.navigateTo('person-management-menu-item', new PersonManagementViewPage(this.page).waitForPageLoad());
   }
 
   public async navigateToPersonCreation(): Promise<PersonCreationViewPage> {
+    const { PersonCreationViewPage } = await import('../admin/personen/creation/PersonCreationView.page');
     return this.navigateTo('person-creation-menu-item', new PersonCreationViewPage(this.page).waitForPageLoad());
   }
 
   public async navigateToPersonImport(): Promise<PersonImportViewPage> {
+    const { PersonImportViewPage } = await import('../admin/personen/PersonImportView.page');
     return this.navigateTo('person-import-menu-item', new PersonImportViewPage(this.page).waitForPageLoad());
   }
 
@@ -50,6 +60,9 @@ export class MenuBarPage {
   }
 
   public async navigateToPersonAdd(): Promise<PersonCreationViewPage> {
+    const { PersonCreationMode, PersonCreationViewPage } = await import(
+      '../admin/personen/creation/PersonCreationView.page'
+    );
     return this.navigateTo(
       'person-add-menu-item',
       new PersonCreationViewPage(this.page, PersonCreationMode.ADD_ANOTHER_STATE_EMPLOYEE).waitForPageLoad(),
@@ -89,19 +102,59 @@ export class MenuBarPage {
     return this.navigateTo('schule-creation-menu-item', new SchuleCreationViewPage(this.page).waitForPageLoad());
   }
 
+  public async navigateToSchultraegerManagement(): Promise<SchultraegerManagementViewPage> {
+    return this.navigateTo(
+      'schultraeger-management-menu-item',
+      new SchultraegerManagementViewPage(this.page).waitForPageLoad(),
+    );
+  }
+
+  public async navigateToSchultraegerCreation(): Promise<SchultraegerCreationViewPage> {
+    return this.navigateTo(
+      'schultraeger-creation-menu-item',
+      new SchultraegerCreationViewPage(this.page).waitForPageLoad(),
+    );
+  }
+
+  public async navigateToHinweiseEdit(): Promise<HinweiseCreationViewPage> {
+    return this.navigateTo('hinweise-edit-menu-item', new HinweiseCreationViewPage(this.page).waitForPageLoad());
+  }
+
+  public async navigateToAngebotManagement(): Promise<ServiceProviderManagementViewPage> {
+    return this.navigateTo(
+      'angebot-management-menu-item',
+      new ServiceProviderManagementViewPage(this.page).waitForPageLoad(),
+    );
+  }
+
+  public async navigateToAngebotSchulspezifisch(): Promise<ServiceProviderManagementBySchuleViewPage> {
+    return this.navigateTo(
+      'angebot-display-schulspezifisch-menu-item',
+      new ServiceProviderManagementBySchuleViewPage(this.page).waitForPageLoad(),
+    );
+  }
+
+  public async navigateToAngebotCreation(): Promise<ServiceProviderCreationViewPage> {
+    return this.navigateTo(
+      'angebot-creation-menu-item',
+      new ServiceProviderCreationViewPage(this.page).waitForPageLoad(),
+    );
+  }
+
+  public async navigateToMenuItem(navigate: (menu: MenuBarPage) => Promise<unknown>): Promise<void> {
+    await navigate(this);
+  }
+
   /* assertions */
-  async checkMenuItemVisibility(
-    locator: Locator,
-    shouldBeVisible: boolean,
-    navigate: (menu: MenuBarPage) => Promise<unknown>,
-    route?: string,
-  ): Promise<void> {
+  async assertMenuItemVisibility(locator: Locator, shouldBeVisible: boolean): Promise<void> {
     if (shouldBeVisible) {
       await expect(locator).toBeVisible();
-      await navigate(this);
-      await expect(this.page).toHaveURL(new RegExp(`${route}$`));
     } else {
       await expect(locator).toHaveCount(0);
     }
+  }
+
+  async assertCurrentRoute(route: string): Promise<void> {
+    await expect(this.page).toHaveURL(new RegExp(`${route}(\\?.*)?$`));
   }
 }
