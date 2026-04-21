@@ -55,7 +55,7 @@ export interface UserExternalDataResponse {
      * @type {UserExternalDataResponseOx}
      * @memberof UserExternalDataResponse
      */
-    ox: UserExternalDataResponseOx;
+    ox?: UserExternalDataResponseOx;
     /**
      * 
      * @type {UserExeternalDataResponseItslearning}
@@ -87,7 +87,6 @@ export interface UserExternalDataResponse {
  */
 export function instanceOfUserExternalDataResponse(value: object): boolean {
     let isInstance = true;
-    isInstance = isInstance && "ox" in value;
     isInstance = isInstance && "itslearning" in value;
     isInstance = isInstance && "vidis" in value;
     isInstance = isInstance && "opsh" in value;
@@ -106,7 +105,7 @@ export function UserExternalDataResponseFromJSONTyped(json: any, ignoreDiscrimin
     }
     return {
         
-        'ox': UserExternalDataResponseOxFromJSON(json['ox']),
+        'ox': !exists(json, 'ox') ? undefined : UserExternalDataResponseOxFromJSON(json['ox']),
         'itslearning': UserExeternalDataResponseItslearningFromJSON(json['itslearning']),
         'vidis': UserExeternalDataResponseVidisFromJSON(json['vidis']),
         'opsh': UserExeternalDataResponseOpshFromJSON(json['opsh']),
