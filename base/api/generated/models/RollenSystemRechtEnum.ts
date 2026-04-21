@@ -35,7 +35,8 @@ export const RollenSystemRechtEnum = {
     SchulportalVerwalten: 'SCHULPORTAL_VERWALTEN',
     HinweiseBearbeiten: 'HINWEISE_BEARBEITEN',
     RollenErweitern: 'ROLLEN_ERWEITERN',
-    AngeboteVerwalten: 'ANGEBOTE_VERWALTEN'
+    AngeboteVerwalten: 'ANGEBOTE_VERWALTEN',
+    AngeboteEingeschraenktVerwalten: 'ANGEBOTE_EINGESCHRAENKT_VERWALTEN'
 } as const;
 export type RollenSystemRechtEnum = typeof RollenSystemRechtEnum[keyof typeof RollenSystemRechtEnum];
 

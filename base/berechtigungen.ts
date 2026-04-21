@@ -17,6 +17,7 @@ export const systemrechtLabel: Record<RollenSystemRechtEnum, string> = {
   EINGESCHRAENKT_NEUE_BENUTZER_ERSTELLEN: 'Darf eingeschränkt neue Benutzer erstellen',
   ROLLEN_ERWEITERN: 'Darf Rollen schulspezifisch erweitern',
   ANGEBOTE_VERWALTEN: 'Darf Angebote verwalten',
+  ANGEBOTE_EINGESCHRAENKT_VERWALTEN: 'Darf Angebote eingeschränkt verwalten',
   CRON_DURCHFUEHREN: '', // no label in UI
   PERSONEN_LESEN: '', // no label in UI
 };

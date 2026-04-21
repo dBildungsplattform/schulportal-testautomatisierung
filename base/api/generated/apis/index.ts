@@ -5,6 +5,7 @@ export * from './Class2FAApi';
 export * from './ConfigApi';
 export * from './CronApi';
 export * from './DbiamPersonenuebersichtApi';
+export * from './EmailWebhookApi';
 export * from './ImportApi';
 export * from './KeycloakinternalApi';
 export * from './LandesbediensteterApi';
