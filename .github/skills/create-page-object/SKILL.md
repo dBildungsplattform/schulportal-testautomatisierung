@@ -39,7 +39,7 @@ pages/components/              ← Wiederverwendbare UI-Komponenten
 ```ts
 import { expect, Page } from '@playwright/test';
 import { AbstractAdminPage } from '../AbstractAdmin.page';
-import { MenuBarPage } from '../../components/MenuBar.neu.page';
+import { MenuBarPage } from '../../components/MenuBar.page';
 // ... weitere Imports
 
 export class MyViewPage extends AbstractAdminPage {
@@ -68,7 +68,7 @@ export class MyViewPage extends AbstractAdminPage {
 ### Klassenstruktur — Standalone (kein extends)
 ```ts
 import { expect, Locator, Page } from '@playwright/test';
-import { MenuBarPage } from '../../components/MenuBar.neu.page';
+import { MenuBarPage } from '../../components/MenuBar.page';
 
 export class MyViewPage {
   private readonly headline: Locator;
@@ -90,10 +90,10 @@ export class MyViewPage {
 ### Verfügbare Hilfsklassen
 | Klasse | Import | Verwendung |
 |--------|--------|-----------|
-| `DataTable` | `../../components/DataTable.neu.page` | Tabellen mit Sortierung, Paginierung, Zeilenauswahl |
+| `DataTable` | `../../components/DataTable.page` | Tabellen mit Sortierung, Paginierung, Zeilenauswahl |
 | `Autocomplete` | `../../components/Autocomplete` | Such-/Filter-Dropdowns |
 | `SearchFilter` | `../../components/SearchFilter` | Freitext-Suche |
-| `MenuBarPage` | `../../components/MenuBar.neu.page` | Navigationsmenü |
+| `MenuBarPage` | `../../components/MenuBar.page` | Navigationsmenü |
 | `AbstractAdminPage` | `../AbstractAdmin.page` | Basisklasse für Admin-Views |
 
 ---
@@ -244,9 +244,9 @@ public async assertFieldValue(expected: string): Promise<void> {
 
 | Datei | Pattern |
 |-------|---------|
-| [pages/admin/service-provider/SchulischeAngebotsverwaltungView.ts](../../../pages/admin/service-provider/SchulischeAngebotsverwaltungView.ts) | Standalone-Klasse mit Filter-Autocomplete |
-| [pages/admin/service-provider/AngebotsverwaltungView.page.ts](../../../pages/admin/service-provider/AngebotsverwaltungView.page.ts) | extends AbstractAdminPage, DataTable |
-| [pages/admin/personen/PersonManagementView.neu.page.ts](../../../pages/admin/personen/PersonManagementView.neu.page.ts) | Komplexes Beispiel: DataTable, Filter, Dialoge, Navigation zur Detailseite |
+| [pages/admin/service-provider/ServiceProviderManagementBySchuleView.page.ts](../../../pages/admin/service-provider/ServiceProviderManagementBySchuleView.page.ts) | Standalone-Klasse mit Filter-Autocomplete |
+| [pages/admin/service-provider/ServiceProviderManagementView.page.ts](../../../pages/admin/service-provider/ServiceProviderManagementView.page.ts) | extends AbstractAdminPage, DataTable |
+| [pages/admin/personen/PersonManagementView.page.ts](../../../pages/admin/personen/PersonManagementView.page.ts) | Komplexes Beispiel: DataTable, Filter, Dialoge, Navigation zur Detailseite |
 | [pages/admin/rollen/RolleDetailsView.page.ts](../../../pages/admin/rollen/RolleDetailsView.page.ts) | Detailseite mit Edit- und Delete-Aktionen |
 
 ---
@@ -259,7 +259,7 @@ Für die URL `https://main.dev.spsh.dbildungsplattform.de/admin/angebote/schulsp
 
 ```ts
 import { expect, Locator, Page } from '@playwright/test';
-import { MenuBarPage } from '../../components/MenuBar.neu.page';
+import { MenuBarPage } from '../../components/MenuBar.page';
 
 export class ServiceProviderDetailsBySchuleViewPage {
   // TODO: testIds per MCP-Inspektion ermitteln und hier einsetzen
