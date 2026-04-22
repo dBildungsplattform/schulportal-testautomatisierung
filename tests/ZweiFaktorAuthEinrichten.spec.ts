@@ -10,12 +10,7 @@ import { email } from '../base/sp';
 import { DEV, STAGE } from '../base/tags';
 import { gotoTargetURL, loginAndNavigateToAdministration } from '../base/testHelperUtils';
 import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata';
-import {
-  generateKopersNr,
-  generateNachname,
-  generateRolleName,
-  generateVorname,
-} from '../base/utils/generateTestdata';
+import { generateKopersNr, generateNachname, generateRolleName, generateVorname } from '../base/utils/generateTestdata';
 import { PersonDetailsViewPage } from '../pages/admin/personen/details/PersonDetailsView.page';
 import { PersonManagementViewPage } from '../pages/admin/personen/PersonManagementView.page';
 import { HeaderPage } from '../pages/components/Header.page';
@@ -164,40 +159,44 @@ test.describe('Zwei-Faktor-Authentifizierung als Admin einrichten', () => {
     });
   });
 
-  test(
-    '2FA Abschnitt ist für Schüler nicht sichtbar',
-    { tag: [DEV, STAGE] },
-    async ({ page }: PlaywrightTestArgs) => {
-      const userInfoSchueler: UserInfo = await test.step('Testdaten: Schüler anlegen', async () => {
-        const schuleId: string = await getOrganisationId(page, testschuleName);
-        const klasseId: string = await getOrganisationId(page, klasse1Testschule);
-        const rollenname: string = generateRolleName();
-        const rolleId: string = await createRolle(page, 'LERN', schuleId, rollenname);
-        await addServiceProvidersToRolle(page, rolleId, [await getServiceProviderId(page, 'itslearning')]);
-        const userInfo: UserInfo = await createPerson(page, schuleId, rolleId, generateNachname(), generateVorname(), '', klasseId);
-        createdUsername = userInfo.username;
-        createdRolleId = userInfo.rolleId;
-        return userInfo;
-      });
+  test('2FA Abschnitt ist für Schüler nicht sichtbar', { tag: [DEV, STAGE] }, async ({ page }: PlaywrightTestArgs) => {
+    const userInfoSchueler: UserInfo = await test.step('Testdaten: Schüler anlegen', async () => {
+      const schuleId: string = await getOrganisationId(page, testschuleName);
+      const klasseId: string = await getOrganisationId(page, klasse1Testschule);
+      const rollenname: string = generateRolleName();
+      const rolleId: string = await createRolle(page, 'LERN', schuleId, rollenname);
+      await addServiceProvidersToRolle(page, rolleId, [await getServiceProviderId(page, 'itslearning')]);
+      const userInfo: UserInfo = await createPerson(
+        page,
+        schuleId,
+        rolleId,
+        generateNachname(),
+        generateVorname(),
+        '',
+        klasseId,
+      );
+      createdUsername = userInfo.username;
+      createdRolleId = userInfo.rolleId;
+      return userInfo;
+    });
 
-      const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
+    const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
 
-      const personDetailsView: PersonDetailsViewPage = await test.step('Gesamtübersicht öffnen', async () => {
-        await gotoTargetURL(page, 'admin/personen');
-        await personManagementView.searchAndOpenGesamtuebersicht(userInfoSchueler.username);
-        return new PersonDetailsViewPage(page);
-      });
+    const personDetailsView: PersonDetailsViewPage = await test.step('Gesamtübersicht öffnen', async () => {
+      await gotoTargetURL(page, 'admin/personen');
+      await personManagementView.searchAndOpenGesamtuebersicht(userInfoSchueler.username);
+      return new PersonDetailsViewPage(page);
+    });
 
-      await test.step('Gesamtübersicht Abschnitte prüfen', async () => {
-        await personDetailsView.waitForPageLoad();
-        await personDetailsView.checkSections();
-      });
+    await test.step('Gesamtübersicht Abschnitte prüfen', async () => {
+      await personDetailsView.waitForPageLoad();
+      await personDetailsView.checkSections();
+    });
 
-      await test.step('Unsichtbarkeit des 2FA Abschnitts prüfen', async () => {
-        await personDetailsView.checkSectionsNotVisible({ twoFactor: true });
-      });
-    },
-  );
+    await test.step('Unsichtbarkeit des 2FA Abschnitts prüfen', async () => {
+      await personDetailsView.checkSectionsNotVisible({ twoFactor: true });
+    });
+  });
 
   test(
     '2FA Status prüfen: kein Token eingerichtet für Lehrkraft',
