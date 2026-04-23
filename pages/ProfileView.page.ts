@@ -61,7 +61,7 @@ export class ProfileViewPage {
     return newPassword;
   }
 
-  public async resetDevicePassword(): Promise<void> {
+  public async resetDevicePassword(): Promise<string> {
     /* zuordnung card for password reset */
     await expect(this.page.getByTestId('reset-device-password-card-headline')).toBeVisible();
     await expect(this.page.getByTestId('device-password-info-text')).toBeVisible();
@@ -75,8 +75,14 @@ export class ProfileViewPage {
     );
     await this.page.getByTestId('password-reset-button').click();
 
+    const newPassword: string = await this.page
+      .getByTestId('password-output-field')
+      .locator('input[type="password"]')
+      .inputValue();
+
     await this.validatePasswordResetDialog();
     await expect(this.page.getByTestId('profile-headline')).toBeVisible();
+    return newPassword;
   }
 
   public async openChangePasswordDialog(): Promise<void> {

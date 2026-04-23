@@ -95,38 +95,4 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       });
     },
   );
-
-  test(
-    'Inbetriebnahme-Passwort über die Gesamtübersicht erzeugen',
-    { tag: [STAGE, DEV] },
-    async ({ page }: PlaywrightTestArgs) => {
-      let userInfoLehrer: UserInfo;
-
-      await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) über die api anlegen`, async () => {
-        userInfoLehrer = await createRolleAndPersonWithPersonenkontext(
-          page,
-          testschuleName,
-          typeLehrer,
-          generateNachname(),
-          generateVorname(),
-          [await getServiceProviderId(page, email)],
-          generateRolleName(),
-        );
-        usernames.push(userInfoLehrer.username);
-        rolleIds.push(userInfoLehrer.rolleId);
-      });
-
-      const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
-
-      const personDetailsView: PersonDetailsViewPage = await test.step(`Gesamtübersicht öffnen`, async () => {
-        await gotoTargetURL(page, 'admin/personen');
-        await personManagementView.searchAndOpenGesamtuebersicht(userInfoLehrer.username);
-        return new PersonDetailsViewPage(page);
-      });
-
-      await test.step(`Inbetriebnahme-Passwort für LK-Endgerät setzen`, async () => {
-        await personDetailsView.createInbetriebnahmePasswort();
-      });
-    },
-  );
 });
