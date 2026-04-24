@@ -75,12 +75,14 @@ export class ProfileViewPage {
     );
     await this.page.getByTestId('password-reset-button').click();
 
+    await this.validatePasswordResetDialog();
+
     const newPassword: string = await this.page
       .getByTestId('password-output-field')
       .locator('input[type="password"]')
       .inputValue();
 
-    await this.validatePasswordResetDialog();
+    await this.page.getByTestId('close-password-reset-dialog-button').click();
     await expect(this.page.getByTestId('profile-headline')).toBeVisible();
     return newPassword;
   }
@@ -209,7 +211,6 @@ export class ProfileViewPage {
     await expect(this.page.getByTestId('password-output-field').locator('input')).toHaveAttribute('readonly');
     await expect(this.page.getByTestId('show-password-icon')).toBeVisible();
     await expect(this.page.getByTestId('copy-password-icon')).toBeVisible();
-    await this.page.getByTestId('close-password-reset-dialog-button').click();
   }
 
   public async assertPasswordDialogUsernamePrompt(username: string): Promise<void> {

@@ -12,7 +12,7 @@ import { MENU_TEST_CASES } from './menu.test-cases';
 
 ROLLEN_CASES.forEach((rolle: { name: string; permissions: RollenSystemRechtEnum[] }) => {
   test.describe(`MenuBar – ${rolle.name}`, () => {
-    let userInfo: UserInfo;
+    let userInfo: UserInfo | undefined;
 
     test.beforeEach(async ({ page }: { page: Page }) => {
       await loginAndNavigateToAdministration(page);
@@ -31,6 +31,9 @@ ROLLEN_CASES.forEach((rolle: { name: string; permissions: RollenSystemRechtEnum[
       });
 
       await test.step('Als Admin anmelden und Testdaten löschen', async () => {
+        if (!userInfo) {
+          return;
+        }
         await loginAndNavigateToAdministration(page);
         await deletePersonenBySearchStrings(page, [userInfo.username]);
         await deleteRolleById([userInfo.rolleId], page);
