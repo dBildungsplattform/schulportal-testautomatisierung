@@ -10,16 +10,11 @@ import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelp
 import { TestHelperLdap } from '../base/testHelperLdap';
 import { gotoTargetURL, loginAndNavigateToAdministration } from '../base/testHelperUtils';
 import { generateKopersNr, generateNachname, generateRolleName, generateVorname } from '../base/utils/generateTestdata';
-import { LandingViewPage } from '../pages/LandingView.page';
 import { LoginViewPage } from '../pages/LoginView.page';
 import { ProfileViewPage } from '../pages/ProfileView.page';
-import { StartViewPage } from '../pages/StartView.page';
 import { PersonDetailsViewPage } from '../pages/admin/personen/details/PersonDetailsView.page';
 import { PersonManagementViewPage } from '../pages/admin/personen/PersonManagementView.page';
 import { HeaderPage } from '../pages/components/Header.page';
-
-const PW: string | undefined = process.env.PW;
-const ADMIN: string | undefined = process.env.USER;
 
 // This variable must be set to false in the testcase when the logged in user is changed
 let currentUserIsLandesadministrator: boolean = true;
@@ -37,9 +32,6 @@ test.describe('Inbetriebnahme-Passwort einrichten (LDAP erforderlich)', () => {
 
   test.afterEach(async ({ page }: PlaywrightTestArgs) => {
     const header: HeaderPage = new HeaderPage(page);
-    const landing: LandingViewPage = new LandingViewPage(page);
-    const login: LoginViewPage = new LoginViewPage(page);
-    const startseite: StartViewPage = new StartViewPage(page);
 
     await test.step('Offene Dialoge schließen', async () => {
       try {
@@ -52,9 +44,7 @@ test.describe('Inbetriebnahme-Passwort einrichten (LDAP erforderlich)', () => {
     if (!currentUserIsLandesadministrator) {
       await test.step('Zurück zum Admin wechseln', async () => {
         await header.logout();
-        await landing.navigateToLogin();
-        await login.login(ADMIN!, PW!);
-        await startseite.assertServiceProvidersAreLoaded();
+        await loginAndNavigateToAdministration(page);
       });
     }
 
@@ -77,6 +67,8 @@ test.describe('Inbetriebnahme-Passwort einrichten (LDAP erforderlich)', () => {
         // ignore if already logged out
       }
     });
+
+    currentUserIsLandesadministrator = true;
   });
 
   test(
