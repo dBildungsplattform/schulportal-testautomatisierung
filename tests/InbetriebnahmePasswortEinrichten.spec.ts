@@ -9,12 +9,7 @@ import { DEV, STAGE } from '../base/tags';
 import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata';
 import { TestHelperLdap } from '../base/testHelperLdap';
 import { gotoTargetURL, loginAndNavigateToAdministration } from '../base/testHelperUtils';
-import {
-  generateKopersNr,
-  generateNachname,
-  generateRolleName,
-  generateVorname,
-} from '../base/utils/generateTestdata';
+import { generateKopersNr, generateNachname, generateRolleName, generateVorname } from '../base/utils/generateTestdata';
 import { LandingViewPage } from '../pages/LandingView.page';
 import { LoginViewPage } from '../pages/LoginView.page';
 import { ProfileViewPage } from '../pages/ProfileView.page';
@@ -116,19 +111,16 @@ test.describe('Inbetriebnahme-Passwort einrichten', () => {
         currentUserIsLandesadministrator = false;
       });
 
-      const devicePassword: string = await test.step('Inbetriebnahme-Passwort erzeugen', async () => {
+      const inbetriebnahmePasswort: string = await test.step('Inbetriebnahme-Passwort erzeugen', async () => {
         await header.navigateToProfile();
         await profileView.waitForPageLoad();
-        return profileView.resetDevicePassword();
+        return profileView.resetInbetriebnahmePasswort();
       });
 
       await test.step('Passwort in LDAP prüfen', async () => {
-        const ldapHelper: TestHelperLdap = new TestHelperLdap(
-          process.env.LDAP_URL!,
-          process.env.LDAP_ADMIN_PASSWORD!,
-        );
+        const ldapHelper: TestHelperLdap = new TestHelperLdap(process.env.LDAP_URL!, process.env.LDAP_ADMIN_PASSWORD!);
         expect(
-          await ldapHelper.validatePasswordMatchesUEMPassword(userInfoLehrer.username, devicePassword),
+          await ldapHelper.validateInbetriebnahmePasswortMatches(userInfoLehrer.username, inbetriebnahmePasswort),
         ).toBeTruthy();
       });
     },
@@ -163,17 +155,14 @@ test.describe('Inbetriebnahme-Passwort einrichten', () => {
         return new PersonDetailsViewPage(page);
       });
 
-      const devicePassword: string = await test.step('Inbetriebnahme-Passwort erzeugen', async () => {
+      const inbetriebnahmePasswort: string = await test.step('Inbetriebnahme-Passwort erzeugen', async () => {
         return personDetailsView.createInbetriebnahmePasswort();
       });
 
       await test.step('Passwort in LDAP prüfen', async () => {
-        const ldapHelper: TestHelperLdap = new TestHelperLdap(
-          process.env.LDAP_URL!,
-          process.env.LDAP_ADMIN_PASSWORD!,
-        );
+        const ldapHelper: TestHelperLdap = new TestHelperLdap(process.env.LDAP_URL!, process.env.LDAP_ADMIN_PASSWORD!);
         expect(
-          await ldapHelper.validatePasswordMatchesUEMPassword(userInfoLehrer.username, devicePassword),
+          await ldapHelper.validateInbetriebnahmePasswortMatches(userInfoLehrer.username, inbetriebnahmePasswort),
         ).toBeTruthy();
       });
     },

@@ -106,12 +106,12 @@ export class TestHelperLdap {
   }
 
   /**
-   * Checks whether the (encoded result of) clear password matches the persisted UEM-Password.
+   * Checks whether the (encoded result of) clear password matches the persisted Inbetriebnahme-Passwort.
    * Uses retries for enhanced reliability of the LDAP-request and its result.
    * @param username
    * @param clearPassword the password non-encoded as clear string (for comparison response from an API-Call)
    */
-  public async validatePasswordMatchesUEMPassword(username: string, clearPassword: string): Promise<boolean> {
+  public async validateInbetriebnahmePasswortMatches(username: string, clearPassword: string): Promise<boolean> {
     const res: Result<boolean> = await this.executeWithRetry(() =>
       this.checkUserPasswordMatchesPassword(username, clearPassword),
     );

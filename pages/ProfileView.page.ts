@@ -61,7 +61,7 @@ export class ProfileViewPage {
     return newPassword;
   }
 
-  public async resetDevicePassword(): Promise<string> {
+  public async resetInbetriebnahmePasswort(): Promise<string> {
     /* zuordnung card for password reset */
     await expect(this.page.getByTestId('reset-device-password-card-headline')).toBeVisible();
     await expect(this.page.getByTestId('device-password-info-text')).toBeVisible();
