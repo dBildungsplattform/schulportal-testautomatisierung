@@ -355,11 +355,11 @@ export async function createTeacherAndLogin(page: Page): Promise<UserInfo> {
 }
 
 /**
- * Sets the UEM-Password for a person in LDAP.
+ * Sets the Inbetriebnahme-Passwort (device password) for a person in LDAP.
  * @param page
  * @param personId
  */
-export async function setUEMPassword(page: Page, personId: string): Promise<string> {
+export async function setInbetriebnahmePasswort(page: Page, personId: string): Promise<string> {
   try {
     const requestParameters: PersonControllerResetUEMPasswordByPersonIdRequest = {
       personId,
@@ -373,7 +373,7 @@ export async function setUEMPassword(page: Page, personId: string): Promise<stri
     const newPassword: string = await response.value();
     return newPassword;
   } catch (error) {
-    console.error('[ERROR] setUEMPassword failed:', error);
+    console.error('[ERROR] setInbetriebnahmePasswort failed:', error);
     throw error;
   }
 }
