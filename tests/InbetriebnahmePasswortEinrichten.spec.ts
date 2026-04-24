@@ -28,7 +28,7 @@ let currentUserIsLandesadministrator: boolean = true;
 let usernames: string[] = [];
 let rolleIds: string[] = [];
 
-test.describe('Inbetriebnahme-Passwort einrichten', () => {
+test.describe('Inbetriebnahme-Passwort einrichten (LDAP erforderlich)', () => {
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
     await test.step('Login', async () => {
       await loginAndNavigateToAdministration(page);
@@ -80,7 +80,7 @@ test.describe('Inbetriebnahme-Passwort einrichten', () => {
   });
 
   test(
-    'Inbetriebnahme-Passwort als Lehrer über das eigene Profil erzeugen',
+    'Inbetriebnahme-Passwort als Lehrer über das eigene Profil erzeugen (LDAP erforderlich)',
     { tag: [DEV, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
       const header: HeaderPage = new HeaderPage(page);
@@ -127,7 +127,7 @@ test.describe('Inbetriebnahme-Passwort einrichten', () => {
   );
 
   test(
-    'Inbetriebnahme-Passwort über die Gesamtübersicht erzeugen',
+    'Inbetriebnahme-Passwort über die Gesamtübersicht erzeugen (LDAP erforderlich)',
     { tag: [DEV, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
       let userInfoLehrer: UserInfo;
