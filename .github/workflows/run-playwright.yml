@@ -190,7 +190,7 @@ jobs:
           SPSH_DEV_TUNNEL_PORT: ${{ secrets.SPSH_DEV_TUNNEL_PORT }}
         run: |
           ssh -o StrictHostKeyChecking=no \
-              -L 1389:$LDAP_POD_IP:1389 $SPSH_DEV_TUNNEL_USERNAME@$SPSH_DEV_TUNNEL_HOST \
+              -L 1389:$LDAP_POD_IP:389 $SPSH_DEV_TUNNEL_USERNAME@$SPSH_DEV_TUNNEL_HOST \
               -p $SPSH_DEV_TUNNEL_PORT \
               -N -o ServerAliveInterval=15 -o ExitOnForwardFailure=yes &
           disown
