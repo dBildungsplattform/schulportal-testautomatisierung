@@ -165,7 +165,7 @@ jobs:
           echo "LDAP_POD_IP=$POD_IP" >> $GITHUB_ENV
 
       # --------------------------
-      # Get LDAP admin password from Kubernetes
+      # Get LDAP admin credentials from Kubernetes
       # --------------------------
       - name: Get LDAP admin credentials from Kubernetes
         if: ${{ inputs.tag == 'dev' }}
@@ -174,7 +174,7 @@ jobs:
         run: |
           LDAP_ADMIN_USER=$(kubectl -n "$NS" get secret dbildungs-iam-server -o jsonpath='{.data.ldap-bind-dn}' | base64 -d)
           echo "::add-mask::$LDAP_ADMIN_USER"
-          echo "$LDAP_ADMIN_USER=$LDAP_ADMIN_USER" >> $GITHUB_ENV
+          echo "LDAP_ADMIN_USER=$LDAP_ADMIN_USER" >> $GITHUB_ENV
           LDAP_ADMIN_PASSWORD=$(kubectl -n "$NS" get secret dbildungs-iam-server -o jsonpath='{.data.ldap-admin-password}' | base64 -d)
           echo "::add-mask::$LDAP_ADMIN_PASSWORD"
           echo "LDAP_ADMIN_PASSWORD=$LDAP_ADMIN_PASSWORD" >> $GITHUB_ENV
