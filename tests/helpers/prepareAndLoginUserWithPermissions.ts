@@ -40,7 +40,7 @@ import { getOrganisationId } from '../../base/api/organisationApi';
 export async function prepareAndLoginUserWithPermissions(
   page: Page,
   permissions: RollenSystemRechtEnum[],
-): Promise<void> {
+): Promise<UserInfo> {
   // Get the service provider ID for Schulportal Administration
   const idSPs: string[] = [await getServiceProviderId(page, 'Schulportal-Administration')];
 
@@ -77,4 +77,5 @@ export async function prepareAndLoginUserWithPermissions(
   // Wait for the start page to load and go to administration
   await startPage.waitForPageLoad();
   await startPage.navigateToAdministration();
+  return userInfo;
 }
