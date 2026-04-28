@@ -23,8 +23,6 @@ test.describe('Inbetriebnahme-Passwort einrichten (LDAP erforderlich)', () => {
   });
 
   test.afterEach(async ({ page }: PlaywrightTestArgs) => {
-    const header: HeaderPage = new HeaderPage(page);
-
     await test.step('Offene Dialoge schließen', async () => {
       try {
         await page.keyboard.press('Escape');
@@ -70,7 +68,11 @@ test.describe('Inbetriebnahme-Passwort einrichten (LDAP erforderlich)', () => {
       });
 
       await test.step('Passwort in LDAP prüfen', async () => {
-        const ldapHelper: TestHelperLdap = new TestHelperLdap(process.env.LDAP_URL!, process.env.LDAP_ADMIN_USER!, process.env.LDAP_ADMIN_PASSWORD!);
+        const ldapHelper: TestHelperLdap = new TestHelperLdap(
+          process.env.LDAP_URL!,
+          process.env.LDAP_ADMIN_USER!,
+          process.env.LDAP_ADMIN_PASSWORD!,
+        );
         expect(
           await ldapHelper.validateInbetriebnahmePasswortMatches(userInfoLehrer.username, inbetriebnahmePasswort),
         ).toBeTruthy();
@@ -110,7 +112,11 @@ test.describe('Inbetriebnahme-Passwort einrichten (LDAP erforderlich)', () => {
       });
 
       await test.step('Passwort in LDAP prüfen', async () => {
-        const ldapHelper: TestHelperLdap = new TestHelperLdap(process.env.LDAP_URL!, process.env.LDAP_ADMIN_USER!, process.env.LDAP_ADMIN_PASSWORD!);
+        const ldapHelper: TestHelperLdap = new TestHelperLdap(
+          process.env.LDAP_URL!,
+          process.env.LDAP_ADMIN_USER!,
+          process.env.LDAP_ADMIN_PASSWORD!,
+        );
         expect(
           await ldapHelper.validateInbetriebnahmePasswortMatches(userInfoLehrer.username, inbetriebnahmePasswort),
         ).toBeTruthy();
