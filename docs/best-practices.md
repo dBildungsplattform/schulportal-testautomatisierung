@@ -101,7 +101,7 @@ Tags werden immer alphabetisch sortiert angegeben: `{ tag: [DEV, STAGE] }`, nich
 # Aufräumen (Cleanup)
 Bevorzugter Projektstandard ist das Global Teardown, das alle Testdaten mit dem Prefix `TAuto` nach dem Testlauf aufräumt. Tests müssen daher keine eigenen Cleanup-Schritte für erstellte Entitäten implementieren.
 
-Jeder Test soll ein `afterEach` mit Logout enthalten. Das Löschen von Testdaten im `afterEach` ist nicht nötig, da das Global Teardown diese Aufgabe übernimmt.
+Das Löschen von Testdaten in einem `afterEach` Hook ist nicht nötig, da das Global Teardown diese Aufgabe übernimmt.
 
 Langfristig ist die Migration auf Playwright Custom Fixtures mit automatischem Teardown pro Test der bevorzugte Weg.
 

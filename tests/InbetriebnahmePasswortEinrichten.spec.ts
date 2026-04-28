@@ -32,14 +32,6 @@ test.describe('Inbetriebnahme-Passwort einrichten (LDAP erforderlich)', () => {
         // ignore if no dialog open
       }
     });
-
-    await test.step('Abmelden', async () => {
-      try {
-        await header.logout();
-      } catch {
-        // ignore if already logged out
-      }
-    });
   });
 
   test(
@@ -78,7 +70,7 @@ test.describe('Inbetriebnahme-Passwort einrichten (LDAP erforderlich)', () => {
       });
 
       await test.step('Passwort in LDAP prüfen', async () => {
-        const ldapHelper: TestHelperLdap = new TestHelperLdap(process.env.LDAP_URL!, process.env.LDAP_ADMIN_PASSWORD!);
+        const ldapHelper: TestHelperLdap = new TestHelperLdap(process.env.LDAP_URL!, process.env.LDAP_ADMIN_USER!, process.env.LDAP_ADMIN_PASSWORD!);
         expect(
           await ldapHelper.validateInbetriebnahmePasswortMatches(userInfoLehrer.username, inbetriebnahmePasswort),
         ).toBeTruthy();
@@ -118,7 +110,7 @@ test.describe('Inbetriebnahme-Passwort einrichten (LDAP erforderlich)', () => {
       });
 
       await test.step('Passwort in LDAP prüfen', async () => {
-        const ldapHelper: TestHelperLdap = new TestHelperLdap(process.env.LDAP_URL!, process.env.LDAP_ADMIN_PASSWORD!);
+        const ldapHelper: TestHelperLdap = new TestHelperLdap(process.env.LDAP_URL!, process.env.LDAP_ADMIN_USER!, process.env.LDAP_ADMIN_PASSWORD!);
         expect(
           await ldapHelper.validateInbetriebnahmePasswortMatches(userInfoLehrer.username, inbetriebnahmePasswort),
         ).toBeTruthy();
