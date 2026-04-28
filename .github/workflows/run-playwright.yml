@@ -165,14 +165,17 @@ jobs:
           echo "LDAP_POD_IP=$POD_IP" >> $GITHUB_ENV
 
       # --------------------------
-      # Get LDAP admin password from Kubernetes
+      # Get LDAP admin credentials from Kubernetes
       # --------------------------
-      - name: Get LDAP admin password from Kubernetes
+      - name: Get LDAP admin credentials from Kubernetes
         if: ${{ inputs.tag == 'dev' }}
         env:
           NS: ${{ inputs.namespace_to_use }}
         run: |
-          LDAP_ADMIN_PASSWORD=$(kubectl -n "$NS" get secret dbildungs-iam-ldap -o jsonpath='{.data.LDAP_ADMIN_PASSWORD}' | base64 -d)
+          LDAP_ADMIN_USER=$(kubectl -n "$NS" get secret dbildungs-iam-server -o jsonpath='{.data.ldap-bind-dn}' | base64 -d)
+          echo "::add-mask::$LDAP_ADMIN_USER"
+          echo "LDAP_ADMIN_USER=$LDAP_ADMIN_USER" >> $GITHUB_ENV
+          LDAP_ADMIN_PASSWORD=$(kubectl -n "$NS" get secret dbildungs-iam-server -o jsonpath='{.data.ldap-admin-password}' | base64 -d)
           echo "::add-mask::$LDAP_ADMIN_PASSWORD"
           echo "LDAP_ADMIN_PASSWORD=$LDAP_ADMIN_PASSWORD" >> $GITHUB_ENV
 
@@ -187,7 +190,7 @@ jobs:
           SPSH_DEV_TUNNEL_PORT: ${{ secrets.SPSH_DEV_TUNNEL_PORT }}
         run: |
           ssh -o StrictHostKeyChecking=no \
-              -L 1389:$LDAP_POD_IP:1389 $SPSH_DEV_TUNNEL_USERNAME@$SPSH_DEV_TUNNEL_HOST \
+              -L 1389:$LDAP_POD_IP:3389 $SPSH_DEV_TUNNEL_USERNAME@$SPSH_DEV_TUNNEL_HOST \
               -p $SPSH_DEV_TUNNEL_PORT \
               -N -o ServerAliveInterval=15 -o ExitOnForwardFailure=yes &
           disown
@@ -201,7 +204,7 @@ jobs:
 
       - name: Test LDAP Connectivity
         if: ${{ inputs.tag == 'dev' }}
-        run: ldapwhoami -x -H ldap://localhost:1389 -D "cn=admin,dc=schule-sh,dc=de" -w "$LDAP_ADMIN_PASSWORD"
+        run: ldapwhoami -x -H ldap://localhost:1389 -D "$LDAP_ADMIN_USER" -w "$LDAP_ADMIN_PASSWORD"
 
       # --------------------------
       # Run Playwright tests
@@ -215,6 +218,7 @@ jobs:
           PW: '${{ secrets.PW }}'
           OTP_SEED_B32: '${{ secrets.OTP_SEED_B32 }}'
           LDAP_URL: ldap://localhost:1389
+          LDAP_ADMIN_USER: ${{ env.LDAP_ADMIN_USER }}
           LDAP_ADMIN_PASSWORD: ${{ env.LDAP_ADMIN_PASSWORD }}
           NODE_OPTIONS: --no-experimental-strip-types
         run: npx playwright test --config=playwright.config.ts --grep @"$TAG" --project "$BROWSER"
