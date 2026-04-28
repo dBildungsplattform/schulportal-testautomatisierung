@@ -5,8 +5,7 @@ import { getServiceProviderId } from '../base/api/serviceProviderApi';
 import { testschuleName } from '../base/organisation';
 import { typeLehrer } from '../base/rollentypen';
 import { email } from '../base/sp';
-import { DEV, STAGE } from '../base/tags';
-import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata';
+import { DEV } from '../base/tags';
 import { TestHelperLdap } from '../base/testHelperLdap';
 import { gotoTargetURL, loginAndNavigateToAdministration } from '../base/testHelperUtils';
 import { generateKopersNr, generateNachname, generateRolleName, generateVorname } from '../base/utils/generateTestdata';
@@ -15,13 +14,6 @@ import { ProfileViewPage } from '../pages/ProfileView.page';
 import { PersonDetailsViewPage } from '../pages/admin/personen/details/PersonDetailsView.page';
 import { PersonManagementViewPage } from '../pages/admin/personen/PersonManagementView.page';
 import { HeaderPage } from '../pages/components/Header.page';
-
-// This variable must be set to false in the testcase when the logged in user is changed
-let currentUserIsLandesadministrator: boolean = true;
-
-// The created test data will be deleted in the afterEach block
-let usernames: string[] = [];
-let rolleIds: string[] = [];
 
 test.describe('Inbetriebnahme-Passwort einrichten (LDAP erforderlich)', () => {
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
@@ -41,25 +33,6 @@ test.describe('Inbetriebnahme-Passwort einrichten (LDAP erforderlich)', () => {
       }
     });
 
-    if (!currentUserIsLandesadministrator) {
-      await test.step('Zurück zum Admin wechseln', async () => {
-        await header.logout();
-        await loginAndNavigateToAdministration(page);
-      });
-    }
-
-    await test.step('Testdaten löschen', async () => {
-      if (usernames.length > 0) {
-        await deletePersonenBySearchStrings(page, usernames);
-        usernames = [];
-      }
-
-      if (rolleIds.length > 0) {
-        await deleteRolleById(rolleIds, page);
-        rolleIds = [];
-      }
-    });
-
     await test.step('Abmelden', async () => {
       try {
         await header.logout();
@@ -67,13 +40,11 @@ test.describe('Inbetriebnahme-Passwort einrichten (LDAP erforderlich)', () => {
         // ignore if already logged out
       }
     });
-
-    currentUserIsLandesadministrator = true;
   });
 
   test(
     'Inbetriebnahme-Passwort als Lehrer über das eigene Profil erzeugen (LDAP erforderlich)',
-    { tag: [DEV, STAGE] },
+    { tag: [DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       const header: HeaderPage = new HeaderPage(page);
       const login: LoginViewPage = new LoginViewPage(page);
@@ -91,8 +62,6 @@ test.describe('Inbetriebnahme-Passwort einrichten (LDAP erforderlich)', () => {
           generateRolleName(),
           generateKopersNr(),
         );
-        usernames.push(userInfoLehrer.username);
-        rolleIds.push(userInfoLehrer.rolleId);
       });
 
       await test.step('Als Lehrer anmelden', async () => {
@@ -100,7 +69,6 @@ test.describe('Inbetriebnahme-Passwort einrichten (LDAP erforderlich)', () => {
         await header.navigateToLogin();
         await login.login(userInfoLehrer.username, userInfoLehrer.password);
         await login.updatePassword();
-        currentUserIsLandesadministrator = false;
       });
 
       const inbetriebnahmePasswort: string = await test.step('Inbetriebnahme-Passwort erzeugen', async () => {
@@ -120,7 +88,7 @@ test.describe('Inbetriebnahme-Passwort einrichten (LDAP erforderlich)', () => {
 
   test(
     'Inbetriebnahme-Passwort über die Gesamtübersicht erzeugen (LDAP erforderlich)',
-    { tag: [DEV, STAGE] },
+    { tag: [DEV] },
     async ({ page }: PlaywrightTestArgs) => {
       let userInfoLehrer: UserInfo;
 
@@ -135,8 +103,6 @@ test.describe('Inbetriebnahme-Passwort einrichten (LDAP erforderlich)', () => {
           generateRolleName(),
           generateKopersNr(),
         );
-        usernames.push(userInfoLehrer.username);
-        rolleIds.push(userInfoLehrer.rolleId);
       });
 
       const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
