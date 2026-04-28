@@ -233,6 +233,7 @@ test.describe(`Testfälle für die Anlage von Personen`, () => {
 
           const ldapHelper: TestHelperLdap = new TestHelperLdap(
             process.env.LDAP_URL!,
+            process.env.LDAP_ADMIN_USER!,
             process.env.LDAP_ADMIN_PASSWORD!,
           );
 
@@ -266,6 +267,7 @@ test.describe(`Testfälle für die Anlage von Personen`, () => {
 
             const ldapHelper: TestHelperLdap = new TestHelperLdap(
               process.env.LDAP_URL!,
+              process.env.LDAP_ADMIN_USER!,
               process.env.LDAP_ADMIN_PASSWORD!,
             );
 

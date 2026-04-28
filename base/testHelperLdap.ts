@@ -8,7 +8,7 @@ export class TestHelperLdap {
   private static readonly DEFAULT_RETRIES: number = 3; // e.g. DEFAULT_RETRIES = 3 will produce retry sequence: 1sek, 8sek, 27sek (1000ms * retrycounter^3)
   private static readonly GROUPS: string = 'cn=groups';
   private static readonly BASE_DN: string = 'dc=schule-sh,dc=de';
-  private static readonly BIND_DN: string = 'cn=admin,dc=schule-sh,dc=de';
+
   private static readonly OEFFENTLICHE_SCHULEN_OU: string = 'ou=oeffentlicheSchulen';
   private static readonly ERSATZ_SCHULEN_OU: string = 'ou=ersatzSchulen';
 
@@ -20,11 +20,13 @@ export class TestHelperLdap {
   /**
    *
    * @param ldapUrl the url of LDAP e.g.ldap://localhost
+   * @param ldapAdminUser the user that is used at the bind-dn
    * @param ldapAdminPassword the password that is used at the bind-dn
    * @param retries specifies the amount of retries used for methods which are using retries (see method-docs), defaults is 3
    */
   public constructor(
     private ldapUrl: string,
+    private ldapAdminUser: string,
     private ldapAdminPassword: string,
     private retries: number = TestHelperLdap.DEFAULT_RETRIES,
   ) {}
@@ -162,7 +164,7 @@ export class TestHelperLdap {
 
   //** PRIVATE methods */
   private async bind(): Promise<void> {
-    await this.client.bind(TestHelperLdap.BIND_DN, this.ldapAdminPassword);
+    await this.client.bind(this.ldapAdminUser, this.ldapAdminPassword);
   }
 
   private async unbind(): Promise<void> {
