@@ -366,8 +366,13 @@ export class TestHelperLdap {
         } else {
           throw new Error(`Function returned error: ${(result as { ok: false; error: Error }).error.message}`);
         }
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error: unknown) {
+        if (!result.ok && error instanceof Error) {
+          result = {
+            ok: false,
+            error,
+          };
+        }
         const currentDelay: number = delay * Math.pow(currentAttempt, 3);
         console.warn(
           `Attempt ${currentAttempt} failed. Retrying in ${currentDelay}ms... Remaining retries: ${retries - currentAttempt}`,
@@ -378,7 +383,7 @@ export class TestHelperLdap {
       currentAttempt++;
     }
     console.error(`All ${retries} attempts failed. Exiting with failure.`);
-    return result;
+    throw (result as { ok: false; error: Error }).error;
   }
 
   private async sleep(ms: number): Promise<void> {
