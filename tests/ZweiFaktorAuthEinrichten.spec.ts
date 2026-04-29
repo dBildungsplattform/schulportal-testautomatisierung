@@ -9,7 +9,6 @@ import { typeLehrer, typeSchuladmin } from '../base/rollentypen';
 import { email } from '../base/sp';
 import { DEV, STAGE } from '../base/tags';
 import { gotoTargetURL, loginAndNavigateToAdministration } from '../base/testHelperUtils';
-import { deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata';
 import { generateKopersNr, generateNachname, generateRolleName, generateVorname } from '../base/utils/generateTestdata';
 import { PersonDetailsViewPage } from '../pages/admin/personen/details/PersonDetailsView.page';
 import { PersonManagementViewPage } from '../pages/admin/personen/PersonManagementView.page';
@@ -17,13 +16,7 @@ import { HeaderPage } from '../pages/components/Header.page';
 import { LoginViewPage } from '../pages/LoginView.page';
 import { ProfileViewPage } from '../pages/ProfileView.page';
 
-const PW: string | undefined = process.env.PW;
-const ADMIN: string | undefined = process.env.USER;
-
 test.describe('Zwei-Faktor-Authentifizierung über eigenes Profil einrichten', () => {
-  let createdUsername: string = '';
-  let createdRolleId: string = '';
-
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
     await test.step('Login', async () => {
       await loginAndNavigateToAdministration(page);
@@ -31,40 +24,12 @@ test.describe('Zwei-Faktor-Authentifizierung über eigenes Profil einrichten', (
   });
 
   test.afterEach(async ({ page }: PlaywrightTestArgs) => {
-    const header: HeaderPage = new HeaderPage(page);
-    const login: LoginViewPage = new LoginViewPage(page);
-
     await test.step('Offene Dialoge schließen', async () => {
       try {
         await page.keyboard.press('Escape');
       } catch {
         // ignore if no dialog open
       }
-    });
-
-    await test.step('Zurück zum Admin wechseln', async () => {
-      try {
-        await header.logout();
-      } catch {
-        // ignore if already logged out
-      }
-      await header.navigateToLogin();
-      await login.login(ADMIN!, PW!);
-    });
-
-    await test.step('Testdaten löschen', async () => {
-      if (createdUsername) {
-        await deletePersonenBySearchStrings(page, [createdUsername]);
-        createdUsername = '';
-      }
-      if (createdRolleId) {
-        await deleteRolleById([createdRolleId], page);
-        createdRolleId = '';
-      }
-    });
-
-    await test.step('Abmelden', async () => {
-      await header.logout();
     });
   });
 
@@ -90,9 +55,6 @@ test.describe('Zwei-Faktor-Authentifizierung über eigenes Profil einrichten', (
           generateRolleName(),
           kopersnummer,
         );
-        createdUsername = userInfo.username;
-        createdRolleId = userInfo.rolleId;
-
         await header.logout();
         await header.navigateToLogin();
         await login.login(userInfo.username, userInfo.password);
@@ -132,9 +94,6 @@ test.describe('Zwei-Faktor-Authentifizierung über eigenes Profil einrichten', (
 });
 
 test.describe('Zwei-Faktor-Authentifizierung als Admin einrichten', () => {
-  let createdUsername: string = '';
-  let createdRolleId: string = '';
-
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
     await test.step('Login', async () => {
       await loginAndNavigateToAdministration(page);
@@ -142,20 +101,12 @@ test.describe('Zwei-Faktor-Authentifizierung als Admin einrichten', () => {
   });
 
   test.afterEach(async ({ page }: PlaywrightTestArgs) => {
-    await test.step('Testdaten löschen', async () => {
-      if (createdUsername) {
-        await deletePersonenBySearchStrings(page, [createdUsername]);
-        createdUsername = '';
+    await test.step('Offene Dialoge schließen', async () => {
+      try {
+        await page.keyboard.press('Escape');
+      } catch {
+        // ignore if no dialog open
       }
-      if (createdRolleId) {
-        await deleteRolleById([createdRolleId], page);
-        createdRolleId = '';
-      }
-    });
-
-    await test.step('Abmelden', async () => {
-      const header: HeaderPage = new HeaderPage(page);
-      await header.logout();
     });
   });
 
@@ -175,8 +126,6 @@ test.describe('Zwei-Faktor-Authentifizierung als Admin einrichten', () => {
         '',
         klasseId,
       );
-      createdUsername = userInfo.username;
-      createdRolleId = userInfo.rolleId;
       return userInfo;
     });
 
@@ -212,8 +161,6 @@ test.describe('Zwei-Faktor-Authentifizierung als Admin einrichten', () => {
           [await getServiceProviderId(page, email)],
           generateRolleName(),
         );
-        createdUsername = userInfo.username;
-        createdRolleId = userInfo.rolleId;
         return userInfo;
       });
 
@@ -247,8 +194,6 @@ test.describe('Zwei-Faktor-Authentifizierung als Admin einrichten', () => {
           generateRolleName(),
         );
         await addSystemrechtToRolle(page, userInfo.rolleId, 'PERSONEN_VERWALTEN');
-        createdUsername = userInfo.username;
-        createdRolleId = userInfo.rolleId;
         return userInfo;
       });
 
@@ -288,8 +233,6 @@ test.describe('Zwei-Faktor-Authentifizierung als Admin einrichten', () => {
         await addSystemrechtToRolle(page, userInfo.rolleId, 'KLASSEN_VERWALTEN');
         await addSystemrechtToRolle(page, userInfo.rolleId, 'SCHULTRAEGER_VERWALTEN');
         await addSystemrechtToRolle(page, userInfo.rolleId, 'PERSONEN_ANLEGEN');
-        createdUsername = userInfo.username;
-        createdRolleId = userInfo.rolleId;
         return userInfo;
       });
 
@@ -327,8 +270,6 @@ test.describe('Zwei-Faktor-Authentifizierung als Admin einrichten', () => {
           generateRolleName(),
         );
         await addSystemrechtToRolle(page, userInfo.rolleId, 'PERSONEN_VERWALTEN');
-        createdUsername = userInfo.username;
-        createdRolleId = userInfo.rolleId;
         return userInfo;
       });
 
@@ -365,8 +306,6 @@ test.describe('Zwei-Faktor-Authentifizierung als Admin einrichten', () => {
           [await getServiceProviderId(page, email)],
           generateRolleName(),
         );
-        createdUsername = userInfo.username;
-        createdRolleId = userInfo.rolleId;
         return userInfo;
       });
 
@@ -403,8 +342,6 @@ test.describe('Zwei-Faktor-Authentifizierung als Admin einrichten', () => {
           [await getServiceProviderId(page, email)],
           generateRolleName(),
         );
-        createdUsername = userInfo.username;
-        createdRolleId = userInfo.rolleId;
         return userInfo;
       });
 

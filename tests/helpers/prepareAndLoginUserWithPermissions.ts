@@ -40,7 +40,7 @@ import { getOrganisationId } from '../../base/api/organisationApi';
 export async function prepareAndLoginUserWithPermissions(
   page: Page,
   permissions: RollenSystemRechtEnum[],
-): Promise<void> {
+): Promise<UserInfo> {
   // Get the service provider ID for Schulportal Administration
   const idSPs: string[] = [await getServiceProviderId(page, 'Schulportal-Administration')];
 
@@ -55,15 +55,17 @@ export async function prepareAndLoginUserWithPermissions(
     generateRolleName(),
   );
 
-  // Assign each system right to the newly created role
+  // Assign each system right to the newly created role (must be sequential — server uses optimistic locking on Rolle)
   for (const permission of permissions) {
     await addSystemrechtToRolle(page, userInfo.rolleId, permission);
   }
 
   // Add a second school to the user's person context
-  const primarySchuleId: string = await getOrganisationId(page, testschuleName);
-  const secondSchuleId: string = await getOrganisationId(page, testschule665Name);
-  await addSecondOrganisationToPerson(page, userInfo.personId, primarySchuleId, secondSchuleId, userInfo.rolleId);
+  const [primarySchuleId, secondarySchuleId]: [string, string] = await Promise.all([
+    getOrganisationId(page, testschuleName),
+    getOrganisationId(page, testschule665Name),
+  ]);
+  await addSecondOrganisationToPerson(page, userInfo.personId, primarySchuleId, secondarySchuleId, userInfo.rolleId);
 
   // Logout any existing session
   const header: HeaderPage = new HeaderPage(page);
@@ -77,4 +79,5 @@ export async function prepareAndLoginUserWithPermissions(
   // Wait for the start page to load and go to administration
   await startPage.waitForPageLoad();
   await startPage.navigateToAdministration();
+  return userInfo;
 }
