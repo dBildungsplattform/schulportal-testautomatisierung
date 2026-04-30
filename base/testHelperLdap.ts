@@ -108,17 +108,13 @@ export class TestHelperLdap {
   }
 
   /**
-   * Checks whether the (encoded result of) clear password matches the persisted UEM-Password.
+   * Checks whether the (encoded result of) clear password matches the persisted Inbetriebnahme-Passwort.
    * Uses retries for enhanced reliability of the LDAP-request and its result.
    * @param username
    * @param clearPassword the password non-encoded as clear string (for comparison response from an API-Call)
    */
-  public async validatePasswordMatchesUEMPassword(username: string, clearPassword: string): Promise<boolean> {
-    const res: Result<boolean> = await this.executeWithRetry(() =>
-      this.checkUserPasswordMatchesPassword(username, clearPassword),
-    );
-
-    return res.ok && res.value;
+  public async validateInbetriebnahmePasswortMatches(username: string, clearPassword: string): Promise<boolean> {
+    return this.checkUserPasswordMatchesPassword(username, clearPassword);
   }
 
   // Polls for the primary email address of a user in LDAP until the email is not empty (This is necessary because email creation is asynchronous and could return an empty if we dont wait)
@@ -290,33 +286,49 @@ export class TestHelperLdap {
     }
   }
 
-  private async checkUserPasswordMatchesPassword(username: string, password: string): Promise<Result<boolean>> {
+  private async checkUserPasswordMatchesPassword(username: string, password: string): Promise<boolean> {
+    // bind as admin to search user
     await this.bind();
 
     try {
-      const searchResultLehrer: SearchResult = await this.client.search(
+      const result: SearchResult = await this.client.search(
         `${TestHelperLdap.OEFFENTLICHE_SCHULEN_OU},${TestHelperLdap.BASE_DN}`,
         {
           scope: 'sub',
           filter: `(uid=${username})`,
-          attributes: ['userPassword'],
-          returnAttributeValues: true,
+          attributes: ['dn'],
         },
       );
 
-      if (searchResultLehrer.searchEntries.length !== 1) {
-        return { ok: true, value: false };
+      if (result.searchEntries.length !== 1) {
+        return false;
       }
 
-      const matches: boolean = searchResultLehrer.searchEntries[0]['userPassword'] === password;
-      return { ok: true, value: matches };
-    } catch {
-      return { ok: false, error: new LdapOperationError('checkUserPasswordMatchesPassword') };
-    } finally {
+      const userDN: string = result.searchEntries[0].dn;
+
+      // unbind admin before binding as user
       await this.unbind();
+
+      // try bind as user
+      try {
+        await this.client.bind(userDN, password);
+        return true; // password correct
+      } catch (ex: unknown) {
+        console.warn(`User bind failed for ${username}: ${ex instanceof Error ? ex.message : String(ex)}`);
+        return false; // password wrong
+      }
+    } catch (ex: unknown) {
+      console.warn(`Admin search failed for ${username}: ${ex instanceof Error ? ex.message : String(ex)}`);
+      return false;
+    } finally {
+      // clean state
+      try {
+        await this.unbind();
+      } catch (ex: unknown) {
+        console.warn(`Unbind failed: ${ex instanceof Error ? ex.message : String(ex)}`);
+      }
     }
   }
-
   /**
    * This search/validate function comes from the original BE-service.
    */
@@ -366,8 +378,13 @@ export class TestHelperLdap {
         } else {
           throw new Error(`Function returned error: ${(result as { ok: false; error: Error }).error.message}`);
         }
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error: unknown) {
+        if (!result.ok && error instanceof Error) {
+          result = {
+            ok: false,
+            error,
+          };
+        }
         const currentDelay: number = delay * Math.pow(currentAttempt, 3);
         console.warn(
           `Attempt ${currentAttempt} failed. Retrying in ${currentDelay}ms... Remaining retries: ${retries - currentAttempt}`,
@@ -378,7 +395,7 @@ export class TestHelperLdap {
       currentAttempt++;
     }
     console.error(`All ${retries} attempts failed. Exiting with failure.`);
-    return result;
+    throw (result as { ok: false; error: Error }).error;
   }
 
   private async sleep(ms: number): Promise<void> {
