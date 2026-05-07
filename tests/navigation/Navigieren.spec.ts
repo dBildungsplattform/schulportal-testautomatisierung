@@ -1,4 +1,4 @@
-import test, { Page } from '@playwright/test';
+import { Page, TestInfo } from '@playwright/test';
 import { UserInfo } from '../../base/api/personApi';
 import { deletePersonenBySearchStrings, deleteRolleById } from '../../base/testHelperDeleteTestdata';
 import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
@@ -8,6 +8,7 @@ import { DEV, STAGE } from '../../base/tags';
 import { MenuBarPage } from '../../pages/components/MenuBar.page';
 import { HeaderPage } from '../../pages/components/Header.page';
 import { prepareAndLoginUserWithPermissions } from '../helpers/prepareAndLoginUserWithPermissions';
+import { getStorageStatePath, test } from '../fixtures';
 import { MENU_TEST_CASES } from './menu.test-cases';
 
 ROLLEN_CASES.forEach((rolle: { name: string; permissions: RollenSystemRechtEnum[] }) => {
@@ -15,11 +16,11 @@ ROLLEN_CASES.forEach((rolle: { name: string; permissions: RollenSystemRechtEnum[
     let userInfo: UserInfo | undefined;
 
     test.beforeEach(async ({ page }: { page: Page }) => {
-      await loginAndNavigateToAdministration(page);
+      await page.goto('/admin/personen', { waitUntil: 'load' });
       userInfo = await prepareAndLoginUserWithPermissions(page, rolle.permissions);
     });
 
-    test.afterEach(async ({ page }: { page: Page }) => {
+    test.afterEach(async ({ page }: { page: Page }, testInfo: TestInfo) => {
       const header: HeaderPage = new HeaderPage(page);
 
       await test.step('Als Testnutzer abmelden', async () => {
@@ -31,17 +32,16 @@ ROLLEN_CASES.forEach((rolle: { name: string; permissions: RollenSystemRechtEnum[
       });
 
       await test.step('Als Admin anmelden und Testdaten löschen', async () => {
-        if (!userInfo) {
-          return;
-        }
         await loginAndNavigateToAdministration(page);
-        await deletePersonenBySearchStrings(page, [userInfo.username]);
-        await deleteRolleById([userInfo.rolleId], page);
+        if (userInfo) {
+          await deletePersonenBySearchStrings(page, [userInfo.username]);
+          await deleteRolleById([userInfo.rolleId], page);
+        }
+
+        const storageStatePath: string = getStorageStatePath(testInfo.parallelIndex);
+        await page.context().storageState({ path: storageStatePath });
       });
 
-      await test.step('Abmelden', async () => {
-        await header.logout();
-      });
     });
 
     test('Sichtbarkeit und Navigation der Menueeintraege', { tag: [DEV, STAGE] }, async ({ page }: { page: Page }) => {
