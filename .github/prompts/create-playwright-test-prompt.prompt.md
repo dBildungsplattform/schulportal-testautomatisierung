@@ -1,0 +1,1 @@
+/create-playwright-test test mit ID 1 aus .github\skills\create-playwright-test\testschritte-SPSH-2787.csv
