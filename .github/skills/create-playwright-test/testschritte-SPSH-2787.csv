@@ -1,0 +1,75 @@
+ID;Action;Data;Expected Result
+1;"# Anmelden als Schuladmin mit einer Schule
+# Benutzerverwaltung öffnen
+# Mehrere Benutzer mit einer Klasse wählen
+# Mehrfachbearbeitung: Rolle zuordnen
+# Lern-Rolle auswählen";-;"Zwischen der Rollenauswahl und der Befristung erscheinen zwei Radiobuttons:
+ - *Option 1:* _Klasse( n )Â beibehalten (diese Option ist standardmäßig ausgewählt)_
+ - *Option 2:* _Andere Klasse auswählen_"
+1;# *Klasse beibehalten* wählen;-;"Folgender Hinweis wird angezeigt:
+
+Bitte beachten: Die neue Rolle wird den ausgewählten Schülerinnen und Schülern an ihren bestehenden Klassen zusätzlich zugeordnet."
+1;# *Rolle zuordnen* klicken;-;"Die neue Rolle wird als Kontext der bestehenden Klasse hinzugefügt.
+In der Ergebnisliste der Benutzerverwaltung steht die neu zugeordnete Rolle bei den ausgwählten Benutzern."
+2;"# Anmelden als Schuladmin mit einer Schule
+ # Benutzerverwaltung öffnen
+ # Mehrere Benutzer mit mehr als einer Klasse wählen
+ # Mehrfachbearbeitung: Rolle zuordnen
+ # Lern-Rolle auswählen, die die Schüler schon haben";-;"Zwischen der Rollenauswahl und der Befristung erscheinen zwei Radiobuttons:
+ - *Option 1:* _Klasse( n ) beibehalten (diese Option ist standardmäßig ausgewählt)_
+ - *Option 2:* _Andere Klasse auswählen_"
+2;# *Klasse beibehalten* wählen;-;Hinweis wird angezeigt: Bitte beachten: Die neue Rolle wird den ausgewählten Schülern und Schülerinnen an ihren bestehenden Klassen zusätzlich zugeordnet.
+2;# *Rolle zuordnen* klicken;-;"Fehler wird ausgegeben/protokolliert, Aktion für diese Person wird nicht ausgeführt.
+Es wird angezeigt: eine Fehlerliste mit betroffenen Schüler:innen.
+Fehlertext in der Liste der Fehlermeldungen: Die neue Rolle kann diesem Benutzer nicht zugeordnet werden, da er entweder diese Rolle schon an einer anderen Klasse besitzt oder mehreren Klassen zugeordnet ist. Bitte nehmen Sie die Änderung per Einzelbearbeitung vor."
+2;# Fehlerliste exportieren;-;Die Fehlerliste läßt sich exportieren und öffnen.
+3;"# Anmelden als Schuladmin mit zwei Schulen
+# Benutzerverwaltung öffnen
+# Nach Schule und Schüler filtern
+# Mehrere Benutzer mit *einer* Klasse wählen
+# Mehrfachbearbeitung: Rolle zuordnen
+# Schule auswählen
+# Lern-Rolle auswählen
+# *Andere Klasse auswählen* klicken";-;"Autocompletefeld wird angezeigt, in dem alle Klassen aus der ausgewählten Schule ausgewählt werden können.
+Es wird der Hinweis angezeigt: _Bitte beachten: Die neue Rolle wird den ausgewählten Schülern und Schülerinnen an der ausgewählten Klasse zugeordnet._"
+3;# *Rolle zuordnen* klicken;-;"Für alle ausgewählten Schüler:innen wird die neue Rolle als Kontext an der ausgewählten Klasse hinzugefügt.
+In der Ergebnisliste der Benutzerverwaltung steht die neu zugeordnete Rolle und die neu ausgewählte Klasse bei den ausgwählten Benutzern."
+4;"# Anmelden als Schuladmin mit zwei Schulen
+ # Benutzerverwaltung öffnen
+ # Nach Schule und Schüler filtern
+ # Mehrere Benutzer mit einer Klasse wählen
+ # Mehrfachbearbeitung: Rolle zuordnen
+ # Schule auswählen
+ # Lern-Rolle auswählen
+ # *Andere Klasse auswählen* klicken
+ # KLasse wählen
+ # Befristung wählen
+ # *Rolle zuordnen* klicken
+ # Eines der Schülerprofile öffnen";;Die neu zugeordnete Rolle wird an der ausgewählten Klasse mit der richtigen Befristung angezeigt.
+5;"# Anmelden als Schuladmin mit zwei Schulen
+ # Benutzerverwaltung öffnen
+ # Nach Schule und Schüler filtern
+ # Mehrere Benutzer mit mehreren Klassen wählen
+ # Mehrfachbearbeitung: Rolle zuordnen
+ # Schule auswählen
+ # Lern-Rolle auswählen, die die Schüler:innen schon an einer Klasse zugeordnet haben
+ # *Andere Klasse auswählen* klicken";-;"Autocompletefeld wird angezeigt, in dem alle Klassen aus der ausgewählten Schule ausgewählt werden können.
+Es wird der Hinweis angezeigt: _Bitte beachten: Die neue Rolle wird den ausgewählten Schülern und Schülerinnen an der ausgewählten Klasse zugeordnet._"
+5;# *Rolle zuordnen* klicken;-;"Fehler wird ausgegeben/protokolliert, Aktion für diese Person wird nicht ausgeführt.
+Es wird angezeigt: eine Fehlerliste mit betroffenen Schüler:innen.
+Fehlertext in der Liste der Fehlermeldungen: _""Die neue Rolle kann diesem Benutzer nicht zugeordnet werden, da er entweder diese Rolle schon an einer anderen Klasse besitzt oder mehreren Klassen zugeordnet ist. Bitte nehmen Sie die Änderung per Einzelbearbeitung vor.""_"
+6;"
+# Anmelden als Schuladmin mit einer Schule
+# Benutzerverwaltung öffnen
+# Mehrere Benutzer  wählen:
+## Mit einer Klasse
+## Mit mehreren Klassen
+# Mehrfachbearbeitung: Rolle zuordnen
+# Lern-Rolle auswählen
+# *Klasse beibehalten* wählen
+# *Rolle zuordnen* klicken";-;"Es passieren 2 Dinge, je nachdem, ob der Schüler vorher an einer oder mehreren Klassen war:
+*1 Klasse:* Die neue Rolle wird als Kontext der bestehenden Klasse hinzugefügt.
+In der Ergebnisliste der Benutzerverwaltung steht die neu zugeordnete Rolle bei den ausgwählten Benutzern.
+*2 Klassen:* Fehler wird ausgegeben/protokolliert, Aktion für diese Person wird nicht ausgeführt.
+Es wird angezeigt: eine Fehlerliste mit betroffenen Schüler:innen.
+Fehlertext in der Liste der Fehlermeldungen: _""Die neue Rolle kann diesem Benutzer nicht zugeordnet werden, da er entweder diese Rolle schon an einer anderen Klasse besitzt oder mehreren Klassen zugeordnet ist. Bitte nehmen Sie die Änderung per Einzelbearbeitung vor.""_"

@@ -1,0 +1,150 @@
+SPSH-2787 - Abgeleitete Testdaten (Arbeitsdatei)
+
+Ziel
+- Testdaten fuer Mehrfachbearbeitung Rollen-Zuordnung bei Schueler:innen vorbereiten.
+- Daten werden pro Testlauf in beforeEach neu erzeugt.
+
+Grundannahmen
+- Rolle wird in der Benutzerverwaltung per Mehrfachbearbeitung zugeordnet.
+- Es gibt mindestens eine Lern-Rolle, die als Zielrolle zugeordnet wird.
+- Fuer Negativfaelle muss die Zielrolle bereits in Konfliktkonstellation vorhanden sein.
+
+Gemeinsame Stammdaten
+- Zielrolle (lernRoleTarget): Lern-Rolle, die in den Tests zugeordnet werden soll.
+- Befristung (expiryDate): gueltiges Datum fuer Szenario 4.
+- Fehlertext (expectedErrorText):
+  Die neue Rolle kann diesem Benutzer nicht zugeordnet werden, da er entweder diese Rolle schon an einer anderen Klasse besitzt oder mehreren Klassen zugeordnet ist. Bitte nehmen Sie die Aenderung per Einzelbearbeitung vor.
+
+Konten und Organisationsstruktur
+
+A) Schuladmin mit einer Schule
+- adminOneSchool
+  - hat genau eine Schule: schoolA
+  - Berechtigung auf Benutzerverwaltung und Mehrfachbearbeitung
+- schoolA
+  - classes:
+    - classA1
+    - classA2
+
+B) Schuladmin mit zwei Schulen
+- adminTwoSchools
+  - hat zwei Schulen: schoolB1, schoolB2
+  - Berechtigung auf Benutzerverwaltung und Mehrfachbearbeitung
+- schoolB1
+  - classes:
+    - classB1_1
+    - classB1_2
+- schoolB2
+  - classes:
+    - classB2_1
+    - classB2_2
+
+Benutzer/Testpersonen (Schueler:innen)
+
+Datensatzgruppe G1 (fuer Positive mit genau 1 Klasse)
+- studentsSingleClass_A (mind. 2-3 Personen)
+  - je Person genau 1 Klassenkontext (in schoolA)
+  - Zielrolle noch NICHT vorhanden
+
+Datensatzgruppe G2 (fuer Negative mit mehreren Klassen)
+- studentsMultiClass_A (mind. 2-3 Personen)
+  - je Person 2 Klassenkontexte (classA1 + classA2)
+  - Zielrolle bereits an mindestens einer anderen Klasse vorhanden ODER Mehrklassenkontext verursacht Konflikt
+
+Datensatzgruppe G3 (fuer 2-Schul-Positive, Filter nach Schule)
+- studentsSingleClass_B1 (mind. 2-3 Personen)
+  - in schoolB1
+  - je Person genau 1 Klassenkontext
+  - Zielrolle noch NICHT vorhanden
+- studentsSingleClass_B2 (optional, fuer Abgrenzung Filter)
+  - in schoolB2
+
+Datensatzgruppe G4 (fuer 2-Schul-Negative)
+- studentsMultiClass_B1 (mind. 2-3 Personen)
+  - in schoolB1
+  - je Person mehrere Klassenkontexte
+  - Zielrolle bereits an einer Klasse vorhanden (Konfliktfall)
+
+Datensatzgruppe G5 (gemischte Auswahl fuer Szenario 6)
+- mixedSelection_A
+  - Teilmenge aus studentsSingleClass_A
+  - Teilmenge aus studentsMultiClass_A
+
+Szenario-Mapping aus CSV
+
+Szenario 1 (ID 1)
+- Admin: adminOneSchool
+- Auswahl: studentsSingleClass_A
+- Aktion: Klasse beibehalten + Rolle zuordnen
+- Erwartung:
+  - Rolle als Kontext an bestehender Klasse hinzugefuegt
+  - Ergebnisliste zeigt neu zugeordnete Rolle
+
+Szenario 2 (ID 2)
+- Admin: adminOneSchool
+- Auswahl: studentsMultiClass_A
+- Vorbedingung: Zielrolle bereits vorhanden/konfliktbehaftet
+- Aktion: Klasse beibehalten + Rolle zuordnen + Fehlerliste exportieren
+- Erwartung:
+  - Fehlerliste sichtbar
+  - expectedErrorText enthalten
+  - Export funktioniert
+
+Szenario 3 (ID 3)
+- Admin: adminTwoSchools
+- Filter: schoolB1 + Schueler
+- Auswahl: studentsSingleClass_B1
+- Aktion: Andere Klasse auswaehlen (z. B. classB1_2) + Rolle zuordnen
+- Erwartung:
+  - Rolle an ausgewaehlter Klasse hinzugefuegt
+  - Ergebnisliste zeigt Rolle + neue Klasse
+
+Szenario 4 (ID 4)
+- Admin: adminTwoSchools
+- Filter: schoolB1 + Schueler
+- Auswahl: studentsSingleClass_B1
+- Aktion: Andere Klasse auswaehlen + Befristung setzen + Rolle zuordnen + Profil oeffnen
+- Erwartung:
+  - Rolle im Profil an ausgewaehlter Klasse mit korrekter Befristung
+
+Szenario 5 (ID 5)
+- Admin: adminTwoSchools
+- Filter: schoolB1 + Schueler
+- Auswahl: studentsMultiClass_B1
+- Vorbedingung: Zielrolle bereits an einer Klasse zugeordnet
+- Aktion: Andere Klasse auswaehlen + Rolle zuordnen
+- Erwartung:
+  - Fehlerliste sichtbar
+  - expectedErrorText enthalten
+
+Szenario 6 (ID 6)
+- Admin: adminOneSchool
+- Auswahl: mixedSelection_A (1-Klasse + Mehrklassen gemischt)
+- Aktion: Klasse beibehalten + Rolle zuordnen
+- Erwartung:
+  - Single-Class-Personen: Erfolg
+  - Multi-Class-Personen: Fehlerliste mit expectedErrorText
+
+Technische Felder fuer Testdaten-Factory (Vorschlag)
+- schoolId
+- classId
+- personId
+- personLogin (optional)
+- personDisplayName
+- existingRoles[] mit:
+  - roleName
+  - contextClassId
+  - validFrom
+  - validTo
+- targetRoleName
+- targetClassId (fuer "Andere Klasse")
+- assignmentMode (KEEP_CLASS | SELECT_OTHER_CLASS)
+- expectedOutcome (SUCCESS | ERROR)
+- expectedErrorText
+
+Mindestumfang pro beforeEach
+- 1x Admin passend zum Szenario
+- 1-2 Schulen passend zum Szenario
+- Pro relevanter Schule mind. 2 Klassen
+- Pro Szenario mind. 2 Testpersonen pro erwarteter Ergebnisart (Erfolg/Fehler)
+- Zielrolle und ggf. Konfliktrolle sauber initialisiert
