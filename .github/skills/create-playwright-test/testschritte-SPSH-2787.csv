@@ -3,7 +3,9 @@ ID;Action;Data;Expected Result
 # Benutzerverwaltung öffnen
 # Mehrere Benutzer mit einer Klasse wählen
 # Mehrfachbearbeitung: Rolle zuordnen
-# Lern-Rolle auswählen";-;"Zwischen der Rollenauswahl und der Befristung erscheinen zwei Radiobuttons:
+# Lern-Rolle auswählen";"- Schule mit 2 Klassen
+- 2 Schüler an der Schule an einer Klasse
+- Schuladmin 1 Schule";"Zwischen der Rollenauswahl und der Befristung erscheinen zwei Radiobuttons:
  - *Option 1:* _Klasse( n )Â beibehalten (diese Option ist standardmäßig ausgewählt)_
  - *Option 2:* _Andere Klasse auswählen_"
 1;# *Klasse beibehalten* wählen;-;"Folgender Hinweis wird angezeigt:

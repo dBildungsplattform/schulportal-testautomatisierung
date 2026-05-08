@@ -20,6 +20,7 @@ Erstellt einen neuen Playwright-Test für das Schulportal nach den Projektkonven
 - [`run-and-fix-test`](../run-and-fix-test/SKILL.md) — Test ausführen und iterativ reparieren
 - [`create-page-object`](../create-page-object/SKILL.md) — Neues Page-Object erstellen
 - [`extend-page-object`](../extend-page-object/SKILL.md) — Bestehendes Page-Object erweitern
+- [testdaten.md](../../../docs/testdaten.md) — Übersicht aller API-Wrapper, Generatoren und Cleanup-Helfer für Testdaten
 - [best-practices.md](../../../docs/best-practices.md) — Coding-Konventionen
 - [structure.md](../../../docs/structure.md) — Projektstruktur
 - [tags.md](../../../docs/tags.md) — Tag-Konventionen
@@ -111,52 +112,81 @@ await addSecondOrganisationToPerson(
 
 ## Verfügbare API-Funktionen für Testdatenerstellung
 
-Alle Funktionen liegen in `base/api/personApi.ts`:
+Vollständige Übersicht inkl. Signaturen, Beispielen und Entscheidungshilfe: [docs/testdaten.md](../../../docs/testdaten.md).
+
+Kurzreferenz:
 
 | Funktion | Zweck |
 |---|---|
-| `createPersonWithPersonenkontext` | Person mit einer Org + Rolle anlegen |
+| `createPersonWithPersonenkontext` | Person an existierender Org + Rolle anlegen |
 | `createRolleAndPersonWithPersonenkontext` | Rolle + Person + Personenkontext in einem Schritt (inkl. Klasse) |
 | `createPersonWithZweiKlassenKontexte` | Person mit Schule + 2 Klassen in einem CREATE |
 | `addSecondOrganisationToPerson` | Zweite Org/Klasse per COMMIT hinzufügen (Achtung: Versionierung!) |
-| `deletePerson` | Person löschen (Cleanup) |
+| `createTeacherAndLogin` | Lehrkraft anlegen + direkt einloggen |
+| `prepareAndLoginUserWithPermissions` | User mit definierten Systemrechten anlegen + einloggen ([tests/helpers/](../../../tests/helpers/prepareAndLoginUserWithPermissions.ts)) |
+| `deletePerson` / `deletePersonenBySearchStrings` | Person(en) löschen (Cleanup) |
+| `deleteRolleById` / `deleteRolleByName` | Rolle(n) löschen (Cleanup) |
+| `deleteKlasseByName` | Klasse(n) löschen (Cleanup) |
 
 Weitere Helpers:
 - `base/api/organisationApi.ts`: `createSchule`, `createKlasse`, `getKlasseId`, `getOrganisationId`
-- `base/api/rolleApi.ts`: `createRolle`, `getRolleId`, `addServiceProvidersToRolle`
+- `base/api/rolleApi.ts`: `createRolle`, `getRolleId`, `addServiceProvidersToRolle`, `addSystemrechtToRolle` (sequentiell – optimistic locking)
 - `base/api/serviceProviderApi.ts`: `getServiceProviderId`
+- `base/testHelperDeleteTestdata.ts`: Bulk-Cleanup-Funktionen
 - `tests/helpers/`: Spezialisierte Helper für komplexere Szenarien
 
 ---
 
 ## Workflow
 
-### Phase 1 — Eingaben sammeln
+### Phase 1 — Testbeschreibung einholen
+
+Ohne Testbeschreibung **nicht starten**. Pflichtangaben:
 
 | Information | Pflicht | Quelle |
 |---|---|---|
 | Use-Case-Beschreibung oder Testschritte | ✅ | Benutzer / CSV / Ticket |
-| Welche Rolle agiert (Landesadmin, Schuladmin, ...) | ✅ | Benutzer |
+| Welche Rolle agiert (Landesadmin, Schuladmin, …) | ✅ | Benutzer / Testschritte |
 | Welche Testdaten benötigt werden | ✅ | Aus Testschritten ableiten |
-| Dateiname der `.spec.ts` | ✅ | Benutzer oder aus Use-Case ableiten |
-| Tags (DEV, STAGE) | ⚪ | Benutzer |
+| Tags (DEV, STAGE) | ⚪ | Benutzer (Default: `[DEV]`) |
 
-### Phase 2 — Benötigte Page-Objects und API-Funktionen identifizieren
+Wenn die Beschreibung unklar ist → beim Benutzer nachfragen, **bevor** Page-Objects oder Tests erstellt werden.
 
-1. Testschritte durchgehen und ermitteln:
-   - Welche Pages werden navigiert?
-   - Welche API-Funktionen für Testdaten-Setup benötigt?
-   - Welche Assertions werden geprüft?
-2. Prüfen, ob die benötigten Page-Objects und API-Funktionen existieren
-3. Falls nicht vorhanden → erst Page-Object erstellen (Skill `create-page-object`) oder API-Funktion ergänzen
+### Phase 2 — Page-Objects und Locators prüfen
 
-### Phase 3 — Test implementieren
+Aus den Testschritten ableiten, welche Pages und welche Methoden/Locators benötigt werden. Dann pro Page der Reihe nach prüfen:
 
-#### 3.1 — Datei anlegen
+1. **Existiert das Page-Object** unter `pages/` oder `pages/admin/<bereich>/`?
+   - **Nein** → Skill [`create-page-object`](../create-page-object/SKILL.md) aufrufen, um die Page neu anzulegen. Erst danach hier weitermachen.
+   - **Ja** → weiter zu Schritt 2.
+2. **Sind alle benötigten Methoden/Locators in der Page vorhanden?**
+   - **Nein** → Skill [`extend-page-object`](../extend-page-object/SKILL.md) aufrufen, um die fehlenden Methoden/Locators zu ergänzen. Erst danach hier weitermachen.
+   - **Ja** → weiter zu Phase 3.
+3. Analog: Prüfen, ob die benötigten **API-Funktionen** für das Testdaten-Setup in `base/api/` existieren. Wenn nicht, vor dem Test ergänzen (siehe [docs/testdaten.md](../../../docs/testdaten.md)).
 
-Ablageort: `tests/<bereich>/` (z.B. `tests/personen/`, `tests/rollen/`, `tests/schulen/`)
+> Diese Phase **niemals überspringen**. Tests sollen keine Locators direkt enthalten – fehlende Logik gehört zuerst in die Page-Objects.
 
-#### 3.2 — Grundstruktur
+### Phase 3 — Ablageort: bestehende `.spec.ts` wiederverwenden oder neu anlegen
+
+Vor dem Schreiben prüfen, ob es bereits eine passende `.spec.ts` gibt, in der der neue Testfall ergänzt werden kann.
+
+1. Unter `tests/<bereich>/` nach thematisch passenden Dateien suchen (z. B. `PersonAnlegen.spec.ts`, `KlasseBearbeiten.spec.ts`).
+2. **Passende Datei vorhanden?**
+   - **Ja** → neuen `test(...)`-Block in eine passende bestehende `test.describe`-Suite einfügen. Vorhandene `beforeEach`/`afterEach` wiederverwenden, soweit sie zum neuen Fall passen.
+   - **Nein** → neue Datei `tests/<bereich>/<UseCase>.spec.ts` (PascalCase) anlegen.
+3. **Vor dem Einfügen** prüfen, ob das vorhandene `beforeEach` bereits alle nötigen Testdaten anlegt:
+   - Reicht das Setup aus → Test einfach ergänzen.
+   - Es fehlen Testdaten → das `beforeEach` (oder ein eigenes inneres `test.describe` mit eigenem `beforeEach`) entsprechend erweitern. Alle neuen IDs/Usernames in die suite-lokalen Cleanup-Arrays aufnehmen, damit `afterEach` sie wieder aufräumt.
+
+### Phase 4 — Test implementieren
+
+#### 4.1 — Ablageort
+
+`tests/<bereich>/` (z. B. `tests/personen/`, `tests/rollen/`, `tests/schulen/`).
+
+#### 4.2 — Grundstruktur (bei neuer Datei)
+
+Wenn eine bestehende Spec-Datei wiederverwendet wird, nur den `test(…)`-Block einfügen und ggf. das `beforeEach` erweitern – keine neue `test.describe`-Hülle bauen.
 
 ```ts
 import test, { expect, PlaywrightTestArgs } from '@playwright/test';
@@ -183,25 +213,46 @@ test.describe(`<Fachlicher Use-Case Name>`, () => {
 });
 ```
 
-#### 3.3 — Testdaten-Setup
+#### 4.3 — Testdaten-Setup
 
 - **Immer API-basiert**, nicht über die UI
+- **Setup gehört in `beforeEach`** (oder in einen `test.step('Testdaten … anlegen')` ganz am Anfang des Tests) – nicht mitten im Testablauf
+- Die Page muss vor API-Aufrufen eingeloggt sein (typisch: `loginAndNavigateToAdministration(page)` als Landesadmin), da die Wrapper über den Page-Cookie authentifizieren
 - Bei Schülern **immer Schule + Klasse** zusammen anlegen (Constraint `LERN_NOT_AT_SCHULE_AND_KLASSE`)
 - Bei Multi-Klasse-Szenarien: `createPersonWithZweiKlassenKontexte` statt CREATE+COMMIT
-- Testdaten generieren mit Funktionen aus `base/utils/generateTestdata.ts`: `generateNachname()`, `generateVorname()`, `generateSchulname()`, `generateKlassenname()`, `generateRolleName()`, `generateDienststellenNr()`
+- Testdaten generieren mit Funktionen aus `base/utils/generateTestdata.ts`: `generateNachname()`, `generateVorname()`, `generateSchulname()`, `generateKlassenname()`, `generateRolleName()`, `generateDienststellenNr()`, `generateKopersNr()`. Alle Generatoren erzeugen Werte mit Präfix `TAuto-PW-…` für Wiedererkennbarkeit und Kollisionsfreiheit bei parallelen Tests.
+- Schulen werden **nicht** angelegt – stattdessen die Konstanten aus [base/organisation.ts](../../../base/organisation.ts) verwenden (`testschuleName`, `testschule665Name`, `ersatzTestschuleName` …), da Schulen aktuell nicht gelöscht werden können.
 
-#### 3.4 — Testlogik
+#### 4.4 — Testlogik
 
 - Aktionen über Page-Methoden aufrufen, keine direkten Locator-Zugriffe
 - Navigation über `waitForPageLoad()`-Ketten
 - `test.step()` für fachliche Hauptphasen
 
-#### 3.5 — Cleanup
+#### 4.5 — Cleanup
 
-- Erstellte Personen mit `deletePerson()` aufräumen
-- In `afterEach` oder am Ende des Tests
+- Cleanup erfolgt im `afterEach` über die Bulk-Helfer aus [base/testHelperDeleteTestdata.ts](../../../base/testHelperDeleteTestdata.ts)
+- Pattern mit suite-lokalen Arrays für angelegte IDs/Usernames:
 
-### Phase 4 — Validierung
+```ts
+let usernames: string[] = [];
+let rolleIds: string[] = [];
+
+test.afterEach(async ({ page }: PlaywrightTestArgs) => {
+  if (usernames.length > 0) {
+    await deletePersonenBySearchStrings(page, usernames);
+    usernames = [];
+  }
+  if (rolleIds.length > 0) {
+    await deleteRolleById(rolleIds, page);
+    rolleIds = [];
+  }
+});
+```
+
+- Nach dem Anlegen via API: `usernames.push(userInfo.username)` bzw. `rolleIds.push(userInfo.rolleId)` für späteren Cleanup merken.
+
+### Phase 5 — Validierung
 
 1. TypeScript-Kompilierung:
    ```bash

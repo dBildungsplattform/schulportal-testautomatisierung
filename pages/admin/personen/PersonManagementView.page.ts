@@ -19,6 +19,7 @@ export class PersonManagementViewPage extends AbstractAdminPage {
   private readonly table: Locator;
   private readonly schuelerVersetzenDialogCard: Locator;
   private readonly passwortZuruecksetzenDialogCard: Locator;
+  private readonly rolleZuordnenDialogCard: Locator;
 
   constructor(protected readonly page: Page) {
     super(page);
@@ -38,6 +39,7 @@ export class PersonManagementViewPage extends AbstractAdminPage {
     this.menu = new MenuBarPage(this.page);
     this.schuelerVersetzenDialogCard = this.page.getByTestId('change-klasse-layout-card');
     this.passwortZuruecksetzenDialogCard = this.page.getByTestId('password-reset-layout-card');
+    this.rolleZuordnenDialogCard = this.page.getByTestId('rolle-modify-layout-card');
   }
 
   /* actions */
@@ -379,5 +381,49 @@ export class PersonManagementViewPage extends AbstractAdminPage {
 
     // aufräumen
     fs.unlinkSync(filePath);
+  }
+
+  /* Rolle zuordnen (Mehrfachbearbeitung) */
+  public async selectRolleInRolleZuordnenDialog(rolleName: string): Promise<void> {
+    const rolleSelect: Locator = this.rolleZuordnenDialogCard.getByTestId('rolle-select');
+    await rolleSelect.locator('input').click();
+    const option: Locator = this.page
+      .locator('div.v-overlay--active')
+      .getByRole('option')
+      .filter({ hasText: new RegExp(`^${rolleName}$`) });
+    await option.first().click({ force: true });
+    await expect(rolleSelect).toContainText(rolleName);
+  }
+
+  public async checkRolleZuordnenKlassenOptionen(): Promise<void> {
+    await expect(this.rolleZuordnenDialogCard.getByTestId('keep-klasse-radio-button')).toBeVisible();
+    await expect(this.rolleZuordnenDialogCard.getByTestId('select-new-klasse-radio-button')).toBeVisible();
+    await expect(this.rolleZuordnenDialogCard.getByTestId('keep-klasse-radio-button').locator('input')).toBeChecked();
+  }
+
+  public async selectKlasseBeibehalten(): Promise<void> {
+    await this.rolleZuordnenDialogCard.getByTestId('keep-klasse-radio-button').click();
+    await expect(this.rolleZuordnenDialogCard.getByTestId('keep-klasse-radio-button').locator('input')).toBeChecked();
+  }
+
+  public async checkRolleZuordnenHint(expectedText: string): Promise<void> {
+    await expect(this.rolleZuordnenDialogCard.getByTestId('modify-Rolle-hint')).toContainText(expectedText);
+  }
+
+  public async submitRolleZuordnen(): Promise<void> {
+    await this.rolleZuordnenDialogCard.getByTestId('rolle-modify-submit-button').click();
+  }
+
+  public async checkRolleZuordnenSuccessDialog(): Promise<void> {
+    await expect(this.rolleZuordnenDialogCard).toBeVisible();
+    await expect(this.rolleZuordnenDialogCard.getByTestId('layout-card-headline')).toHaveText('Rolle zuordnen');
+    await expect(this.rolleZuordnenDialogCard).toContainText('Die Rolle wurde erfolgreich zugeordnet.');
+    await expect(this.rolleZuordnenDialogCard.getByTestId('rolle-modify-close-button')).toBeVisible();
+  }
+
+  public async checkRolleAssignedToPersons(rolleName: string, nachnamen: string[]): Promise<void> {
+    for (const nachname of nachnamen) {
+      await this.personTable.checkCellInRow(nachname, 5, rolleName);
+    }
   }
 }
