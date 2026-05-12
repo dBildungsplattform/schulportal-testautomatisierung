@@ -1,4 +1,5 @@
 import { Browser, BrowserContext, chromium, Page, Request, Response } from '@playwright/test';
+import fs from 'node:fs';
 import path from 'node:path';
 import { TOTP } from 'totp-generator';
 
@@ -19,6 +20,11 @@ import { StartViewPage } from '../pages/StartView.page';
 import { workers } from '../playwright.config';
 
 const FRONTEND_URL: string = process.env.FRONTEND_URL ?? '';
+const AUTH_STATE_DIR: string = path.join('test-results', 'auth');
+
+function getStorageStatePath(index: number): string {
+  return path.join(AUTH_STATE_DIR, `storage-state-${index}.json`);
+}
 
 function encodeNumberAsLetters(num: number): string {
   let encoded: string = '';
@@ -36,6 +42,7 @@ function encodeNumberAsLetters(num: number): string {
  */
 export default async function globalSetup(): Promise<void> {
   console.log('Global setup started');
+  fs.mkdirSync(AUTH_STATE_DIR, { recursive: true });
 
   const browser: Browser = await chromium.launch();
   const context: BrowserContext = await browser.newContext({
@@ -77,11 +84,16 @@ export default async function globalSetup(): Promise<void> {
     await header.logout();
 
     SharedCredentialManager.init();
-    const twoFactorApi: Class2FAApi = construct2FAApi(page);
 
     for (const [index, userInfo] of userInfos.entries()) {
-      const page: Page = await context.newPage();
+      const adminContext: BrowserContext = await browser.newContext({
+        baseURL: FRONTEND_URL,
+        ignoreHTTPSErrors: true,
+      });
+      const page: Page = await adminContext.newPage();
       try {
+        process.env['TEST_PARALLEL_INDEX'] = String(index);
+
         const landingPage: LandingViewPage = await FromAnywhere(page).start();
         const loginPage: LoginViewPage = await landingPage.navigateToLogin();
         const startPage: StartViewPage = await loginPage.login(userInfo.username, userInfo.password);
@@ -89,6 +101,8 @@ export default async function globalSetup(): Promise<void> {
         await startPage.waitForPageLoad();
         SharedCredentialManager.setUsername(userInfo.username, index);
         SharedCredentialManager.setPassword(password, index);
+
+        const twoFactorApi: Class2FAApi = construct2FAApi(page);
 
         const initTokenResponse: string = await twoFactorApi.privacyIdeaAdministrationControllerInitializeSoftwareToken(
           {
@@ -109,9 +123,9 @@ export default async function globalSetup(): Promise<void> {
         });
         SharedCredentialManager.setOtpSeed(otpSecret!, index);
 
-        const header: HeaderPage = new HeaderPage(page);
-        await header.logout();
-        await page.close();
+        await startPage.navigateToAdministration();
+        await page.context().storageState({ path: getStorageStatePath(index) });
+
         console.log(`| ${index.toString().padStart(2, '0')} | ${userInfo.username.padStart(32, ' ')} |`);
       } catch (error) {
         const screenshotPath: string = path.join('playwright-report', `error-creating-admin-${index}.png`);
@@ -120,6 +134,7 @@ export default async function globalSetup(): Promise<void> {
         throw error;
       } finally {
         await page.close();
+        await adminContext.close();
       }
     }
 

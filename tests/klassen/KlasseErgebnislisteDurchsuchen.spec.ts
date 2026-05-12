@@ -1,4 +1,4 @@
-import { PlaywrightTestArgs, test } from '@playwright/test';
+import { PlaywrightTestArgs } from '@playwright/test';
 
 import { createKlasse, getOrganisationId } from '../../base/api/organisationApi';
 import { addSecondOrganisationToPerson, createPersonWithPersonenkontext, UserInfo } from '../../base/api/personApi';
@@ -6,7 +6,6 @@ import { getRolleId } from '../../base/api/rolleApi';
 import { landSH } from '../../base/organisation';
 import { landesadminRolle, schuladminOeffentlichRolle } from '../../base/rollen';
 import { DEV, STAGE } from '../../base/tags';
-import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
 import { generateDienststellenNr, generateKlassenname, generateSchulname } from '../../base/utils/generateTestdata';
 import { LandingViewPage } from '../../pages/LandingView.page';
 import { LoginViewPage } from '../../pages/LoginView.page';
@@ -19,7 +18,7 @@ import {
   Schulform,
 } from '../../pages/admin/organisationen/schulen/SchuleCreationView.page';
 import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.page';
-import { HeaderPage } from '../../pages/components/Header.page';
+import { test } from '../fixtures';
 
 [
   { organisationsName: landSH, rolleName: landesadminRolle, bezeichnung: 'Landesadmin' },
@@ -44,8 +43,8 @@ import { HeaderPage } from '../../pages/components/Header.page';
       let generierteKlassenNamen: string[] = [];
 
       test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
-        const header: HeaderPage = new HeaderPage(page);
-        personManagementViewPage = await loginAndNavigateToAdministration(page);
+        await page.goto('/admin/personen', { waitUntil: 'load' });
+        personManagementViewPage = await new PersonManagementViewPage(page).waitForPageLoad();
 
         // Schule anlegen
         let schuleCreationViewPage: SchuleCreationViewPage =
@@ -86,7 +85,9 @@ import { HeaderPage } from '../../pages/components/Header.page';
           }),
         );
 
-        const landingPage: LandingViewPage = await header.logout();
+        await page.context().clearCookies();
+        await page.goto('/', { waitUntil: 'load' });
+        const landingPage: LandingViewPage = await new LandingViewPage(page).waitForPageLoad();
         const loginPage: LoginViewPage = await landingPage.navigateToLogin();
 
         // Anmeldung mit Passwortänderung
