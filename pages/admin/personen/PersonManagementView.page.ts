@@ -7,7 +7,9 @@ import { MenuBarPage } from '../../components/MenuBar.page';
 import { SearchFilter } from '../../components/SearchFilter';
 import { AbstractAdminPage } from '../AbstractAdmin.page';
 import { PersonDetailsViewPage } from './details/PersonDetailsView.page';
+import { RolleZuordnenPage } from './mehrfachbearbeitung/RolleZuordnen.page';
 
+type MehrfachbearbeitungOption = 'Rolle zuordnen' | 'Schüler versetzen' | 'Passwort zurücksetzen';
 export class PersonManagementViewPage extends AbstractAdminPage {
   private readonly personTable: DataTable;
   private readonly searchFilter: SearchFilter;
@@ -114,10 +116,14 @@ export class PersonManagementViewPage extends AbstractAdminPage {
     await this.personTable.selectRow(name);
   }
 
-  public async selectMehrfachauswahl(option: string): Promise<void> {
+  public async selectMehrfachauswahl(option: MehrfachbearbeitungOption): Promise<RolleZuordnenPage | void> {
     await this.page.getByTestId('benutzer-edit-select').click();
     const locator: Locator = this.page.getByRole('option', { name: option, exact: false });
     await locator.click();
+    switch (option) {
+      case 'Rolle zuordnen':
+        return new RolleZuordnenPage(this.page);
+    }
   }
 
   public async closeDialog(buttonId: string): Promise<void> {
@@ -204,7 +210,7 @@ export class PersonManagementViewPage extends AbstractAdminPage {
 
   public async checkIfSchuleIsCorrect(schulname: string, schulNr?: string): Promise<void> {
     const expected: string = schulNr ? `${schulNr} (${schulname})` : schulname;
-    await this.organisationAutocomplete.checkText(expected);
+    await this.organisationAutocomplete.assertText(expected);
     await this.checkIfColumnAlwaysContainsText(6, schulNr ? schulNr : schulname);
   }
 
@@ -213,7 +219,11 @@ export class PersonManagementViewPage extends AbstractAdminPage {
   }
 
   public async checkIfRolleIsCorrect(rolleName: string): Promise<void> {
-    await this.rolleAutocomplete.checkText(rolleName);
+    await this.rolleAutocomplete.assertText(rolleName);
+    await this.checkIfColumnAlwaysContainsText(5, rolleName);
+  }
+
+  public async assertThatAllPersonsHaveRolle(rolleName: string): Promise<void> {
     await this.checkIfColumnAlwaysContainsText(5, rolleName);
   }
 

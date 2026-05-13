@@ -15,7 +15,7 @@ export class Autocomplete {
     this.overlayLocator = this.page.locator('div.v-overlay.v-menu');
     this.itemsLocator = this.page.locator('.v-overlay .v-list-item');
     this.modalToggle = this.locator.locator('.v-field__append-inner');
-    this.inputLocator = this.locator.locator('input');
+    this.inputLocator = this.locator.locator('.v-field__input input');
     this.loadingLocator = this.locator.locator('.v-field__loader');
   }
 
@@ -37,6 +37,10 @@ export class Autocomplete {
     return selectedItems;
   }
 
+  /**
+   * Opens the modal, selects the title, closes the modal
+   * @param title
+   */
   public async selectByTitle(title: string): Promise<void> {
     await this.openModal();
     await this.waitForData();
@@ -61,7 +65,7 @@ export class Autocomplete {
 
   public async closeModal(): Promise<void> {
     await this.page.keyboard.press('Escape');
-    await this.page.getByTestId('admin-headline').click();
+    // await this.page.getByTestId('admin-headline').click();
   }
 
   public async toggleModal(): Promise<void> {
@@ -132,6 +136,10 @@ export class Autocomplete {
     await this.closeModal();
   }
 
+  /**
+   * Expects the modal to be open
+   * @param title
+   */
   public async selectByName(name: string): Promise<void> {
     const option: Locator = this.itemsLocator.filter({
       hasText: name,
@@ -184,8 +192,12 @@ export class Autocomplete {
     await expect(item).toBeVisible();
   }
 
-  public async checkText(text: string): Promise<void> {
-    await expect(this.locator).toHaveText(text);
+  public async assertText(text: string, exactMatch: boolean = true): Promise<void> {
+    if (exactMatch) {
+      await expect(this.locator).toHaveText(text);
+    } else {
+      await expect(this.locator).toContainText(text);
+    }
   }
 
   public async assertAllMenuItems(expectedTexts: string[]): Promise<void> {

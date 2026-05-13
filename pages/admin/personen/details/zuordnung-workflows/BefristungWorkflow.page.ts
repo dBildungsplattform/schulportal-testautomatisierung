@@ -1,11 +1,11 @@
 import { expect, type Locator, Page } from '@playwright/test';
 import { BaseZuordnungWorkflowPage, TestIdsType } from './BaseWorkflow.page';
+import { BefristungsInput } from '../../../../components/BefristungsInput.page';
 
 export class BefristungWorkflowPage extends BaseZuordnungWorkflowPage {
   /* add global locators here */
-  private readonly unbefristetRadioButton: Locator;
-  private readonly schuljahresendeRadioButton: Locator;
   protected readonly ENDPOINT: string = 'befristung-change/**';
+  private befristungsInput: BefristungsInput;
 
   protected readonly TEST_IDS: TestIdsType = {
     submitButton: 'change-befristung-submit-button',
@@ -17,8 +17,7 @@ export class BefristungWorkflowPage extends BaseZuordnungWorkflowPage {
 
   constructor(protected readonly page: Page) {
     super(page);
-    this.unbefristetRadioButton = this.page.getByTestId('unbefristet-radio-button');
-    this.schuljahresendeRadioButton = this.page.getByTestId('schuljahresende-radio-button');
+    this.befristungsInput = new BefristungsInput(page);
   }
 
   /* actions */
@@ -49,11 +48,10 @@ export class BefristungWorkflowPage extends BaseZuordnungWorkflowPage {
   }
 
   public async checkSelectedBefristungOption(option: 'unbefristet' | 'schuljahresende'): Promise<void> {
-    if (option === 'schuljahresende') await expect(this.schuljahresendeRadioButton).toBeChecked();
-    if (option === 'unbefristet') await expect(this.unbefristetRadioButton).toBeChecked();
+    await this.befristungsInput.assertSelectedBefristungOption(option);
   }
 
   public async checkUnbefristetDisabled(): Promise<void> {
-    await expect(this.unbefristetRadioButton).toBeDisabled();
+    await this.befristungsInput.assertUnbefristetDisabled();
   }
 }

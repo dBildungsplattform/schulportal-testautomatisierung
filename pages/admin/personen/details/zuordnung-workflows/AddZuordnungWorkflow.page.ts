@@ -46,11 +46,11 @@ export class AddZuordnungWorkflowPage extends BaseZuordnungWorkflowPage {
 
   /* assertions */
   public async checkSelectedOrganisation(organisation: string): Promise<void> {
-    await this.organisationen.checkText(organisation);
+    await this.organisationen.assertText(organisation);
   }
 
   public async checkSelectedKlasse(klasse: string): Promise<void> {
-    await this.klasse.checkText(klasse);
+    await this.klasse.assertText(klasse);
   }
 
   public async checkSelectedBefristungOption(option: 'unbefristet' | 'schuljahresende'): Promise<void> {
