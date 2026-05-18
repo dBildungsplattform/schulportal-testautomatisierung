@@ -24,6 +24,7 @@ interface TestFixture {
   shouldKopersTextBeVisible: boolean;
   expectedBefristung: 'schuljahresende' | 'unbefristet';
 }
+
 for (const { adminType, rollenName, shouldKopersTextBeVisible, expectedBefristung } of [
   {
     adminType: 'Schuladmin',

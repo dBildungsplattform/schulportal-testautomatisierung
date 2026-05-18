@@ -6,10 +6,7 @@ import { lehrerImVorbereitungsdienstRolle, lehrkraftOeffentlichRolle } from '../
 import { typeLehrer } from '../../base/rollentypen';
 import { email } from '../../base/sp';
 import { DEV, STAGE } from '../../base/tags';
-import {
-  deletePersonenBySearchStrings,
-  deleteRolleById,
-} from '../../base/testHelperDeleteTestdata';
+import { deletePersonenBySearchStrings, deleteRolleById } from '../../base/testHelperDeleteTestdata';
 import { gotoTargetURL, loginAndNavigateToAdministration } from '../../base/testHelperUtils';
 import { generateNachname, generateRolleName, generateVorname } from '../../base/utils/generateTestdata';
 import { PersonDetailsViewPage } from '../../pages/admin/personen/details/PersonDetailsView.page';

@@ -65,7 +65,6 @@ export class Autocomplete {
 
   public async closeModal(): Promise<void> {
     await this.page.keyboard.press('Escape');
-    // await this.page.getByTestId('admin-headline').click();
   }
 
   public async toggleModal(): Promise<void> {
