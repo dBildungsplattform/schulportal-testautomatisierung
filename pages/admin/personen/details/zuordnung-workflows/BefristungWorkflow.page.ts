@@ -32,7 +32,7 @@ export class BefristungWorkflowPage extends BaseZuordnungWorkflowPage {
   }
 
   /* assertions */
-  public async checkError(shouldBeVisible: boolean): Promise<void> {
+  public async assertErrorMessageVisibility(shouldBeVisible: boolean): Promise<void> {
     const locator: Locator = this.page.getByText('Das eingegebene Datum darf nicht in der Vergangenheit liegen.');
     if (shouldBeVisible) {
       await expect(locator).toBeVisible();
@@ -41,17 +41,17 @@ export class BefristungWorkflowPage extends BaseZuordnungWorkflowPage {
     }
   }
 
-  public async checkConfirmation(oldValue: string, newValue: string): Promise<void> {
+  public async assertConfirmationIsVisible(oldValue: string, newValue: string): Promise<void> {
     await expect(
       this.page.getByText(`Möchten Sie die Befristung wirklich von ${oldValue} in ${newValue} ändern?`),
     ).toBeVisible();
   }
 
-  public async checkSelectedBefristungOption(option: 'unbefristet' | 'schuljahresende'): Promise<void> {
+  public async assertSelectedBefristungOption(option: 'unbefristet' | 'schuljahresende'): Promise<void> {
     await this.befristungsInput.assertSelectedBefristungOption(option);
   }
 
-  public async checkUnbefristetDisabled(): Promise<void> {
+  public async assertUnbefristetDisabled(): Promise<void> {
     await this.befristungsInput.assertUnbefristetDisabled();
   }
 }
