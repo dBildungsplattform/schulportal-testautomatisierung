@@ -65,6 +65,7 @@ export class Autocomplete {
 
   public async closeModal(): Promise<void> {
     await this.page.keyboard.press('Escape');
+    await this.inputLocator.blur();
   }
 
   public async toggleModal(): Promise<void> {
