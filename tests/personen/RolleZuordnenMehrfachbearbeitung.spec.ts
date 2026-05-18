@@ -1,10 +1,8 @@
 import test, { expect, PlaywrightTestArgs } from '@playwright/test';
-import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.page';
-import { loginAndNavigateToAdministration, logout } from '../../base/testHelperUtils';
 import { createSchule, getOrganisationId } from '../../base/api/organisationApi';
-import { generateRolleName, generateSchulname } from '../../base/utils/generateTestdata';
+import { createPerson, UserInfo } from '../../base/api/personApi';
 import { createRolle, getRolleId, RollenArt } from '../../base/api/rolleApi';
-import { createPerson, createPersonWithPersonenkontext, UserInfo } from '../../base/api/personApi';
+import { landSH } from '../../base/organisation';
 import {
   landesadminRolle,
   lehrerImVorbereitungsdienstRolle,
@@ -12,12 +10,13 @@ import {
   religionsLehrkraftRolle,
   schuladminOeffentlichRolle,
 } from '../../base/rollen';
-import { landSH } from '../../base/organisation';
+import { loginAndNavigateToAdministration, logout } from '../../base/testHelperUtils';
+import { generateRolleName, generateSchulname } from '../../base/utils/generateTestdata';
 import { LandingViewPage } from '../../pages/LandingView.page';
 import { LoginViewPage } from '../../pages/LoginView.page';
 import { StartViewPage } from '../../pages/StartView.page';
+import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.page';
 import { RolleZuordnenPage } from '../../pages/admin/personen/mehrfachbearbeitung/RolleZuordnen.page';
-import { userInfo } from 'os';
 
 interface TestFixture {
   adminType: 'Schuladmin' | 'Landesadmin';
@@ -44,7 +43,7 @@ for (const { adminType, rollenName, shouldKopersTextBeVisible, expectedBefristun
     shouldKopersTextBeVisible: true,
     expectedBefristung: 'schuljahresende',
   },
-] as Array<TestFixture>) {
+] as TestFixture[]) {
   test.describe(`Als ${adminType}`, () => {
     let schulName: string;
     let rolleName: string;
