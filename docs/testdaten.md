@@ -38,8 +38,8 @@ Alle Wrapper folgen demselben Muster: Sie konstruieren den passenden OpenAPI-Cli
 
 ### Organisationen / Klassen ([base/api/organisationApi.ts](../base/api/organisationApi.ts))
 
-- `getOrganisationId(page, name)` – Schul-/Organisations-ID per Name auflösen (Schulen werden **nicht** per Test angelegt, sondern verwendet aus den Konstanten in [base/organisation.ts](../base/organisation.ts), da Schulen aktuell nicht gelöscht werden können).
-- `createSchule(page, name, kennung?)` – legt eine Schule unterhalb von „Öffentliche Schulen Land SH" an (nur in Ausnahmefällen).
+- `createSchule(page, name, kennung?)` – legt eine Schule unterhalb von „Öffentliche Schulen Land SH" an. **Standardweg für neue Tests:** Schulen werden pro Test mit `createSchule(page, generateSchulname(), generateDienststellenNr())` frisch angelegt. Die statischen Konstanten `testschuleName` und `ersatzTestschuleName` aus [base/organisation.ts](../base/organisation.ts) dürfen für neue Tests **nicht** mehr verwendet werden; bei Refactorings sind sie durch frisch erzeugte Schulen zu ersetzen.
+- `getOrganisationId(page, name)` – Schul-/Organisations-ID per Name auflösen (nur für Schulen sinnvoll, die nicht selbst angelegt wurden, z. B. `landSH`).
 - `createOrganisation(page, params)` – generischer Anker für individuelle Organisationen.
 - `createKlasse(page, schuleId, name)` – legt eine Klasse zu einer Schule an.
 - `getKlasseId(page, name)`, `deleteKlasse(page, klasseId)`.

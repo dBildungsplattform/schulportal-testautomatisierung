@@ -60,8 +60,25 @@ export class Autocomplete {
   }
 
   public async closeModal(): Promise<void> {
-    await this.page.keyboard.press('Escape');
-    await this.page.getByTestId('admin-headline').click();
+    // Escape nur drücken, wenn das Menü-Overlay noch offen ist – sonst
+    // würde Escape den umschließenden Dialog (falls vorhanden) schließen.
+    const menuOpen: boolean = await this.overlayLocator
+      .first()
+      .isVisible()
+      .catch((): boolean => false);
+    if (menuOpen) {
+      await this.page.keyboard.press('Escape');
+    }
+    // Innerhalb eines Vuetify-Dialogs liegt admin-headline hinter dem Dialog-Scrim
+    // und ist nicht klickbar. Den Klick deshalb nur außerhalb von Dialogen ausführen.
+    const dialogOpen: boolean = await this.page
+      .locator('.v-dialog .v-overlay__content')
+      .first()
+      .isVisible()
+      .catch((): boolean => false);
+    if (!dialogOpen) {
+      await this.page.getByTestId('admin-headline').click();
+    }
   }
 
   public async toggleModal(): Promise<void> {

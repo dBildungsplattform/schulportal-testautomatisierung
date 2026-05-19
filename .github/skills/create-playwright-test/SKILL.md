@@ -119,6 +119,7 @@ Kurzreferenz:
 | Funktion | Zweck |
 |---|---|
 | `createPersonWithPersonenkontext` | Person an existierender Org + Rolle anlegen |
+| `createPerson` | Person mit bestehender Rolle + optional Klasse anlegen (kein neues Rollen-Anlegen; nutzen wenn Schüler eine bereits existierende Rolle teilen sollen) |
 | `createRolleAndPersonWithPersonenkontext` | Rolle + Person + Personenkontext in einem Schritt (inkl. Klasse) |
 | `createPersonWithZweiKlassenKontexte` | Person mit Schule + 2 Klassen in einem CREATE |
 | `addSecondOrganisationToPerson` | Zweite Org/Klasse per COMMIT hinzufügen (Achtung: Versionierung!) |
@@ -166,6 +167,8 @@ Aus den Testschritten ableiten, welche Pages und welche Methoden/Locators benöt
 
 > Diese Phase **niemals überspringen**. Tests sollen keine Locators direkt enthalten – fehlende Logik gehört zuerst in die Page-Objects.
 
+> **Unbekannte testids?** Nutze Playwright MCP (`run_playwright_code` / `read_page`) zur Live-Inspektion der Seite. Navigiere als passender User zum relevanten UI-State und lese die `data-testid`-Attribute aus dem DOM. Siehe [`extend-page-object`](../extend-page-object/SKILL.md) für Details.
+
 ### Phase 3 — Ablageort: bestehende `.spec.ts` wiederverwenden oder neu anlegen
 
 Vor dem Schreiben prüfen, ob es bereits eine passende `.spec.ts` gibt, in der der neue Testfall ergänzt werden kann.
@@ -177,6 +180,9 @@ Vor dem Schreiben prüfen, ob es bereits eine passende `.spec.ts` gibt, in der d
 3. **Vor dem Einfügen** prüfen, ob das vorhandene `beforeEach` bereits alle nötigen Testdaten anlegt:
    - Reicht das Setup aus → Test einfach ergänzen.
    - Es fehlen Testdaten → das `beforeEach` (oder ein eigenes inneres `test.describe` mit eigenem `beforeEach`) entsprechend erweitern. Alle neuen IDs/Usernames in die suite-lokalen Cleanup-Arrays aufnehmen, damit `afterEach` sie wieder aufräumt.
+
+> **Anti-Pattern: Duplicate Describe statt Merge.**
+> Wenn ein bestehendes `beforeEach` bereits 80%+ des benötigten Setups enthält (z.B. Schule, Klassen, Rolle, Schuladmin-Login), füge fehlende Testdaten **dort** hinzu, statt einen eigenständigen Describe-Block mit nahezu identischem Setup zu erstellen. Dupliziertes Setup = längere Laufzeit + Wartungslast.
 
 ### Phase 4 — Test implementieren
 
@@ -221,7 +227,7 @@ test.describe(`<Fachlicher Use-Case Name>`, () => {
 - Bei Schülern **immer Schule + Klasse** zusammen anlegen (Constraint `LERN_NOT_AT_SCHULE_AND_KLASSE`)
 - Bei Multi-Klasse-Szenarien: `createPersonWithZweiKlassenKontexte` statt CREATE+COMMIT
 - Testdaten generieren mit Funktionen aus `base/utils/generateTestdata.ts`: `generateNachname()`, `generateVorname()`, `generateSchulname()`, `generateKlassenname()`, `generateRolleName()`, `generateDienststellenNr()`, `generateKopersNr()`. Alle Generatoren erzeugen Werte mit Präfix `TAuto-PW-…` für Wiedererkennbarkeit und Kollisionsfreiheit bei parallelen Tests.
-- Schulen werden **nicht** angelegt – stattdessen die Konstanten aus [base/organisation.ts](../../../base/organisation.ts) verwenden (`testschuleName`, `testschule665Name`, `ersatzTestschuleName` …), da Schulen aktuell nicht gelöscht werden können.
+- **Schulen werden im Test per API neu angelegt** mit `createSchule(page, generateSchulname(), generateDienststellenNr())`. Die statischen Konstanten `testschuleName` und `ersatzTestschuleName` aus [base/organisation.ts](../../../base/organisation.ts) dürfen für neue Tests **nicht** mehr verwendet werden; bei Refactorings sind sie durch frisch erzeugte Schulen zu ersetzen. Downstream-API-Funktionen wie `createPersonWithPersonenkontext`/`createRolleAndPersonWithPersonenkontext` werden mit dem dynamisch generierten `schuleName` aufgerufen.
 
 #### 4.4 — Testlogik
 

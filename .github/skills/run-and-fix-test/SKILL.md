@@ -43,6 +43,8 @@ Bei einem einzelnen Test-Case (`test.only` oder per Titelfilter):
 npx playwright test <testdatei> --reporter=list -g "<Testname>"
 ```
 
+**Wichtig — Timeout:** Wenn der Test über einen Subagent (`execution_subagent`) ausgeführt wird, setze den Timeout explizit auf **mindestens 600000 ms (10 min)**. Global setup/teardown plus ein einzelner Test brauchen leicht 2–3 Minuten; der Subagent-Default von 120 s bricht sonst mitten im Lauf ab und die Fehlerdetails gehen verloren.
+
 ### Schritt 4: Ergebnis auswerten
 
 **Erfolgreich (Exit Code 0):**
@@ -53,17 +55,24 @@ npx playwright test <testdatei> --reporter=list -g "<Testname>"
 
 ### Schritt 5: Fehler analysieren
 - Lese die vollständige Fehlerausgabe aus dem Terminal.
+- **Lese immer zuerst die Fehler-Artefakte unter `test-results/<test-ordner>/`:**
+  - `error-context.md` (Page-Snapshot zum Fehlerzeitpunkt — zeigt den tatsächlichen DOM-State)
+  - `test-failed-1.png` (Screenshot — via `view_image` öffnen, um den UI-State zu sehen)
+  Diese geben oft schneller Aufschluss als der reine Stack-Trace, ob z.B. eine Aktion gar nicht im DOM ankam oder ein erwarteter Text leicht abweicht.
 - Identifiziere: Fehlermeldung, Stack-Trace, betroffene Datei und Zeile.
 - Lese die betroffene Datei, um den Kontext zu verstehen.
 - Klassifiziere den Fehler:
 
-| Fehlertyp | Typische Ursache |
-|-----------|-----------------|
-| `TimeoutError` / `locator.waitFor` | Locator falsch, `data-testid` geändert, fehlende `await` |
-| `expect(...).toHaveText` fehlgeschlagen | Text im UI geändert, falscher Locator |
-| TypeScript-Kompilierfehler | Falsche Typen, fehlende Imports |
-| `Cannot find element` | Seite lädt nicht, falscher URL/Pfad |
-| `Error: page.goto` | `baseURL` oder Routing-Problem |
+| Fehlertyp | Typische Ursache | Fix-Strategie |
+|-----------|------------------|---------------|
+| `TimeoutError` / `locator.waitFor` | Locator falsch, `data-testid` geändert, fehlende `await` | Locator korrigieren, `await` ergänzen |
+| `expect(...).toHaveText` fehlgeschlagen | Text im UI geändert, falscher Locator | Erwartungstext im Spec anpassen |
+| TypeScript-Kompilierfehler | Falsche Typen, fehlende Imports | Typen/Imports korrigieren |
+| `Cannot find element` | Seite lädt nicht, falscher URL/Pfad | Navigation prüfen |
+| `Error: page.goto` | `baseURL` oder Routing-Problem | URL/Route prüfen |
+| `toBeChecked()` schlägt nach Wrapper-`click()` fehl | Vuetify Radio/Checkbox: Klick auf `[data-testid]` trifft nur das Label-Wrapper, nicht den Input | `.locator('input').click()` oder `.check({ force: true })` direkt auf dem Input |
+| `toContainText` mit ähnlicher, aber umgestellter Zeichenkette | UI-Wortlaut weicht von hardcodiertem Erwartungstext im Spec ab | Erwartungstext im **Spec** an UI angleichen — nicht umgekehrt |
+| `TimeoutError` auf Close-Button nach vorherigem Dialog-Close | Übergeordneter Dialog schließt sich automatisch bei Bestätigung eines Unterdialogs (Vuetify Modal-Stack) | Close-Aufruf entfernen; ggf. mit `waitFor({ state: 'hidden' })` verifizieren, dass der Dialog bereits weg ist |
 
 ### Schritt 6: Fix implementieren
 - Behebe ausschließlich den identifizierten Fehler — keine spekulativen oder unrequested Änderungen.

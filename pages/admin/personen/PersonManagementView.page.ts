@@ -15,6 +15,8 @@ export class PersonManagementViewPage extends AbstractAdminPage {
   private readonly rolleAutocomplete: Autocomplete;
   private readonly klasseAutocomplete: Autocomplete;
   private readonly klasseAutocompleteInBulkVersetzen: Autocomplete;
+  private readonly schuleAutocompleteInRolleZuordnenDialog: Autocomplete;
+  private readonly klasseAutocompleteInRolleZuordnenDialog: Autocomplete;
   public readonly menu: MenuBarPage;
   private readonly table: Locator;
   private readonly schuelerVersetzenDialogCard: Locator;
@@ -40,6 +42,14 @@ export class PersonManagementViewPage extends AbstractAdminPage {
     this.schuelerVersetzenDialogCard = this.page.getByTestId('change-klasse-layout-card');
     this.passwortZuruecksetzenDialogCard = this.page.getByTestId('password-reset-layout-card');
     this.rolleZuordnenDialogCard = this.page.getByTestId('rolle-modify-layout-card');
+    this.schuleAutocompleteInRolleZuordnenDialog = new Autocomplete(
+      this.page,
+      this.rolleZuordnenDialogCard.getByTestId('personenkontext-create-organisation-select'),
+    );
+    this.klasseAutocompleteInRolleZuordnenDialog = new Autocomplete(
+      this.page,
+      this.rolleZuordnenDialogCard.getByTestId('personenkontext-create-rolle-modify-klasse-select'),
+    );
   }
 
   /* actions */
@@ -114,6 +124,23 @@ export class PersonManagementViewPage extends AbstractAdminPage {
 
   public async selectPerson(name: string): Promise<void> {
     await this.personTable.selectRow(name);
+  }
+
+  public async filterAndSelectPersons(
+    schuleName: string | undefined,
+    klassenName: string,
+    personNachnamen: string[],
+  ): Promise<void> {
+    await this.waitForPageLoad();
+    if (schuleName !== undefined) {
+      await this.filterBySchule(schuleName, false);
+    }
+    await this.filterByKlasse(klassenName);
+    await this.waitForDataLoad();
+    for (const nachname of personNachnamen) {
+      await this.selectPerson(nachname);
+      await this.checkPersonSelected(nachname);
+    }
   }
 
   public async selectMehrfachauswahl(option: string): Promise<void> {
@@ -406,6 +433,33 @@ export class PersonManagementViewPage extends AbstractAdminPage {
     await expect(this.rolleZuordnenDialogCard.getByTestId('keep-klasse-radio-button').locator('input')).toBeChecked();
   }
 
+  public async selectAndereKlasseAuswaehlen(): Promise<void> {
+    // Wir starten den Response-Listener VOR dem Klick, weil der Klick
+    // das v-if triggert, KlassenFilter mountet und sofort die API aufruft.
+    const klassenLoaded: Promise<import('@playwright/test').Response> = this.page.waitForResponse(
+      (resp) => resp.url().includes('/api/organisationen') && resp.url().includes('typ=KLASSE') && resp.status() === 200,
+    );
+    await this.rolleZuordnenDialogCard.getByTestId('select-new-klasse-radio-button').locator('input').click();
+    await expect(this.rolleZuordnenDialogCard.getByTestId('select-new-klasse-radio-button').locator('input'),
+    ).toBeChecked();
+    // Warten bis die Klassen tatsächlich geladen sind
+    await klassenLoaded;
+  }
+
+  public async selectSchuleInRolleZuordnenDialog(schulname: string): Promise<void> {
+    await this.schuleAutocompleteInRolleZuordnenDialog.searchByTitle(schulname, false);
+  }
+
+  public async selectKlasseInRolleZuordnenDialog(klassenname: string): Promise<void> {
+    await this.klasseAutocompleteInRolleZuordnenDialog.selectByTitle(klassenname);
+  }
+
+  public async fillBefristungInRolleZuordnenDialog(befristung: string): Promise<void> {
+    const befristungInput: Locator = this.rolleZuordnenDialogCard.getByTestId('befristung-input').locator('input');
+    await befristungInput.waitFor({ state: 'visible' });
+    await befristungInput.fill(befristung);
+  }
+
   public async checkRolleZuordnenHint(expectedText: string): Promise<void> {
     await expect(this.rolleZuordnenDialogCard.getByTestId('modify-Rolle-hint')).toContainText(expectedText);
   }
@@ -421,9 +475,45 @@ export class PersonManagementViewPage extends AbstractAdminPage {
     await expect(this.rolleZuordnenDialogCard.getByTestId('rolle-modify-close-button')).toBeVisible();
   }
 
+  public async checkRolleZuordnenErrorDialog(
+    expectedUsers: { vorname: string; nachname: string; username: string }[],
+  ): Promise<void> {
+    const errorCard: Locator = this.page.getByTestId('person-bulk-error-layout-card');
+    await expect(errorCard).toBeVisible();
+    await expect(errorCard.getByTestId('layout-card-headline')).toHaveText('Fehler bei der Mehrfachbearbeitung');
+
+    const expectedFehlertext: string =
+      'Die neue Rolle kann diesem Benutzer nicht zugeordnet werden, da er entweder diese Rolle schon an einer ' +
+      'anderen Klasse besitzt oder mehreren Klassen zugeordnet ist. Bitte nehmen Sie die Änderung per Einzelbearbeitung vor.';
+
+    const items: Locator = errorCard.locator('[data-testid^="person-bulk-error-error-list-item-"]');
+    await expect(items).toHaveCount(expectedUsers.length);
+
+    for (const user of expectedUsers) {
+      const item: Locator = items.filter({ hasText: `${user.vorname} ${user.nachname} (${user.username})` });
+      await expect(item).toHaveCount(1);
+      await expect(item).toContainText(expectedFehlertext);
+    }
+
+    await expect(errorCard.getByTestId('person-bulk-error-discard-button')).toBeVisible();
+    await expect(errorCard.getByTestId('person-bulk-error-save-button')).toBeVisible();
+  }
+
+  public async closeRolleZuordnenErrorDialog(): Promise<void> {
+    await this.page.getByTestId('person-bulk-error-layout-card').getByTestId('person-bulk-error-discard-button').click();
+    // Bestätigungs-Dialog: "Bevor Sie den Dialog schließen, stellen Sie bitte sicher, dass Sie die Liste ..."
+    await this.page.getByTestId('confirm-close-bulk-error-dialog-button').click();
+  }
+
   public async checkRolleAssignedToPersons(rolleName: string, nachnamen: string[]): Promise<void> {
     for (const nachname of nachnamen) {
       await this.personTable.checkCellInRow(nachname, 5, rolleName);
+    }
+  }
+
+  public async checkKlasseAssignedToPersons(klasseName: string, nachnamen: string[]): Promise<void> {
+    for (const nachname of nachnamen) {
+      await this.personTable.checkCellInRow(nachname, 7, klasseName);
     }
   }
 }
