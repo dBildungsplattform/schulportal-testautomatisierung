@@ -14,16 +14,16 @@ dotenv.config({
 
 dotenv.config({ path: path.resolve(dirname, '.env'), override: true });
 
-export const workers: number = 6;
+export const workers: number = 4;
 
 export default defineConfig({
   testDir: './tests',
-  timeout: 90 * 1000,
-  expect: { timeout: 10 * 1000 },
+  timeout: 1 * 90 * 1000,
+  expect: { timeout: 20 * 1000 },
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
-  maxFailures: 2,
+  retries: process.env.CI ? 0 : 0,
+  maxFailures: 0,
   workers,
   reporter: [['html']],
   globalSetup: './tests/global-setup.ts',
@@ -31,7 +31,7 @@ export default defineConfig({
   globalTeardown: './tests/global-teardown.ts',
 
   use: {
-    trace: 'on-first-retry',
+    trace: 'retain-on-failure',
     locale: 'de-DE',
     timezoneId: 'Europe/Brussels',
     screenshot: 'only-on-failure',

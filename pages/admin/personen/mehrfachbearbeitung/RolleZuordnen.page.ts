@@ -33,7 +33,7 @@ export class RolleZuordnenPage {
     await this.rolleSelect.searchByTitle(name, true);
   }
 
-  public async executeAction(): Promise<void> {
+  public async submitRolleAssignment(): Promise<void> {
     await this.submitButton.click();
   }
 

@@ -124,7 +124,7 @@ for (const { adminType, rollenName, shouldKopersTextBeVisible, expectedBefristun
       });
 
       await test.step('Ausführen und Erfolgsmeldung prüfen', async () => {
-        await rolleZuordnenPage.executeAction();
+        await rolleZuordnenPage.submitRolleAssignment();
         await rolleZuordnenPage.assertSuccessMessageIsVisible();
       });
 
