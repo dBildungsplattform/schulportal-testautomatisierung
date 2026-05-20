@@ -25,7 +25,7 @@ interface TestFixture {
   expectedBefristung: 'schuljahresende' | 'unbefristet';
 }
 
-for (const { adminType, rollenName, shouldKopersTextBeVisible, expectedBefristung } of [
+const TEST_SCENARIOS: TestFixture[] = [
   {
     adminType: 'Schuladmin',
     rollenName: lehrkraftOeffentlichRolle,
@@ -44,7 +44,9 @@ for (const { adminType, rollenName, shouldKopersTextBeVisible, expectedBefristun
     shouldKopersTextBeVisible: true,
     expectedBefristung: 'schuljahresende',
   },
-] as TestFixture[]) {
+];
+
+for (const { adminType, rollenName, shouldKopersTextBeVisible, expectedBefristung } of TEST_SCENARIOS) {
   test.describe(`Als ${adminType}`, () => {
     let schulName: string;
     let rolleName: string;
