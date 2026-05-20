@@ -1,0 +1,27 @@
+## Plan: Firmenfitness-Angebot für Lehr-Rolle testen
+
+**Was/Warum:**  
+Das Angebot "Firmenfitness Angebot" soll als zusätzlicher ServiceProvider für die Rolle "Lehr" im Test ServiceProviderAufStartseite.spec.ts geprüft werden. Es muss in die Fixture, die Konstanten und die Gesamtliste aufgenommen werden.
+
+**Schritte**
+1. In base/sp.ts die Konstante ergänzen:
+   - export const firmenfitness: string = 'Firmenfitness Angebot';
+2. In tests/start/ServiceProviderAufStartseite.data.ts:
+   - firmenfitness aus base/sp importieren.
+   - In der Lehr-Fixture (rollenArt: RollenArt.Lehr) firmenfitness zu serviceProviderNames hinzufügen.
+3. In tests/start/ServiceProviderAufStartseite.spec.ts:
+   - firmenfitness in das Array allProviderNames aufnehmen, damit die Sichtbarkeitsprüfung korrekt ist.
+
+**Relevante Dateien**
+- base/sp.ts — neue Konstante
+- tests/start/ServiceProviderAufStartseite.data.ts — Import und Fixture-Erweiterung
+- tests/start/ServiceProviderAufStartseite.spec.ts — allProviderNames ergänzen
+
+**Verifikation**
+1. Test ausführen: npm test -- tests/start/ServiceProviderAufStartseite.spec.ts
+2. Prüfen, dass Firmenfitness für Lehr sichtbar und für andere Rollen unsichtbar ist.
+3. Keine anderen ServiceProvider für Lehr betroffen.
+
+**Entscheidungen**
+- Firmenfitness wird wie alle anderen Angebote als Konstante geführt.
+- Die Änderung betrifft nur die Rolle Lehr.
