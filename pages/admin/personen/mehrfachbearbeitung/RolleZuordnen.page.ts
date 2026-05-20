@@ -10,7 +10,7 @@ export class RolleZuordnenPage {
   private readonly befristungsInput: BefristungsInput;
   private readonly submitButton: Locator;
 
-  public constructor(private page: Page) {
+  public constructor(private readonly page: Page) {
     this.layoutCard = this.page.getByTestId('rolle-modify-layout-card');
     this.organisationSelect = new Autocomplete(
       page,
@@ -48,7 +48,7 @@ export class RolleZuordnenPage {
   }
 
   public async assertSelectedOrganisation(expectedOrganisation: string): Promise<void> {
-    await this.organisationSelect.assertText(expectedOrganisation, false);
+    await this.organisationSelect.assertTextSoft(expectedOrganisation);
   }
 
   public async assertKopersTextIsVisible(): Promise<void> {

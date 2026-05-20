@@ -120,9 +120,8 @@ export class PersonManagementViewPage extends AbstractAdminPage {
     await this.page.getByTestId('benutzer-edit-select').click();
     const locator: Locator = this.page.getByRole('option', { name: option, exact: false });
     await locator.click();
-    switch (option) {
-      case 'Rolle zuordnen':
-        return new RolleZuordnenPage(this.page).waitForPageToLoad();
+    if (option === 'Rolle zuordnen') {
+      return new RolleZuordnenPage(this.page).waitForPageToLoad();
     }
   }
 
@@ -210,7 +209,7 @@ export class PersonManagementViewPage extends AbstractAdminPage {
 
   public async checkIfSchuleIsCorrect(schulname: string, schulNr?: string): Promise<void> {
     const expected: string = schulNr ? `${schulNr} (${schulname})` : schulname;
-    await this.organisationAutocomplete.assertText(expected);
+    await this.organisationAutocomplete.assertTextHard(expected);
     await this.checkIfColumnAlwaysContainsText(6, schulNr ? schulNr : schulname);
   }
 
@@ -219,7 +218,7 @@ export class PersonManagementViewPage extends AbstractAdminPage {
   }
 
   public async checkIfRolleIsCorrect(rolleName: string): Promise<void> {
-    await this.rolleAutocomplete.assertText(rolleName);
+    await this.rolleAutocomplete.assertTextHard(rolleName);
     await this.checkIfColumnAlwaysContainsText(5, rolleName);
   }
 

@@ -5,7 +5,7 @@ import { BefristungsInput } from '../../../../components/BefristungsInput.page';
 export class BefristungWorkflowPage extends BaseZuordnungWorkflowPage {
   /* add global locators here */
   protected readonly ENDPOINT: string = 'befristung-change/**';
-  private befristungsInput: BefristungsInput;
+  private readonly befristungsInput: BefristungsInput;
 
   protected readonly TEST_IDS: TestIdsType = {
     submitButton: 'change-befristung-submit-button',

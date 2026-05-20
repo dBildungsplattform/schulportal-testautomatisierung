@@ -192,12 +192,12 @@ export class Autocomplete {
     await expect(item).toBeVisible();
   }
 
-  public async assertText(text: string, exactMatch: boolean = true): Promise<void> {
-    if (exactMatch) {
-      await expect(this.locator).toHaveText(text);
-    } else {
-      await expect(this.locator).toContainText(text);
-    }
+  public async assertTextHard(text: string): Promise<void> {
+    await expect(this.locator).toHaveText(text);
+  }
+
+  public async assertTextSoft(text: string): Promise<void> {
+    await expect(this.locator).toContainText(text);
   }
 
   public async assertAllMenuItems(expectedTexts: string[]): Promise<void> {
