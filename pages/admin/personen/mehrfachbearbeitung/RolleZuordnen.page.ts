@@ -10,7 +10,7 @@ export class RolleZuordnenPage {
   private readonly befristungsInput: BefristungsInput;
   private readonly submitButton: Locator;
 
-  constructor(private page: Page) {
+  public constructor(private page: Page) {
     this.layoutCard = this.page.getByTestId('rolle-modify-layout-card');
     this.organisationSelect = new Autocomplete(
       page,
@@ -21,54 +21,54 @@ export class RolleZuordnenPage {
     this.submitButton = this.layoutCard.getByTestId('rolle-modify-submit-button');
   }
 
-  waitForPageToLoad(): Promise<void> {
+  public async waitForPageToLoad(): Promise<void> {
     return expect(this.layoutCard).toContainText('Rolle zuordnen');
   }
 
-  async selectOrganisation(name: string): Promise<void> {
+  public async selectOrganisation(name: string): Promise<void> {
     await this.organisationSelect.searchByTitle(name, false);
   }
 
-  async selectRolle(name: string): Promise<void> {
+  public async selectRolle(name: string): Promise<void> {
     await this.rolleSelect.searchByTitle(name, true);
   }
 
-  async executeAction(): Promise<void> {
+  public async executeAction(): Promise<void> {
     await this.submitButton.click();
   }
 
-  async closeModal(): Promise<PersonManagementViewPage> {
+  public async closeModal(): Promise<PersonManagementViewPage> {
     await this.layoutCard.getByTestId('rolle-modify-close-button').click();
     return new PersonManagementViewPage(this.page).waitForPageLoad();
   }
 
-  async assertSubmitButtonEnabled(): Promise<void> {
+  public async assertSubmitButtonEnabled(): Promise<void> {
     await expect(this.submitButton).toBeEnabled();
   }
 
-  async assertSelectedOrganisation(expectedOrganisation: string): Promise<void> {
+  public async assertSelectedOrganisation(expectedOrganisation: string): Promise<void> {
     await this.organisationSelect.assertText(expectedOrganisation, false);
   }
 
-  async assertKopersTextIsVisible(): Promise<void> {
+  public async assertKopersTextIsVisible(): Promise<void> {
     await expect(this.layoutCard.getByTestId('no-kopersnr-information')).toContainText(
       'Bitte beachten: Alle ausgewählten Benutzerkonten müssen über eine KoPers.-Nr. verfügen. Tragen Sie diese ggf. bitte in der Gesamtübersicht des Benutzers nach, sobald sie Ihnen vorliegt. Ein Benutzerkonto mit der gewählten Rolle ohne KoPers.-Nr. wird nach spätestens 8 Wochen automatisch gesperrt.',
     );
   }
 
-  async assertKopersTextIsNotVisible(): Promise<void> {
+  public async assertKopersTextIsNotVisible(): Promise<void> {
     await expect(this.layoutCard.getByTestId('no-kopersnr-information')).toBeHidden();
   }
 
-  async assertUnbefristetChecked(): Promise<void> {
+  public async assertUnbefristetChecked(): Promise<void> {
     await this.befristungsInput.assertSelectedBefristungOption('unbefristet');
   }
 
-  async assertSchuljahresendeChecked(): Promise<void> {
+  public async assertSchuljahresendeChecked(): Promise<void> {
     await this.befristungsInput.assertSelectedBefristungOption('schuljahresende');
   }
 
-  async assertSuccessMessageIsVisible(): Promise<void> {
+  public async assertSuccessMessageIsVisible(): Promise<void> {
     await expect(this.layoutCard).toContainText('Die Rolle wurde erfolgreich zugeordnet.');
   }
 }
