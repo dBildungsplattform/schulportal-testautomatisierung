@@ -122,7 +122,7 @@ export class PersonManagementViewPage extends AbstractAdminPage {
     await locator.click();
     switch (option) {
       case 'Rolle zuordnen':
-        return new RolleZuordnenPage(this.page);
+        return new RolleZuordnenPage(this.page).waitForPageToLoad();
     }
   }
 

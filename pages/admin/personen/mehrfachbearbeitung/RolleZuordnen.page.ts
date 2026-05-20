@@ -21,8 +21,9 @@ export class RolleZuordnenPage {
     this.submitButton = this.layoutCard.getByTestId('rolle-modify-submit-button');
   }
 
-  public async waitForPageToLoad(): Promise<void> {
-    return expect(this.layoutCard).toContainText('Rolle zuordnen');
+  public async waitForPageToLoad(): Promise<RolleZuordnenPage> {
+    await expect(this.layoutCard).toContainText('Rolle zuordnen');
+    return this;
   }
 
   public async selectOrganisation(name: string): Promise<void> {
