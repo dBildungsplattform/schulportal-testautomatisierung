@@ -1,6 +1,23 @@
 {
   "openapi": "3.0.0",
   "paths": {
+    "/api/email-webhook/changed": {
+      "post": {
+        "operationId": "EmailWebhookController_emailChangedWebhook",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/EmailChangedBodyParams" } } }
+        },
+        "responses": {
+          "201": { "description": "Event received" },
+          "401": { "description": "Insufficient permissions to call webhook" },
+          "403": { "description": "Insufficient permissions to call webhook" },
+          "500": { "description": "Internal server error while processing webhook" }
+        },
+        "tags": ["email-webhook"]
+      }
+    },
     "/api/auth/login": {
       "get": {
         "operationId": "AuthenticationController_login",
@@ -63,23 +80,6 @@
         },
         "summary": "External Data about requested in user.",
         "tags": ["Keycloakinternal"]
-      }
-    },
-    "/api/email-webhook/changed": {
-      "post": {
-        "operationId": "EmailWebhookController_emailChangedWebhook",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/EmailChangedBodyParams" } } }
-        },
-        "responses": {
-          "201": { "description": "Event received" },
-          "401": { "description": "Insufficient permissions to call webhook" },
-          "403": { "description": "Insufficient permissions to call webhook" },
-          "500": { "description": "Internal server error while processing webhook" }
-        },
-        "tags": ["email-webhook"]
       }
     },
     "/api/personen/landesbediensteter": {
@@ -1502,11 +1502,19 @@
         "tags": ["rolle"]
       }
     },
-    "/api/provider/all": {
+    "/api/provider/assignable-for-rolle": {
       "get": {
-        "description": "Get all service-providers.",
-        "operationId": "ProviderController_getAllServiceProviders",
-        "parameters": [],
+        "description": "Get all service-providers assignable for a role.",
+        "operationId": "ProviderController_getAssignableServiceProvidersForRolle",
+        "parameters": [
+          {
+            "name": "schulstrukturknotenOfRolle",
+            "required": true,
+            "in": "query",
+            "description": "The id of the organisation where the service provider should be assignable on",
+            "schema": { "nullable": false, "type": "string" }
+          }
+        ],
         "responses": {
           "200": {
             "description": "The service-providers were successfully returned.",
@@ -1558,7 +1566,7 @@
           }
         },
         "responses": {
-          "200": {
+          "201": {
             "description": "The service-provider was successfully created.",
             "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ServiceProviderResponse" } } }
           },
@@ -1821,6 +1829,32 @@
           "400": { "description": "Invalid request body." },
           "401": { "description": "Not authorized." },
           "403": { "description": "Insufficient permissions." },
+          "500": { "description": "Internal server error." }
+        },
+        "security": [{ "bearer": [] }, { "oauth2": ["openid"] }],
+        "summary": "",
+        "tags": ["provider"]
+      },
+      "delete": {
+        "description": "Delete a service-provider (Angebot) by id.",
+        "operationId": "ProviderController_deleteServiceProvider",
+        "parameters": [
+          {
+            "name": "angebotId",
+            "required": true,
+            "in": "path",
+            "description": "The id of the service provider",
+            "schema": { "nullable": false, "type": "string" }
+          }
+        ],
+        "responses": {
+          "204": { "description": "The service-provider was successfully deleted." },
+          "401": { "description": "Not authorized." },
+          "403": { "description": "Insufficient permissions." },
+          "404": { "description": "The service-provider does not exist." },
+          "409": {
+            "description": "The service-provider has attached rollenerweiterungen or rollen and cannot be deleted."
+          },
           "500": { "description": "Internal server error." }
         },
         "security": [{ "bearer": [] }, { "oauth2": ["openid"] }],
@@ -2913,9 +2947,9 @@
         "type": "oauth2",
         "flows": {
           "authorizationCode": {
-            "authorizationUrl": "https://main-keycloak.dev.spsh.dbildungsplattform.de/realms/SPSH/protocol/openid-connect/auth",
-            "tokenUrl": "https://main-keycloak.dev.spsh.dbildungsplattform.de/realms/SPSH/protocol/openid-connect/token",
-            "refreshUrl": "https://main-keycloak.dev.spsh.dbildungsplattform.de/realms/SPSH/protocol/openid-connect/token",
+            "authorizationUrl": "http://localhost:8080/realms/SPSH/protocol/openid-connect/auth",
+            "tokenUrl": "http://localhost:8080/realms/SPSH/protocol/openid-connect/token",
+            "refreshUrl": "http://localhost:8080/realms/SPSH/protocol/openid-connect/token",
             "scopes": {}
           }
         }
@@ -2923,6 +2957,23 @@
       "bearer": { "scheme": "bearer", "bearerFormat": "JWT", "type": "http" }
     },
     "schemas": {
+      "EmailChangedBodyParams": {
+        "type": "object",
+        "properties": {
+          "spshPersonId": { "type": "string" },
+          "previousPrimaryEmail": { "type": "string" },
+          "previousAlternativeEmail": { "type": "string" },
+          "newPrimaryEmail": { "type": "string" },
+          "newAlternativeEmail": { "type": "string" }
+        },
+        "required": [
+          "spshPersonId",
+          "previousPrimaryEmail",
+          "previousAlternativeEmail",
+          "newPrimaryEmail",
+          "newAlternativeEmail"
+        ]
+      },
       "OrganisationsTyp": {
         "type": "string",
         "enum": [
@@ -3087,6 +3138,24 @@
         "properties": { "personId": { "type": "string" } },
         "required": ["personId"]
       },
+      "UserExternalDataResponseIqshHelpdeskPk": {
+        "type": "object",
+        "properties": { "rolleId": { "type": "string" }, "dstNr": { "type": "string" } },
+        "required": ["rolleId", "dstNr"]
+      },
+      "UserExternalDataResponseIqshHelpdesk": {
+        "type": "object",
+        "properties": {
+          "vorname": { "type": "string" },
+          "nachname": { "type": "string" },
+          "personenkontexte": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/UserExternalDataResponseIqshHelpdeskPk" }
+          },
+          "emailAdresse": { "type": "string" }
+        },
+        "required": ["vorname", "nachname", "personenkontexte", "emailAdresse"]
+      },
       "UserExternalDataResponse": {
         "type": "object",
         "properties": {
@@ -3094,26 +3163,10 @@
           "itslearning": { "$ref": "#/components/schemas/UserExeternalDataResponseItslearning" },
           "vidis": { "$ref": "#/components/schemas/UserExeternalDataResponseVidis" },
           "opsh": { "$ref": "#/components/schemas/UserExeternalDataResponseOpsh" },
-          "onlineDateiablage": { "$ref": "#/components/schemas/UserExeternalDataResponseOnlineDateiablage" }
+          "onlineDateiablage": { "$ref": "#/components/schemas/UserExeternalDataResponseOnlineDateiablage" },
+          "iqshHelpdesk": { "$ref": "#/components/schemas/UserExternalDataResponseIqshHelpdesk" }
         },
-        "required": ["itslearning", "vidis", "opsh", "onlineDateiablage"]
-      },
-      "EmailChangedBodyParams": {
-        "type": "object",
-        "properties": {
-          "spshPersonId": { "type": "string" },
-          "previousPrimaryEmail": { "type": "string" },
-          "previousAlternativeEmail": { "type": "string" },
-          "newPrimaryEmail": { "type": "string" },
-          "newAlternativeEmail": { "type": "string" }
-        },
-        "required": [
-          "spshPersonId",
-          "previousPrimaryEmail",
-          "previousAlternativeEmail",
-          "newPrimaryEmail",
-          "newAlternativeEmail"
-        ]
+        "required": ["itslearning", "vidis", "opsh", "onlineDateiablage", "iqshHelpdesk"]
       },
       "PersonLandesbediensteterSearchPersonenkontextResponse": {
         "type": "object",
@@ -3678,7 +3731,8 @@
               "ROLLE_NAME_UNIQUE_ON_SSK",
               "SERVICE_PROVIDER_NICHT_NACHTRAEGLICH_ZUWEISBAR",
               "SERVICE_PROVIDER_NICHT_VERFUEGBAR_FUER_ROLLENERWEITERUNG",
-              "NO_REDUNDANT_ROLLENERWEITERUNG"
+              "NO_REDUNDANT_ROLLENERWEITERUNG",
+              "SERVICE_PROVIDER_PROVIDED_OUT_OF_TREE"
             ]
           },
           "code": { "type": "number", "description": "Corresponds to HTTP Status code like 200, 404, 500" }
@@ -3725,11 +3779,12 @@
           "target": { "allOf": [{ "$ref": "#/components/schemas/ServiceProviderTarget" }] },
           "url": { "type": "string", "description": "Can be undefined, if `target` is not equal to `URL`" },
           "kategorie": { "allOf": [{ "$ref": "#/components/schemas/ServiceProviderKategorie" }] },
+          "logoId": { "type": "number", "description": "Optional logoId for use with standard logos" },
           "hasLogo": { "type": "boolean" },
           "requires2fa": { "type": "boolean" },
           "merkmale": { "type": "array", "items": { "$ref": "#/components/schemas/ServiceProviderMerkmal" } }
         },
-        "required": ["id", "name", "target", "url", "kategorie", "hasLogo", "requires2fa", "merkmale"]
+        "required": ["id", "name", "target", "url", "kategorie", "logoId", "hasLogo", "requires2fa", "merkmale"]
       },
       "UpdateRolleBodyParams": {
         "type": "object",
@@ -3866,7 +3921,8 @@
             "type": "array",
             "items": { "$ref": "#/components/schemas/RollenerweiterungForManageableServiceProviderResponse" }
           },
-          "rollen": { "type": "array", "items": { "$ref": "#/components/schemas/RolleRefResponse" } }
+          "rollen": { "type": "array", "items": { "$ref": "#/components/schemas/RolleRefResponse" } },
+          "hasSomeVerwaltenPermission": { "type": "boolean" }
         },
         "required": [
           "id",
@@ -3876,7 +3932,8 @@
           "requires2fa",
           "merkmale",
           "rollenerweiterungen",
-          "rollen"
+          "rollen",
+          "hasSomeVerwaltenPermission"
         ]
       },
       "ManageableServiceProviderResponse": {
@@ -3886,6 +3943,7 @@
           "name": { "type": "string" },
           "administrationsebene": { "$ref": "#/components/schemas/OrganisationRefResponse" },
           "kategorie": { "allOf": [{ "$ref": "#/components/schemas/ServiceProviderKategorie" }] },
+          "logoId": { "type": "number", "description": "Optional logoId for use with standard logos" },
           "requires2fa": { "type": "boolean" },
           "merkmale": { "type": "array", "items": { "$ref": "#/components/schemas/ServiceProviderMerkmal" } },
           "url": { "type": "string", "description": "Can be undefined, if `target` is not equal to `URL`" },
@@ -3894,19 +3952,48 @@
             "type": "boolean",
             "description": "Indicates whether the service provider is available for rollenerweiterung."
           },
-          "rollen": { "type": "array", "items": { "$ref": "#/components/schemas/RolleRefResponse" } }
+          "rollen": { "type": "array", "items": { "$ref": "#/components/schemas/RolleRefResponse" } },
+          "relevantSystemrechte": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "ROLLEN_VERWALTEN",
+                "PERSONEN_SOFORT_LOESCHEN",
+                "PERSONEN_VERWALTEN",
+                "LANDESBEDIENSTETE_SUCHEN_UND_HINZUFUEGEN",
+                "EINGESCHRAENKT_NEUE_BENUTZER_ERSTELLEN",
+                "SCHULEN_VERWALTEN",
+                "KLASSEN_VERWALTEN",
+                "SCHULTRAEGER_VERWALTEN",
+                "PERSON_SYNCHRONISIEREN",
+                "CRON_DURCHFUEHREN",
+                "PERSONEN_ANLEGEN",
+                "IMPORT_DURCHFUEHREN",
+                "PERSONEN_LESEN",
+                "BULK_VERWALTEN",
+                "SCHULPORTAL_VERWALTEN",
+                "HINWEISE_BEARBEITEN",
+                "ROLLEN_ERWEITERN",
+                "ANGEBOTE_VERWALTEN",
+                "ANGEBOTE_EINGESCHRAENKT_VERWALTEN"
+              ]
+            }
+          }
         },
         "required": [
           "id",
           "name",
           "administrationsebene",
           "kategorie",
+          "logoId",
           "requires2fa",
           "merkmale",
           "url",
           "hasRollenerweiterung",
           "availableForRollenerweiterung",
-          "rollen"
+          "rollen",
+          "relevantSystemrechte"
         ]
       },
       "CreateServiceProviderBodyParams": {
@@ -3915,7 +4002,16 @@
           "organisationId": { "type": "string", "description": "The id of an organization", "nullable": false },
           "name": { "type": "string" },
           "url": { "type": "string" },
-          "logoBase64": { "type": "string", "description": "Optional logo as base64-encoded string" },
+          "logoId": {
+            "type": "integer",
+            "description": "Optional logoId to use a standard logo. Has to be a positive integer. Only one of logoId or logoBase64 with logoMimeType can be provided, not both.",
+            "maximum": 2147483647,
+            "minimum": 1
+          },
+          "logoBase64": {
+            "type": "string",
+            "description": "Optional logo as base64-encoded string. Only one of logoId or logoBase64 with logoMimeType can be provided, not both."
+          },
           "logoMimeType": {
             "type": "string",
             "enum": ["image/png", "image/jpeg", "image/webp", "image/svg+xml"],
@@ -3935,7 +4031,14 @@
         "properties": {
           "name": { "type": "string" },
           "url": { "type": "string" },
-          "kategorie": { "type": "string", "enum": ["EMAIL", "UNTERRICHT", "VERWALTUNG", "SCHULISCH", "HINWEISE"] }
+          "kategorie": { "type": "string", "enum": ["EMAIL", "UNTERRICHT", "VERWALTUNG", "SCHULISCH", "HINWEISE"] },
+          "logoId": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Optional logoId to use a standard logo. Has to be an integer. Can not be provided, if the service provider already has a custom logo. Null removes the logo.",
+            "maximum": 2147483647,
+            "minimum": 1
+          }
         }
       },
       "PersonResponseAutomapper": {

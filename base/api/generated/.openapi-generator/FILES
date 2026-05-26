@@ -157,6 +157,8 @@ models/UserExeternalDataResponseOpsh.ts
 models/UserExeternalDataResponseOpshPk.ts
 models/UserExeternalDataResponseVidis.ts
 models/UserExternalDataResponse.ts
+models/UserExternalDataResponseIqshHelpdesk.ts
+models/UserExternalDataResponseIqshHelpdeskPk.ts
 models/UserExternalDataResponseOx.ts
 models/UserLockParams.ts
 models/UserinfoResponse.ts

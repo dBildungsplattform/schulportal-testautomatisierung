@@ -135,6 +135,8 @@ export * from './UserExeternalDataResponseOpsh';
 export * from './UserExeternalDataResponseOpshPk';
 export * from './UserExeternalDataResponseVidis';
 export * from './UserExternalDataResponse';
+export * from './UserExternalDataResponseIqshHelpdesk';
+export * from './UserExternalDataResponseIqshHelpdeskPk';
 export * from './UserExternalDataResponseOx';
 export * from './UserLockParams';
 export * from './UserinfoResponse';
