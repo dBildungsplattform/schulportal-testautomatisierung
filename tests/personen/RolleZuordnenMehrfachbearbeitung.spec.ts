@@ -61,7 +61,7 @@ for (const { adminType, rollenAssertions } of TEST_SCENARIOS) {
     let rolleName: string;
     let adminUserInfo: UserInfo;
     let userInfos: UserInfo[] = [];
-    let rolleToAssign: string = rollenAssertions.at(-1)!.rollenName;
+    const rolleToAssign: string = rollenAssertions.at(-1)!.rollenName;
 
     test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
       await loginAndNavigateToAdministration(page);
