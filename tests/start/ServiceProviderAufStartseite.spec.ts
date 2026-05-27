@@ -1,6 +1,6 @@
 import test, { PlaywrightTestArgs } from '@playwright/test';
 
-import { OrganisationResponse, OrganisationsTyp, RollenArt } from '../../base/api/generated';
+import { OrganisationResponse, RollenArt } from '../../base/api/generated';
 import { createKlasse, createOrganisation, getOrganisationId, getOrganisations } from '../../base/api/organisationApi';
 import { createRolleAndPersonWithPersonenkontext, UserInfo } from '../../base/api/personApi';
 import { landSH, oeffentlichLandSH } from '../../base/organisation';
@@ -57,10 +57,7 @@ test.describe('ServiceProvider auf Startseite', () => {
             orga = (await getOrganisations(page, { name: landSH }))[0];
             if (!orga) throw Error('Fetching land failed');
           } else {
-            const traegerId: string = await getOrganisationId(
-              page,
-              organisationsTyp === OrganisationsTyp.Traeger ? oeffentlichLandSH : landSH,
-            );
+            const traegerId: string = await getOrganisationId(page, oeffentlichLandSH);
             orga = await createOrganisation(page, {
               name: generateSchulname(),
               typ: organisationsTyp,
