@@ -20,38 +20,48 @@ import { RolleZuordnenPage } from '../../pages/admin/personen/mehrfachbearbeitun
 
 interface TestFixture {
   adminType: 'Schuladmin' | 'Landesadmin';
-  rollenName: string;
-  shouldKopersTextBeVisible: boolean;
-  expectedBefristung: 'schuljahresende' | 'unbefristet';
+  rollenAssertions: {
+    rollenName: string;
+    shouldKopersTextBeVisible: boolean;
+    expectedBefristung: 'schuljahresende' | 'unbefristet';
+  }[];
 }
 
 const TEST_SCENARIOS: TestFixture[] = [
   {
     adminType: 'Schuladmin',
-    rollenName: lehrkraftOeffentlichRolle,
-    shouldKopersTextBeVisible: true,
-    expectedBefristung: 'unbefristet',
-  },
-  {
-    adminType: 'Schuladmin',
-    rollenName: religionsLehrkraftRolle,
-    shouldKopersTextBeVisible: false,
-    expectedBefristung: 'unbefristet',
+    rollenAssertions: [
+      {
+        rollenName: lehrkraftOeffentlichRolle,
+        shouldKopersTextBeVisible: true,
+        expectedBefristung: 'unbefristet',
+      },
+      {
+        rollenName: religionsLehrkraftRolle,
+        shouldKopersTextBeVisible: false,
+        expectedBefristung: 'unbefristet',
+      },
+    ],
   },
   {
     adminType: 'Landesadmin',
-    rollenName: lehrerImVorbereitungsdienstRolle,
-    shouldKopersTextBeVisible: true,
-    expectedBefristung: 'schuljahresende',
+    rollenAssertions: [
+      {
+        rollenName: lehrerImVorbereitungsdienstRolle,
+        shouldKopersTextBeVisible: true,
+        expectedBefristung: 'schuljahresende',
+      },
+    ],
   },
 ];
 
-for (const { adminType, rollenName, shouldKopersTextBeVisible, expectedBefristung } of TEST_SCENARIOS) {
+for (const { adminType, rollenAssertions } of TEST_SCENARIOS) {
   test.describe(`Als ${adminType}`, () => {
     let schulName: string;
     let rolleName: string;
     let adminUserInfo: UserInfo;
     let userInfos: UserInfo[] = [];
+    let rolleToAssign: string = rollenAssertions.at(-1)!.rollenName;
 
     test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
       await loginAndNavigateToAdministration(page);
@@ -76,7 +86,11 @@ for (const { adminType, rollenName, shouldKopersTextBeVisible, expectedBefristun
       await startPage.navigateToAdministration();
     });
 
-    test(`Rolle ${rollenName} per Mehrfachbearbeitung zuweisen`, async ({ page }: PlaywrightTestArgs) => {
+    test(`Rolle ${rolleToAssign} per Mehrfachbearbeitung zuweisen`, async ({ page }: PlaywrightTestArgs) => {
+      if (!rolleToAssign) {
+        throw new Error('Rolle zum Zuweisen ist nicht definiert');
+      }
+
       let personManagementViewPage: PersonManagementViewPage = new PersonManagementViewPage(page);
       await test.step('Personen auswählen', async () => {
         if (adminType === 'Landesadmin') {
@@ -104,26 +118,32 @@ for (const { adminType, rollenName, shouldKopersTextBeVisible, expectedBefristun
         });
       }
 
-      await test.step(`Rolle ${rollenName} auswählen und Prüfen, dass der Submit-Button aktiviert ist`, async () => {
-        await rolleZuordnenPage.selectRolle(rollenName);
-        await rolleZuordnenPage.assertSubmitButtonEnabled();
+      await test.step(`Prüfen, dass keine LEIT-Rolle gefunden wird`, async () => {
+        await rolleZuordnenPage.assertRolleNotFound(schuladminOeffentlichRolle);
       });
 
-      await test.step('Ausgewählte Befristungsoption prüfen', async () => {
-        if (expectedBefristung === 'schuljahresende') {
-          await rolleZuordnenPage.assertSchuljahresendeChecked();
-        } else {
-          await rolleZuordnenPage.assertUnbefristetChecked();
-        }
-      });
+      for (const { rollenName, shouldKopersTextBeVisible, expectedBefristung } of rollenAssertions) {
+        await test.step(`Rolle ${rollenName} auswählen und Prüfen, dass der Submit-Button aktiviert ist`, async () => {
+          await rolleZuordnenPage.selectRolle(rollenName);
+          await rolleZuordnenPage.assertSubmitButtonEnabled();
+        });
 
-      await test.step('KoPers.-Hinweis prüfen', async () => {
-        if (shouldKopersTextBeVisible) {
-          await rolleZuordnenPage.assertKopersTextIsVisible();
-        } else {
-          await rolleZuordnenPage.assertKopersTextIsNotVisible();
-        }
-      });
+        await test.step('Ausgewählte Befristungsoption prüfen', async () => {
+          if (expectedBefristung === 'schuljahresende') {
+            await rolleZuordnenPage.assertSchuljahresendeChecked();
+          } else {
+            await rolleZuordnenPage.assertUnbefristetChecked();
+          }
+        });
+
+        await test.step('KoPers.-Hinweis prüfen', async () => {
+          if (shouldKopersTextBeVisible) {
+            await rolleZuordnenPage.assertKopersTextIsVisible();
+          } else {
+            await rolleZuordnenPage.assertKopersTextIsNotVisible();
+          }
+        });
+      }
 
       await test.step('Ausführen und Erfolgsmeldung prüfen', async () => {
         await rolleZuordnenPage.submitRolleAssignment();
@@ -134,8 +154,11 @@ for (const { adminType, rollenName, shouldKopersTextBeVisible, expectedBefristun
         return rolleZuordnenPage.closeModal();
       });
 
-      await test.step('Prüfen, dass die Rolle korrekt zugeordnet wurde und die Auswahl bestehen bleibt', async () => {
-        await personManagementViewPage.assertThatAllPersonsHaveRolle(rollenName);
+      await test.step('Prüfen, dass die Rolle korrekt zugeordnet wurde', async () => {
+        await personManagementViewPage.assertThatAllPersonsHaveRolle(rolleToAssign);
+      });
+
+      await test.step('Prüfen, dass die Auswahl bestehen bleibt', async () => {
         await Promise.all(
           userInfos.map(async (userInfo: UserInfo) => {
             return personManagementViewPage.checkPersonSelected(userInfo.username);

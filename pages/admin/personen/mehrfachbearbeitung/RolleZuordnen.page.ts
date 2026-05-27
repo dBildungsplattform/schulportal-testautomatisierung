@@ -1,4 +1,4 @@
-import { expect, Locator, Page } from '@playwright/test';
+import { expect, Locator, Page, Response } from '@playwright/test';
 import { Autocomplete } from '../../../components/Autocomplete';
 import { BefristungsInput } from '../../../components/BefristungsInput.page';
 import { PersonManagementViewPage } from '../PersonManagementView.page';
@@ -41,6 +41,15 @@ export class RolleZuordnenPage {
   public async closeModal(): Promise<PersonManagementViewPage> {
     await this.layoutCard.getByTestId('rolle-modify-close-button').click();
     return new PersonManagementViewPage(this.page).waitForPageLoad();
+  }
+
+  public async assertRolleNotFound(name: string): Promise<void> {
+    await this.rolleSelect.validateItemNotExists(name, true);
+    await this.page.waitForResponse((response: Response): boolean => {
+      const url: string = response.url();
+      return url.includes('personenkontext-workflow/step') && url.includes('rolleName=');
+    });
+    await this.rolleSelect.assertThatNoDataWasFound();
   }
 
   public async assertSubmitButtonEnabled(): Promise<void> {

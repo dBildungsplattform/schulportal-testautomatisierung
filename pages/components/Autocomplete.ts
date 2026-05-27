@@ -152,6 +152,10 @@ export class Autocomplete {
   }
 
   /* assertions */
+  public async assertThatNoDataWasFound(): Promise<void> {
+    await expect(this.overlayLocator).toHaveText(noDataMessage);
+  }
+
   public async validateItemNotExists(searchString: string, exactMatch: boolean = false): Promise<void> {
     await this.inputLocator.click();
     await this.inputLocator.fill(searchString);
