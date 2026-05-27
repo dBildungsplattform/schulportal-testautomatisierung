@@ -100,7 +100,8 @@ export class ServiceProviderDetailsBySchuleViewPage {
     rollenerweiterung?: string;
   }): Promise<void> {
     if (expected.name) await expect(this.nameField).toHaveText(expected.name);
-    if (expected.administrationsebene) await expect(this.administrationsebeneField).toHaveText(expected.administrationsebene);
+    if (expected.administrationsebene)
+      await expect(this.administrationsebeneField).toHaveText(expected.administrationsebene);
     if (expected.requires2fa) await expect(this.requires2faField).toHaveText(expected.requires2fa);
     if (expected.kategorie) await expect(this.kategorieField).toHaveText(expected.kategorie);
     if (expected.link) await expect(this.linkField).toHaveText(expected.link);

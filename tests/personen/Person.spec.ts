@@ -2,12 +2,7 @@ import { PlaywrightTestArgs, test } from '@playwright/test';
 
 import { getOrganisationId } from '../../base/api/organisationApi';
 import { createRolle } from '../../base/api/rolleApi';
-import {
-  ersatzLandSH,
-  landSH,
-  oeffentlichLandSH,
-  testschuleName,
-} from '../../base/organisation';
+import { ersatzLandSH, landSH, oeffentlichLandSH, testschuleName } from '../../base/organisation';
 import { landesadminRolle, schuelerRolle, schuladminOeffentlichRolle } from '../../base/rollen';
 import { typeLehrer, typeSchueler } from '../../base/rollentypen';
 import { DEV, STAGE } from '../../base/tags';

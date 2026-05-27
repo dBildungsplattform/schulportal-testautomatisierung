@@ -1,6 +1,6 @@
 import { PlaywrightTestArgs, test } from '@playwright/test';
 
-import { createKlasse, getKlasseId, getOrganisationId } from '../../base/api/organisationApi';
+import { createKlasse, getOrganisationId } from '../../base/api/organisationApi';
 import {
   createPersonWithPersonenkontext,
   createRolleAndPersonWithPersonenkontext,
@@ -9,7 +9,6 @@ import {
 import { landSH, testschuleDstNr, testschuleName } from '../../base/organisation';
 import { landesadminRolle, schuladminOeffentlichRolle } from '../../base/rollen';
 import { typeSchueler } from '../../base/rollentypen';
-import { itslearning } from '../../base/sp';
 import { DEV, STAGE } from '../../base/tags';
 import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
 import { generateKlassenname } from '../../base/utils/generateTestdata';
@@ -116,19 +115,23 @@ let admin: UserInfo;
 
           admin = await createPersonWithPersonenkontext(page, organisationsName, rolleName);
 
-          // Klasse anlegen
-          klasseParams = {
-            schulname: testschuleName,
-            klassenname: generateKlassenname(),
-            schulNr: testschuleDstNr,
-          };
-          const organisationId: string = await getOrganisationId(page, klasseParams.schulname);
-          const klasseId: string = await createKlasse(page, organisationId, klasseParams.klassenname);
-          // Schüler anlegen
-          await createRolleAndPersonWithPersonenkontext(page, {
-            organisationName: klasseParams.schulname,
-            rollenArt: typeSchueler,
-            klasseId,
+          const klasseId: string = await test.step(`Klasse anlegen`, async () => {
+            klasseParams = {
+              schulname: testschuleName,
+              klassenname: generateKlassenname(),
+              schulNr: testschuleDstNr,
+            };
+            const organisationId: string = await getOrganisationId(page, klasseParams.schulname);
+            const klasseId: string = await createKlasse(page, organisationId, klasseParams.klassenname);
+            return klasseId;
+          });
+
+          await test.step(`Schüler anlegen`, async () => {
+            await createRolleAndPersonWithPersonenkontext(page, {
+              organisationName: klasseParams.schulname,
+              rollenArt: typeSchueler,
+              klasseId,
+            });
           });
 
           const landingPage: LandingViewPage = await new HeaderPage(page).logout();
@@ -149,11 +152,9 @@ let admin: UserInfo;
           `Eine Klasse mit einem zugeordneten Schüler als ${bezeichnung} via Quickaction löschen`,
           { tag: [STAGE, DEV] },
           async () => {
-            await test.step(`Schüler anlegen`, async () => {
-              await test.step(`Prüfen, dass die Klasse nicht gelöscht werden kann`, async () => {
-                await klasseErgebnislistePage.searchAndDeleteKlasse(rolleName == landesadminRolle, klasseParams);
-                await klasseErgebnislistePage.klasseDeletionFailed();
-              });
+            await test.step(`Prüfen, dass die Klasse nicht gelöscht werden kann`, async () => {
+              await klasseErgebnislistePage.searchAndDeleteKlasse(rolleName == landesadminRolle, klasseParams);
+              await klasseErgebnislistePage.klasseDeletionFailed();
             });
           },
         );
@@ -163,14 +164,12 @@ let admin: UserInfo;
           `Eine Klasse mit einem zugeordneten Schüler als ${bezeichnung} via Gesamtübersicht löschen `,
           { tag: [STAGE, DEV] },
           async () => {
-            await test.step(`Schüler anlegen`, async () => {
-              await test.step(`Prüfen, dass die Klasse nicht gelöscht werden kann`, async () => {
-                klasseDetailsPage = await klasseErgebnislistePage.searchAndOpenGesamtuebersicht(
-                  rolleName == landesadminRolle,
-                  klasseParams,
-                );
-                await klasseDetailsPage.unsuccessfullyDeleteKlasse(klasseParams.schulname, klasseParams.klassenname);
-              });
+            await test.step(`Prüfen, dass die Klasse nicht gelöscht werden kann`, async () => {
+              klasseDetailsPage = await klasseErgebnislistePage.searchAndOpenGesamtuebersicht(
+                rolleName == landesadminRolle,
+                klasseParams,
+              );
+              await klasseDetailsPage.unsuccessfullyDeleteKlasse(klasseParams.schulname, klasseParams.klassenname);
             });
           },
         );
