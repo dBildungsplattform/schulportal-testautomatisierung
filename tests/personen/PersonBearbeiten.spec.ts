@@ -1,17 +1,12 @@
 import { PlaywrightTestArgs, test } from '@playwright/test';
 import { createRolleAndPersonWithPersonenkontext, UserInfo } from '../../base/api/personApi';
-import { getServiceProviderId } from '../../base/api/serviceProviderApi';
 import { testschuleName } from '../../base/organisation';
 import { lehrerImVorbereitungsdienstRolle, lehrkraftOeffentlichRolle } from '../../base/rollen';
 import { typeLehrer } from '../../base/rollentypen';
 import { email } from '../../base/sp';
 import { DEV, STAGE } from '../../base/tags';
-import {
-  deletePersonenBySearchStrings,
-  deleteRolleById,
-} from '../../base/testHelperDeleteTestdata';
+import { deletePersonenBySearchStrings, deleteRolleById } from '../../base/testHelperDeleteTestdata';
 import { gotoTargetURL, loginAndNavigateToAdministration } from '../../base/testHelperUtils';
-import { generateNachname, generateRolleName, generateVorname } from '../../base/utils/generateTestdata';
 import { PersonDetailsViewPage } from '../../pages/admin/personen/details/PersonDetailsView.page';
 import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.page';
 import { HeaderPage } from '../../pages/components/Header.page';
@@ -57,15 +52,11 @@ test.describe(`Testfälle für die Administration von Personen": Umgebung: ${pro
       const befristeteRolle: string = lehrerImVorbereitungsdienstRolle;
 
       await test.step(`Testdaten: Lehrer mit einer Rolle(LEHR) und SP(email) über die api anlegen ${ADMIN}`, async () => {
-        userInfoLehrer = await createRolleAndPersonWithPersonenkontext(
-          page,
-          testschuleName,
-          typeLehrer,
-          generateNachname(),
-          generateVorname(),
-          [await getServiceProviderId(page, email)],
-          generateRolleName(),
-        );
+        userInfoLehrer = await createRolleAndPersonWithPersonenkontext(page, {
+          organisationName: testschuleName,
+          rollenArt: typeLehrer,
+          serviceProviderNames: [email],
+        });
         usernames.push(userInfoLehrer.username);
         rolleIds.push(userInfoLehrer.rolleId);
       });

@@ -3,7 +3,6 @@ import test, { PlaywrightTestArgs } from '@playwright/test';
 import { OrganisationResponse, OrganisationsTyp, RollenArt } from '../../base/api/generated';
 import { createKlasse, createOrganisation, getOrganisationId, getOrganisations } from '../../base/api/organisationApi';
 import { createRolleAndPersonWithPersonenkontext, UserInfo } from '../../base/api/personApi';
-import { getServiceProviderIds } from '../../base/api/serviceProviderApi';
 import { landSH, oeffentlichLandSH } from '../../base/organisation';
 import {
   adressbuch,
@@ -21,13 +20,7 @@ import {
 } from '../../base/sp';
 import { DEV, STAGE } from '../../base/tags';
 import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
-import {
-  generateKlassenname,
-  generateNachname,
-  generateRolleName,
-  generateSchulname,
-  generateVorname,
-} from '../../base/utils/generateTestdata';
+import { generateKlassenname, generateSchulname } from '../../base/utils/generateTestdata';
 import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.page';
 import { LandingViewPage } from '../../pages/LandingView.page';
 import { LoginViewPage } from '../../pages/LoginView.page';
@@ -76,17 +69,12 @@ test.describe('ServiceProvider auf Startseite', () => {
           const klasseId: string | null =
             rollenArt === RollenArt.Lern ? await createKlasse(page, orga.id, generateKlassenname()) : null;
 
-          const userInfo: UserInfo = await createRolleAndPersonWithPersonenkontext(
-            page,
-            orga.name,
+          const userInfo: UserInfo = await createRolleAndPersonWithPersonenkontext(page, {
+            organisationName: orga.name,
             rollenArt,
-            generateNachname(),
-            generateVorname(),
-            Array.from((await getServiceProviderIds(page, serviceProviderNames)).values()),
-            generateRolleName(),
-            undefined,
-            klasseId ? klasseId : undefined,
-          );
+            serviceProviderNames,
+            klasseId: klasseId ?? undefined,
+          });
           const landingViewPage: LandingViewPage = await personManagementViewPage.getHeader().logout();
           const loginPage: LoginViewPage = await landingViewPage.navigateToLogin();
           return await loginPage.loginNewUserWithPasswordChange(userInfo.username, userInfo.password);
