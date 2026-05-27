@@ -9,6 +9,7 @@ import {
   adressbuch,
   anleitungen,
   email,
+  firmenfitness,
   helpdeskKontaktieren,
   itslearning,
   kalender,
@@ -36,6 +37,7 @@ import { testFixtures } from './ServiceProviderAufStartseite.data';
 
 const allProviderNames: string[] = [
   email,
+  firmenfitness,
   itslearning,
   kalender,
   adressbuch,
