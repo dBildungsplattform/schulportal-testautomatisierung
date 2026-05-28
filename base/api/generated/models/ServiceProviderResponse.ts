@@ -61,7 +61,7 @@ export interface ServiceProviderResponse {
      * @type {string}
      * @memberof ServiceProviderResponse
      */
-    url: string;
+    url?: string;
     /**
      * 
      * @type {ServiceProviderKategorie}
@@ -73,15 +73,15 @@ export interface ServiceProviderResponse {
      * @type {number}
      * @memberof ServiceProviderResponse
      */
-    logoId: number;
+    logoId?: number;
     /**
-     * 
+     * Indicates if a custom logo is available for fetching
      * @type {boolean}
      * @memberof ServiceProviderResponse
      */
     hasLogo: boolean;
     /**
-     * 
+     * Indicates if 2FA is required
      * @type {boolean}
      * @memberof ServiceProviderResponse
      */
@@ -102,9 +102,7 @@ export function instanceOfServiceProviderResponse(value: object): boolean {
     isInstance = isInstance && "id" in value;
     isInstance = isInstance && "name" in value;
     isInstance = isInstance && "target" in value;
-    isInstance = isInstance && "url" in value;
     isInstance = isInstance && "kategorie" in value;
-    isInstance = isInstance && "logoId" in value;
     isInstance = isInstance && "hasLogo" in value;
     isInstance = isInstance && "requires2fa" in value;
     isInstance = isInstance && "merkmale" in value;
@@ -125,9 +123,9 @@ export function ServiceProviderResponseFromJSONTyped(json: any, ignoreDiscrimina
         'id': json['id'],
         'name': json['name'],
         'target': ServiceProviderTargetFromJSON(json['target']),
-        'url': json['url'],
+        'url': !exists(json, 'url') ? undefined : json['url'],
         'kategorie': ServiceProviderKategorieFromJSON(json['kategorie']),
-        'logoId': json['logoId'],
+        'logoId': !exists(json, 'logoId') ? undefined : json['logoId'],
         'hasLogo': json['hasLogo'],
         'requires2fa': json['requires2fa'],
         'merkmale': ((json['merkmale'] as Array<any>).map(ServiceProviderMerkmalFromJSON)),
