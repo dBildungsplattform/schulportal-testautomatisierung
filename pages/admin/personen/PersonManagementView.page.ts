@@ -17,13 +17,10 @@ export class PersonManagementViewPage extends AbstractAdminPage {
   private readonly rolleAutocomplete: Autocomplete;
   private readonly klasseAutocomplete: Autocomplete;
   private readonly klasseAutocompleteInBulkVersetzen: Autocomplete;
-  private readonly schuleAutocompleteInRolleZuordnenDialog: Autocomplete;
-  private readonly klasseAutocompleteInRolleZuordnenDialog: Autocomplete;
   public readonly menu: MenuBarPage;
   private readonly table: Locator;
   private readonly schuelerVersetzenDialogCard: Locator;
   private readonly passwortZuruecksetzenDialogCard: Locator;
-  private readonly rolleZuordnenDialogCard: Locator;
 
   constructor(protected readonly page: Page) {
     super(page);
@@ -43,15 +40,6 @@ export class PersonManagementViewPage extends AbstractAdminPage {
     this.menu = new MenuBarPage(this.page);
     this.schuelerVersetzenDialogCard = this.page.getByTestId('change-klasse-layout-card');
     this.passwortZuruecksetzenDialogCard = this.page.getByTestId('password-reset-layout-card');
-    this.rolleZuordnenDialogCard = this.page.getByTestId('rolle-modify-layout-card');
-    this.schuleAutocompleteInRolleZuordnenDialog = new Autocomplete(
-      this.page,
-      this.rolleZuordnenDialogCard.getByTestId('personenkontext-create-organisation-select'),
-    );
-    this.klasseAutocompleteInRolleZuordnenDialog = new Autocomplete(
-      this.page,
-      this.rolleZuordnenDialogCard.getByTestId('personenkontext-create-rolle-modify-klasse-select'),
-    );
   }
 
   /* actions */
@@ -417,101 +405,6 @@ export class PersonManagementViewPage extends AbstractAdminPage {
 
     // aufräumen
     fs.unlinkSync(filePath);
-  }
-
-  /* Rolle zuordnen (Mehrfachbearbeitung) */
-  public async selectRolleInRolleZuordnenDialog(rolleName: string): Promise<void> {
-    const rolleSelect: Locator = this.rolleZuordnenDialogCard.getByTestId('rolle-select');
-    await rolleSelect.locator('input').click();
-    const option: Locator = this.page
-      .locator('div.v-overlay--active')
-      .getByRole('option')
-      .filter({ hasText: new RegExp(`^${rolleName}$`) });
-    await option.first().click({ force: true });
-    await expect(rolleSelect).toContainText(rolleName);
-  }
-
-  public async checkRolleZuordnenKlassenOptionen(): Promise<void> {
-    await expect(this.rolleZuordnenDialogCard.getByTestId('keep-klasse-radio-button')).toBeVisible();
-    await expect(this.rolleZuordnenDialogCard.getByTestId('select-new-klasse-radio-button')).toBeVisible();
-    await expect(this.rolleZuordnenDialogCard.getByTestId('keep-klasse-radio-button').locator('input')).toBeChecked();
-  }
-
-  public async selectKlasseBeibehalten(): Promise<void> {
-    await this.rolleZuordnenDialogCard.getByTestId('keep-klasse-radio-button').click();
-    await expect(this.rolleZuordnenDialogCard.getByTestId('keep-klasse-radio-button').locator('input')).toBeChecked();
-  }
-
-  public async selectAndereKlasseAuswaehlen(): Promise<void> {
-    // Wir starten den Response-Listener VOR dem Klick, weil der Klick
-    // das v-if triggert, KlassenFilter mountet und sofort die API aufruft.
-    const klassenLoaded: Promise<import('@playwright/test').Response> = this.page.waitForResponse(
-      (resp) => resp.url().includes('/api/organisationen') && resp.url().includes('typ=KLASSE') && resp.status() === 200,
-    );
-    await this.rolleZuordnenDialogCard.getByTestId('select-new-klasse-radio-button').locator('input').click();
-    await expect(this.rolleZuordnenDialogCard.getByTestId('select-new-klasse-radio-button').locator('input'),
-    ).toBeChecked();
-    // Warten bis die Klassen tatsächlich geladen sind
-    await klassenLoaded;
-  }
-
-  public async selectSchuleInRolleZuordnenDialog(schulname: string): Promise<void> {
-    await this.schuleAutocompleteInRolleZuordnenDialog.searchByTitle(schulname, false);
-  }
-
-  public async selectKlasseInRolleZuordnenDialog(klassenname: string): Promise<void> {
-    await this.klasseAutocompleteInRolleZuordnenDialog.selectByTitle(klassenname);
-  }
-
-  public async fillBefristungInRolleZuordnenDialog(befristung: string): Promise<void> {
-    const befristungInput: Locator = this.rolleZuordnenDialogCard.getByTestId('befristung-input').locator('input');
-    await befristungInput.waitFor({ state: 'visible' });
-    await befristungInput.fill(befristung);
-  }
-
-  public async checkRolleZuordnenHint(expectedText: string): Promise<void> {
-    await expect(this.rolleZuordnenDialogCard.getByTestId('modify-Rolle-hint')).toContainText(expectedText);
-  }
-
-  public async submitRolleZuordnen(): Promise<void> {
-    await this.rolleZuordnenDialogCard.getByTestId('rolle-modify-submit-button').click();
-  }
-
-  public async checkRolleZuordnenSuccessDialog(): Promise<void> {
-    await expect(this.rolleZuordnenDialogCard).toBeVisible();
-    await expect(this.rolleZuordnenDialogCard.getByTestId('layout-card-headline')).toHaveText('Rolle zuordnen');
-    await expect(this.rolleZuordnenDialogCard).toContainText('Die Rolle wurde erfolgreich zugeordnet.');
-    await expect(this.rolleZuordnenDialogCard.getByTestId('rolle-modify-close-button')).toBeVisible();
-  }
-
-  public async checkRolleZuordnenErrorDialog(
-    expectedUsers: { vorname: string; nachname: string; username: string }[],
-  ): Promise<void> {
-    const errorCard: Locator = this.page.getByTestId('person-bulk-error-layout-card');
-    await expect(errorCard).toBeVisible();
-    await expect(errorCard.getByTestId('layout-card-headline')).toHaveText('Fehler bei der Mehrfachbearbeitung');
-
-    const expectedFehlertext: string =
-      'Die neue Rolle kann diesem Benutzer nicht zugeordnet werden, da er entweder diese Rolle schon an einer ' +
-      'anderen Klasse besitzt oder mehreren Klassen zugeordnet ist. Bitte nehmen Sie die Änderung per Einzelbearbeitung vor.';
-
-    const items: Locator = errorCard.locator('[data-testid^="person-bulk-error-error-list-item-"]');
-    await expect(items).toHaveCount(expectedUsers.length);
-
-    for (const user of expectedUsers) {
-      const item: Locator = items.filter({ hasText: `${user.vorname} ${user.nachname} (${user.username})` });
-      await expect(item).toHaveCount(1);
-      await expect(item).toContainText(expectedFehlertext);
-    }
-
-    await expect(errorCard.getByTestId('person-bulk-error-discard-button')).toBeVisible();
-    await expect(errorCard.getByTestId('person-bulk-error-save-button')).toBeVisible();
-  }
-
-  public async closeRolleZuordnenErrorDialog(): Promise<void> {
-    await this.page.getByTestId('person-bulk-error-layout-card').getByTestId('person-bulk-error-discard-button').click();
-    // Bestätigungs-Dialog: "Bevor Sie den Dialog schließen, stellen Sie bitte sicher, dass Sie die Liste ..."
-    await this.page.getByTestId('confirm-close-bulk-error-dialog-button').click();
   }
 
   public async checkRolleAssignedToPersons(rolleName: string, nachnamen: string[]): Promise<void> {

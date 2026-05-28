@@ -111,6 +111,8 @@ test.describe(`Mehrfachbearbeitung Rolle zuordnen: Umgebung: ${process.env.ENV}:
       `Lern-Rolle mehreren Schülern an einer Klasse über "Klasse(n) beibehalten" zuordnen`,
       { tag: [DEV] },
       async () => {
+        let rolleZuordnenPage: RolleZuordnenPage;
+
         await test.step(`Nach Klasse filtern und beide Schüler auswählen`, async () => {
           await personManagementViewPage.filterAndSelectPersons(undefined, klasse1Name, [
             schueler1.nachname,
@@ -119,24 +121,24 @@ test.describe(`Mehrfachbearbeitung Rolle zuordnen: Umgebung: ${process.env.ENV}:
         });
 
         await test.step(`Mehrfachbearbeitung "Rolle zuordnen" öffnen und Lern-Rolle auswählen`, async () => {
-          await personManagementViewPage.selectMehrfachauswahl('Rolle zuordnen');
-          await personManagementViewPage.selectRolleInRolleZuordnenDialog(zielRolleName);
+          rolleZuordnenPage = (await personManagementViewPage.selectMehrfachauswahl('Rolle zuordnen')) as RolleZuordnenPage;
+          await rolleZuordnenPage.selectRolle(zielRolleName);
         });
 
         await test.step(`Beide Klassen-Optionen prüfen, "Klasse(n) beibehalten" ist standardmäßig ausgewählt`, async () => {
-          await personManagementViewPage.checkRolleZuordnenKlassenOptionen();
+          await rolleZuordnenPage.assertKlassenOptionen();
         });
 
         await test.step(`Hinweistext zur Beibehaltung der Klasse prüfen`, async () => {
-          await personManagementViewPage.checkRolleZuordnenHint(
+          await rolleZuordnenPage.assertHint(
             'Bitte beachten: Die neue Rolle wird den ausgewählten Schülerinnen und Schülern an ihren bestehenden Klassen zusätzlich zugeordnet.',
           );
         });
 
         await test.step(`"Rolle zuordnen" abschicken und Erfolgsdialog prüfen`, async () => {
-          await personManagementViewPage.submitRolleZuordnen();
-          await personManagementViewPage.checkRolleZuordnenSuccessDialog();
-          await personManagementViewPage.closeDialog('rolle-modify-close-button');
+          await rolleZuordnenPage.submitRolleAssignment();
+          await rolleZuordnenPage.assertSuccessDialog();
+          await rolleZuordnenPage.closeModal();
         });
 
         await test.step(`Aktualisierte Ergebnisliste prüfen: neue Rolle bei beiden Schülern sichtbar`, async () => {
@@ -265,6 +267,8 @@ test.describe(`Mehrfachbearbeitung Rolle zuordnen: Umgebung: ${process.env.ENV}:
       `Lern-Rolle mehreren Schülern an einer anderen Klasse über "Andere Klasse auswählen" zuordnen`,
       { tag: [DEV] },
       async () => {
+        let rolleZuordnenPage: RolleZuordnenPage;
+
         await test.step(`Nach Schule und Quellklasse filtern und beide Schüler auswählen`, async () => {
           await personManagementViewPage.filterAndSelectPersons(schuleName, quellKlasseName, [
             schueler1.nachname,
@@ -273,23 +277,23 @@ test.describe(`Mehrfachbearbeitung Rolle zuordnen: Umgebung: ${process.env.ENV}:
         });
 
         await test.step(`Mehrfachbearbeitung "Rolle zuordnen" öffnen, Schule und Lern-Rolle auswählen`, async () => {
-          await personManagementViewPage.selectMehrfachauswahl('Rolle zuordnen');
-          await personManagementViewPage.selectSchuleInRolleZuordnenDialog(schuleName);
-          await personManagementViewPage.selectRolleInRolleZuordnenDialog(zielRolleName);
+          rolleZuordnenPage = (await personManagementViewPage.selectMehrfachauswahl('Rolle zuordnen')) as RolleZuordnenPage;
+          await rolleZuordnenPage.selectOrganisation(schuleName);
+          await rolleZuordnenPage.selectRolle(zielRolleName);
         });
 
         await test.step(`"Andere Klasse auswählen" wählen, Zielklasse setzen und Hinweistext prüfen`, async () => {
-          await personManagementViewPage.selectAndereKlasseAuswaehlen();
-          await personManagementViewPage.selectKlasseInRolleZuordnenDialog(zielKlasseName);
-          await personManagementViewPage.checkRolleZuordnenHint(
+          await rolleZuordnenPage.selectAndereKlasseAuswaehlen();
+          await rolleZuordnenPage.selectKlasse(zielKlasseName);
+          await rolleZuordnenPage.assertHint(
             'Bitte beachten: Die neue Rolle wird den ausgewählten Schülerinnen und Schülern an der ausgewählten Klasse zugeordnet.',
           );
         });
 
         await test.step(`"Rolle zuordnen" abschicken und Erfolgsdialog prüfen`, async () => {
-          await personManagementViewPage.submitRolleZuordnen();
-          await personManagementViewPage.checkRolleZuordnenSuccessDialog();
-          await personManagementViewPage.closeDialog('rolle-modify-close-button');
+          await rolleZuordnenPage.submitRolleAssignment();
+          await rolleZuordnenPage.assertSuccessDialog();
+          await rolleZuordnenPage.closeModal();
         });
 
         await test.step(`Aktualisierte Ergebnisliste prüfen: neue Rolle und neue Klasse bei beiden Schülern sichtbar`, async () => {
@@ -311,6 +315,7 @@ test.describe(`Mehrfachbearbeitung Rolle zuordnen: Umgebung: ${process.env.ENV}:
       { tag: [DEV] },
       async () => {
         const befristung: string = formatDateDMY(generateCurrentDate({ days: 0, months: 6 }));
+        let rolleZuordnenPage: RolleZuordnenPage;
 
         await test.step(`Nach Schule und Quellklasse filtern und beide Schüler auswählen`, async () => {
           await personManagementViewPage.filterAndSelectPersons(schuleName, quellKlasseName, [
@@ -320,21 +325,21 @@ test.describe(`Mehrfachbearbeitung Rolle zuordnen: Umgebung: ${process.env.ENV}:
         });
 
         await test.step(`Mehrfachbearbeitung "Rolle zuordnen" öffnen, Schule und Lern-Rolle auswählen`, async () => {
-          await personManagementViewPage.selectMehrfachauswahl('Rolle zuordnen');
-          await personManagementViewPage.selectSchuleInRolleZuordnenDialog(schuleName);
-          await personManagementViewPage.selectRolleInRolleZuordnenDialog(zielRolleName);
+          rolleZuordnenPage = (await personManagementViewPage.selectMehrfachauswahl('Rolle zuordnen')) as RolleZuordnenPage;
+          await rolleZuordnenPage.selectOrganisation(schuleName);
+          await rolleZuordnenPage.selectRolle(zielRolleName);
         });
 
         await test.step(`"Andere Klasse auswählen" wählen, Zielklasse setzen und Befristung eingeben`, async () => {
-          await personManagementViewPage.selectAndereKlasseAuswaehlen();
-          await personManagementViewPage.selectKlasseInRolleZuordnenDialog(zielKlasseName);
-          await personManagementViewPage.fillBefristungInRolleZuordnenDialog(befristung);
+          await rolleZuordnenPage.selectAndereKlasseAuswaehlen();
+          await rolleZuordnenPage.selectKlasse(zielKlasseName);
+          await rolleZuordnenPage.fillBefristung(befristung);
         });
 
         await test.step(`"Rolle zuordnen" abschicken und Erfolgsdialog prüfen`, async () => {
-          await personManagementViewPage.submitRolleZuordnen();
-          await personManagementViewPage.checkRolleZuordnenSuccessDialog();
-          await personManagementViewPage.closeDialog('rolle-modify-close-button');
+          await rolleZuordnenPage.submitRolleAssignment();
+          await rolleZuordnenPage.assertSuccessDialog();
+          await rolleZuordnenPage.closeModal();
         });
 
         await test.step(`Schülerprofil öffnen und neue Zuordnung mit Befristung prüfen`, async () => {
@@ -356,6 +361,8 @@ test.describe(`Mehrfachbearbeitung Rolle zuordnen: Umgebung: ${process.env.ENV}:
       `Fehlermeldung bei "Andere Klasse auswählen" mit bereits zugeordneter Lern-Rolle für mehrere Schüler`,
       { tag: [DEV] },
       async () => {
+        let rolleZuordnenPage: RolleZuordnenPage;
+
         await test.step(`Nach Schule und Quellklasse filtern und beide Schüler (mit bereits zugeordneter Ziel-Lern-Rolle) auswählen`, async () => {
           await personManagementViewPage.filterAndSelectPersons(schuleName, quellKlasseName, [
             schuelerMitZielRolle1.nachname,
@@ -364,19 +371,19 @@ test.describe(`Mehrfachbearbeitung Rolle zuordnen: Umgebung: ${process.env.ENV}:
         });
 
         await test.step(`Mehrfachbearbeitung "Rolle zuordnen" öffnen, Schule und (bereits zugeordnete) Lern-Rolle auswählen`, async () => {
-          await personManagementViewPage.selectMehrfachauswahl('Rolle zuordnen');
-          await personManagementViewPage.selectSchuleInRolleZuordnenDialog(schuleName);
-          await personManagementViewPage.selectRolleInRolleZuordnenDialog(zielRolleName);
+          rolleZuordnenPage = (await personManagementViewPage.selectMehrfachauswahl('Rolle zuordnen')) as RolleZuordnenPage;
+          await rolleZuordnenPage.selectOrganisation(schuleName);
+          await rolleZuordnenPage.selectRolle(zielRolleName);
         });
 
         await test.step(`"Andere Klasse auswählen" wählen und Zielklasse setzen`, async () => {
-          await personManagementViewPage.selectAndereKlasseAuswaehlen();
-          await personManagementViewPage.selectKlasseInRolleZuordnenDialog(zielKlasseName);
+          await rolleZuordnenPage.selectAndereKlasseAuswaehlen();
+          await rolleZuordnenPage.selectKlasse(zielKlasseName);
         });
 
         await test.step(`"Rolle zuordnen" abschicken und Fehlerdialog mit beiden Schülern prüfen`, async () => {
-          await personManagementViewPage.submitRolleZuordnen();
-          await personManagementViewPage.checkRolleZuordnenErrorDialog([
+          await rolleZuordnenPage.submitRolleAssignment();
+          await rolleZuordnenPage.assertErrorDialog([
             {
               vorname: schuelerMitZielRolle1.vorname,
               nachname: schuelerMitZielRolle1.nachname,
@@ -388,7 +395,7 @@ test.describe(`Mehrfachbearbeitung Rolle zuordnen: Umgebung: ${process.env.ENV}:
               username: schuelerMitZielRolle2.username,
             },
           ]);
-          await personManagementViewPage.closeRolleZuordnenErrorDialog();
+          await rolleZuordnenPage.closeErrorDialog();
         });
       },
     );
