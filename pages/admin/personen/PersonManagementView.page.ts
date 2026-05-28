@@ -145,7 +145,7 @@ export class PersonManagementViewPage extends AbstractAdminPage {
     }
   }
 
-  public async selectMehrfachauswahl(option: string): Promise<void> {
+  public async selectMehrfachauswahl(option: string): Promise<RolleZuordnenPage | void> {
     await this.page.getByTestId('benutzer-edit-select').click();
     const locator: Locator = this.page.getByRole('option', { name: option, exact: false });
     await locator.click();
