@@ -7,6 +7,7 @@ export const lehrkraftOeffentlichRolle: string = 'Lehrkraft';
 export const lehrerImVorbereitungsdienstRolle: string = 'LiV';
 export const ersatzschulLehrkraftRolle: string = 'Ersatzschullehrkraft';
 export const vertretungslehrkraftRolle: string = 'Vertretungslehrkraft';
+export const religionsLehrkraftRolle: string = 'Ev./Kat. Religionslehrkraft';
 
 /**
  * Defines different roles with corresponding system rights (permissions)
