@@ -10,3 +10,4 @@ export const anleitungen: string = 'Anleitungen';
 export const helpdeskKontaktieren: string = 'Helpdesk kontaktieren';
 export const psychosozialesBeratungsangebot: string = 'Psychosoziales Beratungsangebot';
 export const schulrechtAZ: string = 'Schulrecht A-Z';
+export const firmenfitness: string = 'Firmenfitness Angebot';

@@ -401,9 +401,7 @@ export class PersonDetailsViewPage {
     }
   }
 
-  public async checkSectionsNotVisible(sections: {
-    twoFactor?: boolean;
-  }): Promise<void> {
+  public async checkSectionsNotVisible(sections: { twoFactor?: boolean }): Promise<void> {
     if (sections.twoFactor) {
       await expect(this.page.getByTestId('two-factor-section-headline')).toBeHidden();
       await expect(this.page.getByTestId('software-factor-setup-text')).toBeHidden();
