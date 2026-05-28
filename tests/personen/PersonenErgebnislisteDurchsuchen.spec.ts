@@ -136,6 +136,8 @@ interface AdminFixture {
             // The searchstring for land matches multiple organisations, so we need to use exactMatch=true
             await personManagementViewPage.filterBySchule(organisationsName, true);
           }
+          // Narrow to the known admin user to avoid interference from concurrent test data
+          await personManagementViewPage.searchByText(admin.nachname);
           await personManagementViewPage.checkIfSchuleIsCorrect(organisationsName, dienststellenNr);
         },
       );

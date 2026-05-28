@@ -33,6 +33,7 @@ import {
 } from './generated/models';
 import {
   PersonControllerDeletePersonByIdRequest,
+  PersonControllerFindPersonenkontexteRequest,
   PersonControllerLockPersonRequest,
   PersonControllerResetUEMPasswordByPersonIdRequest,
   PersonenApi,
@@ -96,6 +97,7 @@ export async function createPerson(
   koPersNr?: string,
   klasseId?: string,
   merkmalNames?: Set<RollenMerkmal>,
+  secondaryRolleId?: string,
 ): Promise<UserInfo> {
   try {
     const createPersonBodyParams: DbiamCreatePersonWithPersonenkontexteBodyParams = {
@@ -114,6 +116,19 @@ export async function createPerson(
         organisationId: klasseId,
         rolleId: rolleId,
       });
+    }
+
+    if (secondaryRolleId) {
+      createPersonBodyParams.createPersonenkontexte.push({
+        organisationId: organisationId,
+        rolleId: secondaryRolleId,
+      });
+      if (klasseId) {
+        createPersonBodyParams.createPersonenkontexte.push({
+          organisationId: klasseId,
+          rolleId: secondaryRolleId,
+        });
+      }
     }
 
     if (koPersNr) {
@@ -290,6 +305,65 @@ export async function addSecondOrganisationToPerson(
     expect(updatedPersonenkontexte.dBiamPersonenkontextResponses.length).toBe(2);
   } catch (error) {
     console.error('[ERROR] addSecondOrganisationToPerson failed:', error);
+    throw error;
+  }
+}
+
+export async function addSecondRolleToPerson(
+  page: Page,
+  personId: string,
+  organisationId: string,
+  existingRolleId: string,
+  newRolleId: string,
+  klasseId?: string,
+): Promise<void> {
+  try {
+    const personenkontexte: DbiamUpdatePersonenkontexteBodyParams['personenkontexte'] = [
+      {
+        personId,
+        organisationId,
+        rolleId: existingRolleId,
+      },
+      {
+        personId,
+        organisationId,
+        rolleId: newRolleId,
+      },
+    ];
+
+    if (klasseId) {
+      personenkontexte.push({
+        personId,
+        organisationId: klasseId,
+        rolleId: existingRolleId,
+      });
+    }
+
+    const personenApi: PersonenApi = constructPersonenApi(page);
+    const findRequest: PersonControllerFindPersonenkontexteRequest = { personId };
+    const currentPersonenkontexteResponse = await personenApi.personControllerFindPersonenkontexteRaw(findRequest);
+    const currentPersonenkontexte = await currentPersonenkontexteResponse.raw.json();
+
+    const dbiamUpdatePersonenkontexteBodyParams: DbiamUpdatePersonenkontexteBodyParams = {
+      lastModified: generateCurrentDate({ days: 0, months: 0 }),
+      count: currentPersonenkontexte.total,
+      personenkontexte,
+    };
+
+    const requestParameters: DbiamPersonenkontextWorkflowControllerCommitRequest = {
+      personId,
+      dbiamUpdatePersonenkontexteBodyParams,
+    };
+
+    const personenkontextApi: PersonenkontextApi = constructPersonenkontextApi(page);
+    const response: ApiResponse<PersonenkontexteUpdateResponse> =
+      await personenkontextApi.dbiamPersonenkontextWorkflowControllerCommitRaw(requestParameters);
+    expect(response.raw.status).toBe(200);
+
+    const updatedPersonenkontexte: PersonenkontexteUpdateResponse = await response.value();
+    expect(updatedPersonenkontexte.dBiamPersonenkontextResponses.length).toBe(klasseId ? 3 : 2);
+  } catch (error) {
+    console.error('[ERROR] addSecondRolleToPerson failed:', error);
     throw error;
   }
 }
