@@ -54,7 +54,7 @@ export async function getServiceProviderId(
  * @param serviceProviderNames
  * @returns a map of names to ids for the given service provider names. If a name is not found, it will not be included in the map.
  */
-export async function getServiceProviderIds(
+export async function getServiceProviderIdsMappedByName(
   page: Page,
   serviceProviderNames: string[],
   schulstrukturknotenOfRolle: string,
@@ -76,12 +76,14 @@ export async function getServiceProviderIds(
       );
       if (serviceProvider) {
         mappedServiceProviderIds.set(name, serviceProvider.id);
+      } else {
+        console.warn(`[WARN] ServiceProvider with name "${name}" not found among fetched service providers.`);
       }
     }
 
     return mappedServiceProviderIds;
   } catch (error) {
-    console.error('[ERROR] getServiceProviderId failed:', error);
+    console.error('[ERROR] getServiceProviderIdsMappedByName failed:', error);
     throw error;
   }
 }

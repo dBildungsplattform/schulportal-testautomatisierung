@@ -42,7 +42,7 @@ import { ApiResponse, Configuration } from './generated/runtime';
 import { getOrganisationId } from './organisationApi';
 import { makeFetchWithPlaywright } from './playwrightFetchAdapter';
 import { addServiceProvidersToRolle, createRolle, getRolleId } from './rolleApi';
-import { getServiceProviderIds } from './serviceProviderApi';
+import { getServiceProviderIdsMappedByName } from './serviceProviderApi';
 
 export interface UserInfo {
   username: string;
@@ -202,12 +202,22 @@ export async function createRolleAndPersonWithPersonenkontext(
   );
 
   if (params.serviceProviderNames && params.serviceProviderNames.length > 0) {
-    const serviceProviderMap: Map<string, string> = await getServiceProviderIds(
+    const serviceProviderByNameMap: Map<string, string> = await getServiceProviderIdsMappedByName(
       page,
       params.serviceProviderNames,
       organisationId,
     );
-    await addServiceProvidersToRolle(page, rolleId, Array.from(serviceProviderMap.values()));
+    const missingServiceProviderNames: string[] = params.serviceProviderNames.filter(
+      (name: string) => !serviceProviderByNameMap.has(name),
+    );
+    if (missingServiceProviderNames.length > 0) {
+      throw new Error(
+        `The following service providers were not found in the organization ${params.organisationName}: ${missingServiceProviderNames.join(
+          ', ',
+        )}`,
+      );
+    }
+    await addServiceProvidersToRolle(page, rolleId, Array.from(serviceProviderByNameMap.values()));
   }
 
   const userInfo: UserInfo = await createPerson(
