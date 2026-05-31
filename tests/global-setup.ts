@@ -17,6 +17,7 @@ import { LandingViewPage } from '../pages/LandingView.page';
 import { LoginViewPage } from '../pages/LoginView.page';
 import { StartViewPage } from '../pages/StartView.page';
 import { workers } from '../playwright.config';
+import { invalidateCsrf } from '../base/api/playwrightFetchAdapter';
 
 const FRONTEND_URL: string = process.env.FRONTEND_URL ?? '';
 
@@ -74,6 +75,7 @@ export default async function globalSetup(): Promise<void> {
     );
 
     const header: HeaderPage = new HeaderPage(page);
+    invalidateCsrf(page);
     await header.logout();
 
     SharedCredentialManager.init();
@@ -110,6 +112,7 @@ export default async function globalSetup(): Promise<void> {
         SharedCredentialManager.setOtpSeed(otpSecret!, index);
 
         const header: HeaderPage = new HeaderPage(page);
+        invalidateCsrf(page);
         await header.logout();
         await page.close();
         console.log(`| ${index.toString().padStart(2, '0')} | ${userInfo.username.padStart(32, ' ')} |`);

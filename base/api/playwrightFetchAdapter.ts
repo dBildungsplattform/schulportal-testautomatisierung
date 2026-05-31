@@ -4,72 +4,95 @@ import { constructAuthApi, getCsrfToken } from './authApi';
 
 type PlaywrightFetchInit = Parameters<APIRequestContext['fetch']>[1];
 
-/**
- * CSRF cached per adapter instance
- */
-let csrfToken: string | undefined;
-let csrfPromise: Promise<string | undefined> | undefined;
+// Per-page cache: WeakMap so pages can be GC'd freely
+const csrfCache = new WeakMap<object, Promise<string | undefined>>();
 
-/**
- * Resolve CSRF using your AuthApi (OpenAPI-based)
- */
 async function resolveCsrf(page: Page): Promise<string | undefined> {
-  if (csrfToken) return csrfToken;
+  // Use page.request as the cache key — unique per browser context
+  const key = page.request;
 
-  if (!csrfPromise) {
-    csrfPromise = (async (): Promise<string | undefined> => {
+  if (!csrfCache.has(key)) {
+    const promise = (async (): Promise<string | undefined> => {
       const authApi = constructAuthApi(page);
-      csrfToken = await getCsrfToken(authApi);
-      return csrfToken;
+      return getCsrfToken(authApi);
     })();
+    csrfCache.set(key, promise);
   }
 
-  return csrfPromise;
+  return csrfCache.get(key)!;
 }
 
+export function invalidateCsrf(page: Page): void {
+  csrfCache.delete(page.request);
+}
 /**
- * Playwright OpenAPI fetch adapter with automatic CSRF injection
+ * makeFetchWithPlaywright
+ * -----------------------
+ * Adapter that allows OpenAPI-generated clients (or any library expecting the native
+ * `fetch` Response interface) to work seamlessly with Playwright’s `page.request.fetch`.
+ *
+ * Why?
+ *  - Playwright’s `page.request.fetch` returns an `APIResponse`, which is *not*
+ *    compatible with the standard `Response` object returned by native `fetch`.
+ *  - The OpenAPI runtime checks properties like `status`, `ok`, `headers.entries()`,
+ *    and calls methods like `json()` or `text()`. These don’t exist or behave differently
+ *    on `APIResponse`.
+ *  - Without this shim, you’ll see errors like:
+ *    `_apiResponse$raw2.entries is not a function`
+ *
+ * What this does:
+ *  - Wraps Playwright’s `APIResponse` and exposes it as a minimal `Response`-like object.
+ *  - Ensures `status`, `ok`, `statusText`, `headers`, `url`, and body methods
+ *    (`text()`, `json()`, `arrayBuffer()`, `blob()`) behave like native fetch.
+ *  - Makes the OpenAPI client (or any fetch-based code) think it’s talking to a real `fetch`.
+ *
+ * Usage:
+ *  ```ts
+ *  import { makeFetchWithPlaywright } from './playwrightFetchAdapter';
+ *  import { Configuration } from './generated';
+ *  import { MyApi } from './generated/apis/MyApi';
+ *
+ *  function createMyApi(page: Page): MyApi {
+ *    const config = new Configuration({
+ *      basePath: FRONTEND_URL.replace(/\/$/, ''),
+ *      fetchApi: makeFetchWithPlaywright(page),
+ *    });
+ *    return new MyApi(config);
+ *  }
+ *  ```
  */
-export function makeFetchWithPlaywright(page: Page): FetchAPI {
+export function makeFetchWithPlaywright(page: Page, options?: { withCsrf?: boolean }): FetchAPI {
+  const withCsrf = options?.withCsrf ?? true;
+
   return async (url: string, init?: RequestInit & PlaywrightFetchInit): Promise<Response> => {
-    const token = await resolveCsrf(page);
-
-    const playwrightInit: PlaywrightFetchInit = {
-      ...init,
-      data: init?.body,
-      maxRetries: 3,
-
-      headers: {
-        ...(init?.headers as Record<string, string>),
-        ...(token ? { 'X-CSRF-Token': token } : {}),
-      },
+    const headers: Record<string, string> = {
+      ...(init?.headers as Record<string, string>),
     };
 
-    const resp: APIResponse = await page.request.fetch(url, playwrightInit);
-
-    const headers = new Headers(resp.headers());
-
-    if (!resp.ok()) {
-      console.log(`[API ERROR] ${resp.status()} ${url}`);
-      try {
-        console.log(await resp.json());
-      } catch {
-        console.log(await resp.text());
+    if (withCsrf) {
+      const token = await resolveCsrf(page);
+      if (token) {
+        headers['X-CSRF-Token'] = token;
       }
     }
+
+    const resp: APIResponse = await page.request.fetch(url, {
+      ...init,
+      data: init?.body,
+      headers,
+      maxRetries: 3,
+    });
 
     return {
       ok: resp.ok(),
       status: resp.status(),
       statusText: resp.statusText(),
       url: resp.url(),
-      headers,
-
+      headers: new Headers(resp.headers()),
       text: () => resp.text(),
       json: () => resp.json(),
       arrayBuffer: async () => resp.body(),
       blob: async () => new Blob([new Uint8Array(await resp.body())]),
-
       clone: () => {
         throw new Error('clone not implemented');
       },

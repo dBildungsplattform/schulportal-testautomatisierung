@@ -7,7 +7,7 @@ export function constructAuthApi(page: Page): AuthApi {
   return new AuthApi(
     new Configuration({
       basePath: FRONTEND_URL?.replace(/\/$/, ''),
-      fetchApi: makeFetchWithPlaywright(page),
+      fetchApi: makeFetchWithPlaywright(page, { withCsrf: false }), // disable CSRF for auth API
     }),
   );
 }
