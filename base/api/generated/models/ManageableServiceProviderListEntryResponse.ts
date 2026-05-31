@@ -98,6 +98,12 @@ export interface ManageableServiceProviderListEntryResponse {
      * @memberof ManageableServiceProviderListEntryResponse
      */
     rollen: Array<RolleRefResponse>;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof ManageableServiceProviderListEntryResponse
+     */
+    hasSomeVerwaltenPermission: boolean;
 }
 
 /**
@@ -113,6 +119,7 @@ export function instanceOfManageableServiceProviderListEntryResponse(value: obje
     isInstance = isInstance && "merkmale" in value;
     isInstance = isInstance && "rollenerweiterungen" in value;
     isInstance = isInstance && "rollen" in value;
+    isInstance = isInstance && "hasSomeVerwaltenPermission" in value;
 
     return isInstance;
 }
@@ -135,6 +142,7 @@ export function ManageableServiceProviderListEntryResponseFromJSONTyped(json: an
         'merkmale': ((json['merkmale'] as Array<any>).map(ServiceProviderMerkmalFromJSON)),
         'rollenerweiterungen': ((json['rollenerweiterungen'] as Array<any>).map(RollenerweiterungForManageableServiceProviderResponseFromJSON)),
         'rollen': ((json['rollen'] as Array<any>).map(RolleRefResponseFromJSON)),
+        'hasSomeVerwaltenPermission': json['hasSomeVerwaltenPermission'],
     };
 }
 
@@ -155,6 +163,7 @@ export function ManageableServiceProviderListEntryResponseToJSON(value?: Managea
         'merkmale': ((value.merkmale as Array<any>).map(ServiceProviderMerkmalToJSON)),
         'rollenerweiterungen': ((value.rollenerweiterungen as Array<any>).map(RollenerweiterungForManageableServiceProviderResponseToJSON)),
         'rollen': ((value.rollen as Array<any>).map(RolleRefResponseToJSON)),
+        'hasSomeVerwaltenPermission': value.hasSomeVerwaltenPermission,
     };
 }
 

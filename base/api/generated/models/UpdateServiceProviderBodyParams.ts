@@ -37,6 +37,12 @@ export interface UpdateServiceProviderBodyParams {
      * @memberof UpdateServiceProviderBodyParams
      */
     kategorie?: UpdateServiceProviderBodyParamsKategorieEnum;
+    /**
+     * Optional logoId to use a standard logo. Has to be an integer. Can not be provided, if the service provider already has a custom logo. Null removes the logo.
+     * @type {number}
+     * @memberof UpdateServiceProviderBodyParams
+     */
+    logoId?: number | null;
 }
 
 
@@ -75,6 +81,7 @@ export function UpdateServiceProviderBodyParamsFromJSONTyped(json: any, ignoreDi
         'name': !exists(json, 'name') ? undefined : json['name'],
         'url': !exists(json, 'url') ? undefined : json['url'],
         'kategorie': !exists(json, 'kategorie') ? undefined : json['kategorie'],
+        'logoId': !exists(json, 'logoId') ? undefined : json['logoId'],
     };
 }
 
@@ -90,6 +97,7 @@ export function UpdateServiceProviderBodyParamsToJSON(value?: UpdateServiceProvi
         'name': value.name,
         'url': value.url,
         'kategorie': value.kategorie,
+        'logoId': value.logoId,
     };
 }
 

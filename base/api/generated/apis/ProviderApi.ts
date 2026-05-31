@@ -41,6 +41,10 @@ export interface ProviderControllerCreateServiceProviderRequest {
     createServiceProviderBodyParams: CreateServiceProviderBodyParams;
 }
 
+export interface ProviderControllerDeleteServiceProviderRequest {
+    angebotId: string;
+}
+
 export interface ProviderControllerFindRollenerweiterungenByServiceProviderIdRequest {
     angebotId: string;
     offset?: number;
@@ -94,6 +98,22 @@ export interface ProviderApiInterface {
      * 
      */
     providerControllerCreateServiceProvider(requestParameters: ProviderControllerCreateServiceProviderRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ServiceProviderResponse>;
+
+    /**
+     * Delete a service-provider (Angebot) by id.
+     * @summary 
+     * @param {string} angebotId The id of the service provider
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ProviderApiInterface
+     */
+    providerControllerDeleteServiceProviderRaw(requestParameters: ProviderControllerDeleteServiceProviderRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>>;
+
+    /**
+     * Delete a service-provider (Angebot) by id.
+     * 
+     */
+    providerControllerDeleteServiceProvider(requestParameters: ProviderControllerDeleteServiceProviderRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void>;
 
     /**
      * Get rollenerweiterungen for service-provider with provided id. Total is the amount of organisations.
@@ -278,6 +298,50 @@ export class ProviderApi extends runtime.BaseAPI implements ProviderApiInterface
     async providerControllerCreateServiceProvider(requestParameters: ProviderControllerCreateServiceProviderRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ServiceProviderResponse> {
         const response = await this.providerControllerCreateServiceProviderRaw(requestParameters, initOverrides);
         return await response.value();
+    }
+
+    /**
+     * Delete a service-provider (Angebot) by id.
+     * 
+     */
+    async providerControllerDeleteServiceProviderRaw(requestParameters: ProviderControllerDeleteServiceProviderRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.angebotId === null || requestParameters.angebotId === undefined) {
+            throw new runtime.RequiredError('angebotId','Required parameter requestParameters.angebotId was null or undefined when calling providerControllerDeleteServiceProvider.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearer", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2", []);
+        }
+
+        const response = await this.request({
+            path: `/api/provider/{angebotId}`.replace(`{${"angebotId"}}`, encodeURIComponent(String(requestParameters.angebotId))),
+            method: 'DELETE',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Delete a service-provider (Angebot) by id.
+     * 
+     */
+    async providerControllerDeleteServiceProvider(requestParameters: ProviderControllerDeleteServiceProviderRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.providerControllerDeleteServiceProviderRaw(requestParameters, initOverrides);
     }
 
     /**
