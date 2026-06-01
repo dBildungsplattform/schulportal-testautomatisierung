@@ -1,84 +1,120 @@
 name: Run Playwright Tests
-
-run-name: Test ${{ inputs.frontendHostname }} with ${{ inputs.browser }} and ${{ inputs.tag }}
+run-name: Test ${{ inputs.frontendHostname }} with ${{ inputs.browser }} and ${{ inputs.tag }} from ${{ inputs.playwright_branch }}
 
 on:
   workflow_call:
     secrets:
       SPSH_DEV_USER_SSHKEY:
+        description: 'SSH Key for Tunnel User to access LDAP tunnel (required for dev tests)'
         required: false
       SPSH_DEV_KUBECONFIG:
+        description: 'Kubeconfig for SPSH development environment (required for dev tests)'
         required: false
       SPSH_DEV_TUNNEL_USERNAME:
+        description: 'Username for SSH tunnel (required for dev tests)'
         required: false
       SPSH_DEV_TUNNEL_HOST:
+        description: 'Hostname of the SSH tunnel (required for dev tests)'
         required: false
       SPSH_DEV_TUNNEL_PORT:
+        description: 'Port of the SSH tunnel (required for dev tests)'
         required: false
       USER:
+        description: 'Username for the application'
         required: true
       PW:
+        description: 'Password for the application'
         required: true
       OTP_SEED_B32:
+        description: 'Base32 encoded OTP seed for 2FA (required for stage tests with 2FA)'
         required: false
       RC_WEBHOOK:
+        description: 'Webhook URL for notifications'
         required: true
 
     inputs:
       frontendHostname:
         type: string
+        description: 'Hostname of the frontend server'
         required: true
         default: 'main.dev.spsh.dbildungsplattform.de'
       namespace_to_use:
         type: string
+        description: 'Namespace to use for LDAP testing (should match hostname)'
+        required: false
         default: 'main'
       tag:
         type: string
+        description: 'Select which tests are run'
         required: true
         default: 'dev'
       browser:
         type: string
+        description: 'Select which browser to use for testing'
         required: true
         default: 'chromium'
       playwright_branch:
         type: string
+        description: 'The branch to take Playwright-tests from.'
+        required: false
         default: main
       send_notifications:
         type: boolean
-        default: false
+        description: 'Whether to send notifications to Rocket.Chat (defaults to false)'
+        required: false
 
   workflow_dispatch:
     inputs:
       frontendHostname:
         type: string
+        description: 'Hostname of the frontend server'
+        required: true
         default: 'main.dev.spsh.dbildungsplattform.de'
       namespace_to_use:
         type: string
+        description: 'Namespace to use for LDAP testing (should match hostname)'
+        required: false
         default: 'main'
       tag:
+        description: 'Select which tests are run'
+        required: true
+        default: 'dev'
         type: choice
-        options: [smoke, dev, stage]
-        default: dev
+        options:
+          - smoke
+          - dev
+          - stage
       browser:
+        description: 'Select which browser to use for testing'
+        required: true
+        default: 'chromium'
         type: choice
-        options: [chromium, chrome, firefox, webkit, msedge]
-        default: chromium
+        options:
+          - chromium
+          - chrome
+          - firefox
+          - webkit
+          - msedge
       playwright_branch:
         type: string
+        description: 'The branch to take Playwright-tests from.'
+        required: false
         default: main
 
 jobs:
-  # --------------------------
-  # SETUP (RUNS ONCE)
-  # --------------------------
-  setup:
+  run_playwright_tests:
+    timeout-minutes: 60
     runs-on: ubuntu-latest
-    outputs:
-      ldap_ip: ${{ steps.ldap.outputs.ip }}
-      ldap_user: ${{ steps.ldap_creds.outputs.user }}
-      ldap_pass: ${{ steps.ldap_creds.outputs.pass }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
 
     steps:
+      # --------------------------
+      # Checkout & Node setup
+      # --------------------------
       - uses: actions/checkout@v3
         with:
           repository: 'dBildungsplattform/schulportal-testautomatisierung'
@@ -88,7 +124,7 @@ jobs:
         with:
           node-version: 22
 
-      - name: Remove Microsoft APT
+      - name: Remove Microsoft APT and Update Packages
         run: |
           sudo rm /etc/apt/sources.list.d/microsoft-prod.list
           sudo apt-get update || true
@@ -96,137 +132,124 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Type check + lint + format
-        run: |
-          npm run type-check
-          npm run lint:ci
-          npm run check-format
+      - name: TypeScript type check
+        run: npm run type-check
 
-      - name: Install Playwright browsers
+      - name: Lint check
+        run: npm run lint:ci
+
+      - name: Prettier check
+        run: npm run check-format
+
+      - name: Install Playwright Browsers
         run: npx playwright install --with-deps
 
-      # Cache node_modules + browsers
-      - name: Cache dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            node_modules
-            ~/.cache/ms-playwright
-          key: ${{ runner.os }}-pw-${{ hashFiles('package-lock.json') }}
-
       # --------------------------
-      # DEV LDAP SETUP
+      # SSH agent (dev only)
       # --------------------------
       - name: Setup SSH agent
         if: ${{ inputs.tag == 'dev' }}
-        uses: webfactory/ssh-agent@v0.9.0
+        uses: webfactory/ssh-agent@dc588b651fe13675774614f8e6a936a468676387
         with:
           ssh-private-key: ${{ secrets.SPSH_DEV_USER_SSHKEY }}
 
+      # --------------------------
+      # Kubeconfig (dev only)
+      # --------------------------
       - name: Add kubeconfig
         if: ${{ inputs.tag == 'dev' }}
+        env:
+          KUBECONFIG_CONTENT: ${{ secrets.SPSH_DEV_KUBECONFIG }}
         run: |
           mkdir -p ~/.kube
-          echo "${{ secrets.SPSH_DEV_KUBECONFIG }}" > ~/.kube/config
+          echo "$KUBECONFIG_CONTENT" > ~/.kube/config
+          chmod 600 ~/.kube/config
 
+      # --------------------------
+      # LDAP setup (dev only)
+      # --------------------------
       - name: Get LDAP Pod IP
-        id: ldap
         if: ${{ inputs.tag == 'dev' }}
+        env:
+          NS: ${{ inputs.namespace_to_use }}
         run: |
-          IP=$(kubectl get pod dbildungs-iam-ldap-0 -n "${{ inputs.namespace_to_use }}" -o=jsonpath='{.status.podIP}')
-          echo "ip=$IP" >> $GITHUB_OUTPUT
+          POD_IP=$(kubectl get pod dbildungs-iam-ldap-0 -n "$NS" -o=jsonpath='{.status.podIP}')
+          echo "LDAP_POD_IP=$POD_IP" >> $GITHUB_ENV
 
-      - name: Get LDAP credentials
-        id: ldap_creds
+      - name: Get LDAP admin credentials from Kubernetes
         if: ${{ inputs.tag == 'dev' }}
+        env:
+          NS: ${{ inputs.namespace_to_use }}
         run: |
-          USER=$(kubectl -n "${{ inputs.namespace_to_use }}" get secret dbildungs-iam-server -o jsonpath='{.data.ldap-bind-dn}' | base64 -d)
-          PASS=$(kubectl -n "${{ inputs.namespace_to_use }}" get secret dbildungs-iam-server -o jsonpath='{.data.ldap-admin-password}' | base64 -d)
+          LDAP_ADMIN_USER=$(kubectl -n "$NS" get secret dbildungs-iam-server -o jsonpath='{.data.ldap-bind-dn}' | base64 -d)
+          echo "::add-mask::$LDAP_ADMIN_USER"
+          echo "LDAP_ADMIN_USER=$LDAP_ADMIN_USER" >> $GITHUB_ENV
 
-          echo "::add-mask::$USER"
-          echo "::add-mask::$PASS"
+          LDAP_ADMIN_PASSWORD=$(kubectl -n "$NS" get secret dbildungs-iam-server -o jsonpath='{.data.ldap-admin-password}' | base64 -d)
+          echo "::add-mask::$LDAP_ADMIN_PASSWORD"
+          echo "LDAP_ADMIN_PASSWORD=$LDAP_ADMIN_PASSWORD" >> $GITHUB_ENV
 
-          echo "user=$USER" >> $GITHUB_OUTPUT
-          echo "pass=$PASS" >> $GITHUB_OUTPUT
-
-      # Upload prepared workspace
-      - name: Upload workspace
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-workspace
-          path: .
-
-  # --------------------------
-  # TEST SHARDS
-  # --------------------------
-  test:
-    needs: setup
-    runs-on: ubuntu-latest
-
-    strategy:
-      fail-fast: false
-      matrix:
-        shard: [1, 2, 3, 4, 5]
-
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: playwright-workspace
-
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 22
-
-      - name: Restore cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            node_modules
-            ~/.cache/ms-playwright
-          key: ${{ runner.os }}-pw-${{ hashFiles('package-lock.json') }}
-
-      # --------------------------
-      # DEV LDAP TUNNEL
-      # --------------------------
-      - name: Setup SSH agent
+      - name: Create SSH tunnel to LDAP
         if: ${{ inputs.tag == 'dev' }}
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.SPSH_DEV_USER_SSHKEY }}
-
-      - name: Create SSH tunnel
-        if: ${{ inputs.tag == 'dev' }}
+        env:
+          SPSH_DEV_TUNNEL_USERNAME: ${{ secrets.SPSH_DEV_TUNNEL_USERNAME }}
+          SPSH_DEV_TUNNEL_HOST: ${{ secrets.SPSH_DEV_TUNNEL_HOST }}
+          SPSH_DEV_TUNNEL_PORT: ${{ secrets.SPSH_DEV_TUNNEL_PORT }}
         run: |
           ssh -o StrictHostKeyChecking=no \
-            -L 1389:${{ needs.setup.outputs.ldap_ip }}:3389 \
-            ${{ secrets.SPSH_DEV_TUNNEL_USERNAME }}@${{ secrets.SPSH_DEV_TUNNEL_HOST }} \
-            -p ${{ secrets.SPSH_DEV_TUNNEL_PORT }} \
-            -N &
+              -L 1389:$LDAP_POD_IP:3389 $SPSH_DEV_TUNNEL_USERNAME@$SPSH_DEV_TUNNEL_HOST \
+              -p $SPSH_DEV_TUNNEL_PORT \
+              -N -o ServerAliveInterval=15 -o ExitOnForwardFailure=yes &
+          disown
+
+      - name: Install ldap-utils
+        if: ${{ inputs.tag == 'dev' }}
+        run: sudo apt-get install -y ldap-utils
+
+      - name: Test LDAP Connectivity
+        if: ${{ inputs.tag == 'dev' }}
+        run: ldapwhoami -x -H ldap://localhost:1389 -D "$LDAP_ADMIN_USER" -w "$LDAP_ADMIN_PASSWORD"
 
       # --------------------------
-      # RUN TESTS
+      # Run Playwright tests (SHARDED)
       # --------------------------
       - name: Run Playwright tests
         env:
-          FRONTEND_URL: https://${{ inputs.frontendHostname }}/
+          FRONTEND_URL: 'https://${{ inputs.frontendHostname }}/'
           TAG: ${{ inputs.tag }}
           BROWSER: ${{ inputs.browser }}
-          USER: ${{ secrets.USER }}
-          PW: ${{ secrets.PW }}
-          OTP_SEED_B32: ${{ secrets.OTP_SEED_B32 }}
+          USER: '${{ secrets.USER }}'
+          PW: '${{ secrets.PW }}'
+          OTP_SEED_B32: '${{ secrets.OTP_SEED_B32 }}'
           LDAP_URL: ldap://localhost:1389
-          LDAP_ADMIN_USER: ${{ needs.setup.outputs.ldap_user }}
-          LDAP_ADMIN_PASSWORD: ${{ needs.setup.outputs.ldap_pass }}
+          LDAP_ADMIN_USER: ${{ env.LDAP_ADMIN_USER }}
+          LDAP_ADMIN_PASSWORD: ${{ env.LDAP_ADMIN_PASSWORD }}
+          NODE_OPTIONS: --no-experimental-strip-types
         run: |
           npx playwright test \
             --config=playwright.config.ts \
             --grep @"$TAG" \
             --project "$BROWSER" \
-            --shard=${{ matrix.shard }}/5 \
-            --retries=2
+            --shard=${{ matrix.shard }}/4
 
+      # --------------------------
+      # Upload reports (per shard)
+      # --------------------------
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: report-${{ matrix.shard }}
+          name: playwright-report-shard-${{ matrix.shard }}
           path: playwright-report/
+          retention-days: 30
+
+      # --------------------------
+      # Notifications (only on failure)
+      # --------------------------
+      - uses: RocketChat/Rocket.Chat.GitHub.Action.Notification@2966f5f2e0313a94f965a51c08700cfecf0b6572
+        if: ${{ inputs.send_notifications && failure() }}
+        with:
+          type: ${{ job.status }}
+          job_name: 'Playwright Job Status: '
+          url: ${{ secrets.RC_WEBHOOK }}
+          channel: '#SPSH-Test-Automation'
+          username: Playwright Notificator
