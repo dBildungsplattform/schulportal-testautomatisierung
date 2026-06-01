@@ -20,6 +20,7 @@ import { constructRolleApi } from '../base/api/rolleApi';
 const FRONTEND_URL: string = process.env.FRONTEND_URL ?? '';
 const shardIndex = process.env.SHARD_INDEX ?? '0';
 const testDataPrefix: string = `TAuto-PW-S${shardIndex}`;
+const personDataPrefix: string = 'TAuto';
 const limit: number = 100;
 const batchSize: number = 20;
 
@@ -71,7 +72,7 @@ export default async function globalTeardown(): Promise<void> {
       async () => {
         const resp: PersonFrontendControllerFindPersons200Response =
           await personFrontendApi.personFrontendControllerFindPersons({
-            suchFilter: testDataPrefix,
+            suchFilter: personDataPrefix,
             limit,
           });
         console.log(`${resp.total} personen to delete`);
