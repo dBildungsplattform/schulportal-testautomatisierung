@@ -1,23 +1,46 @@
 # If you merge changes to this file, you will become the actor for the scheduled runs.
 # Execution can only happen while the account of the actor is active.
 name: Scheduled runs
+run-name: "${{ inputs.browser && format('Browser Test - {0}', inputs.browser) || 'Scheduled runs' }}"
 
 on:
   schedule:
-    - cron: '15 5 * * 1-5'
+    - cron: '0 3 * * 1-5'
     - cron: '45 6 * * *'
+  workflow_dispatch:
+    inputs:
+      browser:
+        type: choice
+        description: 'Browser to test'
+        required: true
+        options:
+          - chrome
+          - firefox
+          - webkit
+          - msedge
 
 jobs:
-  browser_tests:
-    if: github.event.schedule == '15 5 * * 1-5'
+  dispatch_browser_tests:
+    if: github.event.schedule == '0 3 * * 1-5'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
     strategy:
+      fail-fast: false
       matrix:
         browser: [chrome, firefox, webkit, msedge]
+    steps:
+      - run: gh workflow run run-playwright-scheduled.yml --repo "${{ github.repository }}" --ref "${{ github.ref }}" -f browser="${{ matrix.browser }}"
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+  browser_test:
+    if: github.event_name == 'workflow_dispatch'
     uses: ./.github/workflows/run-playwright.yml
     with:
       frontendHostname: main.dev.spsh.dbildungsplattform.de
       tag: dev
-      browser: ${{ matrix.browser }}
+      browser: ${{ inputs.browser }}
       playwright_branch: main
       send_notifications: true
     secrets:
