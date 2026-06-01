@@ -145,13 +145,14 @@ interface AdminFixture {
       let klassenNamen: string[] = [];
 
       test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
-        // 40 Klassen für die Schule anlegen
         klassenNamen = [];
         for (let i: number = 0; i < 40; i++) {
           const klassenname: string = generateKlassenname();
           await createKlasse(page, schuleId2, klassenname);
           klassenNamen.push(klassenname);
         }
+        // Give backend time to settle under parallel load
+        await page.waitForTimeout(2000);
       });
 
       // SPSH-3056
