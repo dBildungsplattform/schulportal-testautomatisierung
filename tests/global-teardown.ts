@@ -116,8 +116,13 @@ export default async function globalTeardown(): Promise<void> {
             typ: OrganisationsTyp.Klasse,
             limit,
           });
+        const items: OrganisationResponse[] = await wrappedResponse.value();
+        console.log(
+          'Sample klassen found:',
+          items.slice(0, 10).map((i: OrganisationResponse) => i.name),
+        );
         console.log(`${wrappedResponse.raw.headers.get('X-Paging-Total')} klassen to delete`);
-        return wrappedResponse.value();
+        return items;
       },
       async (item: OrganisationResponse) =>
         organisationApi.organisationControllerDeleteOrganisation({ organisationId: item.id }),
