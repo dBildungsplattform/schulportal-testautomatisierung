@@ -211,7 +211,8 @@ jobs:
       - name: Test LDAP Connectivity
         if: ${{ inputs.tag == 'dev' }}
         run: ldapwhoami -x -H ldap://localhost:1389 -D "$LDAP_ADMIN_USER" -w "$LDAP_ADMIN_PASSWORD"
-
+      - name: Debug shard index
+        run: echo "SHARD_INDEX is $SHARD_INDEX"
       # --------------------------
       # Run Playwright tests (SHARDED)
       # --------------------------
@@ -227,7 +228,6 @@ jobs:
           LDAP_ADMIN_USER: ${{ env.LDAP_ADMIN_USER }}
           LDAP_ADMIN_PASSWORD: ${{ env.LDAP_ADMIN_PASSWORD }}
           NODE_OPTIONS: --no-experimental-strip-types
-          SHARD_INDEX: ${{ matrix.shard }}
         run: |
           npx playwright test \
             --config=playwright.config.ts \
