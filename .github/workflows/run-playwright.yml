@@ -225,6 +225,7 @@ jobs:
           LDAP_ADMIN_USER: ${{ env.LDAP_ADMIN_USER }}
           LDAP_ADMIN_PASSWORD: ${{ env.LDAP_ADMIN_PASSWORD }}
           NODE_OPTIONS: --no-experimental-strip-types
+          SHARD_INDEX: ${{ matrix.shard }}
         run: |
           npx playwright test \
             --config=playwright.config.ts \
