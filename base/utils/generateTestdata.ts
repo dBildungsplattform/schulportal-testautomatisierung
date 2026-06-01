@@ -6,7 +6,7 @@ const shardIndex = process.env.SHARD_INDEX ?? '0';
 
 export function generateVorname(): string {
   return (
-    `TAuto-PW-S${shardIndex}-V-` +
+    'TAuto-PW-V-' +
     faker.person.firstName() +
     generateRandomString({ length: 3, charSetType: CharacterSetType.Alphabetic })
   );
@@ -14,7 +14,7 @@ export function generateVorname(): string {
 
 export function generateNachname(): string {
   return (
-    `TAuto-PW-S${shardIndex}-N-` +
+    'TAuto-PW-N-' +
     faker.person.lastName() +
     generateRandomString({ length: 3, charSetType: CharacterSetType.Alphabetic })
   );
