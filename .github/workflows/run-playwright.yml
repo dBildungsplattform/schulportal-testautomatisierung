@@ -5,76 +5,104 @@ on:
   workflow_call:
     secrets:
       SPSH_DEV_USER_SSHKEY:
+        description: 'SSH Key for Tunnel User to access LDAP tunnel (required for dev tests)'
         required: false
       SPSH_DEV_KUBECONFIG:
+        description: 'Kubeconfig for SPSH development environment (required for dev tests)'
         required: false
       SPSH_DEV_TUNNEL_USERNAME:
+        description: 'Username for SSH tunnel (required for dev tests)'
         required: false
       SPSH_DEV_TUNNEL_HOST:
+        description: 'Hostname of the SSH tunnel (required for dev tests)'
         required: false
       SPSH_DEV_TUNNEL_PORT:
+        description: 'Port of the SSH tunnel (required for dev tests)'
         required: false
       USER:
+        description: 'Username for the application'
         required: true
       PW:
+        description: 'Password for the application'
         required: true
       OTP_SEED_B32:
+        description: 'Base32 encoded OTP seed for 2FA (required for stage tests with 2FA)'
         required: false
       RC_WEBHOOK:
+        description: 'Webhook URL for notifications'
         required: true
 
     inputs:
       frontendHostname:
         type: string
+        description: 'Hostname of the frontend server'
         required: true
-        default: main.dev.spsh.dbildungsplattform.de
+        default: 'main.dev.spsh.dbildungsplattform.de'
       namespace_to_use:
         type: string
+        description: 'Namespace to use for LDAP testing (should match hostname)'
         required: false
-        default: main
+        default: 'main'
       tag:
         type: string
+        description: 'Select which tests are run'
         required: true
-        default: dev
+        default: 'dev'
       browser:
         type: string
+        description: 'Select which browser to use for testing'
         required: true
-        default: chromium
+        default: 'chromium'
       playwright_branch:
         type: string
+        description: 'The branch to take Playwright-tests from.'
         required: false
         default: main
       send_notifications:
         type: boolean
+        description: 'Whether to send notifications to Rocket.Chat (defaults to false)'
         required: false
 
   workflow_dispatch:
     inputs:
       frontendHostname:
         type: string
+        description: 'Hostname of the frontend server'
         required: true
-        default: main.dev.spsh.dbildungsplattform.de
+        default: 'main.dev.spsh.dbildungsplattform.de'
       namespace_to_use:
         type: string
+        description: 'Namespace to use for LDAP testing (should match hostname)'
         required: false
-        default: main
+        default: 'main'
       tag:
-        type: choice
+        description: 'Select which tests are run'
         required: true
-        default: dev
-        options: [smoke, dev, stage]
+        default: 'dev'
+        type: choice
+        options:
+          - smoke
+          - dev
+          - stage
       browser:
-        type: choice
+        description: 'Select which browser to use for testing'
         required: true
-        default: chromium
-        options: [chromium, chrome, firefox, webkit, msedge]
+        default: 'chromium'
+        type: choice
+        options:
+          - chromium
+          - chrome
+          - firefox
+          - webkit
+          - msedge
       playwright_branch:
         type: string
+        description: 'The branch to take Playwright-tests from.'
         required: false
         default: main
 
 jobs:
-  test:
+  run_playwright_tests:
     timeout-minutes: 60
     runs-on: ubuntu-latest
 
@@ -85,11 +113,11 @@ jobs:
 
     steps:
       # --------------------------
-      # Checkout
+      # Checkout & Node setup
       # --------------------------
       - uses: actions/checkout@v3
         with:
-          repository: dBildungsplattform/schulportal-testautomatisierung
+          repository: 'dBildungsplattform/schulportal-testautomatisierung'
           ref: ${{ inputs.playwright_branch }}
 
       - uses: actions/setup-node@v3
@@ -130,19 +158,23 @@ jobs:
       # --------------------------
       - name: Add kubeconfig
         if: ${{ inputs.tag == 'dev' }}
+        env:
+          KUBECONFIG_CONTENT: ${{ secrets.SPSH_DEV_KUBECONFIG }}
         run: |
           mkdir -p ~/.kube
-          echo "${{ secrets.SPSH_DEV_KUBECONFIG }}" > ~/.kube/config
+          echo "$KUBECONFIG_CONTENT" > ~/.kube/config
           chmod 600 ~/.kube/config
 
       # --------------------------
       # LDAP setup (dev only)
       # --------------------------
-      - name: Get LDAP credentials
+      - name: Get LDAP Pod IP
         if: ${{ inputs.tag == 'dev' }}
+        env:
+          NS: ${{ inputs.namespace_to_use }}
         run: |
-          LDAP_ADMIN_USER=$(kubectl -n "${{ inputs.namespace_to_use }}" get secret dbildungs-iam-server -o jsonpath='{.data.ldap-bind-dn}' | base64 -d)
-          LDAP_ADMIN_PASSWORD=$(kubectl -n "${{ inputs.namespace_to_use }}" get secret dbildungs-iam-server -o jsonpath='{.data.ldap-admin-password}' | base64 -d)
+          POD_IP=$(kubectl get pod dbildungs-iam-ldap-0 -n "$NS" -o=jsonpath='{.status.podIP}')
+          echo "LDAP_POD_IP=$POD_IP" >> $GITHUB_ENV
 
       - name: Get LDAP admin credentials from Kubernetes
         if: ${{ inputs.tag == 'dev' }}
@@ -159,18 +191,16 @@ jobs:
 
       - name: Create SSH tunnel to LDAP
         if: ${{ inputs.tag == 'dev' }}
+        env:
+          SPSH_DEV_TUNNEL_USERNAME: ${{ secrets.SPSH_DEV_TUNNEL_USERNAME }}
+          SPSH_DEV_TUNNEL_HOST: ${{ secrets.SPSH_DEV_TUNNEL_HOST }}
+          SPSH_DEV_TUNNEL_PORT: ${{ secrets.SPSH_DEV_TUNNEL_PORT }}
         run: |
           ssh -o StrictHostKeyChecking=no \
-            -L 1389:$LDAP_POD_IP:3389 \
-            ${{ secrets.SPSH_DEV_TUNNEL_USERNAME }}@${{ secrets.SPSH_DEV_TUNNEL_HOST }} \
-            -p ${{ secrets.SPSH_DEV_TUNNEL_PORT }} \
-            -N -o ServerAliveInterval=15 -o ExitOnFailure=yes &
-
-          echo "Waiting for LDAP tunnel..."
-          for i in {1..15}; do
-            nc -z localhost 1389 && echo "LDAP tunnel ready" && break
-            sleep 1
-          done
+              -L 1389:$LDAP_POD_IP:3389 $SPSH_DEV_TUNNEL_USERNAME@$SPSH_DEV_TUNNEL_HOST \
+              -p $SPSH_DEV_TUNNEL_PORT \
+              -N -o ServerAliveInterval=15 -o ExitOnForwardFailure=yes &
+          disown
 
       - name: Install ldap-utils
         if: ${{ inputs.tag == 'dev' }}
@@ -178,25 +208,19 @@ jobs:
 
       - name: Test LDAP Connectivity
         if: ${{ inputs.tag == 'dev' }}
-        run: |
-          sudo apt-get update && sudo apt-get install -y ldap-utils
-
-          ldapwhoami -x \
-            -H ldap://localhost:1389 \
-            -D "$LDAP_ADMIN_USER" \
-            -w "$LDAP_ADMIN_PASSWORD"
+        run: ldapwhoami -x -H ldap://localhost:1389 -D "$LDAP_ADMIN_USER" -w "$LDAP_ADMIN_PASSWORD"
 
       # --------------------------
       # Run Playwright tests (SHARDED)
       # --------------------------
       - name: Run Playwright tests
         env:
-          FRONTEND_URL: https://${{ inputs.frontendHostname }}/
+          FRONTEND_URL: 'https://${{ inputs.frontendHostname }}/'
           TAG: ${{ inputs.tag }}
           BROWSER: ${{ inputs.browser }}
-          USER: ${{ secrets.USER }}
-          PW: ${{ secrets.PW }}
-          OTP_SEED_B32: ${{ secrets.OTP_SEED_B32 }}
+          USER: '${{ secrets.USER }}'
+          PW: '${{ secrets.PW }}'
+          OTP_SEED_B32: '${{ secrets.OTP_SEED_B32 }}'
           LDAP_URL: ldap://localhost:1389
           LDAP_ADMIN_USER: ${{ env.LDAP_ADMIN_USER }}
           LDAP_ADMIN_PASSWORD: ${{ env.LDAP_ADMIN_PASSWORD }}
