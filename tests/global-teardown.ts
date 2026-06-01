@@ -18,7 +18,8 @@ import { constructPersonenApi, constructPersonenFrontendApi } from '../base/api/
 import { constructRolleApi } from '../base/api/rolleApi';
 
 const FRONTEND_URL: string = process.env.FRONTEND_URL ?? '';
-const testDataPrefix: string = 'TAuto';
+const shardIndex = process.env.SHARD_INDEX ?? '0';
+const testDataPrefix: string = `TAuto-PW-S${shardIndex}`;
 const limit: number = 100;
 const batchSize: number = 20;
 
@@ -41,9 +42,6 @@ function* getBatchedDelPromise<T>(
   }
 }
 
-/**
- * Global teardown – runs ONCE per Playwright run
- */
 export default async function globalTeardown(): Promise<void> {
   console.log('Global teardown started');
 
@@ -61,9 +59,6 @@ export default async function globalTeardown(): Promise<void> {
     const rolleApi: RolleApi = constructRolleApi(page);
     const organisationApi: OrganisationenApi = constructOrganisationApi(page);
 
-    // ---------------------------------------------------------------------
-    // LOGIN
-    // ---------------------------------------------------------------------
     console.log('Login');
     await loginAndNavigateToAdministration(page, process.env.USER!, process.env.PW!);
 
