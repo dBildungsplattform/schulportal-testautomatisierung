@@ -45,6 +45,8 @@ function* getBatchedDelPromise<T>(
 
 export default async function globalTeardown(): Promise<void> {
   console.log('Global teardown started');
+  console.log('SHARD_INDEX in teardown:', process.env.SHARD_INDEX);
+  console.log('testDataPrefix:', testDataPrefix);
 
   const browser: Browser = await chromium.launch();
   const context: BrowserContext = await browser.newContext({
