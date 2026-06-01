@@ -1,7 +1,7 @@
 # If you merge changes to this file, you will become the actor for the scheduled runs.
 # Execution can only happen while the account of the actor is active.
 name: Scheduled runs
-run-name: "${{ inputs.browser && format('Browser Test - {0}', inputs.browser) || 'Scheduled runs' }}"
+run-name: "${{ github.event_name == 'workflow_dispatch' && format('Browser Test - {0}', github.event.inputs.browser) || 'Scheduled runs' }}"
 
 on:
   schedule:
