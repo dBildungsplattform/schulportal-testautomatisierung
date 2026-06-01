@@ -14,7 +14,7 @@ dotenv.config({
 
 dotenv.config({ path: path.resolve(dirname, '.env'), override: true });
 
-export const workers: number = 4;
+export const workers: number = 2;
 
 export default defineConfig({
   testDir: './tests',
