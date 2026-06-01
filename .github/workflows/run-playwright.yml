@@ -105,6 +105,12 @@ jobs:
   run_playwright_tests:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3]
+
     steps:
       # --------------------------
       # Checkout & Node setup
@@ -117,32 +123,38 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 22
-      - name: Remove Microsoft APT and  Update Packages
+
+      - name: Remove Microsoft APT and Update Packages
         run: |
           sudo rm /etc/apt/sources.list.d/microsoft-prod.list
           sudo apt-get update || true
+
       - name: Install dependencies
         run: npm ci
+
       - name: TypeScript type check
         run: npm run type-check
+
       - name: Lint check
         run: npm run lint:ci
+
       - name: Prettier check
         run: npm run check-format
+
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
 
       # --------------------------
-      # Setup SSH agent for LDAP tunnel
+      # SSH agent (dev only)
       # --------------------------
       - name: Setup SSH agent
         if: ${{ inputs.tag == 'dev' }}
-        uses: webfactory/ssh-agent@dc588b651fe13675774614f8e6a936a468676387 # v0.9.0
+        uses: webfactory/ssh-agent@dc588b651fe13675774614f8e6a936a468676387
         with:
           ssh-private-key: ${{ secrets.SPSH_DEV_USER_SSHKEY }}
 
       # --------------------------
-      # Add kubeconfig (main namespace only)
+      # Kubeconfig (dev only)
       # --------------------------
       - name: Add kubeconfig
         if: ${{ inputs.tag == 'dev' }}
@@ -154,7 +166,7 @@ jobs:
           chmod 600 ~/.kube/config
 
       # --------------------------
-      # Get LDAP Pod IP
+      # LDAP setup (dev only)
       # --------------------------
       - name: Get LDAP Pod IP
         if: ${{ inputs.tag == 'dev' }}
@@ -164,9 +176,6 @@ jobs:
           POD_IP=$(kubectl get pod dbildungs-iam-ldap-0 -n "$NS" -o=jsonpath='{.status.podIP}')
           echo "LDAP_POD_IP=$POD_IP" >> $GITHUB_ENV
 
-      # --------------------------
-      # Get LDAP admin credentials from Kubernetes
-      # --------------------------
       - name: Get LDAP admin credentials from Kubernetes
         if: ${{ inputs.tag == 'dev' }}
         env:
@@ -175,13 +184,11 @@ jobs:
           LDAP_ADMIN_USER=$(kubectl -n "$NS" get secret dbildungs-iam-server -o jsonpath='{.data.ldap-bind-dn}' | base64 -d)
           echo "::add-mask::$LDAP_ADMIN_USER"
           echo "LDAP_ADMIN_USER=$LDAP_ADMIN_USER" >> $GITHUB_ENV
+
           LDAP_ADMIN_PASSWORD=$(kubectl -n "$NS" get secret dbildungs-iam-server -o jsonpath='{.data.ldap-admin-password}' | base64 -d)
           echo "::add-mask::$LDAP_ADMIN_PASSWORD"
           echo "LDAP_ADMIN_PASSWORD=$LDAP_ADMIN_PASSWORD" >> $GITHUB_ENV
 
-      # --------------------------
-      # Create SSH tunnel to LDAP
-      # --------------------------
       - name: Create SSH tunnel to LDAP
         if: ${{ inputs.tag == 'dev' }}
         env:
@@ -195,9 +202,6 @@ jobs:
               -N -o ServerAliveInterval=15 -o ExitOnForwardFailure=yes &
           disown
 
-      # --------------------------
-      # Install ldap-utils & test connectivity
-      # --------------------------
       - name: Install ldap-utils
         if: ${{ inputs.tag == 'dev' }}
         run: sudo apt-get install -y ldap-utils
@@ -207,7 +211,7 @@ jobs:
         run: ldapwhoami -x -H ldap://localhost:1389 -D "$LDAP_ADMIN_USER" -w "$LDAP_ADMIN_PASSWORD"
 
       # --------------------------
-      # Run Playwright tests
+      # Run Playwright tests (SHARDED)
       # --------------------------
       - name: Run Playwright tests
         env:
@@ -221,19 +225,27 @@ jobs:
           LDAP_ADMIN_USER: ${{ env.LDAP_ADMIN_USER }}
           LDAP_ADMIN_PASSWORD: ${{ env.LDAP_ADMIN_PASSWORD }}
           NODE_OPTIONS: --no-experimental-strip-types
-        run: npx playwright test --config=playwright.config.ts --grep @"$TAG" --project "$BROWSER"
+        run: |
+          npx playwright test \
+            --config=playwright.config.ts \
+            --grep @"$TAG" \
+            --project "$BROWSER" \
+            --shard=${{ matrix.shard }}/3
 
       # --------------------------
-      # Post test
+      # Upload reports (per shard)
       # --------------------------
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: playwright-report
+          name: playwright-report-shard-${{ matrix.shard }}
           path: playwright-report/
           retention-days: 30
 
-      - uses: RocketChat/Rocket.Chat.GitHub.Action.Notification@2966f5f2e0313a94f965a51c08700cfecf0b6572 # 1.1.1
+      # --------------------------
+      # Notifications (only on failure)
+      # --------------------------
+      - uses: RocketChat/Rocket.Chat.GitHub.Action.Notification@2966f5f2e0313a94f965a51c08700cfecf0b6572
         if: ${{ inputs.send_notifications && failure() }}
         with:
           type: ${{ job.status }}
