@@ -36,6 +36,9 @@ function encodeNumberAsLetters(num: number): string {
  */
 export default async function globalSetup(): Promise<void> {
   console.log('Global setup started');
+  console.log('SHARD_INDEX:', process.env.SHARD_INDEX);
+  console.log('FRONTEND_URL:', process.env.FRONTEND_URL);
+  console.log('Global setup started');
 
   const browser: Browser = await chromium.launch();
   const context: BrowserContext = await browser.newContext({
