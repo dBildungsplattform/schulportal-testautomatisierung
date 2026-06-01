@@ -103,6 +103,8 @@ on:
 
 jobs:
   run_playwright_tests:
+    env:
+      SHARD_INDEX: ${{ matrix.shard }}
     timeout-minutes: 60
     runs-on: ubuntu-latest
 
