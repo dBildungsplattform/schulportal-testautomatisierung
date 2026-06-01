@@ -28,6 +28,10 @@ export function generateRolleName(): string {
   );
 }
 
+export function generateKopersNr(): string {
+  return '0815' + faker.string.numeric({ length: 8 });
+}
+
 export function generateKlassenname(): string {
   return (
     `TAuto-PW-S${shardIndex}-K-12a ` +
@@ -49,9 +53,7 @@ export function generateDienststellenNr(): string {
 }
 
 export function generateCurrentDate({ days, months }: { days: number; months: number }): Date {
-  // creates current date and adds days + month to the current date
   const newDate: Date = addDays(addMonths(new Date(), months), days);
-
   return newDate;
 }
 
