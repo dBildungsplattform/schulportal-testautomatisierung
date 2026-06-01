@@ -96,26 +96,37 @@ jobs:
         with:
           node-version: 22
 
-      # --------------------------
-      # Dependencies
-      # --------------------------
+      - name: Remove Microsoft APT and Update Packages
+        run: |
+          sudo rm /etc/apt/sources.list.d/microsoft-prod.list
+          sudo apt-get update || true
+
       - name: Install dependencies
         run: npm ci
 
-      - name: Install Playwright browsers
+      - name: TypeScript type check
+        run: npm run type-check
+
+      - name: Lint check
+        run: npm run lint:ci
+
+      - name: Prettier check
+        run: npm run check-format
+
+      - name: Install Playwright Browsers
         run: npx playwright install --with-deps
 
       # --------------------------
-      # SSH (dev only)
+      # SSH agent (dev only)
       # --------------------------
       - name: Setup SSH agent
         if: ${{ inputs.tag == 'dev' }}
-        uses: webfactory/ssh-agent@v0.9.0
+        uses: webfactory/ssh-agent@dc588b651fe13675774614f8e6a936a468676387
         with:
           ssh-private-key: ${{ secrets.SPSH_DEV_USER_SSHKEY }}
 
       # --------------------------
-      # kubeconfig (dev only)
+      # Kubeconfig (dev only)
       # --------------------------
       - name: Add kubeconfig
         if: ${{ inputs.tag == 'dev' }}
@@ -125,7 +136,7 @@ jobs:
           chmod 600 ~/.kube/config
 
       # --------------------------
-      # LDAP credentials (IMPORTANT FIX)
+      # LDAP setup (dev only)
       # --------------------------
       - name: Get LDAP credentials
         if: ${{ inputs.tag == 'dev' }}
@@ -133,21 +144,19 @@ jobs:
           LDAP_ADMIN_USER=$(kubectl -n "${{ inputs.namespace_to_use }}" get secret dbildungs-iam-server -o jsonpath='{.data.ldap-bind-dn}' | base64 -d)
           LDAP_ADMIN_PASSWORD=$(kubectl -n "${{ inputs.namespace_to_use }}" get secret dbildungs-iam-server -o jsonpath='{.data.ldap-admin-password}' | base64 -d)
 
+      - name: Get LDAP admin credentials from Kubernetes
+        if: ${{ inputs.tag == 'dev' }}
+        env:
+          NS: ${{ inputs.namespace_to_use }}
+        run: |
+          LDAP_ADMIN_USER=$(kubectl -n "$NS" get secret dbildungs-iam-server -o jsonpath='{.data.ldap-bind-dn}' | base64 -d)
+          echo "::add-mask::$LDAP_ADMIN_USER"
           echo "LDAP_ADMIN_USER=$LDAP_ADMIN_USER" >> $GITHUB_ENV
+
+          LDAP_ADMIN_PASSWORD=$(kubectl -n "$NS" get secret dbildungs-iam-server -o jsonpath='{.data.ldap-admin-password}' | base64 -d)
+          echo "::add-mask::$LDAP_ADMIN_PASSWORD"
           echo "LDAP_ADMIN_PASSWORD=$LDAP_ADMIN_PASSWORD" >> $GITHUB_ENV
 
-      # --------------------------
-      # LDAP pod IP
-      # --------------------------
-      - name: Get LDAP Pod IP
-        if: ${{ inputs.tag == 'dev' }}
-        run: |
-          POD_IP=$(kubectl get pod dbildungs-iam-ldap-0 -n "${{ inputs.namespace_to_use }}" -o=jsonpath='{.status.podIP}')
-          echo "LDAP_POD_IP=$POD_IP" >> $GITHUB_ENV
-
-      # --------------------------
-      # SSH tunnel (FIXED: stable + blocking readiness)
-      # --------------------------
       - name: Create SSH tunnel to LDAP
         if: ${{ inputs.tag == 'dev' }}
         run: |
@@ -163,9 +172,10 @@ jobs:
             sleep 1
           done
 
-      # --------------------------
-      # LDAP connectivity gate (CRITICAL FIX)
-      # --------------------------
+      - name: Install ldap-utils
+        if: ${{ inputs.tag == 'dev' }}
+        run: sudo apt-get install -y ldap-utils
+
       - name: Test LDAP Connectivity
         if: ${{ inputs.tag == 'dev' }}
         run: |
@@ -199,7 +209,7 @@ jobs:
             --shard=${{ matrix.shard }}/3
 
       # --------------------------
-      # Reports
+      # Upload reports (per shard)
       # --------------------------
       - uses: actions/upload-artifact@v4
         if: always()
@@ -209,9 +219,9 @@ jobs:
           retention-days: 30
 
       # --------------------------
-      # Notifications
+      # Notifications (only on failure)
       # --------------------------
-      - uses: RocketChat/Rocket.Chat.GitHub.Action.Notification@1.1.1
+      - uses: RocketChat/Rocket.Chat.GitHub.Action.Notification@2966f5f2e0313a94f965a51c08700cfecf0b6572
         if: ${{ inputs.send_notifications && failure() }}
         with:
           type: ${{ job.status }}
