@@ -74,47 +74,8 @@ on:
         default: main
 
 jobs:
-  # ---------------------------------------------------
-  # 1. LIGHTWEIGHT SHARED SETUP (runs ONCE per workflow)
-  # ---------------------------------------------------
-  setup:
-    runs-on: ubuntu-latest
-    outputs:
-      frontend_url: ${{ steps.out.outputs.frontend_url }}
-
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          repository: dBildungsplattform/schulportal-testautomatisierung
-          ref: ${{ inputs.playwright_branch }}
-
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 22
-
-      - name: Install dependencies (cached)
-        uses: actions/cache@v4
-        with:
-          path: |
-            node_modules
-            ~/.cache/ms-playwright
-          key: ${{ runner.os }}-pw-${{ hashFiles('package-lock.json') }}
-
-      - name: npm install
-        run: npm ci
-
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps
-
-      - name: Output shared values
-        id: out
-        run: echo "frontend_url=https://${{ inputs.frontendHostname }}/" >> $GITHUB_OUTPUT
-
-  # ---------------------------------------------------
-  # 2. SHARDED TEST EXECUTION (ONLY TESTS RUN HERE)
-  # ---------------------------------------------------
   test:
-    needs: setup
+    timeout-minutes: 60
     runs-on: ubuntu-latest
 
     strategy:
@@ -123,6 +84,9 @@ jobs:
         shard: [1, 2, 3]
 
     steps:
+      # --------------------------
+      # Checkout
+      # --------------------------
       - uses: actions/checkout@v3
         with:
           repository: dBildungsplattform/schulportal-testautomatisierung
@@ -133,20 +97,16 @@ jobs:
           node-version: 22
 
       # --------------------------
-      # Cache again (fast restore)
+      # Dependencies
       # --------------------------
-      - uses: actions/cache@v4
-        with:
-          path: |
-            node_modules
-            ~/.cache/ms-playwright
-          key: ${{ runner.os }}-pw-${{ hashFiles('package-lock.json') }}
-
-      - name: npm install (fast via cache)
+      - name: Install dependencies
         run: npm ci
 
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
       # --------------------------
-      # Dev-only infrastructure (kept per shard but lightweight)
+      # SSH (dev only)
       # --------------------------
       - name: Setup SSH agent
         if: ${{ inputs.tag == 'dev' }}
@@ -154,6 +114,9 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SPSH_DEV_USER_SSHKEY }}
 
+      # --------------------------
+      # kubeconfig (dev only)
+      # --------------------------
       - name: Add kubeconfig
         if: ${{ inputs.tag == 'dev' }}
         run: |
@@ -161,12 +124,30 @@ jobs:
           echo "${{ secrets.SPSH_DEV_KUBECONFIG }}" > ~/.kube/config
           chmod 600 ~/.kube/config
 
+      # --------------------------
+      # LDAP credentials (IMPORTANT FIX)
+      # --------------------------
+      - name: Get LDAP credentials
+        if: ${{ inputs.tag == 'dev' }}
+        run: |
+          LDAP_ADMIN_USER=$(kubectl -n "${{ inputs.namespace_to_use }}" get secret dbildungs-iam-server -o jsonpath='{.data.ldap-bind-dn}' | base64 -d)
+          LDAP_ADMIN_PASSWORD=$(kubectl -n "${{ inputs.namespace_to_use }}" get secret dbildungs-iam-server -o jsonpath='{.data.ldap-admin-password}' | base64 -d)
+
+          echo "LDAP_ADMIN_USER=$LDAP_ADMIN_USER" >> $GITHUB_ENV
+          echo "LDAP_ADMIN_PASSWORD=$LDAP_ADMIN_PASSWORD" >> $GITHUB_ENV
+
+      # --------------------------
+      # LDAP pod IP
+      # --------------------------
       - name: Get LDAP Pod IP
         if: ${{ inputs.tag == 'dev' }}
         run: |
           POD_IP=$(kubectl get pod dbildungs-iam-ldap-0 -n "${{ inputs.namespace_to_use }}" -o=jsonpath='{.status.podIP}')
           echo "LDAP_POD_IP=$POD_IP" >> $GITHUB_ENV
 
+      # --------------------------
+      # SSH tunnel (FIXED: stable + blocking readiness)
+      # --------------------------
       - name: Create SSH tunnel to LDAP
         if: ${{ inputs.tag == 'dev' }}
         run: |
@@ -174,20 +155,41 @@ jobs:
             -L 1389:$LDAP_POD_IP:3389 \
             ${{ secrets.SPSH_DEV_TUNNEL_USERNAME }}@${{ secrets.SPSH_DEV_TUNNEL_HOST }} \
             -p ${{ secrets.SPSH_DEV_TUNNEL_PORT }} \
-            -N -o ServerAliveInterval=15 -o ExitOnForwardFailure=yes &
+            -N -o ServerAliveInterval=15 -o ExitOnFailure=yes &
+
+          echo "Waiting for LDAP tunnel..."
+          for i in {1..15}; do
+            nc -z localhost 1389 && echo "LDAP tunnel ready" && break
+            sleep 1
+          done
 
       # --------------------------
-      # RUN TESTS (ONLY REAL WORK)
+      # LDAP connectivity gate (CRITICAL FIX)
+      # --------------------------
+      - name: Test LDAP Connectivity
+        if: ${{ inputs.tag == 'dev' }}
+        run: |
+          sudo apt-get update && sudo apt-get install -y ldap-utils
+
+          ldapwhoami -x \
+            -H ldap://localhost:1389 \
+            -D "$LDAP_ADMIN_USER" \
+            -w "$LDAP_ADMIN_PASSWORD"
+
+      # --------------------------
+      # Run Playwright tests (SHARDED)
       # --------------------------
       - name: Run Playwright tests
         env:
-          FRONTEND_URL: ${{ needs.setup.outputs.frontend_url }}
+          FRONTEND_URL: https://${{ inputs.frontendHostname }}/
           TAG: ${{ inputs.tag }}
           BROWSER: ${{ inputs.browser }}
           USER: ${{ secrets.USER }}
           PW: ${{ secrets.PW }}
           OTP_SEED_B32: ${{ secrets.OTP_SEED_B32 }}
           LDAP_URL: ldap://localhost:1389
+          LDAP_ADMIN_USER: ${{ env.LDAP_ADMIN_USER }}
+          LDAP_ADMIN_PASSWORD: ${{ env.LDAP_ADMIN_PASSWORD }}
           NODE_OPTIONS: --no-experimental-strip-types
         run: |
           npx playwright test \
@@ -197,7 +199,7 @@ jobs:
             --shard=${{ matrix.shard }}/3
 
       # --------------------------
-      # Reports per shard
+      # Reports
       # --------------------------
       - uses: actions/upload-artifact@v4
         if: always()
