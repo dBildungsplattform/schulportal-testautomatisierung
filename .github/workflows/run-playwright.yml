@@ -105,6 +105,10 @@ jobs:
   run_playwright_tests:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    concurrency:
+      group: ${{ inputs.frontendHostname }}
+      cancel-in-progress: false
+      queue: max
     steps:
       # --------------------------
       # Checkout & Node setup

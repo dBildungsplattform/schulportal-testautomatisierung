@@ -20,11 +20,6 @@ on:
           - webkit
           - msedge
 
-concurrency:
-  group: ${{ github.event_name == 'workflow_dispatch' && 'scheduled-browser-tests' || format('scheduled-{0}', github.run_id) }}
-  queue: max
-  cancel-in-progress: false
-
 jobs:
   dispatch_browser_tests:
     if: github.event.schedule == '0 3 * * 1-5' || (github.event_name == 'workflow_dispatch' && github.event.inputs.browser == '')
