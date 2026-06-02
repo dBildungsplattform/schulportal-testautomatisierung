@@ -1,13 +1,11 @@
 # If you merge changes to this file, you will become the actor for the scheduled runs.
 # Execution can only happen while the account of the actor is active.
 name: Scheduled runs
-run-name: "${{ github.event_name == 'workflow_dispatch' && format('Browser Test - {0}', github.event.inputs.browser) || 'Scheduled runs' }}"
+run-name: "${{ github.event_name == 'workflow_dispatch' && format('Browser Test - {0}', github.event.inputs.browser) || 'Dispatch' }}"
 
 on:
   schedule:
     - cron: '0 3 * * 1-5'
-      timezone: 'Europe/Berlin'
-    - cron: '45 6 * * *'
       timezone: 'Europe/Berlin'
 
   workflow_dispatch:
@@ -58,21 +56,6 @@ jobs:
       SPSH_DEV_TUNNEL_USERNAME: ${{ secrets.SPSH_DEV_TUNNEL_USERNAME }}
       SPSH_DEV_TUNNEL_HOST: ${{ secrets.SPSH_DEV_TUNNEL_HOST }}
       SPSH_DEV_TUNNEL_PORT: ${{ secrets.SPSH_DEV_TUNNEL_PORT }}
-      USER: ${{ secrets.USER }}
-      PW: ${{ secrets.PW }}
-      OTP_SEED_B32: ${{ secrets.OTP_SEED_B32 }}
-      RC_WEBHOOK: ${{ secrets.RC_WEBHOOK }}
-
-  stage_smoke_test:
-    if: github.event.schedule == '45 6 * * *'
-    uses: ./.github/workflows/run-playwright.yml
-    with:
-      frontendHostname: spsh.staging.spsh.dbildungsplattform.de
-      tag: smoke
-      browser: chromium
-      playwright_branch: main
-      send_notifications: true
-    secrets:
       USER: ${{ secrets.USER }}
       PW: ${{ secrets.PW }}
       OTP_SEED_B32: ${{ secrets.OTP_SEED_B32 }}
