@@ -29,6 +29,46 @@ export class StartViewPage {
     return twoFactorWorkflowPage.completeTwoFactorAuthentication();
   }
 
+  public async navigateToEmail(): Promise<void> {
+    const emailCard: Locator = this.page
+      .locator('[data-testid^="service-provider-card"]')
+      .filter({ hasText: 'E-Mail' });
+
+    await emailCard.click();
+
+    const twoFactorWorkflowPage: TwoFactorWorkflowPage = new TwoFactorWorkflowPage(this.page, this.username);
+    const setupButton: Locator = this.page.getByTestId('toSecondFactorSetup-button');
+    let otpSecret: string | undefined;
+    let requires2FASetup: boolean = false;
+    try {
+      await setupButton.waitFor({ state: 'visible', timeout: 10_000 });
+      requires2FASetup = true;
+    } catch {
+      // 2FA already configured or not required
+    }
+
+    if (requires2FASetup) {
+      const result = await twoFactorWorkflowPage.setupTwoFactorAuthenticationFromErrorMessage();
+      otpSecret = result.otpSecret;
+      await this.page.goto('/');
+      await this.waitForPageLoad();
+      await emailCard.click();
+    }
+
+    const otpInput: Locator = this.page.locator('#otp');
+    let requires2FA: boolean = false;
+    try {
+      await otpInput.waitFor({ state: 'visible', timeout: 10_000 });
+      requires2FA = true;
+    } catch {
+      // No OTP required
+    }
+
+    if (requires2FA) {
+      await twoFactorWorkflowPage.enterOtpForTwoFactorAuthentication(otpSecret);
+    }
+  }
+
   /* assertions */
   public async assertServiceProvidersAreLoaded(): Promise<void> {
     await this.page.waitForResponse(
