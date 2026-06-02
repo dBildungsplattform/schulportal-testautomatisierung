@@ -3,10 +3,11 @@ import { generateRandomString, CharacterSetType } from 'ts-randomstring/lib/inde
 import { format, addDays, addMonths } from 'date-fns';
 
 const shardIndex = process.env.SHARD_INDEX ?? '0';
+const shardLetter = String.fromCharCode(65 + parseInt(shardIndex, 10)); // 0→A, 1→B, 2→C
 
 export function generateVorname(): string {
   return (
-    'TAuto-PW-V-' +
+    `TAuto-PW-V${shardLetter}-` +
     faker.person.firstName() +
     generateRandomString({ length: 3, charSetType: CharacterSetType.Alphabetic })
   );
@@ -14,7 +15,7 @@ export function generateVorname(): string {
 
 export function generateNachname(): string {
   return (
-    'TAuto-PW-N-' +
+    `TAuto-PW-N${shardLetter}-` +
     faker.person.lastName() +
     generateRandomString({ length: 3, charSetType: CharacterSetType.Alphabetic })
   );

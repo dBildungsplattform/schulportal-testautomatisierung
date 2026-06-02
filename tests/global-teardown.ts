@@ -19,8 +19,10 @@ import { constructRolleApi } from '../base/api/rolleApi';
 
 const FRONTEND_URL: string = process.env.FRONTEND_URL ?? '';
 const shardIndex = process.env.SHARD_INDEX ?? '0';
+const shardLetter = String.fromCharCode(65 + parseInt(shardIndex, 10)); // 0→A, 1→B, 2→C
+
 const testDataPrefix: string = `TAuto-PW-S${shardIndex}`;
-const personDataPrefix: string = 'TAuto';
+const personDataPrefix = `TAuto-PW-S${shardLetter}`;
 const limit: number = 100;
 const batchSize: number = 20;
 
