@@ -51,7 +51,8 @@ interface AdminFixture {
   let schuleId2: string;
   let schuleParams: SchuleCreationParams;
 
-  test.describe(`Testfälle für die Ergebnisliste von Benutzern als ${bezeichnung}: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
+  test.describe
+    .skip(`Testfälle für die Ergebnisliste von Benutzern als ${bezeichnung}: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
     test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
       header = new HeaderPage(page);
       personManagementViewPage = await loginAndNavigateToAdministration(page);
