@@ -6,7 +6,10 @@ run-name: "${{ github.event_name == 'workflow_dispatch' && format('Browser Test 
 on:
   schedule:
     - cron: '0 3 * * 1-5'
+      timezone: 'Europe/Berlin'
     - cron: '45 6 * * *'
+      timezone: 'Europe/Berlin'
+
   workflow_dispatch:
     inputs:
       browser:
