@@ -22,7 +22,7 @@ on:
 
 jobs:
   dispatch_browser_tests:
-    if: github.event.schedule == '0 3 * * 1-5'
+    if: github.event_name == 'schedule'
     runs-on: ubuntu-latest
     permissions:
       actions: write
