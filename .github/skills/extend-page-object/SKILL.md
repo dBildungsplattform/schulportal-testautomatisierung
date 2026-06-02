@@ -20,12 +20,7 @@ Dieser Skill erweitert eine bestehende Playwright Page-Object-Klasse um neue Loc
 
 ## Projektkonventionen
 
-### Wichtigste Regeln (aus best-practices.md)
-- Locators werden **bevorzugt methoden-lokal** deklariert — nur wenn ein Locator in mehreren Methoden genutzt wird, kommt er als `private readonly`-Feld in den Konstruktor
-- **Niemals** bestehende Felder oder Methoden überschreiben
-- Methoden mit `assert`-Präfix sind Assertions (`/* assertions */`-Block)
-- Alle anderen aktiven Methoden gehören in den `/* actions */`-Block
-- Tests greifen **niemals** direkt auf Locators zu, nur auf Page-Methoden
+Vollständige Konventionen: [docs/best-practices.md](../../../docs/best-practices.md).
 
 ### Blockreihenfolge in einer Page-Klasse
 ```
@@ -220,3 +215,50 @@ Neue Assertion im `/* assertions */`-Block:
 | [pages/admin/service-provider/ServiceProviderManagementView.page.ts](../../../pages/admin/service-provider/ServiceProviderManagementView.page.ts) | extends AbstractAdminPage, DataTable |
 | [pages/components/DataTable.page.ts](../../../pages/components/DataTable.page.ts) | Wiederverwendbare DataTable-Komponente |
 | [pages/components/Autocomplete.ts](../../../pages/components/Autocomplete.ts) | Autocomplete-Komponente |
+
+---
+
+## Bekannte Vuetify-Pitfalls bei Autocomplete/Dropdown-Interaktionen
+
+### Problem: „Keine Daten gefunden." bei Dropdown-Öffnung
+
+Vuetify-Autocomplete-Felder laden Daten oft erst per API-Call, wenn das Feld sichtbar/aktiv wird. Wenn die Page das Dropdown öffnet, bevor die API-Antwort da ist, zeigt es „Keine Daten gefunden." und `waitForData()` in der `Autocomplete`-Klasse schlägt fehl.
+
+**Lösung:** Nach dem Öffnen des Dropdowns `waitUntilLoadingIsDone()` aufrufen, bevor auf Inhalte zugegriffen wird. Das wartet, bis der Lade-Spinner verschwindet.
+
+### Problem: DOM-Detachment bei `pressSequentially`
+
+`pressSequentially` tippt Zeichen für Zeichen. Jeder Tastendruck kann eine API-Suche triggern, die das DOM der Ergebnisliste neu rendert. Zwischen dem Finden des Elements und dem Klick wird das Element durch ein Re-Render aus dem DOM entfernt → `element was detached from the DOM, retrying` → Timeout.
+
+**Lösung:** `click({ force: true })` verwenden, um Playwright's Stability-Check zu überspringen. Dies ist ein akzeptiertes Pattern im Projekt (siehe `Autocomplete.openModal()`).
+
+### Problem: Stale Overlays – falsches Dropdown wird angesprochen
+
+Vuetify hält vorherige Overlay-Elemente im DOM. Der globale Selektor `.v-overlay .v-list-item` matched auch Items aus bereits geschlossenen Dropdowns (Org, Rolle), die noch unsichtbar im DOM liegen.
+
+**Lösung:** Nur das **aktive** Overlay ansprechen:
+```ts
+// ❌ Matched alle Overlays (inkl. stale)
+this.page.locator('.v-overlay .v-list-item')
+
+// ✅ Nur das aktive Overlay
+this.page.locator('div.v-overlay--active').getByRole('option')
+```
+
+### Zusammenfassung: Robustes Pattern für Vuetify-Autocomplete-Auswahl
+
+```ts
+// 1. Input klicken und Text tippen (triggert API-Suche)
+await selectLocator.locator('input').click();
+await selectLocator.locator('input').pressSequentially(suchtext);
+
+// 2. Warten bis Laden abgeschlossen
+const autocomplete = new Autocomplete(this.page, selectLocator);
+await autocomplete.waitUntilLoadingIsDone();
+
+// 3. Nur im aktiven Overlay suchen, force-click wegen DOM-Instabilität
+const option = this.page.locator('div.v-overlay--active')
+  .getByRole('option')
+  .filter({ hasText: suchtext });
+await option.first().click({ force: true });
+```
