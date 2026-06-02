@@ -3,7 +3,7 @@ import { generateRandomString, CharacterSetType } from 'ts-randomstring/lib/inde
 import { format, addDays, addMonths } from 'date-fns';
 
 const shardIndex = process.env.SHARD_INDEX ?? '0';
-const shardLetter = String.fromCharCode(65 + parseInt(shardIndex, 10)); // 0→A, 1→B, 2→C
+const shardLetter = String.fromCharCode(65 + parseInt(shardIndex, 10));
 
 export function generateVorname(): string {
   return (
