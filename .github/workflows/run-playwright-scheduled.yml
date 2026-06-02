@@ -21,6 +21,7 @@ on:
 
 concurrency:
   group: ${{ github.event_name == 'workflow_dispatch' && 'scheduled-browser-tests' || format('scheduled-{0}', github.run_id) }}
+  queue: max
   cancel-in-progress: false
 
 jobs:
