@@ -6,7 +6,6 @@ import { getServiceProviderIds } from '../base/api/serviceProviderApi';
 import { testschuleName } from '../base/organisation';
 import { itslearning } from '../base/sp';
 import { DEV, SMOKE, STAGE } from '../base/tags';
-import { deleteKlasseByName, deletePersonenBySearchStrings, deleteRolleById } from '../base/testHelperDeleteTestdata';
 import { loginAndNavigateToAdministration, logout } from '../base/testHelperUtils';
 import {
   generateDienststellenNr,
@@ -72,9 +71,6 @@ test.describe(`Testfälle für den Login: Umgebung: ${process.env.ENV}: URL: ${p
 
 test.describe('Smoke: Schüler kann sich anmelden, itslearning öffnen und sich abmelden', () => {
   let userInfo: UserInfo;
-  let rolleIds: string[] = [];
-  let usernames: string[] = [];
-  let klassenNamen: string[] = [];
 
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
     await test.step('Testdaten anlegen', async () => {
@@ -83,7 +79,6 @@ test.describe('Smoke: Schüler kann sich anmelden, itslearning öffnen und sich 
       const schuleId: string = await createSchule(page, schuleName, generateDienststellenNr());
       const klasseName: string = generateKlassenname();
       const klasseId: string = await createKlasse(page, schuleId, klasseName);
-      klassenNamen.push(klasseName);
       const rolleName: string = generateRolleName();
       const itslearningSpIds: Map<string, string> = await getServiceProviderIds(page, [itslearning]);
       userInfo = await createRolleAndPersonWithPersonenkontext(
@@ -97,8 +92,6 @@ test.describe('Smoke: Schüler kann sich anmelden, itslearning öffnen und sich 
         undefined,
         klasseId,
       );
-      rolleIds.push(userInfo.rolleId);
-      usernames.push(userInfo.username);
     });
 
     await test.step('Als Schüler anmelden', async () => {
@@ -106,23 +99,6 @@ test.describe('Smoke: Schüler kann sich anmelden, itslearning öffnen und sich 
       const loginViewPage: LoginViewPage = await freshLoginPage(page);
       await loginViewPage.loginNewUserWithPasswordChange(userInfo.username, userInfo.password);
     });
-  });
-
-  test.afterEach(async ({ page }: PlaywrightTestArgs) => {
-    await page.context().clearCookies();
-    await loginAndNavigateToAdministration(page);
-    if (usernames.length > 0) {
-      await deletePersonenBySearchStrings(page, usernames);
-      usernames = [];
-    }
-    if (rolleIds.length > 0) {
-      await deleteRolleById(rolleIds, page);
-      rolleIds = [];
-    }
-    if (klassenNamen.length > 0) {
-      await deleteKlasseByName(klassenNamen, page);
-      klassenNamen = [];
-    }
   });
 
   test(
