@@ -12,7 +12,7 @@ on:
       browser:
         type: choice
         description: 'Browser to test'
-        required: true
+        # required: true
         options:
           - chrome
           - firefox
@@ -21,7 +21,7 @@ on:
 
 jobs:
   dispatch_browser_tests:
-    if: github.event.schedule == '0 3 * * 1-5'
+    if: github.event.schedule == '0 3 * * 1-5' || (github.event_name == 'workflow_dispatch' && github.event.inputs.browser == '')
     runs-on: ubuntu-latest
     permissions:
       actions: write
@@ -35,7 +35,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
 
   browser_test:
-    if: github.event_name == 'workflow_dispatch'
+    # if: github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.browser != ''
     uses: ./.github/workflows/run-playwright.yml
     with:
       frontendHostname: main.dev.spsh.dbildungsplattform.de
