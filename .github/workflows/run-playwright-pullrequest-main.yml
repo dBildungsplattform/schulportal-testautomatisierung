@@ -78,6 +78,9 @@ jobs:
           fi
 
   run_playwright_tests:
+    permissions:
+      statuses: write
+    timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
       - run: echo "Playwright tests are run manually via workflow_dispatch"
