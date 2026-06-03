@@ -261,3 +261,12 @@ jobs:
           url: ${{ secrets.RC_WEBHOOK }}
           channel: '#SPSH-Test-Automation'
           username: Playwright Notificator
+
+      - name: Report status to PR
+        if: always()
+        uses: myrotvorets/set-commit-status-action@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          status: ${{ job.status }}
+          context: 'run_playwright_tests / run_playwright_tests'
+          sha: ${{ github.sha }}
