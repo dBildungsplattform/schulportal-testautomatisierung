@@ -101,6 +101,11 @@ on:
         required: false
         default: main
 
+concurrency:
+  group: ${{ inputs.frontendHostname }}
+  cancel-in-progress: false
+  queue: max
+
 jobs:
   run_playwright_tests:
     timeout-minutes: 60
