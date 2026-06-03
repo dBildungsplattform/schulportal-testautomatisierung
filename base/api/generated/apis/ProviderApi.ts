@@ -16,6 +16,7 @@
 import * as runtime from '../runtime';
 import type {
   CreateServiceProviderBodyParams,
+  CreateServiceProviderResponse,
   ManageableServiceProviderResponse,
   ProviderControllerFindRollenerweiterungenByServiceProviderId200Response,
   ProviderControllerGetManageableServiceProviders200Response,
@@ -25,6 +26,8 @@ import type {
 import {
     CreateServiceProviderBodyParamsFromJSON,
     CreateServiceProviderBodyParamsToJSON,
+    CreateServiceProviderResponseFromJSON,
+    CreateServiceProviderResponseToJSON,
     ManageableServiceProviderResponseFromJSON,
     ManageableServiceProviderResponseToJSON,
     ProviderControllerFindRollenerweiterungenByServiceProviderId200ResponseFromJSON,
@@ -95,13 +98,13 @@ export interface ProviderApiInterface {
      * @throws {RequiredError}
      * @memberof ProviderApiInterface
      */
-    providerControllerCreateServiceProviderRaw(requestParameters: ProviderControllerCreateServiceProviderRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ServiceProviderResponse>>;
+    providerControllerCreateServiceProviderRaw(requestParameters: ProviderControllerCreateServiceProviderRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CreateServiceProviderResponse>>;
 
     /**
      * Create a new service-provider (Angebot).
      * 
      */
-    providerControllerCreateServiceProvider(requestParameters: ProviderControllerCreateServiceProviderRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ServiceProviderResponse>;
+    providerControllerCreateServiceProvider(requestParameters: ProviderControllerCreateServiceProviderRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CreateServiceProviderResponse>;
 
     /**
      * Delete a service-provider (Angebot) by id.
@@ -261,7 +264,7 @@ export class ProviderApi extends runtime.BaseAPI implements ProviderApiInterface
      * Create a new service-provider (Angebot).
      * 
      */
-    async providerControllerCreateServiceProviderRaw(requestParameters: ProviderControllerCreateServiceProviderRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ServiceProviderResponse>> {
+    async providerControllerCreateServiceProviderRaw(requestParameters: ProviderControllerCreateServiceProviderRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CreateServiceProviderResponse>> {
         if (requestParameters.createServiceProviderBodyParams === null || requestParameters.createServiceProviderBodyParams === undefined) {
             throw new runtime.RequiredError('createServiceProviderBodyParams','Required parameter requestParameters.createServiceProviderBodyParams was null or undefined when calling providerControllerCreateServiceProvider.');
         }
@@ -293,14 +296,14 @@ export class ProviderApi extends runtime.BaseAPI implements ProviderApiInterface
             body: CreateServiceProviderBodyParamsToJSON(requestParameters.createServiceProviderBodyParams),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => ServiceProviderResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => CreateServiceProviderResponseFromJSON(jsonValue));
     }
 
     /**
      * Create a new service-provider (Angebot).
      * 
      */
-    async providerControllerCreateServiceProvider(requestParameters: ProviderControllerCreateServiceProviderRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ServiceProviderResponse> {
+    async providerControllerCreateServiceProvider(requestParameters: ProviderControllerCreateServiceProviderRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CreateServiceProviderResponse> {
         const response = await this.providerControllerCreateServiceProviderRaw(requestParameters, initOverrides);
         return await response.value();
     }
