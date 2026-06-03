@@ -111,7 +111,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2, 3]
+        shard: [1, 2, 3, 4]
 
     steps:
       # --------------------------
@@ -233,7 +233,7 @@ jobs:
             --config=playwright.config.ts \
             --grep @"$TAG" \
             --project "$BROWSER" \
-            --shard=${{ matrix.shard }}/3
+            --shard=${{ matrix.shard }}/4
 
       # --------------------------
       # Upload reports (per shard)
