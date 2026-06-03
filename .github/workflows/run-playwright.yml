@@ -264,7 +264,7 @@ jobs:
 
       - name: Report status to PR
         if: always()
-        uses: myrotvorets/set-commit-status-action@v2
+        uses: myrotvorets/set-commit-status-action@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           status: ${{ job.status }}
