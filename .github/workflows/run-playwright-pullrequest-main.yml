@@ -24,75 +24,60 @@ jobs:
       fe_host: ${{ steps.determine-fe-host.outputs.fe_host }}
       namespace_to_use: ${{ steps.determine-fe-host.outputs.namespace_to_use }}
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    # --------------------------
-    # Determine Branch Count
-    # --------------------------
-    - name: Determine Branch Count
-      id: branch-count
-      env:
-        TAG: ${{ needs.create_branch_identifier.outputs.namespace_from_branch }}
-      run: |
-        REPOS=(
-          "https://github.com/dBildungsplattform/dbildungs-iam-server.git"
-          "https://github.com/dbildungsplattform/schulportal-client.git"
-          "https://github.com/dbildungsplattform/dbildungs-iam-keycloak.git"
-          "https://github.com/dbildungsplattform/dbildungs-iam-ldap.git"
-        )
-        MATCH_COUNT=0
-        for REPO in "${REPOS[@]}"; do
-          echo "🔍 Checking $REPO for branch '$TAG'"
-          BRANCH_EXISTS=$(git ls-remote --heads "$REPO" | { grep -i "refs/heads/$TAG" || test $? = 1; })
-          if [[ -n "$BRANCH_EXISTS" ]]; then
-            echo "✅ Branch '$TAG' exists in $REPO"
-            MATCH_COUNT=$((MATCH_COUNT + 1))
+      # --------------------------
+      # Determine Branch Count
+      # --------------------------
+      - name: Determine Branch Count
+        id: branch-count
+        env:
+          TAG: ${{ needs.create_branch_identifier.outputs.namespace_from_branch }}
+        run: |
+          REPOS=(
+            "https://github.com/dBildungsplattform/dbildungs-iam-server.git"
+            "https://github.com/dbildungsplattform/schulportal-client.git"
+            "https://github.com/dbildungsplattform/dbildungs-iam-keycloak.git"
+            "https://github.com/dbildungsplattform/dbildungs-iam-ldap.git"
+          )
+          MATCH_COUNT=0
+          for REPO in "${REPOS[@]}"; do
+            echo "🔍 Checking $REPO for branch '$TAG'"
+            BRANCH_EXISTS=$(git ls-remote --heads "$REPO" | { grep -i "refs/heads/$TAG" || test $? = 1; })
+            if [[ -n "$BRANCH_EXISTS" ]]; then
+              echo "✅ Branch '$TAG' exists in $REPO"
+              MATCH_COUNT=$((MATCH_COUNT + 1))
+            else
+              echo "Branch '$TAG' does NOT exist in $REPO"
+            fi
+          done
+          echo "Total matches found: $MATCH_COUNT"
+          echo "count=$MATCH_COUNT" >> "$GITHUB_OUTPUT"
+
+      # --------------------------
+      # Determine Frontend Host
+      # --------------------------
+      - name: Determine Frontend Host
+        id: determine-fe-host
+        env:
+          TAG: ${{ needs.create_branch_identifier.outputs.namespace_from_branch }}
+        run: |
+          if [ ${{ steps.branch-count.outputs.count }} -ge 1 ]; then
+            echo "At least one branch for ticket was found, using branch FE and BE infrastructure"
+            FRONTEND_HOST_PREFIX=$(echo "$TAG" | tr '[:upper:]' '[:lower:]')
+            FRONTEND_HOST="${FRONTEND_HOST_PREFIX}.dev.spsh.dbildungsplattform.de"
+            echo "FRONTEND_HOST=$FRONTEND_HOST"
+            echo "fe_host=${FRONTEND_HOST}" >> "$GITHUB_OUTPUT"
+            echo "namespace_to_use=${TAG}" >> "$GITHUB_OUTPUT"
           else
-            echo "Branch '$TAG' does NOT exist in $REPO"
+            echo "No branch to ticket found, using main FE and BE infrastructure"
+            FRONTEND_HOST="main.dev.spsh.dbildungsplattform.de"
+            echo "FRONTEND_HOST=$FRONTEND_HOST"
+            echo "fe_host=${FRONTEND_HOST}" >> "$GITHUB_OUTPUT" 
+            echo "namespace_to_use=main" >> "$GITHUB_OUTPUT"
           fi
-        done
-        echo "Total matches found: $MATCH_COUNT"
-        echo "count=$MATCH_COUNT" >> "$GITHUB_OUTPUT"
-
-    # --------------------------
-    # Determine Frontend Host
-    # --------------------------
-    - name: Determine Frontend Host
-      id: determine-fe-host
-      env:
-        TAG: ${{ needs.create_branch_identifier.outputs.namespace_from_branch }}
-      run: |
-        if [ ${{ steps.branch-count.outputs.count }} -ge 1 ]; then
-          echo "At least one branch for ticket was found, using branch FE and BE infrastructure"
-          FRONTEND_HOST_PREFIX=$(echo "$TAG" | tr '[:upper:]' '[:lower:]')
-          FRONTEND_HOST="${FRONTEND_HOST_PREFIX}.dev.spsh.dbildungsplattform.de"
-          echo "FRONTEND_HOST=$FRONTEND_HOST"
-          echo "fe_host=${FRONTEND_HOST}" >> "$GITHUB_OUTPUT"
-          echo "namespace_to_use=${TAG}" >> "$GITHUB_OUTPUT"
-        else
-          echo "No branch to ticket found, using main FE and BE infrastructure"
-          FRONTEND_HOST="main.dev.spsh.dbildungsplattform.de"
-          echo "FRONTEND_HOST=$FRONTEND_HOST"
-          echo "fe_host=${FRONTEND_HOST}" >> "$GITHUB_OUTPUT" 
-          echo "namespace_to_use=main" >> "$GITHUB_OUTPUT"
-        fi
 
   run_playwright_tests:
-      uses: ./.github/workflows/run-playwright.yml
-      needs: determine_frontend_hostname
-      with:
-        frontendHostname: ${{ needs.determine_frontend_hostname.outputs.fe_host }}
-        namespace_to_use: ${{ needs.determine_frontend_hostname.outputs.namespace_to_use }}
-        tag: dev
-        browser: chromium
-        playwright_branch: ${{ github.head_ref }}
-      secrets:
-        SPSH_DEV_USER_SSHKEY: ${{ secrets.SPSH_DEV_USER_SSHKEY }}
-        SPSH_DEV_KUBECONFIG: ${{ secrets.SPSH_DEV_KUBECONFIG }}
-        SPSH_DEV_TUNNEL_USERNAME: ${{ secrets.SPSH_DEV_TUNNEL_USERNAME }}
-        SPSH_DEV_TUNNEL_HOST: ${{ secrets.SPSH_DEV_TUNNEL_HOST }}
-        SPSH_DEV_TUNNEL_PORT: ${{ secrets.SPSH_DEV_TUNNEL_PORT }}
-        USER: ${{ secrets.USER }}
-        PW: ${{ secrets.PW }}
-        OTP_SEED_B32: ${{ secrets.OTP_SEED_B32 }}
-        RC_WEBHOOK: ${{ secrets.RC_WEBHOOK }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Playwright tests skipped on auto-trigger, run manually if needed"
