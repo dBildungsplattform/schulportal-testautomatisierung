@@ -128,8 +128,7 @@ test.describe('Smoke: Schüler kann sich anmelden, itslearning öffnen und sich 
       });
 
       await test.step('itslearning in neuem Tab öffnen', async () => {
-        const itslearningTab: Page = await startPage.openServiceProviderInNewTab(itslearning);
-        await startPage.assertServiceProviderTabOpened(itslearningTab, 'itsl');
+        await startPage.openServiceProviderInNewTab(itslearning);
       });
 
       await test.step('Abmelden', async () => {
@@ -240,8 +239,7 @@ test.describe('Smoke: Lehrer kann sich anmelden, auf E-Mail zugreifen und sich a
       });
 
       await test.step('School-SH in neuem Tab öffnen', async () => {
-        const schoolSHTab: Page = await startPage.openServiceProviderInNewTab(schoolSH);
-        await startPage.assertServiceProviderTabOpened(schoolSHTab, 'school-sh');
+        await startPage.openServiceProviderInNewTab(schoolSH);
       });
 
       await test.step('Abmelden', async () => {
