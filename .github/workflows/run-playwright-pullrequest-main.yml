@@ -3,20 +3,9 @@ on:
   pull_request:
     branches:
       - main
-  issue_comment:
-    types: [created]
+    types: [opened, synchronize, reopened, labeled]
 
 jobs:
-  debug:
-    if: github.event_name == 'issue_comment'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Print event info
-        run: |
-          echo "event: ${{ github.event_name }}"
-          echo "comment body: ${{ github.event.comment.body }}"
-          echo "is PR: ${{ github.event.issue.pull_request != null }}"
-          echo "actor: ${{ github.event.comment.author_association }}"
   branch_meta:
     if: |
       github.event_name == 'issue_comment' &&
@@ -118,10 +107,7 @@ jobs:
           fi
 
   run_playwright_tests:
-    if: |
-      github.event_name == 'issue_comment' &&
-      github.event.issue.pull_request != null &&
-      github.event.comment.body == '/run-tests'
+    if: github.event.label.name == 'run-tests'
     uses: ./.github/workflows/run-playwright.yml
     needs: determine_frontend_hostname
     with:
