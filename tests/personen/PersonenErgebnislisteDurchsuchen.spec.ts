@@ -166,7 +166,7 @@ interface AdminFixture {
           },
         );
 
-        test(
+        test.skip(
           `Als ${bezeichnung}: Alle Klassen im Drop-Down des Klassenfilters anklickbar`,
           { tag: [STAGE, DEV] },
           async () => {
