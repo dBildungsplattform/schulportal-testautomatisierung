@@ -107,7 +107,7 @@ concurrency:
   queue: max
 
 jobs:
-  run_playwright_tests:
+  playwright_shards::
     env:
       SHARD_INDEX: ${{ matrix.shard }}
     timeout-minutes: 60
@@ -261,3 +261,15 @@ jobs:
           url: ${{ secrets.RC_WEBHOOK }}
           channel: '#SPSH-Test-Automation'
           username: Playwright Notificator
+
+    run_playwright_tests:
+      if: always()
+      needs: [playwright_shards]
+      runs-on: ubuntu-latest
+      steps:
+        - name: All shards passed
+          run: |
+            if [ "${{ needs.playwright_shards.result }}" != "success" ]; then
+              echo "One or more shards failed or were cancelled!"
+              exit 1
+            fi
