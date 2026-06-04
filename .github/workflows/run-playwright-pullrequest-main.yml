@@ -8,9 +8,17 @@ on:
 
 jobs:
   branch_meta:
+    if: |
+      github.event_name == 'issue_comment' &&
+      github.event.issue.pull_request != null &&
+      github.event.comment.body == '/run-tests'
     uses: dBildungsplattform/spsh-app-deploy/.github/workflows/get-branch-meta.yml@9f0f68050d0997b8b34a375da4fb2366f40074c4 # 7.0.4
 
   create_branch_identifier:
+    if: |
+      github.event_name == 'issue_comment' &&
+      github.event.issue.pull_request != null &&
+      github.event.comment.body == '/run-tests'
     needs:
       - branch_meta
     uses: dBildungsplattform/spsh-app-deploy/.github/workflows/convert-branch-name.yml@9f0f68050d0997b8b34a375da4fb2366f40074c4 # 7.0.4
@@ -18,6 +26,10 @@ jobs:
       branch: ${{ needs.branch_meta.outputs.branch }}
 
   determine_frontend_hostname:
+    if: |
+      github.event_name == 'issue_comment' &&
+      github.event.issue.pull_request != null &&
+      github.event.comment.body == '/run-tests'
     runs-on: ubuntu-latest
     needs:
       - branch_meta
@@ -25,8 +37,24 @@ jobs:
     outputs:
       fe_host: ${{ steps.determine-fe-host.outputs.fe_host }}
       namespace_to_use: ${{ steps.determine-fe-host.outputs.namespace_to_use }}
+      pr_branch: ${{ steps.get-pr-branch.outputs.pr_branch }}
     steps:
       - uses: actions/checkout@v3
+
+      # --------------------------
+      # Get PR branch name from API
+      # --------------------------
+      - name: Get PR branch
+        id: get-pr-branch
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number
+            });
+            core.setOutput('pr_branch', pr.data.head.ref);
 
       # --------------------------
       # Determine Branch Count
@@ -75,12 +103,14 @@ jobs:
             echo "No branch to ticket found, using main FE and BE infrastructure"
             FRONTEND_HOST="main.dev.spsh.dbildungsplattform.de"
             echo "FRONTEND_HOST=$FRONTEND_HOST"
-            echo "fe_host=${FRONTEND_HOST}" >> "$GITHUB_OUTPUT" 
+            echo "fe_host=${FRONTEND_HOST}" >> "$GITHUB_OUTPUT"
             echo "namespace_to_use=main" >> "$GITHUB_OUTPUT"
           fi
 
   run_playwright_tests:
     if: |
+      github.event_name == 'issue_comment' &&
+      github.event.issue.pull_request != null &&
       github.event.comment.body == '/run-tests'
     uses: ./.github/workflows/run-playwright.yml
     needs: determine_frontend_hostname
@@ -89,7 +119,7 @@ jobs:
       namespace_to_use: ${{ needs.determine_frontend_hostname.outputs.namespace_to_use }}
       tag: dev
       browser: chromium
-      playwright_branch: ${{ github.head_ref }}
+      playwright_branch: ${{ needs.determine_frontend_hostname.outputs.pr_branch }}
     secrets:
       SPSH_DEV_USER_SSHKEY: ${{ secrets.SPSH_DEV_USER_SSHKEY }}
       SPSH_DEV_KUBECONFIG: ${{ secrets.SPSH_DEV_KUBECONFIG }}
