@@ -7,6 +7,16 @@ on:
     types: [created]
 
 jobs:
+  debug:
+    if: github.event_name == 'issue_comment'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print event info
+        run: |
+          echo "event: ${{ github.event_name }}"
+          echo "comment body: ${{ github.event.comment.body }}"
+          echo "is PR: ${{ github.event.issue.pull_request != null }}"
+          echo "actor: ${{ github.event.comment.author_association }}"
   branch_meta:
     if: |
       github.event_name == 'issue_comment' &&
