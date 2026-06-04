@@ -107,7 +107,7 @@ concurrency:
   queue: max
 
 jobs:
-  run_playwright_tests:
+  playwright_shards: # <-- renamed
     env:
       SHARD_INDEX: ${{ matrix.shard }}
     timeout-minutes: 60
@@ -216,8 +216,10 @@ jobs:
       - name: Test LDAP Connectivity
         if: ${{ inputs.tag == 'dev' }}
         run: ldapwhoami -x -H ldap://localhost:1389 -D "$LDAP_ADMIN_USER" -w "$LDAP_ADMIN_PASSWORD"
+
       - name: Debug shard index
         run: echo "SHARD_INDEX is $SHARD_INDEX"
+
       # --------------------------
       # Run Playwright tests (SHARDED)
       # --------------------------
@@ -261,3 +263,18 @@ jobs:
           url: ${{ secrets.RC_WEBHOOK }}
           channel: '#SPSH-Test-Automation'
           username: Playwright Notificator
+
+  # --------------------------
+  # Aggregator — satisfies required check
+  # --------------------------
+  run_playwright_tests: # <-- exact name GitHub expects
+    if: always()
+    needs: [playwright_shards]
+    runs-on: ubuntu-latest
+    steps:
+      - name: All shards passed
+        run: |
+          if [ "${{ needs.playwright_shards.result }}" != "success" ]; then
+            echo "One or more shards failed or were cancelled!"
+            exit 1
+          fi
