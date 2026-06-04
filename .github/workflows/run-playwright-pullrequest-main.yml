@@ -3,7 +3,7 @@ on:
   pull_request:
     branches:
       - main
-    types: [labeled]
+    types: [labeled, synchronize]
 
 jobs:
   branch_meta:
