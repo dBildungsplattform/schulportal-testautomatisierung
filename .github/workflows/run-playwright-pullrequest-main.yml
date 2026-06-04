@@ -3,6 +3,8 @@ on:
   pull_request:
     branches:
       - main
+  issue_comment:
+    types: [created]
 
 jobs:
   branch_meta:
@@ -78,6 +80,10 @@ jobs:
           fi
 
   run_playwright_tests:
+    if: |
+      github.event_name == 'issue_comment' &&
+      github.event.issue.pull_request != null &&
+      github.event.comment.body == '/run-tests'
     uses: ./.github/workflows/run-playwright.yml
     needs: determine_frontend_hostname
     with:

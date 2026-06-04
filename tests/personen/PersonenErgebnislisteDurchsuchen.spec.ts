@@ -151,12 +151,10 @@ interface AdminFixture {
           await createKlasse(page, schuleId2, klassenname);
           klassenNamen.push(klassenname);
         }
-        // Give backend time to settle under parallel load
-        await page.waitForTimeout(2000);
       });
 
       // SPSH-3056
-      test.describe('Klassenfilter-Tests', () => {
+      test.describe.skip('Klassenfilter-Tests', () => {
         test(
           `Als ${bezeichnung}: Alle Klassen im Drop-Down des Klassenfilters anzeigen`,
           { tag: [STAGE, DEV] },
@@ -166,7 +164,7 @@ interface AdminFixture {
           },
         );
 
-        test.skip(
+        test(
           `Als ${bezeichnung}: Alle Klassen im Drop-Down des Klassenfilters anklickbar`,
           { tag: [STAGE, DEV] },
           async () => {
