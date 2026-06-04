@@ -71,7 +71,7 @@ jobs:
               echo "Branch '$TAG' does NOT exist in $REPO"
             fi
           done
-          echo "Total dmatches found: $MATCH_COUNT"
+          echo "Total matches found: $MATCH_COUNT"
           echo "count=$MATCH_COUNT" >> "$GITHUB_OUTPUT"
 
       # --------------------------
