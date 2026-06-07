@@ -37,6 +37,12 @@ import {
     UserExeternalDataResponseVidisFromJSONTyped,
     UserExeternalDataResponseVidisToJSON,
 } from './UserExeternalDataResponseVidis';
+import type { UserExternalDataResponseIqshHelpdesk } from './UserExternalDataResponseIqshHelpdesk';
+import {
+    UserExternalDataResponseIqshHelpdeskFromJSON,
+    UserExternalDataResponseIqshHelpdeskFromJSONTyped,
+    UserExternalDataResponseIqshHelpdeskToJSON,
+} from './UserExternalDataResponseIqshHelpdesk';
 import type { UserExternalDataResponseOx } from './UserExternalDataResponseOx';
 import {
     UserExternalDataResponseOxFromJSON,
@@ -80,6 +86,12 @@ export interface UserExternalDataResponse {
      * @memberof UserExternalDataResponse
      */
     onlineDateiablage: UserExeternalDataResponseOnlineDateiablage;
+    /**
+     * 
+     * @type {UserExternalDataResponseIqshHelpdesk}
+     * @memberof UserExternalDataResponse
+     */
+    iqshHelpdesk: UserExternalDataResponseIqshHelpdesk;
 }
 
 /**
@@ -91,6 +103,7 @@ export function instanceOfUserExternalDataResponse(value: object): boolean {
     isInstance = isInstance && "vidis" in value;
     isInstance = isInstance && "opsh" in value;
     isInstance = isInstance && "onlineDateiablage" in value;
+    isInstance = isInstance && "iqshHelpdesk" in value;
 
     return isInstance;
 }
@@ -110,6 +123,7 @@ export function UserExternalDataResponseFromJSONTyped(json: any, ignoreDiscrimin
         'vidis': UserExeternalDataResponseVidisFromJSON(json['vidis']),
         'opsh': UserExeternalDataResponseOpshFromJSON(json['opsh']),
         'onlineDateiablage': UserExeternalDataResponseOnlineDateiablageFromJSON(json['onlineDateiablage']),
+        'iqshHelpdesk': UserExternalDataResponseIqshHelpdeskFromJSON(json['iqshHelpdesk']),
     };
 }
 
@@ -127,6 +141,7 @@ export function UserExternalDataResponseToJSON(value?: UserExternalDataResponse 
         'vidis': UserExeternalDataResponseVidisToJSON(value.vidis),
         'opsh': UserExeternalDataResponseOpshToJSON(value.opsh),
         'onlineDateiablage': UserExeternalDataResponseOnlineDateiablageToJSON(value.onlineDateiablage),
+        'iqshHelpdesk': UserExternalDataResponseIqshHelpdeskToJSON(value.iqshHelpdesk),
     };
 }
 
