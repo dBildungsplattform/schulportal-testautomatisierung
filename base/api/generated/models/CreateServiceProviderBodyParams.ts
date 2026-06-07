@@ -38,7 +38,13 @@ export interface CreateServiceProviderBodyParams {
      */
     url?: string;
     /**
-     * Optional logo as base64-encoded string
+     * Optional logoId to use a standard logo. Has to be a positive integer. Only one of logoId or logoBase64 with logoMimeType can be provided, not both.
+     * @type {number}
+     * @memberof CreateServiceProviderBodyParams
+     */
+    logoId?: number;
+    /**
+     * Optional logo as base64-encoded string. Only one of logoId or logoBase64 with logoMimeType can be provided, not both.
      * @type {string}
      * @memberof CreateServiceProviderBodyParams
      */
@@ -130,6 +136,7 @@ export function CreateServiceProviderBodyParamsFromJSONTyped(json: any, ignoreDi
         'organisationId': json['organisationId'],
         'name': json['name'],
         'url': !exists(json, 'url') ? undefined : json['url'],
+        'logoId': !exists(json, 'logoId') ? undefined : json['logoId'],
         'logoBase64': !exists(json, 'logoBase64') ? undefined : json['logoBase64'],
         'logoMimeType': !exists(json, 'logoMimeType') ? undefined : json['logoMimeType'],
         'kategorie': json['kategorie'],
@@ -150,6 +157,7 @@ export function CreateServiceProviderBodyParamsToJSON(value?: CreateServiceProvi
         'organisationId': value.organisationId,
         'name': value.name,
         'url': value.url,
+        'logoId': value.logoId,
         'logoBase64': value.logoBase64,
         'logoMimeType': value.logoMimeType,
         'kategorie': value.kategorie,
