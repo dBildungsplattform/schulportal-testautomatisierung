@@ -2,6 +2,9 @@ name: Run Playwright Tests
 run-name: Test ${{ inputs.frontendHostname }} with ${{ inputs.browser }} and ${{ inputs.tag }} from ${{ inputs.playwright_branch }}
 
 on:
+  # --------------------------
+  # Reusable workflow trigger
+  # --------------------------
   workflow_call:
     secrets:
       SPSH_DEV_USER_SSHKEY:
@@ -63,6 +66,9 @@ on:
         description: 'Whether to send notifications to Rocket.Chat (defaults to false)'
         required: false
 
+  # --------------------------
+  # Manual trigger
+  # --------------------------
   workflow_dispatch:
     inputs:
       frontendHostname:
@@ -101,13 +107,19 @@ on:
         required: false
         default: main
 
+# --------------------------
+# Concurrency — queue per host, no cancellation
+# --------------------------
 concurrency:
   group: ${{ inputs.frontendHostname }}
   cancel-in-progress: false
   queue: max
 
 jobs:
-  playwright_shards: # <-- renamed
+  # --------------------------
+  # Sharded Playwright test runs
+  # --------------------------
+  playwright_shards:
     env:
       SHARD_INDEX: ${{ matrix.shard }}
     timeout-minutes: 60
@@ -272,6 +284,9 @@ jobs:
     needs: [playwright_shards]
     runs-on: ubuntu-latest
     steps:
+      # --------------------------
+      # Fail if any shard failed or was cancelled
+      # --------------------------
       - name: All shards passed
         run: |
           if [ "${{ needs.playwright_shards.result }}" != "success" ]; then
