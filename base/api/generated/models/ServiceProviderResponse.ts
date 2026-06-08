@@ -69,6 +69,12 @@ export interface ServiceProviderResponse {
      */
     kategorie: ServiceProviderKategorie;
     /**
+     * Optional logoId for use with standard logos
+     * @type {number}
+     * @memberof ServiceProviderResponse
+     */
+    logoId: number;
+    /**
      * 
      * @type {boolean}
      * @memberof ServiceProviderResponse
@@ -98,6 +104,7 @@ export function instanceOfServiceProviderResponse(value: object): boolean {
     isInstance = isInstance && "target" in value;
     isInstance = isInstance && "url" in value;
     isInstance = isInstance && "kategorie" in value;
+    isInstance = isInstance && "logoId" in value;
     isInstance = isInstance && "hasLogo" in value;
     isInstance = isInstance && "requires2fa" in value;
     isInstance = isInstance && "merkmale" in value;
@@ -120,6 +127,7 @@ export function ServiceProviderResponseFromJSONTyped(json: any, ignoreDiscrimina
         'target': ServiceProviderTargetFromJSON(json['target']),
         'url': json['url'],
         'kategorie': ServiceProviderKategorieFromJSON(json['kategorie']),
+        'logoId': json['logoId'],
         'hasLogo': json['hasLogo'],
         'requires2fa': json['requires2fa'],
         'merkmale': ((json['merkmale'] as Array<any>).map(ServiceProviderMerkmalFromJSON)),
@@ -140,6 +148,7 @@ export function ServiceProviderResponseToJSON(value?: ServiceProviderResponse | 
         'target': ServiceProviderTargetToJSON(value.target),
         'url': value.url,
         'kategorie': ServiceProviderKategorieToJSON(value.kategorie),
+        'logoId': value.logoId,
         'hasLogo': value.hasLogo,
         'requires2fa': value.requires2fa,
         'merkmale': ((value.merkmale as Array<any>).map(ServiceProviderMerkmalToJSON)),
