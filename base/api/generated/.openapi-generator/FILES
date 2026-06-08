@@ -32,6 +32,7 @@ models/CreateRolleBodyParams.ts
 models/CreateRollenerweiterungBodyParams.ts
 models/CreateServiceProviderBodyParams.ts
 models/CreateServiceProviderResponse.ts
+models/CsrfTokenResponse.ts
 models/DBiamPersonResponse.ts
 models/DBiamPersonenkontextResponse.ts
 models/DBiamPersonenuebersichtControllerFindPersonenuebersichten200Response.ts

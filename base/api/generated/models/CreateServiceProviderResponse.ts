@@ -57,11 +57,11 @@ export interface CreateServiceProviderResponse {
      */
     target: ServiceProviderTarget;
     /**
-     * Can be undefined, if `target` is not equal to `URL`
+     * URL of created service provider
      * @type {string}
      * @memberof CreateServiceProviderResponse
      */
-    url?: string;
+    url: string;
     /**
      * 
      * @type {ServiceProviderKategorie}
@@ -102,6 +102,7 @@ export function instanceOfCreateServiceProviderResponse(value: object): boolean 
     isInstance = isInstance && "id" in value;
     isInstance = isInstance && "name" in value;
     isInstance = isInstance && "target" in value;
+    isInstance = isInstance && "url" in value;
     isInstance = isInstance && "kategorie" in value;
     isInstance = isInstance && "hasLogo" in value;
     isInstance = isInstance && "requires2fa" in value;
@@ -123,7 +124,7 @@ export function CreateServiceProviderResponseFromJSONTyped(json: any, ignoreDisc
         'id': json['id'],
         'name': json['name'],
         'target': ServiceProviderTargetFromJSON(json['target']),
-        'url': !exists(json, 'url') ? undefined : json['url'],
+        'url': json['url'],
         'kategorie': ServiceProviderKategorieFromJSON(json['kategorie']),
         'logoId': !exists(json, 'logoId') ? undefined : json['logoId'],
         'hasLogo': json['hasLogo'],
