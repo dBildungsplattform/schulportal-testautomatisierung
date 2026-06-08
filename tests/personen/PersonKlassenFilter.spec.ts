@@ -6,21 +6,12 @@ import {
   createRolleAndPersonWithPersonenkontext,
   UserInfo,
 } from '../../base/api/personApi';
-import { getServiceProviderId } from '../../base/api/serviceProviderApi';
 import { landSH } from '../../base/organisation';
 import { landesadminRolle, schuelerRolle, schuladminOeffentlichRolle } from '../../base/rollen';
 import { typeSchueler } from '../../base/rollentypen';
-import { itslearning } from '../../base/sp';
 import { DEV, STAGE } from '../../base/tags';
 import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
-import {
-  generateDienststellenNr,
-  generateKlassenname,
-  generateNachname,
-  generateRolleName,
-  generateSchulname,
-  generateVorname,
-} from '../../base/utils/generateTestdata';
+import { generateDienststellenNr, generateKlassenname, generateSchulname } from '../../base/utils/generateTestdata';
 import { LandingViewPage } from '../../pages/LandingView.page';
 import { LoginViewPage } from '../../pages/LoginView.page';
 import { StartViewPage } from '../../pages/StartView.page';
@@ -102,17 +93,11 @@ import { HeaderPage } from '../../pages/components/Header.page';
         }
 
         // Schüler anlegen
-        schueler = await createRolleAndPersonWithPersonenkontext(
-          page,
-          schuleParams.name,
-          typeSchueler,
-          generateNachname(),
-          generateVorname(),
-          [await getServiceProviderId(page, itslearning)],
-          generateRolleName(),
-          undefined,
-          await getKlasseId(page, klassenNamen[0]),
-        );
+        schueler = await createRolleAndPersonWithPersonenkontext(page, {
+          organisationName: schuleParams.name,
+          rollenArt: typeSchueler,
+          klasseId: await getKlasseId(page, klassenNamen[0]),
+        });
 
         // Zur Bearbeiten-Ansicht des Schülers navigieren
         if (rolleName === landesadminRolle) {

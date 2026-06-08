@@ -1,8 +1,8 @@
 import { expect, Page } from '@playwright/test';
 import { ProviderApi } from './generated/apis/ProviderApi';
+import { ServiceProviderResponse } from './generated/models';
 import { ApiResponse, Configuration } from './generated/runtime';
 import { makeFetchWithPlaywright } from './playwrightFetchAdapter';
-import { ServiceProviderResponse } from './generated/models';
 
 const FRONTEND_URL: string | undefined = process.env.FRONTEND_URL || '';
 
@@ -19,11 +19,17 @@ export function constructProviderApi(page: Page): ProviderApi {
   return new ProviderApi(config);
 }
 
-export async function getServiceProviderId(page: Page, serviceProviderName: string): Promise<string> {
+export async function getServiceProviderId(
+  page: Page,
+  serviceProviderName: string,
+  schulstrukturknotenOfRolle: string,
+): Promise<string> {
   try {
     const providerApi: ProviderApi = constructProviderApi(page);
     const response: ApiResponse<ServiceProviderResponse[]> =
-      await providerApi.providerControllerGetAllServiceProvidersRaw();
+      await providerApi.providerControllerGetAssignableServiceProvidersForRolleRaw({
+        schulstrukturknotenOfRolle,
+      });
     expect(response.raw.status).toBe(200);
 
     const fetchedServiceProviders: ServiceProviderResponse[] = await response.value();
@@ -48,11 +54,17 @@ export async function getServiceProviderId(page: Page, serviceProviderName: stri
  * @param serviceProviderNames
  * @returns a map of names to ids for the given service provider names. If a name is not found, it will not be included in the map.
  */
-export async function getServiceProviderIds(page: Page, serviceProviderNames: string[]): Promise<Map<string, string>> {
+export async function getServiceProviderIdsMappedByName(
+  page: Page,
+  serviceProviderNames: string[],
+  schulstrukturknotenOfRolle: string,
+): Promise<Map<string, string>> {
   try {
     const providerApi: ProviderApi = constructProviderApi(page);
     const response: ApiResponse<ServiceProviderResponse[]> =
-      await providerApi.providerControllerGetAllServiceProvidersRaw();
+      await providerApi.providerControllerGetAssignableServiceProvidersForRolleRaw({
+        schulstrukturknotenOfRolle,
+      });
     expect(response.raw.status).toBe(200);
 
     const fetchedServiceProviders: ServiceProviderResponse[] = await response.value();
@@ -64,12 +76,14 @@ export async function getServiceProviderIds(page: Page, serviceProviderNames: st
       );
       if (serviceProvider) {
         mappedServiceProviderIds.set(name, serviceProvider.id);
+      } else {
+        console.warn(`[WARN] ServiceProvider with name "${name}" not found among fetched service providers.`);
       }
     }
 
     return mappedServiceProviderIds;
   } catch (error) {
-    console.error('[ERROR] getServiceProviderId failed:', error);
+    console.error('[ERROR] getServiceProviderIdsMappedByName failed:', error);
     throw error;
   }
 }
