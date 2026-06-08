@@ -80,21 +80,17 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       let newPassword: string = '';
 
       await test.step(`Lehrer und Schüler via api anlegen`, async () => {
-        userInfoLehrer = await createRolleAndPersonWithPersonenkontext(
-          page,
-          testschuleName,
-          typeLehrer,
-          generateNachname(),
-          generateVorname(),
-          [await getServiceProviderId(page, email)],
-          generateRolleName(),
-          generateKopersNr(),
-        );
+        userInfoLehrer = await createRolleAndPersonWithPersonenkontext(page, {
+          organisationName: testschuleName,
+          rollenArt: typeLehrer,
+          serviceProviderNames: [email],
+          koPersNr: generateKopersNr(),
+        });
 
         const schuleId: string = await getOrganisationId(page, testschuleName);
         const klasseId: string = await getOrganisationId(page, klasse1Testschule);
-        const idSPs: string[] = [await getServiceProviderId(page, 'itslearning')];
-        const rolleId: string = await createRolle(page, 'LERN', schuleId, generateRolleName());
+        const idSPs: string[] = [await getServiceProviderId(page, itslearning, schuleId)];
+        const rolleId: string = await createRolle(page, RollenArt.Lern, schuleId, generateRolleName());
         await addServiceProvidersToRolle(page, rolleId, idSPs);
         userInfoSchueler = await createPerson(
           page,
@@ -156,17 +152,12 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       const kopersnummer: string = generateKopersNr();
 
       await test.step('Lehrer via API anlegen und mit diesem anmelden', async () => {
-        const idSPs: string[] = [await getServiceProviderId(page, itslearning)];
-        const userInfo: UserInfo = await createRolleAndPersonWithPersonenkontext(
-          page,
-          organisation,
-          rollenart,
-          generateNachname(),
-          generateVorname(),
-          idSPs,
-          generateRolleName(),
-          kopersnummer,
-        );
+        const userInfo: UserInfo = await createRolleAndPersonWithPersonenkontext(page, {
+          organisationName: organisation,
+          rollenArt: rollenart,
+          serviceProviderNames: [itslearning],
+          koPersNr: kopersnummer,
+        });
 
         username = userInfo.username;
 

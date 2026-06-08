@@ -1,19 +1,18 @@
 import { Page } from '@playwright/test';
+import { RollenSystemRechtEnum } from '../../base/api/generated/models/RollenSystemRechtEnum';
+import { getOrganisationId } from '../../base/api/organisationApi';
 import {
   addSecondOrganisationToPerson,
   createRolleAndPersonWithPersonenkontext,
   UserInfo,
 } from '../../base/api/personApi';
-import { addSystemrechtToRolle } from '../../base/api/rolleApi';
-import { getServiceProviderId } from '../../base/api/serviceProviderApi';
+import { addSystemrechtToRolle, RollenArt } from '../../base/api/rolleApi';
 import { testschule665Name, testschuleName } from '../../base/organisation';
-import { generateNachname, generateVorname, generateRolleName } from '../../base/utils/generateTestdata';
-import { LoginViewPage } from '../../pages/LoginView.page';
-import { StartViewPage } from '../../pages/StartView.page';
-import { RollenSystemRechtEnum } from '../../base/api/generated/models/RollenSystemRechtEnum';
+import { schulportaladmin } from '../../base/sp';
 import { HeaderPage } from '../../pages/components/Header.page';
 import { LandingViewPage } from '../../pages/LandingView.page';
-import { getOrganisationId } from '../../base/api/organisationApi';
+import { LoginViewPage } from '../../pages/LoginView.page';
+import { StartViewPage } from '../../pages/StartView.page';
 
 /**
  * Prepares a test user with the specified system rights and logs them into the application.
@@ -41,19 +40,12 @@ export async function prepareAndLoginUserWithPermissions(
   page: Page,
   permissions: RollenSystemRechtEnum[],
 ): Promise<UserInfo> {
-  // Get the service provider ID for Schulportal Administration
-  const idSPs: string[] = [await getServiceProviderId(page, 'Schulportal-Administration')];
-
   // Create a new user with role and person context
-  const userInfo: UserInfo = await createRolleAndPersonWithPersonenkontext(
-    page,
-    testschuleName,
-    'LEIT',
-    generateNachname(),
-    generateVorname(),
-    idSPs,
-    generateRolleName(),
-  );
+  const userInfo: UserInfo = await createRolleAndPersonWithPersonenkontext(page, {
+    organisationName: testschuleName,
+    rollenArt: RollenArt.Leit,
+    serviceProviderNames: [schulportaladmin],
+  });
 
   // Assign each system right to the newly created role (must be sequential — server uses optimistic locking on Rolle)
   for (const permission of permissions) {
