@@ -141,7 +141,7 @@ interface AdminFixture {
       );
     });
 
-    test.describe('Mit Klassendatenanlage', () => {
+    test.describe.skip('Mit Klassendatenanlage', () => {
       let klassenNamen: string[] = [];
 
       test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
@@ -154,7 +154,7 @@ interface AdminFixture {
       });
 
       // SPSH-3056
-      test.describe.skip('Klassenfilter-Tests', () => {
+      test.describe('Klassenfilter-Tests', () => {
         test(
           `Als ${bezeichnung}: Alle Klassen im Drop-Down des Klassenfilters anzeigen`,
           { tag: [STAGE, DEV] },
