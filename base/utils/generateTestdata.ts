@@ -35,7 +35,7 @@ export function generateKopersNr(): string {
 
 export function generateKlassenname(): string {
   return (
-    `TAuto-PW-S${shardIndex}-K- ` +
+    `TAuto-PW-S${shardIndex}-K-` +
     faker.lorem.word({ length: { min: 8, max: 8 } }) +
     generateRandomString({ length: 3, charSetType: CharacterSetType.Alphabetic })
   );
