@@ -36,7 +36,7 @@ export interface CreateServiceProviderBodyParams {
      * @type {string}
      * @memberof CreateServiceProviderBodyParams
      */
-    url?: string;
+    url: string;
     /**
      * Optional logoId to use a standard logo. Has to be a positive integer. Only one of logoId or logoBase64 with logoMimeType can be provided, not both.
      * @type {number}
@@ -116,6 +116,7 @@ export function instanceOfCreateServiceProviderBodyParams(value: object): boolea
     let isInstance = true;
     isInstance = isInstance && "organisationId" in value;
     isInstance = isInstance && "name" in value;
+    isInstance = isInstance && "url" in value;
     isInstance = isInstance && "kategorie" in value;
     isInstance = isInstance && "requires2fa" in value;
     isInstance = isInstance && "merkmale" in value;
@@ -135,7 +136,7 @@ export function CreateServiceProviderBodyParamsFromJSONTyped(json: any, ignoreDi
         
         'organisationId': json['organisationId'],
         'name': json['name'],
-        'url': !exists(json, 'url') ? undefined : json['url'],
+        'url': json['url'],
         'logoId': !exists(json, 'logoId') ? undefined : json['logoId'],
         'logoBase64': !exists(json, 'logoBase64') ? undefined : json['logoBase64'],
         'logoMimeType': !exists(json, 'logoMimeType') ? undefined : json['logoMimeType'],

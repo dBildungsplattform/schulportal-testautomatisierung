@@ -2,14 +2,7 @@ import { Page } from '@playwright/test';
 import { createKlasse, getKlasseId } from '../../base/api/organisationApi';
 import { createRolleAndPersonWithPersonenkontext, UserInfo } from '../../base/api/personApi';
 import { typeSchueler } from '../../base/rollentypen';
-import { getServiceProviderId } from '../../base/api/serviceProviderApi';
-import { itslearning } from '../../base/sp';
-import {
-  generateKlassenname,
-  generateNachname,
-  generateRolleName,
-  generateVorname,
-} from '../../base/utils/generateTestdata';
+import { generateKlassenname } from '../../base/utils/generateTestdata';
 import { SchuleCreationParams } from '../../pages/admin/organisationen/schulen/SchuleCreationView.page';
 
 export interface KlassenAndSchuelerData {
@@ -75,19 +68,12 @@ async function createSchuelerForSchule(page: Page, schueler: Schueler): Promise<
   return Promise.all(
     Array.from({ length: schueler.count }, async () => {
       const klasseId: string | undefined = await getKlasseId(page, schueler.klassenName);
-      const serviceProviderId: string = await getServiceProviderId(page, itslearning);
 
-      return createRolleAndPersonWithPersonenkontext(
-        page,
-        schueler.schuleName,
-        typeSchueler,
-        generateNachname(),
-        generateVorname(),
-        [serviceProviderId],
-        generateRolleName(),
-        undefined,
+      return createRolleAndPersonWithPersonenkontext(page, {
+        organisationName: schueler.schuleName,
+        rollenArt: typeSchueler,
         klasseId,
-      );
+      });
     }),
   );
 }
