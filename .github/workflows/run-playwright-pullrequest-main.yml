@@ -106,9 +106,9 @@ jobs:
             echo "namespace_to_use=main" >> "$GITHUB_OUTPUT"
           fi
 
-  # --------------------------
+  # -------------------------
   # Run Playwright E2E tests
-  # --------------------------
+  # -------------------------
   run_playwright_tests:
     if: contains(github.event.pull_request.labels.*.name, 'run-tests')
     uses: ./.github/workflows/run-playwright.yml
