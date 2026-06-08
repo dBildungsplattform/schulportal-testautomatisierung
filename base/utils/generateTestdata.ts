@@ -7,7 +7,7 @@ const shardLetter = String.fromCharCode(65 + parseInt(shardIndex, 10));
 
 export function generateVorname(): string {
   return (
-    `TAuto-PW-S${shardLetter}-` +
+    `TAuto-PW-V-S${shardLetter}-` +
     faker.person.firstName() +
     generateRandomString({ length: 3, charSetType: CharacterSetType.Alphabetic })
   );
@@ -15,7 +15,7 @@ export function generateVorname(): string {
 
 export function generateNachname(): string {
   return (
-    `TAuto-PW-S${shardLetter}-` +
+    `TAuto-PW-N-S${shardLetter}-` +
     faker.person.lastName() +
     generateRandomString({ length: 3, charSetType: CharacterSetType.Alphabetic })
   );

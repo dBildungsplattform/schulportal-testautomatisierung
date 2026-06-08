@@ -120,8 +120,6 @@ jobs:
   # Sharded Playwright test runs
   # --------------------------
   playwright_shards:
-    env:
-      SHARD_INDEX: ${{ matrix.shard }}
     timeout-minutes: 60
     runs-on: ubuntu-latest
 
@@ -228,9 +226,6 @@ jobs:
       - name: Test LDAP Connectivity
         if: ${{ inputs.tag == 'dev' }}
         run: ldapwhoami -x -H ldap://localhost:1389 -D "$LDAP_ADMIN_USER" -w "$LDAP_ADMIN_PASSWORD"
-
-      - name: Debug shard index
-        run: echo "SHARD_INDEX is $SHARD_INDEX"
 
       # --------------------------
       # Run Playwright tests (SHARDED)
