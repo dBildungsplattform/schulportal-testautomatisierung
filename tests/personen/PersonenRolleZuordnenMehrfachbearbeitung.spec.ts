@@ -50,7 +50,7 @@ test.describe(`Mehrfachbearbeitung Rolle zuordnen: Umgebung: ${process.env.ENV}:
         const schuleName: string = generateSchulname();
         const schuleDstNr: string = generateDienststellenNr();
         const schuleId: string = await createSchule(page, schuleName, schuleDstNr);
-        const itslearningId: string = await getServiceProviderId(page, itslearning);
+        const itslearningId: string = await getServiceProviderId(page, itslearning, schuleId);
 
         // Zwei Klassen anlegen
         klasse1Name = generateKlassenname();
@@ -64,29 +64,25 @@ test.describe(`Mehrfachbearbeitung Rolle zuordnen: Umgebung: ${process.env.ENV}:
         await addServiceProvidersToRolle(page, zielRolleId, [itslearningId]);
 
         // Zwei Schüler mit jeweils eigener Lern-Rolle in Klasse 1 anlegen
-        schueler1 = await createRolleAndPersonWithPersonenkontext(
-          page,
-          schuleName,
-          typeSchueler,
-          generateNachname(),
-          generateVorname(),
-          [itslearningId],
-          generateRolleName(),
-          undefined,
-          klasse1Id,
-        );
+        schueler1 = await createRolleAndPersonWithPersonenkontext(page, {
+          organisationName: schuleName,
+          rollenArt: typeSchueler,
+          familienname: generateNachname(),
+          vorname: generateVorname(),
+          serviceProviderNames: [itslearning],
+          rollenName: generateRolleName(),
+          klasseId: klasse1Id,
+        });
 
-        schueler2 = await createRolleAndPersonWithPersonenkontext(
-          page,
-          schuleName,
-          typeSchueler,
-          generateNachname(),
-          generateVorname(),
-          [itslearningId],
-          generateRolleName(),
-          undefined,
-          klasse1Id,
-        );
+        schueler2 = await createRolleAndPersonWithPersonenkontext(page, {
+          organisationName: schuleName,
+          rollenArt: typeSchueler,
+          familienname: generateNachname(),
+          vorname: generateVorname(),
+          serviceProviderNames: [itslearning],
+          rollenName: generateRolleName(),
+          klasseId: klasse1Id,
+        });
 
         // Schuladmin (1 Schule) anlegen
         const admin: UserInfo = await createPersonWithPersonenkontext(
@@ -183,7 +179,7 @@ test.describe(`Mehrfachbearbeitung Rolle zuordnen: Umgebung: ${process.env.ENV}:
         const zweiteSchuleDstNr: string = generateDienststellenNr();
         const zweiteSchuleId: string = await createSchule(page, zweiteSchuleName, zweiteSchuleDstNr);
 
-        const itslearningId: string = await getServiceProviderId(page, itslearning);
+        const itslearningId: string = await getServiceProviderId(page, itslearning, schuleId);
 
         // Quell- und Zielklasse an der ersten Schule anlegen
         quellKlasseName = generateKlassenname();
@@ -197,29 +193,25 @@ test.describe(`Mehrfachbearbeitung Rolle zuordnen: Umgebung: ${process.env.ENV}:
         await addServiceProvidersToRolle(page, zielRolleId, [itslearningId]);
 
         // Zwei Schüler mit jeweils eigener Lern-Rolle in der Quellklasse anlegen
-        schueler1 = await createRolleAndPersonWithPersonenkontext(
-          page,
-          schuleName,
-          typeSchueler,
-          generateNachname(),
-          generateVorname(),
-          [itslearningId],
-          generateRolleName(),
-          undefined,
-          quellKlasseId,
-        );
+        schueler1 = await createRolleAndPersonWithPersonenkontext(page, {
+          organisationName: schuleName,
+          rollenArt: typeSchueler,
+          familienname: generateNachname(),
+          vorname: generateVorname(),
+          serviceProviderNames: [itslearning],
+          rollenName: generateRolleName(),
+          klasseId: quellKlasseId,
+        });
 
-        schueler2 = await createRolleAndPersonWithPersonenkontext(
-          page,
-          schuleName,
-          typeSchueler,
-          generateNachname(),
-          generateVorname(),
-          [itslearningId],
-          generateRolleName(),
-          undefined,
-          quellKlasseId,
-        );
+        schueler2 = await createRolleAndPersonWithPersonenkontext(page, {
+          organisationName: schuleName,
+          rollenArt: typeSchueler,
+          familienname: generateNachname(),
+          vorname: generateVorname(),
+          serviceProviderNames: [itslearning],
+          rollenName: generateRolleName(),
+          klasseId: quellKlasseId,
+        });
 
         // Zwei weitere Schüler in der Quellklasse, die bereits die Ziel-Lern-Rolle besitzen
         // (für Fehlerfall: erneute Zuordnung derselben Rolle an eine andere Klasse)

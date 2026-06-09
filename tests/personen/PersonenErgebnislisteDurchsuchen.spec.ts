@@ -1,6 +1,6 @@
 import { PlaywrightTestArgs, test } from '@playwright/test';
 
-import { createKlasse, getOrganisationId } from '../../base/api/organisationApi';
+import { createKlasse, createSchule, getOrganisationId } from '../../base/api/organisationApi';
 import { addSecondOrganisationToPerson, createPersonWithPersonenkontext, UserInfo } from '../../base/api/personApi';
 import { getRolleId } from '../../base/api/rolleApi';
 import { landSH, testschuleDstNr, testschuleName } from '../../base/organisation';
@@ -18,12 +18,7 @@ import {
 import { LandingViewPage } from '../../pages/LandingView.page';
 import { LoginViewPage } from '../../pages/LoginView.page';
 import { StartViewPage } from '../../pages/StartView.page';
-import { SchuleCreationSuccessPage } from '../../pages/admin/organisationen/schulen/SchuleCreationSuccess.page';
-import {
-  SchuleCreationParams,
-  SchuleCreationViewPage,
-  Schulform,
-} from '../../pages/admin/organisationen/schulen/SchuleCreationView.page';
+import { SchuleCreationParams, Schulform } from '../../pages/admin/organisationen/schulen/SchuleCreationView.page';
 import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.page';
 import { HeaderPage } from '../../pages/components/Header.page';
 
@@ -64,16 +59,13 @@ interface AdminFixture {
         undefined,
         generateDienststellenNr(),
       );
-
-      const schuleCreationViewPage: SchuleCreationViewPage =
-        await personManagementViewPage.menu.navigateToSchuleCreation();
       schuleParams = {
         name: generateSchulname(),
         dienststellenNr: generateDienststellenNr(),
         schulform: Schulform.Oeffentlich,
       };
-      const schuleSuccessPage: SchuleCreationSuccessPage = await schuleCreationViewPage.createSchule(schuleParams);
-      await schuleSuccessPage.waitForPageLoad();
+      await createSchule(page, schuleParams.name, schuleParams.dienststellenNr);
+
       const schuleId1: string = await getOrganisationId(page, organisationsName);
       schuleId2 = await getOrganisationId(page, schuleParams.name);
       const rolleId: string = await getRolleId(page, rolleName);

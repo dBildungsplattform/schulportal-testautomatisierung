@@ -46,19 +46,16 @@ export async function createRolle(
   organisationId: string,
   rolleName: string,
   merkmale?: Set<RollenMerkmal>,
+  systemrechte?: Set<RollenSystemRechtEnum>,
 ): Promise<string> {
   try {
     const createRolleBodyParams: CreateRolleBodyParams = {
       name: rolleName,
       administeredBySchulstrukturknoten: organisationId,
       rollenart: rollenArt,
-      merkmale: new Set<RollenMerkmal>(),
-      systemrechte: new Set<RollenSystemRechtEnum>(),
+      merkmale: merkmale ?? new Set<RollenMerkmal>(),
+      systemrechte: systemrechte ?? new Set<RollenSystemRechtEnum>(),
     };
-
-    if (merkmale) {
-      createRolleBodyParams.merkmale = new Set(merkmale);
-    }
 
     const requestParameters: RolleControllerCreateRolleRequest = {
       createRolleBodyParams,
