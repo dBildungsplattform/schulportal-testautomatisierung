@@ -9,7 +9,6 @@ import {
 } from '../base/api/personApi';
 import { addSystemrechtToRolle, createRolle, RollenArt } from '../base/api/rolleApi';
 import { RollenSystemRechtEnum } from '../base/api/generated/models/RollenSystemRechtEnum';
-import { getServiceProviderId, getServiceProviderIds } from '../base/api/serviceProviderApi';
 import { testschuleName } from '../base/organisation';
 import { adressbuch, email, itslearning, kalender, schoolSH, schulportaladmin } from '../base/sp';
 import { DEV, SMOKE, STAGE } from '../base/tags';
@@ -94,18 +93,17 @@ test.describe('Smoke: Schüler kann sich anmelden, itslearning öffnen und sich 
       const schuleId: string = await createSchule(page, schuleName, generateDienststellenNr());
       const klasseName: string = generateKlassenname();
       const klasseId: string = await createKlasse(page, schuleId, klasseName);
-      const rolleName: string = generateRolleName();
-      const itslearningSpIds: Map<string, string> = await getServiceProviderIds(page, [itslearning]);
       userInfo = await createRolleAndPersonWithPersonenkontext(
         page,
-        schuleName,
-        RollenArt.Lern,
-        generateNachname(),
-        generateVorname(),
-        Array.from(itslearningSpIds.values()),
-        rolleName,
-        undefined,
-        klasseId,
+        {
+          organisationName: schuleName,
+          rollenArt: RollenArt.Lern,
+          familienname: generateNachname(),
+          vorname: generateVorname(),
+          serviceProviderNames: [itslearning],
+          rollenName: generateRolleName(),
+          klasseId,
+        },
       );
     });
 
@@ -146,15 +144,16 @@ test.describe('Smoke: Schuladmin kann sich anmelden, zur Schulportal-Administrat
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
     await test.step('Testdaten anlegen', async () => {
       await loginAndNavigateToAdministration(page);
-      const spId: string = await getServiceProviderId(page, schulportaladmin);
       userInfo = await createRolleAndPersonWithPersonenkontext(
         page,
-        testschuleName,
-        RollenArt.Leit,
-        generateNachname(),
-        generateVorname(),
-        [spId],
-        generateRolleName(),
+        {
+          organisationName: testschuleName,
+          rollenArt: RollenArt.Leit,
+          familienname: generateNachname(),
+          vorname: generateVorname(),
+          serviceProviderNames: [schulportaladmin],
+          rollenName: generateRolleName(),
+        },
       );
       await addSystemrechtToRolle(page, userInfo.rolleId, RollenSystemRechtEnum.PersonenVerwalten);
     });
@@ -199,15 +198,16 @@ test.describe('Smoke: Lehrer kann sich anmelden, auf E-Mail zugreifen und sich a
       const schuleName: string = generateSchulname();
       const schuleId: string = await createSchule(page, schuleName, generateDienststellenNr());
       void schuleId;
-      const spIds: Map<string, string> = await getServiceProviderIds(page, [email, adressbuch, kalender, schoolSH]);
       userInfo = await createRolleAndPersonWithPersonenkontext(
         page,
-        schuleName,
-        RollenArt.Lehr,
-        generateNachname(),
-        generateVorname(),
-        Array.from(spIds.values()),
-        generateRolleName(),
+        {
+          organisationName: schuleName,
+          rollenArt: RollenArt.Lehr,
+          familienname: generateNachname(),
+          vorname: generateVorname(),
+          serviceProviderNames: [email, adressbuch, kalender, schoolSH],
+          rollenName: generateRolleName(),
+        },
       );
     });
 
