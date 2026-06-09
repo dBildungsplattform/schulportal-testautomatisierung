@@ -7,8 +7,11 @@ export class RolleZuordnenPage {
   private readonly layoutCard: Locator;
   private readonly organisationSelect: Autocomplete;
   private readonly rolleSelect: Autocomplete;
+  private readonly klasseAutocomplete: Autocomplete;
   private readonly befristungsInput: BefristungsInput;
   private readonly submitButton: Locator;
+  private readonly keepKlasseRadioButton: Locator;
+  private readonly selectNewKlasseRadioButton: Locator;
 
   public constructor(private readonly page: Page) {
     this.layoutCard = this.page.getByTestId('rolle-modify-layout-card');
@@ -17,8 +20,14 @@ export class RolleZuordnenPage {
       this.layoutCard.getByTestId('personenkontext-create-organisation-select'),
     );
     this.rolleSelect = new Autocomplete(page, this.layoutCard.getByTestId('rolle-select'));
+    this.klasseAutocomplete = new Autocomplete(
+      page,
+      this.layoutCard.getByTestId('personenkontext-create-rolle-modify-klasse-select'),
+    );
     this.befristungsInput = new BefristungsInput(page);
     this.submitButton = this.layoutCard.getByTestId('rolle-modify-submit-button');
+    this.keepKlasseRadioButton = this.layoutCard.getByTestId('keep-klasse-radio-button');
+    this.selectNewKlasseRadioButton = this.layoutCard.getByTestId('select-new-klasse-radio-button');
   }
 
   public async waitForPageToLoad(): Promise<RolleZuordnenPage> {
@@ -31,7 +40,17 @@ export class RolleZuordnenPage {
   }
 
   public async selectRolle(name: string): Promise<void> {
-    await this.rolleSelect.searchByTitle(name, true);
+    const rolleSelectLocator: Locator = this.layoutCard.getByTestId('rolle-select');
+    const inputLocator: Locator = rolleSelectLocator.locator('input');
+    await inputLocator.click();
+    await inputLocator.clear();
+    await inputLocator.pressSequentially(name);
+    const option: Locator = this.page
+      .locator('div.v-overlay--active')
+      .getByRole('option')
+      .filter({ hasText: new RegExp(`^${name}$`) });
+    await option.first().click({ force: true });
+    await expect(rolleSelectLocator).toContainText(name);
   }
 
   public async submitRolleAssignment(): Promise<void> {
@@ -80,5 +99,87 @@ export class RolleZuordnenPage {
 
   public async assertSuccessMessageIsVisible(): Promise<void> {
     await expect(this.layoutCard).toContainText('Die Rolle wurde erfolgreich zugeordnet.');
+  }
+
+  public async assertKlassenOptionen(): Promise<void> {
+    await expect(this.keepKlasseRadioButton).toBeVisible();
+    await expect(this.selectNewKlasseRadioButton).toBeVisible();
+    await expect(this.keepKlasseRadioButton.locator('input')).toBeChecked();
+  }
+
+  public async selectKlasseBeibehalten(): Promise<void> {
+    await this.keepKlasseRadioButton.click();
+    await expect(this.keepKlasseRadioButton.locator('input')).toBeChecked();
+  }
+
+  public async selectAndereKlasseAuswaehlen(): Promise<void> {
+    const klassenLoaded: Promise<Response> = this.page.waitForResponse(
+      (resp) => resp.url().includes('/api/organisationen') && resp.url().includes('typ=KLASSE') && resp.status() === 200,
+    );
+    await this.selectNewKlasseRadioButton.locator('input').click();
+    await expect(this.selectNewKlasseRadioButton.locator('input')).toBeChecked();
+    await klassenLoaded;
+  }
+
+  public async selectKlasse(klassenname: string): Promise<void> {
+    const klasseSelectLocator: Locator = this.layoutCard.getByTestId(
+      'personenkontext-create-rolle-modify-klasse-select',
+    );
+    const inputLocator: Locator = klasseSelectLocator.locator('input');
+    await inputLocator.click();
+    await inputLocator.clear();
+    await inputLocator.pressSequentially(klassenname);
+    const option: Locator = this.page
+      .locator('div.v-overlay--active')
+      .getByRole('option')
+      .filter({ hasText: new RegExp(`^${klassenname}$`) });
+    await option.first().click({ force: true });
+    await expect(klasseSelectLocator).toContainText(klassenname);
+  }
+
+  public async fillBefristung(date: string): Promise<void> {
+    const befristungInput: Locator = this.layoutCard.getByTestId('befristung-input').locator('input');
+    await befristungInput.waitFor({ state: 'visible' });
+    await befristungInput.fill(date);
+  }
+
+  public async assertHint(expectedText: string): Promise<void> {
+    await expect(this.layoutCard.getByTestId('modify-Rolle-hint')).toContainText(expectedText);
+  }
+
+  public async assertSuccessDialog(): Promise<void> {
+    await expect(this.layoutCard).toBeVisible();
+    await expect(this.layoutCard.getByTestId('layout-card-headline')).toHaveText('Rolle zuordnen');
+    await expect(this.layoutCard).toContainText('Die Rolle wurde erfolgreich zugeordnet.');
+    await expect(this.layoutCard.getByTestId('rolle-modify-close-button')).toBeVisible();
+  }
+
+  public async assertErrorDialog(
+    expectedUsers: { vorname: string; nachname: string; username: string }[],
+  ): Promise<void> {
+    const errorCard: Locator = this.page.getByTestId('person-bulk-error-layout-card');
+    await expect(errorCard).toBeVisible();
+    await expect(errorCard.getByTestId('layout-card-headline')).toHaveText('Fehler bei der Mehrfachbearbeitung');
+
+    const expectedFehlertext: string =
+      'Die neue Rolle kann diesem Benutzer nicht zugeordnet werden, da er entweder diese Rolle schon an einer ' +
+      'anderen Klasse besitzt oder mehreren Klassen zugeordnet ist. Bitte nehmen Sie die Änderung per Einzelbearbeitung vor.';
+
+    const items: Locator = errorCard.locator('[data-testid^="person-bulk-error-error-list-item-"]');
+    await expect(items).toHaveCount(expectedUsers.length);
+
+    for (const user of expectedUsers) {
+      const item: Locator = items.filter({ hasText: `${user.vorname} ${user.nachname} (${user.username})` });
+      await expect(item).toHaveCount(1);
+      await expect(item).toContainText(expectedFehlertext);
+    }
+
+    await expect(errorCard.getByTestId('person-bulk-error-discard-button')).toBeVisible();
+    await expect(errorCard.getByTestId('person-bulk-error-save-button')).toBeVisible();
+  }
+
+  public async closeErrorDialog(): Promise<void> {
+    await this.page.getByTestId('person-bulk-error-layout-card').getByTestId('person-bulk-error-discard-button').click();
+    await this.page.getByTestId('confirm-close-bulk-error-dialog-button').click();
   }
 }

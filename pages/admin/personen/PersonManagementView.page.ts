@@ -121,6 +121,23 @@ export class PersonManagementViewPage extends AbstractAdminPage {
     await this.personTable.selectRow(name);
   }
 
+  public async filterAndSelectPersons(
+    schuleName: string | undefined,
+    klassenName: string,
+    personNachnamen: string[],
+  ): Promise<void> {
+    await this.waitForPageLoad();
+    if (schuleName !== undefined) {
+      await this.filterBySchule(schuleName, false);
+    }
+    await this.filterByKlasse(klassenName);
+    await this.waitForDataLoad();
+    for (const nachname of personNachnamen) {
+      await this.selectPerson(nachname);
+      await this.checkPersonSelected(nachname);
+    }
+  }
+
   public async selectMehrfachauswahl(option: MehrfachbearbeitungOption): Promise<RolleZuordnenPage | void> {
     await this.page.getByTestId('benutzer-edit-select').click();
     const locator: Locator = this.page.getByRole('option', { name: option, exact: false });
@@ -454,5 +471,17 @@ export class PersonManagementViewPage extends AbstractAdminPage {
 
     // aufräumen
     fs.unlinkSync(filePath);
+  }
+
+  public async checkRolleAssignedToPersons(rolleName: string, nachnamen: string[]): Promise<void> {
+    for (const nachname of nachnamen) {
+      await this.personTable.checkCellInRow(nachname, 5, rolleName);
+    }
+  }
+
+  public async checkKlasseAssignedToPersons(klasseName: string, nachnamen: string[]): Promise<void> {
+    for (const nachname of nachnamen) {
+      await this.personTable.checkCellInRow(nachname, 7, klasseName);
+    }
   }
 }
