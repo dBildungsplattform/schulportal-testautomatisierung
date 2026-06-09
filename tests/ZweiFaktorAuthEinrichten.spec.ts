@@ -6,7 +6,7 @@ import { getOrganisationId } from '../base/api/organisationApi';
 import { klasse1Testschule } from '../base/klassen';
 import { landSH, testschule665Name, testschuleName } from '../base/organisation';
 import { typeLehrer, typeSchuladmin } from '../base/rollentypen';
-import { email } from '../base/sp';
+import { email, itslearning, schulportaladmin } from '../base/sp';
 import { DEV, STAGE } from '../base/tags';
 import { gotoTargetURL, loginAndNavigateToAdministration } from '../base/testHelperUtils';
 import { generateKopersNr, generateNachname, generateRolleName, generateVorname } from '../base/utils/generateTestdata';
@@ -44,17 +44,12 @@ test.describe('Zwei-Faktor-Authentifizierung über eigenes Profil einrichten', (
       const kopersnummer: string = generateKopersNr();
 
       await test.step('Lehrer via API anlegen und mit diesem anmelden', async () => {
-        const idSPs: string[] = [await getServiceProviderId(page, email)];
-        const userInfo: UserInfo = await createRolleAndPersonWithPersonenkontext(
-          page,
-          testschuleName,
-          rollenart,
-          generateNachname(),
-          generateVorname(),
-          idSPs,
-          generateRolleName(),
-          kopersnummer,
-        );
+        const userInfo: UserInfo = await createRolleAndPersonWithPersonenkontext(page, {
+          organisationName: testschuleName,
+          rollenArt: rollenart,
+          serviceProviderNames: [email],
+          koPersNr: kopersnummer,
+        });
         await header.logout();
         await header.navigateToLogin();
         await login.login(userInfo.username, userInfo.password);
@@ -116,7 +111,7 @@ test.describe('Zwei-Faktor-Authentifizierung als Admin einrichten', () => {
       const klasseId: string = await getOrganisationId(page, klasse1Testschule);
       const rollenname: string = generateRolleName();
       const rolleId: string = await createRolle(page, 'LERN', schuleId, rollenname);
-      await addServiceProvidersToRolle(page, rolleId, [await getServiceProviderId(page, 'itslearning')]);
+      await addServiceProvidersToRolle(page, rolleId, [await getServiceProviderId(page, itslearning, schuleId)]);
       const userInfo: UserInfo = await createPerson(
         page,
         schuleId,
@@ -152,15 +147,11 @@ test.describe('Zwei-Faktor-Authentifizierung als Admin einrichten', () => {
     { tag: [DEV, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
       const userInfoLehrer: UserInfo = await test.step('Testdaten: Lehrkraft anlegen', async () => {
-        const userInfo: UserInfo = await createRolleAndPersonWithPersonenkontext(
-          page,
-          testschuleName,
-          typeLehrer,
-          generateNachname(),
-          generateVorname(),
-          [await getServiceProviderId(page, email)],
-          generateRolleName(),
-        );
+        const userInfo: UserInfo = await createRolleAndPersonWithPersonenkontext(page, {
+          organisationName: testschuleName,
+          rollenArt: typeLehrer,
+          serviceProviderNames: [email],
+        });
         return userInfo;
       });
 
@@ -184,15 +175,11 @@ test.describe('Zwei-Faktor-Authentifizierung als Admin einrichten', () => {
     { tag: [DEV, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
       const userInfoAdmin: UserInfo = await test.step('Testdaten: Schuladmin anlegen', async () => {
-        const userInfo: UserInfo = await createRolleAndPersonWithPersonenkontext(
-          page,
-          testschule665Name,
-          typeSchuladmin,
-          generateNachname(),
-          generateVorname(),
-          [await getServiceProviderId(page, 'Schulportal-Administration')],
-          generateRolleName(),
-        );
+        const userInfo: UserInfo = await createRolleAndPersonWithPersonenkontext(page, {
+          organisationName: testschule665Name,
+          rollenArt: typeSchuladmin,
+          serviceProviderNames: [schulportaladmin],
+        });
         await addSystemrechtToRolle(page, userInfo.rolleId, 'PERSONEN_VERWALTEN');
         return userInfo;
       });
@@ -217,15 +204,11 @@ test.describe('Zwei-Faktor-Authentifizierung als Admin einrichten', () => {
     { tag: [DEV, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
       const userInfoAdmin: UserInfo = await test.step('Testdaten: Landesadmin anlegen', async () => {
-        const userInfo: UserInfo = await createRolleAndPersonWithPersonenkontext(
-          page,
-          landSH,
-          'SYSADMIN',
-          generateNachname(),
-          generateVorname(),
-          [await getServiceProviderId(page, 'Schulportal-Administration')],
-          generateRolleName(),
-        );
+        const userInfo: UserInfo = await createRolleAndPersonWithPersonenkontext(page, {
+          organisationName: landSH,
+          rollenArt: RollenArt.Sysadmin,
+          serviceProviderNames: [schulportaladmin],
+        });
         await addSystemrechtToRolle(page, userInfo.rolleId, 'ROLLEN_VERWALTEN');
         await addSystemrechtToRolle(page, userInfo.rolleId, 'PERSONEN_SOFORT_LOESCHEN');
         await addSystemrechtToRolle(page, userInfo.rolleId, 'PERSONEN_VERWALTEN');
@@ -260,15 +243,11 @@ test.describe('Zwei-Faktor-Authentifizierung als Admin einrichten', () => {
     { tag: [DEV, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
       const userInfoAdmin: UserInfo = await test.step('Testdaten: Schuladmin anlegen', async () => {
-        const userInfo: UserInfo = await createRolleAndPersonWithPersonenkontext(
-          page,
-          testschule665Name,
-          typeSchuladmin,
-          generateNachname(),
-          generateVorname(),
-          [await getServiceProviderId(page, 'Schulportal-Administration')],
-          generateRolleName(),
-        );
+        const userInfo: UserInfo = await createRolleAndPersonWithPersonenkontext(page, {
+          organisationName: testschule665Name,
+          rollenArt: typeSchuladmin,
+          serviceProviderNames: [schulportaladmin],
+        });
         await addSystemrechtToRolle(page, userInfo.rolleId, 'PERSONEN_VERWALTEN');
         return userInfo;
       });
@@ -297,15 +276,11 @@ test.describe('Zwei-Faktor-Authentifizierung als Admin einrichten', () => {
     { tag: [DEV, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
       const userInfoLehrer: UserInfo = await test.step('Testdaten: Lehrkraft anlegen', async () => {
-        const userInfo: UserInfo = await createRolleAndPersonWithPersonenkontext(
-          page,
-          testschuleName,
-          typeLehrer,
-          generateNachname(),
-          generateVorname(),
-          [await getServiceProviderId(page, email)],
-          generateRolleName(),
-        );
+        const userInfo: UserInfo = await createRolleAndPersonWithPersonenkontext(page, {
+          organisationName: testschuleName,
+          rollenArt: typeLehrer,
+          serviceProviderNames: [email],
+        });
         return userInfo;
       });
 
@@ -333,15 +308,11 @@ test.describe('Zwei-Faktor-Authentifizierung als Admin einrichten', () => {
     { tag: [DEV, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
       const userInfoLehrer: UserInfo = await test.step('Testdaten: Lehrkraft anlegen', async () => {
-        const userInfo: UserInfo = await createRolleAndPersonWithPersonenkontext(
-          page,
-          testschuleName,
-          typeLehrer,
-          generateNachname(),
-          generateVorname(),
-          [await getServiceProviderId(page, email)],
-          generateRolleName(),
-        );
+        const userInfo: UserInfo = await createRolleAndPersonWithPersonenkontext(page, {
+          organisationName: testschuleName,
+          rollenArt: typeLehrer,
+          serviceProviderNames: [email],
+        });
         return userInfo;
       });
 

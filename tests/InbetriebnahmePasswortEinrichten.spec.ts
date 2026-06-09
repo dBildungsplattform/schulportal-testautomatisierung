@@ -1,14 +1,13 @@
 import { expect, PlaywrightTestArgs, test } from '@playwright/test';
 
 import { createRolleAndPersonWithPersonenkontext, UserInfo } from '../base/api/personApi';
-import { getServiceProviderId } from '../base/api/serviceProviderApi';
 import { testschuleName } from '../base/organisation';
 import { typeLehrer } from '../base/rollentypen';
 import { email } from '../base/sp';
 import { DEV } from '../base/tags';
 import { TestHelperLdap } from '../base/testHelperLdap';
 import { gotoTargetURL, loginAndNavigateToAdministration } from '../base/testHelperUtils';
-import { generateKopersNr, generateNachname, generateRolleName, generateVorname } from '../base/utils/generateTestdata';
+import { generateKopersNr } from '../base/utils/generateTestdata';
 import { LoginViewPage } from '../pages/LoginView.page';
 import { ProfileViewPage } from '../pages/ProfileView.page';
 import { PersonDetailsViewPage } from '../pages/admin/personen/details/PersonDetailsView.page';
@@ -42,16 +41,12 @@ test.describe('Inbetriebnahme-Passwort einrichten (LDAP erforderlich)', () => {
       let userInfoLehrer: UserInfo;
 
       await test.step('Testdaten: Lehrer anlegen', async () => {
-        userInfoLehrer = await createRolleAndPersonWithPersonenkontext(
-          page,
-          testschuleName,
-          typeLehrer,
-          generateNachname(),
-          generateVorname(),
-          [await getServiceProviderId(page, email)],
-          generateRolleName(),
-          generateKopersNr(),
-        );
+        userInfoLehrer = await createRolleAndPersonWithPersonenkontext(page, {
+          organisationName: testschuleName,
+          rollenArt: typeLehrer,
+          serviceProviderNames: [email],
+          koPersNr: generateKopersNr(),
+        });
       });
 
       await test.step('Als Lehrer anmelden', async () => {
@@ -87,16 +82,12 @@ test.describe('Inbetriebnahme-Passwort einrichten (LDAP erforderlich)', () => {
       let userInfoLehrer: UserInfo;
 
       await test.step('Testdaten: Lehrer anlegen', async () => {
-        userInfoLehrer = await createRolleAndPersonWithPersonenkontext(
-          page,
-          testschuleName,
-          typeLehrer,
-          generateNachname(),
-          generateVorname(),
-          [await getServiceProviderId(page, email)],
-          generateRolleName(),
-          generateKopersNr(),
-        );
+        userInfoLehrer = await createRolleAndPersonWithPersonenkontext(page, {
+          organisationName: testschuleName,
+          rollenArt: typeLehrer,
+          serviceProviderNames: [email],
+          koPersNr: generateKopersNr(),
+        });
       });
 
       const personManagementView: PersonManagementViewPage = new PersonManagementViewPage(page);
