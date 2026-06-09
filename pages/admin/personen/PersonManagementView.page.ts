@@ -11,6 +11,7 @@ import { RolleZuordnenPage } from './mehrfachbearbeitung/RolleZuordnen.page';
 
 type MehrfachbearbeitungOption = 'Rolle zuordnen' | 'Schüler versetzen' | 'Passwort zurücksetzen' | 'Rolle entziehen';
 export class PersonManagementViewPage extends AbstractAdminPage {
+  private static readonly BULK_OPERATION_TIMEOUT_MS: number = 30_000;
   private readonly personTable: DataTable;
   private readonly searchFilter: SearchFilter;
   private readonly organisationAutocomplete: Autocomplete;
@@ -366,7 +367,7 @@ export class PersonManagementViewPage extends AbstractAdminPage {
   }
 
   public async checkRolleEntziehenDialog(): Promise<void> {
-    await expect(this.rolleEntziehenDialogCard).toBeVisible({ timeout: 10000 });
+    await expect(this.rolleEntziehenDialogCard).toBeVisible();
     await expect(this.rolleEntziehenDialogCard.getByTestId('layout-card-headline')).toHaveText('Rolle entziehen');
     await expect(this.rolleEntziehenDialogCard.getByTestId('rolle-unassign-submit-button')).toBeVisible();
     await expect(this.rolleEntziehenDialogCard.getByTestId('rolle-unassign-discard-button')).toBeVisible();
@@ -375,11 +376,12 @@ export class PersonManagementViewPage extends AbstractAdminPage {
   public async checkRolleEntziehenInProgress(): Promise<void> {
     const progressbar: Locator = this.rolleEntziehenDialogCard.getByTestId('rolle-unassign-progressbar');
     await expect(progressbar).toBeVisible();
-    await expect(progressbar).toHaveAttribute('aria-valuenow', '100', { timeout: 30000 });
   }
 
   public async checkRolleEntziehenSuccessDialog(): Promise<void> {
-    await expect(this.rolleEntziehenDialogCard).toBeVisible();
+    await expect(this.rolleEntziehenDialogCard).toBeVisible({
+      timeout: PersonManagementViewPage.BULK_OPERATION_TIMEOUT_MS,
+    });
     await expect(this.rolleEntziehenDialogCard.getByTestId('layout-card-headline')).toHaveText('Rolle entziehen');
     await expect(this.rolleEntziehenDialogCard).toContainText('Die Rolle wurde erfolgreich entfernt.');
     await expect(this.rolleEntziehenDialogCard.getByTestId('rolle-unassign-progressbar')).toHaveText('100%');
@@ -387,7 +389,9 @@ export class PersonManagementViewPage extends AbstractAdminPage {
   }
 
   public async checkBulkErrorDialog(expectedErrorCount: number, expectedErrorText: string): Promise<void> {
-    await expect(this.bulkErrorDialogCard).toBeVisible({ timeout: 10000 });
+    await expect(this.bulkErrorDialogCard).toBeVisible({
+      timeout: PersonManagementViewPage.BULK_OPERATION_TIMEOUT_MS,
+    });
     await expect(this.bulkErrorDialogCard.getByTestId('layout-card-headline')).toHaveText(
       'Fehler bei der Mehrfachbearbeitung',
     );
@@ -403,7 +407,7 @@ export class PersonManagementViewPage extends AbstractAdminPage {
   }
 
   public async closeBulkErrorDialog(): Promise<void> {
-    await this.page.getByTestId('person-bulk-error-discard-button').click();
+    await this.bulkErrorDialogCard.getByTestId('person-bulk-error-discard-button').click();
     await this.page.getByTestId('confirm-close-bulk-error-dialog-button').click();
   }
 

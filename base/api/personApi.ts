@@ -15,7 +15,6 @@ import {
 import { FRONTEND_URL } from './baseApi';
 import {
   PersonControllerDeletePersonByIdRequest,
-  PersonControllerFindPersonenkontexteRequest,
   PersonControllerLockPersonRequest,
   PersonControllerResetUEMPasswordByPersonIdRequest,
   PersonenApi,
@@ -184,6 +183,53 @@ export async function createPerson(
     };
   } catch (error) {
     console.error('[ERROR] createPerson failed:', error);
+    throw error;
+  }
+}
+
+export async function createUsersWithLernRollenInDifferentKlassen(
+  page: Page,
+  schuleId: string,
+  primaryRolleId: string,
+  secondaryRolleId: string,
+  primaryKlasseId: string,
+  secondaryKlasseId: string,
+  count: number,
+): Promise<UserInfo[]> {
+  try {
+    const personenkontextApi: PersonenkontextApi = constructPersonenkontextApi(page);
+    return Promise.all(
+      Array.from({ length: count }, async () => {
+        const response: ApiResponse<DBiamPersonResponse> =
+          await personenkontextApi.dbiamPersonenkontextWorkflowControllerCreatePersonWithPersonenkontexteRaw({
+            dbiamCreatePersonWithPersonenkontexteBodyParams: {
+              familienname: generateNachname(),
+              vorname: generateVorname(),
+              createPersonenkontexte: [
+                { organisationId: schuleId, rolleId: primaryRolleId },
+                { organisationId: primaryKlasseId, rolleId: primaryRolleId },
+                { organisationId: schuleId, rolleId: secondaryRolleId },
+                { organisationId: secondaryKlasseId, rolleId: secondaryRolleId },
+              ],
+            },
+          });
+        expect(response.raw.status).toBe(201);
+        const createdPerson: DBiamPersonResponse = await response.value();
+
+        return {
+          username: createdPerson.person.username!,
+          password: createdPerson.person.startpasswort,
+          rolleId: primaryRolleId,
+          organisationId: schuleId,
+          personId: createdPerson.person.id,
+          vorname: createdPerson.person.name.vorname,
+          nachname: createdPerson.person.name.familienname,
+          kopersnummer: '',
+        };
+      }),
+    );
+  } catch (error) {
+    console.error('[ERROR] createUsersWithLernRollenInDifferentKlassen failed:', error);
     throw error;
   }
 }
@@ -391,65 +437,6 @@ export async function addSecondOrganisationToPerson(
     }
   } catch (error) {
     console.error('[ERROR] addSecondOrganisationToPerson failed:', error);
-    throw error;
-  }
-}
-
-export async function addSecondRolleToPerson(
-  page: Page,
-  personId: string,
-  organisationId: string,
-  existingRolleId: string,
-  newRolleId: string,
-  klasseId?: string,
-): Promise<void> {
-  try {
-    const personenkontexte: DbiamUpdatePersonenkontexteBodyParams['personenkontexte'] = [
-      {
-        personId,
-        organisationId,
-        rolleId: existingRolleId,
-      },
-      {
-        personId,
-        organisationId,
-        rolleId: newRolleId,
-      },
-    ];
-
-    if (klasseId) {
-      personenkontexte.push({
-        personId,
-        organisationId: klasseId,
-        rolleId: existingRolleId,
-      });
-    }
-
-    const personenApi: PersonenApi = constructPersonenApi(page);
-    const findRequest: PersonControllerFindPersonenkontexteRequest = { personId };
-    const currentPersonenkontexteResponse = await personenApi.personControllerFindPersonenkontexteRaw(findRequest);
-    const currentPersonenkontexte = await currentPersonenkontexteResponse.raw.json();
-
-    const dbiamUpdatePersonenkontexteBodyParams: DbiamUpdatePersonenkontexteBodyParams = {
-      lastModified: generateCurrentDate({ days: 0, months: 0 }),
-      count: currentPersonenkontexte.total,
-      personenkontexte,
-    };
-
-    const requestParameters: DbiamPersonenkontextWorkflowControllerCommitRequest = {
-      personId,
-      dbiamUpdatePersonenkontexteBodyParams,
-    };
-
-    const personenkontextApi: PersonenkontextApi = constructPersonenkontextApi(page);
-    const response: ApiResponse<PersonenkontexteUpdateResponse> =
-      await personenkontextApi.dbiamPersonenkontextWorkflowControllerCommitRaw(requestParameters);
-    expect(response.raw.status).toBe(200);
-
-    const updatedPersonenkontexte: PersonenkontexteUpdateResponse = await response.value();
-    expect(updatedPersonenkontexte.dBiamPersonenkontextResponses.length).toBe(klasseId ? 3 : 2);
-  } catch (error) {
-    console.error('[ERROR] addSecondRolleToPerson failed:', error);
     throw error;
   }
 }

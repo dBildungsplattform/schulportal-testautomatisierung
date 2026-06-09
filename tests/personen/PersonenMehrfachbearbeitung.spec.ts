@@ -1,10 +1,10 @@
-import { Download, expect, PlaywrightTestArgs, test } from '@playwright/test';
+import { Download, PlaywrightTestArgs, test } from '@playwright/test';
 import { createKlasse, getOrganisationId } from '../../base/api/organisationApi';
 import {
   addSecondOrganisationToPerson,
-  constructPersonenkontextApi,
   createPerson,
   createPersonWithPersonenkontext,
+  createUsersWithLernRollenInDifferentKlassen,
   UserInfo,
 } from '../../base/api/personApi';
 import { createRolle, addServiceProvidersToRolle, getRolleId } from '../../base/api/rolleApi';
@@ -19,10 +19,8 @@ import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
 import {
   generateDienststellenNr,
   generateKlassenname,
-  generateNachname,
   generateRolleName,
   generateSchulname,
-  generateVorname,
 } from '../../base/utils/generateTestdata';
 import { LandingViewPage } from '../../pages/LandingView.page';
 import { LoginViewPage } from '../../pages/LoginView.page';
@@ -68,51 +66,6 @@ async function createUsersWithRolle(
       createPerson(page, schuleId, rolleId, undefined, undefined, undefined, klasseId, undefined, secondaryRolleId),
     ),
   );
-}
-
-async function createUsersWithLernRollenInDifferentKlassen(
-  page: PlaywrightTestArgs['page'],
-  schuleId: string,
-  primaryRolleId: string,
-  secondaryRolleId: string,
-  primaryKlasseId: string,
-  secondaryKlasseId: string,
-  count: number,
-): Promise<UserInfo[]> {
-  const personenkontextApi = constructPersonenkontextApi(page);
-  const users: UserInfo[] = [];
-
-  for (let index: number = 0; index < count; index++) {
-    const response = await personenkontextApi.dbiamPersonenkontextWorkflowControllerCreatePersonWithPersonenkontexteRaw(
-      {
-        dbiamCreatePersonWithPersonenkontexteBodyParams: {
-          familienname: generateNachname(),
-          vorname: generateVorname(),
-          createPersonenkontexte: [
-            { organisationId: schuleId, rolleId: primaryRolleId },
-            { organisationId: primaryKlasseId, rolleId: primaryRolleId },
-            { organisationId: schuleId, rolleId: secondaryRolleId },
-            { organisationId: secondaryKlasseId, rolleId: secondaryRolleId },
-          ],
-        },
-      },
-    );
-    expect(response.raw.status).toBe(201);
-    const createdPerson = await response.value();
-
-    users.push({
-      username: createdPerson.person.username!,
-      password: createdPerson.person.startpasswort,
-      rolleId: primaryRolleId,
-      organisationId: schuleId,
-      personId: createdPerson.person.id,
-      vorname: createdPerson.person.name.vorname,
-      nachname: createdPerson.person.name.familienname,
-      kopersnummer: '',
-    });
-  }
-
-  return users;
 }
 
 async function selectUsersAndStartRolleEntziehen(
@@ -353,21 +306,22 @@ test.describe('Rolle entziehen als Schuladmin', () => {
     admin = await createPersonWithPersonenkontext(page, schuleParams.name, schuladminOeffentlichRolle);
   });
 
-  async function switchToSchuladmin(page: PlaywrightTestArgs['page']): Promise<void> {
+  async function switchToSchuladmin(page: PlaywrightTestArgs['page']): Promise<PersonManagementViewPage> {
     const header: HeaderPage = new HeaderPage(page);
     const landingPage: LandingViewPage = await header.logout();
     const loginPage: LoginViewPage = await landingPage.navigateToLogin();
     const startPage: StartViewPage = await loginPage.loginNewUserWithPasswordChange(admin.username, admin.password);
     await startPage.waitForPageLoad();
-    personManagementViewPage = await startPage.navigateToAdministration();
-    await personManagementViewPage.waitForPageLoad();
+    const schuladminPersonManagementViewPage: PersonManagementViewPage = await startPage.navigateToAdministration();
+    await schuladminPersonManagementViewPage.waitForPageLoad();
+    return schuladminPersonManagementViewPage;
   }
 
   test('Fehler wenn Rolle die einzige Rollenzuordnung ist', { tag: [DEV, STAGE] }, async ({ page }: PlaywrightTestArgs) => {
     const stepData: { bezeichnung: string; rolleName: string; users: UserInfo[] }[] = [];
 
-    await test.step('Testdaten erstellen', async () => {
-      const idSPs: string[] = [await getServiceProviderId(page, itslearning)];
+    await test.step('Setup', async () => {
+      const idSPs: string[] = [await getServiceProviderId(page, itslearning, schuleId)];
       for (const { rollenArt, bezeichnung } of ROLLE_ENTZIEHEN_TYPES) {
         const targetRolleName: string = generateRolleName();
         const targetRolleId: string = await createRolle(page, rollenArt, schuleId, targetRolleName);
@@ -387,7 +341,7 @@ test.describe('Rolle entziehen als Schuladmin', () => {
       }
     });
 
-    await switchToSchuladmin(page);
+    personManagementViewPage = await test.step('Als Schuladmin anmelden', async () => switchToSchuladmin(page));
 
     for (const { bezeichnung, rolleName, users } of stepData) {
       await test.step(bezeichnung, async () => {
@@ -404,8 +358,8 @@ test.describe('Rolle entziehen als Schuladmin', () => {
   test('Rolle wird erfolgreich entzogen', { tag: [DEV, STAGE] }, async ({ page }: PlaywrightTestArgs) => {
     const stepData: { bezeichnung: string; rolleName: string; users: UserInfo[] }[] = [];
 
-    await test.step('Testdaten erstellen', async () => {
-      const idSPs: string[] = [await getServiceProviderId(page, itslearning)];
+    await test.step('Setup', async () => {
+      const idSPs: string[] = [await getServiceProviderId(page, itslearning, schuleId)];
       for (const { rollenArt, bezeichnung } of ROLLE_ENTZIEHEN_TYPES) {
         const targetRolleName: string = generateRolleName();
         const secondaryRolleName: string = generateRolleName();
@@ -429,7 +383,7 @@ test.describe('Rolle entziehen als Schuladmin', () => {
       }
     });
 
-    await switchToSchuladmin(page);
+    personManagementViewPage = await test.step('Als Schuladmin anmelden', async () => switchToSchuladmin(page));
 
     for (const { bezeichnung, rolleName, users } of stepData) {
       await test.step(bezeichnung, async () => {
@@ -452,7 +406,7 @@ test.describe('Rolle entziehen als Schuladmin', () => {
       let users: UserInfo[] = [];
 
       await test.step('Setup', async () => {
-        const idSPs: string[] = [await getServiceProviderId(page, itslearning)];
+        const idSPs: string[] = [await getServiceProviderId(page, itslearning, schuleId)];
         zugewieseneRolleName = generateRolleName();
         nichtZugewieseneRolleName = generateRolleName();
         const zugewieseneRolleId: string = await createRolle(page, typeSchueler, schuleId, zugewieseneRolleName);
@@ -468,7 +422,7 @@ test.describe('Rolle entziehen als Schuladmin', () => {
         const klasseId: string = await createKlasse(page, schuleId, generateKlassenname());
         users = await createUsersWithRolle(page, schuleId, zugewieseneRolleId, ROLLE_ENTZIEHEN_BULK_COUNT, klasseId);
 
-        await switchToSchuladmin(page);
+        personManagementViewPage = await switchToSchuladmin(page);
       });
 
       await test.step('Aktion', async () => {
@@ -499,7 +453,7 @@ test.describe('Rolle entziehen als Schuladmin', () => {
         let users: UserInfo[] = [];
 
         await test.step('Setup', async () => {
-          const idSPs: string[] = [await getServiceProviderId(page, itslearning)];
+          const idSPs: string[] = [await getServiceProviderId(page, itslearning, schuleId)];
           targetRolleName = generateRolleName();
           const secondaryRolleName: string = generateRolleName();
           const targetRolleId: string = await createRolle(page, typeSchueler, schuleId, targetRolleName);
@@ -530,7 +484,7 @@ test.describe('Rolle entziehen als Schuladmin', () => {
             );
           }
 
-          await switchToSchuladmin(page);
+          personManagementViewPage = await switchToSchuladmin(page);
         });
 
         await test.step('Aktion', async () => {
@@ -550,8 +504,8 @@ test.describe('Rolle entziehen als Schuladmin', () => {
   test('Teilerfolg bei gemischten Benutzern', { tag: [DEV, STAGE] }, async ({ page }: PlaywrightTestArgs) => {
     const stepData: { bezeichnung: string; rolleName: string; singleRolleUsers: UserInfo[]; allUsers: UserInfo[] }[] = [];
 
-    await test.step('Testdaten erstellen', async () => {
-      const idSPs: string[] = [await getServiceProviderId(page, itslearning)];
+    await test.step('Setup', async () => {
+      const idSPs: string[] = [await getServiceProviderId(page, itslearning, schuleId)];
       for (const { rollenArt, bezeichnung } of ROLLE_ENTZIEHEN_TYPES) {
         const targetRolleName: string = generateRolleName();
         const secondaryRolleName: string = generateRolleName();
@@ -583,7 +537,7 @@ test.describe('Rolle entziehen als Schuladmin', () => {
       }
     });
 
-    await switchToSchuladmin(page);
+    personManagementViewPage = await test.step('Als Schuladmin anmelden', async () => switchToSchuladmin(page));
 
     for (const { bezeichnung, rolleName, singleRolleUsers, allUsers } of stepData) {
       await test.step(bezeichnung, async () => {
