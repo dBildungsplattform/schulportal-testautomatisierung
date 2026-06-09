@@ -60,44 +60,34 @@ export interface UserInfo {
   kopersnummer: string;
 }
 
-export function constructPersonenkontextApi(page: Page): PersonenkontextApi {
+type ApiConstructor<T> = new (config: Configuration) => T;
+
+function constructApi<T>(page: Page, ApiClass: ApiConstructor<T>): T {
   const config: Configuration = new Configuration({
     basePath: FRONTEND_URL?.replace(/\/$/, ''),
     fetchApi: makeFetchWithPlaywright(page),
   });
-  return new PersonenkontextApi(config);
+  return new ApiClass(config);
+}
+
+export function constructPersonenkontextApi(page: Page): PersonenkontextApi {
+  return constructApi(page, PersonenkontextApi);
 }
 
 export function constructPersonenApi(page: Page): PersonenApi {
-  const config: Configuration = new Configuration({
-    basePath: FRONTEND_URL?.replace(/\/$/, ''),
-    fetchApi: makeFetchWithPlaywright(page),
-  });
-  return new PersonenApi(config);
+  return constructApi(page, PersonenApi);
 }
 
 export function constructPersonenFrontendApi(page: Page): PersonenFrontendApi {
-  const config: Configuration = new Configuration({
-    basePath: FRONTEND_URL?.replace(/\/$/, ''),
-    fetchApi: makeFetchWithPlaywright(page),
-  });
-  return new PersonenFrontendApi(config);
+  return constructApi(page, PersonenFrontendApi);
 }
 
 export function construct2FAApi(page: Page): Class2FAApi {
-  const config: Configuration = new Configuration({
-    basePath: FRONTEND_URL?.replace(/\/$/, ''),
-    fetchApi: makeFetchWithPlaywright(page),
-  });
-  return new Class2FAApi(config);
+  return constructApi(page, Class2FAApi);
 }
 
 export function constructPersonenuebersichtApi(page: Page): DbiamPersonenuebersichtApi {
-  const config: Configuration = new Configuration({
-    basePath: FRONTEND_URL?.replace(/\/$/, ''),
-    fetchApi: makeFetchWithPlaywright(page),
-  });
-  return new DbiamPersonenuebersichtApi(config);
+  return constructApi(page, DbiamPersonenuebersichtApi);
 }
 
 export async function freshLoginPage(page: Page): Promise<LoginViewPage> {
