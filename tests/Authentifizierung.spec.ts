@@ -93,18 +93,15 @@ test.describe('Smoke: Schüler kann sich anmelden, itslearning öffnen und sich 
       const schuleId: string = await createSchule(page, schuleName, generateDienststellenNr());
       const klasseName: string = generateKlassenname();
       const klasseId: string = await createKlasse(page, schuleId, klasseName);
-      userInfo = await createRolleAndPersonWithPersonenkontext(
-        page,
-        {
-          organisationName: schuleName,
-          rollenArt: RollenArt.Lern,
-          familienname: generateNachname(),
-          vorname: generateVorname(),
-          serviceProviderNames: [itslearning],
-          rollenName: generateRolleName(),
-          klasseId,
-        },
-      );
+      userInfo = await createRolleAndPersonWithPersonenkontext(page, {
+        organisationName: schuleName,
+        rollenArt: RollenArt.Lern,
+        familienname: generateNachname(),
+        vorname: generateVorname(),
+        serviceProviderNames: [itslearning],
+        rollenName: generateRolleName(),
+        klasseId,
+      });
     });
 
     await test.step('Als Schüler anmelden', async () => {
@@ -144,17 +141,14 @@ test.describe('Smoke: Schuladmin kann sich anmelden, zur Schulportal-Administrat
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
     await test.step('Testdaten anlegen', async () => {
       await loginAndNavigateToAdministration(page);
-      userInfo = await createRolleAndPersonWithPersonenkontext(
-        page,
-        {
-          organisationName: testschuleName,
-          rollenArt: RollenArt.Leit,
-          familienname: generateNachname(),
-          vorname: generateVorname(),
-          serviceProviderNames: [schulportaladmin],
-          rollenName: generateRolleName(),
-        },
-      );
+      userInfo = await createRolleAndPersonWithPersonenkontext(page, {
+        organisationName: testschuleName,
+        rollenArt: RollenArt.Leit,
+        familienname: generateNachname(),
+        vorname: generateVorname(),
+        serviceProviderNames: [schulportaladmin],
+        rollenName: generateRolleName(),
+      });
       await addSystemrechtToRolle(page, userInfo.rolleId, RollenSystemRechtEnum.PersonenVerwalten);
     });
 
@@ -198,17 +192,14 @@ test.describe('Smoke: Lehrer kann sich anmelden, auf E-Mail zugreifen und sich a
       const schuleName: string = generateSchulname();
       const schuleId: string = await createSchule(page, schuleName, generateDienststellenNr());
       void schuleId;
-      userInfo = await createRolleAndPersonWithPersonenkontext(
-        page,
-        {
-          organisationName: schuleName,
-          rollenArt: RollenArt.Lehr,
-          familienname: generateNachname(),
-          vorname: generateVorname(),
-          serviceProviderNames: [email, adressbuch, kalender, schoolSH],
-          rollenName: generateRolleName(),
-        },
-      );
+      userInfo = await createRolleAndPersonWithPersonenkontext(page, {
+        organisationName: schuleName,
+        rollenArt: RollenArt.Lehr,
+        familienname: generateNachname(),
+        vorname: generateVorname(),
+        serviceProviderNames: [email, adressbuch, kalender, schoolSH],
+        rollenName: generateRolleName(),
+      });
     });
 
     await test.step('Als Lehrer anmelden', async () => {
