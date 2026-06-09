@@ -9,6 +9,7 @@ export * from './CreateOrganisationBodyParams';
 export * from './CreateRolleBodyParams';
 export * from './CreateRollenerweiterungBodyParams';
 export * from './CreateServiceProviderBodyParams';
+export * from './CreateServiceProviderResponse';
 export * from './CsrfTokenResponse';
 export * from './DBiamPersonResponse';
 export * from './DBiamPersonenkontextResponse';

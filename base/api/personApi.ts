@@ -1,18 +1,25 @@
-import { Page, expect } from '@playwright/test';
-import { FRONTEND_URL } from './baseApi';
-import { generateCurrentDate, generateKopersNr, generateNachname, generateRolleName } from '../utils/generateTestdata';
-import { generateVorname } from '../utils/generateTestdata';
-import { LoginViewPage } from '../../pages/LoginView.page';
-import FromAnywhere from '../../pages/FromAnywhere';
-import { befristungPflicht } from '../merkmale';
-import { getOrganisationId } from './organisationApi';
-import { addServiceProvidersToRolle, createRolle, getRolleId } from './rolleApi';
+import { expect, Page } from '@playwright/test';
 import { HeaderPage } from '../../pages/components/Header.page';
+import FromAnywhere from '../../pages/FromAnywhere';
+import { LoginViewPage } from '../../pages/LoginView.page';
+import { befristungPflicht } from '../merkmale';
 import { testschuleName } from '../organisation';
-import { typeLehrer } from '../rollentypen';
-import { getServiceProviderId } from './serviceProviderApi';
 import { adressbuch, email, kalender } from '../sp';
-import { makeFetchWithPlaywright } from './playwrightFetchAdapter';
+import {
+  generateCurrentDate,
+  generateKopersNr,
+  generateNachname,
+  generateRolleName,
+  generateVorname,
+} from '../utils/generateTestdata';
+import { FRONTEND_URL } from './baseApi';
+import {
+  PersonControllerDeletePersonByIdRequest,
+  PersonControllerFindPersonenkontexteRequest,
+  PersonControllerLockPersonRequest,
+  PersonControllerResetUEMPasswordByPersonIdRequest,
+  PersonenApi,
+} from './generated/apis/PersonenApi';
 import {
   DbiamPersonenkontextWorkflowControllerCommitRequest,
   DbiamPersonenkontextWorkflowControllerCreatePersonWithPersonenkontexteRequest,
@@ -22,7 +29,6 @@ import {
   DBiamPersonenuebersichtControllerFindPersonenuebersichtenByPersonRequest,
   DbiamPersonenuebersichtApi,
 } from './generated/apis/DbiamPersonenuebersichtApi';
-import { ApiResponse, Configuration } from './generated/runtime';
 import {
   DBiamPersonenuebersichtResponse,
   DbiamCreatePersonWithPersonenkontexteBodyParams,
@@ -36,15 +42,13 @@ import {
   RollenArt,
   RollenMerkmal,
 } from './generated/models';
-import {
-  PersonControllerDeletePersonByIdRequest,
-  PersonControllerFindPersonenkontexteRequest,
-  PersonControllerLockPersonRequest,
-  PersonControllerResetUEMPasswordByPersonIdRequest,
-  PersonenApi,
-} from './generated/apis/PersonenApi';
 import { PersonenFrontendApi, PersonFrontendControllerFindPersonsRequest } from './generated/apis/PersonenFrontendApi';
 import { Class2FAApi } from './generated';
+import { ApiResponse, Configuration } from './generated/runtime';
+import { getOrganisationId } from './organisationApi';
+import { makeFetchWithPlaywright } from './playwrightFetchAdapter';
+import { addServiceProvidersToRolle, createRolle, getRolleId } from './rolleApi';
+import { getServiceProviderIdsMappedByName } from './serviceProviderApi';
 
 export interface UserInfo {
   username: string;
@@ -199,32 +203,60 @@ export async function createPersonWithPersonenkontext(
   return userInfo;
 }
 
+interface CreateRolleAndPersonWithPersonenkontextParams {
+  organisationName: string;
+  rollenArt: RollenArt;
+  serviceProviderNames?: string[];
+  rollenName?: string;
+  familienname?: string;
+  vorname?: string;
+  klasseId?: string;
+  koPersNr?: string;
+  rollenMerkmalNamen?: Set<RollenMerkmal>;
+}
 export async function createRolleAndPersonWithPersonenkontext(
   page: Page,
-  organisationName: string,
-  rollenArt: RollenArt,
-  familienname: string,
-  vorname: string,
-  idSPs: string[],
-  rolleName: string,
-  koPersNr?: string,
-  klasseId?: string,
-  merkmaleName?: Set<RollenMerkmal>,
+  params: CreateRolleAndPersonWithPersonenkontextParams,
 ): Promise<UserInfo> {
   // Organisation wird nicht angelegt, da diese zur Zeit nicht gelöscht werden kann
-  const organisationId: string = await getOrganisationId(page, organisationName);
-  const rolleId: string = await createRolle(page, rollenArt, organisationId, rolleName, merkmaleName);
+  const organisationId: string = await getOrganisationId(page, params.organisationName);
 
-  await addServiceProvidersToRolle(page, rolleId, idSPs);
+  const rolleId: string = await createRolle(
+    page,
+    params.rollenArt,
+    organisationId,
+    params.rollenName ?? generateRolleName(),
+    params.rollenMerkmalNamen,
+  );
+
+  if (params.serviceProviderNames && params.serviceProviderNames.length > 0) {
+    const serviceProviderByNameMap: Map<string, string> = await getServiceProviderIdsMappedByName(
+      page,
+      params.serviceProviderNames,
+      organisationId,
+    );
+    const missingServiceProviderNames: string[] = params.serviceProviderNames.filter(
+      (name: string) => !serviceProviderByNameMap.has(name),
+    );
+    if (missingServiceProviderNames.length > 0) {
+      throw new Error(
+        `The following service providers were not found in the organization ${params.organisationName}: ${missingServiceProviderNames.join(
+          ', ',
+        )}`,
+      );
+    }
+    await addServiceProvidersToRolle(page, rolleId, Array.from(serviceProviderByNameMap.values()));
+  }
+
   const userInfo: UserInfo = await createPerson(
     page,
     organisationId,
     rolleId,
-    familienname,
-    vorname,
-    koPersNr,
-    klasseId,
-    merkmaleName,
+    params.familienname,
+    params.vorname,
+    params.koPersNr,
+    params.klasseId,
+    params.rollenMerkmalNamen,
   );
   return userInfo;
 }
@@ -459,20 +491,12 @@ export async function getPersonId(page: Page, searchString: string): Promise<str
 
 export async function createTeacherAndLogin(page: Page): Promise<UserInfo> {
   const header: HeaderPage = new HeaderPage(page);
-  const userInfo: UserInfo = await createRolleAndPersonWithPersonenkontext(
-    page,
-    testschuleName,
-    typeLehrer,
-    generateNachname(),
-    generateVorname(),
-    [
-      await getServiceProviderId(page, email),
-      await getServiceProviderId(page, kalender),
-      await getServiceProviderId(page, adressbuch),
-    ],
-    generateRolleName(),
-    generateKopersNr(),
-  );
+  const userInfo: UserInfo = await createRolleAndPersonWithPersonenkontext(page, {
+    organisationName: testschuleName,
+    rollenArt: RollenArt.Lehr,
+    serviceProviderNames: [email, kalender, adressbuch],
+    koPersNr: generateKopersNr(),
+  });
 
   await header.logout();
   const loginPage = await header.navigateToLogin();

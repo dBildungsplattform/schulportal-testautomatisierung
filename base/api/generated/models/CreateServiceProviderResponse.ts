@@ -35,73 +35,74 @@ import {
 /**
  * 
  * @export
- * @interface ServiceProviderResponse
+ * @interface CreateServiceProviderResponse
  */
-export interface ServiceProviderResponse {
+export interface CreateServiceProviderResponse {
     /**
      * 
      * @type {string}
-     * @memberof ServiceProviderResponse
+     * @memberof CreateServiceProviderResponse
      */
     id: string;
     /**
      * 
      * @type {string}
-     * @memberof ServiceProviderResponse
+     * @memberof CreateServiceProviderResponse
      */
     name: string;
     /**
      * 
      * @type {ServiceProviderTarget}
-     * @memberof ServiceProviderResponse
+     * @memberof CreateServiceProviderResponse
      */
     target: ServiceProviderTarget;
     /**
-     * Can be undefined, if `target` is not equal to `URL`
+     * URL of created service provider
      * @type {string}
-     * @memberof ServiceProviderResponse
+     * @memberof CreateServiceProviderResponse
      */
-    url?: string;
+    url: string;
     /**
      * 
      * @type {ServiceProviderKategorie}
-     * @memberof ServiceProviderResponse
+     * @memberof CreateServiceProviderResponse
      */
     kategorie: ServiceProviderKategorie;
     /**
      * Optional logoId for use with standard logos
      * @type {number}
-     * @memberof ServiceProviderResponse
+     * @memberof CreateServiceProviderResponse
      */
     logoId?: number;
     /**
      * Indicates if a custom logo is available for fetching
      * @type {boolean}
-     * @memberof ServiceProviderResponse
+     * @memberof CreateServiceProviderResponse
      */
     hasLogo: boolean;
     /**
      * Indicates if 2FA is required
      * @type {boolean}
-     * @memberof ServiceProviderResponse
+     * @memberof CreateServiceProviderResponse
      */
     requires2fa: boolean;
     /**
      * 
      * @type {Array<ServiceProviderMerkmal>}
-     * @memberof ServiceProviderResponse
+     * @memberof CreateServiceProviderResponse
      */
     merkmale: Array<ServiceProviderMerkmal>;
 }
 
 /**
- * Check if a given object implements the ServiceProviderResponse interface.
+ * Check if a given object implements the CreateServiceProviderResponse interface.
  */
-export function instanceOfServiceProviderResponse(value: object): boolean {
+export function instanceOfCreateServiceProviderResponse(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "id" in value;
     isInstance = isInstance && "name" in value;
     isInstance = isInstance && "target" in value;
+    isInstance = isInstance && "url" in value;
     isInstance = isInstance && "kategorie" in value;
     isInstance = isInstance && "hasLogo" in value;
     isInstance = isInstance && "requires2fa" in value;
@@ -110,11 +111,11 @@ export function instanceOfServiceProviderResponse(value: object): boolean {
     return isInstance;
 }
 
-export function ServiceProviderResponseFromJSON(json: any): ServiceProviderResponse {
-    return ServiceProviderResponseFromJSONTyped(json, false);
+export function CreateServiceProviderResponseFromJSON(json: any): CreateServiceProviderResponse {
+    return CreateServiceProviderResponseFromJSONTyped(json, false);
 }
 
-export function ServiceProviderResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): ServiceProviderResponse {
+export function CreateServiceProviderResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): CreateServiceProviderResponse {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -123,7 +124,7 @@ export function ServiceProviderResponseFromJSONTyped(json: any, ignoreDiscrimina
         'id': json['id'],
         'name': json['name'],
         'target': ServiceProviderTargetFromJSON(json['target']),
-        'url': !exists(json, 'url') ? undefined : json['url'],
+        'url': json['url'],
         'kategorie': ServiceProviderKategorieFromJSON(json['kategorie']),
         'logoId': !exists(json, 'logoId') ? undefined : json['logoId'],
         'hasLogo': json['hasLogo'],
@@ -132,7 +133,7 @@ export function ServiceProviderResponseFromJSONTyped(json: any, ignoreDiscrimina
     };
 }
 
-export function ServiceProviderResponseToJSON(value?: ServiceProviderResponse | null): any {
+export function CreateServiceProviderResponseToJSON(value?: CreateServiceProviderResponse | null): any {
     if (value === undefined) {
         return undefined;
     }
