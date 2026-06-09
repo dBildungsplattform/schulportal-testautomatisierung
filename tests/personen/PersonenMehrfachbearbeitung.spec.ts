@@ -1,7 +1,8 @@
-import { Download, PlaywrightTestArgs, test } from '@playwright/test';
+import { Download, expect, PlaywrightTestArgs, test } from '@playwright/test';
 import { createKlasse, getOrganisationId } from '../../base/api/organisationApi';
 import {
   addSecondOrganisationToPerson,
+  constructPersonenkontextApi,
   createPerson,
   createPersonWithPersonenkontext,
   UserInfo,
@@ -15,7 +16,14 @@ import { typeLehrer, typeSchueler } from '../../base/rollentypen';
 import { itslearning } from '../../base/sp';
 import { DEV, STAGE } from '../../base/tags';
 import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
-import { generateDienststellenNr, generateKlassenname, generateRolleName, generateSchulname } from '../../base/utils/generateTestdata';
+import {
+  generateDienststellenNr,
+  generateKlassenname,
+  generateNachname,
+  generateRolleName,
+  generateSchulname,
+  generateVorname,
+} from '../../base/utils/generateTestdata';
 import { LandingViewPage } from '../../pages/LandingView.page';
 import { LoginViewPage } from '../../pages/LoginView.page';
 import { StartViewPage } from '../../pages/StartView.page';
@@ -42,6 +50,11 @@ const ROLLE_ENTZIEHEN_ERROR_TEXT: string =
 
 const ROLLE_ENTZIEHEN_BULK_COUNT: number = 2;
 
+const LERN_ROLLE_ENTZIEHEN_KLASSEN_VARIANTEN: { bezeichnung: string; unterschiedlicheKlassen: boolean }[] = [
+  { bezeichnung: 'an derselben Klasse', unterschiedlicheKlassen: false },
+  { bezeichnung: 'an unterschiedlichen Klassen', unterschiedlicheKlassen: true },
+];
+
 async function createUsersWithRolle(
   page: PlaywrightTestArgs['page'],
   schuleId: string,
@@ -57,13 +70,61 @@ async function createUsersWithRolle(
   );
 }
 
+async function createUsersWithLernRollenInDifferentKlassen(
+  page: PlaywrightTestArgs['page'],
+  schuleId: string,
+  primaryRolleId: string,
+  secondaryRolleId: string,
+  primaryKlasseId: string,
+  secondaryKlasseId: string,
+  count: number,
+): Promise<UserInfo[]> {
+  const personenkontextApi = constructPersonenkontextApi(page);
+  const users: UserInfo[] = [];
+
+  for (let index: number = 0; index < count; index++) {
+    const response = await personenkontextApi.dbiamPersonenkontextWorkflowControllerCreatePersonWithPersonenkontexteRaw(
+      {
+        dbiamCreatePersonWithPersonenkontexteBodyParams: {
+          familienname: generateNachname(),
+          vorname: generateVorname(),
+          createPersonenkontexte: [
+            { organisationId: schuleId, rolleId: primaryRolleId },
+            { organisationId: primaryKlasseId, rolleId: primaryRolleId },
+            { organisationId: schuleId, rolleId: secondaryRolleId },
+            { organisationId: secondaryKlasseId, rolleId: secondaryRolleId },
+          ],
+        },
+      },
+    );
+    expect(response.raw.status).toBe(201);
+    const createdPerson = await response.value();
+
+    users.push({
+      username: createdPerson.person.username!,
+      password: createdPerson.person.startpasswort,
+      rolleId: primaryRolleId,
+      organisationId: schuleId,
+      personId: createdPerson.person.id,
+      vorname: createdPerson.person.name.vorname,
+      nachname: createdPerson.person.name.familienname,
+      kopersnummer: '',
+    });
+  }
+
+  return users;
+}
+
 async function selectUsersAndStartRolleEntziehen(
   personManagementViewPage: PersonManagementViewPage,
   rolleName: string,
   users: UserInfo[],
+  options?: { filterByRolle?: boolean; submit?: boolean },
 ): Promise<void> {
-  await personManagementViewPage.filterByRolle(rolleName);
-  await personManagementViewPage.waitForDataLoad();
+  if (options?.filterByRolle ?? true) {
+    await personManagementViewPage.filterByRolle(rolleName);
+    await personManagementViewPage.waitForDataLoad();
+  }
 
   for (const user of users) {
     await personManagementViewPage.assertThatPersonExists(user.username);
@@ -73,7 +134,9 @@ async function selectUsersAndStartRolleEntziehen(
 
   await personManagementViewPage.selectMehrfachauswahl('Rolle entziehen');
   await personManagementViewPage.checkRolleEntziehenDialog();
-  await personManagementViewPage.rolleEntziehen();
+  if (options?.submit ?? true) {
+    await personManagementViewPage.rolleEntziehen();
+  }
 }
 
 interface AdminFixture {
@@ -378,6 +441,110 @@ test.describe('Rolle entziehen als Schuladmin', () => {
         await personManagementViewPage.closeDialog('rolle-unassign-close-button');
       });
     }
+  });
+
+  test(
+    'Nicht vorhandene LERN-Rolle wird beim Entziehen ignoriert',
+    { tag: [DEV, STAGE] },
+    async ({ page }: PlaywrightTestArgs) => {
+      let zugewieseneRolleName: string = '';
+      let nichtZugewieseneRolleName: string = '';
+      let users: UserInfo[] = [];
+
+      await test.step('Setup', async () => {
+        const idSPs: string[] = [await getServiceProviderId(page, itslearning)];
+        zugewieseneRolleName = generateRolleName();
+        nichtZugewieseneRolleName = generateRolleName();
+        const zugewieseneRolleId: string = await createRolle(page, typeSchueler, schuleId, zugewieseneRolleName);
+        const nichtZugewieseneRolleId: string = await createRolle(
+          page,
+          typeSchueler,
+          schuleId,
+          nichtZugewieseneRolleName,
+        );
+        await addServiceProvidersToRolle(page, zugewieseneRolleId, idSPs);
+        await addServiceProvidersToRolle(page, nichtZugewieseneRolleId, idSPs);
+
+        const klasseId: string = await createKlasse(page, schuleId, generateKlassenname());
+        users = await createUsersWithRolle(page, schuleId, zugewieseneRolleId, ROLLE_ENTZIEHEN_BULK_COUNT, klasseId);
+
+        await switchToSchuladmin(page);
+      });
+
+      await test.step('Aktion', async () => {
+        await personManagementViewPage.resetFilter();
+        await personManagementViewPage.waitForDataLoad();
+        await selectUsersAndStartRolleEntziehen(personManagementViewPage, zugewieseneRolleName, users, {
+          filterByRolle: false,
+          submit: false,
+        });
+        await personManagementViewPage.selectRolleInEntziehenDialog(nichtZugewieseneRolleName);
+        await personManagementViewPage.rolleEntziehen();
+      });
+
+      await test.step('Verifikation', async () => {
+        await personManagementViewPage.checkRolleEntziehenInProgress();
+        await personManagementViewPage.checkRolleEntziehenSuccessDialog();
+        await personManagementViewPage.closeDialog('rolle-unassign-close-button');
+      });
+    },
+  );
+
+  LERN_ROLLE_ENTZIEHEN_KLASSEN_VARIANTEN.forEach(({ bezeichnung, unterschiedlicheKlassen }) => {
+    test(
+      `Rolle LERN wird erfolgreich entzogen ${bezeichnung}`,
+      { tag: [DEV, STAGE] },
+      async ({ page }: PlaywrightTestArgs) => {
+        let targetRolleName: string = '';
+        let users: UserInfo[] = [];
+
+        await test.step('Setup', async () => {
+          const idSPs: string[] = [await getServiceProviderId(page, itslearning)];
+          targetRolleName = generateRolleName();
+          const secondaryRolleName: string = generateRolleName();
+          const targetRolleId: string = await createRolle(page, typeSchueler, schuleId, targetRolleName);
+          const secondaryRolleId: string = await createRolle(page, typeSchueler, schuleId, secondaryRolleName);
+          await addServiceProvidersToRolle(page, targetRolleId, idSPs);
+          await addServiceProvidersToRolle(page, secondaryRolleId, idSPs);
+
+          const primaryKlasseId: string = await createKlasse(page, schuleId, generateKlassenname());
+          if (unterschiedlicheKlassen) {
+            const secondaryKlasseId: string = await createKlasse(page, schuleId, generateKlassenname());
+            users = await createUsersWithLernRollenInDifferentKlassen(
+              page,
+              schuleId,
+              targetRolleId,
+              secondaryRolleId,
+              primaryKlasseId,
+              secondaryKlasseId,
+              ROLLE_ENTZIEHEN_BULK_COUNT,
+            );
+          } else {
+            users = await createUsersWithRolle(
+              page,
+              schuleId,
+              targetRolleId,
+              ROLLE_ENTZIEHEN_BULK_COUNT,
+              primaryKlasseId,
+              secondaryRolleId,
+            );
+          }
+
+          await switchToSchuladmin(page);
+        });
+
+        await test.step('Aktion', async () => {
+          await personManagementViewPage.resetFilter();
+          await selectUsersAndStartRolleEntziehen(personManagementViewPage, targetRolleName, users);
+        });
+
+        await test.step('Verifikation', async () => {
+          await personManagementViewPage.checkRolleEntziehenInProgress();
+          await personManagementViewPage.checkRolleEntziehenSuccessDialog();
+          await personManagementViewPage.closeDialog('rolle-unassign-close-button');
+        });
+      },
+    );
   });
 
   test('Teilerfolg bei gemischten Benutzern', { tag: [DEV, STAGE] }, async ({ page }: PlaywrightTestArgs) => {

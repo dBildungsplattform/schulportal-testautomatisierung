@@ -9,7 +9,7 @@ import { AbstractAdminPage } from '../AbstractAdmin.page';
 import { PersonDetailsViewPage } from './details/PersonDetailsView.page';
 import { RolleZuordnenPage } from './mehrfachbearbeitung/RolleZuordnen.page';
 
-type MehrfachbearbeitungOption = 'Rolle zuordnen' | 'Schüler versetzen' | 'Passwort zurücksetzen';
+type MehrfachbearbeitungOption = 'Rolle zuordnen' | 'Schüler versetzen' | 'Passwort zurücksetzen' | 'Rolle entziehen';
 export class PersonManagementViewPage extends AbstractAdminPage {
   private readonly personTable: DataTable;
   private readonly searchFilter: SearchFilter;
@@ -144,6 +144,18 @@ export class PersonManagementViewPage extends AbstractAdminPage {
 
   public async rolleEntziehen(): Promise<void> {
     await this.page.getByTestId('rolle-unassign-submit-button').click();
+  }
+
+  public async selectRolleInEntziehenDialog(rolleName: string): Promise<void> {
+    const rolleSelect: Locator = this.rolleEntziehenDialogCard.getByTestId('rolle-select');
+    await rolleSelect.locator('.v-field__append-inner').click({ force: true });
+    const rolleInput: Locator = rolleSelect.locator('input');
+    await rolleInput.fill('');
+    await rolleInput.pressSequentially(rolleName);
+    const rolleOption: Locator = this.page.locator('.v-overlay .v-list-item').filter({
+      hasText: new RegExp(`^${rolleName}$`),
+    });
+    await rolleOption.click();
   }
 
   public async downloadPasswordFile(): Promise<Download> {

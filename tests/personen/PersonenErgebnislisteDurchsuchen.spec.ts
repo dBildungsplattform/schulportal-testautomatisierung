@@ -137,7 +137,8 @@ interface AdminFixture {
             await personManagementViewPage.filterBySchule(organisationsName, true);
           }
           // Narrow to the known admin user to avoid interference from concurrent test data
-          await personManagementViewPage.searchByText(admin.nachname);
+          // username is server-generated and globally unique; nachname is not guaranteed unique across parallel workers
+          await personManagementViewPage.searchByText(admin.username);
           await personManagementViewPage.checkIfSchuleIsCorrect(organisationsName, dienststellenNr);
         },
       );
