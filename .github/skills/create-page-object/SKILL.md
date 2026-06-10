@@ -13,8 +13,11 @@ Dieses Skill erstellt ein neues Playwright Page-Object für eine Admin-Seite des
 - Die `data-testid`-Attribute einer Seite unbekannt sind und per MCP ermittelt werden müssen
 
 ## Do Not Use When
-- Nur eine bestehende Klasse erweitert oder umbenannt werden soll
+- Nur eine bestehende Klasse erweitert oder umbenannt werden soll → verwende stattdessen [`extend-page-object`](../extend-page-object/SKILL.md)
 - Kein Login-Zugang zur Zielseite vorhanden ist
+
+## See Also
+- [`extend-page-object`](../extend-page-object/SKILL.md) — Erweitert eine bestehende Page-Klasse um neue Locators und Methoden
 
 ---
 
