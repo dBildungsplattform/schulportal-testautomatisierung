@@ -16,10 +16,8 @@ import { loginAndNavigateToAdministration, logout } from '../base/testHelperUtil
 import {
   generateDienststellenNr,
   generateKlassenname,
-  generateNachname,
   generateRolleName,
   generateSchulname,
-  generateVorname,
 } from '../base/utils/generateTestdata';
 import { LandingViewPage } from '../pages/LandingView.page';
 import { LoginViewPage } from '../pages/LoginView.page';
@@ -96,10 +94,7 @@ test.describe('Smoke: Schüler kann sich anmelden, itslearning öffnen und sich 
       userInfo = await createRolleAndPersonWithPersonenkontext(page, {
         organisationName: schuleName,
         rollenArt: RollenArt.Lern,
-        familienname: generateNachname(),
-        vorname: generateVorname(),
         serviceProviderNames: [itslearning],
-        rollenName: generateRolleName(),
         klasseId,
       });
     });
@@ -144,10 +139,7 @@ test.describe('Smoke: Schuladmin kann sich anmelden, zur Schulportal-Administrat
       userInfo = await createRolleAndPersonWithPersonenkontext(page, {
         organisationName: testschuleName,
         rollenArt: RollenArt.Leit,
-        familienname: generateNachname(),
-        vorname: generateVorname(),
         serviceProviderNames: [schulportaladmin],
-        rollenName: generateRolleName(),
       });
       await addSystemrechtToRolle(page, userInfo.rolleId, RollenSystemRechtEnum.PersonenVerwalten);
     });
@@ -190,15 +182,11 @@ test.describe('Smoke: Lehrer kann sich anmelden, auf E-Mail zugreifen und sich a
     await test.step('Testdaten anlegen', async () => {
       await loginAndNavigateToAdministration(page);
       const schuleName: string = generateSchulname();
-      const schuleId: string = await createSchule(page, schuleName, generateDienststellenNr());
-      void schuleId;
+      await createSchule(page, schuleName, generateDienststellenNr());
       userInfo = await createRolleAndPersonWithPersonenkontext(page, {
         organisationName: schuleName,
         rollenArt: RollenArt.Lehr,
-        familienname: generateNachname(),
-        vorname: generateVorname(),
         serviceProviderNames: [email, adressbuch, kalender, schoolSH],
-        rollenName: generateRolleName(),
       });
     });
 

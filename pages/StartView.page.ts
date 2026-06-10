@@ -20,53 +20,28 @@ export class StartViewPage {
   }
 
   public async navigateToAdministration(): Promise<PersonManagementViewPage> {
-    await this.page
-      .locator('[data-testid^="service-provider-card"]')
-      .filter({ hasText: 'Schulportal-Administration' })
-      .click();
+    await this.getServiceProviderCard('Schulportal-Administration').click();
 
     const twoFactorWorkflowPage: TwoFactorWorkflowPage = new TwoFactorWorkflowPage(this.page, this.username);
     return twoFactorWorkflowPage.completeTwoFactorAuthentication();
   }
 
   public async navigateToEmail(): Promise<void> {
-    const emailCard: Locator = this.page
-      .locator('[data-testid^="service-provider-card"]')
-      .filter({ hasText: 'E-Mail' });
-
-    await emailCard.click();
+    await this.getServiceProviderCard('E-Mail').click();
 
     const twoFactorWorkflowPage: TwoFactorWorkflowPage = new TwoFactorWorkflowPage(this.page, this.username);
-    const setupButton: Locator = this.page.getByTestId('toSecondFactorSetup-button');
-    let otpSecret: string | undefined;
-    let requires2FASetup: boolean = false;
-    try {
-      await setupButton.waitFor({ state: 'visible', timeout: 10_000 });
-      requires2FASetup = true;
-    } catch {
-      // 2FA already configured or not required
-    }
+    await twoFactorWorkflowPage.completeTwoFactorAuthentication<void>('/email', async () => undefined);
+  }
 
-    if (requires2FASetup) {
-      const result = await twoFactorWorkflowPage.setupTwoFactorAuthenticationFromErrorMessage();
-      otpSecret = result.otpSecret;
-      await this.page.goto('/');
-      await this.waitForPageLoad();
-      await emailCard.click();
-    }
-
-    const otpInput: Locator = this.page.locator('#otp');
-    let requires2FA: boolean = false;
-    try {
-      await otpInput.waitFor({ state: 'visible', timeout: 10_000 });
-      requires2FA = true;
-    } catch {
-      // No OTP required
-    }
-
-    if (requires2FA) {
-      await twoFactorWorkflowPage.enterOtpForTwoFactorAuthentication(otpSecret);
-    }
+  public async openServiceProviderInNewTab(serviceProviderName: string): Promise<Page> {
+    const [newPage] = await Promise.all([
+      this.page.context().waitForEvent('page'),
+      this.getServiceProviderCard(serviceProviderName).click(),
+    ]);
+    await newPage.waitForLoadState('load');
+    const response = await this.page.request.get(newPage.url());
+    expect(response.ok()).toBeTruthy();
+    return newPage;
   }
 
   /* assertions */
@@ -81,9 +56,7 @@ export class StartViewPage {
   public async assertServiceProvidersAreVisible(serviceProviderNames: string[]): Promise<void> {
     await Promise.all(
       serviceProviderNames.map(async (serviceProviderName: string) => {
-        const serviceProviderCard: Locator = this.page.locator(`[data-testid^="service-provider-card"]`, {
-          hasText: serviceProviderName,
-        });
+        const serviceProviderCard: Locator = this.getServiceProviderCard(serviceProviderName);
         await expect(serviceProviderCard).toBeVisible();
         await expect(serviceProviderCard.locator('img')).toBeVisible();
       }),
@@ -92,23 +65,8 @@ export class StartViewPage {
 
   public async assertServiceProvidersAreHidden(serviceProviderNames: string[]): Promise<void> {
     for (const serviceProviderName of serviceProviderNames) {
-      await expect(
-        this.page.locator('[data-testid^="service-provider-card"]', { hasText: serviceProviderName }),
-      ).toBeHidden();
+      await expect(this.getServiceProviderCard(serviceProviderName)).toBeHidden();
     }
-  }
-
-  public async openServiceProviderInNewTab(serviceProviderName: string): Promise<Page> {
-    const [newPage] = await Promise.all([
-      this.page.context().waitForEvent('page'),
-      this.page.locator('[data-testid^="service-provider-card"]').filter({ hasText: serviceProviderName }).click(),
-    ]);
-    await newPage.waitForLoadState('load');
-    return newPage;
-  }
-
-  public async assertServiceProviderTabOpened(newPage: Page, expectedUrlPart: string): Promise<void> {
-    await expect(newPage).toHaveURL(new RegExp(expectedUrlPart));
   }
 
   public async assertNewsbox(
@@ -127,5 +85,9 @@ export class StartViewPage {
     if (expectedColor === 'orange') {
       await expect(this.page.getByRole('alert')).toHaveCSS('background-color', 'rgb(255, 152, 37)');
     }
+  }
+
+  private getServiceProviderCard(serviceProviderName: string): Locator {
+    return this.page.locator('[data-testid^="service-provider-card"]', { hasText: serviceProviderName });
   }
 }
