@@ -62,6 +62,9 @@ export default defineConfig({
         ...devices['Desktop Safari'],
         viewport: { width: 1920, height: 1080 },
         ignoreHTTPSErrors: true,
+        contextOptions: {
+          reducedMotion: 'reduce',
+        },
       },
     },
     /* Test against branded browsers. */
