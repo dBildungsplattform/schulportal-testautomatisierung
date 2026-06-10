@@ -60,9 +60,8 @@ export class MenuBarPage {
   }
 
   public async navigateToPersonAdd(): Promise<PersonCreationViewPage> {
-    const { PersonCreationMode, PersonCreationViewPage } = await import(
-      '../admin/personen/creation/PersonCreationView.page'
-    );
+    const { PersonCreationMode, PersonCreationViewPage } =
+      await import('../admin/personen/creation/PersonCreationView.page');
     return this.navigateTo(
       'person-add-menu-item',
       new PersonCreationViewPage(this.page, PersonCreationMode.ADD_ANOTHER_STATE_EMPLOYEE).waitForPageLoad(),
