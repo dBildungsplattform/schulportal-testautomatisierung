@@ -133,6 +133,7 @@ interface AdminFixture {
       );
     });
 
+    // Skipping this test for now since it fails when sharding. It will be re-enabled in a separate scope
     test.describe.skip('Mit Klassendatenanlage', () => {
       let klassenNamen: string[] = [];
 

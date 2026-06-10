@@ -276,7 +276,7 @@ jobs:
   # Aggregator — satisfies required check
   # --------------------------
   run_playwright_tests: # <-- exact name GitHub expects
-    if: always()
+    if: always() # <-- run even if shards fail, to report failure properly
     needs: [playwright_shards]
     runs-on: ubuntu-latest
     steps:
