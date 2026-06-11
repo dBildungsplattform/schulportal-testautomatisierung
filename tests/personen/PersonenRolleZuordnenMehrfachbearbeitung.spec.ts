@@ -10,7 +10,13 @@ import {
 import { addServiceProvidersToRolle, createRolle, getRolleId, RollenArt } from '../../base/api/rolleApi';
 import { getServiceProviderId } from '../../base/api/serviceProviderApi';
 import { landSH } from '../../base/organisation';
-import { landesadminRolle, lehrerImVorbereitungsdienstRolle, lehrkraftOeffentlichRolle, religionsLehrkraftRolle, schuladminOeffentlichRolle } from '../../base/rollen';
+import {
+  landesadminRolle,
+  lehrerImVorbereitungsdienstRolle,
+  lehrkraftOeffentlichRolle,
+  religionsLehrkraftRolle,
+  schuladminOeffentlichRolle,
+} from '../../base/rollen';
 import { typeSchueler } from '../../base/rollentypen';
 import { itslearning } from '../../base/sp';
 import { DEV } from '../../base/tags';
@@ -85,19 +91,12 @@ test.describe(`Mehrfachbearbeitung Rolle zuordnen: Umgebung: ${process.env.ENV}:
         });
 
         // Schuladmin (1 Schule) anlegen
-        const admin: UserInfo = await createPersonWithPersonenkontext(
-          page,
-          schuleName,
-          schuladminOeffentlichRolle,
-        );
+        const admin: UserInfo = await createPersonWithPersonenkontext(page, schuleName, schuladminOeffentlichRolle);
 
         // Als Schuladmin neu anmelden (inkl. Passwortwechsel)
         const landingPage: LandingViewPage = await personManagementViewPage.getHeader().logout();
         const loginPage: LoginViewPage = await landingPage.navigateToLogin();
-        const startPage: StartViewPage = await loginPage.loginNewUserWithPasswordChange(
-          admin.username,
-          admin.password,
-        );
+        const startPage: StartViewPage = await loginPage.loginNewUserWithPasswordChange(admin.username, admin.password);
         await startPage.waitForPageLoad();
         personManagementViewPage = await startPage.navigateToAdministration();
       });
@@ -117,7 +116,9 @@ test.describe(`Mehrfachbearbeitung Rolle zuordnen: Umgebung: ${process.env.ENV}:
         });
 
         await test.step(`Mehrfachbearbeitung "Rolle zuordnen" öffnen und Lern-Rolle auswählen`, async () => {
-          rolleZuordnenPage = (await personManagementViewPage.selectMehrfachauswahl('Rolle zuordnen')) as RolleZuordnenPage;
+          rolleZuordnenPage = (await personManagementViewPage.selectMehrfachauswahl(
+            'Rolle zuordnen',
+          )) as RolleZuordnenPage;
           await rolleZuordnenPage.selectRolle(zielRolleName);
         });
 
@@ -235,21 +236,14 @@ test.describe(`Mehrfachbearbeitung Rolle zuordnen: Umgebung: ${process.env.ENV}:
         );
 
         // Schuladmin mit 2 Schulen anlegen
-        const admin: UserInfo = await createPersonWithPersonenkontext(
-          page,
-          schuleName,
-          schuladminOeffentlichRolle,
-        );
+        const admin: UserInfo = await createPersonWithPersonenkontext(page, schuleName, schuladminOeffentlichRolle);
         const schuladminRolleId: string = await getRolleId(page, schuladminOeffentlichRolle);
         await addSecondOrganisationToPerson(page, admin.personId, schuleId, zweiteSchuleId, schuladminRolleId);
 
         // Als Schuladmin neu anmelden (inkl. Passwortwechsel)
         const landingPage: LandingViewPage = await personManagementViewPage.getHeader().logout();
         const loginPage: LoginViewPage = await landingPage.navigateToLogin();
-        const startPage: StartViewPage = await loginPage.loginNewUserWithPasswordChange(
-          admin.username,
-          admin.password,
-        );
+        const startPage: StartViewPage = await loginPage.loginNewUserWithPasswordChange(admin.username, admin.password);
         await startPage.waitForPageLoad();
         personManagementViewPage = await startPage.navigateToAdministration();
       });
@@ -269,7 +263,9 @@ test.describe(`Mehrfachbearbeitung Rolle zuordnen: Umgebung: ${process.env.ENV}:
         });
 
         await test.step(`Mehrfachbearbeitung "Rolle zuordnen" öffnen, Schule und Lern-Rolle auswählen`, async () => {
-          rolleZuordnenPage = (await personManagementViewPage.selectMehrfachauswahl('Rolle zuordnen')) as RolleZuordnenPage;
+          rolleZuordnenPage = (await personManagementViewPage.selectMehrfachauswahl(
+            'Rolle zuordnen',
+          )) as RolleZuordnenPage;
           await rolleZuordnenPage.selectOrganisation(schuleName);
           await rolleZuordnenPage.selectRolle(zielRolleName);
         });
@@ -317,7 +313,9 @@ test.describe(`Mehrfachbearbeitung Rolle zuordnen: Umgebung: ${process.env.ENV}:
         });
 
         await test.step(`Mehrfachbearbeitung "Rolle zuordnen" öffnen, Schule und Lern-Rolle auswählen`, async () => {
-          rolleZuordnenPage = (await personManagementViewPage.selectMehrfachauswahl('Rolle zuordnen')) as RolleZuordnenPage;
+          rolleZuordnenPage = (await personManagementViewPage.selectMehrfachauswahl(
+            'Rolle zuordnen',
+          )) as RolleZuordnenPage;
           await rolleZuordnenPage.selectOrganisation(schuleName);
           await rolleZuordnenPage.selectRolle(zielRolleName);
         });
@@ -336,8 +334,9 @@ test.describe(`Mehrfachbearbeitung Rolle zuordnen: Umgebung: ${process.env.ENV}:
 
         await test.step(`Schülerprofil öffnen und neue Zuordnung mit Befristung prüfen`, async () => {
           await personManagementViewPage.waitForDataLoad();
-          const personDetailsView: PersonDetailsViewPage =
-            await personManagementViewPage.openGesamtuebersicht(schueler1.nachname);
+          const personDetailsView: PersonDetailsViewPage = await personManagementViewPage.openGesamtuebersicht(
+            schueler1.nachname,
+          );
           await personDetailsView.checkZuordnungExists({
             dstNr: schuleDstNr,
             organisation: schuleName,
@@ -363,7 +362,9 @@ test.describe(`Mehrfachbearbeitung Rolle zuordnen: Umgebung: ${process.env.ENV}:
         });
 
         await test.step(`Mehrfachbearbeitung "Rolle zuordnen" öffnen, Schule und (bereits zugeordnete) Lern-Rolle auswählen`, async () => {
-          rolleZuordnenPage = (await personManagementViewPage.selectMehrfachauswahl('Rolle zuordnen')) as RolleZuordnenPage;
+          rolleZuordnenPage = (await personManagementViewPage.selectMehrfachauswahl(
+            'Rolle zuordnen',
+          )) as RolleZuordnenPage;
           await rolleZuordnenPage.selectOrganisation(schuleName);
           await rolleZuordnenPage.selectRolle(zielRolleName);
         });
@@ -544,4 +545,3 @@ for (const { adminType, rollenAssertions } of LEHR_ROLLEN_TEST_SCENARIOS) {
     });
   });
 }
-

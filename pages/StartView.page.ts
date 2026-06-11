@@ -20,13 +20,28 @@ export class StartViewPage {
   }
 
   public async navigateToAdministration(): Promise<PersonManagementViewPage> {
-    await this.page
-      .locator('[data-testid^="service-provider-card"]')
-      .filter({ hasText: 'Schulportal-Administration' })
-      .click();
+    await this.getServiceProviderCard('Schulportal-Administration').click();
 
     const twoFactorWorkflowPage: TwoFactorWorkflowPage = new TwoFactorWorkflowPage(this.page, this.username);
     return twoFactorWorkflowPage.completeTwoFactorAuthentication();
+  }
+
+  public async navigateToEmail(): Promise<void> {
+    await this.getServiceProviderCard('E-Mail').click();
+
+    const twoFactorWorkflowPage: TwoFactorWorkflowPage = new TwoFactorWorkflowPage(this.page, this.username);
+    await twoFactorWorkflowPage.completeTwoFactorAuthentication<void>('/email', async () => undefined);
+  }
+
+  public async openServiceProviderInNewTab(serviceProviderName: string): Promise<Page> {
+    const [newPage] = await Promise.all([
+      this.page.context().waitForEvent('page'),
+      this.getServiceProviderCard(serviceProviderName).click(),
+    ]);
+    await newPage.waitForLoadState('load');
+    const response = await this.page.request.get(newPage.url());
+    expect(response.ok()).toBeTruthy();
+    return newPage;
   }
 
   /* assertions */
@@ -41,9 +56,7 @@ export class StartViewPage {
   public async assertServiceProvidersAreVisible(serviceProviderNames: string[]): Promise<void> {
     await Promise.all(
       serviceProviderNames.map(async (serviceProviderName: string) => {
-        const serviceProviderCard: Locator = this.page.locator(`[data-testid^="service-provider-card"]`, {
-          hasText: serviceProviderName,
-        });
+        const serviceProviderCard: Locator = this.getServiceProviderCard(serviceProviderName);
         await expect(serviceProviderCard).toBeVisible();
         await expect(serviceProviderCard.locator('img')).toBeVisible();
       }),
@@ -52,9 +65,7 @@ export class StartViewPage {
 
   public async assertServiceProvidersAreHidden(serviceProviderNames: string[]): Promise<void> {
     for (const serviceProviderName of serviceProviderNames) {
-      await expect(
-        this.page.locator('[data-testid^="service-provider-card"]', { hasText: serviceProviderName }),
-      ).toBeHidden();
+      await expect(this.getServiceProviderCard(serviceProviderName)).toBeHidden();
     }
   }
 
@@ -74,5 +85,9 @@ export class StartViewPage {
     if (expectedColor === 'orange') {
       await expect(this.page.getByRole('alert')).toHaveCSS('background-color', 'rgb(255, 152, 37)');
     }
+  }
+
+  private getServiceProviderCard(serviceProviderName: string): Locator {
+    return this.page.locator('[data-testid^="service-provider-card"]', { hasText: serviceProviderName });
   }
 }

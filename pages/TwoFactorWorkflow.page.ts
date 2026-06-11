@@ -18,14 +18,18 @@ export class TwoFactorWorkflowPage {
     private readonly username?: string,
   ) {}
 
-  public async completeTwoFactorAuthentication(): Promise<PersonManagementViewPage> {
+  public async completeTwoFactorAuthentication<T = PersonManagementViewPage>(
+    redirectUrl: string = '/admin/personen',
+    waitForPageLoad: () => Promise<T> = async () =>
+      new PersonManagementViewPage(this.page).waitForPageLoad() as Promise<T>,
+  ): Promise<T> {
     const setupButton: Locator = this.getSecondFactorSetupButtonLocator();
     const requires2FASetup: boolean = await this.isLocatorVisible(setupButton);
     let otpSecret: string | undefined;
     if (requires2FASetup) {
       const result: TwoFactorSetupResult = await this.setupTwoFactorAuthenticationFromErrorMessage();
       otpSecret = result.otpSecret;
-      await this.page.goto('/admin/personen');
+      await this.page.goto(redirectUrl);
     }
 
     const otpInput: Locator = this.getOtpInputLocator();
@@ -33,7 +37,7 @@ export class TwoFactorWorkflowPage {
     if (requires2FA) {
       await this.enterOtpForTwoFactorAuthentication(otpSecret);
     }
-    return new PersonManagementViewPage(this.page).waitForPageLoad();
+    return waitForPageLoad();
   }
 
   public async setupTwoFactorAuthenticationFromErrorMessage(): Promise<TwoFactorSetupResult> {
