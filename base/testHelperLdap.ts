@@ -12,10 +12,7 @@ export class TestHelperLdap {
   private static readonly OEFFENTLICHE_SCHULEN_OU: string = 'ou=oeffentlicheSchulen';
   private static readonly ERSATZ_SCHULEN_OU: string = 'ou=ersatzSchulen';
 
-  private client: Client = new Client({
-    url: this.ldapUrl,
-    timeout: 3000,
-  });
+  private client: Client;
 
   /**
    *
@@ -29,7 +26,12 @@ export class TestHelperLdap {
     private ldapAdminUser: string,
     private ldapAdminPassword: string,
     private retries: number = TestHelperLdap.DEFAULT_RETRIES,
-  ) {}
+  ) {
+    this.client = new Client({
+      url: this.ldapUrl,
+      timeout: 3000,
+    });
+  }
 
   //** PUBLIC methods for direct usage in tests */
 
