@@ -6,15 +6,12 @@ import {
   RollenMerkmal,
   RolleResponse,
   RolleWithServiceProvidersResponse,
-  ServiceProviderResponse,
 } from './generated/models';
 import {
   RolleApi,
-  RolleControllerAddSystemRechtRequest,
   RolleControllerCreateRolleRequest,
   RolleControllerDeleteRolleRequest,
   RolleControllerFindRollenRequest,
-  RolleControllerUpdateServiceProvidersByIdRequest,
 } from './generated/apis/RolleApi';
 import { makeFetchWithPlaywright } from './playwrightFetchAdapter';
 import { ApiResponse, Configuration } from './generated/runtime';
@@ -47,6 +44,7 @@ export async function createRolle(
   rolleName: string,
   merkmale?: Set<RollenMerkmal>,
   systemrechte?: Set<RollenSystemRechtEnum>,
+  serviceProviderIds?: Set<string>,
 ): Promise<string> {
   try {
     const createRolleBodyParams: CreateRolleBodyParams = {
@@ -55,6 +53,7 @@ export async function createRolle(
       rollenart: rollenArt,
       merkmale: merkmale ?? new Set<RollenMerkmal>(),
       systemrechte: systemrechte ?? new Set<RollenSystemRechtEnum>(),
+      serviceProviderIds: serviceProviderIds ?? new Set<string>(),
     };
 
     const requestParameters: RolleControllerCreateRolleRequest = {
@@ -69,55 +68,6 @@ export async function createRolle(
     return createdRolle.id;
   } catch (error) {
     console.error('[ERROR] createRolle failed:', error);
-    throw error;
-  }
-}
-
-export async function addServiceProvidersToRolle(
-  page: Page,
-  rolleId: string,
-  serviceProviderIds: string[],
-): Promise<void> {
-  try {
-    const requestParameters: RolleControllerUpdateServiceProvidersByIdRequest = {
-      rolleId,
-      rolleServiceProviderBodyParams: {
-        serviceProviderIds: serviceProviderIds,
-        version: 1,
-      },
-    };
-
-    const rolleApi: RolleApi = constructRolleApi(page);
-    const response: ApiResponse<ServiceProviderResponse[]> =
-      await rolleApi.rolleControllerUpdateServiceProvidersByIdRaw(requestParameters);
-    expect(response.raw.status).toBe(201);
-
-    const addedServiceProviders: ServiceProviderResponse[] = await response.value();
-    expect(addedServiceProviders.length).toBe(serviceProviderIds.length);
-  } catch (error) {
-    console.error('[ERROR] addServiceProvidersToRolle failed:', error);
-    throw error;
-  }
-}
-
-export async function addSystemrechtToRolle(
-  page: Page,
-  rolleId: string,
-  systemRecht: RollenSystemRechtEnum,
-): Promise<void> {
-  try {
-    const requestParameters: RolleControllerAddSystemRechtRequest = {
-      rolleId,
-      addSystemrechtBodyParams: {
-        systemRecht,
-      },
-    };
-
-    const rolleApi: RolleApi = constructRolleApi(page);
-    const response: ApiResponse<void> = await rolleApi.rolleControllerAddSystemRechtRaw(requestParameters);
-    expect(response.raw.status).toBe(200);
-  } catch (error) {
-    console.error('[ERROR] addSystemrechtToRolle failed:', error);
     throw error;
   }
 }

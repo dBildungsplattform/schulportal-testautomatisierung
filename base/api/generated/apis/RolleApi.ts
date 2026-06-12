@@ -15,26 +15,21 @@
 
 import * as runtime from '../runtime';
 import type {
-  AddSystemrechtBodyParams,
   ApplyRollenerweiterungBodyParams,
   CreateRolleBodyParams,
   CreateRollenerweiterungBodyParams,
   DbiamApplyRollenerweiterungMultiError,
   DbiamRolleError,
   RolleResponse,
-  RolleServiceProviderBodyParams,
   RolleServiceProviderResponse,
   RolleWithServiceProvidersResponse,
   RollenArt,
   RollenSystemRechtEnum,
   RollenerweiterungResponse,
-  ServiceProviderResponse,
   SystemRechtResponse,
   UpdateRolleBodyParams,
 } from '../models';
 import {
-    AddSystemrechtBodyParamsFromJSON,
-    AddSystemrechtBodyParamsToJSON,
     ApplyRollenerweiterungBodyParamsFromJSON,
     ApplyRollenerweiterungBodyParamsToJSON,
     CreateRolleBodyParamsFromJSON,
@@ -47,8 +42,6 @@ import {
     DbiamRolleErrorToJSON,
     RolleResponseFromJSON,
     RolleResponseToJSON,
-    RolleServiceProviderBodyParamsFromJSON,
-    RolleServiceProviderBodyParamsToJSON,
     RolleServiceProviderResponseFromJSON,
     RolleServiceProviderResponseToJSON,
     RolleWithServiceProvidersResponseFromJSON,
@@ -59,18 +52,11 @@ import {
     RollenSystemRechtEnumToJSON,
     RollenerweiterungResponseFromJSON,
     RollenerweiterungResponseToJSON,
-    ServiceProviderResponseFromJSON,
-    ServiceProviderResponseToJSON,
     SystemRechtResponseFromJSON,
     SystemRechtResponseToJSON,
     UpdateRolleBodyParamsFromJSON,
     UpdateRolleBodyParamsToJSON,
 } from '../models';
-
-export interface RolleControllerAddSystemRechtRequest {
-    rolleId: string;
-    addSystemrechtBodyParams: AddSystemrechtBodyParams;
-}
 
 export interface RolleControllerCreateRolleRequest {
     createRolleBodyParams: CreateRolleBodyParams;
@@ -101,19 +87,9 @@ export interface RolleControllerGetRolleServiceProviderIdsRequest {
     rolleId: string;
 }
 
-export interface RolleControllerRemoveServiceProviderByIdRequest {
-    rolleId: string;
-    rolleServiceProviderBodyParams: RolleServiceProviderBodyParams;
-}
-
 export interface RolleControllerUpdateRolleRequest {
     rolleId: string;
     updateRolleBodyParams: UpdateRolleBodyParams;
-}
-
-export interface RolleControllerUpdateServiceProvidersByIdRequest {
-    rolleId: string;
-    rolleServiceProviderBodyParams: RolleServiceProviderBodyParams;
 }
 
 export interface RollenerweiterungControllerApplyRollenerweiterungChangesRequest {
@@ -129,23 +105,6 @@ export interface RollenerweiterungControllerApplyRollenerweiterungChangesRequest
  * @interface RolleApiInterface
  */
 export interface RolleApiInterface {
-    /**
-     * Add systemrecht to a rolle.
-     * @summary 
-     * @param {string} rolleId The id for the rolle.
-     * @param {AddSystemrechtBodyParams} addSystemrechtBodyParams 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof RolleApiInterface
-     */
-    rolleControllerAddSystemRechtRaw(requestParameters: RolleControllerAddSystemRechtRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>>;
-
-    /**
-     * Add systemrecht to a rolle.
-     * 
-     */
-    rolleControllerAddSystemRecht(requestParameters: RolleControllerAddSystemRechtRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void>;
-
     /**
      * Create a new rolle.
      * @summary 
@@ -263,23 +222,6 @@ export interface RolleApiInterface {
     rolleControllerGetRolleServiceProviderIds(requestParameters: RolleControllerGetRolleServiceProviderIdsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<RolleServiceProviderResponse>;
 
     /**
-     * Remove a service-provider from a rolle by id.
-     * @summary 
-     * @param {string} rolleId The id for the rolle.
-     * @param {RolleServiceProviderBodyParams} rolleServiceProviderBodyParams 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof RolleApiInterface
-     */
-    rolleControllerRemoveServiceProviderByIdRaw(requestParameters: RolleControllerRemoveServiceProviderByIdRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>>;
-
-    /**
-     * Remove a service-provider from a rolle by id.
-     * 
-     */
-    rolleControllerRemoveServiceProviderById(requestParameters: RolleControllerRemoveServiceProviderByIdRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void>;
-
-    /**
      * Update rolle.
      * @summary 
      * @param {string} rolleId The id for the rolle.
@@ -295,23 +237,6 @@ export interface RolleApiInterface {
      * 
      */
     rolleControllerUpdateRolle(requestParameters: RolleControllerUpdateRolleRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<RolleWithServiceProvidersResponse>;
-
-    /**
-     * Add a service-provider to a rolle by id.
-     * @summary 
-     * @param {string} rolleId The id for the rolle.
-     * @param {RolleServiceProviderBodyParams} rolleServiceProviderBodyParams 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof RolleApiInterface
-     */
-    rolleControllerUpdateServiceProvidersByIdRaw(requestParameters: RolleControllerUpdateServiceProvidersByIdRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<ServiceProviderResponse>>>;
-
-    /**
-     * Add a service-provider to a rolle by id.
-     * 
-     */
-    rolleControllerUpdateServiceProvidersById(requestParameters: RolleControllerUpdateServiceProvidersByIdRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<ServiceProviderResponse>>;
 
     /**
      * Apply changes to rollen-erweiterung for a given angebot and organisation.
@@ -337,57 +262,6 @@ export interface RolleApiInterface {
  * 
  */
 export class RolleApi extends runtime.BaseAPI implements RolleApiInterface {
-
-    /**
-     * Add systemrecht to a rolle.
-     * 
-     */
-    async rolleControllerAddSystemRechtRaw(requestParameters: RolleControllerAddSystemRechtRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters.rolleId === null || requestParameters.rolleId === undefined) {
-            throw new runtime.RequiredError('rolleId','Required parameter requestParameters.rolleId was null or undefined when calling rolleControllerAddSystemRecht.');
-        }
-
-        if (requestParameters.addSystemrechtBodyParams === null || requestParameters.addSystemrechtBodyParams === undefined) {
-            throw new runtime.RequiredError('addSystemrechtBodyParams','Required parameter requestParameters.addSystemrechtBodyParams was null or undefined when calling rolleControllerAddSystemRecht.');
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("bearer", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-        if (this.configuration && this.configuration.accessToken) {
-            // oauth required
-            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2", []);
-        }
-
-        const response = await this.request({
-            path: `/api/rolle/{rolleId}`.replace(`{${"rolleId"}}`, encodeURIComponent(String(requestParameters.rolleId))),
-            method: 'PATCH',
-            headers: headerParameters,
-            query: queryParameters,
-            body: AddSystemrechtBodyParamsToJSON(requestParameters.addSystemrechtBodyParams),
-        }, initOverrides);
-
-        return new runtime.VoidApiResponse(response);
-    }
-
-    /**
-     * Add systemrecht to a rolle.
-     * 
-     */
-    async rolleControllerAddSystemRecht(requestParameters: RolleControllerAddSystemRechtRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.rolleControllerAddSystemRechtRaw(requestParameters, initOverrides);
-    }
 
     /**
      * Create a new rolle.
@@ -726,57 +600,6 @@ export class RolleApi extends runtime.BaseAPI implements RolleApiInterface {
     }
 
     /**
-     * Remove a service-provider from a rolle by id.
-     * 
-     */
-    async rolleControllerRemoveServiceProviderByIdRaw(requestParameters: RolleControllerRemoveServiceProviderByIdRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters.rolleId === null || requestParameters.rolleId === undefined) {
-            throw new runtime.RequiredError('rolleId','Required parameter requestParameters.rolleId was null or undefined when calling rolleControllerRemoveServiceProviderById.');
-        }
-
-        if (requestParameters.rolleServiceProviderBodyParams === null || requestParameters.rolleServiceProviderBodyParams === undefined) {
-            throw new runtime.RequiredError('rolleServiceProviderBodyParams','Required parameter requestParameters.rolleServiceProviderBodyParams was null or undefined when calling rolleControllerRemoveServiceProviderById.');
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("bearer", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-        if (this.configuration && this.configuration.accessToken) {
-            // oauth required
-            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2", []);
-        }
-
-        const response = await this.request({
-            path: `/api/rolle/{rolleId}/serviceProviders`.replace(`{${"rolleId"}}`, encodeURIComponent(String(requestParameters.rolleId))),
-            method: 'DELETE',
-            headers: headerParameters,
-            query: queryParameters,
-            body: RolleServiceProviderBodyParamsToJSON(requestParameters.rolleServiceProviderBodyParams),
-        }, initOverrides);
-
-        return new runtime.VoidApiResponse(response);
-    }
-
-    /**
-     * Remove a service-provider from a rolle by id.
-     * 
-     */
-    async rolleControllerRemoveServiceProviderById(requestParameters: RolleControllerRemoveServiceProviderByIdRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.rolleControllerRemoveServiceProviderByIdRaw(requestParameters, initOverrides);
-    }
-
-    /**
      * Update rolle.
      * 
      */
@@ -825,58 +648,6 @@ export class RolleApi extends runtime.BaseAPI implements RolleApiInterface {
      */
     async rolleControllerUpdateRolle(requestParameters: RolleControllerUpdateRolleRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<RolleWithServiceProvidersResponse> {
         const response = await this.rolleControllerUpdateRolleRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Add a service-provider to a rolle by id.
-     * 
-     */
-    async rolleControllerUpdateServiceProvidersByIdRaw(requestParameters: RolleControllerUpdateServiceProvidersByIdRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<ServiceProviderResponse>>> {
-        if (requestParameters.rolleId === null || requestParameters.rolleId === undefined) {
-            throw new runtime.RequiredError('rolleId','Required parameter requestParameters.rolleId was null or undefined when calling rolleControllerUpdateServiceProvidersById.');
-        }
-
-        if (requestParameters.rolleServiceProviderBodyParams === null || requestParameters.rolleServiceProviderBodyParams === undefined) {
-            throw new runtime.RequiredError('rolleServiceProviderBodyParams','Required parameter requestParameters.rolleServiceProviderBodyParams was null or undefined when calling rolleControllerUpdateServiceProvidersById.');
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("bearer", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-        if (this.configuration && this.configuration.accessToken) {
-            // oauth required
-            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2", []);
-        }
-
-        const response = await this.request({
-            path: `/api/rolle/{rolleId}/serviceProviders`.replace(`{${"rolleId"}}`, encodeURIComponent(String(requestParameters.rolleId))),
-            method: 'PUT',
-            headers: headerParameters,
-            query: queryParameters,
-            body: RolleServiceProviderBodyParamsToJSON(requestParameters.rolleServiceProviderBodyParams),
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(ServiceProviderResponseFromJSON));
-    }
-
-    /**
-     * Add a service-provider to a rolle by id.
-     * 
-     */
-    async rolleControllerUpdateServiceProvidersById(requestParameters: RolleControllerUpdateServiceProvidersByIdRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<ServiceProviderResponse>> {
-        const response = await this.rolleControllerUpdateServiceProvidersByIdRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
