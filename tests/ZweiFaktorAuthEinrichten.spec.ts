@@ -8,7 +8,13 @@ import { typeLehrer, typeSchuladmin } from '../base/rollentypen';
 import { email, itslearning, schulportaladmin } from '../base/sp';
 import { DEV, STAGE } from '../base/tags';
 import { gotoTargetURL, loginAndNavigateToAdministration } from '../base/testHelperUtils';
-import { generateKlassenname, generateKopersNr, generateNachname, generateRolleName, generateVorname } from '../base/utils/generateTestdata';
+import {
+  generateKlassenname,
+  generateKopersNr,
+  generateNachname,
+  generateRolleName,
+  generateVorname,
+} from '../base/utils/generateTestdata';
 import { PersonDetailsViewPage } from '../pages/admin/personen/details/PersonDetailsView.page';
 import { PersonManagementViewPage } from '../pages/admin/personen/PersonManagementView.page';
 import { HeaderPage } from '../pages/components/Header.page';
