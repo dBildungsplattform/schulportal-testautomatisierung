@@ -22,7 +22,6 @@ apis/RolleApi.ts
 apis/StatusApi.ts
 apis/index.ts
 index.ts
-models/AddSystemrechtBodyParams.ts
 models/ApplyRollenerweiterungBodyParams.ts
 models/AssignHardwareTokenBodyParams.ts
 models/AssignHardwareTokenResponse.ts
@@ -125,7 +124,6 @@ models/ProviderControllerGetManageableServiceProviders200ResponseAllOf.ts
 models/RawPagedResponse.ts
 models/RolleRefResponse.ts
 models/RolleResponse.ts
-models/RolleServiceProviderBodyParams.ts
 models/RolleServiceProviderResponse.ts
 models/RolleWithServiceProvidersResponse.ts
 models/RollenArt.ts

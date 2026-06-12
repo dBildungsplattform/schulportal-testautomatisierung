@@ -1,6 +1,6 @@
 import { PlaywrightTestArgs, test } from '@playwright/test';
 import { createPerson, createRolleAndPersonWithPersonenkontext, UserInfo } from '../base/api/personApi';
-import { addServiceProvidersToRolle, addSystemrechtToRolle, createRolle, RollenArt } from '../base/api/rolleApi';
+import { createRolle, RollenArt } from '../base/api/rolleApi';
 import { getServiceProviderId } from '../base/api/serviceProviderApi';
 import { getOrganisationId } from '../base/api/organisationApi';
 import { klasse1Testschule } from '../base/klassen';
@@ -110,8 +110,15 @@ test.describe('Zwei-Faktor-Authentifizierung als Admin einrichten', () => {
       const schuleId: string = await getOrganisationId(page, testschuleName);
       const klasseId: string = await getOrganisationId(page, klasse1Testschule);
       const rollenname: string = generateRolleName();
-      const rolleId: string = await createRolle(page, 'LERN', schuleId, rollenname);
-      await addServiceProvidersToRolle(page, rolleId, [await getServiceProviderId(page, itslearning, schuleId)]);
+      const rolleId: string = await createRolle(
+        page,
+        'LERN',
+        schuleId,
+        rollenname,
+        undefined,
+        undefined,
+        new Set([await getServiceProviderId(page, itslearning, schuleId)]),
+      );
       const userInfo: UserInfo = await createPerson(
         page,
         schuleId,
@@ -179,8 +186,8 @@ test.describe('Zwei-Faktor-Authentifizierung als Admin einrichten', () => {
           organisationName: testschule665Name,
           rollenArt: typeSchuladmin,
           serviceProviderNames: [schulportaladmin],
+          systemrechte: new Set(['PERSONEN_VERWALTEN']),
         });
-        await addSystemrechtToRolle(page, userInfo.rolleId, 'PERSONEN_VERWALTEN');
         return userInfo;
       });
 
@@ -208,14 +215,16 @@ test.describe('Zwei-Faktor-Authentifizierung als Admin einrichten', () => {
           organisationName: landSH,
           rollenArt: RollenArt.Sysadmin,
           serviceProviderNames: [schulportaladmin],
+          systemrechte: new Set([
+            'ROLLEN_VERWALTEN',
+            'PERSONEN_SOFORT_LOESCHEN',
+            'PERSONEN_VERWALTEN',
+            'SCHULEN_VERWALTEN',
+            'KLASSEN_VERWALTEN',
+            'SCHULTRAEGER_VERWALTEN',
+            'PERSONEN_ANLEGEN',
+          ]),
         });
-        await addSystemrechtToRolle(page, userInfo.rolleId, 'ROLLEN_VERWALTEN');
-        await addSystemrechtToRolle(page, userInfo.rolleId, 'PERSONEN_SOFORT_LOESCHEN');
-        await addSystemrechtToRolle(page, userInfo.rolleId, 'PERSONEN_VERWALTEN');
-        await addSystemrechtToRolle(page, userInfo.rolleId, 'SCHULEN_VERWALTEN');
-        await addSystemrechtToRolle(page, userInfo.rolleId, 'KLASSEN_VERWALTEN');
-        await addSystemrechtToRolle(page, userInfo.rolleId, 'SCHULTRAEGER_VERWALTEN');
-        await addSystemrechtToRolle(page, userInfo.rolleId, 'PERSONEN_ANLEGEN');
         return userInfo;
       });
 
@@ -247,8 +256,8 @@ test.describe('Zwei-Faktor-Authentifizierung als Admin einrichten', () => {
           organisationName: testschule665Name,
           rollenArt: typeSchuladmin,
           serviceProviderNames: [schulportaladmin],
+          systemrechte: new Set(['PERSONEN_VERWALTEN']),
         });
-        await addSystemrechtToRolle(page, userInfo.rolleId, 'PERSONEN_VERWALTEN');
         return userInfo;
       });
 
