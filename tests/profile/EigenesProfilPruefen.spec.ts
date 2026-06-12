@@ -1,6 +1,6 @@
 import { PlaywrightTestArgs, test } from '@playwright/test';
 
-import { getOrganisationId } from '../../base/api/organisationApi';
+import { createKlasse, getOrganisationId } from '../../base/api/organisationApi';
 import { createRolleAndPersonWithPersonenkontext, UserInfo } from '../../base/api/personApi';
 import { RollenArt } from '../../base/api/rolleApi';
 import { DEV, STAGE } from '../../base/tags';
@@ -66,8 +66,9 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
       { tag: [STAGE, DEV] },
       async ({ page }: PlaywrightTestArgs) => {
         await test.step('Rolle und Nutzer anlegen und anmelden', async () => {
+          const schuleId: string = await getOrganisationId(page, zuordnungen[0].organisationsname);
           const klasseId: string | undefined = zuordnungen[0].klassenName
-            ? await getOrganisationId(page, zuordnungen[0].klassenName)
+            ? await createKlasse(page, schuleId, zuordnungen[0].klassenName)
             : undefined;
           const userInfo: UserInfo = await createRolleAndPersonWithPersonenkontext(page, {
             organisationName: zuordnungen[0].organisationsname,

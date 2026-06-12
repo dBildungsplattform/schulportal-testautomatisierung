@@ -215,7 +215,7 @@ export class PersonManagementViewPage extends AbstractAdminPage {
   public async checkIfKlassenAreVisibleInDropdown(klassenNamen: string[]): Promise<void> {
     return this.klasseAutocomplete.checkVisibleDropdownOptions(
       klassenNamen,
-      true,
+      false,
       `${klassenNamen.length} Klassen gefunden`,
     );
   }
