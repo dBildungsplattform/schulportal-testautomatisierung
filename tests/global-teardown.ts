@@ -18,7 +18,11 @@ import { constructPersonenApi, constructPersonenFrontendApi } from '../base/api/
 import { constructRolleApi } from '../base/api/rolleApi';
 
 const FRONTEND_URL: string = process.env.FRONTEND_URL ?? '';
-const testDataPrefix: string = 'TAuto';
+const shardIndex = process.env.SHARD_INDEX ?? '0';
+const shardLetter = String.fromCharCode(65 + parseInt(shardIndex, 10)); // 0→A, 1→B, 2→C
+
+const testDataPrefix: string = `TAuto-PW-S${shardIndex}`;
+const personDataPrefix = `TAuto-PW-S${shardLetter}`;
 const limit: number = 100;
 const batchSize: number = 20;
 
@@ -41,9 +45,6 @@ function* getBatchedDelPromise<T>(
   }
 }
 
-/**
- * Global teardown – runs ONCE per Playwright run
- */
 export default async function globalTeardown(): Promise<void> {
   console.log('Global teardown started');
 
@@ -61,9 +62,6 @@ export default async function globalTeardown(): Promise<void> {
     const rolleApi: RolleApi = constructRolleApi(page);
     const organisationApi: OrganisationenApi = constructOrganisationApi(page);
 
-    // ---------------------------------------------------------------------
-    // LOGIN
-    // ---------------------------------------------------------------------
     console.log('Login');
     await loginAndNavigateToAdministration(page, process.env.USER!, process.env.PW!);
 
@@ -76,7 +74,7 @@ export default async function globalTeardown(): Promise<void> {
       async () => {
         const resp: PersonFrontendControllerFindPersons200Response =
           await personFrontendApi.personFrontendControllerFindPersons({
-            suchFilter: testDataPrefix,
+            suchFilter: personDataPrefix,
             limit,
           });
         console.log(`${resp.total} personen to delete`);
@@ -118,8 +116,13 @@ export default async function globalTeardown(): Promise<void> {
             typ: OrganisationsTyp.Klasse,
             limit,
           });
+        const items: OrganisationResponse[] = await wrappedResponse.value();
+        console.log(
+          'Sample klassen found:',
+          items.slice(0, 10).map((i: OrganisationResponse) => i.name),
+        );
         console.log(`${wrappedResponse.raw.headers.get('X-Paging-Total')} klassen to delete`);
-        return wrappedResponse.value();
+        return items;
       },
       async (item: OrganisationResponse) =>
         organisationApi.organisationControllerDeleteOrganisation({ organisationId: item.id }),
