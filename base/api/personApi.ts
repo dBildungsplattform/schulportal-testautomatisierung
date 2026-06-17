@@ -77,21 +77,21 @@ export function constructPersonenuebersichtApi(page: Page): DbiamPersonenuebersi
   return constructApi(page, DbiamPersonenuebersichtApi);
 }
 
-function toUserInfo(
-  createdPerson: DBiamPersonResponse,
-  rolleId: string,
-  organisationId: string,
-  kopersnummer: string = '',
-): UserInfo {
+function toUserInfo(createdPerson: DBiamPersonResponse): UserInfo {
+  const primaryPersonenkontext = createdPerson.dBiamPersonenkontextResponses[0];
+  if (!primaryPersonenkontext) {
+    throw new Error('Created person is missing personenkontext response.');
+  }
+
   return {
     username: createdPerson.person.username!,
     password: createdPerson.person.startpasswort,
-    rolleId,
-    organisationId,
+    rolleId: primaryPersonenkontext.rolleId,
+    organisationId: primaryPersonenkontext.organisationId,
     personId: createdPerson.person.id,
     vorname: createdPerson.person.name.vorname,
     nachname: createdPerson.person.name.familienname,
-    kopersnummer,
+    kopersnummer: createdPerson.person.personalnummer ?? '',
   };
 }
 
@@ -221,7 +221,7 @@ export async function createPerson(
     expect(response.raw.status).toBe(201);
     const createdPerson: DBiamPersonResponse = await response.value();
 
-    return toUserInfo(createdPerson, rolleId, organisationId, koPersNr ?? '');
+    return toUserInfo(createdPerson);
   } catch (error) {
     console.error('[ERROR] createPerson failed:', error);
     throw error;
@@ -257,7 +257,7 @@ export async function createUsersWithLernRollenInDifferentKlassen(
         expect(response.raw.status).toBe(201);
         const createdPerson: DBiamPersonResponse = await response.value();
 
-        return toUserInfo(createdPerson, primaryRolleId, schuleId);
+        return toUserInfo(createdPerson);
       }),
     );
   } catch (error) {
