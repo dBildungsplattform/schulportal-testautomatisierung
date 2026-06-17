@@ -12,7 +12,7 @@ import {
   generateRolleName,
   generateVorname,
 } from '../utils/generateTestdata';
-import { FRONTEND_URL } from './baseApi';
+import { constructApi } from './apiFactory';
 import {
   PersonControllerDeletePersonByIdRequest,
   PersonControllerLockPersonRequest,
@@ -41,9 +41,8 @@ import {
 } from './generated/models';
 import { PersonenFrontendApi, PersonFrontendControllerFindPersonsRequest } from './generated/apis/PersonenFrontendApi';
 import { Class2FAApi } from './generated';
-import { ApiResponse, Configuration } from './generated/runtime';
+import { ApiResponse } from './generated/runtime';
 import { getOrganisationId } from './organisationApi';
-import { makeFetchWithPlaywright } from './playwrightFetchAdapter';
 import { addServiceProvidersToRolle, createRolle, getRolleId } from './rolleApi';
 import { getServiceProviderIdsMappedByName } from './serviceProviderApi';
 
@@ -56,16 +55,6 @@ export interface UserInfo {
   vorname: string;
   nachname: string;
   kopersnummer: string;
-}
-
-type ApiConstructor<T> = new (config: Configuration) => T;
-
-function constructApi<T>(page: Page, ApiClass: ApiConstructor<T>): T {
-  const config: Configuration = new Configuration({
-    basePath: FRONTEND_URL?.replace(/\/$/, ''),
-    fetchApi: makeFetchWithPlaywright(page),
-  });
-  return new ApiClass(config);
 }
 
 export function constructPersonenkontextApi(page: Page): PersonenkontextApi {
