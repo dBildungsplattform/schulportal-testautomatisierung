@@ -2,14 +2,19 @@ import { PlaywrightTestArgs, test } from '@playwright/test';
 import { createPerson, createRolleAndPersonWithPersonenkontext, UserInfo } from '../base/api/personApi';
 import { createRolle, RollenArt } from '../base/api/rolleApi';
 import { getServiceProviderId } from '../base/api/serviceProviderApi';
-import { getOrganisationId } from '../base/api/organisationApi';
-import { klasse1Testschule } from '../base/klassen';
+import { createKlasse, getOrganisationId } from '../base/api/organisationApi';
 import { landSH, testschule665Name, testschuleName } from '../base/organisation';
 import { typeLehrer, typeSchuladmin } from '../base/rollentypen';
 import { email, itslearning, schulportaladmin } from '../base/sp';
 import { DEV, STAGE } from '../base/tags';
 import { gotoTargetURL, loginAndNavigateToAdministration } from '../base/testHelperUtils';
-import { generateKopersNr, generateNachname, generateRolleName, generateVorname } from '../base/utils/generateTestdata';
+import {
+  generateKlassenname,
+  generateKopersNr,
+  generateNachname,
+  generateRolleName,
+  generateVorname,
+} from '../base/utils/generateTestdata';
 import { PersonDetailsViewPage } from '../pages/admin/personen/details/PersonDetailsView.page';
 import { PersonManagementViewPage } from '../pages/admin/personen/PersonManagementView.page';
 import { HeaderPage } from '../pages/components/Header.page';
@@ -108,7 +113,7 @@ test.describe('Zwei-Faktor-Authentifizierung als Admin einrichten', () => {
   test('2FA Abschnitt ist für Schüler nicht sichtbar', { tag: [DEV, STAGE] }, async ({ page }: PlaywrightTestArgs) => {
     const userInfoSchueler: UserInfo = await test.step('Testdaten: Schüler anlegen', async () => {
       const schuleId: string = await getOrganisationId(page, testschuleName);
-      const klasseId: string = await getOrganisationId(page, klasse1Testschule);
+      const klasseId: string = await createKlasse(page, schuleId, generateKlassenname());
       const rollenname: string = generateRolleName();
       const rolleId: string = await createRolle(
         page,

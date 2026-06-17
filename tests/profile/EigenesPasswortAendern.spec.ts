@@ -1,16 +1,16 @@
 import { PlaywrightTestArgs, test } from '@playwright/test';
 
-import { getOrganisationId } from '../../base/api/organisationApi';
+import { createKlasse, getOrganisationId } from '../../base/api/organisationApi';
 import { createPerson, createRolleAndPersonWithPersonenkontext, UserInfo } from '../../base/api/personApi';
 import { createRolle, RollenArt } from '../../base/api/rolleApi';
 import { getServiceProviderId } from '../../base/api/serviceProviderApi';
-import { klasse1Testschule } from '../../base/klassen';
 import { testschuleName } from '../../base/organisation';
 import { typeLehrer } from '../../base/rollentypen';
 import { email, itslearning } from '../../base/sp';
 import { DEV, STAGE } from '../../base/tags';
 import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
 import {
+  generateKlassenname,
   generateKopersNr,
   generateNachname,
   generateRolleName,
@@ -88,7 +88,7 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         });
 
         const schuleId: string = await getOrganisationId(page, testschuleName);
-        const klasseId: string = await getOrganisationId(page, klasse1Testschule);
+        const klasseId: string = await createKlasse(page, schuleId, generateKlassenname());
         const idSPs: string[] = [await getServiceProviderId(page, itslearning, schuleId)];
         const rolleId: string = await createRolle(
           page,

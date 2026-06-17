@@ -34,7 +34,6 @@ export class StartViewPage {
     await this.page.waitForResponse(
       (response: Response) => response.url().includes('/api/provider') && response.status() === 200,
     );
-    await this.page.waitForResponse('/api/provider/**/logo');
     await expect(this.page.getByTestId('all-service-provider-title')).toBeVisible();
   }
 
