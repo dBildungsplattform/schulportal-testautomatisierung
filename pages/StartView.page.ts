@@ -27,9 +27,13 @@ export class StartViewPage {
   }
 
   public async navigateToEmail(): Promise<void> {
-    await this.getServiceProviderCard('E-Mail').click();
+    const [newPage] = await Promise.all([
+      this.page.context().waitForEvent('page'),
+      this.getServiceProviderCard('E-Mail').click(),
+    ]);
+    await newPage.waitForLoadState('load');
 
-    const twoFactorWorkflowPage: TwoFactorWorkflowPage = new TwoFactorWorkflowPage(this.page, this.username);
+    const twoFactorWorkflowPage: TwoFactorWorkflowPage = new TwoFactorWorkflowPage(newPage, this.username);
     await twoFactorWorkflowPage.completeTwoFactorAuthentication<void>('/email', async () => undefined);
   }
 
