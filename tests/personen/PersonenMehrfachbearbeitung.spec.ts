@@ -1,5 +1,5 @@
 import { Download, PlaywrightTestArgs, test } from '@playwright/test';
-import { createKlasse, getOrganisationId } from '../../base/api/organisationApi';
+import { createKlasse, createSchule } from '../../base/api/organisationApi';
 import {
   addSecondOrganisationToPerson,
   createPerson,
@@ -25,10 +25,8 @@ import {
 import { LandingViewPage } from '../../pages/LandingView.page';
 import { LoginViewPage } from '../../pages/LoginView.page';
 import { StartViewPage } from '../../pages/StartView.page';
-import { SchuleCreationSuccessPage } from '../../pages/admin/organisationen/schulen/SchuleCreationSuccess.page';
 import {
   SchuleCreationParams,
-  SchuleCreationViewPage,
   Schulform,
 } from '../../pages/admin/organisationen/schulen/SchuleCreationView.page';
 import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.page';
@@ -116,31 +114,28 @@ interface AdminFixture {
       const header: HeaderPage = new HeaderPage(page);
       personManagementViewPage = await loginAndNavigateToAdministration(page);
       // Schule anlegen
-      let schuleCreationViewPage: SchuleCreationViewPage =
-        await personManagementViewPage.menu.navigateToSchuleCreation();
+      const schule1Name: string = generateSchulname();
+      const schule1Kennung: string = generateDienststellenNr();
       schule1Params = {
-        name: generateSchulname(),
-        dienststellenNr: generateDienststellenNr(),
+        name: schule1Name,
+        dienststellenNr: schule1Kennung,
         schulform: Schulform.Oeffentlich,
       };
-      let schuleSuccessPage: SchuleCreationSuccessPage = await schuleCreationViewPage.createSchule(schule1Params);
-      await schuleSuccessPage.waitForPageLoad();
-      schuleId = await getOrganisationId(page, schule1Params.name);
+      schuleId = await createSchule(page, schule1Name, schule1Kennung);
 
-      const adminOrganisation: string = organisationsName || schule1Params.name;
+      const adminOrganisation: string = organisationsName || schule1Name;
       admin = await createPersonWithPersonenkontext(page, adminOrganisation, rolleName);
 
       // für Admins mit mehreren Schulen: zweite Schule anlegen
       if (hasMultipleSchulen) {
+        const schule2Name: string = generateSchulname();
+        const schule2Kennung: string = generateDienststellenNr();
         schule2Params = {
-          name: generateSchulname(),
-          dienststellenNr: generateDienststellenNr(),
+          name: schule2Name,
+          dienststellenNr: schule2Kennung,
           schulform: Schulform.Oeffentlich,
         };
-        schuleCreationViewPage = await schuleSuccessPage.goBackToCreateAnotherSchule();
-        schuleSuccessPage = await schuleCreationViewPage.createSchule(schule2Params);
-        await schuleSuccessPage.waitForPageLoad();
-        schuleId2 = await getOrganisationId(page, schule2Params.name);
+        schuleId2 = await createSchule(page, schule2Name, schule2Kennung);
 
         const rolleId: string = await getRolleId(page, rolleName);
         await addSecondOrganisationToPerson(page, admin.personId, schuleId, schuleId2, rolleId);
@@ -285,25 +280,16 @@ interface AdminFixture {
 
 test.describe('Rolle entziehen als Schuladmin', () => {
   let personManagementViewPage: PersonManagementViewPage;
-  let schuleParams: SchuleCreationParams;
   let schuleId: string;
   let admin: UserInfo;
 
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
     personManagementViewPage = await loginAndNavigateToAdministration(page);
 
-    const schuleCreationViewPage: SchuleCreationViewPage = await personManagementViewPage.menu.navigateToSchuleCreation();
-    schuleParams = {
-      name: generateSchulname(),
-      dienststellenNr: generateDienststellenNr(),
-      schulform: Schulform.Oeffentlich,
-    };
+    const schuleName: string = generateSchulname();
+    schuleId = await createSchule(page, schuleName);
 
-    const schuleSuccessPage: SchuleCreationSuccessPage = await schuleCreationViewPage.createSchule(schuleParams);
-    await schuleSuccessPage.waitForPageLoad();
-    schuleId = await getOrganisationId(page, schuleParams.name);
-
-    admin = await createPersonWithPersonenkontext(page, schuleParams.name, schuladminOeffentlichRolle);
+    admin = await createPersonWithPersonenkontext(page, schuleName, schuladminOeffentlichRolle);
   });
 
   async function switchToSchuladmin(page: PlaywrightTestArgs['page']): Promise<PersonManagementViewPage> {
