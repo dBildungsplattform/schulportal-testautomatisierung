@@ -51,7 +51,7 @@ export class StartViewPage {
       await newPage.waitForURL(/webmail/, { timeout: 30_000 });
     }
   }
-
+  
   public async openServiceProviderInNewTab(serviceProviderName: string): Promise<Page> {
     const [newPage] = await Promise.all([
       this.page.context().waitForEvent('page'),
@@ -61,6 +61,20 @@ export class StartViewPage {
     const response = await this.page.request.get(newPage.url());
     expect(response.ok()).toBeTruthy();
     return newPage;
+  }
+
+  public async openServiceProviderInNewPopup(serviceProviderName: string): Promise<Page> {
+    const serviceProviderCard: Locator = this.getServiceProviderCard(serviceProviderName);
+    await serviceProviderCard.scrollIntoViewIfNeeded();
+    await expect(serviceProviderCard).toBeVisible();
+
+    const [popupPage] = await Promise.all([
+      this.page.waitForEvent('popup', { timeout: 30_000 }),
+      serviceProviderCard.click(),
+    ]);
+
+    await popupPage.waitForLoadState('domcontentloaded');
+    return popupPage;
   }
 
   /* assertions */
