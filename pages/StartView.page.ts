@@ -36,7 +36,10 @@ export class StartViewPage {
 
     // Handle Keycloak 2FA on the new page
     const keycloak2FA: Keycloak2FAPage = new Keycloak2FAPage(newPage, this.username);
-    const isOtpRequired: boolean = await keycloak2FA.waitForPageLoad().then(() => true).catch(() => false);
+    const isOtpRequired: boolean = await keycloak2FA
+      .waitForPageLoad()
+      .then(() => true)
+      .catch(() => false);
 
     if (isOtpRequired) {
       await keycloak2FA.enterOtpForTwoFactorAuthentication();
