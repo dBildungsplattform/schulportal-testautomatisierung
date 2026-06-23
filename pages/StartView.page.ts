@@ -28,14 +28,15 @@ export class StartViewPage {
   }
 
   public async navigateToEmail(): Promise<void> {
-    const [newPage] = await Promise.all([
-      this.page.context().waitForEvent('page'),
-      this.getServiceProviderCard('E-Mail').click(),
-    ]);
-    await newPage.waitForLoadState('load');
+    const newPagePromise: Promise<Page | null> = this.page.context().waitForEvent('page', { timeout: 15_000 }).catch(() => null);
+    await this.getServiceProviderCard('E-Mail').click();
+
+    const newPage: Page | null = await newPagePromise;
+    const targetPage: Page = newPage ?? this.page;
+    await targetPage.waitForLoadState('domcontentloaded');
 
     // Handle Keycloak 2FA on the new page
-    const keycloak2FA: Keycloak2FAPage = new Keycloak2FAPage(newPage, this.username);
+    const keycloak2FA: Keycloak2FAPage = new Keycloak2FAPage(targetPage, this.username);
     const isOtpRequired: boolean = await keycloak2FA
       .waitForPageLoad()
       .then(() => true)
@@ -44,11 +45,11 @@ export class StartViewPage {
     if (isOtpRequired) {
       await keycloak2FA.enterOtpForTwoFactorAuthentication();
       // Wait for redirect to email app after 2FA
-      await newPage.waitForURL(/webmail.*\/mail/, { timeout: 30_000 });
+      await targetPage.waitForURL(/webmail.*\/mail/, { timeout: 30_000 });
     } else {
       // If no 2FA page appears, user might already be authenticated or SSO worked
       // Page should already be at email app
-      await newPage.waitForURL(/webmail/, { timeout: 30_000 });
+      await targetPage.waitForURL(/webmail/, { timeout: 30_000 });
     }
   }
 
