@@ -3,9 +3,10 @@ import { PlaywrightTestArgs, test } from '@playwright/test';
 import { getOrganisationId } from '../../base/api/organisationApi';
 import { createPerson, freshLoginPage, UserInfo } from '../../base/api/personApi';
 import { getRolleId, RollenMerkmal } from '../../base/api/rolleApi';
-import { klasse1Testschule } from '../../base/klassen';
 import { rollenMerkmalLabel } from '../../base/merkmale';
 import { testschuleName } from '../../base/organisation';
+import { createKlasse} from '../../base/api/organisationApi';
+import { generateKlassenname } from '../../base/utils/generateTestdata';
 import { rollenArtLabel } from '../../base/rollentypen';
 import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
 import { generateRolleName } from '../../base/utils/generateTestdata';
@@ -89,7 +90,7 @@ test.describe(`Testfälle für die Rollenanlage: Umgebung: ${process.env.ENV}: U
         const organisationId: string = await getOrganisationId(page, testschuleName);
         const rolleId: string = await getRolleId(page, params.name);
         const klasseId: string | undefined =
-          params.rollenart === rollenArtLabel.LERN ? await getOrganisationId(page, klasse1Testschule) : undefined;
+          params.rollenart === rollenArtLabel.LERN ? await createKlasse(page, organisationId, generateKlassenname()) : undefined;
         const merkmalNames: Set<RollenMerkmal> = new Set<RollenMerkmal>(
           params.merkmale.includes(rollenMerkmalLabel.BEFRISTUNG_PFLICHT) ? [RollenMerkmal.BefristungPflicht] : [],
         );

@@ -1,9 +1,9 @@
 import { RollenArt } from '../../base/api/generated';
-import { klasse1Testschule } from '../../base/klassen';
 import { landSH, testschuleName, testschuleDstNr } from '../../base/organisation';
 import { typeLandesadmin, typeLehrer, typeSchuladmin } from '../../base/rollentypen';
 import { schulportaladmin, email, itslearning } from '../../base/sp';
 import {
+  generateKlassenname,
   generateVorname,
   generateNachname,
   generateRolleName,
@@ -87,7 +87,7 @@ export const testData: TestData[] = [
         {
           organisationsname: testschuleName,
           dienststellennummer: testschuleDstNr,
-          klassenName: klasse1Testschule,
+          klassenName: generateKlassenname(),
           rollenname,
           rollenart: RollenArt.Lern,
         },
