@@ -2,6 +2,7 @@ import jsQR, { QRCode } from 'jsqr';
 import { PNG } from 'pngjs';
 
 export { SharedCredentialManager } from './SharedCredentialManager';
+export { generateCurrentOtp, isLocatorVisible, submitOtpWithRetry } from './twoFactorAuth.shared';
 
 export function getSecretFromTokenQRCode(imageSrc: string): string | null {
   const base64Data: string = imageSrc.replace('data:image/png;base64,', '');

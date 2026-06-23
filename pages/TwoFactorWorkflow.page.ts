@@ -1,7 +1,12 @@
 import { expect, Locator, Page } from '@playwright/test';
-import { TOTP } from 'totp-generator';
 
-import { getSecretFromTokenQRCode, SharedCredentialManager } from '../base/2fa';
+import {
+  generateCurrentOtp,
+  getSecretFromTokenQRCode,
+  isLocatorVisible,
+  SharedCredentialManager,
+  submitOtpWithRetry,
+} from '../base/2fa';
 import { PersonManagementViewPage } from './admin/personen/PersonManagementView.page';
 import { ProfileViewPage } from './ProfileView.page';
 
@@ -24,7 +29,7 @@ export class TwoFactorWorkflowPage {
       new PersonManagementViewPage(this.page).waitForPageLoad() as Promise<T>,
   ): Promise<T> {
     const setupButton: Locator = this.getSecondFactorSetupButtonLocator();
-    const requires2FASetup: boolean = await this.isLocatorVisible(setupButton);
+    const requires2FASetup: boolean = await isLocatorVisible(setupButton);
     let otpSecret: string | undefined;
     if (requires2FASetup) {
       const result: TwoFactorSetupResult = await this.setupTwoFactorAuthenticationFromErrorMessage();
@@ -33,7 +38,7 @@ export class TwoFactorWorkflowPage {
     }
 
     const otpInput: Locator = this.getOtpInputLocator();
-    const requires2FA: boolean = await this.isLocatorVisible(otpInput);
+    const requires2FA: boolean = await isLocatorVisible(otpInput);
     if (requires2FA) {
       await this.enterOtpForTwoFactorAuthentication(otpSecret);
     }
@@ -69,25 +74,12 @@ export class TwoFactorWorkflowPage {
   }
 
   public async enterOtpForTwoFactorAuthentication(otpKey?: string): Promise<void> {
-    const otp: string = await this.generateCurrentOtp(otpKey);
-    await this.fillOtpAndConfirm(otp);
     const errorMessageLocator: Locator = this.page.getByTestId('login-error-message');
-    // try to recover from possible failed attempts due to timing issues
-    if (await this.isLocatorVisible(errorMessageLocator)) {
-      const otp: string = await this.generateCurrentOtp(otpKey);
-      await this.fillOtpAndConfirm(otp);
-    }
-    await expect(errorMessageLocator).toBeHidden();
-  }
-
-  /** This function swallows errors, so we can use the result to retry. */
-  private async isLocatorVisible(locator: Locator): Promise<boolean> {
-    try {
-      await locator.waitFor({ timeout: 10 * 1000, state: 'visible' });
-      return true;
-    } catch {
-      return false;
-    }
+    await submitOtpWithRetry({
+      getOtp: () => this.generateCurrentOtp(otpKey),
+      submitOtp: async (otp: string) => this.fillOtpAndConfirm(otp),
+      errorLocator: errorMessageLocator,
+    });
   }
 
   private async getOtpSecretFromQRCode(): Promise<string> {
@@ -133,41 +125,12 @@ export class TwoFactorWorkflowPage {
   }
 
   private async generateCurrentOtp(providedKey?: string): Promise<string> {
-    let key: string | undefined;
-    if (providedKey) {
-      key = providedKey;
-    } else if (this.username) {
-      const workerParallelIndex: string = process.env['TEST_PARALLEL_INDEX']!;
-      // are we the workers designated root user?
-      if (SharedCredentialManager.getUsername(workerParallelIndex) === this.username) {
-        key = SharedCredentialManager.getOtpSeed(workerParallelIndex);
-      } else if (this.username === process.env['USER']) {
-        key = SharedCredentialManager.getOtpSeed();
-      }
-    }
-
-    if (!key) {
-      throw new Error(
-        `No OTP seed found for user ${this.username} and TEST_PARALLEL_INDEX ${process.env.TEST_PARALLEL_INDEX}`,
-      );
-    }
-
-    if (this.expires) {
-      // if we are asked to input two OTPs in a short time, i.e. during setup,
-      // we may need to wait for the next token, since repeated entry is not allowed
-      const currentTime: number = Date.now();
-      const timeLeft: number = this.expires - currentTime;
-
-      await this.page.waitForTimeout(timeLeft + 100);
-    }
-
-    const {
-      otp,
-      expires,
-    }: {
-      otp: string;
-      expires: number;
-    } = await TOTP.generate(key);
+    const { otp, expires }: { otp: string; expires: number } = await generateCurrentOtp({
+      page: this.page,
+      providedKey,
+      username: this.username,
+      expires: this.expires,
+    });
     this.expires = expires;
     return otp;
   }

@@ -1,7 +1,9 @@
 # Struktur der Playwright-Tests
+
 In diesem Dokument wird beschrieben, wie wir unsere Playwright-Tests strukturieren.
 
 ## Zielsetzung
+
 Das Ziel bei unseren Tests ist es, die Benutzerinteraktionen so abstrakt wie möglich zu beschreiben.
 Das heißt zum Beispiel, dass wir nicht in jedem Test erneut beschreiben wollen, wie man eine Autocomplete bedient.
 Stattdessen soll der Test lediglich fordern, dass aus einer Autocomplete ein Eintrag ausgewählt wird.
@@ -17,32 +19,46 @@ Tests werden parallel ausgeführt, wenn sie in verschiedenen Dateien stehen.
 Es ist daher ratsam, Testdateien klein zu halten und entsprechend sinnvoll zu schneiden.
 
 ## Technische Umsetzung
+
 ### Verzeichnisstruktur
+
 #### `base`: Helper für Tests
+
 Im `base`-Verzeichnis befinden sich Helper, die von den Tests aufgerufen werden aber nicht direkt zu den Tests gehören.
 Darunter fällt zum Beispiel die Erzeugung von Testdaten direkt über API.
 
+**Ablageregel für neue Helper**
+
+- Domain-spezifische Shared-Helper liegen in einem passenden Unterordner unter `base` (z. B. `base/2fa/`).
+- Solche Helper werden nicht unter `pages` abgelegt. `pages` enthält nur Page Objects und seitennahe Komponenten.
+- Shared-Helper werden über den jeweiligen Domain-Index exportiert (z. B. `base/2fa/index.ts`), damit Importe konsistent bleiben.
+
 #### `components`: wiederkehrende Komponenten
+
 In `components` befinden sich semantische Wrapper um Locators, die wiederkehrende Komponenten auf den Seiten testen.
 Beispielsweise legen wir hier eine Klasse für "Comboboxen" ab, die die nötigen Schritte zur Auswahl von Komponenten kapselt.
 
 #### `fixtures`: Ablage von Testdaten
+
 Fixtures meinen in diesem Fall die klassischen Testing-Fixtures. Das `fixtures`-Verzeichnis beinhaltet Testdaten, die als JSON oder in beliebigen anderen Formaten abgelegt werden können.
 
 Playwright-Fixtures sind hier nicht hinterlegt.
 
 #### `pages`: Seitenobjekte
+
 Im Verzeichnis `pages` liegen Repräsentationen der Views im Frontend (schulportal-client).
 Eine Seite hat dabei high-level-Funktionen zur Navigation und zum Aufruf von Seitenfunktionalitäten. Außerdem werden die Assertions hier durchgeführt.
 
 #### `/tests`: Die eigentlichen Tests
 
 ### Navigation mit FromAnywhere
+
 Für die Verwendung von mehreren Pages in den einzelnen Tests müssen sie nicht in jedem Test importiert und einzeln navigiert werden. Stattdessen ist es sinnvoll, verlinkte Pages in dedizierten Funktionen der einzelnen Pages zu returnen und die Funktionen im Test aufzurufen. Das spart Code und Wartungsaufwand.
 
 Als Einstieg dient dazu die Klasse `FromAnywhere`, über die man von jeder Route aus die LandingPage aufrufen kann, um von dort aus weiter zu navigieren.
 
 #### Beispiel
+
 ```
 FromAnywhere
 .start()
