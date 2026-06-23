@@ -4,7 +4,7 @@ import {
   addSecondOrganisationToPerson,
   createPerson,
   createPersonWithPersonenkontext,
-  createUsersWithLernRollenInDifferentKlassen,
+  createUserWithLernRollenInDifferentKlassen,
   UserInfo,
 } from '../../base/api/personApi';
 import { createRolle, addServiceProvidersToRolle, getRolleId } from '../../base/api/rolleApi';
@@ -22,6 +22,7 @@ import {
   generateRolleName,
   generateSchulname,
 } from '../../base/utils/generateTestdata';
+import { createMany } from '../../base/utils/concurrency';
 import { LandingViewPage } from '../../pages/LandingView.page';
 import { LoginViewPage } from '../../pages/LoginView.page';
 import { StartViewPage } from '../../pages/StartView.page';
@@ -57,10 +58,15 @@ async function createUsersWithRolle(
   klasseId?: string,
   secondaryRolleId?: string,
 ): Promise<UserInfo[]> {
-  return Promise.all(
-    Array.from({ length: count }, () =>
-      createPerson(page, schuleId, rolleId, undefined, undefined, undefined, klasseId, undefined, secondaryRolleId),
-    ),
+  return createMany(
+    count,
+    () =>
+      createPerson(page, {
+        organisationId: schuleId,
+        rolleId,
+        klasseId,
+        secondaryRolleId,
+      }),
   );
 }
 
@@ -454,14 +460,15 @@ test.describe('Rolle entziehen als Schuladmin', () => {
           const primaryKlasseId: string = await createKlasse(page, schuleId, generateKlassenname());
           if (unterschiedlicheKlassen) {
             const secondaryKlasseId: string = await createKlasse(page, schuleId, generateKlassenname());
-            users = await createUsersWithLernRollenInDifferentKlassen(
-              page,
-              schuleId,
-              targetRolleId,
-              secondaryRolleId,
-              primaryKlasseId,
-              secondaryKlasseId,
-              ROLLE_ENTZIEHEN_BULK_COUNT,
+            users = await createMany(ROLLE_ENTZIEHEN_BULK_COUNT, () =>
+              createUserWithLernRollenInDifferentKlassen(
+                page,
+                schuleId,
+                targetRolleId,
+                secondaryRolleId,
+                primaryKlasseId,
+                secondaryKlasseId,
+              ),
             );
           } else {
             users = await createUsersWithRolle(

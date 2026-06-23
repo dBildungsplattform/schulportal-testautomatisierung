@@ -63,13 +63,12 @@ export default async function globalSetup(): Promise<void> {
 
     const userInfos: UserInfo[] = await Promise.all(
       Array.from({ length: workers }).map((_: unknown, index: number) =>
-        createPerson(
-          page,
+        createPerson(page, {
           organisationId,
           rolleId,
-          generateNachname() + encodeNumberAsLetters(index + 1),
-          generateVorname(),
-        ),
+          familienname: generateNachname() + encodeNumberAsLetters(index + 1),
+          vorname: generateVorname(),
+        }),
       ),
     );
 

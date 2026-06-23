@@ -150,18 +150,33 @@ export async function freshLoginPage(page: Page): Promise<LoginViewPage> {
   return (await FromAnywhere(page).start()).navigateToLogin();
 }
 
+interface CreatePersonParams {
+  organisationId: string;
+  rolleId: string;
+  familienname?: string;
+  vorname?: string;
+  koPersNr?: string;
+  klasseId?: string;
+  merkmalNames?: Set<RollenMerkmal>;
+  secondaryRolleId?: string;
+}
+
 export async function createPerson(
   page: Page,
-  organisationId: string,
-  rolleId: string,
-  familienname?: string,
-  vorname?: string,
-  koPersNr?: string,
-  klasseId?: string,
-  merkmalNames?: Set<RollenMerkmal>,
-  secondaryRolleId?: string,
+  params: CreatePersonParams,
 ): Promise<UserInfo> {
   try {
+    const {
+      organisationId,
+      rolleId,
+      familienname,
+      vorname,
+      koPersNr,
+      klasseId,
+      merkmalNames,
+      secondaryRolleId,
+    } = params;
+
     const createPersonBodyParams: DbiamCreatePersonWithPersonenkontexteBodyParams = {
       familienname: familienname || generateNachname(),
       vorname: vorname || generateVorname(),
@@ -224,40 +239,35 @@ export async function createPerson(
   }
 }
 
-export async function createUsersWithLernRollenInDifferentKlassen(
+export async function createUserWithLernRollenInDifferentKlassen(
   page: Page,
   schuleId: string,
   primaryRolleId: string,
   secondaryRolleId: string,
   primaryKlasseId: string,
   secondaryKlasseId: string,
-  count: number,
-): Promise<UserInfo[]> {
+): Promise<UserInfo> {
   try {
     const personenkontextApi: PersonenkontextApi = constructPersonenkontextApi(page);
-    return Promise.all(
-      Array.from({ length: count }, async () => {
-        const response: ApiResponse<DBiamPersonResponse> =
-          await personenkontextApi.dbiamPersonenkontextWorkflowControllerCreatePersonWithPersonenkontexteRaw({
-            dbiamCreatePersonWithPersonenkontexteBodyParams: {
-              familienname: generateNachname(),
-              vorname: generateVorname(),
-              createPersonenkontexte: [
-                { organisationId: schuleId, rolleId: primaryRolleId },
-                { organisationId: primaryKlasseId, rolleId: primaryRolleId },
-                { organisationId: schuleId, rolleId: secondaryRolleId },
-                { organisationId: secondaryKlasseId, rolleId: secondaryRolleId },
-              ],
-            },
-          });
-        expect(response.raw.status).toBe(201);
-        const createdPerson: DBiamPersonResponse = await response.value();
+    const response: ApiResponse<DBiamPersonResponse> =
+      await personenkontextApi.dbiamPersonenkontextWorkflowControllerCreatePersonWithPersonenkontexteRaw({
+        dbiamCreatePersonWithPersonenkontexteBodyParams: {
+          familienname: generateNachname(),
+          vorname: generateVorname(),
+          createPersonenkontexte: [
+            { organisationId: schuleId, rolleId: primaryRolleId },
+            { organisationId: primaryKlasseId, rolleId: primaryRolleId },
+            { organisationId: schuleId, rolleId: secondaryRolleId },
+            { organisationId: secondaryKlasseId, rolleId: secondaryRolleId },
+          ],
+        },
+      });
+    expect(response.raw.status).toBe(201);
+    const createdPerson: DBiamPersonResponse = await response.value();
 
-        return toUserInfo(createdPerson);
-      }),
-    );
+    return toUserInfo(createdPerson);
   } catch (error) {
-    console.error('[ERROR] createUsersWithLernRollenInDifferentKlassen failed:', error);
+    console.error('[ERROR] createUserWithLernRollenInDifferentKlassen failed:', error);
     throw error;
   }
 }
@@ -273,7 +283,13 @@ export async function createPersonWithPersonenkontext(
   // Organisation wird nicht angelegt, da diese zur Zeit nicht gelöscht werden kann
   const organisationId: string = await getOrganisationId(page, organisationName);
   const rolleId: string = await getRolleId(page, rolleName);
-  const userInfo: UserInfo = await createPerson(page, organisationId, rolleId, familienname, vorname, koPersNr);
+  const userInfo: UserInfo = await createPerson(page, {
+    organisationId,
+    rolleId,
+    familienname,
+    vorname,
+    koPersNr,
+  });
   return userInfo;
 }
 
@@ -322,16 +338,15 @@ export async function createRolleAndPersonWithPersonenkontext(
     await addServiceProvidersToRolle(page, rolleId, Array.from(serviceProviderByNameMap.values()));
   }
 
-  const userInfo: UserInfo = await createPerson(
-    page,
+  const userInfo: UserInfo = await createPerson(page, {
     organisationId,
     rolleId,
-    params.familienname,
-    params.vorname,
-    params.koPersNr,
-    params.klasseId,
-    params.rollenMerkmalNamen,
-  );
+    familienname: params.familienname,
+    vorname: params.vorname,
+    koPersNr: params.koPersNr,
+    klasseId: params.klasseId,
+    merkmalNames: params.rollenMerkmalNamen,
+  });
   return userInfo;
 }
 

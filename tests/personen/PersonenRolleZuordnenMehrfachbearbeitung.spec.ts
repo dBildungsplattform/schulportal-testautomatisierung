@@ -25,6 +25,7 @@ import {
   generateSchulname,
   generateVorname,
 } from '../../base/utils/generateTestdata';
+import { createMany } from '../../base/utils/concurrency';
 import { LandingViewPage } from '../../pages/LandingView.page';
 import { LoginViewPage } from '../../pages/LoginView.page';
 import { StartViewPage } from '../../pages/StartView.page';
@@ -215,24 +216,20 @@ test.describe(`Mehrfachbearbeitung Rolle zuordnen: Umgebung: ${process.env.ENV}:
 
         // Zwei weitere Schüler in der Quellklasse, die bereits die Ziel-Lern-Rolle besitzen
         // (für Fehlerfall: erneute Zuordnung derselben Rolle an eine andere Klasse)
-        schuelerMitZielRolle1 = await createPerson(
-          page,
-          schuleId,
-          zielRolleId,
-          generateNachname(),
-          generateVorname(),
-          undefined,
-          quellKlasseId,
-        );
-        schuelerMitZielRolle2 = await createPerson(
-          page,
-          schuleId,
-          zielRolleId,
-          generateNachname(),
-          generateVorname(),
-          undefined,
-          quellKlasseId,
-        );
+        schuelerMitZielRolle1 = await createPerson(page, {
+          organisationId: schuleId,
+          rolleId: zielRolleId,
+          familienname: generateNachname(),
+          vorname: generateVorname(),
+          klasseId: quellKlasseId,
+        });
+        schuelerMitZielRolle2 = await createPerson(page, {
+          organisationId: schuleId,
+          rolleId: zielRolleId,
+          familienname: generateNachname(),
+          vorname: generateVorname(),
+          klasseId: quellKlasseId,
+        });
 
         // Schuladmin mit 2 Schulen anlegen
         const admin: UserInfo = await createPersonWithPersonenkontext(
@@ -445,13 +442,13 @@ for (const { adminType, rollenAssertions } of LEHR_ROLLEN_TEST_SCENARIOS) {
       rolleName = generateRolleName();
       const schuleId: string = await createSchule(page, schulName);
       const rolleId: string = await createRolle(page, RollenArt.Lehr, schuleId, rolleName);
-      userInfos = await Promise.all(Array.from({ length: 5 }).map(() => createPerson(page, schuleId, rolleId)));
+      userInfos = await createMany(5, () => createPerson(page, { organisationId: schuleId, rolleId }));
       const adminRolleId: string = await getRolleId(
         page,
         adminType === 'Schuladmin' ? schuladminOeffentlichRolle : landesadminRolle,
       );
       const adminOrgaId: string = adminType === 'Schuladmin' ? schuleId : await getOrganisationId(page, landSH);
-      adminUserInfo = await createPerson(page, adminOrgaId, adminRolleId);
+      adminUserInfo = await createPerson(page, { organisationId: adminOrgaId, rolleId: adminRolleId });
 
       const landingPage: LandingViewPage = await logout(page);
       const loginPage: LoginViewPage = await landingPage.navigateToLogin();

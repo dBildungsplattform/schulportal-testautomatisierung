@@ -92,15 +92,13 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         const idSPs: string[] = [await getServiceProviderId(page, itslearning, schuleId)];
         const rolleId: string = await createRolle(page, RollenArt.Lern, schuleId, generateRolleName());
         await addServiceProvidersToRolle(page, rolleId, idSPs);
-        userInfoSchueler = await createPerson(
-          page,
-          schuleId,
+        userInfoSchueler = await createPerson(page, {
+          organisationId: schuleId,
           rolleId,
-          generateNachname(),
-          generateVorname(),
-          '',
+          familienname: generateNachname(),
+          vorname: generateVorname(),
           klasseId,
-        );
+        });
       });
 
       await test.step(`Mit dem Lehrer am Portal anmelden`, async () => {
