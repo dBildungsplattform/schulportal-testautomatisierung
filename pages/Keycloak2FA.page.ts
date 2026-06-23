@@ -42,7 +42,7 @@ export class Keycloak2FAPage {
   }
 
   public async assertSubmitButtonIsVisible(): Promise<void> {
-    const submitButton: Locator = this.page.getByRole('button', { name: /anmelden/i });
+    const submitButton: Locator = this.getSubmitButtonLocator();
     await expect(submitButton).toBeVisible();
   }
 
@@ -69,15 +69,19 @@ export class Keycloak2FAPage {
       }
     } else {
       // Otherwise fill the single field
-      await this.page.locator('#otp').fill(otp);
+      await this.getOtpInputLocator().fill(otp);
     }
 
-    const submitButton: Locator = this.page.getByRole('button', { name: /anmelden/i });
+    const submitButton: Locator = this.getSubmitButtonLocator();
     await submitButton.click();
   }
 
   private getOtpInputLocator(): Locator {
     return this.page.locator('#otp');
+  }
+
+  private getSubmitButtonLocator(): Locator {
+    return this.page.getByRole('button', { name: /anmelden/i });
   }
 
   private async generateCurrentOtp(providedKey?: string): Promise<string> {
