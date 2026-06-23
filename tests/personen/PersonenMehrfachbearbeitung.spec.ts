@@ -30,6 +30,7 @@ import {
   Schulform,
 } from '../../pages/admin/organisationen/schulen/SchuleCreationView.page';
 import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.page';
+import { RolleEntziehenPage } from '../../pages/admin/personen/mehrfachbearbeitung/RolleEntziehen.page';
 import { HeaderPage } from '../../pages/components/Header.page';
 import {
   createKlassenAndSchuelerForSchulen,
@@ -40,9 +41,6 @@ const ROLLE_ENTZIEHEN_TYPES: { rollenArt: RollenArt; bezeichnung: string }[] = [
   { rollenArt: typeLehrer, bezeichnung: 'Lehrkraft (LEHR)' },
   { rollenArt: typeSchueler, bezeichnung: 'Schüler (LERN)' },
 ];
-
-const ROLLE_ENTZIEHEN_ERROR_TEXT: string =
-  'Die Rolle kann diesem Benutzer nicht entzogen werden, da dies die letzte Rollenzuordnung an der Schule ist und er dadurch von der Schule entfernt werden würde. Wenn Sie den Benutzer von der Schule entfernen möchten, führen Sie dies per Einzelbearbeitung (Schulzuordnung entfernen) oder über die Funktion Schulzuordnung(en) aufheben in der Mehrfachbearbeitung aus.';
 
 const ROLLE_ENTZIEHEN_BULK_COUNT: number = 2;
 
@@ -66,13 +64,12 @@ async function createUsersWithRolle(
   );
 }
 
-async function selectUsersAndStartRolleEntziehen(
+async function selectUsersAndOpenRolleEntziehenDialog(
   personManagementViewPage: PersonManagementViewPage,
-  rolleName: string,
+  rolleName: string | undefined,
   users: UserInfo[],
-  options?: { filterByRolle?: boolean; submit?: boolean },
-): Promise<void> {
-  if (options?.filterByRolle ?? true) {
+): Promise<RolleEntziehenPage> {
+  if (rolleName) {
     await personManagementViewPage.filterByRolle(rolleName);
     await personManagementViewPage.waitForDataLoad();
   }
@@ -83,11 +80,7 @@ async function selectUsersAndStartRolleEntziehen(
     await personManagementViewPage.checkPersonSelected(user.username);
   }
 
-  await personManagementViewPage.selectMehrfachauswahl('Rolle entziehen');
-  await personManagementViewPage.checkRolleEntziehenDialog();
-  if (options?.submit ?? true) {
-    await personManagementViewPage.rolleEntziehen();
-  }
+  return personManagementViewPage.startRolleEntziehen();
 }
 
 interface AdminFixture {
@@ -332,11 +325,16 @@ test.describe('Rolle entziehen als Schuladmin', () => {
     for (const { bezeichnung, rolleName, users } of stepData) {
       await test.step(bezeichnung, async () => {
         await personManagementViewPage.resetFilter();
-        await selectUsersAndStartRolleEntziehen(personManagementViewPage, rolleName, users);
+        const rolleEntziehenPage: RolleEntziehenPage = await selectUsersAndOpenRolleEntziehenDialog(
+          personManagementViewPage,
+          rolleName,
+          users,
+        );
+        await rolleEntziehenPage.submit();
 
-        await personManagementViewPage.checkRolleEntziehenInProgress();
-        await personManagementViewPage.checkBulkErrorDialog(users.length, ROLLE_ENTZIEHEN_ERROR_TEXT);
-        await personManagementViewPage.closeBulkErrorDialog();
+        await rolleEntziehenPage.assertInProgress();
+        await rolleEntziehenPage.assertBulkErrorDialog(users.length);
+        await rolleEntziehenPage.closeBulkErrorDialog();
       });
     }
   });
@@ -374,11 +372,16 @@ test.describe('Rolle entziehen als Schuladmin', () => {
     for (const { bezeichnung, rolleName, users } of stepData) {
       await test.step(bezeichnung, async () => {
         await personManagementViewPage.resetFilter();
-        await selectUsersAndStartRolleEntziehen(personManagementViewPage, rolleName, users);
+        const rolleEntziehenPage: RolleEntziehenPage = await selectUsersAndOpenRolleEntziehenDialog(
+          personManagementViewPage,
+          rolleName,
+          users,
+        );
+        await rolleEntziehenPage.submit();
 
-        await personManagementViewPage.checkRolleEntziehenInProgress();
-        await personManagementViewPage.checkRolleEntziehenSuccessDialog();
-        await personManagementViewPage.closeDialog('rolle-unassign-close-button');
+        await rolleEntziehenPage.assertInProgress();
+        await rolleEntziehenPage.assertSuccess();
+        await rolleEntziehenPage.close();
       });
     }
   });
@@ -413,19 +416,20 @@ test.describe('Rolle entziehen als Schuladmin', () => {
 
       await test.step('Aktion', async () => {
         await personManagementViewPage.resetFilter();
-        await personManagementViewPage.waitForDataLoad();
-        await selectUsersAndStartRolleEntziehen(personManagementViewPage, zugewieseneRolleName, users, {
-          filterByRolle: false,
-          submit: false,
-        });
-        await personManagementViewPage.selectRolleInEntziehenDialog(nichtZugewieseneRolleName);
-        await personManagementViewPage.rolleEntziehen();
+        const rolleEntziehenPage: RolleEntziehenPage = await selectUsersAndOpenRolleEntziehenDialog(
+          personManagementViewPage,
+          zugewieseneRolleName,
+          users,
+        );
+        await rolleEntziehenPage.selectRolle(nichtZugewieseneRolleName);
+        await rolleEntziehenPage.submit();
       });
 
       await test.step('Verifikation', async () => {
-        await personManagementViewPage.checkRolleEntziehenInProgress();
-        await personManagementViewPage.checkRolleEntziehenSuccessDialog();
-        await personManagementViewPage.closeDialog('rolle-unassign-close-button');
+        const rolleEntziehenPage: RolleEntziehenPage = new RolleEntziehenPage(page);
+        await rolleEntziehenPage.assertInProgress();
+        await rolleEntziehenPage.assertSuccess();
+        await rolleEntziehenPage.close();
       });
     },
   );
@@ -475,13 +479,19 @@ test.describe('Rolle entziehen als Schuladmin', () => {
 
         await test.step('Aktion', async () => {
           await personManagementViewPage.resetFilter();
-          await selectUsersAndStartRolleEntziehen(personManagementViewPage, targetRolleName, users);
+          const rolleEntziehenPage: RolleEntziehenPage = await selectUsersAndOpenRolleEntziehenDialog(
+            personManagementViewPage,
+            targetRolleName,
+            users,
+          );
+          await rolleEntziehenPage.submit();
         });
 
         await test.step('Verifikation', async () => {
-          await personManagementViewPage.checkRolleEntziehenInProgress();
-          await personManagementViewPage.checkRolleEntziehenSuccessDialog();
-          await personManagementViewPage.closeDialog('rolle-unassign-close-button');
+          const rolleEntziehenPage: RolleEntziehenPage = new RolleEntziehenPage(page);
+          await rolleEntziehenPage.assertInProgress();
+          await rolleEntziehenPage.assertSuccess();
+          await rolleEntziehenPage.close();
         });
       },
     );
@@ -528,11 +538,16 @@ test.describe('Rolle entziehen als Schuladmin', () => {
     for (const { bezeichnung, rolleName, singleRolleUsers, allUsers } of stepData) {
       await test.step(bezeichnung, async () => {
         await personManagementViewPage.resetFilter();
-        await selectUsersAndStartRolleEntziehen(personManagementViewPage, rolleName, allUsers);
+        const rolleEntziehenPage: RolleEntziehenPage = await selectUsersAndOpenRolleEntziehenDialog(
+          personManagementViewPage,
+          rolleName,
+          allUsers,
+        );
+        await rolleEntziehenPage.submit();
 
-        await personManagementViewPage.checkRolleEntziehenInProgress();
-        await personManagementViewPage.checkBulkErrorDialog(singleRolleUsers.length, ROLLE_ENTZIEHEN_ERROR_TEXT);
-        await personManagementViewPage.closeBulkErrorDialog();
+        await rolleEntziehenPage.assertInProgress();
+        await rolleEntziehenPage.assertBulkErrorDialog(singleRolleUsers.length);
+        await rolleEntziehenPage.closeBulkErrorDialog();
       });
     }
   });

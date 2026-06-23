@@ -55,7 +55,7 @@ USER='xxx' PW='xxx' FRONTEND_URL='https://main.dev.spsh.dbildungsplattform.de/' 
 
 #### Alle Tests mit einem bestimmten Stichwort ausführen
 ```
-USER='xxx' PW='xxx' FRONTEND_URL='https://main.dev.spsh.dbildungsplattform.de/' npx playwright test -g "@dev"
+USER='xxx' PW='xxx' FRONTEND_URL='https://main.dev.spsh.dbildungsplattform.de/' npx playwright test -g "Stichwort"
 ```
 
 #### Alle Tests einer bestimmten Datei ausführen
@@ -65,7 +65,7 @@ USER='xxx' PW='xxx' FRONTEND_URL='https://main.dev.spsh.dbildungsplattform.de/' 
 
 #### Alle Tests OHNE ein bestimmtes Stichwort ausführen
 ```
-USER='xxx' PW='xxx' FRONTEND_URL='https://main.dev.spsh.dbildungsplattform.de/' npx playwright test --grep-invert "LDAP"
+USER='xxx' PW='xxx' FRONTEND_URL='https://main.dev.spsh.dbildungsplattform.de/' npx playwright test --grep-invert "Stichwort"
 ```
 
 ### Tests ausführen mit LDAP-Operationen:

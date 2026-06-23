@@ -7,11 +7,11 @@ import { MenuBarPage } from '../../components/MenuBar.page';
 import { SearchFilter } from '../../components/SearchFilter';
 import { AbstractAdminPage } from '../AbstractAdmin.page';
 import { PersonDetailsViewPage } from './details/PersonDetailsView.page';
+import { RolleEntziehenPage } from './mehrfachbearbeitung/RolleEntziehen.page';
 import { RolleZuordnenPage } from './mehrfachbearbeitung/RolleZuordnen.page';
 
 type MehrfachbearbeitungOption = 'Rolle zuordnen' | 'Schüler versetzen' | 'Passwort zurücksetzen' | 'Rolle entziehen';
 export class PersonManagementViewPage extends AbstractAdminPage {
-  private static readonly BULK_OPERATION_TIMEOUT_MS: number = 30_000;
   private readonly personTable: DataTable;
   private readonly searchFilter: SearchFilter;
   private readonly organisationAutocomplete: Autocomplete;
@@ -22,8 +22,6 @@ export class PersonManagementViewPage extends AbstractAdminPage {
   private readonly table: Locator;
   private readonly schuelerVersetzenDialogCard: Locator;
   private readonly passwortZuruecksetzenDialogCard: Locator;
-  private readonly rolleEntziehenDialogCard: Locator;
-  private readonly bulkErrorDialogCard: Locator;
 
   constructor(protected readonly page: Page) {
     super(page);
@@ -43,8 +41,6 @@ export class PersonManagementViewPage extends AbstractAdminPage {
     this.menu = new MenuBarPage(this.page);
     this.schuelerVersetzenDialogCard = this.page.getByTestId('change-klasse-layout-card');
     this.passwortZuruecksetzenDialogCard = this.page.getByTestId('password-reset-layout-card');
-    this.rolleEntziehenDialogCard = this.page.getByTestId('rolle-unassign-layout-card');
-    this.bulkErrorDialogCard = this.page.getByTestId('person-bulk-error-layout-card');
   }
 
   /* actions */
@@ -147,6 +143,11 @@ export class PersonManagementViewPage extends AbstractAdminPage {
     }
   }
 
+  public async startRolleEntziehen(): Promise<RolleEntziehenPage> {
+    await this.selectMehrfachauswahl('Rolle entziehen');
+    return new RolleEntziehenPage(this.page).waitForPageToLoad();
+  }
+
   public async closeDialog(buttonId: string): Promise<void> {
     return this.page.getByTestId(buttonId).click();
   }
@@ -158,22 +159,6 @@ export class PersonManagementViewPage extends AbstractAdminPage {
 
   public async resetPassword(): Promise<void> {
     await this.page.getByTestId('password-reset-submit-button').click();
-  }
-
-  public async rolleEntziehen(): Promise<void> {
-    await this.page.getByTestId('rolle-unassign-submit-button').click();
-  }
-
-  public async selectRolleInEntziehenDialog(rolleName: string): Promise<void> {
-    const rolleSelect: Locator = this.rolleEntziehenDialogCard.getByTestId('rolle-select');
-    await rolleSelect.locator('.v-field__append-inner').click({ force: true });
-    const rolleInput: Locator = rolleSelect.locator('input');
-    await rolleInput.fill('');
-    await rolleInput.pressSequentially(rolleName);
-    const rolleOption: Locator = this.page.locator('.v-overlay .v-list-item').filter({
-      hasText: new RegExp(`^${rolleName}$`),
-    });
-    await rolleOption.click();
   }
 
   public async downloadPasswordFile(): Promise<Download> {
@@ -381,51 +366,6 @@ export class PersonManagementViewPage extends AbstractAdminPage {
     );
     await expect(this.passwortZuruecksetzenDialogCard.getByTestId('password-reset-close-button')).toBeVisible();
     await expect(this.passwortZuruecksetzenDialogCard.getByTestId('download-result-button')).toBeVisible();
-  }
-
-  public async checkRolleEntziehenDialog(): Promise<void> {
-    await expect(this.rolleEntziehenDialogCard).toBeVisible();
-    await expect(this.rolleEntziehenDialogCard.getByTestId('layout-card-headline')).toHaveText('Rolle entziehen');
-    await expect(this.rolleEntziehenDialogCard.getByTestId('rolle-unassign-submit-button')).toBeVisible();
-    await expect(this.rolleEntziehenDialogCard.getByTestId('rolle-unassign-discard-button')).toBeVisible();
-  }
-
-  public async checkRolleEntziehenInProgress(): Promise<void> {
-    const progressbar: Locator = this.rolleEntziehenDialogCard.getByTestId('rolle-unassign-progressbar');
-    await expect(progressbar).toBeVisible();
-  }
-
-  public async checkRolleEntziehenSuccessDialog(): Promise<void> {
-    await expect(this.rolleEntziehenDialogCard).toBeVisible({
-      timeout: PersonManagementViewPage.BULK_OPERATION_TIMEOUT_MS,
-    });
-    await expect(this.rolleEntziehenDialogCard.getByTestId('layout-card-headline')).toHaveText('Rolle entziehen');
-    await expect(this.rolleEntziehenDialogCard).toContainText('Die Rolle wurde erfolgreich entfernt.');
-    await expect(this.rolleEntziehenDialogCard.getByTestId('rolle-unassign-progressbar')).toHaveText('100%');
-    await expect(this.rolleEntziehenDialogCard.getByTestId('rolle-unassign-close-button')).toBeVisible();
-  }
-
-  public async checkBulkErrorDialog(expectedErrorCount: number, expectedErrorText: string): Promise<void> {
-    await expect(this.bulkErrorDialogCard).toBeVisible({
-      timeout: PersonManagementViewPage.BULK_OPERATION_TIMEOUT_MS,
-    });
-    await expect(this.bulkErrorDialogCard.getByTestId('layout-card-headline')).toHaveText(
-      'Fehler bei der Mehrfachbearbeitung',
-    );
-
-    for (let i = 0; i < expectedErrorCount; i++) {
-      const errorItem: Locator = this.bulkErrorDialogCard.getByTestId(`person-bulk-error-error-list-item-${i}`);
-      await expect(errorItem).toBeVisible();
-      await expect(errorItem).toContainText(expectedErrorText);
-    }
-
-    await expect(this.bulkErrorDialogCard.getByTestId('person-bulk-error-discard-button')).toBeVisible();
-    await expect(this.bulkErrorDialogCard.getByTestId('person-bulk-error-save-button')).toBeVisible();
-  }
-
-  public async closeBulkErrorDialog(): Promise<void> {
-    await this.bulkErrorDialogCard.getByTestId('person-bulk-error-discard-button').click();
-    await this.page.getByTestId('confirm-close-bulk-error-dialog-button').click();
   }
 
   public async checkPasswortdateiHinweis(): Promise<void> {
