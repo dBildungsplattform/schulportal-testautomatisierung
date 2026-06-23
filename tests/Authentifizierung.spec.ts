@@ -21,6 +21,7 @@ import {
 } from '../base/utils/generateTestdata';
 import { LandingViewPage } from '../pages/LandingView.page';
 import { LoginViewPage } from '../pages/LoginView.page';
+import { Keycloak2FAPage } from '../pages/Keycloak2FA.page';
 import { StartViewPage } from '../pages/StartView.page';
 import { HeaderPage } from '../pages/components/Header.page';
 
@@ -209,7 +210,20 @@ test.describe('Smoke: Lehrer kann sich anmelden, auf E-Mail zugreifen und sich a
       });
 
       await test.step('E-Mail öffnen', async () => {
-        await startPage.openServiceProviderInNewTab(email);
+        const emailTab: Page = await startPage.openServiceProviderInNewTab(email);
+        const keycloak2FA: Keycloak2FAPage = new Keycloak2FAPage(emailTab, userInfo.username);
+
+        const isOtpRequired: boolean = await keycloak2FA
+          .waitForPageLoad()
+          .then(() => true)
+          .catch(() => false);
+
+        if (isOtpRequired) {
+          await keycloak2FA.enterOtpForTwoFactorAuthentication();
+        }
+
+        await emailTab.waitForURL(/webmail.*\/mail/, { timeout: 30_000 });
+        await emailTab.close();
       });
 
       await test.step('Zurück zur Startseite navigieren', async () => {
