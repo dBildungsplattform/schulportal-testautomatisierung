@@ -137,6 +137,7 @@ interface AdminFixture {
     });
 
     // Skipping this test for now since it fails when sharding. It will be re-enabled in a separate scope SPSH-3815
+    // eslint-disable-next-line playwright/no-skipped-test
     test.describe.skip('Mit Klassendatenanlage', () => {
       let klassenNamen: string[] = [];
 
