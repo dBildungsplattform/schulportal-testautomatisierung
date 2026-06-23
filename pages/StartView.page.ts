@@ -28,7 +28,10 @@ export class StartViewPage {
   }
 
   public async navigateToEmail(): Promise<void> {
-    const newPagePromise: Promise<Page | null> = this.page.context().waitForEvent('page', { timeout: 15_000 }).catch(() => null);
+    const newPagePromise: Promise<Page | null> = this.page
+      .context()
+      .waitForEvent('page', { timeout: 15_000 })
+      .catch(() => null);
     await this.getServiceProviderCard('E-Mail').click();
 
     const newPage: Page | null = await newPagePromise;
