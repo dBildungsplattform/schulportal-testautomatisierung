@@ -1,7 +1,6 @@
 import { expect, Locator, Page, Response } from '@playwright/test';
 import { PersonManagementViewPage } from './admin/personen/PersonManagementView.page';
 import { TwoFactorWorkflowPage } from './TwoFactorWorkflow.page';
-import { Keycloak2FAPage } from './Keycloak2FA.page';
 import { formatDateDMY } from '../base/utils/generateTestdata';
 export class StartViewPage {
   /* add global locators here */
@@ -27,31 +26,6 @@ export class StartViewPage {
     return twoFactorWorkflowPage.completeTwoFactorAuthentication();
   }
 
-  public async navigateToEmail(): Promise<void> {
-    const [newPage] = await Promise.all([
-      this.page.context().waitForEvent('page'),
-      this.getServiceProviderCard('E-Mail').click(),
-    ]);
-    await newPage.waitForLoadState('load');
-
-    // Handle Keycloak 2FA on the new page
-    const keycloak2FA: Keycloak2FAPage = new Keycloak2FAPage(newPage, this.username);
-    const isOtpRequired: boolean = await keycloak2FA
-      .waitForPageLoad()
-      .then(() => true)
-      .catch(() => false);
-
-    if (isOtpRequired) {
-      await keycloak2FA.enterOtpForTwoFactorAuthentication();
-      // Wait for redirect to email app after 2FA
-      await newPage.waitForURL(/webmail.*\/mail/, { timeout: 30_000 });
-    } else {
-      // If no 2FA page appears, user might already be authenticated or SSO worked
-      // Page should already be at email app
-      await newPage.waitForURL(/webmail/, { timeout: 30_000 });
-    }
-  }
-
   public async openServiceProviderInNewTab(serviceProviderName: string): Promise<Page> {
     const [newPage] = await Promise.all([
       this.page.context().waitForEvent('page'),
@@ -61,20 +35,6 @@ export class StartViewPage {
     const response = await this.page.request.get(newPage.url());
     expect(response.ok()).toBeTruthy();
     return newPage;
-  }
-
-  public async openServiceProviderInNewPopup(serviceProviderName: string): Promise<Page> {
-    const serviceProviderCard: Locator = this.getServiceProviderCard(serviceProviderName);
-    await serviceProviderCard.scrollIntoViewIfNeeded();
-    await expect(serviceProviderCard).toBeVisible();
-
-    const [popupPage] = await Promise.all([
-      this.page.waitForEvent('popup', { timeout: 30_000 }),
-      serviceProviderCard.click(),
-    ]);
-
-    await popupPage.waitForLoadState('domcontentloaded');
-    return popupPage;
   }
 
   /* assertions */
