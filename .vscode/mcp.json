@@ -2,7 +2,7 @@
   "servers": {
     "playwright": {
       "command": "npx",
-      "args": ["@playwright/mcp@latest", "--browser", "chromium", "--headed"]
+      "args": ["@playwright/mcp@latest", "--browser", "chromium"]
     }
   }
 }

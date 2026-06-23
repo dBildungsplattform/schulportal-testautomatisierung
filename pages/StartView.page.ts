@@ -1,6 +1,7 @@
 import { expect, Locator, Page, Response } from '@playwright/test';
 import { PersonManagementViewPage } from './admin/personen/PersonManagementView.page';
 import { TwoFactorWorkflowPage } from './TwoFactorWorkflow.page';
+import { Keycloak2FAPage } from './Keycloak2FA.page';
 import { formatDateDMY } from '../base/utils/generateTestdata';
 export class StartViewPage {
   /* add global locators here */
@@ -33,8 +34,19 @@ export class StartViewPage {
     ]);
     await newPage.waitForLoadState('load');
 
-    const twoFactorWorkflowPage: TwoFactorWorkflowPage = new TwoFactorWorkflowPage(newPage, this.username);
-    await twoFactorWorkflowPage.completeTwoFactorAuthentication<void>('/email', async () => undefined);
+    // Handle Keycloak 2FA on the new page
+    const keycloak2FA: Keycloak2FAPage = new Keycloak2FAPage(newPage, this.username);
+    const isOtpRequired: boolean = await keycloak2FA.waitForPageLoad().then(() => true).catch(() => false);
+
+    if (isOtpRequired) {
+      await keycloak2FA.enterOtpForTwoFactorAuthentication();
+      // Wait for redirect to email app after 2FA
+      await newPage.waitForURL(/webmail.*\/mail/, { timeout: 30_000 });
+    } else {
+      // If no 2FA page appears, user might already be authenticated or SSO worked
+      // Page should already be at email app
+      await newPage.waitForURL(/webmail/, { timeout: 30_000 });
+    }
   }
 
   public async openServiceProviderInNewTab(serviceProviderName: string): Promise<Page> {

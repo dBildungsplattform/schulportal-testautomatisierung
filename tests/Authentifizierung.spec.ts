@@ -199,7 +199,7 @@ test.describe('Smoke: Lehrer kann sich anmelden, auf E-Mail zugreifen und sich a
 
   test(
     'Lehrer meldet sich an, navigiert zur E-Mail und meldet sich ab',
-    { tag: [DEV, SMOKE, STAGE] },
+    { tag: [SMOKE, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
       const startPage: StartViewPage = new StartViewPage(page, userInfo.username);
 
