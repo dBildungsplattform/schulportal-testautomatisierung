@@ -95,18 +95,12 @@ function toUserInfo(createdPerson: DBiamPersonResponse): UserInfo {
   };
 }
 
-type BuildPersonenkontexteResult =
-  | DbiamUpdatePersonenkontexteBodyParams['personenkontexte']
-  | 'retry'
-  | 'done';
-
 async function commitPersonenkontexteWithRetry(
   page: Page,
   personId: string,
   buildPersonenkontexte: (
     personenuebersicht: DBiamPersonenuebersichtResponse,
-    attempt: number,
-  ) => BuildPersonenkontexteResult,
+  ) => DbiamUpdatePersonenkontexteBodyParams['personenkontexte'] | null,
   validate?: (result: PersonenkontexteUpdateResponse) => void,
 ): Promise<void> {
   const personenuebersichtApi: DbiamPersonenuebersichtApi = constructPersonenuebersichtApi(page);
@@ -117,11 +111,9 @@ async function commitPersonenkontexteWithRetry(
       .dBiamPersonenuebersichtControllerFindPersonenuebersichtenByPersonRaw({ personId })
       .then((response) => response.value());
 
-    const personenkontexte: BuildPersonenkontexteResult = buildPersonenkontexte(personenuebersicht, attempt);
-    if (personenkontexte === 'done') {
-      return;
-    }
-    if (personenkontexte === 'retry') {
+    const personenkontexte: DbiamUpdatePersonenkontexteBodyParams['personenkontexte'] | null =
+      buildPersonenkontexte(personenuebersicht);
+    if (personenkontexte === null) {
       continue;
     }
 
@@ -148,6 +140,10 @@ async function commitPersonenkontexteWithRetry(
       throw error;
     }
   }
+
+  throw new Error(
+    `Unable to commit personenkontexte for person ${personId} after 3 attempts because required source data was not available.`,
+  );
 }
 
 export async function freshLoginPage(page: Page): Promise<LoginViewPage> {
@@ -341,9 +337,7 @@ export async function createRolleAndPersonWithPersonenkontext(
 
 export async function removeAllPersonenkontexte(page: Page, personId: string): Promise<void> {
   try {
-    await commitPersonenkontexteWithRetry(page, personId, (personenuebersicht) =>
-      personenuebersicht.zuordnungen.length === 0 ? 'done' : [],
-    );
+    await commitPersonenkontexteWithRetry(page, personId, () => []);
   } catch (error) {
     console.error('[ERROR] removeAllPersonenkontexte failed:', error);
     throw error;
@@ -387,9 +381,9 @@ export async function addSecondOrganisationToPerson(
     await commitPersonenkontexteWithRetry(
       page,
       personId,
-      (personenuebersicht, attempt) => {
-        if (personenuebersicht.zuordnungen.length === 0 && attempt < 2) {
-          return 'retry';
+      (personenuebersicht) => {
+        if (personenuebersicht.zuordnungen.length === 0) {
+          return null;
         }
         return [
           {
