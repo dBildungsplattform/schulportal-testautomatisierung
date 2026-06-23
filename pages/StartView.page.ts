@@ -51,7 +51,7 @@ export class StartViewPage {
       await newPage.waitForURL(/webmail/, { timeout: 30_000 });
     }
   }
-  
+
   public async openServiceProviderInNewTab(serviceProviderName: string): Promise<Page> {
     const [newPage] = await Promise.all([
       this.page.context().waitForEvent('page'),
