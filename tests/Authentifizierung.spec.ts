@@ -209,7 +209,7 @@ test.describe('Smoke: Lehrer kann sich anmelden, auf E-Mail zugreifen und sich a
       });
 
       await test.step('E-Mail öffnen', async () => {
-        await startPage.navigateToEmail();
+        await startPage.openServiceProviderInNewTab(email);
       });
 
       await test.step('Zurück zur Startseite navigieren', async () => {
