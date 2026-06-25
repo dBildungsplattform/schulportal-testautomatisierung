@@ -20,7 +20,6 @@ import type {
   CreateRollenerweiterungBodyParams,
   DbiamApplyRollenerweiterungMultiError,
   DbiamRolleError,
-  RolleResponse,
   RolleServiceProviderResponse,
   RolleWithServiceProvidersResponse,
   RollenArt,
@@ -40,8 +39,6 @@ import {
     DbiamApplyRollenerweiterungMultiErrorToJSON,
     DbiamRolleErrorFromJSON,
     DbiamRolleErrorToJSON,
-    RolleResponseFromJSON,
-    RolleResponseToJSON,
     RolleServiceProviderResponseFromJSON,
     RolleServiceProviderResponseToJSON,
     RolleWithServiceProvidersResponseFromJSON,
@@ -113,13 +110,13 @@ export interface RolleApiInterface {
      * @throws {RequiredError}
      * @memberof RolleApiInterface
      */
-    rolleControllerCreateRolleRaw(requestParameters: RolleControllerCreateRolleRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<RolleResponse>>;
+    rolleControllerCreateRolleRaw(requestParameters: RolleControllerCreateRolleRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<RolleWithServiceProvidersResponse>>;
 
     /**
      * Create a new rolle.
      * 
      */
-    rolleControllerCreateRolle(requestParameters: RolleControllerCreateRolleRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<RolleResponse>;
+    rolleControllerCreateRolle(requestParameters: RolleControllerCreateRolleRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<RolleWithServiceProvidersResponse>;
 
     /**
      * Create a new rollenerweiterung.
@@ -176,7 +173,7 @@ export interface RolleApiInterface {
      * @param {number} [limit] The requested limit for the page size.
      * @param {string} [searchStr] The name for the role.
      * @param {string} [organisationId] The id of the organisation where the role should be available.
-     * @param {RollenSystemRechtEnum} [systemrecht] The system right for which the roles should be available. Can only be ROLLEN_VERWALTEN or ROLLEN_ERWEITERN.
+     * @param {RollenSystemRechtEnum} [systemrecht] The system right for which the roles should be available. Can only be ROLLEN_VERWALTEN, ROLLEN_ERWEITERN or IMPORT_DURCHFUEHREN.
      * @param {Array<RollenArt>} [rollenarten] Filter roles by their role types.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -267,7 +264,7 @@ export class RolleApi extends runtime.BaseAPI implements RolleApiInterface {
      * Create a new rolle.
      * 
      */
-    async rolleControllerCreateRolleRaw(requestParameters: RolleControllerCreateRolleRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<RolleResponse>> {
+    async rolleControllerCreateRolleRaw(requestParameters: RolleControllerCreateRolleRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<RolleWithServiceProvidersResponse>> {
         if (requestParameters.createRolleBodyParams === null || requestParameters.createRolleBodyParams === undefined) {
             throw new runtime.RequiredError('createRolleBodyParams','Required parameter requestParameters.createRolleBodyParams was null or undefined when calling rolleControllerCreateRolle.');
         }
@@ -299,14 +296,14 @@ export class RolleApi extends runtime.BaseAPI implements RolleApiInterface {
             body: CreateRolleBodyParamsToJSON(requestParameters.createRolleBodyParams),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => RolleResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => RolleWithServiceProvidersResponseFromJSON(jsonValue));
     }
 
     /**
      * Create a new rolle.
      * 
      */
-    async rolleControllerCreateRolle(requestParameters: RolleControllerCreateRolleRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<RolleResponse> {
+    async rolleControllerCreateRolle(requestParameters: RolleControllerCreateRolleRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<RolleWithServiceProvidersResponse> {
         const response = await this.rolleControllerCreateRolleRaw(requestParameters, initOverrides);
         return await response.value();
     }
