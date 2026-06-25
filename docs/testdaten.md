@@ -13,15 +13,15 @@ Diese Übersicht beschreibt, wie in diesem Projekt Testdaten für Playwright-Tes
 
 ## Verzeichnisse und Bausteine
 
-| Pfad | Zweck |
-| --- | --- |
-| [base/api/](../base/api) | Wrapper um die generierten OpenAPI-Clients (Personen, Organisationen, Rollen, Service-Provider, Personenkontext, 2FA). Hier liegen die High-Level-Funktionen zum Anlegen/Löschen von Testdaten. |
-| [base/api/generated/](../base/api/generated) | Aus `openapispec.json` per `openapi-generator` erzeugter TypeScript-Client. **Nicht manuell editieren.** |
-| [base/api/playwrightFetchAdapter.ts](../base/api/playwrightFetchAdapter.ts) | Adapter, damit der OpenAPI-Client `page.request.fetch` von Playwright verwendet (nutzt damit den Login-Cookie der Page). |
-| [base/utils/generateTestdata.ts](../base/utils/generateTestdata.ts) | Generatoren für Vorname, Nachname, Rollenname, Klassenname, Schulname, KoPers-Nr, Dienststellen-Nr, Datumswerte. |
-| [base/testHelperDeleteTestdata.ts](../base/testHelperDeleteTestdata.ts) | Hilfsfunktionen zum Löschen von Personen/Rollen/Klassen über die API. |
-| [base/organisation.ts](../base/organisation.ts), [base/rollen.ts](../base/rollen.ts), [base/sp.ts](../base/sp.ts), [base/rollentypen.ts](../base/rollentypen.ts), [base/merkmale.ts](../base/merkmale.ts) | Konstanten für vorhandene Schulen, Standardrollen, Service-Provider, Rollentypen und Merkmale. |
-| [tests/helpers/](../tests/helpers) | Wiederverwendbare High-Level-Setups (z. B. [prepareAndLoginUserWithPermissions.ts](../tests/helpers/prepareAndLoginUserWithPermissions.ts)). |
+| Pfad                                                                                                                                                                                                      | Zweck                                                                                                                                                                                           |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [base/api/](../base/api)                                                                                                                                                                                  | Wrapper um die generierten OpenAPI-Clients (Personen, Organisationen, Rollen, Service-Provider, Personenkontext, 2FA). Hier liegen die High-Level-Funktionen zum Anlegen/Löschen von Testdaten. |
+| [base/api/generated/](../base/api/generated)                                                                                                                                                              | Aus `openapispec.json` per `openapi-generator` erzeugter TypeScript-Client. **Nicht manuell editieren.**                                                                                        |
+| [base/api/playwrightFetchAdapter.ts](../base/api/playwrightFetchAdapter.ts)                                                                                                                               | Adapter, damit der OpenAPI-Client `page.request.fetch` von Playwright verwendet (nutzt damit den Login-Cookie der Page).                                                                        |
+| [base/utils/generateTestdata.ts](../base/utils/generateTestdata.ts)                                                                                                                                       | Generatoren für Vorname, Nachname, Rollenname, Klassenname, Schulname, KoPers-Nr, Dienststellen-Nr, Datumswerte.                                                                                |
+| [base/testHelperDeleteTestdata.ts](../base/testHelperDeleteTestdata.ts)                                                                                                                                   | Hilfsfunktionen zum Löschen von Personen/Rollen/Klassen über die API.                                                                                                                           |
+| [base/organisation.ts](../base/organisation.ts), [base/rollen.ts](../base/rollen.ts), [base/sp.ts](../base/sp.ts), [base/rollentypen.ts](../base/rollentypen.ts), [base/merkmale.ts](../base/merkmale.ts) | Konstanten für vorhandene Schulen, Standardrollen, Service-Provider, Rollentypen und Merkmale.                                                                                                  |
+| [tests/helpers/](../tests/helpers)                                                                                                                                                                        | Wiederverwendbare High-Level-Setups (z. B. [prepareAndLoginUserWithPermissions.ts](../tests/helpers/prepareAndLoginUserWithPermissions.ts)).                                                    |
 
 ## API-Wrapper im Überblick
 
@@ -48,7 +48,6 @@ Alle Wrapper folgen demselben Muster: Sie konstruieren den passenden OpenAPI-Cli
 
 - `createRolle(page, rollenArt, organisationId, rolleName, merkmale?)` – legt eine neue Rolle an.
 - `addServiceProvidersToRolle(page, rolleId, serviceProviderIds)` – ordnet Service-Provider zu (Email, Kalender, Adressbuch, Schulportal-Administration usw.).
-- `addSystemrechtToRolle(page, rolleId, systemRecht)` – fügt Systemrechte hinzu (Server nutzt optimistic locking → **sequentiell aufrufen**).
 - `getRolleId(page, name)`, `deleteRolle(page, rolleId)`.
 
 ### Service-Provider ([base/api/serviceProviderApi.ts](../base/api/serviceProviderApi.ts))
@@ -57,15 +56,15 @@ Alle Wrapper folgen demselben Muster: Sie konstruieren den passenden OpenAPI-Cli
 
 ## Generatoren ([base/utils/generateTestdata.ts](../base/utils/generateTestdata.ts))
 
-| Funktion | Beispiel-Output |
-| --- | --- |
-| `generateVorname()` | `TAuto-PW-V-Lara_xYz` |
-| `generateNachname()` | `TAuto-PW-N-Müller_aBc` |
-| `generateRolleName()` | `TAuto-PW-R-flumino_qwe` |
-| `generateKlassenname()` | `TAuto-PW-K-12a flumino_qwe` |
-| `generateSchulname()` | `TAuto-PW-S-flumino_qwe` |
-| `generateKopersNr()` | `081512345678` |
-| `generateDienststellenNr()` | `012345678` |
+| Funktion                                                        | Beispiel-Output                        |
+| --------------------------------------------------------------- | -------------------------------------- |
+| `generateVorname()`                                             | `TAuto-PW-V-Lara_xYz`                  |
+| `generateNachname()`                                            | `TAuto-PW-N-Müller_aBc`                |
+| `generateRolleName()`                                           | `TAuto-PW-R-flumino_qwe`               |
+| `generateKlassenname()`                                         | `TAuto-PW-K-12a flumino_qwe`           |
+| `generateSchulname()`                                           | `TAuto-PW-S-flumino_qwe`               |
+| `generateKopersNr()`                                            | `081512345678`                         |
+| `generateDienststellenNr()`                                     | `012345678`                            |
 | `generateCurrentDate({ days, months })` / `formatDateDMY(date)` | Datums-Helfer (z. B. für Befristungen) |
 
 Der Präfix `TAuto-PW-` ist Konvention und wird an mehreren Stellen verwendet (Suche, globales Aufräumen).
@@ -125,11 +124,7 @@ Hier wird eine neue Rolle (`typeLehrer`) mit Service-Provider „email" an `test
 Aus [tests/LandesbedienstetenSuchenUndHinzufuegen.spec.ts](../tests/LandesbedienstetenSuchenUndHinzufuegen.spec.ts):
 
 ```ts
-const schuladmin: UserInfo = await createPersonWithPersonenkontext(
-  page,
-  testschuleName,
-  schuladminOeffentlichRolle,
-);
+const schuladmin: UserInfo = await createPersonWithPersonenkontext(page, testschuleName, schuladminOeffentlichRolle);
 ```
 
 Nutzt eine **bereits existierende** Rolle und Schule (per Name aufgelöst). Geeignet, wenn keine spezielle Rechte-Konstellation gebraucht wird.
@@ -138,8 +133,8 @@ Nutzt eine **bereits existierende** Rolle und Schule (per Name aufgelöst). Geei
 
 ```ts
 const primarySchuleId = await getOrganisationId(page, primarySchuleName);
-const secondSchuleId  = await getOrganisationId(page, secondSchuleName);
-const rolleId         = await getRolleId(page, rolle);
+const secondSchuleId = await getOrganisationId(page, secondSchuleName);
+const rolleId = await getRolleId(page, rolle);
 await addSecondOrganisationToPerson(page, schuladmin.personId, primarySchuleId, secondSchuleId, rolleId);
 ```
 
@@ -158,15 +153,15 @@ Der Helper legt Rolle + Person an, vergibt die Rechte sequentiell (optimistic lo
 
 ## Entscheidungshilfe: Welche Funktion wann?
 
-| Bedarf | Empfohlene Funktion |
-| --- | --- |
-| Person an existierender Rolle/Schule | `createPersonWithPersonenkontext` |
-| Person + neue, isolierte Rolle (eigene Rechte/Merkmale/Service-Provider) | `createRolleAndPersonWithPersonenkontext` |
-| Komplette Lehrkraft inkl. Login | `createTeacherAndLogin` |
-| Person mit definierten Systemrechten + Login | `prepareAndLoginUserWithPermissions` |
-| Klasse zu einer Schule | `createKlasse` |
-| Mehrere Klassen + Schüler | [tests/helpers/createKlassenAndSchuelerForSchulen.ts](../tests/helpers/createKlassenAndSchuelerForSchulen.ts) |
-| Schule (nur in Ausnahmefällen) | `createSchule` / `createOrganisation` |
+| Bedarf                                                                   | Empfohlene Funktion                                                                                           |
+| ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- |
+| Person an existierender Rolle/Schule                                     | `createPersonWithPersonenkontext`                                                                             |
+| Person + neue, isolierte Rolle (eigene Rechte/Merkmale/Service-Provider) | `createRolleAndPersonWithPersonenkontext`                                                                     |
+| Komplette Lehrkraft inkl. Login                                          | `createTeacherAndLogin`                                                                                       |
+| Person mit definierten Systemrechten + Login                             | `prepareAndLoginUserWithPermissions`                                                                          |
+| Klasse zu einer Schule                                                   | `createKlasse`                                                                                                |
+| Mehrere Klassen + Schüler                                                | [tests/helpers/createKlassenAndSchuelerForSchulen.ts](../tests/helpers/createKlassenAndSchuelerForSchulen.ts) |
+| Schule (nur in Ausnahmefällen)                                           | `createSchule` / `createOrganisation`                                                                         |
 
 ## Wichtige Constraints
 

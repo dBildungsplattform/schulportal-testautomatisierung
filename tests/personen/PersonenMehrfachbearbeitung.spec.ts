@@ -1,5 +1,5 @@
-import { Download, PlaywrightTestArgs, test } from '@playwright/test';
-import { getOrganisationId } from '../../base/api/organisationApi';
+import { Download, Page, PlaywrightTestArgs, test } from '@playwright/test';
+import { createSchule } from '../../base/api/organisationApi';
 import { addSecondOrganisationToPerson, createPersonWithPersonenkontext, UserInfo } from '../../base/api/personApi';
 import { getRolleId } from '../../base/api/rolleApi';
 import { landSH } from '../../base/organisation';
@@ -10,12 +10,7 @@ import { generateDienststellenNr, generateSchulname } from '../../base/utils/gen
 import { LandingViewPage } from '../../pages/LandingView.page';
 import { LoginViewPage } from '../../pages/LoginView.page';
 import { StartViewPage } from '../../pages/StartView.page';
-import { SchuleCreationSuccessPage } from '../../pages/admin/organisationen/schulen/SchuleCreationSuccess.page';
-import {
-  SchuleCreationParams,
-  SchuleCreationViewPage,
-  Schulform,
-} from '../../pages/admin/organisationen/schulen/SchuleCreationView.page';
+import { SchuleCreationParams, Schulform } from '../../pages/admin/organisationen/schulen/SchuleCreationView.page';
 import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.page';
 import { HeaderPage } from '../../pages/components/Header.page';
 import {
@@ -27,6 +22,21 @@ interface AdminFixture {
   organisationsName?: string;
   rolleName: string;
   bezeichnung: string;
+}
+
+async function logoutAndFirstLoginWithAnotherUser(
+  page: Page,
+  username: string,
+  password: string,
+): Promise<PersonManagementViewPage> {
+  const header: HeaderPage = new HeaderPage(page);
+  const landingPage: LandingViewPage = await test.step('Logout', async () => header.logout());
+  return test.step('Login mit anderem Benutzer', async () => {
+    const loginPage: LoginViewPage = await landingPage.navigateToLogin();
+    const startPage: StartViewPage = await loginPage.loginNewUserWithPasswordChange(username, password);
+    await startPage.waitForPageLoad();
+    return startPage.navigateToAdministration();
+  });
 }
 
 [
@@ -44,19 +54,13 @@ interface AdminFixture {
     let admin: UserInfo;
 
     test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
-      const header: HeaderPage = new HeaderPage(page);
       personManagementViewPage = await loginAndNavigateToAdministration(page);
-      // Schule anlegen
-      let schuleCreationViewPage: SchuleCreationViewPage =
-        await personManagementViewPage.menu.navigateToSchuleCreation();
       schule1Params = {
         name: generateSchulname(),
         dienststellenNr: generateDienststellenNr(),
         schulform: Schulform.Oeffentlich,
       };
-      let schuleSuccessPage: SchuleCreationSuccessPage = await schuleCreationViewPage.createSchule(schule1Params);
-      await schuleSuccessPage.waitForPageLoad();
-      schuleId = await getOrganisationId(page, schule1Params.name);
+      schuleId = await createSchule(page, schule1Params.name, schule1Params.dienststellenNr);
 
       const adminOrganisation: string = organisationsName || schule1Params.name;
       admin = await createPersonWithPersonenkontext(page, adminOrganisation, rolleName);
@@ -68,23 +72,11 @@ interface AdminFixture {
           dienststellenNr: generateDienststellenNr(),
           schulform: Schulform.Oeffentlich,
         };
-        schuleCreationViewPage = await schuleSuccessPage.goBackToCreateAnotherSchule();
-        schuleSuccessPage = await schuleCreationViewPage.createSchule(schule2Params);
-        await schuleSuccessPage.waitForPageLoad();
-        schuleId2 = await getOrganisationId(page, schule2Params.name);
+        schuleId2 = await createSchule(page, schule2Params.name, schule2Params.dienststellenNr);
 
         const rolleId: string = await getRolleId(page, rolleName);
         await addSecondOrganisationToPerson(page, admin.personId, schuleId, schuleId2, rolleId);
       }
-
-      const landingPage: LandingViewPage = await header.logout();
-      const loginPage: LoginViewPage = await landingPage.navigateToLogin();
-
-      // Anmeldung mit Passwortänderung
-      const startPage: StartViewPage = await loginPage.loginNewUserWithPasswordChange(admin.username, admin.password);
-      await startPage.waitForPageLoad();
-
-      personManagementViewPage = await startPage.navigateToAdministration();
     });
 
     test(
@@ -101,6 +93,8 @@ interface AdminFixture {
               : []),
           ]);
         });
+
+        await logoutAndFirstLoginWithAnotherUser(page, admin.username, admin.password);
 
         if (hasMultipleSchulen) {
           await test.step(`Fehlermeldungen für Schule und Schülerrolle testen`, async () => {
@@ -168,6 +162,8 @@ interface AdminFixture {
                 : []),
             ]);
           });
+
+          await logoutAndFirstLoginWithAnotherUser(page, admin.username, admin.password);
 
           if (hasMultipleSchulen) {
             await test.step(`Fehlermeldungen für Schule testen`, async () => {

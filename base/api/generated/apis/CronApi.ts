@@ -76,6 +76,18 @@ export interface CronApiInterface {
      * @throws {RequiredError}
      * @memberof CronApiInterface
      */
+    cronControllerTriggerVidisSyncRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>>;
+
+    /**
+     */
+    cronControllerTriggerVidisSync(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void>;
+
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof CronApiInterface
+     */
     cronControllerUnlockUsersWithExpiredLocksRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<boolean>>;
 
     /**
@@ -251,6 +263,42 @@ export class CronApi extends runtime.BaseAPI implements CronApiInterface {
     async cronControllerRemovePersonenKontexteWithExpiredBefristungFromUsers(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<boolean> {
         const response = await this.cronControllerRemovePersonenKontexteWithExpiredBefristungFromUsersRaw(initOverrides);
         return await response.value();
+    }
+
+    /**
+     */
+    async cronControllerTriggerVidisSyncRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearer", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        if (this.configuration && this.configuration.accessToken) {
+            // oauth required
+            headerParameters["Authorization"] = await this.configuration.accessToken("oauth2", []);
+        }
+
+        const response = await this.request({
+            path: `/api/cron/vidis-sync`,
+            method: 'PUT',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     */
+    async cronControllerTriggerVidisSync(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.cronControllerTriggerVidisSyncRaw(initOverrides);
     }
 
     /**

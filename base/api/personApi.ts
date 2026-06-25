@@ -37,11 +37,12 @@ import {
   PersonLockResponse,
   RollenArt,
   RollenMerkmal,
+  RollenSystemRechtEnum,
 } from './generated/models';
 import { ApiResponse, Configuration } from './generated/runtime';
 import { getOrganisationId } from './organisationApi';
 import { makeFetchWithPlaywright } from './playwrightFetchAdapter';
-import { addServiceProvidersToRolle, createRolle, getRolleId } from './rolleApi';
+import { createRolle, getRolleId } from './rolleApi';
 import { getServiceProviderIdsMappedByName } from './serviceProviderApi';
 
 export interface UserInfo {
@@ -185,6 +186,7 @@ interface CreateRolleAndPersonWithPersonenkontextParams {
   klasseId?: string;
   koPersNr?: string;
   rollenMerkmalNamen?: Set<RollenMerkmal>;
+  systemrechte?: Set<RollenSystemRechtEnum>;
 }
 export async function createRolleAndPersonWithPersonenkontext(
   page: Page,
@@ -193,20 +195,14 @@ export async function createRolleAndPersonWithPersonenkontext(
   // Organisation wird nicht angelegt, da diese zur Zeit nicht gelöscht werden kann
   const organisationId: string = await getOrganisationId(page, params.organisationName);
 
-  const rolleId: string = await createRolle(
-    page,
-    params.rollenArt,
-    organisationId,
-    params.rollenName ?? generateRolleName(),
-    params.rollenMerkmalNamen,
-  );
-
+  let serviceProviderIds = new Set<string>();
   if (params.serviceProviderNames && params.serviceProviderNames.length > 0) {
     const serviceProviderByNameMap: Map<string, string> = await getServiceProviderIdsMappedByName(
       page,
       params.serviceProviderNames,
       organisationId,
     );
+
     const missingServiceProviderNames: string[] = params.serviceProviderNames.filter(
       (name: string) => !serviceProviderByNameMap.has(name),
     );
@@ -217,8 +213,19 @@ export async function createRolleAndPersonWithPersonenkontext(
         )}`,
       );
     }
-    await addServiceProvidersToRolle(page, rolleId, Array.from(serviceProviderByNameMap.values()));
+
+    serviceProviderIds = new Set(serviceProviderByNameMap.values());
   }
+
+  const rolleId: string = await createRolle(
+    page,
+    params.rollenArt,
+    organisationId,
+    params.rollenName ?? generateRolleName(),
+    params.rollenMerkmalNamen,
+    params.systemrechte,
+    serviceProviderIds,
+  );
 
   const userInfo: UserInfo = await createPerson(
     page,
