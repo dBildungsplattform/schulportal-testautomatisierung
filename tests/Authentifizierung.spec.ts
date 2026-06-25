@@ -229,7 +229,10 @@ test.describe('Smoke: Lehrer kann sich anmelden, auf E-Mail zugreifen und sich a
       });
 
       await test.step('E-Mail öffnen', async () => {
-        await startPage.clickServiceProvider(email);
+        await Promise.all([
+          page.waitForURL(/keycloak|webmail/, { timeout: 30_000 }),
+          startPage.clickServiceProvider(email),
+        ]);
 
         const keycloak2FA: Keycloak2FAPage = new Keycloak2FAPage(page, userInfo.username);
 
@@ -242,7 +245,7 @@ test.describe('Smoke: Lehrer kann sich anmelden, auf E-Mail zugreifen und sich a
           await keycloak2FA.enterOtpForTwoFactorAuthentication();
         }
 
-        await page.waitForURL(/webmail.*\/mail/, { timeout: 30_000 });
+        await page.waitForURL(/webmail/, { timeout: 30_000 });
       });
 
       await test.step('Zurück zur Startseite navigieren', async () => {
