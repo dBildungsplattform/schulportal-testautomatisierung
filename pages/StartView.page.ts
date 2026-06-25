@@ -27,7 +27,10 @@ export class StartViewPage {
   }
 
   public async getServiceProviderUrl(serviceProviderName: string): Promise<string> {
-    const href: string | null = await this.getServiceProviderCard(serviceProviderName).locator('a').first().getAttribute('href');
+    const href: string | null = await this.getServiceProviderCard(serviceProviderName)
+      .locator('a')
+      .first()
+      .getAttribute('href');
     if (!href) throw new Error(`Kein href gefunden für Service Provider: ${serviceProviderName}`);
     return href;
   }
@@ -41,15 +44,6 @@ export class StartViewPage {
     const response = await this.page.request.get(newPage.url());
     expect(response.ok()).toBeTruthy();
     return newPage;
-  }
-
-  public async openServiceProviderInNewPopup(serviceProviderName: string): Promise<Page> {
-    const popupPage: Page = await this.clickServiceProviderAndWaitForNewPage(
-      serviceProviderName,
-      this.page.waitForEvent('popup'),
-      'domcontentloaded',
-    );
-    return popupPage;
   }
 
   /* assertions */
