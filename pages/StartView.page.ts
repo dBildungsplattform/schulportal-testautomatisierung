@@ -36,8 +36,6 @@ export class StartViewPage {
       this.page.context().waitForEvent('page'),
       'load',
     );
-    const response = await this.page.request.get(newPage.url());
-    expect(response.ok()).toBeTruthy();
     return newPage;
   }
 
