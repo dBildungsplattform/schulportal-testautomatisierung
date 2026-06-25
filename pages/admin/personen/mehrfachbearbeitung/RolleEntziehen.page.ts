@@ -1,4 +1,5 @@
 import { expect, Locator, Page } from '@playwright/test';
+import { Autocomplete } from '../../../components/Autocomplete';
 
 export class RolleEntziehenPage {
   private static readonly BULK_OPERATION_TIMEOUT_MS: number = 30_000;
@@ -7,10 +8,12 @@ export class RolleEntziehenPage {
 
   private readonly layoutCard: Locator;
   private readonly bulkErrorDialogCard: Locator;
+  private readonly rolleAutocomplete: Autocomplete;
 
   public constructor(private readonly page: Page) {
     this.layoutCard = this.page.getByTestId('rolle-unassign-layout-card');
     this.bulkErrorDialogCard = this.page.getByTestId('person-bulk-error-layout-card');
+    this.rolleAutocomplete = new Autocomplete(this.page, this.layoutCard.getByTestId('rolle-select'));
   }
 
   public async waitForPageToLoad(): Promise<RolleEntziehenPage> {
@@ -30,16 +33,7 @@ export class RolleEntziehenPage {
   }
 
   public async selectRolle(rolleName: string): Promise<void> {
-    const rolleSelect: Locator = this.layoutCard.getByTestId('rolle-select');
-    await rolleSelect.locator('.v-field__append-inner').click({ force: true });
-    const rolleInput: Locator = rolleSelect.locator('input');
-    await rolleInput.fill('');
-    await rolleInput.pressSequentially(rolleName);
-    const rolleOption: Locator = this.page.locator('.v-overlay .v-list-item').filter({
-      hasText: new RegExp(`^${rolleName}$`),
-    });
-    await rolleOption.click();
-    await expect(rolleSelect).toContainText(rolleName);
+    await this.rolleAutocomplete.searchByTitle(rolleName, true);
   }
 
   public async assertInProgress(): Promise<void> {
