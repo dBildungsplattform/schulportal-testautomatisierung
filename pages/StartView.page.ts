@@ -26,6 +26,10 @@ export class StartViewPage {
     return twoFactorWorkflowPage.completeTwoFactorAuthentication();
   }
 
+  public async clickServiceProvider(serviceProviderName: string): Promise<void> {
+    await this.getServiceProviderCard(serviceProviderName).click();
+  }
+
   public async getServiceProviderUrl(serviceProviderName: string): Promise<string> {
     const href: string | null = await this.getServiceProviderCard(serviceProviderName)
       .locator('a')
