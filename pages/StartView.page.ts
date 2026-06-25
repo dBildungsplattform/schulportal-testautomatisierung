@@ -27,14 +27,23 @@ export class StartViewPage {
   }
 
   public async openServiceProviderInNewTab(serviceProviderName: string): Promise<Page> {
-    const [newPage] = await Promise.all([
+    const newPage: Page = await this.clickServiceProviderAndWaitForNewPage(
+      serviceProviderName,
       this.page.context().waitForEvent('page'),
-      this.getServiceProviderCard(serviceProviderName).click(),
-    ]);
-    await newPage.waitForLoadState('load');
+      'load',
+    );
     const response = await this.page.request.get(newPage.url());
     expect(response.ok()).toBeTruthy();
     return newPage;
+  }
+
+  public async openServiceProviderInNewPopup(serviceProviderName: string): Promise<Page> {
+    const popupPage: Page = await this.clickServiceProviderAndWaitForNewPage(
+      serviceProviderName,
+      this.page.waitForEvent('popup'),
+      'domcontentloaded',
+    );
+    return popupPage;
   }
 
   /* assertions */
@@ -81,5 +90,15 @@ export class StartViewPage {
 
   private getServiceProviderCard(serviceProviderName: string): Locator {
     return this.page.locator('[data-testid^="service-provider-card"]', { hasText: serviceProviderName });
+  }
+
+  private async clickServiceProviderAndWaitForNewPage(
+    serviceProviderName: string,
+    newPagePromise: Promise<Page>,
+    loadState: 'load' | 'domcontentloaded',
+  ): Promise<Page> {
+    const [newPage] = await Promise.all([newPagePromise, this.getServiceProviderCard(serviceProviderName).click()]);
+    await newPage.waitForLoadState(loadState);
+    return newPage;
   }
 }

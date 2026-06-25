@@ -21,8 +21,8 @@ import {
 } from '../base/utils/generateTestdata';
 import { LandingViewPage } from '../pages/LandingView.page';
 import { LoginViewPage } from '../pages/LoginView.page';
+import { Keycloak2FAPage } from '../pages/Keycloak2FA.page';
 import { StartViewPage } from '../pages/StartView.page';
-import { TwoFactorWorkflowPage } from '../pages/TwoFactorWorkflow.page';
 import { HeaderPage } from '../pages/components/Header.page';
 
 const ADMIN: string = process.env.USER!;
@@ -196,34 +196,41 @@ test.describe('Smoke: Lehrer kann sich anmelden, auf E-Mail zugreifen und sich a
       const loginViewPage: LoginViewPage = await freshLoginPage(page);
       await loginViewPage.loginNewUserWithPasswordChange(userInfo.username, userInfo.password);
     });
-
-    await test.step('2FA einrichten', async () => {
-      const headerPage: HeaderPage = new HeaderPage(page);
-      await headerPage.navigateToProfile();
-      const twoFactorWorkflow: TwoFactorWorkflowPage = new TwoFactorWorkflowPage(page);
-      await twoFactorWorkflow.setupTwoFactorAuthenticationFromProfile();
-      await page.goto('/');
-    });
   });
 
   test(
     'Lehrer meldet sich an, navigiert zur E-Mail und meldet sich ab',
     { tag: [SMOKE, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
-      const startPage: StartViewPage = new StartViewPage(page);
+      const startPage: StartViewPage = new StartViewPage(page, userInfo.username);
 
       await test.step('Startseite mit Lehrer-Kacheln prüfen', async () => {
         await startPage.waitForPageLoad();
+        await startPage.assertServiceProvidersAreLoaded();
         await startPage.assertServiceProvidersAreVisible([adressbuch, email, kalender]);
       });
 
       await test.step('E-Mail öffnen', async () => {
-        const emailTab: Page = await startPage.openServiceProviderInNewTab(email);
+        const emailTab: Page = await startPage.openServiceProviderInNewPopup(email);
+        const keycloak2FA: Keycloak2FAPage = new Keycloak2FAPage(emailTab, userInfo.username);
+
+        const isOtpRequired: boolean = await keycloak2FA
+          .waitForPageLoad()
+          .then(() => true)
+          .catch(() => false);
+
+        if (isOtpRequired) {
+          await keycloak2FA.enterOtpForTwoFactorAuthentication();
+        }
+
+        await emailTab.waitForURL(/webmail.*\/mail/, { timeout: 30_000 });
         await emailTab.close();
       });
 
-      await test.step('Startseite nach dem Schließen des Tabs prüfen', async () => {
+      await test.step('Zurück zur Startseite navigieren', async () => {
+        await page.goto('/');
         await startPage.waitForPageLoad();
+        await startPage.assertServiceProvidersAreLoaded();
       });
 
       await test.step('School-SH in neuem Tab öffnen', async () => {
