@@ -26,6 +26,12 @@ export class StartViewPage {
     return twoFactorWorkflowPage.completeTwoFactorAuthentication();
   }
 
+  public async getServiceProviderUrl(serviceProviderName: string): Promise<string> {
+    const href: string | null = await this.getServiceProviderCard(serviceProviderName).locator('a').first().getAttribute('href');
+    if (!href) throw new Error(`Kein href gefunden für Service Provider: ${serviceProviderName}`);
+    return href;
+  }
+
   public async openServiceProviderInNewTab(serviceProviderName: string): Promise<Page> {
     const newPage: Page = await this.clickServiceProviderAndWaitForNewPage(
       serviceProviderName,

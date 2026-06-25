@@ -229,7 +229,10 @@ test.describe('Smoke: Lehrer kann sich anmelden, auf E-Mail zugreifen und sich a
       });
 
       await test.step('E-Mail öffnen', async () => {
-        const emailTab: Page = await startPage.openServiceProviderInNewTab(email);
+        const emailUrl: string = await startPage.getServiceProviderUrl(email);
+        const emailTab: Page = await page.context().newPage();
+        await emailTab.goto(emailUrl);
+
         const keycloak2FA: Keycloak2FAPage = new Keycloak2FAPage(emailTab, userInfo.username);
 
         const isOtpRequired: boolean = await keycloak2FA
