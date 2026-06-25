@@ -179,6 +179,7 @@ test.describe('Smoke: Schuladmin kann sich anmelden, zur Schulportal-Administrat
 
 test.describe('Smoke: Lehrer kann sich anmelden, auf E-Mail zugreifen und sich abmelden', () => {
   let userInfo: UserInfo;
+  let userPassword: string;
 
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
     await test.step('Testdaten anlegen', async () => {
@@ -195,7 +196,9 @@ test.describe('Smoke: Lehrer kann sich anmelden, auf E-Mail zugreifen und sich a
     await test.step('Als Lehrer anmelden', async () => {
       await logout(page);
       const loginViewPage: LoginViewPage = await freshLoginPage(page);
-      await loginViewPage.loginNewUserWithPasswordChange(userInfo.username, userInfo.password);
+      await loginViewPage.login(userInfo.username, userInfo.password);
+      userPassword = await loginViewPage.updatePassword();
+      await new StartViewPage(page, userInfo.username).waitForPageLoad();
     });
 
     await test.step('2FA einrichten', async () => {
@@ -203,7 +206,13 @@ test.describe('Smoke: Lehrer kann sich anmelden, auf E-Mail zugreifen und sich a
       await headerPage.navigateToProfile();
       const twoFactorWorkflow: TwoFactorWorkflowPage = new TwoFactorWorkflowPage(page);
       await twoFactorWorkflow.setupTwoFactorAuthenticationFromProfile();
-      await page.goto('/', { waitUntil: 'domcontentloaded' });
+    });
+
+    await test.step('Neu anmelden nach 2FA-Einrichtung', async () => {
+      await logout(page);
+      const loginViewPage: LoginViewPage = await freshLoginPage(page);
+      await loginViewPage.login(userInfo.username, userPassword);
+      await new StartViewPage(page, userInfo.username).waitForPageLoad();
     });
   });
 
