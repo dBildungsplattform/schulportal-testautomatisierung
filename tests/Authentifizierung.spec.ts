@@ -23,6 +23,7 @@ import { LandingViewPage } from '../pages/LandingView.page';
 import { LoginViewPage } from '../pages/LoginView.page';
 import { Keycloak2FAPage } from '../pages/Keycloak2FA.page';
 import { StartViewPage } from '../pages/StartView.page';
+import { TwoFactorWorkflowPage } from '../pages/TwoFactorWorkflow.page';
 import { HeaderPage } from '../pages/components/Header.page';
 
 const ADMIN: string = process.env.USER!;
@@ -195,6 +196,14 @@ test.describe('Smoke: Lehrer kann sich anmelden, auf E-Mail zugreifen und sich a
       await logout(page);
       const loginViewPage: LoginViewPage = await freshLoginPage(page);
       await loginViewPage.loginNewUserWithPasswordChange(userInfo.username, userInfo.password);
+    });
+
+    await test.step('2FA einrichten', async () => {
+      const headerPage: HeaderPage = new HeaderPage(page);
+      await headerPage.navigateToProfile();
+      const twoFactorWorkflow: TwoFactorWorkflowPage = new TwoFactorWorkflowPage(page);
+      await twoFactorWorkflow.setupTwoFactorAuthenticationFromProfile();
+      await page.goto('/', { waitUntil: 'domcontentloaded' });
     });
   });
 
