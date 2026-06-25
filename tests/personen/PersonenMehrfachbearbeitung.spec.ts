@@ -420,18 +420,18 @@ test.describe('Rolle entziehen als Schuladmin', () => {
         personManagementViewPage = await switchToSchuladmin(page);
       });
 
-      await test.step('Aktion', async () => {
+      await test.step('Aktion Rolle entziehen', async () => {
         await personManagementViewPage.resetFilter();
         const rolleEntziehenPage: RolleEntziehenPage = await selectUsersAndOpenRolleEntziehenDialog(
           personManagementViewPage,
-          zugewieseneRolleName,
+          undefined,
           users,
         );
         await rolleEntziehenPage.selectRolle(nichtZugewieseneRolleName);
         await rolleEntziehenPage.submit();
       });
 
-      await test.step('Verifikation', async () => {
+      await test.step('Verifikation der entzogenen Rolle', async () => {
         const rolleEntziehenPage: RolleEntziehenPage = new RolleEntziehenPage(page);
         await rolleEntziehenPage.assertInProgress();
         await rolleEntziehenPage.assertSuccess();

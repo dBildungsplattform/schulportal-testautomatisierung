@@ -39,6 +39,7 @@ export class RolleEntziehenPage {
       hasText: new RegExp(`^${rolleName}$`),
     });
     await rolleOption.click();
+    await expect(rolleSelect).toContainText(rolleName);
   }
 
   public async assertInProgress(): Promise<void> {
