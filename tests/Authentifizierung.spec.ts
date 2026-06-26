@@ -11,6 +11,7 @@ import { LoginViewPage } from '../pages/LoginView.page';
 import { StartViewPage } from '../pages/StartView.page';
 import { HeaderPage } from '../pages/components/Header.page';
 import { loginAndNavigateToAdministration } from '../base/testHelperUtils';
+import { RollenSystemRechtEnum } from '../base/api/generated';
 
 const ADMIN: string = process.env.USER!;
 const PASSWORD: string = process.env.PW!;
@@ -104,6 +105,7 @@ test.describe('Smoke: Rollenbasierte Zugänge', () => {
           organisationName: testschuleName,
           rollenArt: RollenArt.Leit,
           serviceProviderNames: [schulportaladmin],
+          systemrechte: new Set([RollenSystemRechtEnum.PersonenVerwalten, RollenSystemRechtEnum.KlassenVerwalten]),
         });
         const landingViewPage: LandingViewPage = await new HeaderPage(page).logout();
         const loginPage: LoginViewPage = await landingViewPage.navigateToLogin();
