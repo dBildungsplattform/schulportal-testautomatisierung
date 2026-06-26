@@ -1,6 +1,12 @@
 import { expect, test, type Page, type PlaywrightTestArgs } from '@playwright/test';
 import { createKlasse, getOrganisationId } from '../base/api/organisationApi';
-import { createPerson, createRolleAndPersonWithPersonenkontext, freshLoginPage, lockPerson, type UserInfo } from '../base/api/personApi';
+import {
+  createPerson,
+  createRolleAndPersonWithPersonenkontext,
+  freshLoginPage,
+  lockPerson,
+  type UserInfo,
+} from '../base/api/personApi';
 import { createRolle, RollenArt } from '../base/api/rolleApi';
 import { testschuleName } from '../base/organisation';
 import { adressbuch, email, itslearning, kalender, schulportaladmin } from '../base/sp';
