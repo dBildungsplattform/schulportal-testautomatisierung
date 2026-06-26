@@ -1,10 +1,11 @@
 import { expect, test, type Page, type PlaywrightTestArgs } from '@playwright/test';
-import { getOrganisationId } from '../base/api/organisationApi';
-import { createPerson, freshLoginPage, lockPerson, type UserInfo } from '../base/api/personApi';
+import { createKlasse, getOrganisationId } from '../base/api/organisationApi';
+import { createPerson, createRolleAndPersonWithPersonenkontext, freshLoginPage, lockPerson, type UserInfo } from '../base/api/personApi';
 import { createRolle, RollenArt } from '../base/api/rolleApi';
 import { testschuleName } from '../base/organisation';
+import { adressbuch, email, itslearning, kalender, schulportaladmin } from '../base/sp';
 import { DEV, SMOKE, STAGE } from '../base/tags';
-import { generateRolleName } from '../base/utils/generateTestdata';
+import { generateKlassenname, generateRolleName } from '../base/utils/generateTestdata';
 import { LandingViewPage } from '../pages/LandingView.page';
 import { LoginViewPage } from '../pages/LoginView.page';
 import { StartViewPage } from '../pages/StartView.page';
@@ -15,19 +16,12 @@ const ADMIN: string = process.env.USER!;
 const PASSWORD: string = process.env.PW!;
 
 test.describe(`Testfälle für den Login: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
-  let landingPage: LandingViewPage;
   let loginPage: LoginViewPage;
   let header: HeaderPage;
 
   test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
     loginPage = await freshLoginPage(page);
     header = new HeaderPage(page);
-  });
-
-  test('Erfolgreicher Login', { tag: [SMOKE, DEV, STAGE] }, async () => {
-    const startPage: StartViewPage = await loginPage.login(ADMIN, PASSWORD);
-    await startPage.waitForPageLoad();
-    await startPage.assertServiceProvidersAreLoaded();
   });
 
   test('Fehlgeschlagener Login mit falschen Daten', { tag: [SMOKE, DEV, STAGE] }, async () => {
@@ -50,12 +44,110 @@ test.describe(`Testfälle für den Login: Umgebung: ${process.env.ENV}: URL: ${p
     await loginPage.login(userinfo.username, userinfo.password);
     await expect(loginPage.loginFailedWithLockedUser()).resolves.toBeUndefined();
   });
+});
 
-  test('Erfolgreicher Logout', { tag: [STAGE, DEV, SMOKE] }, async () => {
-    const startPage: StartViewPage = await loginPage.login(ADMIN, PASSWORD);
-    await startPage.waitForPageLoad();
+test.describe('Smoke: Rollenbasierte Zugänge', () => {
+  test(
+    'Smoke: Lehrer kann sich anmelden, sieht die Kacheln und kann sich abmelden',
+    { tag: [SMOKE] },
+    async ({ page }: PlaywrightTestArgs) => {
+      const startPage: StartViewPage = await test.step('Lehrer anlegen und anmelden', async () => {
+        await loginAndNavigateToAdministration(page);
+        const user: UserInfo = await createRolleAndPersonWithPersonenkontext(page, {
+          organisationName: testschuleName,
+          rollenArt: RollenArt.Lehr,
+          serviceProviderNames: [adressbuch, email, kalender],
+        });
+        const landingViewPage: LandingViewPage = await new HeaderPage(page).logout();
+        const loginPage: LoginViewPage = await landingViewPage.navigateToLogin();
+        return loginPage.loginNewUserWithPasswordChange(user.username, user.password);
+      });
 
-    landingPage = await header.logout();
-    await landingPage.waitForPageLoad();
-  });
+      await test.step('Kacheln prüfen', async () => {
+        await startPage.assertServiceProvidersAreVisible([adressbuch, email, kalender]);
+      });
+
+      await test.step('Abmelden', async () => {
+        await new HeaderPage(page).logout();
+      });
+    },
+  );
+
+  test(
+    'Smoke: Landesadmin kann sich anmelden und zum Administrationsbereich und sich abmelden',
+    { tag: [SMOKE] },
+    async ({ page }: PlaywrightTestArgs) => {
+      const startPage: StartViewPage = await test.step('Als Landesadmin anmelden', async () => {
+        const loginPage: LoginViewPage = await freshLoginPage(page);
+        return loginPage.login(ADMIN, PASSWORD);
+      });
+
+      await test.step('Startseite und Administration prüfen', async () => {
+        await startPage.waitForPageLoad();
+        await startPage.assertServiceProvidersAreVisible([schulportaladmin]);
+        await startPage.navigateToAdministration();
+      });
+
+      await test.step('Abmelden', async () => {
+        await new HeaderPage(page).logout();
+      });
+    },
+  );
+
+  test(
+    'Smoke: Schuladmin kann sich anmelden und zur Schulportal-Administration und sich abmelden',
+    { tag: [SMOKE] },
+    async ({ page }: PlaywrightTestArgs) => {
+      const startPage: StartViewPage = await test.step('Schuladmin anlegen und anmelden', async () => {
+        await loginAndNavigateToAdministration(page);
+        const user: UserInfo = await createRolleAndPersonWithPersonenkontext(page, {
+          organisationName: testschuleName,
+          rollenArt: RollenArt.Leit,
+          serviceProviderNames: [schulportaladmin],
+        });
+        const landingViewPage: LandingViewPage = await new HeaderPage(page).logout();
+        const loginPage: LoginViewPage = await landingViewPage.navigateToLogin();
+        return loginPage.loginNewUserWithPasswordChange(user.username, user.password);
+      });
+
+      await test.step('Startseite und Administration prüfen', async () => {
+        await startPage.assertServiceProvidersAreVisible([schulportaladmin]);
+        await startPage.navigateToAdministration();
+      });
+
+      await test.step('Abmelden', async () => {
+        await new HeaderPage(page).logout();
+      });
+    },
+  );
+
+  test(
+    'Smoke: Schüler kann sich anmelden, itslearning öffnen und sich abmelden',
+    { tag: [SMOKE] },
+    async ({ page }: PlaywrightTestArgs) => {
+      const startPage: StartViewPage = await test.step('Schüler anlegen und anmelden', async () => {
+        await loginAndNavigateToAdministration(page);
+        const schuleId: string = await getOrganisationId(page, testschuleName);
+        const klasseId: string = await createKlasse(page, schuleId, generateKlassenname());
+        const user: UserInfo = await createRolleAndPersonWithPersonenkontext(page, {
+          organisationName: testschuleName,
+          rollenArt: RollenArt.Lern,
+          serviceProviderNames: [itslearning],
+          klasseId,
+        });
+        const landingViewPage: LandingViewPage = await new HeaderPage(page).logout();
+        const loginPage: LoginViewPage = await landingViewPage.navigateToLogin();
+        return loginPage.loginNewUserWithPasswordChange(user.username, user.password);
+      });
+
+      await test.step('itslearning-Kachel prüfen und öffnen', async () => {
+        await startPage.assertServiceProvidersAreVisible([itslearning]);
+        await startPage.assertServiceProviderOpensInNewTab(itslearning);
+      });
+
+      await test.step('Abmelden', async () => {
+        await new HeaderPage(page).logout();
+      });
+    },
+  );
 });
