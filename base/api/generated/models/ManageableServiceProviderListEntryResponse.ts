@@ -82,6 +82,12 @@ export interface ManageableServiceProviderListEntryResponse {
     requires2fa: boolean;
     /**
      * 
+     * @type {string}
+     * @memberof ManageableServiceProviderListEntryResponse
+     */
+    vidisAngebotId?: string;
+    /**
+     * 
      * @type {Array<ServiceProviderMerkmal>}
      * @memberof ManageableServiceProviderListEntryResponse
      */
@@ -139,6 +145,7 @@ export function ManageableServiceProviderListEntryResponseFromJSONTyped(json: an
         'administrationsebene': OrganisationRefResponseFromJSON(json['administrationsebene']),
         'kategorie': ServiceProviderKategorieFromJSON(json['kategorie']),
         'requires2fa': json['requires2fa'],
+        'vidisAngebotId': !exists(json, 'vidisAngebotId') ? undefined : json['vidisAngebotId'],
         'merkmale': ((json['merkmale'] as Array<any>).map(ServiceProviderMerkmalFromJSON)),
         'rollenerweiterungen': ((json['rollenerweiterungen'] as Array<any>).map(RollenerweiterungForManageableServiceProviderResponseFromJSON)),
         'rollen': ((json['rollen'] as Array<any>).map(RolleRefResponseFromJSON)),
@@ -160,6 +167,7 @@ export function ManageableServiceProviderListEntryResponseToJSON(value?: Managea
         'administrationsebene': OrganisationRefResponseToJSON(value.administrationsebene),
         'kategorie': ServiceProviderKategorieToJSON(value.kategorie),
         'requires2fa': value.requires2fa,
+        'vidisAngebotId': value.vidisAngebotId,
         'merkmale': ((value.merkmale as Array<any>).map(ServiceProviderMerkmalToJSON)),
         'rollenerweiterungen': ((value.rollenerweiterungen as Array<any>).map(RollenerweiterungForManageableServiceProviderResponseToJSON)),
         'rollen': ((value.rollen as Array<any>).map(RolleRefResponseToJSON)),

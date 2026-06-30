@@ -82,6 +82,12 @@ export interface ManageableServiceProviderResponse {
     requires2fa: boolean;
     /**
      * 
+     * @type {string}
+     * @memberof ManageableServiceProviderResponse
+     */
+    vidisAngebotId?: string;
+    /**
+     * 
      * @type {Array<ServiceProviderMerkmal>}
      * @memberof ManageableServiceProviderResponse
      */
@@ -183,6 +189,7 @@ export function ManageableServiceProviderResponseFromJSONTyped(json: any, ignore
         'kategorie': ServiceProviderKategorieFromJSON(json['kategorie']),
         'logoId': json['logoId'],
         'requires2fa': json['requires2fa'],
+        'vidisAngebotId': !exists(json, 'vidisAngebotId') ? undefined : json['vidisAngebotId'],
         'merkmale': ((json['merkmale'] as Array<any>).map(ServiceProviderMerkmalFromJSON)),
         'url': json['url'],
         'hasRollenerweiterung': json['hasRollenerweiterung'],
@@ -207,6 +214,7 @@ export function ManageableServiceProviderResponseToJSON(value?: ManageableServic
         'kategorie': ServiceProviderKategorieToJSON(value.kategorie),
         'logoId': value.logoId,
         'requires2fa': value.requires2fa,
+        'vidisAngebotId': value.vidisAngebotId,
         'merkmale': ((value.merkmale as Array<any>).map(ServiceProviderMerkmalToJSON)),
         'url': value.url,
         'hasRollenerweiterung': value.hasRollenerweiterung,

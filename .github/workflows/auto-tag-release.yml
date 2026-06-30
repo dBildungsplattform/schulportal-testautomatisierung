@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 #v4.1.1
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10  #v6.0.3
       
       - name: Update Semver
         uses: rickstaa/action-update-semver@77e8cb0f3cd805b38ffe25c07236336e05dcb4da #v1.1.4

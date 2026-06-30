@@ -1,6 +1,5 @@
 /* tslint:disable */
 /* eslint-disable */
-export * from './AddSystemrechtBodyParams';
 export * from './ApplyRollenerweiterungBodyParams';
 export * from './AssignHardwareTokenBodyParams';
 export * from './AssignHardwareTokenResponse';
@@ -103,7 +102,6 @@ export * from './ProviderControllerGetManageableServiceProviders200ResponseAllOf
 export * from './RawPagedResponse';
 export * from './RolleRefResponse';
 export * from './RolleResponse';
-export * from './RolleServiceProviderBodyParams';
 export * from './RolleServiceProviderResponse';
 export * from './RolleWithServiceProvidersResponse';
 export * from './RollenArt';

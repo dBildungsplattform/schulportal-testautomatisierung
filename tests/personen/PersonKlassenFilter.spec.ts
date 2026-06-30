@@ -1,6 +1,6 @@
 import { PlaywrightTestArgs, test } from '@playwright/test';
 
-import { createKlasse, getKlasseId, getOrganisationId } from '../../base/api/organisationApi';
+import { createKlasse, createSchule, getKlasseId } from '../../base/api/organisationApi';
 import {
   createPersonWithPersonenkontext,
   createRolleAndPersonWithPersonenkontext,
@@ -15,12 +15,7 @@ import { generateDienststellenNr, generateKlassenname, generateSchulname } from 
 import { LandingViewPage } from '../../pages/LandingView.page';
 import { LoginViewPage } from '../../pages/LoginView.page';
 import { StartViewPage } from '../../pages/StartView.page';
-import { SchuleCreationSuccessPage } from '../../pages/admin/organisationen/schulen/SchuleCreationSuccess.page';
-import {
-  SchuleCreationParams,
-  SchuleCreationViewPage,
-  Schulform,
-} from '../../pages/admin/organisationen/schulen/SchuleCreationView.page';
+import { SchuleCreationParams, Schulform } from '../../pages/admin/organisationen/schulen/SchuleCreationView.page';
 import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.page';
 import { PersonDetailsViewPage } from '../../pages/admin/personen/details/PersonDetailsView.page';
 import { ZuordnungenPage, ZuordnungValidationParams } from '../../pages/admin/personen/details/Zuordnungen.page';
@@ -33,26 +28,19 @@ import { HeaderPage } from '../../pages/components/Header.page';
   { rolleName: schuladminOeffentlichRolle, bezeichnung: 'Schuladmin' },
 ].forEach(({ rolleName, bezeichnung }: { rolleName: string; bezeichnung: string }) => {
   test.describe(`Testfälle für den Klassenfilter als ${bezeichnung}: Umgebung: ${process.env.ENV}: URL: ${process.env.FRONTEND_URL}:`, () => {
-    let header: HeaderPage;
     let personManagementViewPage: PersonManagementViewPage;
     let schuleParams: SchuleCreationParams;
     let schuleId: string;
     let admin: UserInfo;
 
     test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
-      header = new HeaderPage(page);
       personManagementViewPage = await loginAndNavigateToAdministration(page);
-      // Schule anlegen
-      const schuleCreationViewPage: SchuleCreationViewPage =
-        await personManagementViewPage.menu.navigateToSchuleCreation();
       schuleParams = {
         name: generateSchulname(),
         dienststellenNr: generateDienststellenNr(),
         schulform: Schulform.Oeffentlich,
       };
-      const schuleSuccessPage: SchuleCreationSuccessPage = await schuleCreationViewPage.createSchule(schuleParams);
-      await schuleSuccessPage.waitForPageLoad();
-      schuleId = await getOrganisationId(page, schuleParams.name);
+      schuleId = await createSchule(page, schuleParams.name, schuleParams.dienststellenNr);
 
       // Admin anlegen
       admin = await createPersonWithPersonenkontext(
@@ -63,16 +51,6 @@ import { HeaderPage } from '../../pages/components/Header.page';
         undefined,
         generateDienststellenNr(),
       );
-
-      const landingPage: LandingViewPage = await header.logout();
-      const loginPage: LoginViewPage = await landingPage.navigateToLogin();
-
-      // Erstmalige Anmeldung mit Passwortänderung
-      const startPage: StartViewPage = await loginPage.loginNewUserWithPasswordChange(admin.username, admin.password);
-      await startPage.waitForPageLoad();
-
-      // Navigation zur Ergebnisliste von Benutzern
-      personManagementViewPage = await startPage.navigateToAdministration();
     });
 
     test.describe('Klassenfilter-Tests', () => {
@@ -98,6 +76,16 @@ import { HeaderPage } from '../../pages/components/Header.page';
           rollenArt: typeSchueler,
           klasseId: await getKlasseId(page, klassenNamen[0]),
         });
+
+        const landingPage: LandingViewPage = await new HeaderPage(page).logout();
+        const loginPage: LoginViewPage = await landingPage.navigateToLogin();
+
+        // Erstmalige Anmeldung mit Passwortänderung
+        const startPage: StartViewPage = await loginPage.loginNewUserWithPasswordChange(admin.username, admin.password);
+        await startPage.waitForPageLoad();
+
+        // Navigation zur Ergebnisliste von Benutzern
+        personManagementViewPage = await startPage.navigateToAdministration();
 
         // Zur Bearbeiten-Ansicht des Schülers navigieren
         if (rolleName === landesadminRolle) {
