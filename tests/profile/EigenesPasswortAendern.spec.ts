@@ -2,7 +2,7 @@ import { PlaywrightTestArgs, test } from '@playwright/test';
 
 import { createKlasse, getOrganisationId } from '../../base/api/organisationApi';
 import { createPerson, createRolleAndPersonWithPersonenkontext, UserInfo } from '../../base/api/personApi';
-import { addServiceProvidersToRolle, createRolle, RollenArt } from '../../base/api/rolleApi';
+import { createRolle, RollenArt } from '../../base/api/rolleApi';
 import { getServiceProviderId } from '../../base/api/serviceProviderApi';
 import { testschuleName } from '../../base/organisation';
 import { typeLehrer } from '../../base/rollentypen';
@@ -90,8 +90,16 @@ test.describe(`Testfälle für das eigene Profil anzeigen: Umgebung: ${process.e
         const schuleId: string = await getOrganisationId(page, testschuleName);
         const klasseId: string = await createKlasse(page, schuleId, generateKlassenname());
         const idSPs: string[] = [await getServiceProviderId(page, itslearning, schuleId)];
-        const rolleId: string = await createRolle(page, RollenArt.Lern, schuleId, generateRolleName());
-        await addServiceProvidersToRolle(page, rolleId, idSPs);
+        const rolleId: string = await createRolle(
+          page,
+          RollenArt.Lern,
+          schuleId,
+          generateRolleName(),
+          undefined,
+          undefined,
+          new Set(idSPs),
+        );
+
         userInfoSchueler = await createPerson(page, {
           organisationId: schuleId,
           rolleId,

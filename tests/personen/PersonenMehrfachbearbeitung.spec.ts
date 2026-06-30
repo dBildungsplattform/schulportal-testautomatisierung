@@ -1,4 +1,4 @@
-import { Download, PlaywrightTestArgs, test } from '@playwright/test';
+import { Download, Page, PlaywrightTestArgs, test } from '@playwright/test';
 import { createKlasse, createSchule } from '../../base/api/organisationApi';
 import {
   addSecondOrganisationToPerson,
@@ -7,7 +7,7 @@ import {
   createUserWithLernRollenInDifferentKlassen,
   UserInfo,
 } from '../../base/api/personApi';
-import { createRolle, addServiceProvidersToRolle, getRolleId } from '../../base/api/rolleApi';
+import { createRolle, getRolleId } from '../../base/api/rolleApi';
 import { getServiceProviderId } from '../../base/api/serviceProviderApi';
 import { RollenArt } from '../../base/api/generated/models/RollenArt';
 import { landSH } from '../../base/organisation';
@@ -95,6 +95,21 @@ interface AdminFixture {
   bezeichnung: string;
 }
 
+async function logoutAndFirstLoginWithAnotherUser(
+  page: Page,
+  username: string,
+  password: string,
+): Promise<PersonManagementViewPage> {
+  const header: HeaderPage = new HeaderPage(page);
+  const landingPage: LandingViewPage = await test.step('Logout', async () => header.logout());
+  return test.step('Login mit anderem Benutzer', async () => {
+    const loginPage: LoginViewPage = await landingPage.navigateToLogin();
+    const startPage: StartViewPage = await loginPage.loginNewUserWithPasswordChange(username, password);
+    await startPage.waitForPageLoad();
+    return startPage.navigateToAdministration();
+  });
+}
+
 [
   { organisationsName: landSH, rolleName: landesadminRolle, bezeichnung: 'Landesadmin' },
   { rolleName: schuladminOeffentlichRolle, bezeichnung: 'Schuladmin (1 Schule)' },
@@ -110,7 +125,6 @@ interface AdminFixture {
     let admin: UserInfo;
 
     test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
-      const header: HeaderPage = new HeaderPage(page);
       personManagementViewPage = await loginAndNavigateToAdministration(page);
       // Schule anlegen
       const schule1Name: string = generateSchulname();
@@ -139,15 +153,6 @@ interface AdminFixture {
         const rolleId: string = await getRolleId(page, rolleName);
         await addSecondOrganisationToPerson(page, admin.personId, schuleId, schuleId2, rolleId);
       }
-
-      const landingPage: LandingViewPage = await header.logout();
-      const loginPage: LoginViewPage = await landingPage.navigateToLogin();
-
-      // Anmeldung mit Passwortänderung
-      const startPage: StartViewPage = await loginPage.loginNewUserWithPasswordChange(admin.username, admin.password);
-      await startPage.waitForPageLoad();
-
-      personManagementViewPage = await startPage.navigateToAdministration();
     });
 
     test(
@@ -164,6 +169,8 @@ interface AdminFixture {
               : []),
           ]);
         });
+
+        await logoutAndFirstLoginWithAnotherUser(page, admin.username, admin.password);
 
         if (hasMultipleSchulen) {
           await test.step(`Fehlermeldungen für Schule und Schülerrolle testen`, async () => {
@@ -231,6 +238,8 @@ interface AdminFixture {
                 : []),
             ]);
           });
+
+          await logoutAndFirstLoginWithAnotherUser(page, admin.username, admin.password);
 
           if (hasMultipleSchulen) {
             await test.step(`Fehlermeldungen für Schule testen`, async () => {
@@ -309,8 +318,7 @@ test.describe('Rolle entziehen als Schuladmin', () => {
       const idSPs: string[] = [await getServiceProviderId(page, itslearning, schuleId)];
       for (const { rollenArt, bezeichnung } of ROLLE_ENTZIEHEN_TYPES) {
         const targetRolleName: string = generateRolleName();
-        const targetRolleId: string = await createRolle(page, rollenArt, schuleId, targetRolleName);
-        await addServiceProvidersToRolle(page, targetRolleId, idSPs);
+        const targetRolleId: string = await createRolle(page, rollenArt, schuleId, targetRolleName, undefined, undefined, new Set(idSPs));
         const klasseId: string | undefined =
           rollenArt === typeSchueler ? await createKlasse(page, schuleId, generateKlassenname()) : undefined;
 
@@ -353,10 +361,8 @@ test.describe('Rolle entziehen als Schuladmin', () => {
       for (const { rollenArt, bezeichnung } of ROLLE_ENTZIEHEN_TYPES) {
         const targetRolleName: string = generateRolleName();
         const secondaryRolleName: string = generateRolleName();
-        const targetRolleId: string = await createRolle(page, rollenArt, schuleId, targetRolleName);
-        const secondaryRolleId: string = await createRolle(page, rollenArt, schuleId, secondaryRolleName);
-        await addServiceProvidersToRolle(page, targetRolleId, idSPs);
-        await addServiceProvidersToRolle(page, secondaryRolleId, idSPs);
+        const targetRolleId: string = await createRolle(page, rollenArt, schuleId, targetRolleName, undefined, undefined, new Set(idSPs));
+        const secondaryRolleId: string = await createRolle(page, rollenArt, schuleId, secondaryRolleName, undefined, undefined, new Set(idSPs));
         const klasseId: string | undefined =
           rollenArt === typeSchueler ? await createKlasse(page, schuleId, generateKlassenname()) : undefined;
 
@@ -404,15 +410,16 @@ test.describe('Rolle entziehen als Schuladmin', () => {
         const idSPs: string[] = [await getServiceProviderId(page, itslearning, schuleId)];
         zugewieseneRolleName = generateRolleName();
         nichtZugewieseneRolleName = generateRolleName();
-        const zugewieseneRolleId: string = await createRolle(page, typeSchueler, schuleId, zugewieseneRolleName);
-        const nichtZugewieseneRolleId: string = await createRolle(
+        const zugewieseneRolleId: string = await createRolle(page, typeSchueler, schuleId, zugewieseneRolleName, undefined, undefined, new Set(idSPs));
+        const _nichtZugewieseneRolleId: string = await createRolle(
           page,
           typeSchueler,
           schuleId,
           nichtZugewieseneRolleName,
+          undefined,
+          undefined,
+          new Set(idSPs),
         );
-        await addServiceProvidersToRolle(page, zugewieseneRolleId, idSPs);
-        await addServiceProvidersToRolle(page, nichtZugewieseneRolleId, idSPs);
 
         const klasseId: string = await createKlasse(page, schuleId, generateKlassenname());
         users = await createUsersWithRolle(page, schuleId, zugewieseneRolleId, ROLLE_ENTZIEHEN_BULK_COUNT, klasseId);
@@ -452,10 +459,8 @@ test.describe('Rolle entziehen als Schuladmin', () => {
           const idSPs: string[] = [await getServiceProviderId(page, itslearning, schuleId)];
           targetRolleName = generateRolleName();
           const secondaryRolleName: string = generateRolleName();
-          const targetRolleId: string = await createRolle(page, typeSchueler, schuleId, targetRolleName);
-          const secondaryRolleId: string = await createRolle(page, typeSchueler, schuleId, secondaryRolleName);
-          await addServiceProvidersToRolle(page, targetRolleId, idSPs);
-          await addServiceProvidersToRolle(page, secondaryRolleId, idSPs);
+          const targetRolleId: string = await createRolle(page, typeSchueler, schuleId, targetRolleName, undefined, undefined, new Set(idSPs));
+          const secondaryRolleId: string = await createRolle(page, typeSchueler, schuleId, secondaryRolleName, undefined, undefined, new Set(idSPs));
 
           const primaryKlasseId: string = await createKlasse(page, schuleId, generateKlassenname());
           if (unterschiedlicheKlassen) {
@@ -512,10 +517,8 @@ test.describe('Rolle entziehen als Schuladmin', () => {
       for (const { rollenArt, bezeichnung } of ROLLE_ENTZIEHEN_TYPES) {
         const targetRolleName: string = generateRolleName();
         const secondaryRolleName: string = generateRolleName();
-        const targetRolleId: string = await createRolle(page, rollenArt, schuleId, targetRolleName);
-        const secondaryRolleId: string = await createRolle(page, rollenArt, schuleId, secondaryRolleName);
-        await addServiceProvidersToRolle(page, targetRolleId, idSPs);
-        await addServiceProvidersToRolle(page, secondaryRolleId, idSPs);
+        const targetRolleId: string = await createRolle(page, rollenArt, schuleId, targetRolleName, undefined, undefined, new Set(idSPs));
+        const secondaryRolleId: string = await createRolle(page, rollenArt, schuleId, secondaryRolleName, undefined, undefined, new Set(idSPs));
         const klasseId: string | undefined =
           rollenArt === typeSchueler ? await createKlasse(page, schuleId, generateKlassenname()) : undefined;
 
@@ -559,3 +562,4 @@ test.describe('Rolle entziehen als Schuladmin', () => {
     }
   });
 });
+

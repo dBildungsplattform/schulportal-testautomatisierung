@@ -6,7 +6,7 @@ import {
   createRolleAndPersonWithPersonenkontext,
   UserInfo,
 } from '../../base/api/personApi';
-import { addSystemrechtToRolle, RollenArt } from '../../base/api/rolleApi';
+import { RollenArt } from '../../base/api/rolleApi';
 import { testschule665Name, testschuleName } from '../../base/organisation';
 import { schulportaladmin } from '../../base/sp';
 import { HeaderPage } from '../../pages/components/Header.page';
@@ -45,12 +45,8 @@ export async function prepareAndLoginUserWithPermissions(
     organisationName: testschuleName,
     rollenArt: RollenArt.Leit,
     serviceProviderNames: [schulportaladmin],
+    systemrechte: new Set(permissions),
   });
-
-  // Assign each system right to the newly created role (must be sequential — server uses optimistic locking on Rolle)
-  for (const permission of permissions) {
-    await addSystemrechtToRolle(page, userInfo.rolleId, permission);
-  }
 
   // Add a second school to the user's person context
   const [primarySchuleId, secondarySchuleId]: [string, string] = await Promise.all([
