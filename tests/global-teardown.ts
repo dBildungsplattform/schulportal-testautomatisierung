@@ -2,6 +2,7 @@ import { Browser, BrowserContext, chromium, Page } from '@playwright/test';
 
 import {
   ApiResponse,
+  ManageableServiceProviderListEntryResponse,
   OrganisationenApi,
   OrganisationResponse,
   OrganisationsTyp,
@@ -9,6 +10,8 @@ import {
   PersonendatensatzResponse,
   PersonenFrontendApi,
   PersonFrontendControllerFindPersons200Response,
+  ProviderApi,
+  ProviderControllerGetManageableServiceProviders200Response,
   RolleApi,
   RolleWithServiceProvidersResponse,
 } from '../base/api/generated';
@@ -16,6 +19,7 @@ import { constructOrganisationApi } from '../base/api/organisationApi';
 import { loginAndNavigateToAdministration } from '../base/testHelperUtils';
 import { constructPersonenApi, constructPersonenFrontendApi } from '../base/api/personApi';
 import { constructRolleApi } from '../base/api/rolleApi';
+import { constructProviderApi } from '../base/api/serviceProviderApi';
 
 const FRONTEND_URL: string = process.env.FRONTEND_URL ?? '';
 const shardIndex = process.env.SHARD_INDEX ?? '0';
@@ -61,6 +65,7 @@ export default async function globalTeardown(): Promise<void> {
     const personFrontendApi: PersonenFrontendApi = constructPersonenFrontendApi(page);
     const rolleApi: RolleApi = constructRolleApi(page);
     const organisationApi: OrganisationenApi = constructOrganisationApi(page);
+    const providerApi: ProviderApi = constructProviderApi(page);
 
     console.log('Login');
     await loginAndNavigateToAdministration(page, process.env.USER!, process.env.PW!);
@@ -144,8 +149,46 @@ export default async function globalTeardown(): Promise<void> {
         console.log(`${wrappedResponse.raw.headers.get('X-Paging-Total')} schulen to delete`);
         return wrappedResponse.value();
       },
-      async (item: OrganisationResponse) =>
-        organisationApi.organisationControllerDeleteOrganisation({ organisationId: item.id }),
+      async (item: OrganisationResponse) => {
+        await cleanup(
+          async () => {
+            const wrappedResponse: ApiResponse<ProviderControllerGetManageableServiceProviders200Response> =
+              await providerApi.providerControllerGetManageableServiceProvidersForOrganisationIdRaw({
+                organisationId: item.id,
+                limit,
+              });
+            const angebote: ProviderControllerGetManageableServiceProviders200Response = await wrappedResponse.value();
+            if (angebote.total === 0) return [];
+
+            console.log(`${angebote.total} Angebote für ${item.id}:${item.name} löschen`);
+            return angebote.items.filter(
+              (angebot) => angebot.name.startsWith(testDataPrefix) || angebot.administrationsebene.id === item.id,
+            );
+          },
+          async (angebot: ManageableServiceProviderListEntryResponse) => {
+            const rollenIds: string[] = angebot.rollenerweiterungen.map((re) => re.rolle.id);
+            if (rollenIds.length > 0) {
+              console.log(
+                `${angebot.rollenerweiterungen.length} Rollenerweiterungen für ${angebot.id}:${angebot.name} an ${item.id}:${item.name} löschen`,
+              );
+              await rolleApi.rollenerweiterungControllerApplyRollenerweiterungChanges({
+                angebotId: angebot.id,
+                organisationId: item.id,
+                applyRollenerweiterungBodyParams: {
+                  addErweiterungenForRolleIds: [],
+                  removeErweiterungenForRolleIds: rollenIds,
+                },
+              });
+            }
+
+            if (angebot.administrationsebene.id === item.id) {
+              await providerApi.providerControllerDeleteServiceProvider({ angebotId: angebot.id });
+            }
+          },
+        );
+
+        return organisationApi.organisationControllerDeleteOrganisation({ organisationId: item.id });
+      },
     );
 
     console.log('Global teardown finished successfully');

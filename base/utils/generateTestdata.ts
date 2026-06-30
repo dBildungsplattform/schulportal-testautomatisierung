@@ -53,6 +53,14 @@ export function generateDienststellenNr(): string {
   return '0' + faker.number.bigInt({ min: 10000000, max: 100000000 });
 }
 
+export function generateAngebotname(): string {
+  return (
+    `TAuto-PW-S${shardIndex}-A-` +
+    faker.lorem.word({ length: { min: 8, max: 8 } }) +
+    generateRandomString({ length: 3, charSetType: CharacterSetType.Alphabetic })
+  );
+}
+
 export function generateCurrentDate({ days, months }: { days: number; months: number }): Date {
   const newDate: Date = addDays(addMonths(new Date(), months), days);
   return newDate;
