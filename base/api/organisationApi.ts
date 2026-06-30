@@ -1,7 +1,7 @@
 import { Page, expect } from '@playwright/test';
 import { oeffentlichLandSH } from '../organisation';
 import { generateDienststellenNr, generateSchulname } from '../utils/generateTestdata';
-import { FRONTEND_URL } from './baseApi';
+import { constructApi } from './apiFactory';
 import {
   OrganisationControllerCreateOrganisationRequest,
   OrganisationControllerDeleteOrganisationRequest,
@@ -9,15 +9,10 @@ import {
   OrganisationenApi,
 } from './generated/apis/OrganisationenApi';
 import { CreateOrganisationBodyParams, OrganisationResponse, OrganisationsTyp } from './generated/models';
-import { ApiResponse, Configuration } from './generated/runtime';
-import { makeFetchWithPlaywright } from './playwrightFetchAdapter';
+import { ApiResponse } from './generated/runtime';
 
 export function constructOrganisationApi(page: Page): OrganisationenApi {
-  const config: Configuration = new Configuration({
-    basePath: FRONTEND_URL?.replace(/\/$/, ''),
-    fetchApi: makeFetchWithPlaywright(page),
-  });
-  return new OrganisationenApi(config);
+  return constructApi(page, OrganisationenApi);
 }
 
 export async function getOrganisationId(page: Page, organisationName: string): Promise<string> {

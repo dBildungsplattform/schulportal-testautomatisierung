@@ -128,12 +128,16 @@ interface AdminFixture {
             // The searchstring for land matches multiple organisations, so we need to use exactMatch=true
             await personManagementViewPage.filterBySchule(organisationsName, true);
           }
+          // Narrow to the known admin user to avoid interference from concurrent test data
+          // username is server-generated and globally unique; nachname is not guaranteed unique across parallel workers
+          await personManagementViewPage.searchByText(admin.username);
           await personManagementViewPage.checkIfSchuleIsCorrect(organisationsName, dienststellenNr);
         },
       );
     });
 
     // Skipping this test for now since it fails when sharding. It will be re-enabled in a separate scope SPSH-3815
+    // eslint-disable-next-line playwright/no-skipped-test
     test.describe.skip('Mit Klassendatenanlage', () => {
       let klassenNamen: string[] = [];
 

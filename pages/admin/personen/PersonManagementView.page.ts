@@ -7,9 +7,10 @@ import { MenuBarPage } from '../../components/MenuBar.page';
 import { SearchFilter } from '../../components/SearchFilter';
 import { AbstractAdminPage } from '../AbstractAdmin.page';
 import { PersonDetailsViewPage } from './details/PersonDetailsView.page';
+import { RolleEntziehenPage } from './mehrfachbearbeitung/RolleEntziehen.page';
 import { RolleZuordnenPage } from './mehrfachbearbeitung/RolleZuordnen.page';
 
-type MehrfachbearbeitungOption = 'Rolle zuordnen' | 'Schüler versetzen' | 'Passwort zurücksetzen';
+type MehrfachbearbeitungOption = 'Rolle zuordnen' | 'Schüler versetzen' | 'Passwort zurücksetzen' | 'Rolle entziehen';
 export class PersonManagementViewPage extends AbstractAdminPage {
   private readonly personTable: DataTable;
   private readonly searchFilter: SearchFilter;
@@ -140,6 +141,11 @@ export class PersonManagementViewPage extends AbstractAdminPage {
     if (option === 'Rolle zuordnen') {
       return new RolleZuordnenPage(this.page).waitForPageToLoad();
     }
+  }
+
+  public async startRolleEntziehen(): Promise<RolleEntziehenPage> {
+    await this.selectMehrfachauswahl('Rolle entziehen');
+    return new RolleEntziehenPage(this.page).waitForPageToLoad();
   }
 
   public async closeDialog(buttonId: string): Promise<void> {

@@ -12,21 +12,22 @@ import {
   generateRolleName,
   generateVorname,
 } from '../utils/generateTestdata';
-import { FRONTEND_URL } from './baseApi';
-import { Class2FAApi } from './generated';
+import { constructApi } from './apiFactory';
 import {
   PersonControllerDeletePersonByIdRequest,
   PersonControllerLockPersonRequest,
   PersonControllerResetUEMPasswordByPersonIdRequest,
   PersonenApi,
 } from './generated/apis/PersonenApi';
-import { PersonenFrontendApi, PersonFrontendControllerFindPersonsRequest } from './generated/apis/PersonenFrontendApi';
 import {
-  DbiamPersonenkontextWorkflowControllerCommitRequest,
   DbiamPersonenkontextWorkflowControllerCreatePersonWithPersonenkontexteRequest,
   PersonenkontextApi,
 } from './generated/apis/PersonenkontextApi';
 import {
+  DbiamPersonenuebersichtApi,
+} from './generated/apis/DbiamPersonenuebersichtApi';
+import {
+  DBiamPersonenuebersichtResponse,
   DbiamCreatePersonWithPersonenkontexteBodyParams,
   DBiamPersonResponse,
   DbiamUpdatePersonenkontexteBodyParams,
@@ -39,9 +40,10 @@ import {
   RollenMerkmal,
   RollenSystemRechtEnum,
 } from './generated/models';
-import { ApiResponse, Configuration } from './generated/runtime';
+import { PersonenFrontendApi, PersonFrontendControllerFindPersonsRequest } from './generated/apis/PersonenFrontendApi';
+import { Class2FAApi } from './generated';
+import { ApiResponse } from './generated/runtime';
 import { getOrganisationId } from './organisationApi';
-import { makeFetchWithPlaywright } from './playwrightFetchAdapter';
 import { createRolle, getRolleId } from './rolleApi';
 import { getServiceProviderIdsMappedByName } from './serviceProviderApi';
 
@@ -57,52 +59,125 @@ export interface UserInfo {
 }
 
 export function constructPersonenkontextApi(page: Page): PersonenkontextApi {
-  const config: Configuration = new Configuration({
-    basePath: FRONTEND_URL?.replace(/\/$/, ''),
-    fetchApi: makeFetchWithPlaywright(page),
-  });
-  return new PersonenkontextApi(config);
+  return constructApi(page, PersonenkontextApi);
 }
 
 export function constructPersonenApi(page: Page): PersonenApi {
-  const config: Configuration = new Configuration({
-    basePath: FRONTEND_URL?.replace(/\/$/, ''),
-    fetchApi: makeFetchWithPlaywright(page),
-  });
-  return new PersonenApi(config);
+  return constructApi(page, PersonenApi);
 }
 
 export function constructPersonenFrontendApi(page: Page): PersonenFrontendApi {
-  const config: Configuration = new Configuration({
-    basePath: FRONTEND_URL?.replace(/\/$/, ''),
-    fetchApi: makeFetchWithPlaywright(page),
-  });
-  return new PersonenFrontendApi(config);
+  return constructApi(page, PersonenFrontendApi);
 }
 
 export function construct2FAApi(page: Page): Class2FAApi {
-  const config: Configuration = new Configuration({
-    basePath: FRONTEND_URL?.replace(/\/$/, ''),
-    fetchApi: makeFetchWithPlaywright(page),
-  });
-  return new Class2FAApi(config);
+  return constructApi(page, Class2FAApi);
+}
+
+export function constructPersonenuebersichtApi(page: Page): DbiamPersonenuebersichtApi {
+  return constructApi(page, DbiamPersonenuebersichtApi);
+}
+
+function toUserInfo(createdPerson: DBiamPersonResponse): UserInfo {
+  const primaryPersonenkontext = createdPerson.dBiamPersonenkontextResponses[0];
+  if (!primaryPersonenkontext) {
+    throw new Error('Created person is missing personenkontext response.');
+  }
+
+  return {
+    username: createdPerson.person.username!,
+    password: createdPerson.person.startpasswort,
+    rolleId: primaryPersonenkontext.rolleId,
+    organisationId: primaryPersonenkontext.organisationId,
+    personId: createdPerson.person.id,
+    vorname: createdPerson.person.name.vorname,
+    nachname: createdPerson.person.name.familienname,
+    kopersnummer: createdPerson.person.personalnummer ?? '',
+  };
+}
+
+async function commitPersonenkontexteWithRetry(
+  page: Page,
+  personId: string,
+  buildPersonenkontexte: (
+    personenuebersicht: DBiamPersonenuebersichtResponse,
+  ) => DbiamUpdatePersonenkontexteBodyParams['personenkontexte'] | null,
+  validate?: (result: PersonenkontexteUpdateResponse) => void,
+): Promise<void> {
+  const personenuebersichtApi: DbiamPersonenuebersichtApi = constructPersonenuebersichtApi(page);
+  const personenkontextApi: PersonenkontextApi = constructPersonenkontextApi(page);
+
+  for (let attempt: number = 0; attempt < 3; attempt++) {
+    const personenuebersicht: DBiamPersonenuebersichtResponse = await personenuebersichtApi
+      .dBiamPersonenuebersichtControllerFindPersonenuebersichtenByPersonRaw({ personId })
+      .then((response) => response.value());
+
+    const personenkontexte: DbiamUpdatePersonenkontexteBodyParams['personenkontexte'] | null =
+      buildPersonenkontexte(personenuebersicht);
+    if (personenkontexte === null) {
+      continue;
+    }
+
+    const dbiamUpdatePersonenkontexteBodyParams: DbiamUpdatePersonenkontexteBodyParams = {
+      lastModified: personenuebersicht.lastModifiedZuordnungen ?? undefined,
+      count: personenuebersicht.zuordnungen.length,
+      personenkontexte,
+    };
+
+    try {
+      const response: ApiResponse<PersonenkontexteUpdateResponse> =
+        await personenkontextApi.dbiamPersonenkontextWorkflowControllerCommitRaw({
+          personId,
+          dbiamUpdatePersonenkontexteBodyParams,
+        });
+      expect(response.raw.status).toBe(200);
+      validate?.(await response.value());
+      return;
+    } catch (error) {
+      const statusCode: number | undefined = (error as { response?: { status?: number } }).response?.status;
+      if (statusCode === 400 && attempt < 2) {
+        continue;
+      }
+      throw error;
+    }
+  }
+
+  throw new Error(
+    `Unable to commit personenkontexte for person ${personId} after 3 attempts because required source data was not available.`,
+  );
 }
 
 export async function freshLoginPage(page: Page): Promise<LoginViewPage> {
   return (await FromAnywhere(page).start()).navigateToLogin();
 }
 
+interface CreatePersonParams {
+  organisationId: string;
+  rolleId: string;
+  familienname?: string;
+  vorname?: string;
+  koPersNr?: string;
+  klasseId?: string;
+  merkmalNames?: Set<RollenMerkmal>;
+  secondaryRolleId?: string;
+}
+
 export async function createPerson(
   page: Page,
-  organisationId: string,
-  rolleId: string,
-  familienname?: string,
-  vorname?: string,
-  koPersNr?: string,
-  klasseId?: string,
-  merkmalNames?: Set<RollenMerkmal>,
+  params: CreatePersonParams,
 ): Promise<UserInfo> {
   try {
+    const {
+      organisationId,
+      rolleId,
+      familienname,
+      vorname,
+      koPersNr,
+      klasseId,
+      merkmalNames,
+      secondaryRolleId,
+    } = params;
+
     const createPersonBodyParams: DbiamCreatePersonWithPersonenkontexteBodyParams = {
       familienname: familienname || generateNachname(),
       vorname: vorname || generateVorname(),
@@ -119,6 +194,19 @@ export async function createPerson(
         organisationId: klasseId,
         rolleId: rolleId,
       });
+    }
+
+    if (secondaryRolleId) {
+      createPersonBodyParams.createPersonenkontexte.push({
+        organisationId: organisationId,
+        rolleId: secondaryRolleId,
+      });
+      if (klasseId) {
+        createPersonBodyParams.createPersonenkontexte.push({
+          organisationId: klasseId,
+          rolleId: secondaryRolleId,
+        });
+      }
     }
 
     if (koPersNr) {
@@ -145,18 +233,42 @@ export async function createPerson(
     expect(response.raw.status).toBe(201);
     const createdPerson: DBiamPersonResponse = await response.value();
 
-    return {
-      username: createdPerson.person.username!,
-      password: createdPerson.person.startpasswort,
-      rolleId: rolleId,
-      organisationId: organisationId,
-      personId: createdPerson.person.id,
-      vorname: createdPerson.person.name.vorname,
-      nachname: createdPerson.person.name.familienname,
-      kopersnummer: koPersNr ?? '',
-    };
+    return toUserInfo(createdPerson);
   } catch (error) {
     console.error('[ERROR] createPerson failed:', error);
+    throw error;
+  }
+}
+
+export async function createUserWithLernRollenInDifferentKlassen(
+  page: Page,
+  schuleId: string,
+  primaryRolleId: string,
+  secondaryRolleId: string,
+  primaryKlasseId: string,
+  secondaryKlasseId: string,
+): Promise<UserInfo> {
+  try {
+    const personenkontextApi: PersonenkontextApi = constructPersonenkontextApi(page);
+    const response: ApiResponse<DBiamPersonResponse> =
+      await personenkontextApi.dbiamPersonenkontextWorkflowControllerCreatePersonWithPersonenkontexteRaw({
+        dbiamCreatePersonWithPersonenkontexteBodyParams: {
+          familienname: generateNachname(),
+          vorname: generateVorname(),
+          createPersonenkontexte: [
+            { organisationId: schuleId, rolleId: primaryRolleId },
+            { organisationId: primaryKlasseId, rolleId: primaryRolleId },
+            { organisationId: schuleId, rolleId: secondaryRolleId },
+            { organisationId: secondaryKlasseId, rolleId: secondaryRolleId },
+          ],
+        },
+      });
+    expect(response.raw.status).toBe(201);
+    const createdPerson: DBiamPersonResponse = await response.value();
+
+    return toUserInfo(createdPerson);
+  } catch (error) {
+    console.error('[ERROR] createUserWithLernRollenInDifferentKlassen failed:', error);
     throw error;
   }
 }
@@ -172,7 +284,13 @@ export async function createPersonWithPersonenkontext(
   // Organisation wird nicht angelegt, da diese zur Zeit nicht gelöscht werden kann
   const organisationId: string = await getOrganisationId(page, organisationName);
   const rolleId: string = await getRolleId(page, rolleName);
-  const userInfo: UserInfo = await createPerson(page, organisationId, rolleId, familienname, vorname, koPersNr);
+  const userInfo: UserInfo = await createPerson(page, {
+    organisationId,
+    rolleId,
+    familienname,
+    vorname,
+    koPersNr,
+  });
   return userInfo;
 }
 
@@ -227,37 +345,21 @@ export async function createRolleAndPersonWithPersonenkontext(
     serviceProviderIds,
   );
 
-  const userInfo: UserInfo = await createPerson(
-    page,
+  const userInfo: UserInfo = await createPerson(page, {
     organisationId,
     rolleId,
-    params.familienname,
-    params.vorname,
-    params.koPersNr,
-    params.klasseId,
-    params.rollenMerkmalNamen,
-  );
+    familienname: params.familienname,
+    vorname: params.vorname,
+    koPersNr: params.koPersNr,
+    klasseId: params.klasseId,
+    merkmalNames: params.rollenMerkmalNamen,
+  });
   return userInfo;
 }
 
 export async function removeAllPersonenkontexte(page: Page, personId: string): Promise<void> {
   try {
-    const dbiamUpdatePersonenkontexteBodyParams: DbiamUpdatePersonenkontexteBodyParams = {
-      lastModified: new Date(),
-      count: 1,
-      /* an empty array clears all personenkontexte */
-      personenkontexte: [],
-    };
-
-    const requestParameters: DbiamPersonenkontextWorkflowControllerCommitRequest = {
-      personId,
-      dbiamUpdatePersonenkontexteBodyParams,
-    };
-
-    const personenkontextApi: PersonenkontextApi = constructPersonenkontextApi(page);
-    const response: ApiResponse<PersonenkontexteUpdateResponse> =
-      await personenkontextApi.dbiamPersonenkontextWorkflowControllerCommitRaw(requestParameters);
-    expect(response.raw.status).toBe(200);
+    await commitPersonenkontexteWithRetry(page, personId, () => []);
   } catch (error) {
     console.error('[ERROR] removeAllPersonenkontexte failed:', error);
     throw error;
@@ -298,35 +400,30 @@ export async function addSecondOrganisationToPerson(
   rolleId: string,
 ): Promise<void> {
   try {
-    const dbiamUpdatePersonenkontexteBodyParams: DbiamUpdatePersonenkontexteBodyParams = {
-      lastModified: generateCurrentDate({ days: 0, months: 0 }),
-      count: 1,
-      personenkontexte: [
-        {
-          personId,
-          organisationId: organisationId1,
-          rolleId,
-        },
-        {
-          personId,
-          organisationId: organisationId2,
-          rolleId,
-        },
-      ],
-    };
-
-    const requestParameters: DbiamPersonenkontextWorkflowControllerCommitRequest = {
-      personId: personId,
-      dbiamUpdatePersonenkontexteBodyParams,
-    };
-
-    const personenkontextApi: PersonenkontextApi = constructPersonenkontextApi(page);
-    const response: ApiResponse<PersonenkontexteUpdateResponse> =
-      await personenkontextApi.dbiamPersonenkontextWorkflowControllerCommitRaw(requestParameters);
-    expect(response.raw.status).toBe(200);
-
-    const updatedPersonenkontexte: PersonenkontexteUpdateResponse = await response.value();
-    expect(updatedPersonenkontexte.dBiamPersonenkontextResponses.length).toBe(2);
+    await commitPersonenkontexteWithRetry(
+      page,
+      personId,
+      (personenuebersicht) => {
+        if (personenuebersicht.zuordnungen.length === 0) {
+          return null;
+        }
+        return [
+          {
+            personId,
+            organisationId: organisationId1,
+            rolleId,
+          },
+          {
+            personId,
+            organisationId: organisationId2,
+            rolleId,
+          },
+        ];
+      },
+      (result) => {
+        expect(result.dBiamPersonenkontextResponses.length).toBe(2);
+      },
+    );
   } catch (error) {
     console.error('[ERROR] addSecondOrganisationToPerson failed:', error);
     throw error;
@@ -417,31 +514,17 @@ export async function setTimeLimitPersonenkontext(
   timeLimit: Date,
 ): Promise<void> {
   try {
-    const dbiamUpdatePersonenkontexteBodyParams: DbiamUpdatePersonenkontexteBodyParams = {
-      lastModified: generateCurrentDate({ days: 0, months: 0 }),
-      count: 1,
-      personenkontexte: [
-        {
-          befristung: timeLimit,
-          personId: personId,
-          organisationId: organisationId,
-          rolleId: rolleId,
-        },
-      ],
-    };
-
-    const requestParameters: DbiamPersonenkontextWorkflowControllerCommitRequest = {
-      personId,
-      dbiamUpdatePersonenkontexteBodyParams,
-    };
-
-    const personenkontextApi: PersonenkontextApi = constructPersonenkontextApi(page);
-    const response: ApiResponse<PersonenkontexteUpdateResponse> =
-      await personenkontextApi.dbiamPersonenkontextWorkflowControllerCommitRaw(requestParameters);
-    expect(response.raw.status).toBe(200);
-
-    const updatedPersonenkontexte: PersonenkontexteUpdateResponse = await response.value();
-    expect(updatedPersonenkontexte.dBiamPersonenkontextResponses.length).toBe(1);
+    await commitPersonenkontexteWithRetry(page, personId, (personenuebersicht) =>
+      personenuebersicht.zuordnungen.map((zuordnung) => ({
+        personId,
+        organisationId: zuordnung.sskId,
+        rolleId: zuordnung.rolleId,
+        befristung:
+          zuordnung.sskId === organisationId && zuordnung.rolleId === rolleId
+            ? timeLimit
+            : zuordnung.befristung ?? undefined,
+      })),
+    );
   } catch (error) {
     console.error('[ERROR] setTimeLimitPersonenkontext failed:', error);
     throw error;

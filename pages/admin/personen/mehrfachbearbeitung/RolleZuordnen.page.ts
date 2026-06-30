@@ -40,17 +40,7 @@ export class RolleZuordnenPage {
   }
 
   public async selectRolle(name: string): Promise<void> {
-    const rolleSelectLocator: Locator = this.layoutCard.getByTestId('rolle-select');
-    const inputLocator: Locator = rolleSelectLocator.locator('input');
-    await inputLocator.click();
-    await inputLocator.clear();
-    await inputLocator.pressSequentially(name);
-    const option: Locator = this.page
-      .locator('div.v-overlay--active')
-      .getByRole('option')
-      .filter({ hasText: new RegExp(`^${name}$`) });
-    await option.first().click({ force: true });
-    await expect(rolleSelectLocator).toContainText(name);
+    await this.rolleSelect.searchByTitle(name, true);
   }
 
   public async submitRolleAssignment(): Promise<void> {
@@ -122,19 +112,7 @@ export class RolleZuordnenPage {
   }
 
   public async selectKlasse(klassenname: string): Promise<void> {
-    const klasseSelectLocator: Locator = this.layoutCard.getByTestId(
-      'personenkontext-create-rolle-modify-klasse-select',
-    );
-    const inputLocator: Locator = klasseSelectLocator.locator('input');
-    await inputLocator.click();
-    await inputLocator.clear();
-    await inputLocator.pressSequentially(klassenname);
-    const option: Locator = this.page
-      .locator('div.v-overlay--active')
-      .getByRole('option')
-      .filter({ hasText: new RegExp(`^${klassenname}$`) });
-    await option.first().click({ force: true });
-    await expect(klasseSelectLocator).toContainText(klassenname);
+    await this.klasseAutocomplete.searchByTitle(klassenname, true);
   }
 
   public async fillBefristung(date: string): Promise<void> {
