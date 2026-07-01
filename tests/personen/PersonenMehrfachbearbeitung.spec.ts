@@ -1,4 +1,5 @@
-import { Download, Page, PlaywrightTestArgs, test } from '@playwright/test';
+import { Download, Page, PlaywrightTestArgs } from '@playwright/test';
+import { test } from '../../base/fixtures';
 import { createSchule } from '../../base/api/organisationApi';
 import { addSecondOrganisationToPerson, createPersonWithPersonenkontext, UserInfo } from '../../base/api/personApi';
 import { getRolleId } from '../../base/api/rolleApi';

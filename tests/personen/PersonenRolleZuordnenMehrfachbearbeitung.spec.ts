@@ -1,4 +1,5 @@
-import test, { expect, PlaywrightTestArgs } from '@playwright/test';
+import { PlaywrightTestArgs } from '@playwright/test';
+import { expect, test } from '../../base/fixtures';
 import { createKlasse, createSchule, getOrganisationId } from '../../base/api/organisationApi';
 import {
   addSecondOrganisationToPerson,
