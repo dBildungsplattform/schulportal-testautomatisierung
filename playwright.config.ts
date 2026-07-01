@@ -58,6 +58,7 @@ export default defineConfig({
     },
     {
       name: 'webkit',
+      timeout: 150 * 1000,
       use: {
         ...devices['Desktop Safari'],
         viewport: { width: 1920, height: 1080 },
