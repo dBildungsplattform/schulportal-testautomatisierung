@@ -122,16 +122,20 @@ interface AdminFixture {
         `Als ${bezeichnung}: In der Ergebnisliste die Filterfunktion der Schulen benutzen`,
         { tag: [STAGE, DEV] },
         async () => {
+          const expectedSchuleName: string =
+            rolleName === schuladminOeffentlichRolle ? schuleParams.name : organisationsName;
+          const expectedDienststellenNr: string | undefined =
+            rolleName === schuladminOeffentlichRolle ? schuleParams.dienststellenNr : dienststellenNr;
+
           if (rolleName === schuladminOeffentlichRolle) {
-            await personManagementViewPage.filterBySchule(organisationsName, false);
+            await personManagementViewPage.filterBySchule(expectedSchuleName, false);
           } else {
             // The searchstring for land matches multiple organisations, so we need to use exactMatch=true
-            await personManagementViewPage.filterBySchule(organisationsName, true);
+            await personManagementViewPage.filterBySchule(expectedSchuleName, true);
           }
-          // Narrow to the known admin user to avoid interference from concurrent test data
-          // username is server-generated and globally unique; nachname is not guaranteed unique across parallel workers
-          await personManagementViewPage.searchByText(admin.username);
-          await personManagementViewPage.checkIfSchuleIsCorrect(organisationsName, dienststellenNr);
+          // Ensure the created admin is present without narrowing the result set via text search
+          await personManagementViewPage.assertThatPersonExists(admin.username);
+          await personManagementViewPage.checkIfSchuleIsCorrect(expectedSchuleName, expectedDienststellenNr);
         },
       );
     });

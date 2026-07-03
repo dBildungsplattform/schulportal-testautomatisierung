@@ -395,6 +395,13 @@ test.describe('Rolle entziehen als Schuladmin', () => {
         await rolleEntziehenPage.assertSuccess();
         await rolleEntziehenPage.close();
       });
+
+      await test.step(`${bezeichnung}: Benutzer nicht mehr in gefilterter Liste`, async () => {
+        await personManagementViewPage.waitForDataLoad();
+        for (const user of users) {
+          await personManagementViewPage.checkIfPersonNotExists(user.username);
+        }
+      });
     }
   });
 
@@ -411,7 +418,7 @@ test.describe('Rolle entziehen als Schuladmin', () => {
         zugewieseneRolleName = generateRolleName();
         nichtZugewieseneRolleName = generateRolleName();
         const zugewieseneRolleId: string = await createRolle(page, typeSchueler, schuleId, zugewieseneRolleName, undefined, undefined, new Set(idSPs));
-        const _nichtZugewieseneRolleId: string = await createRolle(
+        await createRolle(
           page,
           typeSchueler,
           schuleId,

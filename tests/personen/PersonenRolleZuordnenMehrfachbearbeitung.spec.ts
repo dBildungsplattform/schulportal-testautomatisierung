@@ -1,4 +1,4 @@
-import test, { expect, PlaywrightTestArgs } from '@playwright/test';
+import test, { PlaywrightTestArgs } from '@playwright/test';
 import { createKlasse, createSchule, getOrganisationId } from '../../base/api/organisationApi';
 import {
   addSecondOrganisationToPerson,
@@ -116,9 +116,7 @@ test.describe(`Mehrfachbearbeitung Rolle zuordnen: Umgebung: ${process.env.ENV}:
         });
 
         await test.step(`Mehrfachbearbeitung "Rolle zuordnen" öffnen und Lern-Rolle auswählen`, async () => {
-          rolleZuordnenPage = (await personManagementViewPage.selectMehrfachauswahl(
-            'Rolle zuordnen',
-          )) as RolleZuordnenPage;
+          rolleZuordnenPage = await personManagementViewPage.startRolleZuordnen();
           await rolleZuordnenPage.selectRolle(zielRolleName);
         });
 
@@ -266,9 +264,7 @@ test.describe(`Mehrfachbearbeitung Rolle zuordnen: Umgebung: ${process.env.ENV}:
         });
 
         await test.step(`Mehrfachbearbeitung "Rolle zuordnen" öffnen, Schule und Lern-Rolle auswählen`, async () => {
-          rolleZuordnenPage = (await personManagementViewPage.selectMehrfachauswahl(
-            'Rolle zuordnen',
-          )) as RolleZuordnenPage;
+          rolleZuordnenPage = await personManagementViewPage.startRolleZuordnen();
           await rolleZuordnenPage.selectOrganisation(schuleName);
           await rolleZuordnenPage.selectRolle(zielRolleName);
         });
@@ -316,9 +312,7 @@ test.describe(`Mehrfachbearbeitung Rolle zuordnen: Umgebung: ${process.env.ENV}:
         });
 
         await test.step(`Mehrfachbearbeitung "Rolle zuordnen" öffnen, Schule und Lern-Rolle auswählen`, async () => {
-          rolleZuordnenPage = (await personManagementViewPage.selectMehrfachauswahl(
-            'Rolle zuordnen',
-          )) as RolleZuordnenPage;
+          rolleZuordnenPage = await personManagementViewPage.startRolleZuordnen();
           await rolleZuordnenPage.selectOrganisation(schuleName);
           await rolleZuordnenPage.selectRolle(zielRolleName);
         });
@@ -365,9 +359,7 @@ test.describe(`Mehrfachbearbeitung Rolle zuordnen: Umgebung: ${process.env.ENV}:
         });
 
         await test.step(`Mehrfachbearbeitung "Rolle zuordnen" öffnen, Schule und (bereits zugeordnete) Lern-Rolle auswählen`, async () => {
-          rolleZuordnenPage = (await personManagementViewPage.selectMehrfachauswahl(
-            'Rolle zuordnen',
-          )) as RolleZuordnenPage;
+          rolleZuordnenPage = await personManagementViewPage.startRolleZuordnen();
           await rolleZuordnenPage.selectOrganisation(schuleName);
           await rolleZuordnenPage.selectRolle(zielRolleName);
         });
@@ -482,10 +474,7 @@ for (const { adminType, rollenAssertions } of LEHR_ROLLEN_TEST_SCENARIOS) {
       });
 
       const rolleZuordnenPage: RolleZuordnenPage = await test.step('Mehrfachbearbeitung auswählen', async () => {
-        const rolleZuordnenPage: RolleZuordnenPage | void =
-          await personManagementViewPage.selectMehrfachauswahl('Rolle zuordnen');
-        expect(rolleZuordnenPage).toBeInstanceOf(RolleZuordnenPage);
-        return rolleZuordnenPage as RolleZuordnenPage;
+        return personManagementViewPage.startRolleZuordnen();
       });
 
       if (adminType === 'Schuladmin') {

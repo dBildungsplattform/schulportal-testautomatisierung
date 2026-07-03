@@ -134,13 +134,15 @@ export class PersonManagementViewPage extends AbstractAdminPage {
     }
   }
 
-  public async selectMehrfachauswahl(option: MehrfachbearbeitungOption): Promise<RolleZuordnenPage | void> {
+  public async selectMehrfachauswahl(option: MehrfachbearbeitungOption): Promise<void> {
     await this.page.getByTestId('benutzer-edit-select').click();
     const locator: Locator = this.page.getByRole('option', { name: option, exact: false });
     await locator.click();
-    if (option === 'Rolle zuordnen') {
-      return new RolleZuordnenPage(this.page).waitForPageToLoad();
-    }
+  }
+
+  public async startRolleZuordnen(): Promise<RolleZuordnenPage> {
+    await this.selectMehrfachauswahl('Rolle zuordnen');
+    return new RolleZuordnenPage(this.page).waitForPageToLoad();
   }
 
   public async startRolleEntziehen(): Promise<RolleEntziehenPage> {
@@ -233,7 +235,9 @@ export class PersonManagementViewPage extends AbstractAdminPage {
   public async checkIfSchuleIsCorrect(schulname: string, schulNr?: string): Promise<void> {
     const expected: string = schulNr ? `${schulNr} (${schulname})` : schulname;
     await this.organisationAutocomplete.assertTextHard(expected);
-    await this.checkIfColumnAlwaysContainsText(6, schulNr ? schulNr : schulname);
+    if (schulNr) {
+      await this.checkIfColumnAlwaysContainsText(6, schulNr);
+    }
   }
 
   public async assertSchuleFilterIsDisabled(): Promise<void> {
