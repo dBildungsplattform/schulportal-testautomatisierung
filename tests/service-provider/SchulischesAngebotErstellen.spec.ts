@@ -132,7 +132,10 @@ test.describe('Schulisches Angebot erstellen', () => {
       await serviceProviderCreationPage.selectLogo({ logoAlt: angebot.logoAlt });
     });
     await test.step('Vorschau prüfen', async () => {
-      await serviceProviderCreationPage.assertPreview();
+      await serviceProviderCreationPage.assertPreview(angebot.name, angebot.logoAlt);
+    });
+    await test.step('Standardwerte prüfen', async () => {
+      await serviceProviderCreationPage.assertDefaultValuesSet();
     });
     const successPage: ServiceProviderCreationSuccessPage = await test.step('Angebot anlegen', async () => {
       return await serviceProviderCreationPage.clickSubmit();
@@ -155,6 +158,12 @@ test.describe('Schulisches Angebot erstellen', () => {
     });
     await test.step('Logo auswählen', async () => {
       await serviceProviderCreationPage.selectLogo({ logoAlt: angebot.logoAlt });
+    });
+    await test.step('Vorschau prüfen', async () => {
+      await serviceProviderCreationPage.assertPreview(angebot.name, angebot.logoAlt);
+    });
+    await test.step('Standardwerte prüfen', async () => {
+      await serviceProviderCreationPage.assertDefaultValuesSet();
     });
     await test.step('Felder sind für Schuladmin nicht änderbar', async () => {
       await serviceProviderCreationPage.assertSchuladminFieldsDisabled();

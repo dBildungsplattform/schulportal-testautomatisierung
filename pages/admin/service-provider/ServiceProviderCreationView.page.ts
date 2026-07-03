@@ -1,6 +1,7 @@
-import { expect, Page } from '@playwright/test';
+import { expect, Locator, Page } from '@playwright/test';
 import { ServiceProviderKategorie } from '../../../base/api/generated';
 import { KATEGORIE_LABEL } from '../../../base/sp';
+import { booleanToString } from '../../../base/utils/conversion';
 import { Autocomplete } from '../../components/Autocomplete';
 import { ServiceProviderCreationSuccessPage } from './ServiceProviderCreationSuccessPage.page';
 
@@ -91,17 +92,27 @@ export class ServiceProviderCreationViewPage {
     return new ServiceProviderCreationSuccessPage(this.page).waitForPageLoad();
   }
 
-  public async assertPreview(): Promise<void> {
-    // TODO implement logic for logo
-    await expect(this.page.getByTestId('card-title')).toBeVisible();
+  public async assertPreview(name: string, logoAlt: string): Promise<void> {
+    await expect(this.page.getByTestId('card-title')).toContainText(name);
     await expect(
       this.page.getByText('Eine Vorschau wird angezeigt, sobald Name und Logo festgelegt wurden.'),
     ).toBeHidden();
+    await this.page.getByTestId('service-provider-preview-card').scrollIntoViewIfNeeded();
+    const img: Locator = this.page.locator(`img[alt="provider-logo"]`);
+    await expect(img).toBeVisible();
+    await expect(img).toHaveAttribute('src', new RegExp(logoAlt, 'gi'));
   }
 
   public async assertSchulePreselected(schule: string): Promise<void> {
     await this.organisationAutocomplete.isDisabled();
     await this.organisationAutocomplete.assertTextSoft(schule);
+  }
+
+  public async assertDefaultValuesSet(): Promise<void> {
+    await this.kategorieAutocomplete.assertTextHard(KATEGORIE_LABEL[ServiceProviderKategorie.Schulisch]);
+    await this.rolleZuweisenAutocomplete.assertTextHard(booleanToString(true));
+    await this.schulspezifischeRollenerweiterungAutocomplete.assertTextHard(booleanToString(true));
+    await this.zweiFactorAutocomplete.assertTextHard(booleanToString(false));
   }
 
   public async assertSchuladminFieldsDisabled(): Promise<void> {
@@ -110,6 +121,7 @@ export class ServiceProviderCreationViewPage {
     await this.schulspezifischeRollenerweiterungAutocomplete.isDisabled();
     await this.zweiFactorAutocomplete.isDisabled();
   }
+
   public async assertSelectableSchulen(schulen: string[]): Promise<void> {
     await this.organisationAutocomplete.checkVisibleDropdownOptions(schulen, true);
   }
