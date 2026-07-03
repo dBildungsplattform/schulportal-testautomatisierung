@@ -57,6 +57,14 @@ export class StartViewPage {
     }
   }
 
+  public async assertServiceProviderOpensInNewTab(name: string): Promise<void> {
+    const [newPage] = await Promise.all([
+      this.page.context().waitForEvent('page'),
+      this.page.locator('[data-testid^="service-provider-card"]').filter({ hasText: name }).click(),
+    ]);
+    await newPage.waitForLoadState('domcontentloaded');
+  }
+
   public async assertNewsbox(
     textParameters: {
       schulName: string;
