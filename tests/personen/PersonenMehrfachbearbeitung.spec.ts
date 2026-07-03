@@ -512,6 +512,13 @@ test.describe('Rolle entziehen als Schuladmin', () => {
           await rolleEntziehenPage.assertSuccess();
           await rolleEntziehenPage.close();
         });
+
+        await test.step('Benutzer nicht mehr in gefilterter Liste', async () => {
+          await personManagementViewPage.waitForDataLoad();
+          for (const user of users) {
+            await personManagementViewPage.checkIfPersonNotExists(user.username);
+          }
+        });
       },
     );
   });
