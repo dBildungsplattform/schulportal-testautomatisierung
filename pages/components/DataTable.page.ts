@@ -196,4 +196,15 @@ export class DataTable {
     const cell: Locator = row.locator('td').nth(cellIndex);
     await expect(cell).toContainText(expectedText);
   }
+
+  public async assertThatRowsAreSelectedByCount(expectedCount: number): Promise<void> {
+    const text: Locator = this.page.getByTestId('selected-count');
+    if (expectedCount > 0) {
+      await expect(text).toBeVisible();
+    } else {
+      await expect(text).toBeHidden();
+    }
+    const selectedRows: Locator = this.tableLocator.locator('tbody input[type="checkbox"]:checked');
+    await expect(selectedRows).toHaveCount(expectedCount);
+  }
 }

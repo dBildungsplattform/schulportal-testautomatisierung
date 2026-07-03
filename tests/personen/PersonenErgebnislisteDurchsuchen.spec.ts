@@ -286,3 +286,37 @@ test.describe(`Schulfilter in der Benutzerübersicht für Schuladmin mit einer S
     },
   );
 });
+
+test.describe('Als Landesadmin Selektion prüfen', () => {
+  let schulName: string;
+  let schulNr: string;
+  test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
+    personManagementViewPage = await loginAndNavigateToAdministration(page);
+    schulName = generateSchulname();
+    schulNr = generateDienststellenNr();
+    await createSchule(page, schulName, schulNr);
+  });
+
+  test('Schulfilter löst Selektion auf', async ({ page }: PlaywrightTestArgs) => {
+    await test.step(`Personen anlegen`, async () => {
+      await createPersonWithPersonenkontext(page, schulName, lehrkraftOeffentlichRolle);
+      await createPersonWithPersonenkontext(page, schulName, lehrkraftOeffentlichRolle);
+    });
+    await test.step(`Schule filtern`, async () => {
+      await personManagementViewPage.filterBySchule(schulName);
+      await personManagementViewPage.checkIfSchuleIsCorrect(schulName, schulNr);
+      await personManagementViewPage.checkRowCount(2);
+    });
+    await test.step(`Personen selektieren`, async () => {
+      await personManagementViewPage.toggleSelectAllRows(true);
+      await personManagementViewPage.assertThatNPersonsAreSelected(2);
+    });
+    await test.step(`Schulfilter ändern`, async () => {
+      await personManagementViewPage.filterBySchule(landSH, true);
+      await personManagementViewPage.filterBySchule(schulName);
+    });
+    await test.step(`Prüfen, dass Personen deselektiert wurden`, async () => {
+      await personManagementViewPage.assertThatNPersonsAreSelected(0);
+    });
+  });
+});
