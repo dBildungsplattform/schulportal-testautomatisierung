@@ -90,7 +90,7 @@ export function makeFetchWithPlaywright(page: Page, options?: { withCsrf?: boole
       });
     } catch (error) {
       if (isTestEndedError(error)) {
-        throw new Error('apiRequestContext.fetch aborted because the test already ended');
+        return new Response(null, { status: 0, statusText: 'Test ended' }) as unknown as Response;
       }
       throw error;
     }
