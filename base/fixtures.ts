@@ -7,6 +7,8 @@ const NO_MOTION_STYLE: string = `
 }
 `;
 
+const NO_MOTION_STYLE_ID: string = '__pw_no_motion_style__';
+
 export const test = base.extend({
   page: async ({ page, browserName }, use) => {
     if (browserName !== 'webkit') {
@@ -14,20 +16,35 @@ export const test = base.extend({
       return;
     }
 
-    const injectNoMotionStyles = async (): Promise<void> => {
-      await page.addStyleTag({ content: NO_MOTION_STYLE });
-    };
+    await page.addInitScript(
+      ({ styleId, styleContent }) => {
+        const applyNoMotionStyle = (): void => {
+          if (document.getElementById(styleId)) {
+            return;
+          }
 
-    const onLoad = (): void => {
-      injectNoMotionStyles().catch(() => undefined);
-    };
+          const styleElement: HTMLStyleElement = document.createElement('style');
+          styleElement.id = styleId;
+          styleElement.textContent = styleContent;
 
-    page.on('load', onLoad);
-    await injectNoMotionStyles();
+          const target: HTMLElement | null = document.head ?? document.documentElement;
+          target?.append(styleElement);
+        };
+
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', applyNoMotionStyle, { once: true });
+          return;
+        }
+
+        applyNoMotionStyle();
+      },
+      {
+        styleId: NO_MOTION_STYLE_ID,
+        styleContent: NO_MOTION_STYLE,
+      },
+    );
 
     await use(page);
-
-    page.off('load', onLoad);
   },
 });
 
