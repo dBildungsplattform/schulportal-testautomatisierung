@@ -95,16 +95,12 @@ test.describe(`Testfälle für die Rollenanlage: Umgebung: ${process.env.ENV}: U
           params.merkmale.includes(rollenMerkmalLabel.BEFRISTUNG_PFLICHT) ? [RollenMerkmal.BefristungPflicht] : [],
         );
 
-        const user: UserInfo = await createPerson(
-          page,
+        const user: UserInfo = await createPerson(page, {
           organisationId,
           rolleId,
-          undefined,
-          undefined,
-          undefined,
           klasseId,
           merkmalNames,
-        );
+        });
         const header: HeaderPage = new HeaderPage(page);
         await header.logout();
         const loginPage: LoginViewPage = await freshLoginPage(page);

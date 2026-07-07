@@ -124,15 +124,13 @@ test.describe('Zwei-Faktor-Authentifizierung als Admin einrichten', () => {
         undefined,
         new Set([await getServiceProviderId(page, itslearning, schuleId)]),
       );
-      const userInfo: UserInfo = await createPerson(
-        page,
-        schuleId,
+      const userInfo: UserInfo = await createPerson(page, {
+        organisationId: schuleId,
         rolleId,
-        generateNachname(),
-        generateVorname(),
-        '',
+        familienname: generateNachname(),
+        vorname: generateVorname(),
         klasseId,
-      );
+      });
       return userInfo;
     });
 

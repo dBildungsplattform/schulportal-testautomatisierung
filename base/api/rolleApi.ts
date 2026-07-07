@@ -1,5 +1,5 @@
 import { Page, expect } from '@playwright/test';
-import { FRONTEND_URL } from './baseApi';
+import { constructApi } from './apiFactory';
 import {
   CreateRolleBodyParams,
   RollenArt,
@@ -13,19 +13,14 @@ import {
   RolleControllerDeleteRolleRequest,
   RolleControllerFindRollenRequest,
 } from './generated/apis/RolleApi';
-import { makeFetchWithPlaywright } from './playwrightFetchAdapter';
-import { ApiResponse, Configuration } from './generated/runtime';
+import { ApiResponse } from './generated/runtime';
 import { RollenSystemRechtEnum } from './generated/models/RollenSystemRechtEnum';
 
 export { RollenArt };
 export { RollenMerkmal };
 
 export function constructRolleApi(page: Page): RolleApi {
-  const config: Configuration = new Configuration({
-    basePath: FRONTEND_URL?.replace(/\/$/, ''),
-    fetchApi: makeFetchWithPlaywright(page),
-  });
-  return new RolleApi(config);
+  return constructApi(page, RolleApi);
 }
 
 /**

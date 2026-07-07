@@ -63,13 +63,12 @@ export default async function globalSetup(): Promise<void> {
 
     const userInfos: UserInfo[] = [];
     for (let index = 0; index < workers; index++) {
-      const userInfo = await createPerson(
-        page,
+      const userInfo = await createPerson(page, {
         organisationId,
         rolleId,
-        generateNachname() + encodeNumberAsLetters(index + 1),
-        generateVorname(),
-      );
+        familienname: generateNachname() + encodeNumberAsLetters(index + 1),
+        vorname: generateVorname(),
+      });
       userInfos.push(userInfo);
     }
 

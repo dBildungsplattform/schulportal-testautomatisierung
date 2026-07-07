@@ -1,16 +1,11 @@
 import { Page } from '@playwright/test';
-import { FRONTEND_URL } from './baseApi';
-import { ApiResponse, AuthApi, Configuration } from './generated';
-import { makeFetchWithPlaywright } from './playwrightFetchAdapter';
+import { constructApi } from './apiFactory';
+import { ApiResponse, AuthApi } from './generated';
 
 export function constructAuthApi(page: Page): AuthApi {
-  return new AuthApi(
-    new Configuration({
-      basePath: FRONTEND_URL?.replace(/\/$/, ''),
-      fetchApi: makeFetchWithPlaywright(page, { withCsrf: false }), // disable CSRF for auth API
-    }),
-  );
+  return constructApi(page, AuthApi, { withCsrf: false });
 }
+
 export async function getCsrfToken(authApi: AuthApi): Promise<string> {
   const response: ApiResponse<{ csrfToken: string }> = await authApi.authenticationControllerGetCsrfTokenRaw();
 

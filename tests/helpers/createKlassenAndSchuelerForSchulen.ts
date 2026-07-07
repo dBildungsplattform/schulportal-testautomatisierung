@@ -2,6 +2,7 @@ import { Page } from '@playwright/test';
 import { createKlasse, getKlasseId } from '../../base/api/organisationApi';
 import { createRolleAndPersonWithPersonenkontext, UserInfo } from '../../base/api/personApi';
 import { typeSchueler } from '../../base/rollentypen';
+import { createMany } from '../../base/utils/concurrency';
 import { generateKlassenname } from '../../base/utils/generateTestdata';
 import { SchuleCreationParams } from '../../pages/admin/organisationen/schulen/SchuleCreationView.page';
 
@@ -52,28 +53,24 @@ export async function createKlassenAndSchuelerForSchulen(
  * Erstellt Klassen für eine Schule
  */
 async function createKlassenForSchule(page: Page, klasse: Klassen): Promise<string[]> {
-  return Promise.all(
-    Array.from({ length: klasse.klassenCount }, async () => {
-      const klassenname: string = generateKlassenname();
-      await createKlasse(page, klasse.id, klassenname);
-      return klassenname;
-    }),
-  );
+  return createMany(klasse.klassenCount, async () => {
+    const klassenname: string = generateKlassenname();
+    await createKlasse(page, klasse.id, klassenname);
+    return klassenname;
+  });
 }
 
 /**
  * Erstellt Schüler für eine Schule und ordnet sie einer Klasse zu
  */
 async function createSchuelerForSchule(page: Page, schueler: Schueler): Promise<UserInfo[]> {
-  return Promise.all(
-    Array.from({ length: schueler.count }, async () => {
-      const klasseId: string | undefined = await getKlasseId(page, schueler.klassenName);
+  return createMany(schueler.count, async () => {
+    const klasseId: string | undefined = await getKlasseId(page, schueler.klassenName);
 
-      return createRolleAndPersonWithPersonenkontext(page, {
-        organisationName: schueler.schuleName,
-        rollenArt: typeSchueler,
-        klasseId,
-      });
-    }),
-  );
+    return createRolleAndPersonWithPersonenkontext(page, {
+      organisationName: schueler.schuleName,
+      rollenArt: typeSchueler,
+      klasseId,
+    });
+  });
 }
