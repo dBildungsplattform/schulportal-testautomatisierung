@@ -7,6 +7,10 @@ type PlaywrightFetchInit = Parameters<APIRequestContext['fetch']>[1];
 // Per-page cache: WeakMap so pages can be GC'd freely
 const csrfCache = new WeakMap<object, Promise<string | undefined>>();
 
+function isTestEndedError(error: unknown): boolean {
+  return error instanceof Error && error.message.includes('Test ended');
+}
+
 async function resolveCsrf(page: Page): Promise<string | undefined> {
   // Use page.request as the cache key — unique per browser context
   const key = page.request;
@@ -76,12 +80,20 @@ export function makeFetchWithPlaywright(page: Page, options?: { withCsrf?: boole
       }
     }
 
-    const resp: APIResponse = await page.request.fetch(url, {
-      ...init,
-      data: init?.body,
-      headers,
-      maxRetries: 3,
-    });
+    let resp: APIResponse;
+    try {
+      resp = await page.request.fetch(url, {
+        ...init,
+        data: init?.body,
+        headers,
+        maxRetries: 3,
+      });
+    } catch (error) {
+      if (isTestEndedError(error)) {
+        return new Response(null, { status: 0, statusText: 'Test ended' }) as unknown as Response;
+      }
+      throw error;
+    }
 
     return {
       ok: resp.ok(),
