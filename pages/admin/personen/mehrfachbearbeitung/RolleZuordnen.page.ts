@@ -104,7 +104,8 @@ export class RolleZuordnenPage {
 
   public async selectAndereKlasseAuswaehlen(): Promise<void> {
     const klassenLoaded: Promise<Response> = this.page.waitForResponse(
-      (resp) => resp.url().includes('/api/organisationen') && resp.url().includes('typ=KLASSE') && resp.status() === 200,
+      (resp) =>
+        resp.url().includes('/api/organisationen') && resp.url().includes('typ=KLASSE') && resp.status() === 200,
     );
     await this.selectNewKlasseRadioButton.locator('input').click();
     await expect(this.selectNewKlasseRadioButton.locator('input')).toBeChecked();
@@ -157,7 +158,10 @@ export class RolleZuordnenPage {
   }
 
   public async closeErrorDialog(): Promise<void> {
-    await this.page.getByTestId('person-bulk-error-layout-card').getByTestId('person-bulk-error-discard-button').click();
+    await this.page
+      .getByTestId('person-bulk-error-layout-card')
+      .getByTestId('person-bulk-error-discard-button')
+      .click();
     await this.page.getByTestId('confirm-close-bulk-error-dialog-button').click();
   }
 }
