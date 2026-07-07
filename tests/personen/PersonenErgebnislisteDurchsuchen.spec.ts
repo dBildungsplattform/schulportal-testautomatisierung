@@ -1,4 +1,5 @@
-import { PlaywrightTestArgs, test } from '@playwright/test';
+import { PlaywrightTestArgs } from '@playwright/test';
+import { test } from '../../base/fixtures';
 
 import { createKlasse, createSchule, getOrganisationId } from '../../base/api/organisationApi';
 import { addSecondOrganisationToPerson, createPersonWithPersonenkontext, UserInfo } from '../../base/api/personApi';
@@ -122,18 +123,26 @@ interface AdminFixture {
         `Als ${bezeichnung}: In der Ergebnisliste die Filterfunktion der Schulen benutzen`,
         { tag: [STAGE, DEV] },
         async () => {
+          const expectedSchuleName: string =
+            rolleName === schuladminOeffentlichRolle ? schuleParams.name : organisationsName;
+          const expectedDienststellenNr: string | undefined =
+            rolleName === schuladminOeffentlichRolle ? schuleParams.dienststellenNr : dienststellenNr;
+
           if (rolleName === schuladminOeffentlichRolle) {
-            await personManagementViewPage.filterBySchule(organisationsName, false);
+            await personManagementViewPage.filterBySchule(expectedSchuleName, false);
           } else {
             // The searchstring for land matches multiple organisations, so we need to use exactMatch=true
-            await personManagementViewPage.filterBySchule(organisationsName, true);
+            await personManagementViewPage.filterBySchule(expectedSchuleName, true);
           }
-          await personManagementViewPage.checkIfSchuleIsCorrect(organisationsName, dienststellenNr);
+          // Ensure the created admin is present without narrowing the result set via text search
+          await personManagementViewPage.assertThatPersonExists(admin.username);
+          await personManagementViewPage.checkIfSchuleIsCorrect(expectedSchuleName, expectedDienststellenNr);
         },
       );
     });
 
     // Skipping this test for now since it fails when sharding. It will be re-enabled in a separate scope SPSH-3815
+    // eslint-disable-next-line playwright/no-skipped-test
     test.describe.skip('Mit Klassendatenanlage', () => {
       let klassenNamen: string[] = [];
 

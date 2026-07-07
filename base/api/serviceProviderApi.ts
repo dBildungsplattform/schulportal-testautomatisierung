@@ -1,10 +1,8 @@
 import { expect, Page } from '@playwright/test';
+import { constructApi } from './apiFactory';
 import { ProviderApi } from './generated/apis/ProviderApi';
 import { ServiceProviderResponse } from './generated/models';
-import { ApiResponse, Configuration } from './generated/runtime';
-import { makeFetchWithPlaywright } from './playwrightFetchAdapter';
-
-const FRONTEND_URL: string | undefined = process.env.FRONTEND_URL || '';
+import { ApiResponse } from './generated/runtime';
 
 export interface ServiceProviderFromRolleResponse {
   id: string;
@@ -12,11 +10,7 @@ export interface ServiceProviderFromRolleResponse {
 }
 
 export function constructProviderApi(page: Page): ProviderApi {
-  const config: Configuration = new Configuration({
-    basePath: FRONTEND_URL?.replace(/\/$/, ''),
-    fetchApi: makeFetchWithPlaywright(page),
-  });
-  return new ProviderApi(config);
+  return constructApi(page, ProviderApi);
 }
 
 export async function getServiceProviderId(

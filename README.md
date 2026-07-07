@@ -31,26 +31,45 @@ Das doc dann in die Datei base/api/openapispec.json einfügen (alles kopieren un
 
 `npm run generate-api`
 
-### Tests lokal ausführen:
+
+### Tests lokal ausführen
 
 #### Alle Tests mit einer beliebigen URL ausführen
-
+```
 USER='xxx' PW='xxx' FRONTEND_URL='https://main.dev.spsh.dbildungsplattform.de/' npx playwright test
+```
 
-#### Alle Tests auf main ausführen
+#### Alle Tests mit einem bestimmten Browser ausführen
+```
+USER='xxx' PW='xxx' FRONTEND_URL='https://main.dev.spsh.dbildungsplattform.de/' npx playwright test --project chromium
+```
 
-USER="xxx" PW="xxx" npx playwright test <Test-Dateiname>
+#### Tracing aktivieren
+```
+USER='xxx' PW='xxx' FRONTEND_URL='https://main.dev.spsh.dbildungsplattform.de/' npx playwright test --trace on
+```
 
-#### Einen bestimmten Testfall innerhalb einer Datei ausführen:
+#### Alle Tests mit einem bestimmten Tag ausführen
+```
+USER='xxx' PW='xxx' FRONTEND_URL='https://main.dev.spsh.dbildungsplattform.de/' npx playwright test -g "@dev"
+```
 
-USER='xxx' PW='xxx' FRONTEND_URL='https://main.dev.spsh.dbildungsplattform.de/' npx playwright test -g "Einen Benutzer mit der Rolle Lehrkraft anlegen" --headed
+#### Alle Tests mit einem bestimmten Stichwort ausführen
+```
+USER='xxx' PW='xxx' FRONTEND_URL='https://main.dev.spsh.dbildungsplattform.de/' npx playwright test -g "Stichwort"
+```
 
-#### Alle Tests einer bestimmten Datei ausführen:
-
+#### Alle Tests einer bestimmten Datei ausführen
+```
 USER='xxx' PW='xxx' FRONTEND_URL='https://main.dev.spsh.dbildungsplattform.de/' npx playwright test Schule.spec.ts
+```
 
-### Tests ausführen in denen auch Operationen bzgl. LDAP getestet werden:
+#### Alle Tests OHNE ein bestimmtes Stichwort ausführen
+```
+USER='xxx' PW='xxx' FRONTEND_URL='https://main.dev.spsh.dbildungsplattform.de/' npx playwright test --grep-invert "Stichwort"
+```
 
+### Tests ausführen mit LDAP-Operationen:
 - Zusätzlich die Variablen LDAP_URL und LDAP_ADMIN_PASSWORD definieren
 - Bsp.:
 
