@@ -7,13 +7,16 @@ export class DataTable {
   /* since the table is within Vuetify's jurisdiction,
       we cannot specify test ids for Playwright and heavily rely on classes as locators */
   readonly tableLocator: Locator;
+  readonly selectedCountLocator: Locator | undefined;
   readonly footer: Locator;
 
   constructor(
     protected readonly page: Page,
     locator: Locator,
+    selectedCountLocator?: Locator,
   ) {
     this.tableLocator = locator;
+    this.selectedCountLocator = selectedCountLocator;
     this.footer = this.page.locator('.v-data-table-footer');
   }
 
@@ -198,11 +201,12 @@ export class DataTable {
   }
 
   public async assertThatRowsAreSelectedByCount(expectedCount: number): Promise<void> {
-    const text: Locator = this.page.getByTestId('selected-count');
-    if (expectedCount > 0) {
-      await expect(text).toBeVisible();
-    } else {
-      await expect(text).toBeHidden();
+    if (this.selectedCountLocator) {
+      if (expectedCount > 0) {
+        await expect(this.selectedCountLocator).toBeVisible();
+      } else {
+        await expect(this.selectedCountLocator).toBeHidden();
+      }
     }
     const selectedRows: Locator = this.tableLocator.locator('tbody input[type="checkbox"]:checked');
     await expect(selectedRows).toHaveCount(expectedCount);
