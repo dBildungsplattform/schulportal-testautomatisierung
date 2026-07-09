@@ -203,7 +203,7 @@ export class DataTable {
   public async assertThatRowsAreSelectedByCount(expectedCount: number): Promise<void> {
     if (this.selectedCountLocator) {
       if (expectedCount > 0) {
-        await expect(this.selectedCountLocator).toBeVisible();
+        await expect(this.selectedCountLocator).toContainText(`${expectedCount} ausgewählt`);
       } else {
         await expect(this.selectedCountLocator).toBeHidden();
       }
