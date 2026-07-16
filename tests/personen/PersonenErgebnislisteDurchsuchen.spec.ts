@@ -27,6 +27,7 @@ let header: HeaderPage;
 let landingPage: LandingViewPage;
 let personManagementViewPage: PersonManagementViewPage;
 let admin: UserInfo;
+let userForSearch: UserInfo;
 
 interface AdminFixture {
   organisationsName: string;
@@ -60,12 +61,23 @@ interface AdminFixture {
         undefined,
         generateDienststellenNr(),
       );
+
       schuleParams = {
         name: generateSchulname(),
         dienststellenNr: generateDienststellenNr(),
         schulform: Schulform.Oeffentlich,
       };
+
       await createSchule(page, schuleParams.name, schuleParams.dienststellenNr);
+
+      userForSearch = await createPersonWithPersonenkontext(
+        page,
+        schuleParams.name,
+        rolleName,
+        undefined,
+        undefined,
+        schuleParams.dienststellenNr,
+      );
 
       const schuleId1: string = await getOrganisationId(page, organisationsName);
       schuleId2 = await getOrganisationId(page, schuleParams.name);
@@ -123,8 +135,7 @@ interface AdminFixture {
         `Als ${bezeichnung}: In der Ergebnisliste die Filterfunktion der Schulen benutzen`,
         { tag: [STAGE, DEV] },
         async () => {
-          const expectedSchuleName: string =
-            rolleName === schuladminOeffentlichRolle ? schuleParams.name : organisationsName;
+          const expectedSchuleName: string = schuleParams.name;
           const expectedDienststellenNr: string | undefined =
             rolleName === schuladminOeffentlichRolle ? schuleParams.dienststellenNr : dienststellenNr;
 
@@ -134,8 +145,7 @@ interface AdminFixture {
             // The searchstring for land matches multiple organisations, so we need to use exactMatch=true
             await personManagementViewPage.filterBySchule(expectedSchuleName, true);
           }
-          // Ensure the created admin is present without narrowing the result set via text search
-          await personManagementViewPage.assertThatPersonExists(admin.username);
+          await personManagementViewPage.assertThatPersonExists(userForSearch.username);
           await personManagementViewPage.checkIfSchuleIsCorrect(expectedSchuleName, expectedDienststellenNr);
         },
       );
