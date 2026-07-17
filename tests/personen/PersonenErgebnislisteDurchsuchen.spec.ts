@@ -73,7 +73,7 @@ interface AdminFixture {
       userForSearch = await createPersonWithPersonenkontext(
         page,
         schuleParams.name,
-        rolleName,
+        schuladminOeffentlichRolle,
         undefined,
         undefined,
         schuleParams.dienststellenNr,
