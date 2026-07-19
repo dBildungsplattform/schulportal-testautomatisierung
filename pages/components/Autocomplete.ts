@@ -240,38 +240,84 @@ export class Autocomplete {
     filterHeaderText?: string,
   ): Promise<void> {
     await this.inputLocator.click();
-    // Sortiere Items alphanumerisch wie sie im Dropdown angeordnet sind (Zeitersparnis beim Testlauf)
     const sortedItems: string[] = [...items].sort((a: string, b: string) =>
       a.localeCompare(b, 'de', { numeric: true }),
     );
     if (filterHeaderText) {
-      await expect(this.page.locator('.filter-header')).toContainText(filterHeaderText);
+      await expect(this.overlayLocator.locator('.filter-header')).toContainText(filterHeaderText);
     }
+    const options: Locator = this.overlayLocator.getByRole('option');
     if (exactCount) {
-      const options: Locator = this.page.getByRole('option');
       const expectedCount: number = filterHeaderText ? sortedItems.length + 1 : sortedItems.length;
       await expect(options).toHaveCount(expectedCount, { timeout: 5000 });
     }
-    for (const item of sortedItems) {
-      const option: Locator = this.page.getByRole('option', { name: item, exact: false });
-      await option.scrollIntoViewIfNeeded();
-      await expect(option).toBeVisible();
+
+    // Virtual scroll only renders a subset of items at a time, so scroll the
+    // list container incrementally and collect item text as it comes into view,
+    // rather than scrolling to a specific (possibly unrendered) option.
+    const listContainer: Locator = this.overlayLocator.locator('.v-list');
+    const seen = new Set<string>();
+    let previousScrollTop = -1;
+
+    for (let i = 0; i < 100; i++) {
+      const texts: string[] = await options.allInnerTexts();
+      texts.forEach((text: string): void => void seen.add(text.trim()));
+
+      const missing: string[] = sortedItems.filter((item: string): boolean => !seen.has(item));
+      if (missing.length === 0) {
+        break;
+      }
+
+      const { scrollTop, scrollHeight, clientHeight } = await listContainer.evaluate(
+        (el: Element): { scrollTop: number; scrollHeight: number; clientHeight: number } => ({
+          scrollTop: el.scrollTop,
+          scrollHeight: el.scrollHeight,
+          clientHeight: el.clientHeight,
+        }),
+      );
+      if (scrollTop === previousScrollTop || scrollTop + clientHeight >= scrollHeight - 1) {
+        break; // reached bottom or stopped making progress
+      }
+      previousScrollTop = scrollTop;
+      await listContainer.evaluate((el: Element): void => {
+        el.scrollBy(0, el.clientHeight);
+      });
+      await this.page.waitForTimeout(50);
     }
+
+    const stillMissing: string[] = sortedItems.filter((item: string): boolean => !seen.has(item));
+    expect(
+      stillMissing,
+      `Expected these items in the dropdown but never rendered them: ${stillMissing.join(', ')}`,
+    ).toEqual([]);
   }
 
   public async checkAllDropdownOptionsClickable(items: string[]): Promise<void> {
-    await this.inputLocator.click();
-    // Sortiere Items alphanumerisch wie sie im Dropdown angeordnet sind (Zeitersparnis beim Testlauf)
     const sortedItems: string[] = [...items].sort((a: string, b: string) =>
       a.localeCompare(b, 'de', { numeric: true }),
     );
+    await this.openModal();
+    await expect(this.itemsLocator.first()).toBeVisible();
     for (const item of sortedItems) {
-      await this.clickDropdownOption(item);
+      await this.inputLocator.pressSequentially(item);
+      await this.waitUntilLoadingIsDone();
+      const option: Locator = this.itemsLocator.filter({
+        hasText: new RegExp(`^${item}$`),
+      });
+      await expect(option).toBeVisible();
+      await option.click();
+      await expect(option).toHaveAttribute('aria-selected', 'true');
+      await this.inputLocator.clear();
+      await this.waitUntilLoadingIsDone();
+      await expect(this.itemsLocator.first()).toBeVisible();
     }
+    await this.closeModal();
   }
 
   public async clickDropdownOption(item: string): Promise<void> {
     const option: Locator = this.page.getByRole('option', { name: item, exact: false });
-    await option.click();
+    await expect(option).toBeVisible();
+    await option.scrollIntoViewIfNeeded();
+    await option.click({ force: true });
   }
 }

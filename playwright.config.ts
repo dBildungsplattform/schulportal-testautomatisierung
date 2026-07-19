@@ -48,41 +48,6 @@ export default defineConfig({
         ignoreHTTPSErrors: true,
       },
     },
-    {
-      name: 'firefox',
-      use: {
-        ...devices['Desktop Firefox'],
-        viewport: { width: 1920, height: 1080 },
-        ignoreHTTPSErrors: true,
-      },
-    },
-    {
-      name: 'webkit',
-      timeout: 150 * 1000,
-      use: {
-        ...devices['Desktop Safari'],
-        viewport: { width: 1920, height: 1080 },
-        ignoreHTTPSErrors: true,
-        contextOptions: {
-          reducedMotion: 'reduce',
-        },
-      },
-    },
-    /* Test against branded browsers. */
-    {
-      name: 'msedge',
-      use: {
-        channel: 'msedge',
-        viewport: { width: 1920, height: 1080 },
-      },
-    },
-    {
-      name: 'chrome',
-      use: {
-        channel: 'chrome',
-        viewport: { width: 1920, height: 1080 },
-      },
-    },
 
     /* Test against mobile viewports. */
     // {

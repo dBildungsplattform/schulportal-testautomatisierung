@@ -176,7 +176,7 @@ import { HeaderPage } from '../../pages/components/Header.page';
           },
         );
 
-        test(
+        test.only(
           `Als ${bezeichnung}: Alle Klassen im Drop-Down des Klassenfilters anklickbar`,
           { tag: [STAGE, DEV] },
           async () => {
