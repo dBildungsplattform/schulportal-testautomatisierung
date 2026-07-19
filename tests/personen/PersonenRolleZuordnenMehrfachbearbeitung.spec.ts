@@ -465,6 +465,7 @@ for (const { adminType, rollenAssertions } of LEHR_ROLLEN_TEST_SCENARIOS) {
       }
 
       let personManagementViewPage: PersonManagementViewPage = new PersonManagementViewPage(page);
+
       await test.step('Personen auswählen', async () => {
         if (adminType === 'Landesadmin') {
           await personManagementViewPage.filterBySchule(schulName);

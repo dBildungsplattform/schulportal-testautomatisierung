@@ -19,10 +19,19 @@ export class Autocomplete {
     this.loadingLocator = this.locator.locator('.v-field__loader');
   }
 
-  private async waitForData(): Promise<void> {
-    await expect(this.overlayLocator).not.toHaveText(noDataMessage);
+  private async getOverlayLocator(): Promise<Locator> {
+    const menuId: string | null = await this.inputLocator.getAttribute('aria-controls');
+    if (!menuId) {
+      // fallback to the previous behavior if aria-controls isn't set for some reason
+      return this.page.locator('div.v-overlay.v-menu.v-overlay--active');
+    }
+    return this.page.locator(`#${menuId}`);
   }
 
+  private async waitForData(): Promise<void> {
+    const overlay: Locator = await this.getOverlayLocator();
+    await expect(overlay).not.toHaveText(noDataMessage);
+  }
   public async selectByPosition(selection: number[]): Promise<string[]> {
     const selectedItems: string[] = [];
     await this.openModal();
