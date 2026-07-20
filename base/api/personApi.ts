@@ -539,3 +539,25 @@ export async function getEmailByPersonId(page: Page, id: string): Promise<string
   const personendatensatz: PersonendatensatzResponse = await personendatensatzResponse.value();
   return personendatensatz.person.email?.address;
 }
+
+export async function waitForEmailByPersonId(
+  page: Page,
+  id: string,
+  maxAttempts: number = 10,
+  delayMs: number = 2000,
+): Promise<string> {
+  for (let attempt: number = 1; attempt <= maxAttempts; attempt++) {
+    const email: string | undefined = await getEmailByPersonId(page, id);
+    if (email && email.trim() !== '') {
+      return email;
+    }
+
+    if (attempt < maxAttempts) {
+      await new Promise((resolve: (value: unknown) => void) => setTimeout(resolve, delayMs));
+    }
+  }
+
+  throw new Error(
+    `No email address available for personId ${id} after ${maxAttempts} attempts (${delayMs}ms interval).`,
+  );
+}
