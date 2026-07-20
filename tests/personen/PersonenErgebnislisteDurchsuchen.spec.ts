@@ -314,14 +314,14 @@ test.describe('Als Landesadmin Selektion prüfen', () => {
     });
     await test.step(`Personen selektieren`, async () => {
       await personManagementViewPage.toggleSelectAllRows(true);
-      await personManagementViewPage.assertThatNPersonsAreSelected(2);
+      await personManagementViewPage.assertSelectedPersonsByCount(2);
     });
     await test.step(`Schulfilter ändern`, async () => {
       await personManagementViewPage.filterBySchule(landSH, true);
       await personManagementViewPage.filterBySchule(schulName);
     });
     await test.step(`Prüfen, dass Personen deselektiert wurden`, async () => {
-      await personManagementViewPage.assertThatNPersonsAreSelected(0);
+      await personManagementViewPage.assertSelectedPersonsByCount(0);
     });
   });
 
@@ -338,14 +338,14 @@ test.describe('Als Landesadmin Selektion prüfen', () => {
     });
     await test.step(`Personen selektieren`, async () => {
       await personManagementViewPage.toggleSelectAllRows(true);
-      await personManagementViewPage.assertThatNPersonsAreSelected(2);
+      await personManagementViewPage.assertSelectedPersonsByCount(2);
     });
     await test.step(`Rollenfilter ändern`, async () => {
       await personManagementViewPage.filterByRolle(lehrkraftOeffentlichRolle);
       await personManagementViewPage.filterByRolle(schuladminOeffentlichRolle);
     });
     await test.step(`Prüfen, dass Personen deselektiert wurden`, async () => {
-      await personManagementViewPage.assertThatNPersonsAreSelected(0);
+      await personManagementViewPage.assertSelectedPersonsByCount(0);
     });
   });
 
@@ -368,14 +368,14 @@ test.describe('Als Landesadmin Selektion prüfen', () => {
     });
     await test.step(`Personen selektieren`, async () => {
       await personManagementViewPage.toggleSelectAllRows(true);
-      await personManagementViewPage.assertThatNPersonsAreSelected(2);
+      await personManagementViewPage.assertSelectedPersonsByCount(2);
     });
     await test.step(`Klassenfilter ändern`, async () => {
       await personManagementViewPage.filterByKlasse(klassenUndSchueler[0].klassenNamenSchule[0]);
       await personManagementViewPage.filterByKlasse(klassenUndSchueler[0].klassenNamenSchule[1]);
     });
     await test.step(`Prüfen, dass Personen deselektiert wurden`, async () => {
-      await personManagementViewPage.assertThatNPersonsAreSelected(0);
+      await personManagementViewPage.assertSelectedPersonsByCount(0);
     });
   });
 
@@ -391,13 +391,13 @@ test.describe('Als Landesadmin Selektion prüfen', () => {
     });
     await test.step(`Personen selektieren`, async () => {
       await personManagementViewPage.toggleSelectAllRows(true);
-      await personManagementViewPage.assertThatNPersonsAreSelected(2);
+      await personManagementViewPage.assertSelectedPersonsByCount(2);
     });
     await test.step(`Textsuche ändern`, async () => {
       await personManagementViewPage.searchByText('NichtExistierenderEintrag');
     });
     await test.step(`Prüfen, dass Personen deselektiert wurden`, async () => {
-      await personManagementViewPage.assertThatNPersonsAreSelected(0);
+      await personManagementViewPage.assertSelectedPersonsByCount(0);
     });
   });
 });

@@ -209,8 +209,8 @@ export class PersonManagementViewPage extends AbstractAdminPage {
     await this.personTable.checkRowCount(expectedRowCount);
   }
 
-  public async assertThatNPersonsAreSelected(expectedCount: number): Promise<void> {
-    await this.personTable.assertThatRowsAreSelectedByCount(expectedCount);
+  public async assertSelectedPersonsByCount(expectedCount: number): Promise<void> {
+    await this.personTable.assertSelectedRowsByCount(expectedCount);
   }
 
   public async checkHeaders(expectedHeaders: string[]): Promise<void> {

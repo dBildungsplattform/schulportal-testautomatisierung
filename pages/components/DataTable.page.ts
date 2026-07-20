@@ -200,7 +200,7 @@ export class DataTable {
     await expect(cell).toContainText(expectedText);
   }
 
-  public async assertThatRowsAreSelectedByCount(expectedCount: number): Promise<void> {
+  public async assertSelectedRowsByCount(expectedCount: number): Promise<void> {
     if (this.selectedCountLocator) {
       if (expectedCount > 0) {
         await expect(this.selectedCountLocator).toContainText(`${expectedCount} ausgewählt`);
