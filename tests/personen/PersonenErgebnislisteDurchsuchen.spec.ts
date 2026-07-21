@@ -139,6 +139,7 @@ interface AdminFixture {
             await personManagementViewPage.filterBySchule(expectedSchuleName, true);
           }
           // Ensure the created admin is present without narrowing the result set via text search
+          await personManagementViewPage.setItemsPerPage(300);
           await personManagementViewPage.assertThatPersonExists(admin.username);
           await personManagementViewPage.checkIfSchuleIsCorrect(expectedSchuleName, expectedDienststellenNr);
         },
