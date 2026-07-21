@@ -26,7 +26,7 @@ export class PersonManagementViewPage extends AbstractAdminPage {
   constructor(protected readonly page: Page) {
     super(page);
     this.table = this.page.getByTestId('person-table');
-    this.personTable = new DataTable(this.page, this.table);
+    this.personTable = new DataTable(this.page, this.table, this.page.getByTestId('selected-count'));
     this.searchFilter = new SearchFilter(this.page);
     this.organisationAutocomplete = new Autocomplete(
       this.page,
@@ -207,6 +207,10 @@ export class PersonManagementViewPage extends AbstractAdminPage {
 
   public async checkRowCount(expectedRowCount: number): Promise<void> {
     await this.personTable.checkRowCount(expectedRowCount);
+  }
+
+  public async assertSelectedPersonsByCount(expectedCount: number): Promise<void> {
+    await this.personTable.assertSelectedRowsByCount(expectedCount);
   }
 
   public async checkHeaders(expectedHeaders: string[]): Promise<void> {

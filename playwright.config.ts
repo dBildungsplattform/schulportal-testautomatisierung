@@ -31,7 +31,7 @@ export default defineConfig({
   globalTeardown: './tests/global-teardown.ts',
 
   use: {
-    trace: 'on-first-retry',
+    trace: 'retain-on-failure',
     locale: 'de-DE',
     timezoneId: 'Europe/Brussels',
     screenshot: 'only-on-failure',
