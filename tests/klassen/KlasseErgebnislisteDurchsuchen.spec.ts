@@ -123,10 +123,7 @@ import { HeaderPage } from '../../pages/components/Header.page';
             await test.step(`Schule filtern oder validieren`, async () => {
               await klasseManagementViewPage.setItemsPerPage(5);
               await klasseManagementViewPage.checkRows(5);
-              if (hasMultipleSchulen) {
-                await klasseManagementViewPage.filterBySchule(schuleParams.name);
-                await klasseManagementViewPage.waitForDataLoad();
-              } else {
+              if (!hasMultipleSchulen) {
                 await klasseManagementViewPage.checkIfSchuleIsCorrect(schuleParams.name, schuleParams.dienststellenNr);
               }
             });
