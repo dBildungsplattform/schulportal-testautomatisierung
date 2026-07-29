@@ -15,4 +15,5 @@ jobs:
       skip_tests: true
     permissions:
       contents: read
-    secrets: inherit
+    secrets:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
