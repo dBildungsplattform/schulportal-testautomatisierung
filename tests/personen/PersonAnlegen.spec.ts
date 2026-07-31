@@ -42,7 +42,8 @@ function calculateBefristung(): string {
   let yearForBefristung: number = currentYear;
   const today: Date = new Date();
 
-  if (today.getMonth() >= 8 || (today.getMonth() === 7 && today.getDate() === 31)) {
+  // getMonth() is 0-based
+  if (today.getMonth() >= 7 || (today.getMonth() === 6 && today.getDate() === 31)) {
     yearForBefristung = currentYear + 1;
   }
   return '31.7.' + yearForBefristung;
