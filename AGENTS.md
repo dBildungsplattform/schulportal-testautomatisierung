@@ -61,3 +61,53 @@ This repository also provides editor-invoked helpers under `.github/skills/` (e.
 ## Jira Integration
 
 Whenever a prompt references a ticket matching `SPSH-\d+`, **MUST** immediately call the Jira MCP tool (`jira_get_issue` or `jira_search`) to fetch current ticket data before responding. Never answer from memory or context alone.
+
+### Fetching complete Xray test steps
+
+Only when explicitly asked for **all/complete/every** test step of a ticket (Xray "Manuelle Testschritte", `customfield_12204`):
+
+1. Call `jira_get_issue` with `fields: customfield_12204,customfield_12206` and `expand: renderedFields`.
+2. If the result is written to a session-resource file, do **NOT** read it with the file-reading tool — long single-line step text is silently truncated at 2000 chars per line, cutting steps off mid-text.
+3. Ask the human user once per session which extraction tool to use — `jq` (default/recommended), `python3`, or `node` — unless they already named one in their prompt. Reuse that choice for the rest of the conversation.
+4. Run the matching template below against the session-resource file to reflow each step onto short multi-line output:
+
+   `jq`:
+   ```
+   jq -r '.result | fromjson | .customfield_12204.value.steps[] | "- [ ] Step \(.index)\n  **Action:** \(.fields.Action)\n  **Data:** \(.fields.Data)\n  **Expected:** \(.fields["Expected Result"])\n"'
+   ```
+
+   `python3`:
+   ```
+   python3 -c "
+   import json, sys
+   with open(sys.argv[1]) as f:
+       data = json.load(f)
+   steps = json.loads(data['result'])['customfield_12204']['value']['steps']
+   for s in steps:
+       fld = s['fields']
+       print(f\"- [ ] Step {s['index']}\")
+       print(f\"  **Action:** {fld.get('Action','')}\")
+       print(f\"  **Data:** {fld.get('Data','')}\")
+       print(f\"  **Expected:** {fld.get('Expected Result','')}\")
+       print()
+   " <content.json path>
+   ```
+
+   `node`:
+   ```
+   node -e "
+   const fs = require('fs');
+   const raw = JSON.parse(fs.readFileSync(process.argv[1], 'utf8'));
+   const steps = JSON.parse(raw.result).customfield_12204.value.steps;
+   for (const s of steps) {
+     const f = s.fields;
+     console.log('- [ ] Step ' + s.index);
+     console.log('  **Action:** ' + (f.Action || ''));
+     console.log('  **Data:** ' + (f.Data || ''));
+     console.log('  **Expected:** ' + (f['Expected Result'] || ''));
+     console.log();
+   }
+   " <content.json path>
+   ```
+
+5. Never log in to Jira via browser to retrieve steps — MCP tool plus one of the above extraction tools is the only sanctioned path.
