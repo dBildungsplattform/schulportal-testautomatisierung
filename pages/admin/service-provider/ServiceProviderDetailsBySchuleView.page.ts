@@ -1,6 +1,9 @@
 import { expect, Locator, Page } from '@playwright/test';
 import { MenuBarPage } from '../../components/MenuBar.page';
 
+type RollenartGroup = 'LEHR' | 'LERN' | 'LEIT';
+type GroupCounter = { selected: number; total: number };
+
 export class ServiceProviderDetailsBySchuleViewPage {
   private readonly card: Locator;
   private readonly headline: Locator;
@@ -14,6 +17,11 @@ export class ServiceProviderDetailsBySchuleViewPage {
   private readonly rollenerweiterungField: Locator;
   private readonly rollenerweiterungenField: Locator;
   private readonly rollenerweiterungBearbeitenButton: Locator;
+  private readonly rollenerweiterungTree: Locator;
+  private readonly rollenerweiterungCancelButton: Locator;
+  private readonly rollenerweiterungSaveButton: Locator;
+  private readonly rollenerweiterungSuccessCloseButton: Locator;
+  private readonly rollenerweiterungSuccessMessage: Locator;
   public readonly menu: MenuBarPage;
 
   constructor(protected readonly page: Page) {
@@ -29,7 +37,24 @@ export class ServiceProviderDetailsBySchuleViewPage {
     this.rollenerweiterungField = this.page.getByTestId('service-provider-rollenerweiterung');
     this.rollenerweiterungenField = this.page.getByTestId('service-provider-rollenerweiterungen');
     this.rollenerweiterungBearbeitenButton = this.page.getByTestId('rollenerweiterung-bearbeiten-button');
+    this.rollenerweiterungTree = this.page.getByTestId('rollenerweiterung-tree');
+    this.rollenerweiterungCancelButton = this.page.getByTestId('rollenerweiterung-cancel-button');
+    this.rollenerweiterungSaveButton = this.page.getByTestId('rollenerweiterung-save-button');
+    this.rollenerweiterungSuccessCloseButton = this.page.getByTestId('close-rollenerweiterung-save-success-button');
+    this.rollenerweiterungSuccessMessage = this.page.getByText(
+      'Die Rollenerweiterungen wurden erfolgreich gespeichert.',
+      { exact: true },
+    );
     this.menu = new MenuBarPage(this.page);
+  }
+
+  private getGroupHeader(gruppe: RollenartGroup): Locator {
+    return this.page.getByTestId(`treeview-group-${gruppe}`);
+  }
+
+  private getGroupTreeItem(gruppe: RollenartGroup): Locator {
+    const groupHeader: Locator = this.getGroupHeader(gruppe);
+    return this.rollenerweiterungTree.locator('[role="treeitem"]').filter({ has: groupHeader });
   }
 
   /* actions */
@@ -76,6 +101,112 @@ export class ServiceProviderDetailsBySchuleViewPage {
     await this.rollenerweiterungBearbeitenButton.click();
   }
 
+  public async cancelRollenerweiterung(): Promise<void> {
+    await this.rollenerweiterungCancelButton.click();
+    await expect(this.rollenerweiterungCancelButton).toBeHidden();
+  }
+
+  public async saveRollenerweiterung(): Promise<void> {
+    await this.rollenerweiterungSaveButton.click();
+  }
+
+  public async closeRollenerweiterungSuccessDialog(): Promise<void> {
+    await this.rollenerweiterungSuccessCloseButton.click();
+    await expect(this.rollenerweiterungSuccessCloseButton).toBeHidden();
+  }
+
+  public async toggleGroupExpand(gruppe: RollenartGroup): Promise<void> {
+    const groupTreeItem: Locator = this.getGroupTreeItem(gruppe);
+    const expandToggle: Locator = groupTreeItem.locator('.v-list-item-action--start .v-btn');
+    await expandToggle.click();
+  }
+
+  public async toggleGroupCheckbox(gruppe: RollenartGroup): Promise<void> {
+    await this.page.getByTestId(`treeview-group-checkbox-${gruppe}`).click();
+  }
+
+  public async toggleRolleByName(rolleName: string): Promise<void> {
+    // :not([aria-expanded]) excludes group nodes, which always carry that attribute
+    const roleRow: Locator = this.rollenerweiterungTree
+      .locator('[role="treeitem"]:not([aria-expanded])')
+      .filter({ hasText: rolleName });
+    await expect(roleRow).toHaveCount(1);
+    await roleRow.scrollIntoViewIfNeeded();
+    await roleRow.getByRole('checkbox').click();
+  }
+
+  public async getGroupCounter(gruppe: RollenartGroup): Promise<GroupCounter> {
+    const text: string = await this.getGroupHeader(gruppe).innerText();
+    const match: RegExpMatchArray | null = text.match(/\((\d+)\s+von\s+(\d+)\)/);
+    if (!match) {
+      throw new Error(`Unable to parse counter for group ${gruppe}: ${text}`);
+    }
+
+    return {
+      selected: Number(match[1]),
+      total: Number(match[2]),
+    };
+  }
+
+  public async openRollenerweiterungDialog(): Promise<void> {
+    await this.clickRollenerweiterungBearbeiten();
+    await this.assertRollenerweiterungDialogVisible();
+  }
+
+  public async assertRollenerweiterungDialogInitialState(): Promise<void> {
+    await this.assertGroupExpanded('LEHR', true);
+    await this.assertGroupExpanded('LERN', true);
+    await this.assertGroupExpanded('LEIT', false);
+
+    const lehrCounter: GroupCounter = await this.getGroupCounter('LEHR');
+    const lernCounter: GroupCounter = await this.getGroupCounter('LERN');
+    const leitCounter: GroupCounter = await this.getGroupCounter('LEIT');
+
+    await this.assertGroupCounter('LEHR', 0, lehrCounter.total);
+    await this.assertGroupCounter('LERN', 0, lernCounter.total);
+    await this.assertGroupCounter('LEIT', 0, leitCounter.total);
+  }
+
+  public async toggleInitialGroupExpansionAndAssert(): Promise<void> {
+    await this.toggleGroupExpand('LEHR');
+    await this.assertGroupExpanded('LEHR', false);
+
+    await this.toggleGroupExpand('LERN');
+    await this.assertGroupExpanded('LERN', false);
+
+    await this.toggleGroupExpand('LEIT');
+    await this.assertGroupExpanded('LEIT', true);
+  }
+
+  public async selectGroupAndAssertAllSelected(gruppe: RollenartGroup): Promise<GroupCounter> {
+    await this.toggleGroupCheckbox(gruppe);
+    const selectedCounter: GroupCounter = await this.getGroupCounter(gruppe);
+    expect(selectedCounter.selected).toBe(selectedCounter.total);
+    return selectedCounter;
+  }
+
+  public async deselectRolesAndAssertPartialSelection(
+    gruppe: RollenartGroup,
+    rollenNamen: string[],
+    selectedCounterBeforeDeselect: GroupCounter,
+  ): Promise<GroupCounter> {
+    for (const rollenName of rollenNamen) {
+      await this.toggleRolleByName(rollenName);
+    }
+
+    const selectedCounterAfterDeselect: GroupCounter = await this.getGroupCounter(gruppe);
+    expect(selectedCounterAfterDeselect.selected).toBe(selectedCounterBeforeDeselect.selected - rollenNamen.length);
+    expect(selectedCounterAfterDeselect.total).toBe(selectedCounterBeforeDeselect.total);
+    await this.assertGroupPartiallySelected(gruppe);
+
+    return selectedCounterAfterDeselect;
+  }
+
+  public async saveRollenerweiterungAndAssertSuccess(): Promise<void> {
+    await this.saveRollenerweiterung();
+    await this.assertSuccessDialogVisible();
+  }
+
   public async close(): Promise<void> {
     await this.closeButton.click();
   }
@@ -85,6 +216,40 @@ export class ServiceProviderDetailsBySchuleViewPage {
     await expect(this.page.getByTestId('admin-headline')).toHaveText('Administrationsbereich');
     await expect(this.card).toBeVisible();
     await expect(this.headline).toContainText('Angebot bearbeiten');
+  }
+
+  public async assertRollenerweiterungBearbeitenVisible(): Promise<void> {
+    await expect(this.rollenerweiterungBearbeitenButton).toBeVisible();
+  }
+
+  public async assertRollenerweiterungDialogVisible(): Promise<void> {
+    await expect(this.rollenerweiterungTree).toBeVisible();
+    await expect(this.page.getByText('Rollenauswahl bearbeiten', { exact: true })).toBeVisible();
+    await expect(this.rollenerweiterungCancelButton).toBeVisible();
+    await expect(this.rollenerweiterungSaveButton).toBeVisible();
+  }
+
+  public async assertGroupExpanded(gruppe: RollenartGroup, expanded: boolean): Promise<void> {
+    await expect(this.getGroupTreeItem(gruppe)).toHaveAttribute('aria-expanded', expanded ? 'true' : 'false');
+  }
+
+  public async assertGroupCounter(gruppe: RollenartGroup, selected: number, total: number): Promise<void> {
+    const currentCounter: { selected: number; total: number } = await this.getGroupCounter(gruppe);
+    expect(currentCounter.selected).toBe(selected);
+    expect(currentCounter.total).toBe(total);
+  }
+
+  public async assertSuccessDialogVisible(): Promise<void> {
+    await expect(this.page.getByText('Rollenauswahl bearbeiten', { exact: true })).toBeVisible();
+    await expect(this.rollenerweiterungSuccessMessage).toBeVisible();
+    await expect(this.rollenerweiterungSuccessCloseButton).toBeVisible();
+  }
+
+  public async assertGroupPartiallySelected(gruppe: RollenartGroup): Promise<void> {
+    await expect(this.page.getByTestId(`treeview-group-checkbox-${gruppe}`).locator('input')).toHaveAttribute(
+      'aria-checked',
+      'mixed',
+    );
   }
 
   public async assertHeadline(schulname: string): Promise<void> {
@@ -110,5 +275,11 @@ export class ServiceProviderDetailsBySchuleViewPage {
 
   public async assertRollenerweiterungen(expected: string): Promise<void> {
     await expect(this.rollenerweiterungenField).toHaveText(expected);
+  }
+
+  public async assertRollenerweiterungenContain(expectedRollen: string[]): Promise<void> {
+    for (const rollenName of expectedRollen) {
+      await expect(this.rollenerweiterungenField).toContainText(rollenName);
+    }
   }
 }
