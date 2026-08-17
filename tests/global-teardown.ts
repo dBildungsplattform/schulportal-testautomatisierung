@@ -11,7 +11,7 @@ import {
   PersonenFrontendApi,
   PersonFrontendControllerFindPersons200Response,
   ProviderApi,
-  ProviderControllerGetManageableServiceProviders200Response,
+  ProviderControllerGetManageableServiceProvidersForOrganisationId200Response,
   RolleApi,
   RolleWithServiceProvidersResponse,
 } from '../base/api/generated';
@@ -152,12 +152,12 @@ export default async function globalTeardown(): Promise<void> {
       async (item: OrganisationResponse) => {
         await cleanup(
           async () => {
-            const wrappedResponse: ApiResponse<ProviderControllerGetManageableServiceProviders200Response> =
+            const wrappedResponse: ApiResponse<ProviderControllerGetManageableServiceProvidersForOrganisationId200Response> =
               await providerApi.providerControllerGetManageableServiceProvidersForOrganisationIdRaw({
                 organisationId: item.id,
                 limit,
               });
-            const angebote: ProviderControllerGetManageableServiceProviders200Response = await wrappedResponse.value();
+            const angebote: ProviderControllerGetManageableServiceProvidersForOrganisationId200Response = await wrappedResponse.value();
             if (angebote.total === 0) return [];
 
             console.log(`${angebote.total} Angebote für ${item.id}:${item.name} löschen`);

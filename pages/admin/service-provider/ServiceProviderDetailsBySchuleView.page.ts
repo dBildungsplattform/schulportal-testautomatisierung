@@ -2,7 +2,7 @@ import { expect, Locator, Page } from '@playwright/test';
 import { MenuBarPage } from '../../components/MenuBar.page';
 
 type RollenartGroup = 'LEHR' | 'LERN' | 'LEIT';
-type GroupCounter = { selected: number; total: number };
+interface GroupCounter { selected: number; total: number }
 
 export class ServiceProviderDetailsBySchuleViewPage {
   private readonly card: Locator;
