@@ -157,7 +157,8 @@ export default async function globalTeardown(): Promise<void> {
                 organisationId: item.id,
                 limit,
               });
-            const angebote: ProviderControllerGetManageableServiceProvidersForOrganisationId200Response = await wrappedResponse.value();
+            const angebote: ProviderControllerGetManageableServiceProvidersForOrganisationId200Response =
+              await wrappedResponse.value();
             if (angebote.total === 0) return [];
 
             console.log(`${angebote.total} Angebote für ${item.id}:${item.name} löschen`);
