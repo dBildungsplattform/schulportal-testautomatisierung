@@ -249,7 +249,7 @@ test.describe('SPSH-3890: Rollenerweiterung für schulspezifisches Angebot bearb
       const detailsViewPage: ServiceProviderDetailsBySchuleViewPage =
         await managementBySchuleViewPage.openServiceProviderDetails(
           angebotName,
-          hasMultipleSchulen ? testschuleName : undefined,
+          hasMultipleSchulen ? { id: testschuleId, name: testschuleName } : undefined,
         );
 
       await test.step('Dialog initial prüfen', async () => {
@@ -270,7 +270,7 @@ test.describe('SPSH-3890: Rollenerweiterung für schulspezifisches Angebot bearb
       const detailsViewPage: ServiceProviderDetailsBySchuleViewPage =
         await managementBySchuleViewPage.openServiceProviderDetails(
           angebotName,
-          hasMultipleSchulen ? testschuleName : undefined,
+          hasMultipleSchulen ? { id: testschuleId, name: testschuleName } : undefined,
         );
 
       await test.step('Gruppen auswählen und Rollen abwählen', async () => {
@@ -284,7 +284,7 @@ test.describe('SPSH-3890: Rollenerweiterung für schulspezifisches Angebot bearb
       const detailsViewPage: ServiceProviderDetailsBySchuleViewPage =
         await managementBySchuleViewPage.openServiceProviderDetails(
           angebotName,
-          hasMultipleSchulen ? testschuleName : undefined,
+          hasMultipleSchulen ? { id: testschuleId, name: testschuleName } : undefined,
         );
 
       await test.step('Rollenerweiterung speichern', async () => {
