@@ -23,6 +23,7 @@ export class ServiceProviderManagementBySchuleViewPage {
     );
     await schuleAutocomplete.searchByTitle(schuleName);
     await this.waitForResultTableLoad();
+    await expect(this.page.getByTestId('layout-card-headline')).toContainText(schuleName);
   }
 
   public async openServiceProviderByName(angebotName: string): Promise<ServiceProviderDetailsBySchuleViewPage> {

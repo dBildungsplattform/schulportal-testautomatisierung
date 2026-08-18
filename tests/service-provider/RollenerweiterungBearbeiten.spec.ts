@@ -12,7 +12,7 @@ import {
   createRolle,
   RollenArt,
 } from '../../base/api/rolleApi';
-import { createServiceProvider, deleteServiceProvider } from '../../base/api/serviceProviderApi';
+import { constructProviderApi, createServiceProvider, deleteServiceProvider } from '../../base/api/serviceProviderApi';
 import {
   CreateServiceProviderBodyParamsKategorieEnum,
   CreateServiceProviderBodyParamsMerkmaleEnum,
@@ -52,7 +52,6 @@ test.describe('SPSH-3890: Rollenerweiterung für schulspezifisches Angebot bearb
   let testschuleId: string = '';
   let angebotId: string = '';
   let angebotName: string = '';
-  let createdRollen: CreatedRolle[] = [];
   let usersForVisibilityCheck: UserInfo[] = [];
   let schuladminUser: UserInfo | null = null;
 
@@ -152,7 +151,6 @@ test.describe('SPSH-3890: Rollenerweiterung für schulspezifisches Angebot bearb
   }
 
   test.beforeEach(async ({ page }) => {
-    createdRollen = [];
     usersForVisibilityCheck = [];
     schuladminUser = null;
 
@@ -175,7 +173,6 @@ test.describe('SPSH-3890: Rollenerweiterung für schulspezifisches Angebot bearb
     lehrRollen = await createRollenForRollenart(page, testschuleId, RollenArt.Lehr, 3);
     lernRollen = await createRollenForRollenart(page, testschuleId, RollenArt.Lern, 2);
     leitRollen = await createRollenForRollenart(page, testschuleId, RollenArt.Leit, 2);
-    createdRollen = [...lehrRollen, ...lernRollen, ...leitRollen];
 
     schuladminUser = await createPersonWithPersonenkontext(page, testschuleName, schuladminOeffentlichRolle);
 
@@ -205,17 +202,26 @@ test.describe('SPSH-3890: Rollenerweiterung für schulspezifisches Angebot bearb
 
     await loginAndNavigateToAdministration(page);
 
-    if (angebotId && testschuleId && createdRollen.length > 0) {
+    if (angebotId && testschuleId) {
       try {
         const rolleApi = constructRolleApi(page);
-        await rolleApi.rollenerweiterungControllerApplyRollenerweiterungChanges({
+        const providerApi = constructProviderApi(page);
+        const rollenerweiterungen = await providerApi.providerControllerFindRollenerweiterungenByServiceProviderId({
           angebotId,
-          organisationId: testschuleId,
-          applyRollenerweiterungBodyParams: {
-            addErweiterungenForRolleIds: [],
-            removeErweiterungenForRolleIds: createdRollen.map((rolle) => rolle.id),
-          },
+          organisationIds: [testschuleId],
         });
+        const rolleIds: string[] = rollenerweiterungen.items.map((rollenerweiterung) => rollenerweiterung.rolleId);
+
+        if (rolleIds.length > 0) {
+          await rolleApi.rollenerweiterungControllerApplyRollenerweiterungChanges({
+            angebotId,
+            organisationId: testschuleId,
+            applyRollenerweiterungBodyParams: {
+              addErweiterungenForRolleIds: [],
+              removeErweiterungenForRolleIds: rolleIds,
+            },
+          });
+        }
       } catch (error) {
         console.warn('[WARN] Failed to detach rollenerweiterungen before Angebot deletion:', error);
       }
