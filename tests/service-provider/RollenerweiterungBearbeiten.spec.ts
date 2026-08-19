@@ -246,11 +246,9 @@ test.describe('SPSH-3890: Rollenerweiterung für schulspezifisches Angebot bearb
     test(`SPSH-3313 Schritte 1-6 prüfen (${bezeichnung})`, { tag: [DEV] }, async ({ page }) => {
       const managementBySchuleViewPage: ServiceProviderManagementBySchuleViewPage =
         await getServiceProviderManagementPage(page, hasMultipleSchulen);
-      const detailsViewPage: ServiceProviderDetailsBySchuleViewPage =
-        await managementBySchuleViewPage.openServiceProviderDetails(
-          angebotName,
-          hasMultipleSchulen ? { id: testschuleId, name: testschuleName } : undefined,
-        );
+      const detailsViewPage: ServiceProviderDetailsBySchuleViewPage = hasMultipleSchulen
+        ? await managementBySchuleViewPage.openServiceProviderDetailsById(angebotId, testschuleId)
+        : await managementBySchuleViewPage.openServiceProviderDetails(angebotName);
 
       await test.step('Dialog initial prüfen', async () => {
         await detailsViewPage.openRollenerweiterungDialog();
@@ -267,11 +265,9 @@ test.describe('SPSH-3890: Rollenerweiterung für schulspezifisches Angebot bearb
     test(`SPSH-3313 Schritte 7-12 prüfen (${bezeichnung})`, { tag: [DEV] }, async ({ page }) => {
       const managementBySchuleViewPage: ServiceProviderManagementBySchuleViewPage =
         await getServiceProviderManagementPage(page, hasMultipleSchulen);
-      const detailsViewPage: ServiceProviderDetailsBySchuleViewPage =
-        await managementBySchuleViewPage.openServiceProviderDetails(
-          angebotName,
-          hasMultipleSchulen ? { id: testschuleId, name: testschuleName } : undefined,
-        );
+      const detailsViewPage: ServiceProviderDetailsBySchuleViewPage = hasMultipleSchulen
+        ? await managementBySchuleViewPage.openServiceProviderDetailsById(angebotId, testschuleId)
+        : await managementBySchuleViewPage.openServiceProviderDetails(angebotName);
 
       await test.step('Gruppen auswählen und Rollen abwählen', async () => {
         await applyRollenerweiterungSelectionAndAssertions(detailsViewPage);
@@ -281,11 +277,9 @@ test.describe('SPSH-3890: Rollenerweiterung für schulspezifisches Angebot bearb
     test(`SPSH-3313 Schritte 13-15 prüfen (${bezeichnung})`, { tag: [DEV] }, async ({ page }) => {
       const managementBySchuleViewPage: ServiceProviderManagementBySchuleViewPage =
         await getServiceProviderManagementPage(page, hasMultipleSchulen);
-      const detailsViewPage: ServiceProviderDetailsBySchuleViewPage =
-        await managementBySchuleViewPage.openServiceProviderDetails(
-          angebotName,
-          hasMultipleSchulen ? { id: testschuleId, name: testschuleName } : undefined,
-        );
+      const detailsViewPage: ServiceProviderDetailsBySchuleViewPage = hasMultipleSchulen
+        ? await managementBySchuleViewPage.openServiceProviderDetailsById(angebotId, testschuleId)
+        : await managementBySchuleViewPage.openServiceProviderDetails(angebotName);
 
       await test.step('Rollenerweiterung speichern', async () => {
         await applyRollenerweiterungSelectionAndAssertions(detailsViewPage);

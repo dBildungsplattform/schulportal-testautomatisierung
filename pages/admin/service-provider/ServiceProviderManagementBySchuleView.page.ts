@@ -1,11 +1,6 @@
-import { expect, Page, type Response } from '@playwright/test';
+import { expect, Page } from '@playwright/test';
 import { Autocomplete } from '../../components/Autocomplete';
 import { ServiceProviderDetailsBySchuleViewPage } from './ServiceProviderDetailsBySchuleView.page';
-
-interface SchuleSelection {
-  id: string;
-  name: string;
-}
 
 export class ServiceProviderManagementBySchuleViewPage {
   constructor(protected readonly page: Page) {}
@@ -21,61 +16,57 @@ export class ServiceProviderManagementBySchuleViewPage {
     return this;
   }
 
-  public async filterBySchule(schule: SchuleSelection): Promise<void> {
+  public async filterBySchule(schuleName: string): Promise<void> {
     const schuleAutocomplete: Autocomplete = new Autocomplete(
       this.page,
       this.page.getByTestId('service-provider-management-by-schule-organisation-select'),
     );
-    const organisationResponse: Promise<Response> = this.page.waitForResponse((response: Response): boolean => {
-      const responseUrl: URL = new URL(response.url());
-      return (
-        response.request().method() === 'GET' &&
-        responseUrl.pathname === `/api/organisationen/${encodeURIComponent(schule.id)}` &&
-        response.ok()
-      );
-    });
-
-    await schuleAutocomplete.searchByTitle(schule.name);
-    await organisationResponse;
+    await schuleAutocomplete.searchByTitle(schuleName);
     await this.waitForResultTableLoad();
-    await expect(this.page.getByTestId('layout-card-headline')).toContainText(schule.name);
+    await expect(this.page.getByTestId('layout-card-headline')).toContainText(schuleName);
   }
 
-  public async openServiceProviderByName(
-    angebotName: string,
-    expectedOrganisationId?: string,
-  ): Promise<ServiceProviderDetailsBySchuleViewPage> {
+  public async openServiceProviderByName(angebotName: string): Promise<ServiceProviderDetailsBySchuleViewPage> {
     const row = this.page.locator('tr').filter({ hasText: angebotName });
     await expect(row).toHaveCount(1);
     await expect(row).toBeVisible();
     await row.click();
-
-    await expect(this.page).toHaveURL((url: URL): boolean => {
-      const organisationId: string | null = url.searchParams.get('orga');
-      return (
-        /^\/admin\/angebote\/schulspezifisch\/[^/]+$/.test(url.pathname) &&
-        organisationId !== null &&
-        (!expectedOrganisationId || organisationId === expectedOrganisationId)
-      );
-    });
 
     const detailsViewPage: ServiceProviderDetailsBySchuleViewPage = new ServiceProviderDetailsBySchuleViewPage(this.page);
     await detailsViewPage.waitForPageLoad();
     return detailsViewPage;
   }
 
+  public async openServiceProviderDetailsById(
+    angebotId: string,
+    organisationId: string,
+  ): Promise<ServiceProviderDetailsBySchuleViewPage> {
+    // The frontend row click can omit the required orga query for multi-school users, causing the route guard to redirect back to the management page.
+    await this.page.goto(
+      `/admin/angebote/schulspezifisch/${encodeURIComponent(angebotId)}?orga=${encodeURIComponent(organisationId)}`,
+    );
+    await expect(this.page).toHaveURL((url: URL): boolean => {
+      return (
+        url.pathname === `/admin/angebote/schulspezifisch/${encodeURIComponent(angebotId)}` &&
+        url.searchParams.get('orga') === organisationId
+      );
+    });
+
+    const detailsViewPage: ServiceProviderDetailsBySchuleViewPage = new ServiceProviderDetailsBySchuleViewPage(this.page);
+    await detailsViewPage.waitForPageLoad();
+    await detailsViewPage.assertRollenerweiterungBearbeitenVisible();
+    return detailsViewPage;
+  }
+
   public async openServiceProviderDetails(
     angebotName: string,
-    schule?: SchuleSelection,
+    schuleName?: string,
   ): Promise<ServiceProviderDetailsBySchuleViewPage> {
-    if (schule) {
-      await this.filterBySchule(schule);
+    if (schuleName) {
+      await this.filterBySchule(schuleName);
     }
 
-    const detailsViewPage: ServiceProviderDetailsBySchuleViewPage = await this.openServiceProviderByName(
-      angebotName,
-      schule?.id,
-    );
+    const detailsViewPage: ServiceProviderDetailsBySchuleViewPage = await this.openServiceProviderByName(angebotName);
     await detailsViewPage.assertRollenerweiterungBearbeitenVisible();
     return detailsViewPage;
   }
