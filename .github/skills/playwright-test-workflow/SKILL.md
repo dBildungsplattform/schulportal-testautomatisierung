@@ -95,7 +95,7 @@ Für jedes Szenario aus der Beschreibung bestimmen:
 | Entitäten | Welche Personen, Schulen, Klassen, Rollen, Admins werden benötigt? |
 | Konstellationen | Positivfälle, Konfliktfälle, Mehrklassen-Szenarien? |
 | Vorbedingungen | Müssen bestimmte Rollen/Kontexte bereits vor dem Test existieren? |
-| Cleanup | Welche Entitäten müssen im `afterEach` gelöscht werden? |
+| Cleanup | Welche Entitäten erzeugt das globale Teardown anhand des `TAuto-PW`-Präfixes? Ist ausnahmsweise ein lokaler Cleanup vor Testlaufende erforderlich? |
 
 #### Schritt 3.2 — Benötigte API-Wrapper prüfen
 
@@ -130,10 +130,9 @@ Ausgabeformat:
 - `createRolleAndPersonWithPersonenkontext(...)` × 3 → studentsSingleClass_A
 - ...
 
-### afterEach Cleanup
-- `deletePersonenBySearchStrings(page, usernames)`
-- `deleteRolleById(rolleIds, page)`
-- ...
+### Cleanup
+- Globales Teardown löscht nach dem Testlauf Personen, Rollen, Klassen und Schulen mit dem Präfix `TAuto-PW`.
+- Lokalen `afterEach`-Cleanup nur bei begründeter Notwendigkeit aufführen, wenn Daten noch vor Testlaufende entfernt werden müssen.
 
 ---
 Bitte bestätigen (ja) oder Änderungen angeben.
@@ -163,7 +162,7 @@ Testbeschreibung aus Phase 1 und den gespeicherten Testdaten-Plan aus
 `.github/skills/create-playwright-test/testdaten` als Input übergeben.
 
 **Erwartetes Ergebnis:** Neue `.spec.ts`-Datei wurde erstellt (oder ein bestehender Describe-Block
-wurde erweitert) — inkl. vollständigem `beforeEach`-Setup und `afterEach`-Cleanup.
+wurde erweitert) — inkl. vollständigem `beforeEach`-Setup; die Daten werden durch das globale Teardown bereinigt.
 
 ---
 

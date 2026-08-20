@@ -130,11 +130,11 @@ Vor dem Schreiben prüfen, ob es bereits eine passende `.spec.ts` gibt, in der d
 
 1. Unter `tests/<bereich>/` nach thematisch passenden Dateien suchen (z. B. `PersonAnlegen.spec.ts`, `KlasseBearbeiten.spec.ts`).
 2. **Passende Datei vorhanden?**
-   - **Ja** → neuen `test(...)`-Block in eine passende bestehende `test.describe`-Suite einfügen. Vorhandene `beforeEach`/`afterEach` wiederverwenden, soweit sie zum neuen Fall passen.
+  - **Ja** → neuen `test(...)`-Block in eine passende bestehende `test.describe`-Suite einfügen. Vorhandenes `beforeEach` wiederverwenden; bestehendes `afterEach` nur beibehalten, wenn dessen lokaler Cleanup fachlich erforderlich ist.
    - **Nein** → neue Datei `tests/<bereich>/<UseCase>.spec.ts` (PascalCase) anlegen.
 3. **Vor dem Einfügen** prüfen, ob das vorhandene `beforeEach` bereits alle nötigen Testdaten anlegt:
    - Reicht das Setup aus → Test einfach ergänzen.
-   - Es fehlen Testdaten → das `beforeEach` (oder ein eigenes inneres `test.describe` mit eigenem `beforeEach`) entsprechend erweitern. Alle neuen IDs/Usernames in die suite-lokalen Cleanup-Arrays aufnehmen, damit `afterEach` sie wieder aufräumt.
+  - Es fehlen Testdaten → das `beforeEach` (oder ein eigenes inneres `test.describe` mit eigenem `beforeEach`) entsprechend erweitern. Alle Namen müssen den Generator-Präfix `TAuto-PW-…` tragen, damit das globale Teardown sie nach dem Lauf aufräumt.
 
 > **Anti-Pattern: Duplicate Describe statt Merge.**
 > Wenn ein bestehendes `beforeEach` bereits 80%+ des benötigten Setups enthält (z.B. Schule, Klassen, Rolle, Schuladmin-Login), füge fehlende Testdaten **dort** hinzu, statt einen eigenständigen Describe-Block mit nahezu identischem Setup zu erstellen. Dupliziertes Setup = längere Laufzeit + Wartungslast.
@@ -163,10 +163,6 @@ test.describe(`<Fachlicher Use-Case Name>`, () => {
       // Testdaten via API anlegen
     });
 
-    test.afterEach(async ({ page }: PlaywrightTestArgs) => {
-      // Cleanup: Testdaten löschen
-    });
-
     test(`Testfall-Beschreibung`, { tag: [DEV] }, async ({ page }: PlaywrightTestArgs) => {
       // Test-Schritte über Page-Methoden
     });
@@ -192,26 +188,9 @@ test.describe(`<Fachlicher Use-Case Name>`, () => {
 
 #### 4.5 — Cleanup
 
-- Cleanup erfolgt im `afterEach` über die Bulk-Helfer aus [base/testHelperDeleteTestdata.ts](../../../base/testHelperDeleteTestdata.ts)
-- Pattern mit suite-lokalen Arrays für angelegte IDs/Usernames:
-
-```ts
-let usernames: string[] = [];
-let rolleIds: string[] = [];
-
-test.afterEach(async ({ page }: PlaywrightTestArgs) => {
-  if (usernames.length > 0) {
-    await deletePersonenBySearchStrings(page, usernames);
-    usernames = [];
-  }
-  if (rolleIds.length > 0) {
-    await deleteRolleById(rolleIds, page);
-    rolleIds = [];
-  }
-});
-```
-
-- Nach dem Anlegen via API: `usernames.push(userInfo.username)` bzw. `rolleIds.push(userInfo.rolleId)` für späteren Cleanup merken.
+- Das globale Teardown in [tests/global-teardown.ts](../../../tests/global-teardown.ts) löscht nach dem Testlauf alle mit `TAuto-PW` erzeugten Personen, Rollen, Klassen und Schulen.
+- Neue Tests implementieren deshalb keinen eigenen `afterEach`-Cleanup und müssen keine IDs oder Usernames für diesen Zweck sammeln.
+- Ein lokaler `afterEach`-Cleanup über [base/testHelperDeleteTestdata.ts](../../../base/testHelperDeleteTestdata.ts) ist nur zulässig, wenn Daten noch vor Ende des Testlaufs gelöscht werden müssen; die Ausnahme ist im Test kurz zu begründen.
 
 ### Phase 5 — Validierung
 

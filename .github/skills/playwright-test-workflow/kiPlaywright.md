@@ -52,7 +52,7 @@ Bevor Testcode entsteht, wird der **Testdaten-Bedarf** vollständig geplant:
 
 - Welche Entitäten werden benötigt? (Personen, Schulen, Klassen, Rollen)
 - Welche Szenarien gibt es? (Positivfall, Konfliktfall, Mehrklassen-Szenario)
-- Welche Einträge müssen im `afterEach` wieder gelöscht werden?
+- Welche Daten werden mit `TAuto-PW` erzeugt und damit vom globalen Teardown entfernt? Ist ausnahmsweise ein lokaler Cleanup vor Testlaufende notwendig?
 - Sind alle API-Wrapper in `base/api/` und `tests/helpers/` vorhanden?
 
 Der Testdaten-Plan wird dem Nutzer zur **Freigabe** vorgelegt — erst danach geht es weiter.  
@@ -67,7 +67,7 @@ Skill `create-playwright-test` generiert die `.spec.ts`-Datei nach den Projektko
 - Dateiname im PascalCase (`KlasseAnlegen.spec.ts`)
 - Ein Use-Case pro Datei
 - `beforeEach` mit API-basiertem Testdaten-Setup (laut freigegebenem Plan)
-- `afterEach` mit vollständigem Cleanup
+- globales Teardown für den vollständigen Cleanup nach dem Testlauf
 - Fachliche `test.step()`-Blöcke auf Deutsch
 - Alle Aktionen und Assertions über Page-Object-Methoden (keine direkten Locators im Test)
 
@@ -145,7 +145,7 @@ flowchart TD
 2. `beforeEach` mit API-basiertem Setup implementieren (Personen, Schulen, Klassen via REST-API anlegen)
 3. Testschritte als `test.step()`-Blöcke strukturieren
 4. Alle Aktionen und Assertions über Page-Object-Methoden aufrufen
-5. `afterEach` mit vollständigem Cleanup (Personen, Rollen, Schulen löschen)
+5. Globales Teardown bereinigt nach dem Testlauf alle erzeugten Personen, Rollen, Klassen und Schulen
 
 **Wichtige Regeln:**
 - Tests enthalten **keine** Locators oder Funktionslogik
@@ -185,7 +185,7 @@ flowchart TD
 | Locators nur in Pages | `getByTestId()` ausschließlich in Page-Klassen |
 | Eine `.spec.ts` pro Use-Case | Kein Mischen verschiedener fachlicher Themen |
 | API-basierte Testdaten | Kein statisches Testdaten-Setup; alles per REST-API |
-| Cleanup in `afterEach` | Alle angelegten Entitäten nach dem Test löschen |
+| Globales Teardown | Alle mit `TAuto-PW` angelegten Entitäten nach dem Testlauf löschen |
 | Schüler immer mit Klasse | Backend-Constraint: `LERN_NOT_AT_SCHULE_AND_KLASSE` |
 
 ---
