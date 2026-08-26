@@ -91,6 +91,11 @@ export class ServiceProviderDetailsBySchuleViewPage {
     await expect(this.headline).toHaveText(`Angebot bearbeiten ${schulname}`);
   }
 
+  public async assertBearbeitbar(): Promise<void> {
+    await expect(this.rollenerweiterungBearbeitenButton).toBeVisible();
+    await expect(this.rollenerweiterungBearbeitenButton).toBeEnabled();
+  }
+
   public async assertServiceProviderDetails(expected: {
     name?: string;
     administrationsebene?: string;

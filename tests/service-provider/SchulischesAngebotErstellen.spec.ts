@@ -6,6 +6,7 @@ import { loginAndNavigateToAdministration, logout } from '../../base/testHelperU
 import { generateAngebotname, generateSchulname } from '../../base/utils/generateTestdata';
 import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.page';
 import { ServiceProviderCreationSuccessPage } from '../../pages/admin/service-provider/ServiceProviderCreationSuccessPage.page';
+import { ServiceProviderDetailsBySchuleViewPage } from '../../pages/admin/service-provider/ServiceProviderDetailsBySchuleView.page';
 import {
   ServiceProviderCreateParams,
   ServiceProviderCreationViewPage,
@@ -143,6 +144,11 @@ test.describe('Schulisches Angebot erstellen', () => {
     await test.step('Erfolgsmeldung prüfen', async () => {
       await successPage.assertSuccessPage(angebot);
     });
+    await test.step('Zur Rollenauswahl navigieren und Bearbeitbarkeit prüfen', async () => {
+      const detailsPage: ServiceProviderDetailsBySchuleViewPage = await successPage.clickToRollenauswahl();
+      await detailsPage.assertHeadline(schulen[0].name);
+      await detailsPage.assertBearbeitbar();
+    });
   });
 
   test('Als Schuladmin ein schulisches Angebot erstellen', async ({ asSchuladmin }) => {
@@ -173,6 +179,11 @@ test.describe('Schulisches Angebot erstellen', () => {
     });
     await test.step('Erfolgsmeldung prüfen', async () => {
       await successPage.assertSuccessPage(angebot);
+    });
+    await test.step('Zur Rollenauswahl navigieren und Bearbeitbarkeit prüfen', async () => {
+      const detailsPage: ServiceProviderDetailsBySchuleViewPage = await successPage.clickToRollenauswahl();
+      await detailsPage.assertHeadline(schulen[0].name);
+      await detailsPage.assertBearbeitbar();
     });
   });
 
