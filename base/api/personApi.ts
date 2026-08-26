@@ -379,6 +379,44 @@ export async function lockPerson(page: Page, personId: string, organisationId: s
   }
 }
 
+export async function addSecondOrganisationToPerson(
+  page: Page,
+  personId: string,
+  organisationId1: string,
+  organisationId2: string,
+  rolleId: string,
+): Promise<void> {
+  try {
+    await commitPersonenkontexteWithRetry(
+      page,
+      personId,
+      (personenuebersicht) => {
+        if (personenuebersicht.zuordnungen.length === 0) {
+          return null;
+        }
+        return [
+          {
+            personId,
+            organisationId: organisationId1,
+            rolleId,
+          },
+          {
+            personId,
+            organisationId: organisationId2,
+            rolleId,
+          },
+        ];
+      },
+      (result) => {
+        expect(result.dBiamPersonenkontextResponses.length).toBe(2);
+      },
+    );
+  } catch (error) {
+    console.error('[ERROR] addSecondOrganisationToPerson failed:', error);
+    throw error;
+  }
+}
+
 export async function addOrganisationsToPerson(
   page: Page,
   personId: string,
