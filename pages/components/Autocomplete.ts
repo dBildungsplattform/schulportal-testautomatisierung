@@ -1,4 +1,4 @@
-import { expect, type Locator, type Response, Page } from '@playwright/test';
+import { expect, Page, type Locator, type Response } from '@playwright/test';
 
 const noDataMessage: string = 'Keine Daten gefunden.';
 export class Autocomplete {
@@ -291,7 +291,9 @@ export class Autocomplete {
       await listContainer.evaluate((el: Element): void => {
         el.scrollBy(0, el.clientHeight);
       });
-      await this.page.waitForTimeout(50);
+      // Give the virtual scroller enough time to render the newly revealed items
+      // before the next read; too short a wait flakes on the last batch under load.
+      await this.page.waitForTimeout(150);
     }
 
     const stillMissing: string[] = sortedItems.filter((item: string): boolean => !seen.has(item));

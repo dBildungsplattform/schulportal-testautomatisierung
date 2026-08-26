@@ -8,6 +8,7 @@ import { landSH, testschuleDstNr, testschuleName } from '../../base/organisation
 import { landesadminRolle, lehrkraftOeffentlichRolle, schuladminOeffentlichRolle } from '../../base/rollen';
 import { DEV, STAGE } from '../../base/tags';
 import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
+import { createManyLimited } from '../../base/utils/concurrency';
 import {
   generateDienststellenNr,
   generateKlassenname,
@@ -146,25 +147,25 @@ interface AdminFixture {
       );
     });
 
-    // Skipping this test for now since it fails when sharding. It will be re-enabled in a separate scope SPSH-3815
-    // eslint-disable-next-line playwright/no-skipped-test
-    test.describe.skip('Mit Klassendatenanlage', () => {
+    test.describe('Mit Klassendatenanlage', () => {
+      const KLASSEN_COUNT: number = 40;
       let klassenNamen: string[] = [];
 
       test.beforeEach(async ({ page }: PlaywrightTestArgs) => {
-        klassenNamen = [];
-        for (let i: number = 0; i < 40; i++) {
+        // Klassen mit begrenzter Parallelität anlegen: schnell genug, um das Test-Timeout
+        // nicht zu reißen, ohne die Backend-API beim Sharding mit einem Burst zu überlasten.
+        klassenNamen = await createManyLimited(KLASSEN_COUNT, async (): Promise<string> => {
           const klassenname: string = generateKlassenname();
           await createKlasse(page, schuleId2, klassenname);
-          klassenNamen.push(klassenname);
-        }
+          return klassenname;
+        });
       });
 
       // SPSH-3056
       test.describe('Klassenfilter-Tests', () => {
         test(
           `Als ${bezeichnung}: Alle Klassen im Drop-Down des Klassenfilters anzeigen`,
-          { tag: [STAGE, DEV] },
+          { tag: [DEV, STAGE] },
           async () => {
             await personManagementViewPage.filterBySchule(schuleParams.name);
             await personManagementViewPage.checkIfKlassenAreVisibleInDropdown(klassenNamen);
@@ -173,8 +174,11 @@ interface AdminFixture {
 
         test(
           `Als ${bezeichnung}: Alle Klassen im Drop-Down des Klassenfilters anklickbar`,
-          { tag: [STAGE, DEV] },
+          { tag: [DEV, STAGE] },
           async () => {
+            // Jede Klasse wird einzeln gesucht und angeklickt – bei vielen Klassen eine
+            // lange, aber legitime Interaktion. Timeout großzügiger setzen statt zu flaken.
+            test.slow();
             await personManagementViewPage.filterBySchule(schuleParams.name);
             await personManagementViewPage.checkAllKlassenOptionsClickable(klassenNamen);
           },
