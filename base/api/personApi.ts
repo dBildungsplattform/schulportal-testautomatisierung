@@ -23,9 +23,7 @@ import {
   DbiamPersonenkontextWorkflowControllerCreatePersonWithPersonenkontexteRequest,
   PersonenkontextApi,
 } from './generated/apis/PersonenkontextApi';
-import {
-  DbiamPersonenuebersichtApi,
-} from './generated/apis/DbiamPersonenuebersichtApi';
+import { DbiamPersonenuebersichtApi } from './generated/apis/DbiamPersonenuebersichtApi';
 import {
   DBiamPersonenuebersichtResponse,
   DbiamCreatePersonWithPersonenkontexteBodyParams,
@@ -162,21 +160,10 @@ interface CreatePersonParams {
   secondaryRolleId?: string;
 }
 
-export async function createPerson(
-  page: Page,
-  params: CreatePersonParams,
-): Promise<UserInfo> {
+export async function createPerson(page: Page, params: CreatePersonParams): Promise<UserInfo> {
   try {
-    const {
-      organisationId,
-      rolleId,
-      familienname,
-      vorname,
-      koPersNr,
-      klasseId,
-      merkmalNames,
-      secondaryRolleId,
-    } = params;
+    const { organisationId, rolleId, familienname, vorname, koPersNr, klasseId, merkmalNames, secondaryRolleId } =
+      params;
 
     const createPersonBodyParams: DbiamCreatePersonWithPersonenkontexteBodyParams = {
       familienname: familienname || generateNachname(),
@@ -392,11 +379,10 @@ export async function lockPerson(page: Page, personId: string, organisationId: s
   }
 }
 
-export async function addSecondOrganisationToPerson(
+export async function addOrganisationsToPerson(
   page: Page,
   personId: string,
-  organisationId1: string,
-  organisationId2: string,
+  organisationIds: string[],
   rolleId: string,
 ): Promise<void> {
   try {
@@ -407,25 +393,14 @@ export async function addSecondOrganisationToPerson(
         if (personenuebersicht.zuordnungen.length === 0) {
           return null;
         }
-        return [
-          {
-            personId,
-            organisationId: organisationId1,
-            rolleId,
-          },
-          {
-            personId,
-            organisationId: organisationId2,
-            rolleId,
-          },
-        ];
+        return organisationIds.map((organisationId) => ({ personId, organisationId, rolleId }));
       },
       (result) => {
-        expect(result.dBiamPersonenkontextResponses.length).toBe(2);
+        expect(result.dBiamPersonenkontextResponses.length).toBe(organisationIds.length);
       },
     );
   } catch (error) {
-    console.error('[ERROR] addSecondOrganisationToPerson failed:', error);
+    console.error('[ERROR] addOrganisationsToPerson failed:', error);
     throw error;
   }
 }
@@ -522,7 +497,7 @@ export async function setTimeLimitPersonenkontext(
         befristung:
           zuordnung.sskId === organisationId && zuordnung.rolleId === rolleId
             ? timeLimit
-            : zuordnung.befristung ?? undefined,
+            : (zuordnung.befristung ?? undefined),
       })),
     );
   } catch (error) {
