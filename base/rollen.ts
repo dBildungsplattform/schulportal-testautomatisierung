@@ -50,7 +50,7 @@ export const ROLLEN_CASES: RolleCase[] = [
       'ANGEBOTE_VERWALTEN',
       'ANGEBOTE_EINGESCHRAENKT_VERWALTEN',
     ],
-    organisations: [landSH, testschuleName, testschule665Name],
+    organisations: [landSH],
     rollenArt: RollenArt.Sysadmin,
   },
   {
