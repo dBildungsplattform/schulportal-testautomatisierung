@@ -89,7 +89,7 @@ export const MENU_TEST_CASES: MenuTestCase[] = [
     name: 'Alle Rollen anzeigen',
     testId: 'rolle-management-menu-item',
     route: '/admin/rollen',
-    requiredPermissions: [RollenSystemRechtEnum.RollenVerwalten, RollenSystemRechtEnum.AngeboteVerwalten],
+    requiredPermissions: [RollenSystemRechtEnum.RollenVerwalten],
     navigate: (menu: MenuBarPage) => menu.navigateToRolleManagement(),
   },
   {
