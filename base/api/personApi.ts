@@ -417,32 +417,6 @@ export async function addSecondOrganisationToPerson(
   }
 }
 
-export async function addOrganisationsToPerson(
-  page: Page,
-  personId: string,
-  organisationIds: string[],
-  rolleId: string,
-): Promise<void> {
-  try {
-    await commitPersonenkontexteWithRetry(
-      page,
-      personId,
-      (personenuebersicht) => {
-        if (personenuebersicht.zuordnungen.length === 0) {
-          return null;
-        }
-        return organisationIds.map((organisationId) => ({ personId, organisationId, rolleId }));
-      },
-      (result) => {
-        expect(result.dBiamPersonenkontextResponses.length).toBe(organisationIds.length);
-      },
-    );
-  } catch (error) {
-    console.error('[ERROR] addOrganisationsToPerson failed:', error);
-    throw error;
-  }
-}
-
 export async function deletePerson(page: Page, personId: string): Promise<void> {
   try {
     const requestParameters: PersonControllerDeletePersonByIdRequest = {

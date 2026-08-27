@@ -1,6 +1,10 @@
 import { Page } from '@playwright/test';
 import { getOrganisationId } from '../../base/api/organisationApi';
-import { addOrganisationsToPerson, createRolleAndPersonWithPersonenkontext, UserInfo } from '../../base/api/personApi';
+import {
+  addSecondOrganisationToPerson,
+  createRolleAndPersonWithPersonenkontext,
+  UserInfo,
+} from '../../base/api/personApi';
 import { schulportaladmin } from '../../base/sp';
 import { RolleCase } from '../../base/rollen';
 import { HeaderPage } from '../../pages/components/Header.page';
@@ -45,7 +49,13 @@ export async function prepareAndLoginUserWithPermissions(page: Page, rolle: Roll
     const organisationIds: string[] = await Promise.all(
       rolle.organisations.map((name) => getOrganisationId(page, name)),
     );
-    await addOrganisationsToPerson(page, userInfo.personId, organisationIds, userInfo.rolleId);
+    await addSecondOrganisationToPerson(
+      page,
+      userInfo.personId,
+      organisationIds[0],
+      organisationIds[1],
+      userInfo.rolleId,
+    );
   }
 
   // Logout any existing session
