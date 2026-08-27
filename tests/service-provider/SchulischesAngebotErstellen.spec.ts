@@ -1,4 +1,5 @@
 import { test as base, expect, Page } from '@playwright/test';
+import { ServiceProviderKategorie } from '../../base/api/generated';
 import { createSchule } from '../../base/api/organisationApi';
 import { addSecondOrganisationToPerson, createPersonWithPersonenkontext, UserInfo } from '../../base/api/personApi';
 import { schuladminOeffentlichRolle } from '../../base/rollen';
@@ -6,12 +7,11 @@ import { loginAndNavigateToAdministration, logout } from '../../base/testHelperU
 import { generateAngebotname, generateSchulname } from '../../base/utils/generateTestdata';
 import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.page';
 import { ServiceProviderCreationSuccessPage } from '../../pages/admin/service-provider/ServiceProviderCreationSuccessPage.page';
-import { ServiceProviderDetailsBySchuleViewPage } from '../../pages/admin/service-provider/ServiceProviderDetailsBySchuleView.page';
 import {
   ServiceProviderCreateParams,
   ServiceProviderCreationViewPage,
 } from '../../pages/admin/service-provider/ServiceProviderCreationView.page';
-import { ServiceProviderKategorie } from '../../base/api/generated';
+import { ServiceProviderDetailsBySchuleViewPage } from '../../pages/admin/service-provider/ServiceProviderDetailsBySchuleView.page';
 
 interface BaseFixture {
   schulen: {
@@ -145,9 +145,9 @@ test.describe('Schulisches Angebot erstellen', () => {
       await successPage.assertSuccessPage(angebot);
     });
     await test.step('Zur Rollenauswahl navigieren und Bearbeitbarkeit prüfen', async () => {
-      const detailsPage: ServiceProviderDetailsBySchuleViewPage = await successPage.clickToRollenauswahl();
+      const detailsPage: ServiceProviderDetailsBySchuleViewPage = await successPage.navigateToRollenauswahl();
       await detailsPage.assertHeadline(schulen[0].name);
-      await detailsPage.assertBearbeitbar();
+      await detailsPage.assertCanEditRollenerweiterung();
     });
   });
 
@@ -181,9 +181,9 @@ test.describe('Schulisches Angebot erstellen', () => {
       await successPage.assertSuccessPage(angebot);
     });
     await test.step('Zur Rollenauswahl navigieren und Bearbeitbarkeit prüfen', async () => {
-      const detailsPage: ServiceProviderDetailsBySchuleViewPage = await successPage.clickToRollenauswahl();
+      const detailsPage: ServiceProviderDetailsBySchuleViewPage = await successPage.navigateToRollenauswahl();
       await detailsPage.assertHeadline(schulen[0].name);
-      await detailsPage.assertBearbeitbar();
+      await detailsPage.assertCanEditRollenerweiterung();
     });
   });
 

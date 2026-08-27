@@ -15,7 +15,7 @@ export class ServiceProviderCreationSuccessPage {
     return this;
   }
 
-  public async clickToRollenauswahl(): Promise<ServiceProviderDetailsBySchuleViewPage> {
+  public async navigateToRollenauswahl(): Promise<ServiceProviderDetailsBySchuleViewPage> {
     await this.page.getByTestId('to-service-provider-details-button').click();
     return new ServiceProviderDetailsBySchuleViewPage(this.page).waitForPageLoad();
   }
