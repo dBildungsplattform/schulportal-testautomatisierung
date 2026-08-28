@@ -144,10 +144,11 @@ test.describe('Schulisches Angebot erstellen', () => {
     await test.step('Erfolgsmeldung prüfen', async () => {
       await successPage.assertSuccessPage(angebot);
     });
-    await test.step('Zur Rollenauswahl navigieren und Bearbeitbarkeit prüfen', async () => {
+    await test.step('Zur Rollenauswahl navigieren, angezeigte Werte und Bearbeitbarkeit prüfen', async () => {
       const detailsPage: ServiceProviderDetailsBySchuleViewPage = await successPage.navigateToRollenauswahl();
-      await detailsPage.assertHeadline(schulen[0].name);
-      await detailsPage.assertCanEditRollenerweiterung();
+      await detailsPage.assertServiceProviderDetailsHeadline(schulen[0].name);
+      await detailsPage.assertServiceProviderDetails(angebot);
+      await detailsPage.assertRollenerweiterungenDetails();
     });
   });
 
@@ -180,10 +181,11 @@ test.describe('Schulisches Angebot erstellen', () => {
     await test.step('Erfolgsmeldung prüfen', async () => {
       await successPage.assertSuccessPage(angebot);
     });
-    await test.step('Zur Rollenauswahl navigieren und Bearbeitbarkeit prüfen', async () => {
+    await test.step('Zur Rollenauswahl navigieren, angezeigte Werte und Bearbeitbarkeit prüfen', async () => {
       const detailsPage: ServiceProviderDetailsBySchuleViewPage = await successPage.navigateToRollenauswahl();
-      await detailsPage.assertHeadline(schulen[0].name);
-      await detailsPage.assertCanEditRollenerweiterung();
+      await detailsPage.assertServiceProviderDetailsHeadline(schulen[0].name);
+      await detailsPage.assertServiceProviderDetails(angebot);
+      await detailsPage.assertRollenerweiterungenDetails();
     });
   });
 
