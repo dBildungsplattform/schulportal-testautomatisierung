@@ -1,11 +1,7 @@
 import { Page } from '@playwright/test';
 import { RollenSystemRechtEnum } from '../../base/api/generated/models/RollenSystemRechtEnum';
 import { getOrganisationId } from '../../base/api/organisationApi';
-import {
-  addSecondOrganisationToPerson,
-  createRolleAndPersonWithPersonenkontext,
-  UserInfo,
-} from '../../base/api/personApi';
+import { addOrganisationenToPerson, createRolleAndPersonWithPersonenkontext, UserInfo } from '../../base/api/personApi';
 import { RollenArt } from '../../base/api/rolleApi';
 import { testschule665Name, testschuleName } from '../../base/organisation';
 import { schulportaladmin } from '../../base/sp';
@@ -53,7 +49,7 @@ export async function prepareAndLoginUserWithPermissions(
     getOrganisationId(page, testschuleName),
     getOrganisationId(page, testschule665Name),
   ]);
-  await addSecondOrganisationToPerson(page, userInfo.personId, primarySchuleId, secondarySchuleId, userInfo.rolleId);
+  await addOrganisationenToPerson(page, userInfo.personId, [primarySchuleId, secondarySchuleId], userInfo.rolleId);
 
   // Logout any existing session
   const header: HeaderPage = new HeaderPage(page);
