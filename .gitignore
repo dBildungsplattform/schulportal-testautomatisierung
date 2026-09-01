@@ -12,3 +12,6 @@ error-global-setup.png
 
 # Ignore editor files
 *.code-workspace
+
+# Ignore VS Code settings
+.vscode/settings.json
