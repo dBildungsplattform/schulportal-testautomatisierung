@@ -1,8 +1,13 @@
 import { expect, Locator, Page } from '@playwright/test';
 import { MenuBarPage } from '../../components/MenuBar.page';
+import { RollenArt } from '../../../base/api/rolleApi';
 
-type RollenartGroup = 'LEHR' | 'LERN' | 'LEIT';
 interface GroupCounter { selected: number; total: number }
+
+interface CreatedRolle {
+  id: string;
+  name: string;
+}
 
 export class ServiceProviderDetailsBySchuleViewPage {
   private readonly card: Locator;
@@ -48,11 +53,11 @@ export class ServiceProviderDetailsBySchuleViewPage {
     this.menu = new MenuBarPage(this.page);
   }
 
-  private getGroupHeader(gruppe: RollenartGroup): Locator {
+  private getGroupHeader(gruppe: RollenArt): Locator {
     return this.page.getByTestId(`treeview-group-${gruppe}`);
   }
 
-  private getGroupTreeItem(gruppe: RollenartGroup): Locator {
+  private getGroupTreeItem(gruppe: RollenArt): Locator {
     const groupHeader: Locator = this.getGroupHeader(gruppe);
     return this.rollenerweiterungTree.locator('[role="treeitem"]').filter({ has: groupHeader });
   }
@@ -115,13 +120,13 @@ export class ServiceProviderDetailsBySchuleViewPage {
     await expect(this.rollenerweiterungSuccessCloseButton).toBeHidden();
   }
 
-  public async toggleGroupExpand(gruppe: RollenartGroup): Promise<void> {
+  public async toggleGroupExpand(gruppe: RollenArt): Promise<void> {
     const groupTreeItem: Locator = this.getGroupTreeItem(gruppe);
     const expandToggle: Locator = groupTreeItem.locator('.v-list-item-action--start .v-btn');
     await expandToggle.click();
   }
 
-  public async toggleGroupCheckbox(gruppe: RollenartGroup): Promise<void> {
+  public async toggleGroupCheckbox(gruppe: RollenArt): Promise<void> {
     await this.page.getByTestId(`treeview-group-checkbox-${gruppe}`).click();
   }
 
@@ -135,7 +140,7 @@ export class ServiceProviderDetailsBySchuleViewPage {
     await roleRow.getByRole('checkbox').click();
   }
 
-  public async getGroupCounter(gruppe: RollenartGroup): Promise<GroupCounter> {
+  public async getGroupCounter(gruppe: RollenArt): Promise<GroupCounter> {
     const text: string = await this.getGroupHeader(gruppe).innerText();
     const match: RegExpMatchArray | null = text.match(/\((\d+)\s+von\s+(\d+)\)/);
     if (!match) {
@@ -178,7 +183,7 @@ export class ServiceProviderDetailsBySchuleViewPage {
     await this.assertGroupExpanded('LEIT', true);
   }
 
-  public async selectGroupAndAssertAllSelected(gruppe: RollenartGroup): Promise<GroupCounter> {
+  public async selectGroupAndAssertAllSelected(gruppe: RollenArt): Promise<GroupCounter> {
     await this.toggleGroupCheckbox(gruppe);
     const selectedCounter: GroupCounter = await this.getGroupCounter(gruppe);
     expect(selectedCounter.selected).toBe(selectedCounter.total);
@@ -186,7 +191,7 @@ export class ServiceProviderDetailsBySchuleViewPage {
   }
 
   public async deselectRolesAndAssertPartialSelection(
-    gruppe: RollenartGroup,
+    gruppe: RollenArt,
     rollenNamen: string[],
     selectedCounterBeforeDeselect: GroupCounter,
   ): Promise<GroupCounter> {
@@ -229,11 +234,11 @@ export class ServiceProviderDetailsBySchuleViewPage {
     await expect(this.rollenerweiterungSaveButton).toBeVisible();
   }
 
-  public async assertGroupExpanded(gruppe: RollenartGroup, expanded: boolean): Promise<void> {
+  public async assertGroupExpanded(gruppe: RollenArt, expanded: boolean): Promise<void> {
     await expect(this.getGroupTreeItem(gruppe)).toHaveAttribute('aria-expanded', expanded ? 'true' : 'false');
   }
 
-  public async assertGroupCounter(gruppe: RollenartGroup, selected: number, total: number): Promise<void> {
+  public async assertGroupCounter(gruppe: RollenArt, selected: number, total: number): Promise<void> {
     const currentCounter: { selected: number; total: number } = await this.getGroupCounter(gruppe);
     expect(currentCounter.selected).toBe(selected);
     expect(currentCounter.total).toBe(total);
@@ -245,7 +250,7 @@ export class ServiceProviderDetailsBySchuleViewPage {
     await expect(this.rollenerweiterungSuccessCloseButton).toBeVisible();
   }
 
-  public async assertGroupPartiallySelected(gruppe: RollenartGroup): Promise<void> {
+  public async assertGroupPartiallySelected(gruppe: RollenArt): Promise<void> {
     await expect(this.page.getByTestId(`treeview-group-checkbox-${gruppe}`).locator('input')).toHaveAttribute(
       'aria-checked',
       'mixed',
@@ -281,5 +286,36 @@ export class ServiceProviderDetailsBySchuleViewPage {
     for (const rollenName of expectedRollen) {
       await expect(this.rollenerweiterungenField).toContainText(rollenName);
     }
+  }
+
+  public async applyRollenerweiterungSelectionAndAssertions(
+    lehrRollen: CreatedRolle[],
+    lernRollen: CreatedRolle[],
+    leitRollen: CreatedRolle[],
+  ): Promise<void> {
+    await this.openRollenerweiterungDialog();
+
+    const lehrBeforeUncheck = await this.selectGroupAndAssertAllSelected('LEHR');
+    await this.deselectRolesAndAssertPartialSelection(
+      'LEHR',
+      [lehrRollen[0]!.name, lehrRollen[1]!.name],
+      lehrBeforeUncheck,
+    );
+
+    const lernBeforeUncheck = await this.selectGroupAndAssertAllSelected('LERN');
+    await this.deselectRolesAndAssertPartialSelection(
+      'LERN',
+      [lernRollen[0]!.name],
+      lernBeforeUncheck,
+    );
+
+    const leitBeforeUncheck = await this.selectGroupAndAssertAllSelected('LEIT');
+    await this.toggleGroupExpand('LEIT');
+    await this.assertGroupExpanded('LEIT', true);
+    await this.deselectRolesAndAssertPartialSelection(
+      'LEIT',
+      [leitRollen[0]!.name],
+      leitBeforeUncheck,
+    );
   }
 }

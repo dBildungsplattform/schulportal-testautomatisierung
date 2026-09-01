@@ -105,51 +105,6 @@ test.describe('SPSH-3890: Rollenerweiterung für schulspezifisches Angebot bearb
     return managementBySchuleViewPage;
   }
 
-  async function applyRollenerweiterungSelectionAndAssertions(
-    detailsViewPage: ServiceProviderDetailsBySchuleViewPage,
-  ): Promise<void> {
-    await detailsViewPage.openRollenerweiterungDialog();
-
-    const lehrBeforeUncheck = await detailsViewPage.selectGroupAndAssertAllSelected('LEHR');
-    await detailsViewPage.deselectRolesAndAssertPartialSelection(
-      'LEHR',
-      [lehrRollen[0]!.name, lehrRollen[1]!.name],
-      lehrBeforeUncheck,
-    );
-
-    const lernBeforeUncheck = await detailsViewPage.selectGroupAndAssertAllSelected('LERN');
-    await detailsViewPage.deselectRolesAndAssertPartialSelection(
-      'LERN',
-      [lernRollen[0]!.name],
-      lernBeforeUncheck,
-    );
-
-    const leitBeforeUncheck = await detailsViewPage.selectGroupAndAssertAllSelected('LEIT');
-    await detailsViewPage.toggleGroupExpand('LEIT');
-    await detailsViewPage.assertGroupExpanded('LEIT', true);
-    await detailsViewPage.deselectRolesAndAssertPartialSelection(
-      'LEIT',
-      [leitRollen[0]!.name],
-      leitBeforeUncheck,
-    );
-  }
-
-  async function assertAngebotVisibilityForAssignedUsers(page: Page): Promise<void> {
-    let landingPage = await logout(page);
-    let loginPage = await landingPage.navigateToLogin();
-
-    for (let index: number = 0; index < usersForVisibilityCheck.length; index++) {
-      const user: UserInfo = usersForVisibilityCheck[index]!;
-      const startViewPage = await loginPage.loginNewUserWithPasswordChange(user.username, user.password);
-      await startViewPage.assertServiceProvidersAreVisible([angebotName]);
-
-      if (index < usersForVisibilityCheck.length - 1) {
-        landingPage = await logout(page);
-        loginPage = await landingPage.navigateToLogin();
-      }
-    }
-  }
-
   test.beforeEach(async ({ page }) => {
     usersForVisibilityCheck = [];
     schuladminUser = null;
@@ -262,7 +217,7 @@ test.describe('SPSH-3890: Rollenerweiterung für schulspezifisches Angebot bearb
       });
     });
 
-    test(`SPSH-3313 Schritte 7-12 prüfen (${bezeichnung})`, { tag: [DEV] }, async ({ page }) => {
+    test(`SPSH-3313 Schritte 7-15 prüfen (${bezeichnung})`, { tag: [DEV] }, async ({ page }) => {
       const managementBySchuleViewPage: ServiceProviderManagementBySchuleViewPage =
         await getServiceProviderManagementPage(page, hasMultipleSchulen);
       const detailsViewPage: ServiceProviderDetailsBySchuleViewPage = hasMultipleSchulen
@@ -270,19 +225,10 @@ test.describe('SPSH-3890: Rollenerweiterung für schulspezifisches Angebot bearb
         : await managementBySchuleViewPage.openServiceProviderDetails(angebotName);
 
       await test.step('Gruppen auswählen und Rollen abwählen', async () => {
-        await applyRollenerweiterungSelectionAndAssertions(detailsViewPage);
+        await detailsViewPage.applyRollenerweiterungSelectionAndAssertions(lehrRollen, lernRollen, leitRollen);
       });
-    });
-
-    test(`SPSH-3313 Schritte 13-15 prüfen (${bezeichnung})`, { tag: [DEV] }, async ({ page }) => {
-      const managementBySchuleViewPage: ServiceProviderManagementBySchuleViewPage =
-        await getServiceProviderManagementPage(page, hasMultipleSchulen);
-      const detailsViewPage: ServiceProviderDetailsBySchuleViewPage = hasMultipleSchulen
-        ? await managementBySchuleViewPage.openServiceProviderDetailsById(angebotId, testschuleId)
-        : await managementBySchuleViewPage.openServiceProviderDetails(angebotName);
 
       await test.step('Rollenerweiterung speichern', async () => {
-        await applyRollenerweiterungSelectionAndAssertions(detailsViewPage);
         await detailsViewPage.saveRollenerweiterungAndAssertSuccess();
         await detailsViewPage.closeRollenerweiterungSuccessDialog();
         await detailsViewPage.assertRollenerweiterungenContain([
@@ -293,7 +239,19 @@ test.describe('SPSH-3890: Rollenerweiterung für schulspezifisches Angebot bearb
       });
 
       await test.step('Sichtbarkeit für Nutzer prüfen', async () => {
-        await assertAngebotVisibilityForAssignedUsers(page);
+        let landingPage = await logout(page);
+        let loginPage = await landingPage.navigateToLogin();
+
+        for (let index: number = 0; index < usersForVisibilityCheck.length; index++) {
+          const user: UserInfo = usersForVisibilityCheck[index]!;
+          const startViewPage = await loginPage.loginNewUserWithPasswordChange(user.username, user.password);
+          await startViewPage.assertServiceProvidersAreVisible([angebotName]);
+
+          if (index < usersForVisibilityCheck.length - 1) {
+            landingPage = await logout(page);
+            loginPage = await landingPage.navigateToLogin();
+          }
+        }
       });
     });
   }
