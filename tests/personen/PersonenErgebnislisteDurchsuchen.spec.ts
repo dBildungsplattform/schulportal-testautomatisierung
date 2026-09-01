@@ -149,7 +149,7 @@ interface AdminFixture {
       );
     });
 
-    test.describe('Mit Klassendatenanlage', () => {
+    test.describe('Mit Nutzung vorhandener Klassen', () => {
       // SPSH-3056
       test.describe('Klassenfilter-Tests', () => {
         test(
