@@ -1,4 +1,5 @@
 import { test as base, expect, Page } from '@playwright/test';
+import { ServiceProviderKategorie } from '../../base/api/generated';
 import { createSchule } from '../../base/api/organisationApi';
 import { addSecondOrganisationToPerson, createPersonWithPersonenkontext, UserInfo } from '../../base/api/personApi';
 import { schuladminOeffentlichRolle } from '../../base/rollen';
@@ -10,7 +11,7 @@ import {
   ServiceProviderCreateParams,
   ServiceProviderCreationViewPage,
 } from '../../pages/admin/service-provider/ServiceProviderCreationView.page';
-import { ServiceProviderKategorie } from '../../base/api/generated';
+import { ServiceProviderDetailsBySchuleViewPage } from '../../pages/admin/service-provider/ServiceProviderDetailsBySchuleView.page';
 
 interface BaseFixture {
   schulen: {
@@ -143,6 +144,12 @@ test.describe('Schulisches Angebot erstellen', () => {
     await test.step('Erfolgsmeldung prüfen', async () => {
       await successPage.assertSuccessPage(angebot);
     });
+    await test.step('Zur Rollenauswahl navigieren, angezeigte Werte und Bearbeitbarkeit prüfen', async () => {
+      const detailsPage: ServiceProviderDetailsBySchuleViewPage = await successPage.navigateToRollenauswahl();
+      await detailsPage.assertServiceProviderDetailsHeadline(schulen[0].name);
+      await detailsPage.assertServiceProviderDetails(angebot);
+      await detailsPage.assertRollenerweiterungenDetails();
+    });
   });
 
   test('Als Schuladmin ein schulisches Angebot erstellen', async ({ asSchuladmin }) => {
@@ -173,6 +180,12 @@ test.describe('Schulisches Angebot erstellen', () => {
     });
     await test.step('Erfolgsmeldung prüfen', async () => {
       await successPage.assertSuccessPage(angebot);
+    });
+    await test.step('Zur Rollenauswahl navigieren, angezeigte Werte und Bearbeitbarkeit prüfen', async () => {
+      const detailsPage: ServiceProviderDetailsBySchuleViewPage = await successPage.navigateToRollenauswahl();
+      await detailsPage.assertServiceProviderDetailsHeadline(schulen[0].name);
+      await detailsPage.assertServiceProviderDetails(angebot);
+      await detailsPage.assertRollenerweiterungenDetails();
     });
   });
 
