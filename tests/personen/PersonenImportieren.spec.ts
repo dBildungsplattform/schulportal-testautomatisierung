@@ -126,7 +126,7 @@ for (const szenario of klassennameSzenarien) {
         const personManagementPage: PersonManagementViewPage = await new MenuBarPage(page).navigateToPersonManagement();
         await personManagementPage.filterBySchule(schuleName);
         for (const user of usersToBeImported) {
-          await personManagementPage.filterByKlasse(user.klasse);
+          await personManagementPage.filterByKlasse(user.klasse, klassennnamen.length);
           await personManagementPage.assertThatPersonExists(user.nachname);
           await personManagementPage.resetKlasseFilter();
         }

@@ -73,8 +73,10 @@ export class PersonManagementViewPage extends AbstractAdminPage {
     await this.rolleAutocomplete.searchByTitle(rolle, true);
   }
 
-  public async filterByKlasse(klasse: string): Promise<void> {
-    await this.klasseAutocomplete.searchByTitle(klasse, true);
+  public async filterByKlasse(klasse: string, expectedKlassenCount?: number): Promise<void> {
+    const expectedHeaderText: string | undefined =
+      expectedKlassenCount !== undefined ? `${expectedKlassenCount} Klassen gefunden` : undefined;
+    await this.klasseAutocomplete.searchByTitle(klasse, true, undefined, expectedHeaderText);
   }
 
   public async resetKlasseFilter(): Promise<void> {
