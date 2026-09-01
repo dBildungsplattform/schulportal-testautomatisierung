@@ -1,4 +1,5 @@
 # TL;DR
+
 - Code should follow TypeScript best practices.
 - Frontend views are represented as pages.
 - Business logic (actions and assertions) is implemented as methods in pages.
@@ -10,16 +11,19 @@
 - To create data via API, navigate into the portal first so 2FA can be performed if necessary.
 
 # Pages
+
 Every view in the frontend (`schulportal-client`) is represented as a page in Playwright.
 
 Pages contain three sections: locators, actions, and assertions. Locators are used to find elements in the application. Actions are methods that implement the business logic of frontend views. Assertions are the checks (`expect`s). Assertions start with the prefix `assert`, e.g. `assertPersonalData()`.
 
 ## Locators
+
 Locators should only be used inside a page. Tests must never access page locators directly, only page methods. Locators are preferably created locally inside the respective method. This removes the need for class fields for one-off locators and keeps encapsulation intact. Method-spanning locators are defined globally.
 
 Locator variable names are based on the test ID names used in the frontend.
 
 ## Actions
+
 Methods used by tests must be `public`. Methods only used internally should be `private`. Tests should pass as few parameters as possible (but as many as necessary) to page functions.
 
 Every page must have a `waitForPageLoad()` method that checks at least one unique headline (or similar element) of the page and then returns the page.
@@ -27,6 +31,7 @@ Every page must have a `waitForPageLoad()` method that checks at least one uniqu
 Inside pages, the term *workflow* describes a business process executed in the frontend that is composed in Playwright of multiple units (e.g. actions, pages, etc.).
 
 ## Assertions
+
 - Prefer web-first assertions: `await expect(locator).toBeVisible()` instead of a separate `waitFor(...)` plus an additional `expect`.
 - Use `expect.soft()` for non-critical multi-assertion checks.
 - Use `toPass()` for polling-based verification instead of manual retry loops.
@@ -34,19 +39,23 @@ Inside pages, the term *workflow* describes a business process executed in the f
 Related assertions should be grouped into a shared method unless there is a business reason to call them individually. Only if an assertion needs to be called separately and deliberately (e.g. because it needs its own parameter like `assertHeadline(schulname: string)`) should it be extracted as a standalone method. Such specific assertions can then be called inside a higher-level assertion method.
 
 ## Test IDs
+
 Every HTML element that is meaningfully testable with Playwright receives a test ID via the HTML attribute `data-testid`. This attribute can be read using the Playwright function `.getByTestId()`. Names in the frontend preferably use kebab-case following the schema `<function>-<element>`, e.g. `data-testid="username-input"`.
 
 Test IDs must be unique per page so tests can access elements unambiguously. This especially applies to programmatically generated elements, such as service-provider cards. For such elements the test ID must get an affix that makes it unique, e.g. the model ID: `service-provider-card-7e6f10d7-b6e5-4686-9011-182634c03bf3`.
 
 ### No ID available in the frontend?
+
 If an element to be tested has no test ID, the frontend must be updated. The best approach is a branch in `schulportal-client` with the same number as the Playwright ticket. This ensures the tests always run consistently.
 
 ### Exceptions due to Vuetify
+
 In some cases a specific element (e.g. an input field) has no test ID even though one was assigned in the frontend. This is caused by Vuetify, the UI component library used in the frontend. For Vuetify components we can currently assign a test ID only at the top level. If an element at a deeper level must be located in Playwright, this can be done by chaining Playwright methods.
 
 Example: the input field inside the search filter should be located. The search filter is a Vuetify component with a test ID. Chain as follows: `this.page.getByTestId('search-filter-input').locator('input')`.
 
 # Test Suites
+
 All test suites (files) are use-case oriented. A test suite contains **only one** use case. A use case can consist of several test cases.
 
 Tests must not contain business logic. Logic, actions, and checks only happen in pages.
@@ -56,17 +65,20 @@ A top-level `describe` block is not needed if the file name makes it clear what 
 `describe` block names should be short and business-oriented, e.g. `Testfälle für die Anlage von Personen`. Environment information like environment, URL, or `process.env.*` does not belong in `describe` names, since this information is already present in Playwright reports and configuration.
 
 ## Parallel Safety
+
 Module-level mutable state (e.g. `let usernames: string[] = []`) is error-prone with parallel test workers. Therefore:
 - Use variables only test-locally (`test`) or suite-locally (`test.describe`).
 - Do not use global arrays/objects for created data.
 - For reusable setup/teardown, use Playwright custom fixtures (`test.extend`) in the medium to long term.
 
 ## test.step() Guidelines
+
 - Use `test.step()` only for major business phases (setup, action, verification).
 - Keep step names short, in German, and describing *what* is being done.
 - Use return values from steps to pass data clearly to subsequent steps.
 
 # Naming
+
 | Element             | Recommended Case     | Extension | Example                  | Notes                                              |
 | ------------------- | -------------------- | --------- | ------------------------ | -------------------------------------------------- |
 | Pages               | PascalCase           | .page.ts  | PersonImportView.page.ts | Matches the frontend view file name                |
@@ -78,7 +90,9 @@ Module-level mutable state (e.g. `let usernames: string[] = []`) is error-prone 
 | Test IDs (Frontend) | kebab-case           | -         | person-creation-form     |                                                      |
 
 # Coding Rules
-Always run linter, build, and tests before pushing:
+
+_Always_ run linter, build, and tests before pushing:
+
 ```
 npm run lint
 npm run type-check
@@ -88,15 +102,16 @@ npx playwright test
 # Tags
 Tags allow targeted control over test execution. For example, tests can be run only on stage or only on dev, depending on which third-party systems or other circumstances must be considered. The following matrix shows the available tags and what they cover.
 
-| Tag   | Basic Functions | LDAP | Third-Party Systems | Login |
-| ----- | --------------- | ---- | ------------------- | ----- |
-| dev   | x               | x    |                     |       |
-| stage | x               |      | x                   |       |
-| smoke |                 |      |                     | x     |
+| Tag         | Basic Functions | LDAP | Third-Party Systems | Login |
+| ----------- | --------------- | ---- | ------------------- | ----- |
+| dev         | x               | x    |                     |       |
+| stage       | x               |      | x                   |       |
+| stage-smoke |                 |      |                     | x     |
 
 Tags are always given in alphabetical order: `{ tag: [DEV, STAGE] }`, not `{ tag: [STAGE, DEV] }`. Consistent order makes searching and review easier.
 
 # Cleanup
+
 The preferred project standard is global teardown, which cleans up all test data with the prefix `TAuto` after the test run. Tests therefore do not need to implement their own cleanup steps for created entities.
 
 Deleting test data in an `afterEach` hook is not necessary, because global teardown takes care of it.
@@ -104,6 +119,7 @@ Deleting test data in an `afterEach` hook is not necessary, because global teard
 In the long term, migrating to Playwright custom fixtures with automatic teardown per test is the preferred direction.
 
 # API
+
 To maintain stability and maintainability of the automated tests, API calls are defined in their own classes. There are the API classes we created ourselves, e.g. `base/api/personApi.ts` (name we chose, model name in singular), where we define methods for use in pages and tests. There we use the corresponding generated API class, e.g. `base/api/generated/personenApi.ts` (name assigned by the backend API). This is generated from the backend API Swagger document.
 
 Before the refactoring there were helper classes containing both business logic and API logic. They were separated by the refactoring so that API classes now contain only API logic.
@@ -111,6 +127,7 @@ Before the refactoring there were helper classes containing both business logic 
 Whenever the API changes in the backend repo, the API must also be regenerated in Playwright. The command for this in the Playwright repo is `npm run generate-api`.
 
 # GitHub Workflows
+
 There is one GitHub workflow (`run-playwright.yml`) that handles execution and accepts parameters for environment, browser, and test scope (tags). This makes it possible to execute every possible combination of parameters manually and on schedule.
 
 The other GitHub workflows call `run-playwright.yml` with parameters.
@@ -118,7 +135,9 @@ The other GitHub workflows call `run-playwright.yml` with parameters.
 See `docs/actions-github.md`.
 
 # Examples
+
 ## Page
+
 ```typescript
 import ....
 
@@ -190,6 +209,7 @@ export class LoginViewPage {
 ```
 
 ## Test
+
 ```typescript
 import ....
 
