@@ -23,9 +23,7 @@ import {
   DbiamPersonenkontextWorkflowControllerCreatePersonWithPersonenkontexteRequest,
   PersonenkontextApi,
 } from './generated/apis/PersonenkontextApi';
-import {
-  DbiamPersonenuebersichtApi,
-} from './generated/apis/DbiamPersonenuebersichtApi';
+import { DbiamPersonenuebersichtApi } from './generated/apis/DbiamPersonenuebersichtApi';
 import {
   DBiamPersonenuebersichtResponse,
   DbiamCreatePersonWithPersonenkontexteBodyParams,
@@ -162,21 +160,10 @@ interface CreatePersonParams {
   secondaryRolleId?: string;
 }
 
-export async function createPerson(
-  page: Page,
-  params: CreatePersonParams,
-): Promise<UserInfo> {
+export async function createPerson(page: Page, params: CreatePersonParams): Promise<UserInfo> {
   try {
-    const {
-      organisationId,
-      rolleId,
-      familienname,
-      vorname,
-      koPersNr,
-      klasseId,
-      merkmalNames,
-      secondaryRolleId,
-    } = params;
+    const { organisationId, rolleId, familienname, vorname, koPersNr, klasseId, merkmalNames, secondaryRolleId } =
+      params;
 
     const createPersonBodyParams: DbiamCreatePersonWithPersonenkontexteBodyParams = {
       familienname: familienname || generateNachname(),
@@ -522,7 +509,7 @@ export async function setTimeLimitPersonenkontext(
         befristung:
           zuordnung.sskId === organisationId && zuordnung.rolleId === rolleId
             ? timeLimit
-            : zuordnung.befristung ?? undefined,
+            : (zuordnung.befristung ?? undefined),
       })),
     );
   } catch (error) {
