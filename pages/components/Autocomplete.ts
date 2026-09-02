@@ -126,12 +126,22 @@ export class Autocomplete {
     await this.closeModal();
   }
 
-  public async searchByTitle(searchString: string, exactMatch: boolean = false, endpoint?: string): Promise<void> {
+  public async searchByTitle(
+    searchString: string,
+    exactMatch: boolean = false,
+    endpoint?: string,
+    expectedHeaderText?: string,
+  ): Promise<void> {
     const currentValue: string | null = await this.inputLocator.textContent();
     if (currentValue === searchString) {
       return;
     }
     await this.openModal();
+    // Wait until the dropdown data has finished updating before typing, e.g. the
+    // "X Klassen gefunden" header only shows the final count once loading is done.
+    if (expectedHeaderText) {
+      await expect(this.overlayLocator.locator('.filter-header')).toContainText(expectedHeaderText);
+    }
     await this.clear();
     // Start listening BEFORE typing so we don't miss the response
     const responsePromise: Promise<Response> | null = endpoint
