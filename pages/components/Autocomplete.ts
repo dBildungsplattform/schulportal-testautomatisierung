@@ -319,11 +319,17 @@ export class Autocomplete {
     ).toEqual([]);
   }
 
-  public async checkAllDropdownOptionsClickable(items: string[]): Promise<void> {
+  public async checkAllDropdownOptionsClickable(items: string[], filterHeaderText?: string): Promise<void> {
     const sortedItems: string[] = [...items].sort((a: string, b: string) =>
       a.localeCompare(b, 'de', { numeric: true }),
     );
     await this.openModal();
+    // Wait until the dropdown data has finished updating (e.g. after changing the
+    // school filter) before typing – otherwise stale options remain and cause
+    // strict-mode violations when filtering by name.
+    if (filterHeaderText) {
+      await expect(this.overlayLocator.locator('.filter-header')).toContainText(filterHeaderText);
+    }
     await expect(this.itemsLocator.first()).toBeVisible();
     for (const item of sortedItems) {
       await this.inputLocator.pressSequentially(item);

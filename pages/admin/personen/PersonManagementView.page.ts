@@ -235,7 +235,10 @@ export class PersonManagementViewPage extends AbstractAdminPage {
   }
 
   public async checkAllKlassenOptionsClickable(klassenNamen: string[]): Promise<void> {
-    await this.klasseAutocomplete.checkAllDropdownOptionsClickable(klassenNamen);
+    await this.klasseAutocomplete.checkAllDropdownOptionsClickable(
+      klassenNamen,
+      `${klassenNamen.length} Klassen gefunden`,
+    );
   }
 
   public async checkIfSchuleIsCorrect(schulname: string, schulNr?: string): Promise<void> {
