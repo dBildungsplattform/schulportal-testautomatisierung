@@ -4,24 +4,17 @@ import {
   CreateServiceProviderBodyParamsMerkmaleEnum,
 } from '../../base/api/generated';
 import { createSchule } from '../../base/api/organisationApi';
-import { addOrganisationenToPerson, createPersonWithPersonenkontext, UserInfo } from '../../base/api/personApi';
+import { addOrganisationenToPerson } from '../../base/api/personApi';
 import { createServiceProvider } from '../../base/api/serviceProviderApi';
-import { test as base } from '../../base/fixtures';
-import { schuladminOeffentlichRolle } from '../../base/rollen';
+import { test as base, TestSchule } from '../../base/fixtures';
 import { DEV, STAGE } from '../../base/tags';
-import { loginAndNavigateToAdministration, logout } from '../../base/testHelperUtils';
+import { loginNewUserAndNavigateToAdministration } from '../../base/testHelperUtils';
 import { generateAngebotname, generateSchulname } from '../../base/utils/generateTestdata';
-import { PersonManagementViewPage } from '../../pages/admin/personen/PersonManagementView.page';
 import { ServiceProviderManagementBySchuleViewPage } from '../../pages/admin/service-provider/ServiceProviderManagementBySchuleView.page';
-
-interface Schule {
-  id: string;
-  name: string;
-}
 
 interface AngebotsverwaltungFixture {
   managementPage: ServiceProviderManagementBySchuleViewPage;
-  schulen: Schule[];
+  schulen: TestSchule[];
   angebotName?: string;
 }
 
@@ -40,61 +33,48 @@ async function createServiceProviderForSchule(page: Page, schuleId: string, ange
   });
 }
 
-async function loginAsSchuladminAndNavigateToAngebotManagementSchulspezifisch(
-  page: Page,
-  user: UserInfo,
-): Promise<ServiceProviderManagementBySchuleViewPage> {
-  const landingPage = await logout(page);
-  const loginPage = await landingPage.navigateToLogin();
-  const startViewPage = await loginPage.loginNewUserWithPasswordChange(user.username, user.password);
-  const personManagementViewPage: PersonManagementViewPage = await startViewPage.navigateToAdministration();
-  return personManagementViewPage.getMenu().navigateToAngebotManagementSchulspezifisch();
-}
-
 const test = base.extend<{
   asSchuladminWithoutAngebot: AngebotsverwaltungFixture;
   asSchuladminWithAngebot: AngebotsverwaltungFixture;
   asSchuladminWith2Schulen: AngebotsverwaltungFixture;
 }>({
-  asSchuladminWithoutAngebot: async ({ page }, use) => {
-    await loginAndNavigateToAdministration(page);
-    const schuleName: string = generateSchulname();
-    const schuleId: string = await createSchule(page, schuleName);
-    const schulen: Schule[] = [{ id: schuleId, name: schuleName }];
-
-    const user: UserInfo = await createPersonWithPersonenkontext(page, schuleName, schuladminOeffentlichRolle);
-    const managementPage: ServiceProviderManagementBySchuleViewPage =
-      await loginAsSchuladminAndNavigateToAngebotManagementSchulspezifisch(page, user);
-    await use({ managementPage, schulen });
+  asSchuladminWithoutAngebot: async ({ asSchuladmin }, use) => {
+    const managementPage: ServiceProviderManagementBySchuleViewPage = await asSchuladmin.personManagementViewPage
+      .getMenu()
+      .navigateToAngebotManagementSchulspezifisch();
+    await use({ managementPage, schulen: [asSchuladmin.schule] });
   },
 
-  asSchuladminWithAngebot: async ({ page }, use) => {
-    await loginAndNavigateToAdministration(page);
-    const schuleName: string = generateSchulname();
-    const schuleId: string = await createSchule(page, schuleName);
+  asSchuladminWithAngebot: async ({ page, schuladminAccount }, use) => {
     const angebotName: string = generateAngebotname();
-    await createServiceProviderForSchule(page, schuleId, angebotName);
-    const schulen: Schule[] = [{ id: schuleId, name: schuleName }];
-
-    const user: UserInfo = await createPersonWithPersonenkontext(page, schuleName, schuladminOeffentlichRolle);
-    const managementPage: ServiceProviderManagementBySchuleViewPage =
-      await loginAsSchuladminAndNavigateToAngebotManagementSchulspezifisch(page, user);
-    await use({ managementPage, schulen, angebotName });
+    await createServiceProviderForSchule(page, schuladminAccount.schule.id, angebotName);
+    const personManagementPage = await loginNewUserAndNavigateToAdministration(page, schuladminAccount.userinfo);
+    const managementPage: ServiceProviderManagementBySchuleViewPage = await personManagementPage
+      .getMenu()
+      .navigateToAngebotManagementSchulspezifisch();
+    await use({ managementPage, schulen: [schuladminAccount.schule], angebotName });
   },
 
-  asSchuladminWith2Schulen: async ({ page }, use) => {
-    await loginAndNavigateToAdministration(page);
-    const schulNamen: string[] = [generateSchulname(), generateSchulname()];
-    const schuleIds: string[] = await Promise.all(schulNamen.map((name: string) => createSchule(page, name)));
+  asSchuladminWith2Schulen: async ({ page, schuladminAccount }, use) => {
     const angebotName: string = generateAngebotname();
-    await createServiceProviderForSchule(page, schuleIds[0]!, angebotName);
-    const schulen: Schule[] = schuleIds.map((id: string, index: number) => ({ id, name: schulNamen[index]! }));
-
-    const user: UserInfo = await createPersonWithPersonenkontext(page, schulNamen[0]!, schuladminOeffentlichRolle);
-    await addOrganisationenToPerson(page, user.personId, schuleIds, user.rolleId);
-    const managementPage: ServiceProviderManagementBySchuleViewPage =
-      await loginAsSchuladminAndNavigateToAngebotManagementSchulspezifisch(page, user);
-    await use({ managementPage, schulen, angebotName });
+    await createServiceProviderForSchule(page, schuladminAccount.schule.id, angebotName);
+    const zweiteSchuleName: string = generateSchulname();
+    const zweiteSchuleId: string = await createSchule(page, zweiteSchuleName);
+    await addOrganisationenToPerson(
+      page,
+      schuladminAccount.userinfo.personId,
+      [schuladminAccount.schule.id, zweiteSchuleId],
+      schuladminAccount.userinfo.rolleId,
+    );
+    const personManagementPage = await loginNewUserAndNavigateToAdministration(page, schuladminAccount.userinfo);
+    const managementPage: ServiceProviderManagementBySchuleViewPage = await personManagementPage
+      .getMenu()
+      .navigateToAngebotManagementSchulspezifisch();
+    await use({
+      managementPage,
+      schulen: [schuladminAccount.schule, { id: zweiteSchuleId, name: zweiteSchuleName }],
+      angebotName,
+    });
   },
 });
 
@@ -143,7 +123,7 @@ test.describe('Schulspezifische Angebote anzeigen', () => {
       await test.step('Ohne Schulauswahl wird ein Hinweis angezeigt', async () => {
         await managementPage.assertHeadline();
         await managementPage.assertNoSchuleSelectedInFilter();
-        await managementPage.assertSelectableSchulen(schulen.map((schule: Schule) => schule.name));
+        await managementPage.assertSelectableSchulen(schulen.map((schule: TestSchule) => schule.name));
         await managementPage.assertChooseSchuleFirstHint();
       });
 
