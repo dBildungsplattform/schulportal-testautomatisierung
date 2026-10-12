@@ -2,7 +2,6 @@ import { expect, Page, type Locator, type Response } from '@playwright/test';
 
 const noDataMessage: string = 'Keine Daten gefunden.';
 export class Autocomplete {
-  private readonly overlayLocator: Locator;
   private readonly itemsLocator: Locator;
   private readonly modalToggle: Locator;
   private readonly inputLocator: Locator;
@@ -12,7 +11,6 @@ export class Autocomplete {
     private readonly page: Page,
     private readonly locator: Locator,
   ) {
-    this.overlayLocator = this.page.locator('div.v-overlay.v-menu');
     this.itemsLocator = this.page.locator('.v-overlay .v-list-item');
     this.modalToggle = this.locator.locator('.v-field__append-inner');
     this.inputLocator = this.locator.locator('.v-field__input input');
@@ -32,6 +30,7 @@ export class Autocomplete {
     const overlay: Locator = await this.getOverlayLocator();
     await expect(overlay).not.toHaveText(noDataMessage);
   }
+
   public async selectByPosition(selection: number[]): Promise<string[]> {
     const selectedItems: string[] = [];
     await this.openModal();
@@ -73,9 +72,10 @@ export class Autocomplete {
   }
 
   public async closeModal(): Promise<void> {
+    const overlayLocator: Locator = await this.getOverlayLocator();
     // Escape nur drücken, wenn das Menü-Overlay noch offen ist – sonst
     // würde Escape den umschließenden Dialog (falls vorhanden) schließen.
-    const menuOpen: boolean = await this.overlayLocator
+    const menuOpen: boolean = await overlayLocator
       .first()
       .isVisible()
       .catch((): boolean => false);
@@ -93,7 +93,7 @@ export class Autocomplete {
       await this.page.getByTestId('admin-headline').click();
     }
     // Sicherstellen, dass Autocomplete geschlossen ist
-    await this.overlayLocator.first().isHidden();
+    await overlayLocator.first().isHidden();
   }
 
   public async toggleModal(): Promise<void> {
@@ -142,7 +142,8 @@ export class Autocomplete {
     // Wait until the dropdown data has finished updating before typing, e.g. the
     // "X Klassen gefunden" header only shows the final count once loading is done.
     if (expectedHeaderText) {
-      await expect(this.overlayLocator.locator('.filter-header')).toContainText(expectedHeaderText);
+      const overlayLocator: Locator = await this.getOverlayLocator();
+      await expect(overlayLocator.locator('.filter-header')).toContainText(expectedHeaderText);
     }
     await this.clear();
     // Start listening BEFORE typing so we don't miss the response
@@ -191,7 +192,8 @@ export class Autocomplete {
 
   /* assertions */
   public async assertThatNoDataWasFound(): Promise<void> {
-    await expect(this.overlayLocator).toHaveText(noDataMessage);
+    const overlayLocator: Locator = await this.getOverlayLocator();
+    await expect(overlayLocator).toHaveText(noDataMessage);
   }
 
   public async validateItemNotExists(searchString: string, exactMatch: boolean = false): Promise<void> {
@@ -265,10 +267,11 @@ export class Autocomplete {
     const sortedItems: string[] = [...items].sort((a: string, b: string) =>
       a.localeCompare(b, 'de', { numeric: true }),
     );
+    const overlayLocator: Locator = await this.getOverlayLocator();
     if (filterHeaderText) {
-      await expect(this.overlayLocator.locator('.filter-header')).toContainText(filterHeaderText);
+      await expect(overlayLocator.locator('.filter-header')).toContainText(filterHeaderText);
     }
-    const options: Locator = this.overlayLocator.getByRole('option');
+    const options: Locator = overlayLocator.getByRole('option');
     if (exactCount) {
       const expectedCount: number = filterHeaderText ? sortedItems.length + 1 : sortedItems.length;
       await expect(options).toHaveCount(expectedCount, { timeout: 5000 });
@@ -280,7 +283,7 @@ export class Autocomplete {
     // Virtual scroll only renders a subset of items at a time, so scroll the
     // list container incrementally and collect item text as it comes into view,
     // rather than scrolling to a specific (possibly unrendered) option.
-    const listContainer: Locator = this.overlayLocator.locator('.v-list');
+    const listContainer: Locator = overlayLocator.locator('.v-list');
     const seen = new Set<string>();
     let previousScrollTop = -1;
 
@@ -333,7 +336,8 @@ export class Autocomplete {
     // school filter) before typing – otherwise stale options remain and cause
     // strict-mode violations when filtering by name.
     if (filterHeaderText) {
-      await expect(this.overlayLocator.locator('.filter-header')).toContainText(filterHeaderText);
+      const overlayLocator: Locator = await this.getOverlayLocator();
+      await expect(overlayLocator.locator('.filter-header')).toContainText(filterHeaderText);
     }
     await expect(this.itemsLocator.first()).toBeVisible();
     for (const item of sortedItems) {
