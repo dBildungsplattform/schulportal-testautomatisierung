@@ -102,11 +102,11 @@ export interface RolleControllerFindRollenRequest {
 }
 
 export interface RolleControllerFindRollenAvailableForErweiterungRequest {
+    organisationId: string;
     offset?: number;
     limit?: number;
     searchStr?: string;
     rollenarten?: Array<RollenArt>;
-    organisationId?: string;
     systemrechte?: Array<RollenSystemRechtEnum>;
 }
 
@@ -249,9 +249,9 @@ export interface RolleApiInterface {
      * @param {number} [offset] The offset of the paginated list.
      * @param {number} [limit] The requested limit for the page size.
      * @param {string} [searchStr] The name for the role.
-     * @param {Array<string>} [organisationIds] Filters the result to roles administered by any of the given organisations.
+     * @param {Array<string>} [organisationIds] Filters the result to Rollen administered by any of the given organisations.
      * @param {Array<string>} [rolleIds] The ids of the selected Rollen. If provided, these Rollen will be returned regardless of the other filters since they are required by the frontend
-     * @param {Array<RollenSystemRechtEnum>} [systemrechte] Restricts the result to roles administered at organisations where the requesting user holds the given systemrechte. Defaults to ROLLEN_VERWALTEN.
+     * @param {Array<RollenSystemRechtEnum>} [systemrechte] Restricts the result to roles administered at organisations where the requesting user holds the given systemrechte. Must be ROLLEN_VERWALTEN, ROLLEN_ERWEITERN, or MPT_ROLLEN_ZUORDNEN. Defaults to ROLLEN_VERWALTEN.
      * @param {Array<RollenArt>} [rollenarten] Filter roles by rollenart.
      * @param {Array<RollenMerkmal>} [merkmale] Filter roles by merkmal.
      * @param {Array<string>} [serviceProviderIds] Filter roles by service provider ids.
@@ -270,11 +270,11 @@ export interface RolleApiInterface {
     /**
      * List all rollen that are available for the Rollenerweiterung workflow.
      * @summary 
+     * @param {string} organisationId The organisation the Rollenerweiterung is performed for.
      * @param {number} [offset] The offset of the paginated list.
      * @param {number} [limit] The requested limit for the page size.
      * @param {string} [searchStr] The name for the role.
      * @param {Array<RollenArt>} [rollenarten] Filter roles by rollenart.
-     * @param {string} [organisationId] The organisation the Rollenerweiterung is performed for. If omitted, roles of all organisations the user may create Rollenerweiterungen for are returned.
      * @param {Array<RollenSystemRechtEnum>} [systemrechte] Systemrechte the requesting user\&#39;s permissions are evaluated against. Including MPT_ROLLEN_ZUORDNEN additionally returns MPT roles. Can only be ROLLEN_ERWEITERN and optionally MPT_ROLLEN_ZUORDNEN. Defaults to ROLLEN_ERWEITERN.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -334,7 +334,7 @@ export interface RolleApiInterface {
      * @param {number} [offset] The offset of the paginated list.
      * @param {number} [limit] The requested limit for the page size.
      * @param {string} [searchStr] The name for the role.
-     * @param {Array<string>} [organisationIds] Filters the result to roles administered by any of the given organisations.
+     * @param {Array<string>} [organisationIds] Filters the result to Rollen administered by any of the given organisations.
      * @param {Array<string>} [rolleIds] The ids of the selected Rollen. If provided, these Rollen will be returned regardless of the other filters since they are required by the frontend
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -761,6 +761,10 @@ export class RolleApi extends runtime.BaseAPI implements RolleApiInterface {
      * 
      */
     async rolleControllerFindRollenAvailableForErweiterungRaw(requestParameters: RolleControllerFindRollenAvailableForErweiterungRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<RolleWithServiceProvidersResponse>>> {
+        if (requestParameters.organisationId === null || requestParameters.organisationId === undefined) {
+            throw new runtime.RequiredError('organisationId','Required parameter requestParameters.organisationId was null or undefined when calling rolleControllerFindRollenAvailableForErweiterung.');
+        }
+
         const queryParameters: any = {};
 
         if (requestParameters.offset !== undefined) {
@@ -816,7 +820,7 @@ export class RolleApi extends runtime.BaseAPI implements RolleApiInterface {
      * List all rollen that are available for the Rollenerweiterung workflow.
      * 
      */
-    async rolleControllerFindRollenAvailableForErweiterung(requestParameters: RolleControllerFindRollenAvailableForErweiterungRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<RolleWithServiceProvidersResponse>> {
+    async rolleControllerFindRollenAvailableForErweiterung(requestParameters: RolleControllerFindRollenAvailableForErweiterungRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<RolleWithServiceProvidersResponse>> {
         const response = await this.rolleControllerFindRollenAvailableForErweiterungRaw(requestParameters, initOverrides);
         return await response.value();
     }

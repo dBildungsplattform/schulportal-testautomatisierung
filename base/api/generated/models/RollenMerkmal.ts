@@ -20,7 +20,12 @@
 export const RollenMerkmal = {
     BefristungPflicht: 'BEFRISTUNG_PFLICHT',
     KopersPflicht: 'KOPERS_PFLICHT',
-    MptRolle: 'MPT_ROLLE'
+    MptRolle: 'MPT_ROLLE',
+    Pilot1Rolle: 'PILOT_1_ROLLE',
+    Pilot2Rolle: 'PILOT_2_ROLLE',
+    Pilot3Rolle: 'PILOT_3_ROLLE',
+    Pilot4Rolle: 'PILOT_4_ROLLE',
+    Pilot5Rolle: 'PILOT_5_ROLLE'
 } as const;
 export type RollenMerkmal = typeof RollenMerkmal[keyof typeof RollenMerkmal];
 
