@@ -4,20 +4,8 @@ run-name: Test ${{ inputs.frontendHostname }} with ${{ inputs.browser }} and ${{
 on:
   workflow_call:
     secrets:
-      SPSH_DEV_USER_SSHKEY:
-        description: 'SSH Key for Tunnel User to access LDAP tunnel (required for dev tests)'
-        required: false
       SPSH_DEV_KUBECONFIG:
         description: 'Kubeconfig for SPSH development environment (required for dev tests)'
-        required: false
-      SPSH_DEV_TUNNEL_USERNAME:
-        description: 'Username for SSH tunnel (required for dev tests)'
-        required: false
-      SPSH_DEV_TUNNEL_HOST:
-        description: 'Hostname of the SSH tunnel (required for dev tests)'
-        required: false
-      SPSH_DEV_TUNNEL_PORT:
-        description: 'Port of the SSH tunnel (required for dev tests)'
         required: false
       USER:
         description: 'Username for the application'
@@ -133,15 +121,6 @@ jobs:
         run: npx playwright install --with-deps
 
       # --------------------------
-      # Setup SSH agent for LDAP tunnel
-      # --------------------------
-      - name: Setup SSH agent
-        if: ${{ inputs.tag == 'dev' }}
-        uses: webfactory/ssh-agent@dc588b651fe13675774614f8e6a936a468676387 # v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.SPSH_DEV_USER_SSHKEY }}
-
-      # --------------------------
       # Add kubeconfig (main namespace only)
       # --------------------------
       - name: Add kubeconfig
@@ -152,17 +131,6 @@ jobs:
           mkdir -p ~/.kube
           echo "$KUBECONFIG_CONTENT" > ~/.kube/config
           chmod 600 ~/.kube/config
-
-      # --------------------------
-      # Get LDAP Pod IP
-      # --------------------------
-      - name: Get LDAP Pod IP
-        if: ${{ inputs.tag == 'dev' }}
-        env:
-          NS: ${{ inputs.namespace_to_use }}
-        run: |
-          POD_IP=$(kubectl get pod dbildungs-iam-ldap-0 -n "$NS" -o=jsonpath='{.status.podIP}')
-          echo "LDAP_POD_IP=$POD_IP" >> $GITHUB_ENV
 
       # --------------------------
       # Get LDAP admin password from Kubernetes
@@ -177,19 +145,15 @@ jobs:
           echo "LDAP_ADMIN_PASSWORD=$LDAP_ADMIN_PASSWORD" >> $GITHUB_ENV
 
       # --------------------------
-      # Create SSH tunnel to LDAP
+      # Create tunnel to LDAP
       # --------------------------
-      - name: Create SSH tunnel to LDAP
+
+      - name: Create tunnel to LDAP
         if: ${{ inputs.tag == 'dev' }}
         env:
-          SPSH_DEV_TUNNEL_USERNAME: ${{ secrets.SPSH_DEV_TUNNEL_USERNAME }}
-          SPSH_DEV_TUNNEL_HOST: ${{ secrets.SPSH_DEV_TUNNEL_HOST }}
-          SPSH_DEV_TUNNEL_PORT: ${{ secrets.SPSH_DEV_TUNNEL_PORT }}
+          NS: ${{ inputs.namespace_to_use }}
         run: |
-          ssh -o StrictHostKeyChecking=no \
-              -L 1389:$LDAP_POD_IP:1389 $SPSH_DEV_TUNNEL_USERNAME@$SPSH_DEV_TUNNEL_HOST \
-              -p $SPSH_DEV_TUNNEL_PORT \
-              -N -o ServerAliveInterval=15 -o ExitOnForwardFailure=yes &
+          kubectl port-forward -n "$NS" dbildungs-iam-ldap-0 3389:3389 &
           disown
 
       # --------------------------
@@ -201,7 +165,7 @@ jobs:
 
       - name: Test LDAP Connectivity
         if: ${{ inputs.tag == 'dev' }}
-        run: ldapwhoami -x -H ldap://localhost:1389 -D "cn=admin,dc=schule-sh,dc=de" -w "$LDAP_ADMIN_PASSWORD"
+        run: ldapwhoami -x -H ldap://localhost:3389 -D "cn=admin,dc=schule-sh,dc=de" -w "$LDAP_ADMIN_PASSWORD"
 
       # --------------------------
       # Run Playwright tests
@@ -214,7 +178,7 @@ jobs:
           USER: '${{ secrets.USER }}'
           PW: '${{ secrets.PW }}'
           OTP_SEED_B32: '${{ secrets.OTP_SEED_B32 }}'
-          LDAP_URL: ldap://localhost:1389
+          LDAP_URL: ldap://localhost:3389
           LDAP_ADMIN_PASSWORD: ${{ env.LDAP_ADMIN_PASSWORD }}
           NODE_OPTIONS: --no-experimental-strip-types
         run: npx playwright test --config=playwright.config.ts --grep @"$TAG" --project "$BROWSER"
