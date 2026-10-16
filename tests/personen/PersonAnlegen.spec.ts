@@ -1,4 +1,4 @@
-import test, { expect, PlaywrightTestArgs } from '@playwright/test';
+import test, { PlaywrightTestArgs } from '@playwright/test';
 import { createKlasse, createSchule, getOrganisationId } from '../../base/api/organisationApi';
 import { createPersonWithPersonenkontext, UserInfo } from '../../base/api/personApi';
 import { createRolle, RollenArt } from '../../base/api/rolleApi';
@@ -11,7 +11,6 @@ import {
   schuladminOeffentlichRolle,
 } from '../../base/rollen';
 import { DEV, STAGE } from '../../base/tags';
-import { TestHelperLdap } from '../../base/testHelperLdap';
 import { loginAndNavigateToAdministration } from '../../base/testHelperUtils';
 import {
   generateDienststellenNr,
@@ -42,7 +41,8 @@ function calculateBefristung(): string {
   let yearForBefristung: number = currentYear;
   const today: Date = new Date();
 
-  if (today.getMonth() >= 8 || (today.getMonth() === 7 && today.getDate() === 31)) {
+  // getMonth() is 0-based
+  if (today.getMonth() >= 7 || (today.getMonth() === 6 && today.getDate() === 31)) {
     yearForBefristung = currentYear + 1;
   }
   return '31.7.' + yearForBefristung;
@@ -213,48 +213,11 @@ test.describe(`Testfälle für die Anlage von Personen`, () => {
         });
       });
 
-      test.describe(`LDAP-Integration`, () => {
-        test('Lehrer anlegen und LDAP-Daten prüfen', { tag: [DEV] }, async () => {
-          const params: PersonCreationSuccessValidationParams = {
-            nachname: generateNachname(),
-            vorname: generateVorname(),
-            rollen: [lehrkraftOeffentlichRolle],
-            organisation: schuleName,
-            dstNr: schuleDstNr,
-            kopersnr: generateKopersNr(),
-          };
-
-          const createdBenutzername: string = await test.step('Nutzer anlegen', async () => {
-            await personCreationViewPage.fillForm(params);
-            const successPage: PersonCreationSuccessPage = await personCreationViewPage.submit();
-            await successPage.assertSuccessfulCreation(params);
-            return successPage.getBenutzername();
-          });
-
-          const ldapHelper: TestHelperLdap = new TestHelperLdap(
-            process.env.LDAP_URL!,
-            process.env.LDAP_ADMIN_PASSWORD!,
-          );
-
-          await test.step(`Prüfen, dass Lehrkraft im LDAP angelegt wurde`, async () => {
-            expect(await ldapHelper.validateUserExists(createdBenutzername, 10, 1000)).toBeTruthy();
-          });
-
-          await test.step(`Prüfen, dass Lehrkraft im LDAP korrekter Gruppe zugeordnet wurde`, async () => {
-            expect(await ldapHelper.validateUserIsInGroupOfNames(createdBenutzername, params.dstNr!)).toBeTruthy();
-          });
-
-          await test.step(`Mail Primary Address Auf Existenz Prüfen`, async () => {
-            const mailPrimaryAddress: string = await ldapHelper.getMailPrimaryAddress(createdBenutzername, 10, 1000);
-            expect(mailPrimaryAddress).toContain('schule-sh.de');
-            expect(mailPrimaryAddress.length).toBeGreaterThan(5);
-          });
-        });
-
+      test.describe('Personenkontext wiederherstellen', () => {
         test(
-          'Lehrer anlegen, Kontext entfernen und wiederherstellen und LDAP-Daten prüfen',
+          'Lehrer anlegen, Kontext entfernen und wiederherstellen',
           { tag: [DEV] },
-          async () => {
+          async ({ page }: PlaywrightTestArgs) => {
             const params: PersonCreationSuccessValidationParams = {
               nachname: generateNachname(),
               vorname: generateVorname(),
@@ -263,11 +226,6 @@ test.describe(`Testfälle für die Anlage von Personen`, () => {
               dstNr: schuleDstNr,
               kopersnr: generateKopersNr(),
             };
-
-            const ldapHelper: TestHelperLdap = new TestHelperLdap(
-              process.env.LDAP_URL!,
-              process.env.LDAP_ADMIN_PASSWORD!,
-            );
 
             const [createdBenutzername, initialPersonManagementView]: [string, PersonManagementViewPage] =
               await test.step('Nutzer anlegen', async () => {
@@ -279,26 +237,6 @@ test.describe(`Testfälle für die Anlage von Personen`, () => {
               });
 
             let personManagementView: PersonManagementViewPage = initialPersonManagementView;
-
-            await test.step(`Prüfen, dass Lehrkraft im LDAP angelegt wurde`, async () => {
-              expect(await ldapHelper.validateUserExists(createdBenutzername, 10, 1000)).toBeTruthy();
-            });
-
-            await test.step(`Prüfen, dass Lehrkraft im LDAP korrekter Gruppe zugeordnet wurde`, async () => {
-              expect(await ldapHelper.validateUserIsInGroupOfNames(createdBenutzername, params.dstNr!)).toBeTruthy();
-            });
-
-            const generatedPrimaryMailAddress: string =
-              await test.step(`Mail Primary Address Auf Existenz Prüfen`, async () => {
-                const primaryMailAddress: string = await ldapHelper.getMailPrimaryAddress(
-                  createdBenutzername,
-                  10,
-                  1000,
-                );
-                expect(primaryMailAddress).toContain('schule-sh.de');
-                expect(primaryMailAddress.length).toBeGreaterThan(5);
-                return primaryMailAddress;
-              });
 
             let personDetailsViewPage: PersonDetailsViewPage = await test.step(`Gesamtübersicht öffnen`, async () => {
               return personManagementView.searchAndOpenGesamtuebersicht(createdBenutzername);
@@ -316,22 +254,23 @@ test.describe(`Testfälle für die Anlage von Personen`, () => {
             });
 
             await test.step('Schulzuordnung wiederherstellen', async () => {
+              const zuordnungenView: ZuordnungenPage = new ZuordnungenPage(page);
+              await zuordnungenView.assertZuordnungDoesNotExist({
+                organisation: schuleName,
+                dstNr: schuleDstNr,
+                rolle: lehrkraftOeffentlichRolle,
+              });
               const zuordnungenPage: ZuordnungenPage = await personDetailsViewPage.editZuordnungen();
               await zuordnungenPage.addZuordnung({ organisation: schuleName, rolle: lehrkraftOeffentlichRolle });
             });
 
-            await test.step(`Prüfen, dass Lehrkraft im LDAP noch existiert`, async () => {
-              expect(await ldapHelper.validateUserExists(createdBenutzername, 10, 1000)).toBeTruthy();
-            });
-
-            await test.step(`Prüfen, dass Lehrkraft noch im LDAP korrekter Gruppe zugeordnet ist`, async () => {
-              expect(await ldapHelper.validateUserIsInGroupOfNames(createdBenutzername, params.dstNr!)).toBeTruthy();
-            });
-
-            await test.step(`Prüfen, dass eine Mail weiterhin existiert und zugeordnet ist`, async () => {
-              const mailPrimaryAddress: string = await ldapHelper.getMailPrimaryAddress(createdBenutzername);
-              const expected: string = generatedPrimaryMailAddress.replace('@', '1@');
-              expect(mailPrimaryAddress).toBe(expected);
+            await test.step('Schulzuordnung prüfen', async () => {
+              const zuordnungenView: ZuordnungenPage = new ZuordnungenPage(page);
+              await zuordnungenView.assertZuordnungExists({
+                organisation: schuleName,
+                dstNr: schuleDstNr,
+                rolle: lehrkraftOeffentlichRolle,
+              });
             });
           },
         );

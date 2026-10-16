@@ -143,12 +143,17 @@ export class ZuordnungenPage {
   /* assertions */
   public async checkSelectedBefristungOption(option: 'unbefristet' | 'schuljahresende'): Promise<void> {
     const workflowPage: BefristungWorkflowPage = await this.startBefristungWorkflow();
-    await workflowPage.checkSelectedBefristungOption(option);
+    await workflowPage.assertSelectedBefristungOption(option);
   }
 
-  public async checkZuordnungExists(params: ZuordnungValidationParams): Promise<void> {
+  public async assertZuordnungExists(params: ZuordnungValidationParams): Promise<void> {
     const expectedText: string = this.buildExpectedTextForZuordnung(params);
     await expect(this.page.getByTestId('person-zuordnungen-section-view')).toContainText(expectedText);
+  }
+
+  public async assertZuordnungDoesNotExist(params: ZuordnungValidationParams): Promise<void> {
+    const expectedText: string = this.buildExpectedTextForZuordnung(params);
+    await expect(this.page.getByTestId('person-zuordnungen-section-view')).not.toContainText(expectedText);
   }
 
   public async checkPendingZuordnungen(params: ZuordnungValidationParams): Promise<void> {
