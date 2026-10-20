@@ -20,6 +20,11 @@
 export const RollenSystemRechtEnum = {
     RollenVerwalten: 'ROLLEN_VERWALTEN',
     MptRollenZuordnen: 'MPT_ROLLEN_ZUORDNEN',
+    Pilot1RollenZuordnen: 'PILOT_1_ROLLEN_ZUORDNEN',
+    Pilot2RollenZuordnen: 'PILOT_2_ROLLEN_ZUORDNEN',
+    Pilot3RollenZuordnen: 'PILOT_3_ROLLEN_ZUORDNEN',
+    Pilot4RollenZuordnen: 'PILOT_4_ROLLEN_ZUORDNEN',
+    Pilot5RollenZuordnen: 'PILOT_5_ROLLEN_ZUORDNEN',
     PersonenSofortLoeschen: 'PERSONEN_SOFORT_LOESCHEN',
     PersonenVerwalten: 'PERSONEN_VERWALTEN',
     LandesbediensteteSuchenUndHinzufuegen: 'LANDESBEDIENSTETE_SUCHEN_UND_HINZUFUEGEN',
