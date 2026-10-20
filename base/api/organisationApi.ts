@@ -9,7 +9,7 @@ import {
   OrganisationenApi,
 } from './generated/apis/OrganisationenApi';
 import { CreateOrganisationBodyParams, OrganisationResponse, OrganisationsTyp } from './generated/models';
-import { ApiResponse } from './generated/runtime';
+import { ApiResponse, ResponseError } from './generated/runtime';
 
 export function constructOrganisationApi(page: Page): OrganisationenApi {
   return constructApi(page, OrganisationenApi);
@@ -113,11 +113,18 @@ export async function createOrganisation(
   params: OrganisationControllerCreateOrganisationRequest['createOrganisationBodyParams'],
 ): Promise<OrganisationResponse> {
   try {
+    const typ: OrganisationsTyp = params.typ;
+    let kennung: string | undefined = params.kennung;
+
+    if (kennung === undefined && typ === OrganisationsTyp.Schule) {
+      kennung = generateDienststellenNr();
+    }
+
     const createOrganisationBodyParams: CreateOrganisationBodyParams = {
       ...params,
       name: params.name ?? generateSchulname(),
-      kennung: params.kennung ?? generateDienststellenNr(),
-      typ: params.typ ?? OrganisationsTyp.Schule,
+      kennung,
+      typ,
     };
 
     const requestParameters: OrganisationControllerCreateOrganisationRequest = {
