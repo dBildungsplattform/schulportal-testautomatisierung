@@ -9,7 +9,7 @@ import {
   OrganisationenApi,
 } from './generated/apis/OrganisationenApi';
 import { CreateOrganisationBodyParams, OrganisationResponse, OrganisationsTyp } from './generated/models';
-import { ApiResponse, ResponseError } from './generated/runtime';
+import { ApiResponse } from './generated/runtime';
 
 export function constructOrganisationApi(page: Page): OrganisationenApi {
   return constructApi(page, OrganisationenApi);
