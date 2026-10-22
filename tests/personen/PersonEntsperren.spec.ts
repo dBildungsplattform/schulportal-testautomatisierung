@@ -13,7 +13,7 @@ import { LoginViewPage } from '../../pages/LoginView.page';
 
 test.describe('PersonEntsperren', () => {
   test(
-    'SPSH-3945: should allow an unlocked user to log in',
+    'Should allow an unlocked user to log in',
     { tag: [DEV, STAGE] },
     async ({ page }: PlaywrightTestArgs) => {
       const user: UserInfo = await test.step('Gesperrten Benutzer anlegen', async () => {
